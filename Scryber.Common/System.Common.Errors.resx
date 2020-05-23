@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CannotParseNullString" xml:space="preserve">
+    <value>Cannot parse a nave value from a null or empty string.</value>
+  </data>
+  <data name="CannotParsePastTheEndOfTheString" xml:space="preserve">
+    <value>Cannot parse a native value beyond the length of the provided string</value>
+  </data>
+  <data name="CannotParseTheDocumentIDs" xml:space="preserve">
+    <value>The document ID's could nopt be parsed. The expected format is either a single Guid, or a pair of Guid values separated by a comma.</value>
+  </data>
+  <data name="CannotRecordWebTraceWithoutWebContext" xml:space="preserve">
+    <value>Trace log messages cannot be recorded to a web tracing log without a current HttpContext. Ensure that there is a current web request or remove the PDFWebTraceLog from the trace.</value>
+  </data>
+  <data name="CannotWriteToThisStream" xml:space="preserve">
+    <value>The stream passed to the PDFWriter cannot be written to.</value>
+  </data>
+  <data name="CouldNotApplyStreamFilters" xml:space="preserve">
+    <value>The specified stream filters could not be applied to the PDF object {0} : {1}</value>
+  </data>
+  <data name="CouldNotCompressStreamFilter" xml:space="preserve">
+    <value>The compression of the stream failed, check the inner exception for more details.</value>
+  </data>
+  <data name="CouldNotParseBooleanValue" xml:space="preserve">
+    <value>The required boolean value could not be parsed from the string literal.</value>
+  </data>
+  <data name="DocumentIDCannotBeEmpty" xml:space="preserve">
+    <value>One or more of the specified values for the document id were empty (or an empty Guid). The expected format is a pair of byte arrays (or Guids) </value>
+  </data>
+  <data name="FontDefinitionDoesNotHaveFile" xml:space="preserve">
+    <value>There is no font file associated with the font definition '{0}'</value>
+  </data>
+  <data name="InvalidChararcterForStreamUseBytes" xml:space="preserve">
+    <value>The use of high order characters in a stream is only supported with binary data writing. The character '{0}' could not be written.</value>
+  </data>
+  <data name="InvalidNullString" xml:space="preserve">
+    <value>The string value was not recognised as the 'null' string so could not be parsed.</value>
+  </data>
+  <data name="InvalidObjectReferenceString" xml:space="preserve">
+    <value>The string expression could not be converted to a valid object reference.</value>
+  </data>
+  <data name="InvalidPDFName" xml:space="preserve">
+    <value>The PDF Name '{0}' contains invalid characters. Please use Alpha numeric characters for names.</value>
+  </data>
+  <data name="InvalidPDFStringEscapeSequence" xml:space="preserve">
+    <value>The parsed string does not conform to the PDF standards</value>
+  </data>
+  <data name="NoDataContextOnTheStack" xml:space="preserve">
+    <value>There is no current data context to access</value>
+  </data>
+  <data name="NoWebContextAvailableForRelativeUrl" xml:space="preserve">
+    <value>The web application relative url could not be resolved as there is no current HttpContext</value>
+  </data>
+  <data name="ParsedValueWasNotAnItegralNumber" xml:space="preserve">
+    <value>Parsed value was not an itegral number.</value>
+  </data>
+  <data name="ParsedValueWasNotANumericValue" xml:space="preserve">
+    <value>The parsed value in the string was not convertable to a numeric value.</value>
+  </data>
+  <data name="PDFNameDoesNotStartWithSlash" xml:space="preserve">
+    <value>The PDF name does not start with the required '/' character.</value>
+  </data>
+  <data name="PDFStringDoesNotStartWithRequiredCharacter" xml:space="preserve">
+    <value>The PDF String does not start with the required '(' character, nor is it a recognised hexadecimal sequence</value>
+  </data>
+  <data name="PDFStringHasUnbalancedParenthese" xml:space="preserve">
+    <value>The parsed string does not have balanced unescpaed paranthese.</value>
+  </data>
+  <data name="StreamDoesNotHaveFiltersDefined" xml:space="preserve">
+    <value>The PDFStream does not have any filters defined. If is invalid to ensure that the filters have been applied</value>
+  </data>
+  <data name="TypeStringOnlyNChars" xml:space="preserve">
+    <value>The PDFType can only be initialized with a ASCII string {1} characters long. The string '{0}' is not the correct length.</value>
+  </data>
+  <data name="WriteToOnlySupportedForMemoryStreams" xml:space="preserve">
+    <value>The PDFStream WriteTo method only supports MemoryStreams.</value>
+  </data>
+  <data name="XPathExpressionCouldNotBeEvaluated" xml:space="preserve">
+    <value>The XPath expression '{0}' could not be evaluated and returned an error.</value>
+  </data>
+  <data name="AllDictionaryKeysMustBePDFNames" xml:space="preserve">
+    <value>The PDFDictionary could not be parsed. All Keys within hte dictionary must be Names (/Name).</value>
+  </data>
+  <data name="ArrayDoesNotEndWithRequiredChar" xml:space="preserve">
+    <value>The PDFArray could not be parsed as it does not end with the required ']' character.</value>
+  </data>
+  <data name="ArrayDoesNotStartWithRequiredChar" xml:space="preserve">
+    <value>The PDFArray could not be parsed as it does not start with the required '[' character.</value>
+  </data>
+  <data name="DictionaryDoesNotEndWithRequiredChar" xml:space="preserve">
+    <value>The PDFDictionary could not be parsed as it does not end with the required '&gt;&gt;' marker.</value>
+  </data>
+  <data name="DictionaryDoesNotStartWithRequiredChar" xml:space="preserve">
+    <value>The PDFDictionary could not be parsed as it does not start with the required '&lt;&lt;' marker.</value>
+  </data>
+  <data name="XRefTableDoesNotStartWithXRef" xml:space="preserve">
+    <value>The parsed XRefTable does not start with the required 'xref' marker</value>
+  </data>
+  <data name="XRefTableEntryMustBeInCorrectFormat" xml:space="preserve">
+    <value>Each XRef table entry must consist of a 10 byte digit offset, a 5 byte generation number, and a single character state marker (f,n) with spaces in between and 2 whitespace characters at the end (to make 20 bytes).</value>
+  </data>
+  <data name="XRefTableSectionMustBe2Integers" xml:space="preserve">
+    <value>Each XRefTable section must be a single line of 2 integer values separated by a space. And always have more than 1 entry.</value>
+  </data>
+  <data name="CouldNotInitializeThePDFReader" xml:space="preserve">
+    <value>The PDFReader could not initialize based on the referenced file or stream. Check the validity of the file.</value>
+  </data>
+  <data name="IndirectObjectCannotBeParsed" xml:space="preserve">
+    <value>The Indirect object could not be parsed</value>
+  </data>
+  <data name="AnIndirectObjectWithReferenceCouldNotBeFound" xml:space="preserve">
+    <value>An indirect object with the referenced id of {0} could not be found in the original file.</value>
+  </data>
+  <data name="CannotOpenTheFileAtThePath" xml:space="preserve">
+    <value>The specified file could not be opened or does not exist at the specified path. See the inner exception for more details.</value>
+  </data>
+  <data name="MarkerNotFoundByReader" xml:space="preserve">
+    <value>The PDF file marker '{0}' could not be found in the data file by the PDFReader. This marker is required in a PDFFile.</value>
+  </data>
+  <data name="DatabindingPropertyNotFound" xml:space="preserve">
+    <value>The property '{0}' could not be found or accessed for binding. Please check the spelling.</value>
+  </data>
+  <data name="DatabindingSourceNotXPath" xml:space="preserve">
+    <value>The current databinding source is not an IXpathNavigable object.</value>
+  </data>
+  <data name="InvalidIndexerExpression" xml:space="preserve">
+    <value>The binding indexer expression '{0}' could not be evaluated.</value>
+  </data>
+</root>
