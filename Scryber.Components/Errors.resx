@@ -1,0 +1,636 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AssignedDataSourceIsNotIPDFDataSource" xml:space="preserve">
+    <value>The Component with the id '{0}' does not implement the IPDFDataSource interface. All Components that are to be used as datasources must implement this interface.</value>
+  </data>
+  <data name="CannotAddCellToIndexAlreadyFull" xml:space="preserve">
+    <value>Cannot add the cell reference to the column at row {0} because it is already full. Ensure that the cells are added in order to a column.</value>
+  </data>
+  <data name="CannotCastToStyleItem" xml:space="preserve">
+    <value>The created style item returned from the Document could not be cast to a {0} item.</value>
+  </data>
+  <data name="CannotChangeValueWhenLocked" xml:space="preserve">
+    <value>The value of property '{0}' cannot be changed because the item '{1}' is locked for rendering</value>
+  </data>
+  <data name="CannotSetDataSourceAndDataSourceID" xml:space="preserve">
+    <value>Cannot set both the DataSource value and the DataSourceID value of a binding control. Ensure that the unused property is clear before setting the required property.</value>
+  </data>
+  <data name="CannotUseFindForComponentNotInDocumentHeirarchy" xml:space="preserve">
+    <value>Cannot use the FindComponent method when an Component is not contained within the document heirarchy.</value>
+  </data>
+  <data name="CanOnlyReferenceExternalStyleDefinitionsOfType" xml:space="preserve">
+    <value>All external defined files must have a base type of '{0}'.</value>
+  </data>
+  <data name="CouldNotFindControlWithID" xml:space="preserve">
+    <value>The Component with the id '{0}' could not be found. The search is case sensitive.</value>
+  </data>
+  <data name="CouldNotParseValue_2" xml:space="preserve">
+    <value>The value '{0}' could not be parsed into a {1} instance.</value>
+  </data>
+  <data name="CouldNotSelectData" xml:space="preserve">
+    <value>An error occurred whilst trying to extract the data.</value>
+  </data>
+  <data name="FontNotRegistered" xml:space="preserve">
+    <value>The font '{0} {1}' has not been registered with the current resource section. Fonts must be registered with the current page or IResourceContainer before use. This is normally done with the PDFGraphics DrawString and DrawTextBlock methods.</value>
+  </data>
+  <data name="GridIsNullNotMeasured" xml:space="preserve">
+    <value>The table has not been measured or the referenced grid has been lost.</value>
+  </data>
+  <data name="InvalidCallToGetGraphicsForStructure" xml:space="preserve">
+    <value>The hierarchy is not complete. No parent exists that can create a graphics context for the requesting Component.</value>
+  </data>
+  <data name="InvalidEmptyUnits" xml:space="preserve">
+    <value>A unit cannot be instantiated with 'Empty', please specify the actual unit of measurement</value>
+  </data>
+  <data name="LoadingOfExternalFilesNotSupported" xml:space="preserve">
+    <value>The loading of an external file '{0}' is not supported in the base document class.</value>
+  </data>
+  <data name="MeasureNotCalled" xml:space="preserve">
+    <value>The Measure and Arrange methods must be called on an object before it can be rendered.</value>
+  </data>
+  <data name="NoOpCountOutOfRange" xml:space="preserve">
+    <value>The NoOp count on the PDFComponentList has become unbalanced. Please ensure that the count is only incrementd or decrementd evenly.</value>
+  </data>
+  <data name="NullArgument" xml:space="preserve">
+    <value>The parameter '{0}' cannot be null.</value>
+  </data>
+  <data name="PDFTypeStringOnlyNChars" xml:space="preserve">
+    <value>The PDFType can only be initialized with a ASCII string {1} characters long. The string '{0}' is not the correct length.</value>
+  </data>
+  <data name="TemplateComponentCannotBeRoot" xml:space="preserve">
+    <value>A template Component cannot be the root Component. It must be contained within another container.</value>
+  </data>
+  <data name="UnbalancedDataStack" xml:space="preserve">
+    <value>The data stack has become unbalanced. Entries have been added or removed out of sequence.</value>
+  </data>
+  <data name="UnbalancedStyleStack" xml:space="preserve">
+    <value>The style stack has become unbalanced. Entries have been added or removed out of sequence.</value>
+  </data>
+  <data name="AssignedDataSourceIsNotNavigable" xml:space="preserve">
+    <value>The assigned datasource for the binding component does not implement the IXPathNavigable interface. All datasources that are to be used must implement this interface.</value>
+  </data>
+  <data name="CannotUseBaseTemplateInChoose" xml:space="preserve">
+    <value>Setting of the 'Template' property is not supported in the PDFChoose Component. Use the Where and Otherwise properties instead.</value>
+  </data>
+  <data name="CannotAccessStreamWithoutRead" xml:space="preserve">
+    <value>Cannot access the stream until its initial position has been set. Please use the Read() method before tring to access the stream.</value>
+  </data>
+  <data name="CannotReadPastTheEOF" xml:space="preserve">
+    <value>It is an error to attempt to read past the end of the stream. Use the bool Read() return value before accessing the stream values.</value>
+  </data>
+  <data name="CouldNotFillText" xml:space="preserve">
+    <value>Could not fill the graphics context with the specific text due to the error : {0}</value>
+  </data>
+  <data name="CouldNotParseValue_21" xml:space="preserve">
+    <value>The value '{0}' could not be parsed into a {1} instance.</value>
+  </data>
+  <data name="CouldNotParseValue_3" xml:space="preserve">
+    <value>The value '{0}' could not be parsed into a {1} instance. A value in the format '{2}' was expected.</value>
+  </data>
+  <data name="GraphicsOnlySupportsTopDownDrawing" xml:space="preserve">
+    <value>The PDFGraphics class only supports the TopDown DrawingOrigin</value>
+  </data>
+  <data name="MeasureNotCalled1" xml:space="preserve">
+    <value>The Measure and Arrange methods must be called on an object before it can be rendered.</value>
+  </data>
+  <data name="NullArgument1" xml:space="preserve">
+    <value>The parameter '{0}' cannot be null.</value>
+  </data>
+  <data name="ComponentIsNotKnownToLayoutEngine" xml:space="preserve">
+    <value>The Component with type '{0}' is not a known Component for the layout engine. Either change its type, make the type implement the IPDFComponentViewPort interface, or sets its type to NoOp.</value>
+  </data>
+  <data name="LayoutEngineHasNotSetArrangement" xml:space="preserve">
+    <value>The PDFComponentArangement has not been set on this Component before attempting to render. All Components must have their arrangement set before rendering.</value>
+  </data>
+  <data name="CouldNotBuildTheTableGrid" xml:space="preserve">
+    <value>The TableGrid could not be built for the table '{0}'. See the inner exception for more details</value>
+  </data>
+  <data name="CouldNotLayoutGridCells" xml:space="preserve">
+    <value>Could not layout the cells of the table grid with id '{0}'. {1}</value>
+  </data>
+  <data name="CannotAccessGridOffsetInTable" xml:space="preserve">
+    <value>Cannot access the offset {0} in the table with a {1} count of {2}</value>
+  </data>
+  <data name="CannotModifyTableGridSizes" xml:space="preserve">
+    <value>This group of table grid sizes has been locked and cannot be modified, only read.</value>
+  </data>
+  <data name="GridNotClosed" xml:space="preserve">
+    <value>The CloseGrid method has not been called after adding cells to the table grid. </value>
+  </data>
+  <data name="CannotLoadFileWithRelativePath" xml:space="preserve">
+    <value>The method must be called with an absolute path (not relative). Use the MapPath method to attempt conversion from a relative to an absolute path.</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>The requested file could not be found at the specified path. Or the file is not a valid XML document.</value>
+  </data>
+  <data name="CannotConvertObjectToType" xml:space="preserve">
+    <value>An object of type '{0}' cannot be cast to the required '{1}' type.</value>
+  </data>
+  <data name="CircularReferenceToPath" xml:space="preserve">
+    <value>The parsed documents have a circular dependancy reference to the path '{0}'. Please check the references.</value>
+  </data>
+  <data name="NoTypeFoundWithPDFComponentNameInNamespace" xml:space="preserve">
+    <value>No Type could be found in the namespace '{1}' that declares a component name '{0}'. Please check the file and required type.</value>
+  </data>
+  <data name="PathStackIsUnbalanced" xml:space="preserve">
+    <value>The path resolution stack has become unbalanced and parsing cannot continue.</value>
+  </data>
+  <data name="CannotCreateInstanceOfType" xml:space="preserve">
+    <value>An instance of type '{0}' could not be created. {1}</value>
+  </data>
+  <data name="LayoutEngineIsAlreadyWorking" xml:space="preserve">
+    <value>The layout engine is already positioning a component. You cannot use the same engine to run more than one component at a time</value>
+  </data>
+  <data name="LayoutFailedForComponent" xml:space="preserve">
+    <value>The layout of component '{0}' failed. {1}</value>
+  </data>
+  <data name="PageBreaksAreOnlySupportedAtTheRootSection" xml:space="preserve">
+    <value>Page break components are only supported at the root content level of a section.</value>
+  </data>
+  <data name="ParentDocumentCannotBeNull" xml:space="preserve">
+    <value>The parent document cannot be null.</value>
+  </data>
+  <data name="RequiredChildElementNotFountOnElement" xml:space="preserve">
+    <value>The required child element '{0}' was not found on the component definition '{1}'</value>
+  </data>
+  <data name="ReturnTypeOfXPathExpressionCannotBeNavigatorForPropertyEvaluation" xml:space="preserve">
+    <value>The return type of expression '{0}' is a new XPath navigator. This cannot be assigned to a simple property.</value>
+  </data>
+  <data name="UnbalancedOutlineStack" xml:space="preserve">
+    <value>The outline stack has become unbalanced. Entries have been added or removed out of sequence.</value>
+  </data>
+  <data name="NoValidLicenceFoundForOperation" xml:space="preserve">
+    <value>A valid, sourced licence was not found that supports the restricted operation '{0}'. Please check your license agreement to ensure you are up to date.</value>
+  </data>
+  <data name="ResourceContainerOfComponnetNotFound" xml:space="preserve">
+    <value>The resource container for the {0} component '{1}' was not found. This component can only be rendered as child of a resource container such as a Page or Section.</value>
+  </data>
+  <data name="AFontWithNameMustBeDeclaredInConfig" xml:space="preserve">
+    <value>The font with name '{0}' is not a standard font, This font must be referenced in the configuration file or have the file path specified. </value>
+  </data>
+  <data name="ColorValueIsNotCurrentlySupported" xml:space="preserve">
+    <value>The color space '{0}' is not supported. The PDFX graphics system currently only supports RGB and Gray color spaces, other values of the enumeration are there for future use.</value>
+  </data>
+  <data name="ParentDocumentMustBeTemplateParser" xml:space="preserve">
+    <value>The parent document of a template must implment the IPDFTemplateParser interface.</value>
+  </data>
+  <data name="InvalidXPathExpression" xml:space="preserve">
+    <value>The XPath expression '{0}' could not be evaluated. Please check the statement.</value>
+  </data>
+  <data name="TemplateComponentParentMustBeContainer" xml:space="preserve">
+    <value>The parent Component of a template Component must be an instance of an IPDFContainerComponent</value>
+  </data>
+  <data name="TemplateHasNotBeenInitialised" xml:space="preserve">
+    <value>The template generator has not been initialised. The InitTemplate method must be called before any instaniation.</value>
+  </data>
+  <data name="CannotSetBaseTextOfPageNumber" xml:space="preserve">
+    <value>The base text value of the PageNumberLabel cannot be set explicity. This is derived at render time from the format value and current page numbers</value>
+  </data>
+  <data name="ComponentNamerAlreadyRegistered" xml:space="preserve">
+    <value>A component with the name '{0}' has already been registered in this document. It is an error to have 2 components in the same name in the same document.</value>
+  </data>
+  <data name="LinkToDestinationCouldNotBeMade" xml:space="preserve">
+    <value>No matching destination to '{0}' could be found. The link cannot be assigned.</value>
+  </data>
+  <data name="NoCurrentComponentInLayoutEngine" xml:space="preserve">
+    <value>There is no current component in this Layout Engine. Ensure the engine is in the process of laying out a container before calling this method.</value>
+  </data>
+  <data name="CannotEndAComponentLayoutIfNotCurrent" xml:space="preserve">
+    <value>It is an error to attempt to end the layout of a component that is not the current component.</value>
+  </data>
+  <data name="CannotSetViewPortAsInline" xml:space="preserve">
+    <value>A viewport component cannot be set with a layout mode of inline.</value>
+  </data>
+  <data name="NoTextBlockAsCurrentComponentIsNotTextComponent" xml:space="preserve">
+    <value>The current text block cannot be retrieved as the current component does not implement the IPDFTextComponent interface.</value>
+  </data>
+  <data name="NoWebContextAvailable" xml:space="preserve">
+    <value>There is no current web context available. This provider requires a current web context inorder to function.</value>
+  </data>
+  <data name="CannotLayoutABlockThatHasBeenClosed" xml:space="preserve">
+    <value>Cannot alter the layout of a block that has been closed. Check the IsClosed property before trying to append</value>
+  </data>
+  <data name="CannotLayoutAPageThatHasBeenClosed" xml:space="preserve">
+    <value>Cannot alter the layout of a page that has been closed.</value>
+  </data>
+  <data name="NoOpenBlocksToAppendTo" xml:space="preserve">
+    <value>The layout does not have any open blocks on the page.</value>
+  </data>
+  <data name="LayoutContainerHasExistingOpenItem" xml:space="preserve">
+    <value>Cannot perform this action, as the current item in this container has not been closed. Close the current item first, then perform the action.</value>
+  </data>
+  <data name="LayoutItemCouldNotBeClosed" xml:space="preserve">
+    <value>The layout item could not be closed. </value>
+  </data>
+  <data name="LayoutItemIsClosed" xml:space="preserve">
+    <value>This layout item is closed and cannot be appended to</value>
+  </data>
+  <data name="LayoutNoCurrentLineToClose" xml:space="preserve">
+    <value>The layout item does not have a currently open line available to close. Check the HasOpenLine property first.</value>
+  </data>
+  <data name="AlreadyAHeaderDefinedOnPage" xml:space="preserve">
+    <value>There is already a header layout defined on this layout page</value>
+  </data>
+  <data name="NoFooterBlockToClose" xml:space="preserve">
+    <value>There is no current footer block on this layout page to close. </value>
+  </data>
+  <data name="NoHeaderBlockToClose" xml:space="preserve">
+    <value>There is no current header block on this layout page to close</value>
+  </data>
+  <data name="TextOptionTypeIsNotSupported" xml:space="preserve">
+    <value>The text operation flag '{0}' is not supported. Use a full parse to generate spans, divs, and text formats.</value>
+  </data>
+  <data name="AbsolutePositioningBlocksRegisterWithTheLayoutPage" xml:space="preserve">
+    <value>Blocks that are absolute positioned must be registered with the page rather than on an inner block.</value>
+  </data>
+  <data name="CannotBeginABlockThatIsInline" xml:space="preserve">
+    <value>Inline components do not have surrounding blocks.</value>
+  </data>
+  <data name="TextBlockIsNotSetOnComponent" xml:space="preserve">
+    <value>The TextBlock has not been assigned to the current text component.</value>
+  </data>
+  <data name="ThisBlockDoesNotHaveAnyPostionOptions" xml:space="preserve">
+    <value>The layout block to be rendered does not have any postion infromation associated with it. The position must be set on the block before it can be rendered.</value>
+  </data>
+  <data name="ThisBlockDoesNotHaveAnyStyle" xml:space="preserve">
+    <value>The layout block to be rendered does not have any style information associated with it. The FulStyle must be set before it can be rendered.</value>
+  </data>
+  <data name="NoTableRowToAddCellTo" xml:space="preserve">
+    <value>The current table grid layout does not have any open rows to add layout cells to.</value>
+  </data>
+  <data name="NoCurrentOpenTableCell" xml:space="preserve">
+    <value>There is no currently open table layout cell on the row. </value>
+  </data>
+  <data name="DocumentCannotBeBoundAtThisStage" xml:space="preserve">
+    <value>The document component cannot be bound at this stage. It has already been laid out.</value>
+  </data>
+  <data name="DocumentHasAlreadyBeenInitialized" xml:space="preserve">
+    <value>This document has already been initialized. It cannot be initialized more than once.</value>
+  </data>
+  <data name="DocumentHasAlreadyBeenLoaded" xml:space="preserve">
+    <value>This document has already been loaded. It cannot be loaded more than once.</value>
+  </data>
+  <data name="DocumentHasBeenDisposed" xml:space="preserve">
+    <value>This document has already been disposed. It cannot take part in any activities once it has been disposed.</value>
+  </data>
+  <data name="DocumentHasNotBeenInitialized" xml:space="preserve">
+    <value>This document has not been initialised. It cannot perform further actions until it has been initiaized.</value>
+  </data>
+  <data name="DocumentHasNotBeenLaidout" xml:space="preserve">
+    <value>This PDFDocument has not been laidout, and cannot perfrom further generation stages out of sequence.</value>
+  </data>
+  <data name="DocumentHasNotBeenLoaded" xml:space="preserve">
+    <value>This PDFDocument has not been loaded, and cannot perfrom further generation stages out of sequence.</value>
+  </data>
+  <data name="TryingToOutputADifferentDocumentLayout" xml:space="preserve">
+    <value>The document layout does not correspond to this PDFDocument and you cannot output a layout from a different document component.</value>
+  </data>
+  <data name="CouldNotFindControlWithName" xml:space="preserve">
+    <value>A component with name '{0}' could not be found. The search is case sensitive. To look up an ID, prefix with #</value>
+  </data>
+  <data name="CouldNotLoadTheDataFromTheSourcePath" xml:space="preserve">
+    <value>The {0} data source could not be retrieved from the requested path. See the inner exception for more details.</value>
+  </data>
+  <data name="NoSourcePathDefinedOnXmlDataSource" xml:space="preserve">
+    <value>The XmlDatasource {0} does not has a source file set to load data from and the value of the XmlDocument has not been set.</value>
+  </data>
+  <data name="AssembyTokensDoNotMatchOnLicense" xml:space="preserve">
+    <value>The strong named assembly token does not match the licensed component</value>
+  </data>
+  <data name="CannotDeserializePDFLicenceFromData" xml:space="preserve">
+    <value>Could not deserialize the license data for component {0}. See the inner exception for more details.</value>
+  </data>
+  <data name="CannotSerializePDFLicenceToStream" xml:space="preserve">
+    <value>The license could not be serialized to the provided stream. See te inner exception for more details.</value>
+  </data>
+  <data name="CouldNotDeserializeTheLicenseTerms" xml:space="preserve">
+    <value>Could not deserialize the licence terms. An error occurred whilst reading the fields. See the inner exception for more details.</value>
+  </data>
+  <data name="CouldNotLoadLicenceKey" xml:space="preserve">
+    <value>An error occurred while trying to load the license key for component {0}. See the inner exception for more details.</value>
+  </data>
+  <data name="LicenseSignatureCouldNotBeValidated" xml:space="preserve">
+    <value>The license signature is invalid for the specified terms.</value>
+  </data>
+  <data name="TypeDoesNotHavePublicKeyForLicence" xml:space="preserve">
+    <value>The component {0} is registered as a licensed component, but does not have a public key assigned on it's attribute</value>
+  </data>
+  <data name="TypeIsNotRegisteredWithLicensedComponentAttribute" xml:space="preserve">
+    <value>The component {0} is not registered with a license key attribute.</value>
+  </data>
+  <data name="CouldNotTransformInputData" xml:space="preserve">
+    <value>The transformation of the data failed. See the inner exception for more details.</value>
+  </data>
+  <data name="XSLTCouldNotBeLoadedFromPath" xml:space="preserve">
+    <value>The XSLT transformation file could not be loaded from the mapped path '{0}'</value>
+  </data>
+  <data name="XSLTPathOrTransformerNotSetOnInstance" xml:space="preserve">
+    <value>The path to an XSLT file or an XSLCompiled transform has not been set on the Transform extension for the datasource {0}.</value>
+  </data>
+  <data name="UnknownDocumentFormat" xml:space="preserve">
+    <value>The document format '{0}' is not a known or supported format. Rendering cannot contine.</value>
+  </data>
+  <data name="NoFileLinkSpecifiedOnUriAction" xml:space="preserve">
+    <value>A link of type Uri was specified, but no value was specified for the file to navigate to. Please specify a File value.</value>
+  </data>
+  <data name="LayoutManagerAlreadyHasAnOpenItem" xml:space="preserve">
+    <value>The layout manager already has an open {0}. Please close the current {0} before starting a new one.</value>
+  </data>
+  <data name="DataSchemaExtractionIsNotSupported" xml:space="preserve">
+    <value>This data source does not support extraction of the data schema. Always ceck the Suports property before calling this method.</value>
+  </data>
+  <data name="FontDefinitionDoesNotHaveFile" xml:space="preserve">
+    <value>There is no font file associated with the font definition '{0}'</value>
+  </data>
+  <data name="CouldNotDownloadBarcodeData" xml:space="preserve">
+    <value>The barcode image could not be downloaded from the specified url: {0}</value>
+  </data>
+  <data name="CouldNotInitializeTheImageForComponent" xml:space="preserve">
+    <value>The initialization and image load for component {0} failed. See inner exception for more details</value>
+  </data>
+  <data name="CannotDeclareNamespaceWithoutPrefix" xml:space="preserve">
+    <value>All namespaces must have a prefix explictly set for all elements that are in a namespace. The namespace '{0}' does not have a prefix assigned.</value>
+  </data>
+  <data name="NoCurrentNumberGroup" xml:space="preserve">
+    <value>There is no current number group in the list numbering to action. Groups must be opended before they can be used/</value>
+  </data>
+  <data name="IndirectObjectHasAlreadyBeenWritten" xml:space="preserve">
+    <value>This indirect object has already been written to the underlying stream. Cannot write the same object twice</value>
+  </data>
+  <data name="CannotCreatePolygonWithLessThan3Sides" xml:space="preserve">
+    <value>Cannot create a regular ploygon shape with less than 3 sides (it's not a shape).</value>
+  </data>
+  <data name="CannotCreatePolygramWithLessThan5Sides" xml:space="preserve">
+    <value>Cannot create a regular ploygram shape with less than 5 sides (it's not a shape).</value>
+  </data>
+  <data name="CouldNotParseTheValue_3" xml:space="preserve">
+    <value>The value '{0}' could not be parsed into a {1} instance. A value in the format '{2}'</value>
+  </data>
+  <data name="StepCountCannotBeGreaterThanVertexCount" xml:space="preserve">
+    <value>The step count cannot be greater than the vertex count.</value>
+  </data>
+  <data name="PathMustHave3PointsForTriangle" xml:space="preserve">
+    <value>The path data for a triangle must have 3 and only 3 points.</value>
+  </data>
+  <data name="OrigSourceIsRequiredForUpdateDocument" xml:space="preserve">
+    <value>When using the UpdateDocument either the BaseFile must be set, or the orig source path to a valid PDF file must be set.</value>
+  </data>
+  <data name="PageContentsCanOnlyByReferencesOrArraysOfReferences" xml:space="preserve">
+    <value>The parsed page content streams can only be object references or arrays of bject references</value>
+  </data>
+  <data name="PageMediaboxMustBeAnArray" xml:space="preserve">
+    <value>The MediaBox value for a page must be an array of numbers (or an indirect reference to an array of numbers.</value>
+  </data>
+  <data name="PageToUpdateWasNotFound" xml:space="preserve">
+    <value>The page at (zero based) index {0} was not found in the file '{1}'.</value>
+  </data>
+  <data name="ModificationStartIndexIsLongerThanDocument" xml:space="preserve">
+    <value>The specified start index for a page modification is longer than the current base file.</value>
+  </data>
+  <data name="ModificationStartIndexPlusCountIsLongerThanDocument" xml:space="preserve">
+    <value>The specified count for page modifications goes beyond the current base file page count, starting at the specified index.</value>
+  </data>
+  <data name="PageOwnerOfAModifyLayoutMustBeAModifyPage" xml:space="preserve">
+    <value>The Page owner of a PDFModifyLayoutPage must be a PDFModifyPageBase</value>
+  </data>
+  <data name="CouldNotLoadImageFromPath" xml:space="preserve">
+    <value>The image path could not be resolved, or the image could not be loaded from path '{0}'</value>
+  </data>
+  <data name="CouldNotLoadTheMissingImage" xml:space="preserve">
+    <value>The fall back missing image could not be found, so cannot replace the not found image.</value>
+  </data>
+  <data name="NoRemoteDestinationSpecifiedOnLink" xml:space="preserve">
+    <value>The link to a remote destination could not be created as the path to the file has not been set (or is empty)</value>
+  </data>
+  <data name="CouldNotLoadTheDataFromProvider" xml:space="preserve">
+    <value>The source data could not be loaded from the data provider with id '{0}'. See the inner exception for more details.</value>
+  </data>
+  <data name="CannotChangeTheContentsOfAPlaceHolderOnceParsed" xml:space="preserve">
+    <value>This placeholder has already parsed it's contents, and can no longer be modifed.</value>
+  </data>
+  <data name="CannotGetSchemaForTransformedSource" xml:space="preserve">
+    <value>A transformed SQL data source no longer support schema extraction.</value>
+  </data>
+  <data name="CouldNotBindDataComponent" xml:space="preserve">
+    <value>Building and binding the required components in the data list to the current data source failed. See the inner exception for more details.</value>
+  </data>
+  <data name="CouldNotConvertObjectToXml" xml:space="preserve">
+    <value>The object could not be converted to Xml. Please see the inner exception for more details.</value>
+  </data>
+  <data name="CouldNotLoadAssembly" xml:space="preserve">
+    <value>The requested assembly '{0}' could not be found.</value>
+  </data>
+  <data name="CouldNotLoadType" xml:space="preserve">
+    <value>The requested type '{0}' could not be loaded from the requested assembly.</value>
+  </data>
+  <data name="CouldNotTransformResult" xml:space="preserve">
+    <value>The loaded data could not be transformed by the specified file. See the inner exception for more details.</value>
+  </data>
+  <data name="CountNoConvertBinaryDataToBitmap" xml:space="preserve">
+    <value>The provided binary data could not be converted to a required Bitmap instance. Ensure the data is a bitmap.</value>
+  </data>
+  <data name="DataLoadFailedForCommand" xml:space="preserve">
+    <value>The command '{0}' on data source '{1}' failed to load the data. See the inner exception for more details.</value>
+  </data>
+  <data name="DataSchemaItemNotFoundAtPath" xml:space="preserve">
+    <value>No Data schema item was found at the path '{0}'.</value>
+  </data>
+  <data name="FailedToLoadDataForObjectSource" xml:space="preserve">
+    <value>The object datasource '{0}' could not load the data because : {1}</value>
+  </data>
+  <data name="MethodParameterNotDefinedWithName" xml:space="preserve">
+    <value>The registered method has parameter '{0}' which has not been specified. All parameters must be declared on the command.</value>
+  </data>
+  <data name="NoConnectionDefined" xml:space="preserve">
+    <value>There is no connection defined on this command '{0}' in datasource '{1}'.</value>
+  </data>
+  <data name="NoConnectionSettingFor" xml:space="preserve">
+    <value>The configuration file does not contain a connection setting with the name '{0}'.</value>
+  </data>
+  <data name="NoMethodFoundOnTheTypeWithName" xml:space="preserve">
+    <value>No required method could be found on the type {1} with the name '{0}' or the specified parameters.</value>
+  </data>
+  <data name="NoPredefinedCommandWithKey" xml:space="preserve">
+    <value>The data source '{1}' does not contain a command with the specified key '{0}'.</value>
+  </data>
+  <data name="NoProviderFactoryWithName" xml:space="preserve">
+    <value>There is no configured .net data provider with the name '{0}'.</value>
+  </data>
+  <data name="NullChildColumnForRelationToTable" xml:space="preserve">
+    <value>The relation could not be created in command {1} as the child column name has not been set for table {0}</value>
+  </data>
+  <data name="NullParentColumnForRelationToTable" xml:space="preserve">
+    <value>The relation could not be created in command {1} as the parent column name has not been set for table {0}</value>
+  </data>
+  <data name="ObjectDataSourceCanOnlyUseObjectCommands" xml:space="preserve">
+    <value>The object datasource {1} can only use and execute PDFObjectCommands to load the data. The command '{0}' is not an object command.</value>
+  </data>
+  <data name="ParentDocumentCannotBeNull1" xml:space="preserve">
+    <value>The component must be within the document hierarchy to perform this action. Currently the parent document is null.</value>
+  </data>
+  <data name="ResourceContainerOfComponentNotFound" xml:space="preserve">
+    <value>The required resource container for the {0} component with ID '{1}' cound not be found.</value>
+  </data>
+  <data name="SqlDataSourceCanOnlyUseSqlCommands" xml:space="preserve">
+    <value>The SqlDataSource '{1}' can only use SqlCommands to load data. The command '{0}' is not an SqlCommand.</value>
+  </data>
+  <data name="TableDoesNotContainColumn" xml:space="preserve">
+    <value>The  relation could not be created in command {1} as the table {0} does not contain the column {2}.</value>
+  </data>
+  <data name="CannotCreateInstanceOfTypeOnCommand" xml:space="preserve">
+    <value>An instance of the type '{0}' required by the object command '{1}' could not be created. A public parameterless constructor is needed on the declaring type for instance methods to be used.</value>
+  </data>
+  <data name="CommandForRelatedDataMustMatchType" xml:space="preserve">
+    <value>The releated data command for type {0} must be of type {1}</value>
+  </data>
+  <data name="CommandWithNameCannotBeFound" xml:space="preserve">
+    <value>A Provider command with the name '{0}' could not be found in the source '{1}'. Names are case-sensitive.</value>
+  </data>
+  <data name="MatchingMethodSignatureCouldNotBeFoundForObjectData" xml:space="preserve">
+    <value>The method '{0}' found on type {1}does not match the signature declared by the object command '{2}' in the data source {3}. Ensure all required methods are publicly accessible.</value>
+  </data>
+  <data name="MatchingMethodSignatureDoesNotHaveAReturnTypeObjectData" xml:space="preserve">
+    <value>The method '{0}' found on type {1}does not have a return type, so cannot be used as declared by the object command '{2}' in the data source {3}. Ensure all required methods are publicly accessible.</value>
+  </data>
+  <data name="MethodCouldNotBeFoundForObjectData" xml:space="preserve">
+    <value>The method '{0}' could not be found on type {1} required by object command '{2}' in the data source {3}. Ensure all required methods are publicly accessible.</value>
+  </data>
+  <data name="MethodNameNotSetOnObjectDataSource" xml:space="preserve">
+    <value>The Method name to call for the Object Command '{0}' has not been set in the data source '{1}'</value>
+  </data>
+  <data name="TypeCouldNotBeFoundForObjectData" xml:space="preserve">
+    <value>The type '{0}' could not be found or loaded on object command '{1}' in the data source {2}. Are you missing an assembly reference.</value>
+  </data>
+  <data name="TypeNameNotSetOnObjectDataSource" xml:space="preserve">
+    <value>The Type name of the class containing the method to call for the Object Command '{0}' has not been set in the data source '{1}'</value>
+  </data>
+  <data name="NoDefaultValueSetOnEmptyValueTypeParameter" xml:space="preserve">
+    <value>No default value has been set on the parameter '{0}' which has a value type '{1}'. Cannot pass null to this parameter, so a default value is required.</value>
+  </data>
+  <data name="CannotReferenceExternalFilesFromSourcesWithoutARoot" xml:space="preserve">
+    <value>The original parsed source does not have a root location. Cannot parse referenced files from an un-rooted source unless they are full / absolute paths.</value>
+  </data>
+  <data name="UnknownArtefactForNamesDictionary" xml:space="preserve">
+    <value>Unknown artefact for the names dictionary. All Artefacts must implement the ICategorisedArtefactNamesEntry interface if they are to be stored in the Names dictionary of the documents catalog.</value>
+  </data>
+  <data name="CanOnlyTransformBlockComponents" xml:space="preserve">
+    <value>The contents of a positioned region we expected to be a single layout block. Transformations are only supported on the standard block elements such as panels and divs.</value>
+  </data>
+</root>
