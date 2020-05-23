@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CannotAccessStreamWithoutRead" xml:space="preserve">
+    <value>Cannot access the stream until its initial position has been set. Please use the Read() method before tring to access the stream.</value>
+  </data>
+  <data name="CannotCastObjectToType" xml:space="preserve">
+    <value>The object '{0}' could not be converted or cast to the required '{1}' type.</value>
+  </data>
+  <data name="CannotReadPastTheEOF" xml:space="preserve">
+    <value>It is an error to attempt to read past the end of the stream. Use the bool Read() return value before accessing the stream values.</value>
+  </data>
+  <data name="ColorComponentMustBeBetweenZeroAndOne" xml:space="preserve">
+    <value>The color component value for a pdf color (Red, Green, Blue, etc) must be a floating point number between 0 and 1. The value '{0}' is outside this range.</value>
+  </data>
+  <data name="ColorValueIsNotCurrentlySupported" xml:space="preserve">
+    <value>The color space '{0}' is not supported. The PDFX graphics system currently only supports RGB and Gray color spaces, other values of the enumeration are there for future use.</value>
+  </data>
+  <data name="CouldNotBuildPathFromArc" xml:space="preserve">
+    <value>The PDF Graphics engine could not build a valid set of bezier curves describing the required arc. See inner exception for more details.</value>
+  </data>
+  <data name="CouldNotBuildPathFromQuadratic" xml:space="preserve">
+    <value>The PDF Graphics engine could not build a valid set of bezier curves describing the required quadratic curve. See inner exception for more details.</value>
+  </data>
+  <data name="CouldNotCastObjectToType" xml:space="preserve">
+    <value>The object of type '{1}' could not be cast to a '{0}'</value>
+  </data>
+  <data name="CouldNotFillText" xml:space="preserve">
+    <value>Could not fill the graphics context with the specific text due to the error : {0}</value>
+  </data>
+  <data name="CouldNotInitializeTheFonts" xml:space="preserve">
+    <value>The initialization of the fonts failed. {0}</value>
+  </data>
+  <data name="CouldNotLoadImagingFactory" xml:space="preserve">
+    <value>The configured imaging factory type '{0}' could not be loaded.</value>
+  </data>
+  <data name="CouldNotLoadTheFontFile" xml:space="preserve">
+    <value>The specified font file at path '{0}' could not be loaded. {1}</value>
+  </data>
+  <data name="CouldNotLoadTheFontResource" xml:space="preserve">
+    <value>The font resource with name '{0}' could not be loaded from the resource manager '{1}'</value>
+  </data>
+  <data name="CouldNotLoadTheResourceManagerForBase" xml:space="preserve">
+    <value>The resource manager could not be loaded for the name '{0}'. The name must be in the format 'basename [,assemblyname]' where assembly name is optional and if it is not provided the currently executing assembly will be used</value>
+  </data>
+  <data name="CouldNotParseTheImageAtPath" xml:space="preserve">
+    <value>The image parser could not parse the image at path '{0}'. {1}</value>
+  </data>
+  <data name="CouldNotParseThePathExpectedInstruction" xml:space="preserve">
+    <value>The path data '{0}' could not be parsed into a graphics path. Expected an instruction character at index '{1}', but found '{2}'.</value>
+  </data>
+  <data name="CouldNotParseThePathInstructionNotRecognised" xml:space="preserve">
+    <value>The path data '{0}' could not be parsed into a graphics path. The instruction '{2}' at index {1} was not a known or supported instruction.</value>
+  </data>
+  <data name="CouldNotParseValue_3" xml:space="preserve">
+    <value>The value '{0}' could not be parsed into a {1} instance. A value in the format '{2}' was expected.</value>
+  </data>
+  <data name="FontDefinitionDoesNotHaveFile" xml:space="preserve">
+    <value>There is no font file associated with the font definition '{0}'</value>
+  </data>
+  <data name="FontMappingMustHaveFilePathOrResourceName" xml:space="preserve">
+    <value>A configuration must have either a 'font-file' or 'rsrc-name' attribute declared so that the font definiton can be found. The font '{0}' has neither.</value>
+  </data>
+  <data name="FontNotFound" xml:space="preserve">
+    <value>The font '{0}' could not be found. Please check the name and style.</value>
+  </data>
+  <data name="FontNotFoundOrEnableSystem" xml:space="preserve">
+    <value>The font '{0}' could not be found. Please check the name and style. The use of system font files is currently blocked by the configuration settings.</value>
+  </data>
+  <data name="GraphicsOnlySupportsTopDownDrawing" xml:space="preserve">
+    <value>The PDFGraphics class only supports the TopDown DrawingOrigin</value>
+  </data>
+  <data name="NoLinesInParagraph" xml:space="preserve">
+    <value>There are no lines in this paragraph</value>
+  </data>
+  <data name="NoParagraphsInBlock" xml:space="preserve">
+    <value>There are no paragraphs in this block</value>
+  </data>
+  <data name="NullSystemFont" xml:space="preserve">
+    <value>The system font, or font family cound not be found for the PDFFont '{0}'. Please check the name and any required font mappings in the config file.</value>
+  </data>
+  <data name="TextLayoutFailed" xml:space="preserve">
+    <value>The layout of the text block could not be created. See inner exception for more details.</value>
+  </data>
+  <data name="UnbalancedTextStyle" xml:space="preserve">
+    <value>The text style stack has become unbalanced and style end markers cannot be removed from an empty stack.</value>
+  </data>
+  <data name="UnknownPageUnits" xml:space="preserve">
+    <value>The units '{0}' is not a known unit of measurement. Expected values are mm, inch and point (mm,",pt).</value>
+  </data>
+  <data name="WriteToOnlySupportedForMemoryStreams" xml:space="preserve">
+    <value>The WriteTo method is only supported on Memory Streams</value>
+  </data>
+</root>
