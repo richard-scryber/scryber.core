@@ -1,0 +1,278 @@
+﻿/*  Copyright 2012 PerceiveIT Limited
+ *  This file is part of the Scryber library.
+ *
+ *  You can redistribute Scryber and/or modify 
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Scryber is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with Scryber source code in the COPYING.txt file.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using Scryber;
+using Scryber.Drawing;
+
+namespace Scryber.Styles
+{
+    [PDFParsableComponent("Position")]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [PDFJSConvertor("scryber.studio.design.convertors.styleItem", JSParams ="\"Position\"")]
+    public class PDFPositionStyle : PDFStyleItemBase
+    {
+
+        #region public PositionMode PositionMode {get;set;} + RemovePositionMode()
+
+        [PDFAttribute("mode")]
+        [PDFDesignable("Position Mode", Category = "Layout", Priority = 1, Type = "PositionMode")]
+        [PDFJSConvertor("scryber.studio.design.convertors.positionMode_css")]
+        public PositionMode PositionMode
+        {
+            get
+            {
+                PositionMode val;
+                if (this.TryGetValue(PDFStyleKeys.PositionModeKey,out val))
+                {
+                    return val;
+                }
+                else if (this.IsDefined(PDFStyleKeys.PositionXKey) || this.IsDefined(PDFStyleKeys.PositionYKey))
+                    return PositionMode.Relative;
+                else
+                    return PositionMode.Block;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PositionModeKey,value);
+            }
+        }
+
+        public void RemovePositionMode()
+        {
+            this.RemoveValue(PDFStyleKeys.PositionModeKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit X {get;set;} + RemoveLeft()
+
+        [PDFAttribute("x")]
+        [PDFDesignable("X", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        public PDFUnit X
+        {
+            get
+            {
+                PDFUnit f;
+                if (this.TryGetValue(PDFStyleKeys.PositionXKey,out f))
+                    return f;
+                else
+                    return PDFUnit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PositionXKey, value);
+            }
+        }
+
+        public void RemoveX()
+        {
+            this.RemoveValue(PDFStyleKeys.PositionXKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit Y {get;set;} + RemoveTop()
+
+        [PDFAttribute("y")]
+        [PDFDesignable("Y", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        public PDFUnit Y
+        {
+            get
+            {
+                PDFUnit f;
+                if (this.TryGetValue(PDFStyleKeys.PositionYKey,out f))
+                    return f;
+                else
+                    return PDFUnit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PositionYKey, value);
+            }
+        }
+
+        public void RemoveY()
+        {
+            this.RemoveValue(PDFStyleKeys.PositionYKey);
+        }
+
+        #endregion
+
+        #region public VerticalAlignment VAlign {get;set;} + RemoveVAlign()
+
+        [PDFAttribute("v-align")]
+        [PDFJSConvertor("scryber.studio.design.convertors.valign_css")]
+        [PDFDesignable("V. Align", Category = "Layout", Priority = 1, Type = "Select")]
+        public VerticalAlignment VAlign
+        {
+            get
+            {
+                VerticalAlignment va;
+                if (this.TryGetValue(PDFStyleKeys.PositionVAlignKey, out va))
+                    return va;
+                else
+                    return Const.DefaultVerticalAlign;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PositionVAlignKey, value);
+            }
+        }
+
+        public void RemoveVAlign()
+        {
+            this.RemoveValue(PDFStyleKeys.PositionVAlignKey);
+        }
+
+        #endregion
+
+        #region  public HorizontalAlignment HAlign {get;set;} + RemoveHAlign()
+
+        [PDFAttribute("h-align")]
+        [PDFJSConvertor("scryber.studio.design.convertors.halign_css")]
+        [PDFDesignable("H. Align", Category = "Layout", Priority = 1, Type = "Select")]
+        public HorizontalAlignment HAlign
+        {
+            get
+            {
+                HorizontalAlignment ha;
+                if (this.TryGetValue(PDFStyleKeys.PositionHAlignKey,out ha))
+                    return ha;
+                else
+                    return Const.DefaultHorizontalAlign;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PositionHAlignKey, value);
+            }
+        }
+
+        public void RemoveHAlign()
+        {
+            this.RemoveValue(PDFStyleKeys.PositionHAlignKey);
+        }
+
+        #endregion
+
+
+        #region public PDFUnit Width {get;set;} + RemoveWidth()
+
+        [PDFAttribute("width")]
+        [Obsolete("This has now moved to the PDFSizeStyle",true)]
+        [PDFDesignable("Width", Ignore =true,  Category = "Size", Priority = 1, Type = "PDFUnit")]
+        public PDFUnit Width
+        {
+            get
+            {
+                PDFUnit f;
+                if (this.TryGetValue(PDFStyleKeys.SizeWidthKey, out f))
+                    return f;
+                else
+                    return PDFUnit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.SizeWidthKey, value);
+            }
+        }
+
+        [Obsolete("This has now moved to the PDFSizeStyle", true)]
+        public void RemoveWidth()
+        {
+            this.RemoveValue(PDFStyleKeys.SizeWidthKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit Height {get;set;} + RemoveHeight()
+
+        [PDFAttribute("height")]
+        [PDFDesignable("Height", Ignore = true, Category = "Size", Priority = 1, Type = "PDFUnit")]
+        [Obsolete("This has now moved to the PDFSizeStyle", true)]
+        public PDFUnit Height
+        {
+            get
+            {
+                PDFUnit f;
+                if (this.TryGetValue(PDFStyleKeys.SizeHeightKey, out f))
+                    return f;
+                else
+                    return PDFUnit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.SizeHeightKey, value);
+            }
+        }
+
+        [Obsolete("This has now moved to the PDFSizeStyle", true)]
+        public void RemoveHeight()
+        {
+            this.RemoveValue(PDFStyleKeys.SizeHeightKey);
+        }
+
+        #endregion
+
+        #region public bool FullWidth {get;set;}
+
+        /// <summary>
+        /// Gets or sets the full width flag. If true then the component will attempt to stretch across the available width
+        /// </summary>
+        [PDFAttribute("full-width")]
+        [Obsolete("This has now moved to the PDFSizeStyle", true)]
+        [PDFDesignable("Full Width", Ignore = true, Category = "Size", Priority = 1, Type = "Select")]
+        public bool FullWidth
+        {
+            get
+            {
+                bool b;
+                if (this.TryGetValue(PDFStyleKeys.SizeFullWidthKey, out b))
+                    return b;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.SizeFullWidthKey, value);
+            }
+        }
+
+        [Obsolete("This has now moved to the PDFSizeStyle", true)]
+        public void RemoveFillWidth()
+        {
+            this.RemoveValue(PDFStyleKeys.SizeFullWidthKey);
+        }
+
+        #endregion
+
+        public PDFPositionStyle()
+            : base(PDFStyleKeys.PositionItemKey)
+        {
+        }
+    }
+}

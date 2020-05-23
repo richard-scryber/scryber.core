@@ -3,6 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Common", "Scryber.Common\Scryber.Common.csproj", "{EC95C47B-4B2B-4AC4-8467-FA8CB9F6DC4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Drawing", "Scryber.Drawing\Scryber.Drawing.csproj", "{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Configuration", "Scryber.Configuration\Scryber.Configuration.csproj", "{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Styles", "Scryber.Styles\Scryber.Styles.csproj", "{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +19,17 @@ Global
 		{EC95C47B-4B2B-4AC4-8467-FA8CB9F6DC4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC95C47B-4B2B-4AC4-8467-FA8CB9F6DC4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC95C47B-4B2B-4AC4-8467-FA8CB9F6DC4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
