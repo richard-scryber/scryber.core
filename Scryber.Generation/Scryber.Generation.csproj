@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
+    <ProjectReference Include="..\Scryber.Configuration\Scryber.Configuration.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Generation\Errors1.Designer.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AttributeDefinitionInElementsCollection" xml:space="preserve">
+    <value>An attribute definition was in the elements collection.</value>
+  </data>
+  <data name="CannotConvertObjectToType" xml:space="preserve">
+    <value>An object of type '{0}' cannot be cast to the required '{1}' type.</value>
+  </data>
+  <data name="CannotCreateInstanceOfType" xml:space="preserve">
+    <value>An instance of type '{0}' could not be created. {1}</value>
+  </data>
+  <data name="CannotSpecifyBindingExpressionsOnEvents" xml:space="preserve">
+    <value>The value '{0}' is invalid for an event binding on attribute '{1}'. You cannot specify data binding expressions on event attributes.</value>
+  </data>
+  <data name="CannotUseRemoteTypeReferencesInATypeAttribute" xml:space="preserve">
+    <value>The type reference '{0}' cannot be used as it resolves to a remote type rather than an actual type. Use the actual type name.</value>
+  </data>
+  <data name="CanOnlyParseComponentAsElement" xml:space="preserve">
+    <value>Can only parse a component as an element</value>
+  </data>
+  <data name="CouldNotDeterminePropertyType" xml:space="preserve">
+    <value>Could not determine the type of the reflected property</value>
+  </data>
+  <data name="DatabindingIsNotSupportedOnType" xml:space="preserve">
+    <value>The type '{0}' does not support databinding. To support databinding a type must implement the IPDFBindableComponent interface.</value>
+  </data>
+  <data name="DuplicateDefaultElementOnClass" xml:space="preserve">
+    <value>The type '{1}' has multiple default elements defined. The property '{0}' cannot have a PDFElement attribute with a null or empty name because another property has already declared one. Either specify a name, or user the PDFIgnore attribute.</value>
+  </data>
+  <data name="InvalidXPathExpression" xml:space="preserve">
+    <value>The XPath expression '{0}' could not be evaluated. Please check the statement.</value>
+  </data>
+  <data name="NoAddMethodFoundOnCollection" xml:space="preserve">
+    <value>No 'Add' method was found on the collection type '{0}' accepting a single parameter of type '{1}'. This method is required for a parsed collection, unless the collection implements the IList interface.</value>
+  </data>
+  <data name="NoContentPropertyDefined" xml:space="preserve">
+    <value>Could not get the Content property definition from the template type</value>
+  </data>
+  <data name="NoPDFComponentDeclaredWithNameInNamespace" xml:space="preserve">
+    <value>No PDFComponent was found with the declared name of '{0}' in the namespace '{1}'</value>
+  </data>
+  <data name="ParsableValueMustHaveParseMethod" xml:space="preserve">
+    <value>The type '{0}' is declared as parsable with the PDFParsableValueAttribute, but no static method can be found that matched the signature  'Parse(string):T'</value>
+  </data>
+  <data name="ParsedTypeDoesNotContainDefinitionFor" xml:space="preserve">
+    <value>The parsed type '{0}' does not contain a definiton for the {1} with name '{2}', or the {1} could not be assigned.</value>
+  </data>
+  <data name="ParserAttributeMustBeSimpleOrCustomParsableType" xml:space="preserve">
+    <value>The type of property '{0}' in class '{1}' must either be of a known simple type  or be declared with the PDFParsableValueAttribute. Attributes cannot contain complex defintion.</value>
+  </data>
+  <data name="ParserAttributeNameCannotBeEmpty" xml:space="preserve">
+    <value>The attribute name of a PDFAttribute cannot be null or empty. Please specify a name on property '{0}' of type '{1}' </value>
+  </data>
+  <data name="ParserCannotFindAssemblyWithName" xml:space="preserve">
+    <value>The file parser could not find an assembly with the name '{0}'</value>
+  </data>
+  <data name="RequiredAttributeNoFoundOnElement" xml:space="preserve">
+    <value>The required attribute '{0}' was not found on the component definition '{1}'</value>
+  </data>
+  <data name="ReturnTypeOfXPathExpressionCouldNotBeDetermined" xml:space="preserve">
+    <value>The return type of XPath expression '{0}' could not be determined. Expressions for simple properties must return a simple node set, boolean, integer or string values.</value>
+  </data>
+  <data name="SourcePathOrTypeMustBeSet" xml:space="preserve">
+    <value>Neither the source path or source type were set on the remote reference. One of these attributes is required</value>
+  </data>
+  <data name="CouldNotSetTextPropertyValue" xml:space="preserve">
+    <value>The text property '{0}' could not be set on type '{1}'. Check the permissions and scope.</value>
+  </data>
+  <data name="NoTypeFoundWithPDFComponentNameInNamespace" xml:space="preserve">
+    <value>No Type could be found in the namespace '{1}' that declares a component name '{0}'. Please check the file and required type.</value>
+  </data>
+  <data name="TemplateComponentParentMustBeContainer" xml:space="preserve">
+    <value>The parent Component of a template Component must be an instance of an IPDFComponent</value>
+  </data>
+  <data name="TextLiteralTextPropertyNotFound" xml:space="preserve">
+    <value>The expected {0} property '{1}' was not found on the text literal type '{2}'. Change the generator settings, or define the property.</value>
+  </data>
+  <data name="TemplateHasNotBeenInitialised" xml:space="preserve">
+    <value>The template generator has not been initialised. The InitTemplate method must be called before any instaniation.</value>
+  </data>
+  <data name="ParserDoesNotHaveAssemblyRegisteredForNamespace" xml:space="preserve">
+    <value>The parser could not find a declared assembly or namespace for the prefix '{0}' used with element '{1}. Ensure the assembly is declared at the top of the file with a unique namespace prefix. e.g. xmlns:my="MyAssembly, MyNamespace"</value>
+  </data>
+  <data name="RuntimeTypeCouldNotBeDeterminedForReference" xml:space="preserve">
+    <value>The runtime type required for this property could not be determined for the reference name '{0}'.</value>
+  </data>
+  <data name="NoAssemblyForXmlNamespace" xml:space="preserve">
+    <value>The xml namespace '{0}' does not correspond to a known assembly namespace. Please check the namespace spelling, or make sure it is declared in the configuration file against a required runtime assembly.</value>
+  </data>
+  <data name="ComponentCannotBeUsedBasedOnMaxVersion" xml:space="preserve">
+    <value>The component '{0}' cannot be used. The maximum supported framework for this component is '{1}', but the current loaded framework is '{2}'. Please upgrade to the latest version of this components library</value>
+  </data>
+  <data name="ComponentCannotBeUsedBasedOnMinVersion" xml:space="preserve">
+    <value>The component '{0}' cannot be used. The minimum supported framework for this component is '{1}', but the current loaded framework is '{2}'. Please upgrade to the latest version of the Scryber framework.</value>
+  </data>
+  <data name="ReservedAttributeNameCannotBeUsed" xml:space="preserve">
+    <value>The reserved attribute name '{0}' cannot be used on any parsable properties - {1}</value>
+  </data>
+  <data name="NoCurrentDataContextValue" xml:space="preserve">
+    <value>Binding failed as there is not current data content on the binding stack.</value>
+  </data>
+  <data name="SqlBindingExpressionsCanOnlyUseDataRecords" xml:space="preserve">
+    <value>The SQL binding expressions can only use IDataRecords as the current data context value</value>
+  </data>
+  <data name="CouldNotParseComponentOfType" xml:space="preserve">
+    <value>The XML Parser could not parse type '{0}'. {1}</value>
+  </data>
+  <data name="BindingIsNotSupportedOnType" xml:space="preserve">
+    <value>The type '{0}' does not support binding at the stage '{1}. To support binding at this stage it must implement the '{2}' interface.</value>
+  </data>
+  <data name="BindingPrefixIsNotKnown" xml:space="preserve">
+    <value>The binding prefix '{0}' in expression '{1}' is not a known or registered binding type.</value>
+  </data>
+  <data name="ControllerTypeCouldNotBeFound" xml:space="preserve">
+    <value>The declared controller type '{0}' could not be loaded or found. Type names are case sensitive.</value>
+  </data>
+  <data name="CouldNotSetOutletPropertyValue" xml:space="preserve">
+    <value>The value of the PDF Outlet '{0}' could not be set on the controllers. See the inner execption for more details.</value>
+  </data>
+  <data name="OutletsCannotBeStatic" xml:space="preserve">
+    <value>PDF Outlets can only be public instance properties or fields that can be assigned a value. The member '{0}' is static or shared.</value>
+  </data>
+  <data name="OutletsCanOnlyBePropertiesOrFields" xml:space="preserve">
+    <value>PDF Outlets can only be public properties or fields that can be assigned a value. The member '{0}' is a {1}.</value>
+  </data>
+  <data name="OutletsMustBeReadWrite" xml:space="preserve">
+    <value>PDF Outlets can only be public instance properties or fields that can be assigned a value. The member '{0}' is read-only</value>
+  </data>
+  <data name="ControllerAlreadyHasActionName" xml:space="preserve">
+    <value>The controller definition '{0}' already has an action defined with the name '{1}'</value>
+  </data>
+  <data name="ControllerAlreadyHasOutletWithID" xml:space="preserve">
+    <value>The controller definition '{0}' already has an outlet defined with the id '{1}'</value>
+  </data>
+  <data name="CouldNotParseSource" xml:space="preserve">
+    <value>The XmlParser could not parse the source file '{0}'. {1}</value>
+  </data>
+</root>
