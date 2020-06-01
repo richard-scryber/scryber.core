@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Generation", "Scryb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components", "Scryber.Components\Scryber.Components.csproj", "{5FE37698-9469-427D-BB7B-BA4D7ECC5599}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.UnitTests", "Scryber.Core.UnitTest\Scryber.UnitTests.csproj", "{D30F3AD9-2541-46A1-BA4E-E6D68D457764}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,5 +45,9 @@ Global
 		{5FE37698-9469-427D-BB7B-BA4D7ECC5599}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FE37698-9469-427D-BB7B-BA4D7ECC5599}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FE37698-9469-427D-BB7B-BA4D7ECC5599}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D30F3AD9-2541-46A1-BA4E-E6D68D457764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D30F3AD9-2541-46A1-BA4E-E6D68D457764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D30F3AD9-2541-46A1-BA4E-E6D68D457764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D30F3AD9-2541-46A1-BA4E-E6D68D457764}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

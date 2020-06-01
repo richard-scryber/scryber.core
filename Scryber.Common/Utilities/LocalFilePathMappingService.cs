@@ -53,14 +53,37 @@ namespace Scryber.Utilities
 
             isFile = true;
 
+            //Replace any alternate separator chars with the actual character.
+            var dirSep = System.IO.Path.DirectorySeparatorChar;
+
+            if (dirSep == '/')
+                reference = reference.Replace('\\', '/');
+            else if (dirSep == '\\')
+                reference = reference.Replace('/', '\\');
+
             if (System.IO.Path.IsPathRooted(reference))
                 return reference;
             else if (reference.StartsWith("~"))
-                return System.IO.Path.GetFullPath(System.IO.Path.Combine(System.Environment.CurrentDirectory, reference.Substring(1)));
+            {
+                var dir = System.Environment.CurrentDirectory;
+                var combined = System.IO.Path.Combine(dir, reference.Substring(1));
+                var clean = System.IO.Path.GetFullPath(combined);
+                return clean;
+            }
             else if (!string.IsNullOrEmpty(parent))
-                return System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(parent), reference));
+            {
+                var dir = System.IO.Path.GetDirectoryName(parent);
+                var combined = System.IO.Path.Combine(dir, reference);
+                var clean = System.IO.Path.GetFullPath(combined);
+                return clean;
+            }
             else
-                return System.IO.Path.GetFullPath(System.IO.Path.Combine(System.Environment.CurrentDirectory, reference));
+            {
+                var dir = System.Environment.CurrentDirectory;
+                var combined = System.IO.Path.Combine(dir, reference);
+                var clean = System.IO.Path.GetFullPath(combined);
+                return clean;
+            }
             
         }
     }

@@ -255,29 +255,29 @@ namespace Scryber.Styles
         /// <returns></returns>
         public virtual string MapPath(string path)
         {
-            if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
-                return path;
-
-            if (System.IO.Path.IsPathRooted(path))
-                return path;
-
+            bool isFile;
             if (!string.IsNullOrEmpty(this.LoadedSource))
-            {
-                bool isfile;
-                path = this.MapPath(path, out isfile);
-                return path;
-            }
+                return this.MapPath(path, out isFile);
             else if (null == this.Parent)
                 return path;
             else
-                return this.Parent.MapPath(path);
+                return Parent.MapPath(path);
+
         }
 
 
         public virtual string MapPath(string source, out bool isfile)
         {
             var service = ServiceProvider.GetService<IPDFPathMappingService>();
-            return service.MapPath(this.LoadType, source, this.LoadedSource, out isfile);
+
+            if (!string.IsNullOrEmpty(this.LoadedSource))
+            {
+                return service.MapPath(this.LoadType, source, this.LoadedSource, out isfile);
+            }
+            else
+            {
+                return service.MapPath(this.LoadType, source, string.Empty, out isfile);
+            }
         }
 
 
