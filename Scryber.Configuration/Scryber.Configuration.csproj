@@ -20,4 +20,7 @@
   <ItemGroup>
     <Compile Remove="PDFTraceContext.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\Options\" />
+  </ItemGroup>
 </Project>
