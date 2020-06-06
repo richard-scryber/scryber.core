@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>Scryber</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,14 +14,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="PDFTraceContext.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\Options\" />
   </ItemGroup>
 </Project>

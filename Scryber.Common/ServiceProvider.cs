@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace Scryber
 {
     public static class ServiceProvider
@@ -88,19 +90,15 @@ namespace Scryber
             }
         }
 
-        /// <summary>
-        /// Base level services - these will be initialized by default whenever accessing the service provider
-        /// </summary>
-        private class FirstServices : IServiceProvider
+        public class DictionaryServiceProvider : IServiceProvider
         {
-            private System.Collections.Generic.Dictionary<Type, object> _initialized;
+            protected IDictionary<Type, object> _initialized;
 
-            public FirstServices()
+
+            public DictionaryServiceProvider(IDictionary<Type, object> services)
             {
-                _initialized = new System.Collections.Generic.Dictionary<Type, object>();
-                _initialized.Add(typeof(IPDFPathMappingService), new Utilities.LocalFilePathMappingService());
+                _initialized = services;
             }
-
 
             public object GetService(Type t)
             {
@@ -109,6 +107,26 @@ namespace Scryber
                     return found;
                 else
                     return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Base level services - these will be initialized by default whenever accessing the service provider
+        /// </summary>
+        private class FirstServices : DictionaryServiceProvider
+        {
+            public FirstServices() : base(InitFirst())
+            {
+                
+            }
+
+            private static IDictionary<Type,object> InitFirst()
+            {
+                var initialized = new Dictionary<Type, object>();
+                initialized.Add(typeof(IPDFPathMappingService), new Utilities.LocalFilePathMappingService());
+                initialized.Add(typeof(IScryberConfigurationService), new Utilities.ScryberDefaultConfigurationService());
+                return initialized;
             }
         }
 

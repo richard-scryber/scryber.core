@@ -1,8 +1,11 @@
 ﻿using System;
-namespace Scryber.Configuration.Options
+
+namespace Scryber.Options
 {
-    public class RenderOptions
+    public class OutputOptions
     {
+
+        public const string OutputSection = ScryberOptions.ScryberSectionStub + "Output";
 
         public OutputCompliance Compliance { get; set; }
 
@@ -14,7 +17,7 @@ namespace Scryber.Configuration.Options
 
         public OutputCompressionType Compression { get; set; }
 
-        public RenderOptions()
+        public OutputOptions()
         {
             Compression = OutputCompressionType.FlateDecode;
             PDFVersion = "1.5";

@@ -16,6 +16,7 @@
     <PackageReference Include="coverlet.collector" Version="1.3.0"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,5 +26,14 @@
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
     <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" />
   </ItemGroup>
 </Project>

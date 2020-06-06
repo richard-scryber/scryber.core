@@ -458,6 +458,23 @@ namespace Scryber
 
     #endregion
 
+    public interface IScryberConfigurationService
+    {
+        Options.FontOptions FontOptions();
+
+        Options.ParsingOptions ParsingOptions();
+
+        Options.ImagingOptions ImagingOptions();
+
+        Options.OutputOptions OutputOptions();
+
+        Options.TracingOptions TracingOptions();
+
+        object GetScryberSection(Type ofType, string name);
+
+        void Reset();
+    }
+
     #region public interface IPDFDocument : IPDFLoadableComponent
 
     /// <summary>
