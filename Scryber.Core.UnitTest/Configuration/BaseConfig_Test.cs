@@ -77,7 +77,7 @@ namespace Scryber.UnitTests.Configuration
             Assert.IsNotNull(img, "The imaging options are null");
             Assert.IsFalse(img.AllowMissingImages, "Missing images is not false");
             Assert.AreEqual(-1, img.ImageCacheDuration, "The image cache duration is not -1");
-            Assert.IsNull(img.ImageFactories, "The image factories are not null");
+            Assert.IsNull(img.Factories, "The image factories are not null");
         }
 
 

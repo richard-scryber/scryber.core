@@ -46,9 +46,9 @@ namespace Scryber.Core.UnitTests.Drawing
         static string ProjectDirectory = @"..\..\";
         static string ImageFilePath = ProjectDirectory + ImageDirectory + ImageName;
 
-        static string ImageUriPath = "/Portals/2/Images/";
-        static string ImageUriHost = "http://www.scryber.co.uk";
-        static string ImageUrlPath = ImageUriHost + ImageUriPath + ImageName;
+        static string ImageUriPath = "richard-scryber/scryber.core/master/Scryber.Components/Resources/";
+        static string ImageUriHost = "https://raw.githubusercontent.com/";
+        static string ImageUrlPath = ImageUriHost + ImageUriPath + "scryber_generatedby_bow.png";
 
 
         static int ImagePixelWidth = 370;
