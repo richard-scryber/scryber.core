@@ -24,6 +24,7 @@ using System.Configuration;
 
 namespace Scryber.Configuration
 {
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class TracingConfigurationSection : System.Configuration.ConfigurationSection
     {
         private const string TraceLevelKey = "trace-level";

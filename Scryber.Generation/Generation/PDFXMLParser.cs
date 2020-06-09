@@ -1137,8 +1137,8 @@ namespace Scryber.Generation
         private object HandleRemoteReferenceException(XmlReader reader, string path, Exception ex)
         {
             object replacement = null;
-            ParserReferenceMissingAction action = Scryber.Configuration.ScryberConfiguration.ParserMissingReferenceAction;
-            switch (action)
+            
+            switch (this.Settings.MissingReferenceAction)
             {
                 case ParserReferenceMissingAction.LogError:
                     this.LogAdd(reader, TraceLevel.Error, "Could not parse the file at path '" + path + "'. " + ex.Message);

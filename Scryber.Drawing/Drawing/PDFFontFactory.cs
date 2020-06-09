@@ -400,9 +400,9 @@ namespace Scryber.Drawing
         {
             //Make sure we are initialized and OK
             AssertInitialized();
-
-            bool usesystem = ScryberConfiguration.UseSystemFonts();
-            bool usesubstitute = ScryberConfiguration.UseSubstituteFonts();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            bool usesystem = config.FontOptions.UseSystemFonts;
+            bool usesubstitute = config.FontOptions.FontSubstitution;
             
             if (string.IsNullOrEmpty(family))
                 throw new ArgumentNullException("family");
@@ -476,8 +476,8 @@ namespace Scryber.Drawing
         {
             //Make sure we are initialized and OK
             AssertInitialized();
-
-            bool usesystem = ScryberConfiguration.UseSystemFonts();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            bool usesystem = config.FontOptions.UseSystemFonts;
 
             if (string.IsNullOrEmpty(family))
                 throw new ArgumentNullException("family");
@@ -573,9 +573,9 @@ namespace Scryber.Drawing
         {
             //Make sure we are initialized and OK
             AssertInitialized();
-
-            bool usesystem = ScryberConfiguration.UseSystemFonts();
-            bool usesubstitute = ScryberConfiguration.UseSubstituteFonts();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            bool usesystem = config.FontOptions.UseSystemFonts;
+            bool usesubstitute = config.FontOptions.FontSubstitution;
             
             if (string.IsNullOrEmpty(family))
                 throw new ArgumentNullException("family");
@@ -764,8 +764,9 @@ namespace Scryber.Drawing
             
             InstalledFontCollection install = new InstalledFontCollection();
             FamilyReferenceBag bag = new FamilyReferenceBag(install);
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
             //Check to see if we are allowed to use the system fonts
-            if (ScryberConfiguration.UseSystemFonts())
+            if (config.FontOptions.UseSystemFonts)
             {
                 try
                 {
@@ -823,58 +824,24 @@ namespace Scryber.Drawing
             FamilyReferenceBag bag = new FamilyReferenceBag(priv);
 
             //Load the explicit entries first
-            FontMappingCollection known = ScryberConfiguration.GetExplictFontMappings();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var known = config.FontOptions.Register;
             
-            if ((null != known) && (known.Count > 0))
+            if ((null != known) && (known.Length > 0))
             {
                 //For each of the configuration entries either load from the resources, or load from the file
                 Dictionary<string, System.Resources.ResourceManager> mgrs = new Dictionary<string, System.Resources.ResourceManager>(StringComparer.OrdinalIgnoreCase);
 
-                foreach (Scryber.Configuration.FontMapping map in known)
+                foreach (var map in known)
                 {
-                    string family = map.FamilyName;
-                    System.Drawing.FontStyle style = map.FontStyle;
+                    string family = map.Family;
+                    System.Drawing.FontStyle style = map.Style;
 
-                    if (!string.IsNullOrEmpty(map.ResourceName))
-                    {
-                        //Load the font from a resource
-                        string rsrcname = map.ResourceName;
-                        string rsrcbase = map.ResourceBaseName;
-                        System.Resources.ResourceManager mgr;
-                        byte[] data;
-                        try
-                        {
-                            if (!mgrs.TryGetValue(rsrcbase, out mgr))
-                            {
-                                mgr = LoadResourceManager(rsrcbase);
-                                mgrs.Add(rsrcbase, mgr);
-                            }
-
-
-                            data = (byte[])mgr.GetObject(rsrcname);
-
-                            //from the byte[] of data lock a pointer to it and add the memory font. 
-                            unsafe
-                            {
-                                fixed (byte* ptr = data)
-                                {
-                                    priv.AddMemoryFont((IntPtr)ptr, data.Length);
-                                }
-                            }
-
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ConfigurationErrorsException(String.Format(Errors.CouldNotLoadTheFontResource, rsrcname, rsrcbase),ex);
-                        }
-                        ///Only support ttf not ttc
-                        bag.AddFontResource(family, style, data, 0);
-                    }
-                    else if (!string.IsNullOrEmpty(map.FileName))
+                   
+                    if (!string.IsNullOrEmpty(map.File))
                     {
                         //Load from a file
-                        string path = map.FileName;
+                        string path = map.File;
 
                         try
                         {
@@ -897,7 +864,7 @@ namespace Scryber.Drawing
 
             }
 
-            string defaultdir = Scryber.Configuration.ScryberConfiguration.GetFontDefaultDirectory();
+            string defaultdir = config.FontOptions.DefaultDirectory;
 
             
 

@@ -85,13 +85,14 @@ namespace Scryber.Generation
 
                 try
                 {
-                    Scryber.Configuration.BindingFactoryElementCollection config = Scryber.Configuration.ScryberConfiguration.GetExplicitBindingFactories();
-                    if (null != config && config.Count > 0)
+                    var service = ServiceProvider.GetService<IScryberConfigurationService>();
+                    var config = service.ParsingOptions.Bindings;
+                    if (null != config && config.Length > 0)
                     {
-                        foreach (Scryber.Configuration.BindingFactoryElement ele in config)
+                        foreach (var ele in config)
                         {
                             IPDFBindingExpressionFactory factory = ele.GetFactory();
-                            string key = ele.BindingPrefix;
+                            string key = ele.Prefix;
 
                             //By using the set accessor this will overwrite any of the standard factories previously added.
                             factories[key] = factory;

@@ -7,6 +7,7 @@ using System.Configuration;
 
 namespace Scryber.Configuration
 {
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class ParserConfigurationSection : ConfigurationSection
     {
         public const string DefaultParserKey = "default-parser";

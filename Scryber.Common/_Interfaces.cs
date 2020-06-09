@@ -460,15 +460,15 @@ namespace Scryber
 
     public interface IScryberConfigurationService
     {
-        Options.FontOptions FontOptions();
+        Options.FontOptions FontOptions { get; }
 
-        Options.ParsingOptions ParsingOptions();
+        Options.ParsingOptions ParsingOptions { get; }
 
-        Options.ImagingOptions ImagingOptions();
+        Options.ImagingOptions ImagingOptions { get; }
 
-        Options.OutputOptions OutputOptions();
+        Options.OutputOptions OutputOptions { get; }
 
-        Options.TracingOptions TracingOptions();
+        Options.TracingOptions TracingOptions { get; }
 
         object GetScryberSection(Type ofType, string name);
 

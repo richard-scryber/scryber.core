@@ -28,6 +28,7 @@ namespace Scryber.Configuration
     /// Configuration element for an extension. The extension maps an xml namespace to a runtime assembly and runtime namespace.
     /// This allows the XMLParser to learn about and understand a type dynamically
     /// </summary>
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class SchemaMappingElement : ConfigurationElement
     {
 

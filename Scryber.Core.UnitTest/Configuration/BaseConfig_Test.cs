@@ -39,7 +39,7 @@ namespace Scryber.UnitTests.Configuration
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
-            var parsing = service.ParsingOptions();
+            var parsing = service.ParsingOptions;
             Assert.IsNotNull(parsing, "The parsing options are null");
 
             Assert.AreEqual(parsing.MissingReferenceAction, ParserReferenceMissingAction.RaiseException, "The missing reference action is not to throw an error");
@@ -55,7 +55,7 @@ namespace Scryber.UnitTests.Configuration
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
-            var font = service.FontOptions();
+            var font = service.FontOptions;
             Assert.IsNotNull(font, "The font options are null");
 
             Assert.IsTrue(font.UseSystemFonts, "Use System Foints is not true");
@@ -72,7 +72,7 @@ namespace Scryber.UnitTests.Configuration
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
-            var img = service.ImagingOptions();
+            var img = service.ImagingOptions;
 
             Assert.IsNotNull(img, "The imaging options are null");
             Assert.IsFalse(img.AllowMissingImages, "Missing images is not false");
@@ -89,7 +89,7 @@ namespace Scryber.UnitTests.Configuration
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
-            var output = service.OutputOptions();
+            var output = service.OutputOptions;
             Assert.IsNotNull(output, "The output options are null");
 
         }
@@ -101,7 +101,7 @@ namespace Scryber.UnitTests.Configuration
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
-            var trace = service.TracingOptions();
+            var trace = service.TracingOptions;
             Assert.IsNotNull(trace, "The tracing options are null");
 
         }

@@ -171,5 +171,39 @@ namespace Scryber.Utilities
                 return found;
             }
         }
+
+        public static T GetInstance<T>(string typename, string assembly = "", bool throwOnNotFound = false)
+        {
+            Type type = GetType(typename, assembly, throwOnNotFound);
+
+            if(null == type) // We know that throw on not found is false, as we would not get here
+                return default(T);
+
+            return GetInstance<T>(type);
+            
+        }
+
+        public static T GetInstance<T>(Type type)
+        {
+            if (null == type)
+                throw new ArgumentNullException("type");
+
+            object activated;
+
+            try
+            {
+                activated = Activator.CreateInstance(type);
+            }
+            catch (Exception ex)
+            {
+                throw new System.Reflection.TargetInvocationException("Could not create an instance of the type '" + type.Name + "'. " + ex.Message, ex);
+            }
+
+            if (activated is T)
+                return (T)activated;
+            else
+                throw new InvalidCastException("The instance of type '" + activated.GetType().Name + "' could not be converted or cast to a '" + typeof(T).Name + "'");
+
+        }
     }
 }

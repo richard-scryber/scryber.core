@@ -27,6 +27,7 @@ namespace Scryber.Configuration
     /// <summary>
     /// A configuration element that declares a factory to be used for a particular prefix in a binding expression
     /// </summary>
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class BindingFactoryElement : ConfigurationElement
     {
 
@@ -98,6 +99,7 @@ namespace Scryber.Configuration
     /// A collection of configured Binding Factories that can be directly accessed, or use the 
     /// TryGetBindingElement to attempt retrieval without causing exception.
     /// </summary>
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class BindingFactoryElementCollection : ConfigurationElementCollection
     {
 

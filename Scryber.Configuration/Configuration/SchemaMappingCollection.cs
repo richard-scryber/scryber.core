@@ -28,6 +28,7 @@ namespace Scryber.Configuration
     /// A collection of extension namespaces that the generator can understand.
     /// </summary>
     /// <remarks>Key is the inner elements XmlNamespace property. This is case insensitive</remarks>
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class SchemaMappingCollection : ConfigurationElementCollection
     {
 

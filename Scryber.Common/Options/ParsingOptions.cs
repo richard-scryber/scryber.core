@@ -10,6 +10,8 @@ namespace Scryber.Options
 
         public ParserReferenceMissingAction MissingReferenceAction { get; set; }
 
+        public string DefaultCulture { get; set; }
+
         public NamespaceMappingOption[] Namespaces { get; set; }
 
         public BindingPrefixOption[] Bindings { get; set; }
@@ -18,6 +20,46 @@ namespace Scryber.Options
         {
             MissingReferenceAction = ParserReferenceMissingAction.RaiseException;
         }
+
+        private System.Globalization.CultureInfo _defaultCulture;
+
+        public System.Globalization.CultureInfo GetDefaultCulture()
+        {
+            if (null == _defaultCulture)
+            {
+                if (!string.IsNullOrEmpty(this.DefaultCulture))
+                {
+                    _defaultCulture = System.Globalization.CultureInfo.GetCultureInfo(this.DefaultCulture);
+                }
+            }
+            return _defaultCulture;
+        }
+
+        public string GetXmlNamespaceForAssemblyNamespace(string assemblyNamespace)
+        {
+            if (string.IsNullOrEmpty(assemblyNamespace) || this.Namespaces == null || this.Namespaces.Length == 0)
+                return string.Empty;
+
+            int index = assemblyNamespace.IndexOf(",");
+            if (index < 0)
+                return assemblyNamespace;
+            else
+            {
+                var ns = assemblyNamespace.Substring(0, index).Trim();
+                var assm = assemblyNamespace.Substring(index + 1).Trim();
+
+                for(var i = 0; i < this.Namespaces.Length; i++)
+                {
+                    if (string.Equals(this.Namespaces[i].Namespace, ns) && string.Equals(this.Namespaces[i].Assembly, assm))
+                        return this.Namespaces[i].Source;
+                }
+                //Not found
+                return string.Empty;
+
+            }
+
+        }
+
 
     }
 
@@ -73,5 +115,15 @@ namespace Scryber.Options
         /// e.g. Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe
         /// </summary>
         public string FactoryAssembly { get; set; }
+
+        /// <summary>
+        /// Gets the factory instance that is specified by this options FactoryType and FactoryAssembly
+        /// </summary>
+        /// <returns></returns>
+        public IPDFBindingExpressionFactory GetFactory()
+        {
+            var factory = Utilities.TypeHelper.GetInstance<IPDFBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
+            return factory;
+        }
     }
 }

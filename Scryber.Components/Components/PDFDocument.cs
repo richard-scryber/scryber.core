@@ -27,6 +27,7 @@ using Scryber.Drawing;
 using Scryber.Data;
 using Scryber.Generation;
 using Scryber.Layout;
+using Scryber.Options;
 
 namespace Scryber.Components
 {
@@ -84,7 +85,9 @@ namespace Scryber.Components
             : base(type)
         {
             this._incrementids = new Dictionary<PDFObjectType, int>();
-            this.ImageFactories = Configuration.ImagingConfiguration.ImagingSection.Factories.GetList();
+
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            this.ImageFactories = config.ImagingOptions.GetFactories();
             this._startTime = DateTime.Now;
         }
 
@@ -127,21 +130,6 @@ namespace Scryber.Components
         }
 
         #endregion
-
-        //#region public virtual bool IsWebDocument {get;}
-        ///// <summary>
-        ///// Gets the flags that identified if this document is being served in a web context, 
-        ///// or as part of a service or executable. Inheritors can override to return their own checks
-        ///// </summary>
-        //public virtual bool IsWebDocument
-        //{
-        //    get
-        //    {
-        //        return System.Web.HttpContext.Current != null;
-        //    }
-        //}
-
-        //#endregion
 
         #region public Scryber.Data.PDFXmlNamespaceCollection NamespaceDeclarations {get;}
 
@@ -219,10 +207,14 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public PDFImageFactoryList ImageFactories { get; private set; }
+
         /// <summary>
         /// Gets the collection of image data factories for this document
         /// </summary>
-        public Configuration.PDFImageFactoryList ImageFactories { get; private set; }
+        public PDFImageFactoryList ImageFactories { get; private set; }
+
+        #endregion
 
         //
         // Document level attributes
@@ -770,7 +762,9 @@ namespace Scryber.Components
         /// <returns></returns>
         protected virtual PDFTraceLog CreateTraceLog()
         {
-            PDFTraceLog log = Scryber.Configuration.ScryberConfiguration.GetLog();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            PDFTraceLog log = config.TracingOptions.GetTraceLog();
+
             if (this.AppendTraceLog)
             {
                 _collector = new Logging.PDFCollectorTraceLog(log.RecordLevel, Scryber.PDFTraceLog.ScryberAppendTraceLogName, true);
@@ -913,17 +907,9 @@ namespace Scryber.Components
             defpaper.PaperSize = PaperSize.A4;
             defpaper.PaperOrientation = PaperOrientation.Portrait;
 
-
-            //style.Add(new PDFTextStyle());
-            //style.Add(new PDFOverflowStyle());
-            //style.Add(new PDFClipStyle());
-            //style.Add(new PDFTransformStyle());
-            //style.Add(new PDFMarginsStyle());
-            //style.Add(new PDFPaddingStyle());
-            //style.Add(new PDFPositionStyle());
             PDFFontStyle fs = new PDFFontStyle();
             style.StyleItems.Add(fs);
-            fs.FontFamily = Scryber.Configuration.ScryberConfiguration.GetDefaultFont();
+            fs.FontFamily = ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
             fs.FontSize = new PDFUnit(24.0, PageUnits.Points);
 
 
@@ -2284,7 +2270,7 @@ namespace Scryber.Components
         private DateTime GetImageCacheExpires()
         {
             int mins = this.RenderOptions.ImageCacheDurationMinutes;
-            if (mins == Scryber.Configuration.ImagingConfigurationSection.ImageCacheNeverExpires)
+            if (mins < 0)
                 return Scryber.Caching.PDFCacheProvider.NoAbsoluteExpiration;
             else if (mins == 0)
                 return DateTime.MinValue;
@@ -2442,7 +2428,9 @@ namespace Scryber.Components
 
         private void HandleRemoteReferenceException(string path, System.Exception ex)
         {
-            ParserReferenceMissingAction action = Scryber.Configuration.ScryberConfiguration.ParserMissingReferenceAction;
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+
+            ParserReferenceMissingAction action =config.ParsingOptions.MissingReferenceAction;
             switch (action)
             {
                 case ParserReferenceMissingAction.LogError:
@@ -2507,7 +2495,7 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string fullpath, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = Scryber.Configuration.ScryberConfiguration.ParserMissingReferenceAction == ParserReferenceMissingAction.RaiseException ? ParserConformanceMode.Strict : ParserConformanceMode.Lax;
+            ParserConformanceMode mode = ParserConformanceMode.Strict;
 
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
             return Parse(fullpath, resolver, settings);
@@ -2526,17 +2514,14 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = Scryber.Configuration.ScryberConfiguration.ParserMissingReferenceAction == ParserReferenceMissingAction.RaiseException ? ParserConformanceMode.Strict : ParserConformanceMode.Lax;
+            ParserConformanceMode mode = ParserConformanceMode.Strict;
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
-
             return Parse(source, stream, type, resolver, settings);
         }
 
         public static IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
         {
-            IPDFParser parser = Scryber.Configuration.ParserConfiguration.GetParser(settings);
-            if (null == parser)
-                parser = new Scryber.Generation.PDFXMLParser(settings);
+            IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
 
             IPDFComponent comp = parser.Parse(source, stream, type);
             return comp;
@@ -2544,16 +2529,14 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = Scryber.Configuration.ScryberConfiguration.ParserMissingReferenceAction == ParserReferenceMissingAction.RaiseException ? ParserConformanceMode.Strict : ParserConformanceMode.Lax;
+            ParserConformanceMode mode = ParserConformanceMode.Strict;
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
             return Parse(source, textreader, type, resolver, settings);
         }
 
         public static IPDFComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
         {
-            IPDFParser parser = Scryber.Configuration.ParserConfiguration.GetParser(settings);
-            if (null == parser)
-                parser = new Scryber.Generation.PDFXMLParser(settings);
+            IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
 
             IPDFComponent comp = parser.Parse(source, textreader, type);
             return comp;
@@ -2561,16 +2544,14 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = Scryber.Configuration.ScryberConfiguration.ParserMissingReferenceAction == ParserReferenceMissingAction.RaiseException ? ParserConformanceMode.Strict : ParserConformanceMode.Lax;
+            ParserConformanceMode mode = ParserConformanceMode.Strict;
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
             return Parse(source, xmlreader, type, resolver, settings);
         }
 
         public static IPDFComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
         {
-            IPDFParser parser = Scryber.Configuration.ParserConfiguration.GetParser(settings);
-            if(null == parser)
-                parser =  new Scryber.Generation.PDFXMLParser(settings);
+            IPDFParser parser =  new Scryber.Generation.PDFXMLParser(settings);
 
             IPDFComponent comp = parser.Parse(source, xmlreader, type);
             return comp;
@@ -2627,9 +2608,7 @@ namespace Scryber.Components
             }
 
             PDFGeneratorSettings settings = this.DoCreateGeneratorSettings(resolver);
-            IPDFParser parser = Scryber.Configuration.ParserConfiguration.GetParser(settings);
-            if (null == parser)
-                parser = new Scryber.Generation.PDFXMLParser(settings);
+            IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
 
             parser.RootComponent = owner;
 
@@ -2662,7 +2641,9 @@ namespace Scryber.Components
         {
             ParserConformanceMode conformance = mode;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
-            PDFTraceLog log = Scryber.Configuration.ScryberConfiguration.GetLog();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+
+            PDFTraceLog log = config.TracingOptions.GetTraceLog();
             PDFPerformanceMonitor perfmon = new PDFPerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
 
             return CreateGeneratorSettings(resolver, conformance, loadtype, log, perfmon);
@@ -3036,8 +3017,8 @@ namespace Scryber.Components
             {
                 //We are only going to do the base ones if they don't exist.
                 Dictionary<string, string> namespacestoPrefixes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-                string ns = Scryber.Configuration.ScryberConfiguration.GetXmlNamespaceForAssemblyNamespace(Const.PDFComponentNamespace);
+                var config = ServiceProvider.GetService<IScryberConfigurationService>();
+                string ns = config.ParsingOptions.GetXmlNamespaceForAssemblyNamespace(Const.PDFComponentNamespace);
                 if (string.IsNullOrEmpty(ns))
                     ns = Const.PDFComponentNamespace;
 
@@ -3047,7 +3028,7 @@ namespace Scryber.Components
                 
                 namespacestoPrefixes.Add(ns, prefix);
 
-                ns = Scryber.Configuration.ScryberConfiguration.GetXmlNamespaceForAssemblyNamespace(Const.PDFStylesNamespace);
+                ns = config.ParsingOptions.GetXmlNamespaceForAssemblyNamespace(Const.PDFStylesNamespace);
                 if (string.IsNullOrEmpty(ns))
                     ns = Const.PDFStylesNamespace;
 
@@ -3057,7 +3038,7 @@ namespace Scryber.Components
 
                 namespacestoPrefixes.Add(ns, prefix);
 
-                ns = Scryber.Configuration.ScryberConfiguration.GetXmlNamespaceForAssemblyNamespace(Const.PDFDataNamespace);
+                ns = config.ParsingOptions.GetXmlNamespaceForAssemblyNamespace(Const.PDFDataNamespace);
                 if (string.IsNullOrEmpty(ns))
                     ns = Const.PDFDataNamespace;
 

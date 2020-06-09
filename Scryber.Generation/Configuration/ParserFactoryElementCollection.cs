@@ -7,6 +7,7 @@ using System.Configuration;
 
 namespace Scryber.Configuration
 {
+    [Obsolete("Use the IScryberConfigurationSerive, from the ServiceProvider", true)]
     public class ParserFactoryElementCollection : ConfigurationElementCollection
     {
 

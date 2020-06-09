@@ -7,9 +7,10 @@ using System.Configuration;
 
 namespace Scryber.Configuration
 {
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public static class ParserConfiguration
     {
-        public const string SectionPath = ScryberConfiguration.ScryberConfigGroupKey + "/parsers";
+        public const string SectionPath = "scryber/parsers";
 
 
         private static ParserConfigurationSection _section = null;

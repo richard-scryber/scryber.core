@@ -132,16 +132,18 @@ namespace Scryber
 
         public PDFDocumentRenderOptions()
         {
-            Scryber.Configuration.RenderOptionsConfigurationSection section = Scryber.Configuration.ScryberConfiguration.RenderOptions;
-            Scryber.Configuration.ImagingConfigurationSection imgsection = Scryber.Configuration.ImagingConfiguration.ImagingSection;
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var output = config.OutputOptions;
+            var imging = config.ImagingOptions;
 
-            this.Compression = section.CompressionType;
-            this.ComponentNames = section.NameOutput;
+            
+            this.Compression = output.Compression;
+            this.ComponentNames = output.NameOutput;
             //this.PDFVersion = section.PDFVersion;
-            this.OuptputCompliance = section.OutputCompliance;
-            this.StringOutput = section.StringOutput;
-            this.ImageCacheDurationMinutes = imgsection.ImageCacheDurationMins;
-            this.AllowMissingImages = imgsection.AllowMissingImages;
+            this.OuptputCompliance = output.Compliance.ToString();
+            this.StringOutput = output.StringType;
+            this.ImageCacheDurationMinutes = imging.ImageCacheDuration;
+            this.AllowMissingImages = imging.AllowMissingImages;
             //this.PooledStreams = true;
             this.WriterFactory = null;
         }

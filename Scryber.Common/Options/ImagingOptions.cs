@@ -8,6 +8,8 @@ namespace Scryber.Options
 
         public bool AllowMissingImages { get; set; }
 
+        public double MinimumScaleReduction { get; set; }
+
         public int ImageCacheDuration { get; set; }
 
         public ImageDataFactoryOption[] Factories { get; set; }
@@ -16,11 +18,15 @@ namespace Scryber.Options
         {
             AllowMissingImages = false;
             ImageCacheDuration = -1;
+            MinimumScaleReduction = 0.2;
         }
     }
 
     public class ImageDataFactoryOption
     {
+
+        public string Name { get; set; }
+
         public string Match { get; set; }
 
         public string FactoryType { get; set; }

@@ -24,6 +24,7 @@ using System.Configuration;
 namespace Scryber.Configuration
 {
 
+    [Obsolete("Use the IScryberConfigurationService interface with the services provider", true)]
     public class FontMappingCollection : ConfigurationElementCollection
     {
 

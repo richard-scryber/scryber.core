@@ -7,6 +7,10 @@ namespace Scryber.Options
 
         public const string FontsSection = ScryberOptions.ScryberSectionStub + "Fonts";
 
+        public const bool DefaultUseSystemFonts = true;
+        public const string DefaultFontName = "Sans-Serif";
+        public const bool DefaultUseFontSubstitution = false;
+
         public string DefaultDirectory { get; set; }
 
         public bool UseSystemFonts { get; set; }
@@ -20,9 +24,9 @@ namespace Scryber.Options
         public FontOptions()
         {
             DefaultDirectory = string.Empty;
-            UseSystemFonts = true;
-            FontSubstitution = false;
-            DefaultFont = "Sans-Serif";
+            UseSystemFonts = DefaultUseSystemFonts;
+            FontSubstitution = DefaultUseFontSubstitution;
+            DefaultFont = DefaultFontName;
         }
     }
 

@@ -19,88 +19,106 @@ namespace Scryber.Utilities
 
         public void Reset()
         {
-            _parser = null;
-            _font = null;
-            _imaging = null;
-            _output = null;
-            _tracelog = null;
+            lock (_lock)
+            {
+                _parser = null;
+                _font = null;
+                _imaging = null;
+                _output = null;
+                _tracelog = null;
+            }
         }
         
-        public ParsingOptions ParsingOptions()
+        public ParsingOptions ParsingOptions
         {
-            lock (_lock)
+            get
             {
-                if(null == _parser)
+                lock (_lock)
                 {
-                    _parser = this.GetOptions<ParsingOptions>(Options.ParsingOptions.ParsingSection);
                     if (null == _parser)
-                        _parser = new Options.ParsingOptions();
+                    {
+                        _parser = this.GetOptions<ParsingOptions>(Options.ParsingOptions.ParsingSection);
+                        if (null == _parser)
+                            _parser = new Options.ParsingOptions();
+                    }
                 }
-            }
 
-            return _parser;
+                return _parser;
+            }
         }
 
-        public FontOptions FontOptions()
+        public FontOptions FontOptions
         {
-            lock (_lock)
+            get
             {
-                if (null == _font)
+                lock (_lock)
                 {
-                    _font = this.GetOptions<FontOptions>(Options.FontOptions.FontsSection);
                     if (null == _font)
-                        _font = new FontOptions();
+                    {
+                        _font = this.GetOptions<FontOptions>(Options.FontOptions.FontsSection);
+                        if (null == _font)
+                            _font = new FontOptions();
+                    }
                 }
-            }
 
-            return _font;
+                return _font;
+            }
         }
 
 
 
-        public ImagingOptions ImagingOptions()
+        public ImagingOptions ImagingOptions
         {
-            lock (_lock)
+            get
             {
-                if (null == _imaging)
+                lock (_lock)
                 {
-                    _imaging = this.GetOptions<ImagingOptions>(Options.ImagingOptions.ImagingSection);
                     if (null == _imaging)
-                        _imaging = new ImagingOptions();
+                    {
+                        _imaging = this.GetOptions<ImagingOptions>(Options.ImagingOptions.ImagingSection);
+                        if (null == _imaging)
+                            _imaging = new ImagingOptions();
+                    }
                 }
-            }
 
-            return _imaging;
+                return _imaging;
+            }
         }
 
-        public OutputOptions OutputOptions()
+        public OutputOptions OutputOptions
         {
-            lock (_lock)
+            get
             {
-                if (null == _output)
+                lock (_lock)
                 {
-                    _output = this.GetOptions<OutputOptions>(Options.OutputOptions.OutputSection);
                     if (null == _output)
-                        _output = new OutputOptions();
+                    {
+                        _output = this.GetOptions<OutputOptions>(Options.OutputOptions.OutputSection);
+                        if (null == _output)
+                            _output = new OutputOptions();
+                    }
                 }
-            }
 
-            return _output;
+                return _output;
+            }
         }
 
-        public TracingOptions TracingOptions()
+        public TracingOptions TracingOptions
         {
-            lock (_lock)
+            get
             {
-                if (null == _tracelog)
+                lock (_lock)
                 {
-                    _tracelog = this.GetOptions<TracingOptions>(Options.TracingOptions.TracingSection);
                     if (null == _tracelog)
-                        _tracelog = new TracingOptions();
+                    {
+                        _tracelog = this.GetOptions<TracingOptions>(Options.TracingOptions.TracingSection);
+                        if (null == _tracelog)
+                            _tracelog = new TracingOptions();
+                    }
                 }
-            }
 
-            return _tracelog;
+                return _tracelog;
+            }
         }
 
         internal bool TryGetConfiguration(out IConfiguration config)

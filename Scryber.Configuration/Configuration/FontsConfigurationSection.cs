@@ -23,6 +23,7 @@ using System.Configuration;
 
 namespace Scryber.Configuration
 {
+    [Obsolete("Use the IScryberConfigurationService interface with the services provider", true)]
     public class FontsConfigurationSection : System.Configuration.ConfigurationSection
     {
 
@@ -32,6 +33,7 @@ namespace Scryber.Configuration
         /// Gets or sets the default directory to search for fonts identified in the stream.
         /// </summary>
         [ConfigurationProperty(DefaultDirectoryKey, IsRequired = false)]
+        [Obsolete("Use the configuration service", true)]
         public string DefaultDirectory
         {
             get
@@ -52,14 +54,15 @@ namespace Scryber.Configuration
         /// Flag to identifiy if fonts should be substituted 
         /// if a matching font could not be found on the system
         /// </summary>
-        [ConfigurationProperty(FontSubstitutionKey, IsRequired = false, DefaultValue = ScryberConfiguration.DefaultUseFontSubstitution)]
+        [ConfigurationProperty(FontSubstitutionKey, IsRequired = false, DefaultValue = Scryber.Options.FontOptions.DefaultUseFontSubstitution)]
+        [Obsolete("Use the configuration service", true)]
         public bool UseFontSubstitution
         {
             get
             {
                 object value = this[FontSubstitutionKey];
                 if (null == value || !(value is bool))
-                    return ScryberConfiguration.DefaultUseFontSubstitution;
+                    return Scryber.Options.FontOptions.DefaultUseFontSubstitution;
                 else
                     return (bool)value;
             }
@@ -75,14 +78,15 @@ namespace Scryber.Configuration
         /// Flag to identifiy if fonts should be substituted 
         /// if a matching font could not be found on the system
         /// </summary>
-        [ConfigurationProperty(UseSystemFontsKey, IsRequired = false, DefaultValue = ScryberConfiguration.DefaultUseSystemFonts)]
+        [ConfigurationProperty(UseSystemFontsKey, IsRequired = false, DefaultValue = Scryber.Options.FontOptions.DefaultUseSystemFonts)]
+        [Obsolete("Use the configuration service", true)]
         public bool UseSystemFonts
         {
             get
             {
                 object value = this[UseSystemFontsKey];
                 if (null == value || !(value is bool))
-                    return ScryberConfiguration.DefaultUseSystemFonts;
+                    return Scryber.Options.FontOptions.DefaultUseSystemFonts;
                 else
                     return (bool)value;
             }
@@ -98,13 +102,14 @@ namespace Scryber.Configuration
         /// Gets or sets the default font to use for documents if not explicitly defined
         /// </summary>
         [ConfigurationProperty(DefaultFontNameKey,IsRequired=false)]
+        [Obsolete("Use the configuration service", true)]
         public string DefaultFontName
         {
             get
             {
                 object value = this[DefaultFontNameKey];
                 if (null == value || value.ToString().Length == 0)
-                    return ScryberConfiguration.DefaultFontName;
+                    return Scryber.Options.FontOptions.DefaultFontName;
                 else
                     return value.ToString();
             }
@@ -116,6 +121,7 @@ namespace Scryber.Configuration
         [ConfigurationCollection(typeof(FontMapping), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap,
             AddItemName="add", RemoveItemName="remove", ClearItemsName="clear")]
         [ConfigurationProperty(FontNameCollectionKey, IsDefaultCollection = true, IsRequired = false)]
+        [Obsolete("Use the configuration service", true)]
         public FontMappingCollection FontNames
         {
             get
@@ -130,6 +136,7 @@ namespace Scryber.Configuration
             }
         }
 
+        [Obsolete("Use the configuration service", true)]
         public bool TryGetMappingName(string pdfName, out FontMapping mapping)
         {
             FontMappingCollection col = this.FontNames;

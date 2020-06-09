@@ -56,6 +56,7 @@ namespace Scryber.Generation
         private bool _appendLog;
         private Type _controller;
         private System.Globalization.CultureInfo _specificCulture;
+        private ParserReferenceMissingAction _missingRefAction;
 
         #endregion
 
@@ -159,6 +160,12 @@ namespace Scryber.Generation
             set { _specificCulture = value; }
         }
 
+        public ParserReferenceMissingAction MissingReferenceAction
+        {
+            get { return _missingRefAction; }
+            set { _missingRefAction = value; }
+        }
+
         public bool HasSpecificCulture
         {
             get { return _specificCulture != null; }
@@ -178,7 +185,10 @@ namespace Scryber.Generation
             this._perfmon = perfmon;
 
             //Get the default culture from the config - can be overridden in the processing instructions, or at generation time in code
-            this.SpecificCulture = Scryber.Configuration.ParserConfiguration.GetDefaultCulture();
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var parserOptions = config.ParsingOptions;
+            this.MissingReferenceAction = parserOptions.MissingReferenceAction;
+            this.SpecificCulture = parserOptions.GetDefaultCulture();
         }
 
         /// <summary>

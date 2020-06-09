@@ -40,6 +40,7 @@ namespace Scryber.Configuration
     ///      &lt;/generation&gt;
     ///   </example>
     /// </remarks>
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class GenerationConfigurationSection : ConfigurationSection
     {
 

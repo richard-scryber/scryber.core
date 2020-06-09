@@ -24,6 +24,7 @@ using System.Configuration;
 
 namespace Scryber.Configuration
 {
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class Support
     {
 
@@ -33,6 +34,7 @@ namespace Scryber.Configuration
         /// </summary>
         /// <param name="fullname"></param>
         /// <returns></returns>
+        [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
         public static Type GetTypeFromName(string fullname)
         {
             Type type = null;
@@ -63,6 +65,7 @@ namespace Scryber.Configuration
         }
 
 
+        [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
         public static T GetInstanceFromTypeName<T>(string typename)
         {
             Type type = GetTypeFromName(typename);

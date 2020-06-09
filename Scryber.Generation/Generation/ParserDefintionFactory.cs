@@ -116,7 +116,8 @@ namespace Scryber.Generation
         //
 
         private static ApplicationDefn _application = new ApplicationDefn();
-        private static Dictionary<Type, ParserClassDefinition> _typedefinitions = new Dictionary<Type, ParserClassDefinition>();
+        private static Dictionary<Type, ParserClassDefinition> _typedefinitions;
+        private static Dictionary<string, string> _namespaceMappings;
         private static object _applicationlock = new object();
         private static object _typelock = new object();
         private static Dictionary<string, string> _unqualified;
@@ -135,6 +136,8 @@ namespace Scryber.Generation
         static ParserDefintionFactory()
         {
             _unqualified = InitAllowedUnqualifiedEntries();
+            _namespaceMappings = InitNamespaceMappings();
+            _typedefinitions = new Dictionary<Type, ParserClassDefinition>();
         }
 
         #endregion
@@ -190,8 +193,8 @@ namespace Scryber.Generation
         /// <returns></returns>
         public static string LookupAssemblyForXmlNamespace(string xmlNamespace)
         {
-            string assm =  Scryber.Configuration.ScryberConfiguration.GetAssemblyNamespaceForXmlNamesapce(xmlNamespace);
-            if (string.IsNullOrEmpty(assm))
+            string assm;
+            if (!_namespaceMappings.TryGetValue(xmlNamespace,out assm))
                 assm = xmlNamespace;
             return assm;
         }
@@ -317,8 +320,23 @@ namespace Scryber.Generation
 
         #endregion
 
+        private static Dictionary<string, string> InitNamespaceMappings()
+        {
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var entries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var maps = config.ParsingOptions.Namespaces;
+            if(null != maps && maps.Length > 0)
+            {
+                foreach (var map in maps)
+                {
+                    entries.Add(map.Source, map.Namespace + ", " + map.Assembly);
+                }
+            }
+            return entries;
+        }
+
         #region private static ParserClassDefinition UnsafeGetClassDefinitionFromType(Type parsabletype)
-        
+
         /// <summary>
         /// unsafe method to either retrieve or load the class definiton from the provided type.
         /// Must be called in a thread safe way for multithreaded environments

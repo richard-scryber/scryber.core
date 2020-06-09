@@ -276,8 +276,13 @@ namespace Scryber.Core.UnitTests.Generation
 
         private static PDFDataBindEventArgs CreateDataBindArgs()
         {
+            var config = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            Assert.IsNotNull(config, "THere is no scryber config service");
+
+            var log = config.TracingOptions.GetTraceLog();
+
             PDFItemCollection items = new PDFItemCollection(null);
-            PDFDataContext context = new PDFDataContext(items, Scryber.Configuration.ScryberConfiguration.GetLog(), new PDFPerformanceMonitor(true));
+            PDFDataContext context = new PDFDataContext(items, log, new PDFPerformanceMonitor(true));
             PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
             return args;
         }

@@ -55,7 +55,7 @@ namespace Scryber.Components
             }
         }
 
-        private static double DefaultMinimumScaleReduction = 0.1;
+        
 
         [PDFAttribute("min-scale")]
         public double MinimumScaleReduction
@@ -64,10 +64,21 @@ namespace Scryber.Components
             set;
         }
 
+        [PDFAttribute("allow-missing-images")]
+        public bool AllowMissingImages
+        {
+            get;
+            set;
+        }
+
+
         protected PDFImageBase(PDFObjectType type)
             : base(type)
         {
-            this.MinimumScaleReduction = DefaultMinimumScaleReduction;
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+
+            this.MinimumScaleReduction = config.ImagingOptions.MinimumScaleReduction;
+            this.AllowMissingImages = config.ImagingOptions.AllowMissingImages;
         }
 
         protected override void DoInit(PDFInitContext context)
@@ -94,7 +105,7 @@ namespace Scryber.Components
                 }
                 catch (PDFMissingImageException ex)
                 {
-                    if (Scryber.Configuration.ImagingConfiguration.AllowMissingImages())
+                    if (this.AllowMissingImages)
                     {
                         context.TraceLog.Add(TraceLevel.Error, "Image", "Missing Image replaced: " + ex.Message);
                         PDFImageData data = this.Document.GetNotFoundLogo(this.UniqueID);
@@ -154,6 +165,7 @@ namespace Scryber.Components
         {
             PDFStyle s = base.GetBaseStyle();
             s.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
+            
             return s;
         }
 
@@ -292,6 +304,5 @@ namespace Scryber.Components
             //Do Nothing
         }
 
-        
     }
 }

@@ -30,6 +30,7 @@ namespace Scryber.Configuration
     /// &ltSection name="Scryber" 
     ///         type="Scryber.Configuration.PDFXConfigurationSection, Scryber.Configuration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"/&gt;
     /// In the sections element of the config file</remarks>
+    [Obsolete("Use the IScryberConfigurationService interface with the services provider", true)]
     public static class ScryberConfiguration
     {
         public const string ScryberConfigGroupKey = "scryber";
@@ -53,6 +54,7 @@ namespace Scryber.Configuration
         /// <summary>
         /// Gets the configuration section for the tracing element
         /// </summary>
+        [Obsolete("Use the configuration service", true)]
         public static TracingConfigurationSection TracingConfigSection
         {
             get
@@ -73,6 +75,7 @@ namespace Scryber.Configuration
         /// Gets the configured trace level
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static TraceRecordLevel GetTraceLevel()
         {
             return TracingConfigSection.TraceLevel;
@@ -88,6 +91,7 @@ namespace Scryber.Configuration
         /// </summary>
         /// <param name="level"></param>
         /// <returns>The configured log. If no log is configured, then a new PDFTraceLog that does nothing will be returned</returns>
+        [Obsolete("Use the configuration service", true)]
         public static PDFTraceLog GetLog()
         {
             return TracingConfigSection.GetLog();
@@ -102,6 +106,7 @@ namespace Scryber.Configuration
         /// </summary>
         /// <param name="level"></param>
         /// <returns>The configured log. If no log is configured, then a new PDFTraceLog that does nothing will be returned</returns>
+        [Obsolete("Use the configuration service", true)]
         public static PDFTraceLog GetLog(TraceRecordLevel level)
         {
             TracingConfigurationSection section = TracingConfigSection;
@@ -122,6 +127,7 @@ namespace Scryber.Configuration
         /// <summary>
         /// Gets the FontMappingSection from the configuration file
         /// </summary>
+        [Obsolete("Use the configuration service", true)]
         private static FontsConfigurationSection FontConfigSection
         {
             get
@@ -138,6 +144,7 @@ namespace Scryber.Configuration
         /// Gets the collection of fonts explicitly declared in the configuration file
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static FontMappingCollection GetExplictFontMappings()
         {
             FontsConfigurationSection config = FontConfigSection;
@@ -155,6 +162,7 @@ namespace Scryber.Configuration
         /// Returns the default directory to scan for fonts that can be used in PDF files
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static string GetFontDefaultDirectory()
         {
             FontsConfigurationSection config = FontConfigSection;
@@ -173,6 +181,7 @@ namespace Scryber.Configuration
         /// font cannot be found - same family no style, or if still not found - Courier
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static bool UseSubstituteFonts()
         {
             FontsConfigurationSection config = FontConfigSection;
@@ -186,12 +195,13 @@ namespace Scryber.Configuration
 
         #region internal static bool UseSystemFonts()
 
-        
+
 
         /// <summary>
         /// Returns true if the local system fonts can be used in PDF's. False if only explicit fonts can be used
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static bool UseSystemFonts()
         {
             FontsConfigurationSection config = FontConfigSection;
@@ -209,6 +219,7 @@ namespace Scryber.Configuration
         /// Returns the default font to use in rendering documents
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static string GetDefaultFont()
         {
             FontsConfigurationSection config = FontConfigSection;
@@ -229,6 +240,7 @@ namespace Scryber.Configuration
         /// <summary>
         /// Gets the rendering options section from the configuration
         /// </summary>
+        [Obsolete("Use the configuration service", true)]
         public static RenderOptionsConfigurationSection RenderOptions
         {
             get
@@ -248,10 +260,11 @@ namespace Scryber.Configuration
 
         #region private static GenerationConfigurationSection GeneratorSection {get;}
 
-        
+
         /// <summary>
         /// Gets the GenerationConfigurationSection.
         /// </summary>
+        [Obsolete("Use the configuration service", true)]
         private static GenerationConfigurationSection GeneratorSection
         {
             get
@@ -271,6 +284,7 @@ namespace Scryber.Configuration
         /// <summary>
         /// Gets the action a parser should take if a referenced file or resource cannot be found.
         /// </summary>
+        [Obsolete("Use the configuration service", true)]
         public static ParserReferenceMissingAction ParserMissingReferenceAction
         {
             get
@@ -289,6 +303,7 @@ namespace Scryber.Configuration
         /// </summary>
         /// <param name="xmlNamesapce"></param>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static string GetAssemblyNamespaceForXmlNamesapce(string xmlNamesapce)
         {
             SchemaMappingElement extension;
@@ -318,6 +333,7 @@ namespace Scryber.Configuration
         /// </summary>
         /// <param name="fullAssemblyNameSpace">Should be in the format 'NAME.SPACE, ASSEMBLY.NAME [Optional Full Assembly Name]' - case sensitive</param>
         /// <returns>The xml namespace or null if not found.</returns>
+        [Obsolete("Use the configuration service", true)]
         public static string GetXmlNamespaceForAssemblyNamespace(string fullAssemblyNameSpace)
         {
             if (string.IsNullOrEmpty(fullAssemblyNameSpace))
@@ -337,6 +353,7 @@ namespace Scryber.Configuration
         /// <param name="ns">The namespace - case sensitive </param>
         /// <param name="assembly">The assembly (as per config)</param>
         /// <returns>The xml namespace or null if not found.</returns>
+        [Obsolete("Use the configuration service", true)]
         public static string GetXmlNamespaceForAssemblyNamespace(string ns, string assembly)
         {
             GenerationConfigurationSection section = GeneratorSection;
@@ -360,6 +377,7 @@ namespace Scryber.Configuration
         /// Returns all the configured Binding Factory elements
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static BindingFactoryElementCollection GetExplicitBindingFactories()
         {
             GenerationConfigurationSection gen = GeneratorSection;
@@ -382,6 +400,7 @@ namespace Scryber.Configuration
         /// <param name="prefix"></param>
         /// <param name="binder"></param>
         /// <returns></returns>
+        [Obsolete("Use the configuration service", true)]
         public static bool TryGetBinder(string prefix, out IPDFBindingExpressionFactory binder)
         {
             GenerationConfigurationSection section = GeneratorSection;

@@ -27,6 +27,7 @@ namespace Scryber.Configuration
     /// <summary>
     /// The configuration section for the PDF rendering options. Doefines the default values for output rendering.
     /// </summary>
+    [Obsolete("Use the IScryberCOnfigurationSerive, from the ServiceProvider", true)]
     public class RenderOptionsConfigurationSection : ConfigurationSection
     {
 
