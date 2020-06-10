@@ -25,7 +25,9 @@ using Scryber.Drawing;
 
 namespace Scryber.Options
 {
-
+    /// <summary>
+    /// Extension class for ImagingOptions to load the PDFImageFactoryList
+    /// </summary>
     public static class ImageOptionExtension
     {
 
