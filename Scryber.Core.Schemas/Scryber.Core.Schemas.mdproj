@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ItemType>GenericProject</ItemType>
+    <ProjectGuid>{385A0A08-5181-4287-8EFD-6E2984427A91}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
+    <OutputPath>.\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Scryber.Base.xsd" />
+    <None Include="Scryber.Types.xsd" />
+    <None Include="Scryber.Styles.xsd" />
+    <None Include="Scryber.Data.xsd" />
+    <None Include="Scryber.Components.xsd" />
+    <None Include="SampleDocument.xml" />
+  </ItemGroup>
+</Project>

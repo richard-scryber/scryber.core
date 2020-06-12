@@ -1,0 +1,915 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    elementFormDefault="qualified"
+    version="1.0"
+    xmlns="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    xmlns:mstns="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <!-- standard elements
+  -->
+
+  <!-- 
+  -
+  Attribute Groups
+  -
+  -->
+  
+  <xs:attributeGroup name="PageElementAttributes" >
+    <xs:attributeGroup ref="ElementAttributes" />
+    <xs:attribute name="outline-title" use="optional" type="BindableStringType" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ElementAttributes" >
+    <xs:attribute name="id" use="optional" type="BindableIDType" />
+    <xs:attribute name="name" use="optional" type="xs:string" />
+    <xs:attribute name="visible" use="optional" default="true" type="BindableBooleanType" />
+
+    <xs:attributeGroup ref="ElementEventAttributes" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="StyleEventAttributes" >
+    <xs:attribute name="on-databinding" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-databound" use="optional" type="MethodNameType" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ElementEventAttributes" >
+   <xs:attribute name="on-init" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-loaded" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-databinding" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-databound" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-prelayout" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-postlayout" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-prerender" use="optional" type="MethodNameType" />
+    <xs:attribute name="on-postrender" use="optional" type="MethodNameType" />
+  </xs:attributeGroup>
+
+  <!-- 
+  -
+  Enumerations 
+  -
+  -->
+
+  <xs:element name="Test" type="TestAppliedType" ></xs:element>
+
+  <xs:complexType name="TestAppliedType" >
+    <xs:attribute name="test" form="qualified" type="xs:Name" use="optional" />
+  </xs:complexType>
+  
+  <xs:attribute name="applied-type" >
+    <xs:simpleType >
+      <xs:restriction base="xs:ENTITIES"></xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+
+  <!-- 
+    Enumeration types
+  -->
+    
+  <xs:simpleType name="ScryberComponentType" >
+    <xs:list itemType="ComponentNamesEnum" />
+  </xs:simpleType>
+
+  <xs:simpleType name="CompressionTypeEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="FlateDecode" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableCompressionTypeEnum" >
+    <xs:union memberTypes="CompressionTypeEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="PDFVersionEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="1.5" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePDFVersionEnum" >
+    <xs:union memberTypes="PDFVersionEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="OutputComplianceEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableOutputComplianceEnum" >
+    <xs:union memberTypes="OutputComplianceEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="StringOutputEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Text" />
+      <xs:enumeration value="Hex" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableStringOutputEnum" >
+    <xs:union memberTypes="StringOutputEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="ComponentNamesEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="All" />
+      <xs:enumeration value="ExplicitOnly" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableComponentNamesEnum" >
+    <xs:union memberTypes="ComponentNamesEnum BindableAttributeType" />
+  </xs:simpleType>
+  
+  <!-- PostionModeEnum -->
+  <!-- An enumeration of the options for postioning elements on a page -->
+  <xs:simpleType name="PositionModeEnum" >
+    <xs:restriction base="xs:string" >
+      <!-- Absloute position on the page-->
+      <xs:enumeration value="Absolute" />
+      <!-- positioned relative to its parent container-->
+      <xs:enumeration value="Relative" />
+
+      <!-- postioned on its own line pushing following content onto the next line -->
+      <xs:enumeration value="Block" />
+
+      <!-- positioned flowing in the reading direction -->
+      <xs:enumeration value="Inline" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePositionModeEnum" >
+    <xs:union memberTypes="PositionModeEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- LineStyleEnum -->
+  <!-- An enumeration of the supported line styles 
+       Pattern and image are extensions to this that will be supported in the future -->
+  <xs:simpleType name="LineStyleEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Solid" />
+      <xs:enumeration value="Dash" />
+      <!-- <xs:enumeration value="Pattern" />
+           <xs:enumeration value="Image" /> -->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableLineStyleEnum" >
+    <xs:union memberTypes="LineStyleEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <!-- FillStyleEnum -->
+  <!-- An enumeration of the supported fill styles 
+       Pattern and image are extensions to this that will be supported in the future -->
+  <xs:simpleType name="FillStyleEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Solid" />
+      <xs:enumeration value="Image" />
+      <!-- <xs:enumeration value="Pattern" />
+            -->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableFillStyleEnum" >
+    <xs:union memberTypes="FillStyleEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <xs:simpleType name="ImageRepeatEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="RepeatX" />
+      <xs:enumeration value="RepeatY" />
+      <xs:enumeration value="RepeatBoth" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableImageRepeatEnum" >
+    <xs:union memberTypes="ImageRepeatEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="TableRowRepeatEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="RepeatAtTop" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableRowRepeatEnum" >
+    <xs:union memberTypes="TableRowRepeatEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="CornerType" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="TopLeft" />
+      <xs:enumeration value="TopRight" />
+      <xs:enumeration value="BottomRight" />
+      <xs:enumeration value="BottomLeft" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableCornerType" >
+    <xs:union memberTypes="CornerType BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableReversibleImageType" >
+    <xs:union memberTypes="ReversibleImageType BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="ReversibleImageType" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="WhiteOnBlack" />
+      <xs:enumeration value="BlackOnWhite" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SideFlagsEnum" >
+    <xs:list >
+      <xs:simpleType >
+        <xs:restriction base="xs:string" >
+          <xs:enumeration value="Top" />
+          <xs:enumeration value="Left" />
+          <xs:enumeration value="Bottom" />
+          <xs:enumeration value="Right" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableSideFlagsEnum" >
+    <xs:union memberTypes="SideFlagsEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- PageFitEnum -->
+  <xs:simpleType name="PageFitEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="PageFit" />
+      <xs:enumeration value="PageWidth" />
+      <xs:enumeration value="PageHeight" />
+      <xs:enumeration value="FitBoundingBox" />
+      <xs:enumeration value="FitWidth" />
+      <xs:enumeration value="FitHeight" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePageFitEnum" >
+    <xs:union memberTypes="PageFitEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="PageDisplayEnum">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Outlines" />
+      <xs:enumeration value="Thumbnails" />
+      <xs:enumeration value="FullScreen" />
+      <xs:enumeration value="Attachments" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePageDisplayEnum" >
+    <xs:union memberTypes="PageDisplayEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="PageLayoutEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="SinglePage" />
+      <xs:enumeration value="TwoPageLeft" />
+      <xs:enumeration value="TwoPageRight" />
+      <xs:enumeration value="SingleColumn" />
+      <xs:enumeration value="TwoColumnLeft" />
+      <xs:enumeration value="TwoColumnRight" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePageLayoutEnum" >
+    <xs:union memberTypes="PageLayoutEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- OverflowActionEnum -->
+  <!-- An enumeration of the supported page overflow actions -->
+  <xs:simpleType name="OverflowActionEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="NewPage" />
+      <xs:enumeration value="Truncate" />
+      <xs:enumeration value="Clip" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableOverflowActionEnum" >
+    <xs:union memberTypes="OverflowActionEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- OutlineFitEnum -->
+  <!-- Enumeration of the supported outline destination fits -->
+  <xs:simpleType name="OutlineFitEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="FullPage" />
+      <xs:enumeration value="PageWidth" />
+      <xs:enumeration value="PageHeight" />
+      <xs:enumeration value="BoundingBox" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableOutlineFitEnum" >
+    <xs:union memberTypes="OutlineFitEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <!-- LinkActionEnum -->
+  <!-- Enumeration of the supports navigation to named destination 
+  such as the first or last page in the document -->
+  <xs:simpleType name="LinkActionEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="NextPage" />
+      <xs:enumeration value="PrevPage" />
+      <xs:enumeration value="FirstPage" />
+      <xs:enumeration value="LastPage" />
+      <xs:enumeration value="Uri" />
+      <xs:enumeration value="Destination" />
+      <xs:enumeration value="ExternalDestination" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableLinkActionEnum" >
+    <xs:union memberTypes="LinkActionEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- OverflowSplitEnum -->
+  <!-- An enumeration of the supported overflow splitting options -->
+  <xs:simpleType name="OverflowSplitEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Never" />
+      <!--<xs:enumeration value="Component" />-->
+      <xs:enumeration value="Any" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableOverflowSplitEnum" >
+    <xs:union memberTypes="OverflowSplitEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+  <!-- VerticalAlignEnum  -->
+  <!-- An enumeration of the vertical alignments -->
+  <xs:simpleType name="VerticalAlignEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Top" />
+      <xs:enumeration value="Bottom" />
+      <xs:enumeration value="Middle" />
+      <!-- Not currently supported <xs:enumeration value="Justified" /> -->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableVerticalAlignEnum" >
+    <xs:union memberTypes="VerticalAlignEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+
+  <!-- HorizontalAlignEnum  -->
+  <!-- An enumeration of the horizontal alignments -->
+  <xs:simpleType name="HorizontalAlignEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Left" />
+      <xs:enumeration value="Right" />
+      <xs:enumeration value="Center" />
+      <xs:enumeration value="Justified" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableHorizontalAlignEnum" >
+    <xs:union memberTypes="HorizontalAlignEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+
+  <!-- FontFamilyEnum  -->
+  <!-- An enumeration of the standard fonts - also allows any other name -->
+  <xs:simpleType name="FontFamilyEnum" >
+    <xs:union >
+      <xs:simpleType >
+        <xs:restriction base="xs:string" >
+          <xs:enumeration value="Helvetica" />
+          <xs:enumeration value="Times" />
+          <xs:enumeration value="Courier" />
+          <xs:enumeration value="Zapf Dingbats" />
+          <xs:enumeration value="Symbol" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType >
+        <xs:restriction base="xs:string" />
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableFontFamilyEnum" >
+    <xs:union memberTypes="FontFamilyEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- TextWrapEnum -->
+  <!-- An enumeration of the text wrapping options -->
+  <xs:simpleType name="TextWrapEnum">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Auto" />
+      <xs:enumeration value="NoWrap" />
+      <xs:enumeration value="Character" />
+      <xs:enumeration value="Word" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableTextWrapEnum" >
+    <xs:union memberTypes="TextWrapEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- TextDecorationEnum -->
+  <!-- An enumberation for the text decorations - Underline, Overline and StrikeThrough -->
+  <xs:simpleType name="TextDecorationEnumItems" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Underline" />
+      <xs:enumeration value="Overline" />
+      <xs:enumeration value="StrikeThrough" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TextDecorationEnum" >
+    <xs:list itemType="TextDecorationEnumItems" />
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableTextDecorationEnum" >
+    <xs:union memberTypes="TextDecorationEnum BindableAttributeType" />
+  </xs:simpleType>
+  
+
+  <!-- LineEndingEnum -->
+  <!-- An enumeration of the line ending types -->
+  <xs:simpleType name="LineEndingEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Butt" />
+      <xs:enumeration value="Round" />
+      <xs:enumeration value="Projecting" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableLineEndingEnum" >
+    <xs:union memberTypes="LineEndingEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+  <!-- LineJoinEnum-->
+  <!-- An enumeration of the line join types -->
+  <xs:simpleType name="LineJoinEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Mitre" />
+      <xs:enumeration value="Round" />
+      <xs:enumeration value="Bevel" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableLineJoinEnum" >
+    <xs:union memberTypes="LineJoinEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+
+  <!-- RepeatEnum -->
+  <!-- An enumeration of the repeating options for a backgrounds -->
+  <xs:simpleType name="RepeatEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
+      <xs:enumeration value="RepeatX" />
+      <xs:enumeration value="RepeatY" />
+      <xs:enumeration value="Both" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableRepeatEnum" >
+    <xs:union memberTypes="RepeatEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+  <!-- PageOrientationEnum -->
+  <!-- An enumeration of the orientation options for a page -->
+  <xs:simpleType name="PageOrientationEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Portrait" />
+      <xs:enumeration value="Landscape" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePageOrientationEnum" >
+    <xs:union memberTypes="PageOrientationEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- PageNumberingEnum -->
+  <!-- An enumeration of the supported page number types -->
+  <xs:simpleType name="PageNumberingEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Decimals" />
+      <xs:enumeration value="UppercaseRoman" />
+      <xs:enumeration value="LowercaseRoman" />
+      <xs:enumeration value="UppercaseLetters" />
+      <xs:enumeration value="LowercaseLetters" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  
+
+  <xs:simpleType name="BindablePageNumberingEnum" >
+    <xs:union memberTypes="PageNumberingEnum BindableAttributeType" />
+  </xs:simpleType>
+  
+  <xs:simpleType name="ListNumberStyleEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Decimals" />
+      <xs:enumeration value="UppercaseRoman" />
+      <xs:enumeration value="LowercaseRoman" />
+      <xs:enumeration value="UppercaseLetters" />
+      <xs:enumeration value="LowercaseLetters" />
+      <xs:enumeration value="Bullet" />
+      <xs:enumeration value="Labels">
+        <xs:annotation >
+          <xs:documentation xml:lang="en" >Used for definition lists. Each item will display a separate label for the term, and then the content of the item will be the definition</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="None" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableListNumberStyleEnum" >
+    <xs:union memberTypes="ListNumberStyleEnum BindableAttributeType" />
+  </xs:simpleType>
+  
+  <!-- PageSizeEnum -->
+  <!-- A complete list of the standard page sizes -->
+  <xs:simpleType name="PageSizeEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="A0"/>
+      <xs:enumeration value="A1"/>
+      <xs:enumeration value="A2"/>
+      <xs:enumeration value="A3"/>
+      <xs:enumeration value="A4"/>
+      <xs:enumeration value="A5"/>
+      <xs:enumeration value="A6"/>
+      <xs:enumeration value="A7"/>
+      <xs:enumeration value="A8"/>
+      <xs:enumeration value="A9"/>
+      <xs:enumeration value="B0"/>
+      <xs:enumeration value="B1"/>
+      <xs:enumeration value="B2"/>
+      <xs:enumeration value="B3"/>
+      <xs:enumeration value="B4"/>
+      <xs:enumeration value="B5"/>
+      <xs:enumeration value="B6"/>
+      <xs:enumeration value="B7"/>
+      <xs:enumeration value="B8"/>
+      <xs:enumeration value="B9"/>
+      <xs:enumeration value="C0"/>
+      <xs:enumeration value="C1"/>
+      <xs:enumeration value="C2"/>
+      <xs:enumeration value="C3"/>
+      <xs:enumeration value="C4"/>
+      <xs:enumeration value="C5"/>
+      <xs:enumeration value="C6"/>
+      <xs:enumeration value="C7"/>
+      <xs:enumeration value="C8"/>
+      <xs:enumeration value="C9"/>
+
+      <xs:enumeration value="Quarto"/>
+      <xs:enumeration value="Foolscap"/>
+      <xs:enumeration value="Executive"/>
+      <xs:enumeration value="GovermentLetter"/>
+      <xs:enumeration value="Letter"/>
+      <xs:enumeration value="Legal"/>
+      <xs:enumeration value="Tabloid"/>
+      <xs:enumeration value="Post"/>
+      <xs:enumeration value="Crown"/>
+      <xs:enumeration value="LargePost"/>
+      <xs:enumeration value="Demy"/>
+      <xs:enumeration value="Medium"/>
+      <xs:enumeration value="Royal"/>
+      <xs:enumeration value="Elephant"/>
+      <xs:enumeration value="DoubleDemy"/>
+      <xs:enumeration value="QuadDemy"/>
+      <xs:enumeration value="Statement"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePageSizeEnum" >
+    <xs:union memberTypes="PageSizeEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- ColorEnum -->
+  <!-- A standard color or a reg ex match for the HTML color also includes the alpha channel
+       so can be 3, 6 or 8 hexadecimal characters in length (4 is not supported) -->
+  <xs:simpleType name="ColorEnum" >
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="aqua"/>
+          <xs:enumeration value="black" />
+          <xs:enumeration value="blue" />
+          <xs:enumeration value="fuchsia" />
+          <xs:enumeration value="gray" />
+          <xs:enumeration value="green" />
+          <xs:enumeration value="lime" />
+          <xs:enumeration value="maroon" />
+          <xs:enumeration value="navy" />
+          <xs:enumeration value="olive" />
+          <xs:enumeration value="purple" />
+          <xs:enumeration value="red" />
+          <xs:enumeration value="silver" />
+          <xs:enumeration value="teal" />
+          <xs:enumeration value="white" />
+          <xs:enumeration value="yellow" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" >
+          <xs:pattern value="#([0-9a-fA-F]{3})([0-9a-fA-F]{3}([0-9a-fA-F]{2})?)?" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*\)" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableColorEnum" >
+    <xs:union memberTypes="ColorEnum BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+  <!-- ObjectTypeEnum -->
+  <!-- A list of the standard types of element that styles can be applied to.
+       The list is not restricted and any name can be used. -->
+  <xs:simpleType name="ObjectTypeEnum" >
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" >
+          <xs:enumeration value="pdf:Label" />
+          <xs:enumeration value="pdf:Table" />
+          <xs:enumeration value="pdf:Row" />
+          <xs:enumeration value="pdf:Cell" />
+          <xs:enumeration value="pdf:Panel" />
+          <xs:enumeration value="pdf:Image" />
+          <xs:enumeration value="pdf:Page" />
+          <xs:enumeration value="pdf:Layer" />
+          <xs:enumeration value="pdf:Line" />
+          <xs:enumeration value="pdf:Div" />
+          <xs:enumeration value="pdf:Para" />
+          <xs:enumeration value="pdf:Pre" />
+          <xs:enumeration value="pdf:Span" />
+          <xs:enumeration value="pdf:B" />
+          <xs:enumeration value="pdf:List" />
+          <xs:enumeration value="pdf:Li" />
+          <xs:enumeration value="pdf:Ul" />
+          <xs:enumeration value="pdf:Ol" />
+          <xs:enumeration value="pdf:Dl" />
+          <xs:enumeration value="pdf:Di" />
+          <xs:enumeration value="pdf:I" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" />
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableObjectTypeEnum" >
+    <xs:union memberTypes="ObjectTypeEnum BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="DataTypeEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="String" />
+      <xs:enumeration value="Integer" />
+      <xs:enumeration value="Float" />
+      <xs:enumeration value="Guid" />
+      <xs:enumeration value="Url" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CompressionEnum" >
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Compress" />
+      <xs:enumeration value="None" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+  -
+  - Simple pattern restriction types
+  -
+  -->
+
+  <xs:complexType name="EmptyContentType" >
+    <xs:attribute name="id" type="IDType" />
+  </xs:complexType>
+
+
+  <!-- FilePathType -->
+  <!-- Just a string at the moment but may apply a regular expression match later -->
+  <xs:simpleType name="FilePathType" >
+    <xs:restriction base="xs:string" >
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableFilePathType" >
+    <xs:union memberTypes="FilePathType BindableAttributeType" />
+  </xs:simpleType>
+  
+  <!-- XPathType
+       A non restricted string
+  -->
+
+  <xs:simpleType name="XPathType" >
+    <xs:restriction base="xs:string" >
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableXPathType" >
+    <xs:union memberTypes="XPathType BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- BindableTemplateAttributeType
+       A non restricted string
+  -->
+
+  <xs:simpleType name="TemplateAttributeType" >
+    <xs:restriction base="xs:string" >
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableTemplateAttributeType" >
+    <xs:union memberTypes="TemplateAttributeType BindableAttributeType" />
+  </xs:simpleType>
+
+  
+
+  <!-- IDType -->
+  <!-- The IDType is similar to the xs:ID type, but is not required to be unique in the document
+       Only that it can start with a letter, and have a sequence of letters, numbers or underscores after that -->
+  <xs:simpleType name="IDType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="[a-zA-Z][a-zA-Z0-9_]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableIDType" >
+    <xs:union memberTypes="IDType BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <!-- ClassNameType-->
+  <!-- The class name type is a string restriction similar to IDType except that
+       it also allows the hyphen after the first character -->
+  <xs:simpleType name="ClassNameType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="[a-zA-Z][a-zA-Z0-9_-]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableClassNameType" >
+    <xs:union memberTypes="ClassNameType BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <!-- MethodNameType -->
+  <!-- RegEx pattern as per IDType for allowable names of methods. -->
+  <xs:simpleType name="MethodNameType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="[a-zA-Z][a-zA-Z0-9_]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:simpleType name="BindableThicknessType" >
+    <xs:union memberTypes="ThicknessType BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="ThicknessType" >
+    <xs:list itemType="UnitType" >
+    </xs:list>
+  </xs:simpleType>
+
+  <!-- Unit Type-->
+  <!-- Definition of a unit of measurement e.g 9.3mm | 10.4in | 12pt | 12 
+       The unit is restricted by a regular expression. -->
+  <xs:simpleType name="UnitType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="-?((\d*)|(\d*\.\d*)|(\d*mm)|(\d*\.\d*mm)|(\d*in)|(\d*\.\d*in)|(\d*pt)|(\d*\.\d*pt))" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableUnitType" >
+    <xs:union memberTypes="UnitType BindableAttributeType" />
+  </xs:simpleType>
+
+
+
+  <!-- PointType -->
+  <!-- 2 UnitType's separated by a comma. The unit of measurement is defined on each entry 
+       e.g. '12mm,14.5pt' -->
+  <xs:simpleType name="PointType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="((\d*)|(\d*\.\d*)|(\d*mm)|(\d*\.\d*mm)|(\d*in)|(\d*\.\d*in)|(\d*pt)|(\d*\.\d*pt)),((\d*)|(\d*\.\d*)|(\d*mm)|(\d*\.\d*mm)|(\d*in)|(\d*\.\d*in)|(\d*pt)|(\d*\.\d*pt))" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindablePointType" >
+    <xs:union memberTypes="PointType BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- PointArrayType -->
+  <!-- 2 UnitType's separated by a comma. The unit of measurement is defined on each entry 
+       e.g. '12mm,14.5pt' -->
+  <xs:simpleType name="PointArrayType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="(((\d*)|(\d*\.\d*)|(\d*mm)|(\d*\.\d*mm)|(\d*in)|(\d*\.\d*in)|(\d*pt)|(\d*\.\d*pt)),((\d*)|(\d*\.\d*)|(\d*mm)|(\d*\.\d*mm)|(\d*in)|(\d*\.\d*in)|(\d*pt)|(\d*\.\d*pt))\s?){1,}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableArrayPointType" >
+    <xs:union memberTypes="PointArrayType BindableAttributeType" />
+  </xs:simpleType>
+
+  <!-- Path Data Type-->
+  
+  <xs:simpleType name="GraphicPathDataType" >
+    <xs:restriction base="xs:string" ></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableGraphicPathDataType" >
+    <xs:union memberTypes="GraphicPathDataType BindableAttributeType" />
+  </xs:simpleType>
+  
+
+  <!-- DashType -->
+  <!-- Construction of dash patterns -->
+  <xs:simpleType name="DashType" >
+    <xs:annotation >
+      <xs:documentation xml:lang="en">
+        The format of a custom dash phase should be '[n n ...] n' or '[n,n,n] n'
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="\[(\d+\s?)+\]\s?\d+" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableDashType" >
+    <xs:union memberTypes="DashType BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <!-- 
+  -
+  - Core type extensions to support binding
+  -
+  -->
+
+  <xs:simpleType name="BindableFloatType" >
+    <xs:union memberTypes="xs:float BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableStringType" >
+    <xs:union memberTypes="xs:string BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <xs:simpleType name="BindableIntgerType" >
+    <xs:union memberTypes="xs:integer BindableAttributeType" />
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableBooleanType" >
+    <xs:union memberTypes="xs:boolean BindableAttributeType" />
+  </xs:simpleType>
+
+
+  <!-- BindableAttributeType-->
+  <!-- Defines the schema for a binding declaration on an attribute.-->
+  <xs:simpleType name="BindableAttributeType" >
+    <xs:restriction base="xs:string" >
+      <xs:pattern value="(\{[^\s\\]*:.*\})" />
+      <!--<xs:pattern value="(\{(xpath|item|qs):.*\})" />-->
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

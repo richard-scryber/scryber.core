@@ -1,0 +1,571 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+    elementFormDefault="qualified"
+    version="1.0"
+    xmlns="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+    xmlns:mstns="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:comp="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
+    >
+
+  <xs:import namespace="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd" 
+             schemaLocation="Scryber.Components.xsd" />
+  <xs:import namespace="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" 
+             schemaLocation="Scryber.Data.xsd" />
+
+  <xs:complexType name="StyleDefinitonListType" >
+    <xs:complexContent>
+      <xs:extension base="StyleListType" >
+        <xs:attribute name="code-file" type="xs:string" use="optional" />
+        <xs:attribute name="inherits" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Styles" type="StyleDefinitonListType" />
+
+  <xs:complexType name="StyleListType" >
+    <xs:sequence minOccurs="0" maxOccurs="unbounded" >
+      <xs:element name="Style" type="StyleDefinitionType" minOccurs="0" maxOccurs="unbounded" ></xs:element>
+      <xs:element name="Styles-Ref" type="StyleRefType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="StyleGroup" type="StyleGroupType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StyleRefType" >
+    <xs:attribute name="source" use="optional" type="xs:anyURI" />
+    <xs:attribute name="type" use="optional" type="xs:string" />
+    <xs:attribute name="id" use="optional" type="comp:IDType" />
+  </xs:complexType>
+
+  <xs:complexType name="StyleDefinitionType" >
+    <xs:complexContent>
+      <xs:extension base="StyleType" >
+        <xs:attribute name="applied-class" type="comp:BindableClassNameType" />
+        <xs:attribute name="applied-type" type="comp:BindableObjectTypeEnum" />
+        <xs:attribute name="applied-id" type="comp:BindableIDType" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StyleType" >
+    <xs:sequence minOccurs="0" maxOccurs="unbounded" >
+      <xs:choice minOccurs="0" maxOccurs="1" >
+        <xs:element ref="StyleItemBase" />
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="id" use="optional" type="comp:IDType" />
+    <xs:attributeGroup ref="comp:StyleEventAttributes" />
+  </xs:complexType>
+
+  <xs:complexType name="StyleGroupType" >
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Style" type="StyleDefinitionType" minOccurs="0" maxOccurs="unbounded" ></xs:element>
+      <xs:element name="Styles-Ref" type="StyleRefType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="StyleGroup" type="StyleGroupType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="id" use="optional" type="comp:IDType" />
+    <xs:attributeGroup ref="comp:StyleEventAttributes" />
+  </xs:complexType>
+  <!-- 
+  -
+  Base style type that all explicit style items are extensions of.
+  -
+  -->
+  
+  <xs:complexType name="AStyleItemBase" abstract="true" />
+  
+  <xs:element name="StyleItemBase" type="AStyleItemBase" abstract="true" />
+ 
+  
+  <!-- Position -->
+  
+  <xs:complexType name="Style-PositionType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="v-align" type="comp:BindableVerticalAlignEnum" use="optional" />
+        <xs:attribute name="h-align" type="comp:BindableHorizontalAlignEnum" use="optional" />
+        <xs:attribute name="mode" type="comp:BindablePositionModeEnum" use="optional" />
+        <xs:attribute name="x" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="y" type="comp:BindableUnitType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Position" type="Style-PositionType" substitutionGroup="StyleItemBase" />
+  
+  <!-- Size -->
+
+  <xs:complexType name="Style-SizeType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="width" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="height" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="min-width" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="min-height" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="max-width" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="max-height" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="full-width" type="comp:BindableBooleanType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Size" type="Style-SizeType" substitutionGroup="StyleItemBase" />
+  
+  <!-- Padding, Margins -->
+  
+  <xs:complexType name="Style-ThicknessType" >
+    <xs:complexContent>
+      <xs:extension base="AStyleItemBase">
+        <xs:attributeGroup ref="ThicknessStyleAttributes" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Padding" type="Style-ThicknessType" substitutionGroup="StyleItemBase" />
+  <xs:element name="Margins" type="Style-ThicknessType" substitutionGroup="StyleItemBase" />
+  <xs:element name="Clipping" type="Style-ThicknessType" substitutionGroup="StyleItemBase" />
+
+  
+  <!-- Background -->
+  
+  <xs:complexType name="Style-BackgroundType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attributeGroup ref="ContentStyleAttributes" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Background" type="Style-BackgroundType" substitutionGroup="StyleItemBase" />
+
+  
+  <!-- Border-->
+
+  <xs:complexType name="Style-BorderType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attributeGroup ref="LineStyleAttributes" ></xs:attributeGroup>
+        <xs:attribute name="corner-radius" type="comp:BindableUnitType" use="optional" default="0.0" />
+        <xs:attribute name="sides" use="optional" type="comp:BindableSideFlagsEnum" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Border" type="Style-BorderType" substitutionGroup="StyleItemBase" />
+  
+  <!-- Stroke -->
+  
+  <xs:complexType name="Style-PenType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attributeGroup ref="LineStyleAttributes" ></xs:attributeGroup>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Stroke" type="Style-PenType" substitutionGroup="StyleItemBase" />
+
+  
+  <!-- Fill -->
+  
+  <xs:complexType name="Style-FillType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attributeGroup ref="ContentStyleAttributes" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Fill" type="Style-FillType" substitutionGroup="StyleItemBase" />
+
+  <!-- Font -->
+
+  <xs:complexType name="Style-FontType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attributeGroup ref="FontAttributes" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Font" type="Style-FontType" substitutionGroup="StyleItemBase"  />
+
+  
+  <!-- Columns -->
+
+  <xs:complexType name="Style-ColumnsType"  >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase">
+        <xs:attribute name="count" type="comp:BindableIntgerType" use="optional" />
+        <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Columns" type="Style-ColumnsType" substitutionGroup="StyleItemBase" />
+  
+  
+  <!-- Text -->
+
+  <xs:complexType name="Style-TextType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="leading" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="wrap" type="comp:BindableTextWrapEnum" use="optional" default="Auto" />
+        <xs:attribute name="first-indent" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="date-format" type="comp:BindableStringType" use="optional" />
+        <xs:attribute name="number-format" type="comp:BindableStringType" use="optional" />
+        <xs:attribute name="decoration" type="comp:BindableTextDecorationEnum" use="optional" />
+        <xs:attribute name="whitespace-significant" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="h-scale" type="comp:BindableFloatType" use="optional" />
+        <xs:attribute name="word-spacing" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="char-spacing" type="comp:BindableUnitType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Text" type="Style-TextType" substitutionGroup="StyleItemBase" />
+
+  
+  <!-- Overflow -->
+
+  <xs:complexType name="Style-OverflowType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="action" type="comp:BindableOverflowActionEnum" use="optional" />
+        <xs:attribute name="split" type="comp:BindableOverflowSplitEnum" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Overflow" type="Style-OverflowType" substitutionGroup="StyleItemBase" />
+  
+  
+  <!-- Outline-->
+
+
+  <xs:complexType name="Style-OutlineType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="color" type="comp:BindableColorEnum" use="optional" />
+        <xs:attribute name="bold" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="italic" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="open" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="fit" type="comp:BindablePageFitEnum" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Outline" type="Style-OutlineType" substitutionGroup="StyleItemBase" />
+
+  
+  <!-- Overlay-Grid -->
+
+  <xs:complexType name="Style-OverlayGridType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="show" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="color" type="comp:BindableColorEnum" use="optional" />
+        <xs:attribute name="spacing" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="opacity" type="comp:BindableFloatType" use="optional" />
+        <xs:attribute name="x-offset" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="y-offset" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="fill-columns" type="comp:BindableBooleanType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Overlay-Grid" type="Style-OverlayGridType" substitutionGroup="StyleItemBase" />
+
+  <!-- Badge -->
+
+  <xs:complexType name="Style-ScryberBadgeType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="corner" type="comp:BindableCornerType" use="optional" />
+        <xs:attribute name="show" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="display" type="comp:BindableReversibleImageType" use="optional" />
+        <xs:attribute name="x-offset" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="y-offset" type="comp:BindableUnitType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Badge" type="Style-ScryberBadgeType" substitutionGroup="StyleItemBase" />
+  
+  <!-- Page -->
+
+  <xs:complexType name="Style-PageType" >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase" >
+        <xs:attribute name="size" type="comp:BindablePageSizeEnum" use="optional" default="A4" />
+        <xs:attribute name="orientation" type="comp:BindablePageOrientationEnum" use="optional" default="Portrait" />
+        <xs:attribute name="width" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="height" type="comp:BindableUnitType" use="optional" />
+        <xs:attribute name="number-style" type="comp:BindablePageNumberingEnum" use="optional" />
+        <xs:attribute name="number-start-index" type="comp:BindableIntgerType" use="optional" default="1" />
+        <xs:attribute name="number-prefix" type="comp:BindableStringType" use="optional" />
+        <xs:attribute name="display-format" type="comp:BindableStringType" use="optional" form="qualified" />
+        <xs:attribute name="group-count-hint" type="comp:BindableIntgerType" use="optional" form="qualified" />
+        <xs:attribute name="total-count-hint" type="comp:BindableIntgerType" use="optional" form="qualified" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Page" type="Style-PageType" substitutionGroup="StyleItemBase" />
+
+  <!-- Table -->
+
+  <xs:complexType name="Style-TableType"  >
+    <xs:complexContent >
+      <xs:extension base="AStyleItemBase">
+        <xs:attribute name="cell-column-span" type="comp:BindableIntgerType" use="optional" />
+        <xs:attribute name="row-repeat" type="comp:BindableRowRepeatEnum" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Table" type="Style-TableType" substitutionGroup="StyleItemBase" />
+
+  <!-- List -->
+  
+  <xs:complexType name="Style-ListType" >
+    <xs:complexContent>
+      <xs:extension base="AStyleItemBase">
+        <xs:attribute name="number-style" type="comp:BindableListNumberStyleEnum" use="optional" default="Decimals" form="unqualified"/>
+        <xs:attribute name="number-prefix" type="comp:BindableStringType" use="optional"  form="unqualified" />
+        <xs:attribute name="number-postfix" type="comp:BindableStringType" use="optional" form="unqualified" />
+        <xs:attribute name="number-alignment" type="comp:BindableHorizontalAlignEnum" use="optional" default="Right" form="unqualified" />
+        <xs:attribute name="number-concat" type="comp:BindableBooleanType" use="optional" form="unqualified" />
+        <xs:attribute name="number-inset" type="comp:BindableUnitType" use="optional" form="unqualified" />
+        <xs:attribute name="number-group" type="comp:BindableStringType" use="optional" form="unqualified" />
+        <xs:attribute name="item-label" type="comp:BindableStringType" use="optional" form="unqualified" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="List" type="Style-ListType" substitutionGroup="StyleItemBase" />
+  
+  <!-- Shape -->
+
+  <xs:complexType name="Style-ShapeType" >
+    <xs:complexContent>
+      <xs:extension base="AStyleItemBase">
+        <xs:attribute name="vertex-count" type="comp:BindableIntgerType" use="optional" default="4" form="unqualified" />
+        <xs:attribute name="vertex-step" type="comp:BindableIntgerType" use="optional" default="1" form="unqualified" />
+        <xs:attribute name="closed" type="comp:BindableBooleanType" use="optional" default="true" form="unqualified" />
+        <xs:attribute name="rotate" type="comp:BindableFloatType" use="optional" default="0.0" form="unqualified" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Shape" type="Style-ShapeType" substitutionGroup="StyleItemBase" />
+  
+  <!-- 
+  -
+  Attribute Groups
+  -
+  -->
+
+  <xs:attributeGroup name="TableCellAttributes" >
+    <xs:attribute name="column-span" type="comp:BindableIntgerType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+  
+  <xs:attributeGroup name="TableRowAttributes" >
+    <xs:attribute name="repeat" type="comp:BindableRowRepeatEnum" use="optional" form="qualified" />
+  </xs:attributeGroup>
+  
+  <xs:attributeGroup name="ColumnAttributes" >
+    <xs:attribute name="column-count" type="comp:BindableIntgerType" use="optional" form="qualified" />
+    <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+
+
+  <xs:attributeGroup name="ListStyleAttributes" >
+    <xs:attribute name="number-style" type="comp:BindableListNumberStyleEnum" use="optional" default="Decimals" form="qualified"/>
+    <xs:attribute name="number-prefix" type="comp:BindableStringType" use="optional"  form="qualified" />
+    <xs:attribute name="number-postfix" type="comp:BindableStringType" use="optional" form="qualified" />
+    <xs:attribute name="number-alignment" type="comp:BindableHorizontalAlignEnum" use="optional" default="Right" form="qualified" />
+    <xs:attribute name="number-concat" type="comp:BindableBooleanType" use="optional" form="qualified" />
+    <xs:attribute name="number-inset" type="comp:BindableUnitType" use="optional" form="qualified" />
+    <xs:attribute name="number-group" type="comp:BindableStringType" use="optional" form="qualified" />
+    <xs:attribute name="item-label" type="comp:BindableStringType" use="optional" form="qualified" />
+    <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ListItemStyleAttributes" >
+    <xs:attribute name="number-alignment" type="comp:BindableHorizontalAlignEnum" use="optional" default="Right" form="qualified" />
+    <xs:attribute name="number-inset" type="comp:BindableUnitType" use="optional" form="qualified" />
+    <xs:attribute name="item-label" type="comp:BindableStringType" use="optional" form="qualified" />
+    <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+  
+  <xs:attributeGroup name="OutlineStyleAttributes" >
+    <xs:attribute name="color" type="comp:BindableColorEnum" use="optional" form="qualified" />
+    <xs:attribute name="bold" type="comp:BindableBooleanType" use="optional" form="qualified" />
+    <xs:attribute name="italic" type="comp:BindableBooleanType" use="optional" form="qualified" />
+    <xs:attribute name="open" type="comp:BindableBooleanType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PaperStyleAttributes" >
+    <xs:attribute name="paper-size" type="comp:BindablePageSizeEnum" use="optional" form="qualified" />
+    <xs:attribute name="paper-orientation" type="comp:BindablePageOrientationEnum" use="optional" form="qualified" />
+    <xs:attribute name="overflow-action" type="comp:BindableOverflowActionEnum" use="optional" form="qualified" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PageNumberAttributes" >
+    <xs:attribute name="page-number-style" type="comp:BindablePageNumberingEnum" use="optional" form="qualified" />
+    <xs:attribute name="page-number-prefix" type="comp:BindableStringType" use="optional" form="qualified" />
+    <xs:attribute name="page-number-start-index" type="comp:BindableIntgerType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PageNumberDisplayAttributes" >
+    <xs:attribute name="display-format" type="comp:BindableStringType" use="optional" form="qualified" />
+    <xs:attribute name="group-count-hint" type="comp:BindableIntgerType" use="optional" form="qualified" />
+    <xs:attribute name="total-count-hint" type="comp:BindableIntgerType" use="optional" form="qualified" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="InlineElementNonPostionedStyleAttributes" >
+    <xs:attribute name="class" form="qualified" use="optional" type="xs:string" />
+    <xs:attribute name="fill-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
+    <xs:attribute name="fill-image" form="qualified" use="optional" type="comp:BindableFilePathType" />
+    <xs:attribute name="fill-repeat" form="qualified" use="optional" type="comp:BindableImageRepeatEnum" />
+    <xs:attribute name="fill-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
+    <xs:attribute name="bg-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
+    <xs:attribute name="bg-image" form="qualified" use="optional" type="comp:BindableFilePathType" />
+    <xs:attribute name="bg-repeat" form="qualified" use="optional" type="comp:BindableImageRepeatEnum" />
+    <xs:attribute name="bg-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
+    <xs:attribute name="border-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
+    <xs:attribute name="border-width" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="border-dash" form="qualified" use="optional" type="comp:BindableDashType" />
+    <xs:attribute name="border-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
+    <xs:attribute name="border-sides" form="qualified" use="optional" type="comp:BindableSideFlagsEnum" />
+    <xs:attribute name="border-corner-radius" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="stroke-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
+    <xs:attribute name="stroke-width" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="stroke-dash" form="qualified" use="optional" type="comp:BindableDashType" />
+    <xs:attribute name="stroke-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
+    <xs:attribute name="font-family" form="qualified" use="optional" type="comp:BindableFontFamilyEnum" />
+    <xs:attribute name="font-size" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="font-bold" form="qualified" use="optional" type="comp:BindableBooleanType" />
+    <xs:attribute name="font-italic" form="qualified" use="optional" type="comp:BindableBooleanType" />
+    <xs:attributeGroup ref="data:Data-ComponentAttributes" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="InlineElementStyleAttributes" >
+    <xs:attributeGroup ref="InlineElementNonPostionedStyleAttributes" />
+    <xs:attribute name="x" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="y" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="width" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="height" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="min-width" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="min-height" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="max-width" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="max-height" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="padding" form="qualified" use="optional" type="comp:BindableThicknessType" />
+    <xs:attribute name="margins" form="qualified" use="optional" type="comp:BindableThicknessType" />
+    <xs:attribute name="h-align" form="qualified" use="optional" type="comp:BindableHorizontalAlignEnum" />
+    <xs:attribute name="v-align" form="qualified" use="optional" type="comp:BindableVerticalAlignEnum" />
+    <xs:attribute name="position-mode" form="qualified" use="optional" type="comp:BindablePositionModeEnum" />
+    <xs:attribute name="full-width" form="qualified" use="optional" type="comp:BindableBooleanType" />
+    <xs:attribute name="text-wrap" form="qualified" use="optional" type="comp:BindableTextWrapEnum" />
+    <xs:attribute name="text-leading" form="qualified" use="optional" type="comp:BindableUnitType" />
+    <xs:attribute name="text-decoration" form="qualified" use="optional" type="comp:BindableTextDecorationEnum" />
+    <xs:attribute name="overflow-split" form="qualified" use="optional" type="comp:BindableOverflowSplitEnum" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="NumberFormatStyleAttributes" >
+    <xs:attribute name="number-format" form="qualified" use="optional" type="comp:BindableStringType" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="DateFormatStyleAttributes" >
+    <xs:attribute name="date-format" form="qualified" use="optional" type="comp:BindableStringType" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PolygonBaseStyleAttributes" >
+    <xs:attribute name="fill-style" form="qualified" use="optional" type="comp:BindableFillStyleEnum" />
+    <xs:attribute name="rotate" form="qualified" use="optional" type="comp:BindableFloatType" />
+    <xs:attribute name="closed" form="qualified" use="optional" type="comp:BindableBooleanType"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PathStyleAttributes" >
+    <xs:attribute name="fill-style" form="qualified" use="optional" type="comp:BindableFillStyleEnum" />
+    <xs:attribute name="d" form="unqualified" use="optional" type="comp:BindableGraphicPathDataType" />
+  </xs:attributeGroup>
+  
+  
+  <xs:attributeGroup name="PolygonStyleAttributes" >
+    <xs:attribute name="vertex-count" form="qualified" use="optional" type="comp:BindableIntgerType" />
+    <xs:attribute name="vertex-step" form="qualified" use="optional" type="comp:BindableIntgerType"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PolyPointsStyleAttributes">
+    <xs:attribute name="points" form="unqualified" use="optional" type="comp:BindableArrayPointType" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="PanelStyleAttributes" >
+    <xs:attribute name="overflow-action" form="qualified" use="optional" type="comp:BindableOverflowActionEnum" />
+    <xs:attribute name="clipping-inset" form="qualified" use="optional" type="comp:BindableThicknessType" />
+  </xs:attributeGroup>
+
+  <!--<xs:attributeGroup name="TransformAttributes" >
+    <xs:attribute name="scale-x" type="comp:BindableFloatType" use="optional" />
+    <xs:attribute name="scale-y" type="comp:BindableFloatType" use="optional" />
+    <xs:attribute name="rotate" type="comp:BindableFloatType" use="optional" />
+    <xs:attribute name="skew-x" type="comp:BindableFloatType" use="optional" />
+    <xs:attribute name="skew-y" type="comp:BindableFloatType" use="optional" />
+    <xs:attribute name="offset-h" type="comp:BindableFloatType" use="optional" />
+    <xs:attribute name="offset-v" type="comp:BindableFloatType" use="optional" />
+  </xs:attributeGroup>-->
+
+
+  <xs:attributeGroup name="ThicknessStyleAttributes" >
+    <xs:attribute name="top" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="left" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="bottom" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="right" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="all" type="comp:BindableUnitType" use="optional" />
+  </xs:attributeGroup>
+
+
+
+  <xs:attributeGroup name="FontAttributes">
+    <xs:attribute name="family" type="comp:BindableFontFamilyEnum" use="optional" />
+    <xs:attribute name="bold" type="comp:BindableBooleanType" use="optional" />
+    <xs:attribute name="italic" type="comp:BindableBooleanType" use="optional" />
+    <xs:attribute name="size" type="comp:BindableUnitType" use="optional" />
+  </xs:attributeGroup>
+
+
+  <xs:attributeGroup name="LineStyleAttributes" >
+    <xs:attribute name="style" type="comp:BindableLineStyleEnum" use="optional" />
+    <xs:attribute name="color" type="comp:BindableColorEnum" use="optional" />
+    <xs:attribute name="width" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="dash" type="comp:BindableDashType" use="optional" />
+    <xs:attribute name="ending" type="comp:BindableLineEndingEnum" use="optional" default="Round" />
+    <xs:attribute name="join" type="comp:BindableLineJoinEnum" use="optional" default="Round" />
+    <xs:attribute name="mitre" type="comp:BindableFloatType" use="optional" default="2.0" />
+    <xs:attribute name="opacity" type="comp:BindableFloatType" use="optional" default="1.0" />
+  </xs:attributeGroup>
+
+
+
+  <xs:attributeGroup name="ContentStyleAttributes">
+    <xs:attribute name="style" type="comp:BindableFillStyleEnum" use="optional" />
+    <xs:attribute name="color" type="comp:BindableColorEnum" use="optional" />
+    <xs:attribute name="opacity" type="comp:BindableFloatType" use="optional" default="1.0" />
+    <xs:attribute name="img-src" type="comp:BindableFilePathType" use="optional" />
+    <xs:attribute name="repeat" type="comp:BindableImageRepeatEnum" use="optional" default="RepeatBoth" />
+    <xs:attribute name="x-pos" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="y-pos" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="x-step" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="y-step" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="x-size" type="comp:BindableUnitType" use="optional" />
+    <xs:attribute name="y-size" type="comp:BindableUnitType" use="optional" />
+  </xs:attributeGroup>
+
+
+  
+</xs:schema>

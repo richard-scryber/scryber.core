@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema targetNamespace="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Base.xsd"
+    elementFormDefault="qualified"
+    version="1.0"
+    xmlns="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Base.xsd"
+    xmlns:mstns="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Base.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <!-- 
+    Abstract base types
+  -->
+
+  <!-- root base type for all abstract types -->
+  <xs:complexType name="ScryberRootBaseType" abstract="true" >
+  </xs:complexType>
+
+  <xs:element name="ScryberRootBase" type="ScryberRootBaseType" />
+
+
+  <!-- base type for all pages, sections and referenced pages -->
+  <xs:complexType name="ScryberPageBaseType" abstract="true" >
+    <xs:complexContent >
+      <xs:extension base="ScryberRootBaseType" ></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberPageBase" type="ScryberPageBaseType" abstract="true" />
+
+  <!-- base type for all page content  -->
+  <xs:complexType name="ScryberContentBaseType" abstract="true" >
+    <xs:complexContent >
+      <xs:extension base="ScryberRootBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberContentBase" abstract="true" type="ScryberContentBaseType" ></xs:element>
+
+  <!-- base type for all graphic paths -->
+  <xs:complexType name="ScryberGraphicBaseType" abstract="true" >
+    <xs:complexContent >
+      <xs:extension base="ScryberContentBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberGraphicBase" type="ScryberGraphicBaseType" abstract="true" />
+
+  <!-- base type for rows and cells -->
+  <xs:complexType name="ScryberTableContentBaseType" abstract="true" >
+    <xs:complexContent>
+      <xs:extension base="ScryberContentBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberTableContentBase" abstract="true" type="ScryberTableContentBaseType" />
+
+
+  <!-- base type for all list items -->
+  <xs:complexType name="ScryberListItemContentBaseType" abstract="true" >
+    <xs:complexContent>
+      <xs:extension base="ScryberContentBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberListItemContentBase" abstract="true" type="ScryberListItemContentBaseType" />
+
+
+  <!-- base type for all layer types -->
+  <xs:complexType name="ScryberLayerBaseType" abstract="true" >
+    <xs:complexContent>
+      <xs:extension base="ScryberContentBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberLayerBase" abstract="true" type="ScryberLayerBaseType" />
+
+  <!-- base type for all data sources -->
+  <xs:complexType name="ScryberDataSourceBaseType" abstract="true" >
+    <xs:complexContent>
+      <xs:extension base="ScryberContentBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberDataSourceBase" abstract="true" type="ScryberDataSourceBaseType" />
+
+
+  <!-- base type for all writers -->
+  <xs:complexType name="ScryberWriterBaseType" abstract="true" >
+    <xs:complexContent>
+      <xs:extension base="ScryberRootBaseType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ScryberWriterBase" abstract="true" type="ScryberWriterBaseType" />
+  
+</xs:schema>
