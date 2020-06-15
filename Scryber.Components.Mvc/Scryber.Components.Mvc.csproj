@@ -24,9 +24,5 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Scryber.Core" Version="1.0.0.3" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.5-dev.8">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 </Project>

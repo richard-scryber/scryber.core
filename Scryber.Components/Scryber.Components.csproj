@@ -23,6 +23,12 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Web\**" />
+    <EmbeddedResource Remove="Web\**" />
+    <None Remove="Web\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Class1.cs" />
     <Compile Remove="Errors.Designer.cs" />
   </ItemGroup>
@@ -40,15 +46,8 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Web\" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.5-dev.8">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">

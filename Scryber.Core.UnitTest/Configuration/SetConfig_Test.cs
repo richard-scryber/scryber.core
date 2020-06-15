@@ -29,7 +29,15 @@ namespace Scryber.UnitTests.Configuration
         public static void ConfigClassInitialize(TestContext testContext)
         {
             var path = testContext.TestRunDirectory;
-            path = System.IO.Path.Combine(path, "../../../appsettings.json");
+            path = Path.GetFullPath(Path.Combine(path, "../../../appsettings.json"));
+            if (!File.Exists(path))
+            {
+                path = Path.Combine(testContext.DeploymentDirectory, "../../../appsettings.json");
+                path = Path.GetFullPath(path);
+
+                if (!File.Exists(path))
+                    throw new FileNotFoundException("Cannot find the location of the appsettings.json file to run the tests from");
+            }
 
             var builder = new ConfigurationBuilder()
                                 .AddJsonFile(path, optional: false, reloadOnChange: false);
