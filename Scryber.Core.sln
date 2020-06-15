@@ -21,6 +21,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scryber.Core.Schemas", "Scryber.Core.Schemas", "{75B6EFDC-0508-4DA7-A090-D393E4416049}"
 	ProjectSection(SolutionItems) = preProject
 		Scryber.Core.Schemas\SampleDocument.pdfx = Scryber.Core.Schemas\SampleDocument.pdfx
+		Scryber.Core.Schemas\SamplePage.ppfx = Scryber.Core.Schemas\SamplePage.ppfx
+		Scryber.Core.Schemas\SampleStyles.psfx = Scryber.Core.Schemas\SampleStyles.psfx
 		Scryber.Core.Schemas\Scryber.Base.xsd = Scryber.Core.Schemas\Scryber.Base.xsd
 		Scryber.Core.Schemas\Scryber.Components.xsd = Scryber.Core.Schemas\Scryber.Components.xsd
 		Scryber.Core.Schemas\Scryber.Data.xsd = Scryber.Core.Schemas\Scryber.Data.xsd

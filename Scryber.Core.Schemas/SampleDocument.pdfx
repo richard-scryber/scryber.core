@@ -1,10 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd" >
+<pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+              xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+              xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+  <Data>
+    
+  </Data>
+  
+  <Styles>
+    <styles:Styles-Ref source="SampleStyles.psfx"/>
+
+    <styles:Style applied-class="blue-bg" >
+      <styles:Background color="blue" />
+    </styles:Style>
+    
+  </Styles>
   <Pages>
-    <pdf:Page>
+    
+    <pdf:Section>
       <Content>
         <pdf:Label >Hello World</pdf:Label>
       </Content>
-    </pdf:Page>
+    </pdf:Section>
+    
+    <pdf:Page-Ref source="SamplePage.ppfx"/>
+    
   </Pages>
 </pdf:Document>
