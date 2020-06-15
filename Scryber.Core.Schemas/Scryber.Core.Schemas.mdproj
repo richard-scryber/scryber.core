@@ -14,5 +14,6 @@
     <None Include="Scryber.Data.xsd" />
     <None Include="Scryber.Components.xsd" />
     <None Include="SampleDocument.xml" />
+    <None Include="HtmlFile.html" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <pdf:Document 
     xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd" >
-    
+    <Pages>
+        
+    </Pages>
 </pdf:Document>
