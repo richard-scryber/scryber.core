@@ -6,14 +6,14 @@
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.3</PackageVersion>
+    <PackageVersion>1.0.0.4</PackageVersion>
     <Authors>Silicon Reef</Authors>
     <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Changed the configuration to use the dotnet core options pattern</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package</PackageReleaseNotes>
     <Summary>The scryber library for PDF document creation using dotnet core</Summary>
     <PackageTags>Scryber; PDF</PackageTags>
     <Title>Scryber</Title>

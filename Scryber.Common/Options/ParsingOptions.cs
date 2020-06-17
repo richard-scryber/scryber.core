@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace Scryber.Options
 {
 
@@ -12,13 +14,26 @@ namespace Scryber.Options
 
         public string DefaultCulture { get; set; }
 
-        public NamespaceMappingOption[] Namespaces { get; set; }
+        public List<NamespaceMappingOption> Namespaces { get; private set; }
 
         public BindingPrefixOption[] Bindings { get; set; }
 
         public ParsingOptions()
         {
             MissingReferenceAction = ParserReferenceMissingAction.RaiseException;
+            Namespaces = new List<NamespaceMappingOption>();
+            Namespaces.Add(new NamespaceMappingOption() { Source = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd",
+                                                          Namespace = "Scryber.Components",
+                                                          Assembly = "Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
+            Namespaces.Add(new NamespaceMappingOption(){ Source = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd",
+                                                        Namespace = "Scryber.Data",
+                                                        Assembly = "Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
+            Namespaces.Add(new NamespaceMappingOption(){ Source = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd",
+                                                        Namespace = "Scryber.Styles",
+                                                        Assembly = "Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
         }
 
         private System.Globalization.CultureInfo _defaultCulture;
@@ -37,7 +52,7 @@ namespace Scryber.Options
 
         public string GetXmlNamespaceForAssemblyNamespace(string assemblyNamespace)
         {
-            if (string.IsNullOrEmpty(assemblyNamespace) || this.Namespaces == null || this.Namespaces.Length == 0)
+            if (string.IsNullOrEmpty(assemblyNamespace) || this.Namespaces == null || this.Namespaces.Count == 0)
                 return string.Empty;
 
             int index = assemblyNamespace.IndexOf(",");
@@ -47,20 +62,30 @@ namespace Scryber.Options
             {
                 var ns = assemblyNamespace.Substring(0, index).Trim();
                 var assm = assemblyNamespace.Substring(index + 1).Trim();
-
-                for(var i = 0; i < this.Namespaces.Length; i++)
-                {
-                    if (string.Equals(this.Namespaces[i].Namespace, ns) && string.Equals(this.Namespaces[i].Assembly, assm))
-                        return this.Namespaces[i].Source;
-                }
-                //Not found
-                return string.Empty;
-
+                return GetXmlNamespaceForAssemblyNamespace(ns, assm);
             }
 
         }
 
+        /// <summary>
+        /// Return the associated XML namespace
+        /// </summary>
+        /// <param name="ns"></param>
+        /// <param name="assm"></param>
+        /// <returns></returns>
+        public string GetXmlNamespaceForAssemblyNamespace(string ns, string assm)
+        {
+            if (string.IsNullOrEmpty(assm) || this.Namespaces == null || this.Namespaces.Count == 0)
+                return string.Empty;
 
+            for (var i = 0; i < this.Namespaces.Count; i++)
+            {
+                if (string.Equals(this.Namespaces[i].Namespace, ns) && string.Equals(this.Namespaces[i].Assembly, assm))
+                    return this.Namespaces[i].Source;
+            }
+            //Not found
+            return string.Empty;
+        }
     }
 
     /// <summary>

@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scryber.Core.Schemas", "Scr
 		Scryber.Core.Schemas\Scryber.Data.xsd = Scryber.Core.Schemas\Scryber.Data.xsd
 		Scryber.Core.Schemas\Scryber.Styles.xsd = Scryber.Core.Schemas\Scryber.Styles.xsd
 		Scryber.Core.Schemas\Scryber.Types.xsd = Scryber.Core.Schemas\Scryber.Types.xsd
+		Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec = Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec
 	EndProjectSection
 EndProject
 Global

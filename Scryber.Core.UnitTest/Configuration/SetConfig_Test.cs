@@ -70,15 +70,24 @@ namespace Scryber.UnitTests.Configuration
 
             //Namespace Mappings
             Assert.IsNotNull(parsing.Namespaces, "Namespace mappings is null");
-            int expectedLength = 1;
-            string expectedNs = "Scryber.Components";
-            string expectedAssm = "Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
-            string expectedSrc = "https://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd";
 
-            Assert.AreEqual(expectedLength, parsing.Namespaces.Length, "Namespace mappings length is not 1");
-            Assert.AreEqual(expectedNs, parsing.Namespaces[0].Namespace);
-            Assert.AreEqual(expectedAssm, parsing.Namespaces[0].Assembly);
-            Assert.AreEqual(expectedSrc, parsing.Namespaces[0].Source);
+            int expectedLength = 4;
+            string expectedNs = "Scryber.Core.UnitTests.Generation.Fakes";
+            string expectedAssm = "Scryber.UnitTests";
+            string expectedSrc = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Fakes.xsd";
+
+            Assert.AreEqual(expectedLength, parsing.Namespaces.Count, "Namespace mappings length is not 4");
+
+            var xmlNs = parsing.GetXmlNamespaceForAssemblyNamespace(expectedNs, expectedAssm);
+            Assert.AreEqual(expectedSrc, xmlNs, "The expected xml source was not matched");
+
+            //Check defaults are there
+            expectedNs = "Scryber.Components";
+            expectedAssm = "Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
+            expectedSrc = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd";
+
+            xmlNs = parsing.GetXmlNamespaceForAssemblyNamespace(expectedNs, expectedAssm);
+            Assert.AreEqual(expectedSrc, xmlNs, "The expected xml source was not matched");
 
 
             Assert.IsNotNull(parsing.Bindings, "Binding prefixes are null");

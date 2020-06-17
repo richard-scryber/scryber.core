@@ -325,7 +325,7 @@ namespace Scryber.Generation
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             var entries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var maps = config.ParsingOptions.Namespaces;
-            if(null != maps && maps.Length > 0)
+            if(null != maps && maps.Count > 0)
             {
                 foreach (var map in maps)
                 {
