@@ -86,7 +86,7 @@ namespace Scryber.Configuration
             {
                 try
                 {
-                    Type t = Scryber.Configuration.Support.GetTypeFromName(this.FactoryType);
+                    Type t = Scryber.Utilities.TypeHelper.GetType(this.FactoryType);
                     object instance = System.Activator.CreateInstance(t);
                     IPDFImageDataFactory factory = (IPDFImageDataFactory)instance;
                     _factory = factory;

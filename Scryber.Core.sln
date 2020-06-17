@@ -6,8 +6,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Common", "Scryber.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Drawing", "Scryber.Drawing\Scryber.Drawing.csproj", "{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Configuration", "Scryber.Configuration\Scryber.Configuration.csproj", "{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Styles", "Scryber.Styles\Scryber.Styles.csproj", "{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Generation", "Scryber.Generation\Scryber.Generation.csproj", "{82DC9DDF-DED3-472F-9822-CA3EB0017DF3}"
@@ -50,12 +48,6 @@ Global
 		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{540F3E9B-9E58-4A6F-9AEB-FEA8497690D3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B598FB9-97C0-4509-BEB3-7CFD5BD12D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{187F5438-A9CB-4E85-AEFC-14D8E387ABE8}.Default|Any CPU.ActiveCfg = Debug|Any CPU

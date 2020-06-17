@@ -101,7 +101,7 @@ namespace Scryber.Generation
                 }
                 catch (Exception ex)
                 {
-                    throw new System.Configuration.ConfigurationErrorsException("Failed to initialize the configured binding expression factories :" + ex.Message, ex);
+                    throw new System.Exception("Failed to initialize the configured binding expression factories :" + ex.Message, ex);
                 }
             }
 

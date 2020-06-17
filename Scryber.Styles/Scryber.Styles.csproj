@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
-    <ProjectReference Include="..\Scryber.Configuration\Scryber.Configuration.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
   </ItemGroup>
   <ItemGroup>
