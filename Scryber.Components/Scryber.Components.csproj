@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
-    <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core</PackageId>
     <PackageVersion>1.0.0.4</PackageVersion>
     <Authors>Silicon Reef</Authors>
@@ -13,13 +12,16 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package
+
+Added the default namespaces to the ParsingOptions</PackageReleaseNotes>
     <Summary>The scryber library for PDF document creation using dotnet core</Summary>
     <PackageTags>Scryber; PDF</PackageTags>
     <Title>Scryber</Title>
     <Description>The Scryber PDF Generation library for dotnet core 3.1
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and component separation in referenced files. 
 This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications. </Description>
+    <PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,7 +42,6 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
-    <ProjectReference Include="..\Scryber.Configuration\Scryber.Configuration.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
     <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
