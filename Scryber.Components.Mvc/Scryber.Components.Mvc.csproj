@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>1.0.0.4</PackageVersion>
+    <PackageVersion>1.0.0.6</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
 
@@ -15,7 +15,7 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>First release of the MVC Extensions for Scryber core.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated for v1.0.0.5 of the Core library with atomatic inclusion of the http namespace references, and also added the model extension methods</PackageReleaseNotes>
     <Summary>The MVC extensions for the Scryber PDF creation library</Summary>
     <PackageTags>Scryber; PDF; dotnet core; MVC</PackageTags>
     <Title>Scryber MVC Extensions</Title>
@@ -23,6 +23,6 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Scryber.Core" Version="1.0.0.3" />
+    <PackageReference Include="Scryber.Core" Version="1.0.0.5" />
   </ItemGroup>
 </Project>
