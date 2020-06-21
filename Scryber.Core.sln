@@ -29,6 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scryber.Core.Schemas", "Scr
 		Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec = Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B291362D-A874-45F3-9A31-0127AEC19190}"
+	ProjectSection(SolutionItems) = preProject
+		docs\Home.md = docs\Home.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
