@@ -76,7 +76,6 @@ Create a new file in your code `HelloWorld.pdfx` and paste the contents below _(
 
 And then you can load the pdf from the template, or generate directly.
 
-
 ### Running from Mac
 
 If you are running the application from Visual Studio Mac (as we are), then you may need to follow the instructions here [Libgdiplus installation on Mac](Libgdiplus-For-Mac)
