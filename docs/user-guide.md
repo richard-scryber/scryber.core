@@ -1,11 +1,13 @@
+# Getting Started
+
 The Scryber document engine is a great solution for building PDF documents for your dotnet core applications. With full support for styles, binding to data sources and adaptive layout. It's fully native c# and easy to use as a coded, or declarative document description.
 
-## Getting Started
+## Nuget Packages
 
 The easiest way to start is to use the NuGet packages available here. 
 
-* Console or UI Applications : [https://www.nuget.org/packages/Scryber.Core/](https://www.nuget.org/packages/Scryber.Core/)
-* Dot Net MVC Applications : [https://www.nuget.org/packages/Scryber.Core.Mvc/](https://www.nuget.org/packages/Scryber.Core.Mvc/)
+* For Console or UI Applications : [https://www.nuget.org/packages/Scryber.Core/](https://www.nuget.org/packages/Scryber.Core/)
+* For MVC Applications : [https://www.nuget.org/packages/Scryber.Core.Mvc/](https://www.nuget.org/packages/Scryber.Core.Mvc/)
 
 _(The MVC package simply adds a couple of controller extensions, to make it easy to generate your PDF to an action result, along with the latest core package)_
 
