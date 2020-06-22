@@ -24,15 +24,17 @@ using Scryber.Components.Mvc; //for MVC applications.
 
 ## Create A Document
 
-AKA - Hello World in C#
+Hello World in C#
 
 ```csharp
-//create a document structure
+//create a document
 var doc = new PDFDocument();
 
+//add a page to it
 PDFPage pg = new PDFPage();
 doc.Pages.Add(pg);
 
+//and add a label with some text to it
 PDFLabel label = new PDFLabel();
 label.Text = "Hello World";
 pg.Contents.Add(label);
@@ -58,7 +60,7 @@ return this.PDF(doc);
 
 ## Creating a template
 
-The real advantages of scryber is the use of XML templates to describe your documents, pages, styles, or components.
+The real advantage of scryber is the use of XML templates to describe your documents, pages, styles, or components.
 
 Create a new folder in your project called `PDFs`, and then add new file called `HelloWorld.pdfx` and paste the contents below _(the pdfx file extension is a convention we use to describe our document types)_
 
