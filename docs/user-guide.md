@@ -91,4 +91,4 @@ var doc = PDFDocument.ParseDocument(path);
 
 ## Running from Mac
 
-If you are running the application from Visual Studio Mac (as we are), then you may need to follow the instructions here [Libgdiplus installation on Mac](Libgdiplus.md)
+If you are running the application from Visual Studio Mac (as we are), then you may need to follow the instructions here [Libgdiplus installation on Mac](libgdiplus)
