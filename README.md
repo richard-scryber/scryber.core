@@ -15,3 +15,7 @@ Binding in xml allows you to quickly load data from many sources and output to P
 Check out the wiki for more information on how to use the library.
 
 [Welcome to scryber.core](https://github.com/richard-scryber/scryber.core/wiki/Welcome-to-the-scryber.core-wiki%21)
+
+## Read the Docs
+
+Alternatively use the latest formatted document on readthedocs.io [here](https://scrybercore.readthedocs.io/en/latest/)
