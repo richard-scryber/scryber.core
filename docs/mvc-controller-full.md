@@ -82,6 +82,7 @@ public IActionResult HelloWorld()
 
 The PDF externsion method will read the PDF template from the path and generate the file to the response.
 
+![Our full controller](_static/homecontroller.png)
 
 ## Testing your action
 
