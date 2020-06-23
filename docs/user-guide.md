@@ -78,7 +78,11 @@ Create a new folder in your project called `PDFs`, and then add new file called 
 </pdf:Document>
 ```
 
-And then you can load the pdf from the template, or generate directly.
+The xml structure is exactly the same as the code (and this applies to any template, no matter how complex)
+
+## Loading from the template
+
+Then you can load the pdf from the template.
 
 ```csharp
 
@@ -88,6 +92,20 @@ path = System.IO.Path.Combine(path, "PDFs", "HelloWorld.pdfx");
 var doc = PDFDocument.ParseDocument(path);
 
 ```
+
+Or generate directly as an MVC action result
+
+```csharp
+
+//Parse the XML and process
+var path = "[ContentRootPath]"; //Get the root path
+path = System.IO.Path.Combine(path, "PDFs", "HelloWorld.pdfx");
+
+//This extension method will load the template from the path and return a processed PDF inline
+return this.PDF(path);
+
+```
+
 
 ## Running from Mac
 
