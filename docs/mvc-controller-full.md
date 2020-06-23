@@ -1,17 +1,19 @@
-# Getting Started
+# MVC Controller 
 
-The Scryber document engine is a great solution for building PDF documents for your dotnet core applications and MVC sites. With full support for styles, binding to data sources and adaptive layout. It's fully native c# and easy to use as a coded, or declarative document description.
+A Complete example for an MVC Controller 
 
 ## Nuget Packages
 
-The easiest way to start is to use the NuGet packages available here. 
+Make sure you install the Nuget Packages
 
-* For Console or UI Applications : [https://www.nuget.org/packages/Scryber.Core/](https://www.nuget.org/packages/Scryber.Core/)
-* For MVC Applications : [https://www.nuget.org/packages/Scryber.Core.Mvc/](https://www.nuget.org/packages/Scryber.Core.Mvc/)
+[https://www.nuget.org/packages/Scryber.Core.Mvc/](https://www.nuget.org/packages/Scryber.Core.Mvc/)
 
-_(The MVC package simply adds a couple of controller extensions, to make it easy to generate your PDF to an action result, along with the latest core package)_
+This will add the latest version of the Scryber.Core nuget package, and the Scryber.Core.Mvc extension methods.
 
-Or you can download the source from this repository and reference the libraries.
+Add the XML Schema files to help with the intellisense
+
+[https://www.nuget.org/packages/Scryber.Core.Schemas/](https://www.nuget.org/packages/Scryber.Core.Schemas/)
+
 
 ## Namespaces
 
