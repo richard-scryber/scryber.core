@@ -32,7 +32,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B291362D-A874-45F3-9A31-0127AEC19190}"
 	ProjectSection(SolutionItems) = preProject
 		docs\Home.md = docs\Home.md
+		docs\user-guide.md = docs\user-guide.md
+		docs\index.rst = docs\index.rst
+		docs\conf.py = docs\conf.py
+		docs\_config.yml = docs\_config.yml
+		docs\index.md = docs\index.md
+		docs\libgdiplus.md = docs\libgdiplus.md
+		docs\mvc-controller-full.md = docs\mvc-controller-full.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{A8F3B995-F089-4333-A4D0-789359C00E25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,5 +98,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {43103F0A-F9CB-4C80-9DD9-6F58FF0A2918}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8F3B995-F089-4333-A4D0-789359C00E25} = {B291362D-A874-45F3-9A31-0127AEC19190}
 	EndGlobalSection
 EndGlobal
