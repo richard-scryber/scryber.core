@@ -1,12 +1,8 @@
-==============
-2. MVC Controller 
-==============
+# MVC Controller 
 
 A Complete example for an MVC Controller in C#
 
-
-Nuget Packages
-==============
+## Nuget Packages
 
 Make sure you install the Nuget Packages
 
@@ -19,8 +15,7 @@ Add the XML Schema files to help with the intellisense
 [https://www.nuget.org/packages/Scryber.Core.Schemas/](https://www.nuget.org/packages/Scryber.Core.Schemas/)
 
 
-Add a document template
-=======================
+## Add a document template
 
 In our applications we like to add our templates to a PDF folder the Views folder. You can break it down however works for you, but for a create a new XML file called HelloWorld.pdfx in your folder.
 
@@ -44,13 +39,12 @@ And paste the following content into the file
 
 Your solution should look something like this.
 
-.. image:: _static/initialhellowworld.png
+![Initial Hello World PDFX](images/initialhellowworld.png)
 
 
 For for more information on the namespaces and mappings see this [About Namespaces](namespaces-and-assemblies) documentation
 
-Controller code
-================
+## Controller code
 
 Add a new controller to your project, and a couple of namespaces are important to add to the top of your controller.
 
@@ -59,8 +53,7 @@ Add a new controller to your project, and a couple of namespaces are important t
 *using Scryber.Components.Mvc;* //for MVC applications.
 ```
 
-Add the Web host service
-========================
+## Add the Web host service
 
 In order to nicely reference files in your view, add a reference to the IWebHostEnvironment to your home controller constructor.
 
@@ -73,8 +66,7 @@ public HomeController(IWebHostEnvironment environment)
 }
 ```
 
-Add a Controller Method
-=======================
+## Add a Controller Method
 
 Next add a new Controller Method to your class for retrieve and generate
 
@@ -90,10 +82,9 @@ public IActionResult HelloWorld()
 
 The PDF externsion method will read the PDF template from the path and generate the file to the response.
 
-.. image:: _static/homecontroller.png
+![Our full controller](/images/homecontroller.png)
 
-Testing your action
-===================
+## Testing your action
 
 To create your pdf simply add a link to your action method in a view.
 
@@ -110,13 +101,12 @@ To create your pdf simply add a link to your action method in a view.
 
 Running your application, you should see the link and clicking on it will open the pdf in a new tab or window.
 
-.. image:: _static/hellowworldpage.png
+![Initial Hello World PDF](./images/hellowworldpage.png)
 
-Further reading
-===============
+## Further reading
 
 You can read more about the 
-* [Document Structure)[documentstructure]
+* (Document Structure)[documentstructure]
 * (Passing Data to your Document)[documentmodel]
 * (Component List)[componenttypes]
 * (Styling your documents)[componentstyles]
