@@ -77,7 +77,12 @@ Create a new folder in your project called `PDFs`, and then add new file called 
     </Pages>
 </pdf:Document>
 ```
-And then you can load the pdf from the template.
+
+The xml structure is exactly the same as the code (and this applies to any template, no matter how complex)
+
+## Loading from the template
+
+Then you can load the pdf from the template.
 
 ```csharp
 
