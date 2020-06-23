@@ -39,7 +39,7 @@ And paste the following content into the file
 
 Your solution should look something like this.
 
-![Initial Hello World PDFX](images/initialhellowworld.png)
+![Initial Hello World PDFX](_images/initialhellowworld.png)
 
 
 For for more information on the namespaces and mappings see this [About Namespaces](namespaces-and-assemblies) documentation
@@ -82,7 +82,7 @@ public IActionResult HelloWorld()
 
 The PDF externsion method will read the PDF template from the path and generate the file to the response.
 
-![Our full controller](/images/homecontroller.png)
+![Our full controller](_images/homecontroller.png)
 
 ## Testing your action
 
@@ -101,7 +101,7 @@ To create your pdf simply add a link to your action method in a view.
 
 Running your application, you should see the link and clicking on it will open the pdf in a new tab or window.
 
-![Initial Hello World PDF](./images/hellowworldpage.png)
+![Initial Hello World PDF](_images/hellowworldpage.png)
 
 ## Further reading
 
