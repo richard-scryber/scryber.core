@@ -5,3 +5,4 @@ source_parsers = {
 source_suffix = ['.rst', '.md']
 master_doc = 'index' 
 project = u'Scryber Core'
+html_style = 'css/scrybertheme.css'
