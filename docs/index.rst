@@ -4,6 +4,7 @@ Scryber Core
 Documents
 =========
 .. toctree::
-  :maxdepth:5
-  index
+  :maxdepth:2
+  user-guide
+  mvc-controller-full
   libgdiplus

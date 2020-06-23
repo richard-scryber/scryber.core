@@ -17,6 +17,8 @@ Luckily there is a [HomeBrew](https://brew.sh) package that contains the library
 
 To install the binaries use
 
+### Installing mon-libgdiplus
+
 ```console
 brew install mono-libgdiplus
 ```
