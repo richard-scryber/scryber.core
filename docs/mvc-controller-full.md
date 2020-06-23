@@ -39,7 +39,7 @@ And paste the following content into the file
 
 Your solution should look something like this.
 
-![Initial Hello World PDFX](_static/images/initialhellowworld.png)
+![Initial Hello World PDFX](_static/initialhellowworld.png)
 
 
 For for more information on the namespaces and mappings see this [About Namespaces](namespaces-and-assemblies) documentation
@@ -100,7 +100,7 @@ To create your pdf simply add a link to your action method in a view.
 
 Running your application, you should see the link and clicking on it will open the pdf in a new tab or window.
 
-![Initial Hello World PDF](_static/images/hellowworldpage.png)
+![Initial Hello World PDF](_static/hellowworldpage.png)
 
 ## Further reading
 
