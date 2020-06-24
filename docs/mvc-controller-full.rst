@@ -43,7 +43,7 @@ And paste the following content into the file
 
 Your solution should look something like this.
 
-.. image:: images/initialhellowworld.png
+.. image:: images/initialhelloworld.png
 
 
 
@@ -114,7 +114,7 @@ To create your pdf simply add a link to your action method in a view.
 
 Running your application, you should see the link and clicking on it will open the pdf in a new tab or window.
 
-.. image:: images/hellowworldpage.png
+.. image:: images/helloworldpage.png
 
 
 Further reading
