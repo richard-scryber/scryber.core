@@ -25,12 +25,12 @@ In our applications we like to add our templates to a PDF folder the Views folde
 
 And paste the following content into the file
 
-.. code-block:: xml
+.. code-block:: html
+
     <?xml version="1.0" encoding="UTF-8" ?>
     <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
               xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
               xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    
         <Pages>
             <pdf:Page>
                 <Content>
