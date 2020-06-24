@@ -122,6 +122,6 @@ Further reading
 
 You can read more about the 
 * `Document Structure <documentstructure>`_
-* 'Passing Data to your Document <documentmodel>`_
-* 'Component List <componenttypes>`_
-* 'Styling your documents <componentstyles>`_
+* `Passing Data to your Document <documentmodel>`_
+* `Component List <componenttypes>`_
+* `Styling your documents <componentstyles>`_
