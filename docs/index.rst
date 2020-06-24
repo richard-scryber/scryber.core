@@ -4,8 +4,6 @@ Scryber Core
 
 Create dynamic documents quickly and easily.
 
-.. image:: images/helloworldpage.png
-
 Scryber is an open source flexible PDF document generation tool with:
   an intelligent layout engine, 
   a cascading styles based design, 
