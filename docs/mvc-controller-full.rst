@@ -1,8 +1,8 @@
 ==============
-MVC Controller 
+MVC Controller - Getting Started
 ==============
 
-A Complete example for createding a hellow world PDF file from an MVC Controller in C#
+A Complete example for createing a hellow world PDF file from an MVC Controller in C#
 
 Nuget Packages
 ==============
@@ -57,7 +57,7 @@ Add a new controller to your project, and a couple of namespaces are important t
 .. code-block:: csharp
 
     using Scryber.Components;
-    using Scryber.Components.Mvc; //for MVC applications.
+    using Scryber.Components.Mvc;
 
 
 Add the Web host service
@@ -121,7 +121,8 @@ Further reading
 ===============
 
 You can read more about the 
-* `Document Structure <documentstructure>`_
+
 * `Passing Data to your Document <documentmodel>`_
+* `Document Structure <documentstructure>`_
 * `Component List <componenttypes>`_
 * `Styling your documents <componentstyles>`_
