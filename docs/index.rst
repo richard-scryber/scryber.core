@@ -6,23 +6,42 @@ Create dynamic PDF documents quickly and easily.
 
 Scryber is an open source flexible PDF document generation tool with:
 
-*  an intelligent flowing layout engine, 
-*  a cascading styles based design, 
-*  low code, no code document construction,
-*  and dynamic binding to data sources.
+Easy, and intuitive structure
+-----------------------------
 
-It makes creating PDF output from your sites and applications as easy as writing HTML. Whether you are working on a single 
-document or a complete library.
+Whether you are using xml templates or directly in code, scryber
+is quick and easy to build complex documents from your designs and data.
 
 
-Documents
-=========
+Intelligent flowing layout engine
+---------------------------------
 
-.. toctree::
-  :maxdepth:0
-  mvc_controller_full
-  gui_controller_full
-  document_model
-  document_styles
-  referencing_files
-  libgdiplus
+In scryber content can either be laid out explicitly, or jut flowing with the the page.
+Change the page size, or insert content and everything will adjust around it.
+
+Cascading Styles 
+----------------
+
+With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
+or a combination of all 3 to apply style information to your documents.
+
+Low code, zero code development
+-------------------------------
+
+Scryber is based around xml templates - just like XHTML. It can be transformed, it can be added to,
+and it can be dynamic built. By design we minimise errors, reduce effort and allow reuse.
+
+Binding to your data
+--------------------
+
+With a simple binding notation it's easy to add references to your data structures and pass information
+and complex data to your document, or get the document to look up and bind the data for you.
+
+Learn More
+----------
+
+Take a look at the quick start guides on `Getting started with MVC <mvc_controller_full>`_ or
+`Getting started with GUI applications <gui_controller_full>`_ to learn more.
+
+
+
