@@ -120,7 +120,7 @@ And opening this will show you the file. you could have saved it to a share, ope
 Further reading
 ===============
 
-You can read more about the 
+You can read more about the what you can do with scryber here:
 
 * `Passing Data to your Document <document_model>`_
 * `Document Structure <document_structure>`_

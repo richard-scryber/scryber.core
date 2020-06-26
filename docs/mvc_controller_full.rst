@@ -120,10 +120,10 @@ Running your application, you should see the link and clicking on it will open t
 Further reading
 ===============
 
-You can read more about the 
+You can read more about what you can do with scryber here
 
-* `Passing Data to your Document <documentmodel>`_
-* `Document Structure <documentstructure>`_
-* `Component List <componenttypes>`_
-* `Styling your documents <componentstyles>`_
+* `Passing Data to your Document <document_model>`_
+* `Document Structure <document_structure>`_
+* `Component List <component_types>`_
+* `Styling your documents <document_styles>`_
 * `Splitting your content <referencing_files>`_

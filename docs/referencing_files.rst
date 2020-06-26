@@ -14,9 +14,3 @@ As a converions the files should have the following extensions.
 
 It just makes life easier.
 
-
-
-
-
-
-
