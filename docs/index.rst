@@ -44,4 +44,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 `Getting started with GUI applications <gui_controller_full>`_ to learn more.
 
 
+.. toctree::
+    :maxdepth:0
+
 
