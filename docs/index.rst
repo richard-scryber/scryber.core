@@ -16,7 +16,7 @@ is quick and easy to build complex documents from your designs and data.
 Intelligent flowing layout engine
 ---------------------------------
 
-In scryber content can either be laid out explicitly, or jut flowing with the the page.
+In scryber, content can either be laid out explicitly, or jut flowing with the the page.
 Change the page size, or insert content and everything will adjust around it.
 
 Cascading Styles 
@@ -46,5 +46,13 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
 .. toctree::
     :maxdepth:0
+    mvc_controller_full
+    gui_controller_full
+    document_model
+    document_structure
+    document_styles
+    referencing_files,
+    handling_events
+    reference/index
 
 
