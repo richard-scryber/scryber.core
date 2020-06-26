@@ -19,6 +19,10 @@ Documents
 =========
 
 .. toctree::
-  :maxdepth:1
-  mvc-controller-full
+  :maxdepth:0
+  mvc_controller_full
+  gui_controller_full
+  document_model
+  document_styles
+  referencing_files
   libgdiplus

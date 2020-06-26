@@ -126,3 +126,4 @@ You can read more about the
 * `Document Structure <documentstructure>`_
 * `Component List <componenttypes>`_
 * `Styling your documents <componentstyles>`_
+* `Splitting your content <referencing_files>`_
