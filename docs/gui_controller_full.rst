@@ -68,25 +68,11 @@ In your program.cs add the namespace to the top of your class.
     using Scryber.Components;
 
 
-Add the 
-========================
 
-In order to nicely reference files in your view, add a reference to the IWebHostEnvironment to your home controller constructor.
+Replace your main program method.
+================================
 
-.. code-block:: csharp
-
-    private readonly IWebHostEnvironment _env;
-            
-    public HomeController(IWebHostEnvironment environment)
-    {
-        _env = environment;
-    }
-
-
-Replace your main pro
-=======================
-
-Next add a new Controller Method to your class for retrieve and generate
+Next change the 'Main' method to your class to load the template and generate the pdf file
 
 .. code-block:: csharp
 
@@ -116,9 +102,10 @@ Next add a new Controller Method to your class for retrieve and generate
         }
 
 
+.. image:: images/programcs.png
+
 The parser will read the document from the pdfx XML content, and then create a new PDF document in the tempDirectory for the output.
 
-.. image:: images/programcs.png
 
 Testing your code
 ===================
@@ -127,7 +114,7 @@ Running your application, you should see the console output the path to the pdf.
 And opening this will show you the file. you could have saved it to a share, opened in Acrobat reader, or sent via email as a stream attachment.
 
 
-.. image:: images/helloworldconsle.png
+.. image:: images/helloworldconsole.png
 
 
 Further reading
