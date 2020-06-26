@@ -2,9 +2,10 @@
 Component Reference
 =============
 
-.. toc::
-pdf_document
-pdf_page
+.. toctree::
+    
+    pdf_document
+    pdf_page
 
 
 

@@ -48,6 +48,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     :maxdepth:0
     mvc_controller_full
     gui_controller_full
+    code_vs_xml
     document_model
     document_structure
     document_styles
