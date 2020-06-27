@@ -12,34 +12,35 @@ Styles are supported on each component within the template. They are based on th
 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd".
 
 .. code-block:: xml
-        <pdf:Div *styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
-                 styles:fill-color="#FFFFFF" styles:font-family="Arial" styles:font-size="20pt"*>
-          <pdf:Label>Hello World, from scryber.</pdf:Label>
-        </pdf:Div>
+    <pdf:Div *styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
+                styles:fill-color="#FFFFFF" styles:font-family="Arial" styles:font-size="20pt"*>
+        <pdf:Label>Hello World, from scryber.</pdf:Label>
+    </pdf:Div>
 
 Or in the code
 
 .. code-block:: csharp
-        private static PDFComponent StyledComponent()
+
+    private static PDFComponent StyledComponent()
+    {
+        var div = new PDFDiv()
         {
-            var div = new PDFDiv()
-            {
-                BackgroundColor = new Scryber.Drawing.PDFColor(Drawing.ColorSpace.RGB, 255, 0, 0),
-                Margins = new Drawing.PDFThickness(20),
-                Padding = new Drawing.PDFThickness(4),
-                FontFamily = "Arial",
-                FontSize = 20,
-                FillColor = Scryber.Drawing.PDFColors.White
-            };
+            BackgroundColor = new Scryber.Drawing.PDFColor(Drawing.ColorSpace.RGB, 255, 0, 0),
+            Margins = new Drawing.PDFThickness(20),
+            Padding = new Drawing.PDFThickness(4),
+            FontFamily = "Arial",
+            FontSize = 20,
+            FillColor = Scryber.Drawing.PDFColors.White
+        };
 
-            div.Contents.Add(new PDFLabel()
-            {
-                Text = "Hello World from scryber"
-            });
+        div.Contents.Add(new PDFLabel()
+        {
+            Text = "Hello World from scryber"
+        });
 
-            return div;
+        return div;
 
-        }
+    }
 
 Style Classes
 =============
@@ -48,6 +49,7 @@ Along with appling styles directly to the components, Scryber supports the use o
 This can either be within the document itself, or in a `referenced stylesheet <referenced_styles>`_
 
 .. code-block:: xml
+
     <?xml version="1.0" encoding="utf-8" ?>
     <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
