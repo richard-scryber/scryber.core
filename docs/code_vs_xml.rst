@@ -44,11 +44,8 @@ The same in code
 Why use one over the other
 --------------------------
 
-
-* Render Options
-* Styles
-* Params
-* Pages
+We always think that the declarative is better for what you need, but sometimes building in code works.
+Using the `event model <handling_events>`_ allows you to hook content back into a document template.
 
 
 

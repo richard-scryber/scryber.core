@@ -52,7 +52,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_model
     document_structure
     document_styles
-    referencing_files,
+    referencing_files
     handling_events
     reference/index
 
