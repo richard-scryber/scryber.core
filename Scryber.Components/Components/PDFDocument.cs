@@ -2665,6 +2665,8 @@ namespace Scryber.Components
 
         #endregion
 
+
+
         #region public static PDFDocument ParseDocument(string path)
 
         public static PDFDocument ParseDocument(string path)
@@ -2674,11 +2676,9 @@ namespace Scryber.Components
             bool isFile;
             var newPath = provider.MapPath(ParserLoadType.ReflectiveParser, path, null, out isFile);
 
-            using(var fs = new System.IO.FileStream(newPath, System.IO.FileMode.Open))
-            {
-                var doc = PDFDocument.ParseDocument(fs, isFile ? ParseSourceType.LocalFile : ParseSourceType.DynamicContent);
-                return doc;
-            }
+            var doc = Parse(path) as PDFDocument;
+            return doc;
+
         }
 
         #endregion

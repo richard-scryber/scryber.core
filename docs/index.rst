@@ -63,6 +63,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     scryber_configuration
     extending_scryber
     libgdiplus
+    version_history
     reference/index
 
 
