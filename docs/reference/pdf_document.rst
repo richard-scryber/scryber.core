@@ -1,6 +1,6 @@
-=============
-A Scryber Document structure
-=============
+==============================
+Scryber.Components.PDFDocument
+==============================
 
 The top level document has a number of capabilities
 

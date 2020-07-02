@@ -45,7 +45,8 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
 
 .. toctree::
-    :maxdepth:0
+    :maxdepth: 0
+
     mvc_controller_full
     gui_controller_full
     code_vs_xml

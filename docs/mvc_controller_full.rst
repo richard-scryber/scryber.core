@@ -1,8 +1,8 @@
-==============
+================================
 MVC Controller - Getting Started
-==============
+================================
 
-A Complete example for createing a hellow world PDF file from an MVC Controller in C#
+A Complete example for creating a hellow world PDF file from an MVC Controller in C#
 
 Nuget Packages
 ==============

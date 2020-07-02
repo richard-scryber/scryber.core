@@ -1,6 +1,6 @@
-==============
+================================
 GUI Controller - Getting Started
-==============
+================================
 
 A Complete example for creating a hello world PDF file in a console application or GUI front end.
 For us, we have just created a new dotnet core console application in Visual Studio.

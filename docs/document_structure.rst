@@ -1,6 +1,6 @@
-=============
+============================
 A Scryber Document structure
-=============
+============================
 
 The top level document has a number of capabilities
 
