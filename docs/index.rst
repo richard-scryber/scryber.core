@@ -53,7 +53,15 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_structure
     document_styles
     referencing_files
+    component_positioning
+    drawing_colors
+    drawing_fonts
+    drawing_units
     handling_events
+    namespaces_and_assemblies
+    scryber_configuration
+    extending_scryber
+    libgdiplus
     reference/index
 
 
