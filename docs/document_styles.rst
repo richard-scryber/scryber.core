@@ -1,6 +1,6 @@
-=============
+=======================
 Styles in your template
-=============
+=======================
 
 In scryber styles are used through out to build the document. Every component has a base style and some styles (such as fill colour and font) flow down
 to their inner contents.
@@ -12,6 +12,7 @@ Styles are supported on each component within the template. They are based on th
 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd".
 
 .. code-block:: xml
+
     <pdf:Div *styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
                 styles:fill-color="#FFFFFF" styles:font-family="Arial" styles:font-size="20pt"*>
         <pdf:Label>Hello World, from scryber.</pdf:Label>
@@ -46,7 +47,6 @@ Style Classes
 =============
 
 Along with appling styles directly to the components, Scryber supports the use of styles declaratively and applied to the content dynamically.
-This can either be within the document itself, or in a `referenced stylesheet <referenced_styles>`_
 
 .. code-block:: xml
 
@@ -80,6 +80,8 @@ This can either be within the document itself, or in a `referenced stylesheet <r
     </pdf:Document>
 
 By using styles, it's the same as html and css. It cleans the code and makes it easier to standardise and change later on.
+This can either be within the document itself, or in a `referenced stylesheet <referencing_files>`_
+
 
 
 Block Styles
@@ -97,6 +99,121 @@ There are certain style attributes that will only be used on block level compone
 * Vertical and Horizontal alignment.
 
 
+Applying Styles
+===============
+
+Styles can be applied to an element based upon a combination of 3 attributes of the Style.
+
+@applied-id
+@applied-class
+@applied-type
+
+e.g.
+
+.. code-block:: xml
+
+    <Styles>
+
+        <!-- This style will be applied at the document level specifying
+             the base level font, size and color for text. Because These
+             cascade down, then it will be inherited by components in the document. -->
+
+        <styles:Style applied-type="pdf:Document" >
+            <style:Font family="Gill Sans" size="14pt" />
+            <style:Fill color="#333" />
+        </styles:Style>
+
+        <!-- This style will be applied to all top level headings 
+             specifying the font size and some spacing -->
+
+        <styles:Style applied-type="pdf:H1" >
+            <styles:Font bold="true" size="30pt" />
+            <styles:Margins top="20pt" />
+            <styles:Padding all="5pt" />
+        </styles:Style>
+
+        <!-- This style will be applied to all top level headings with a class of 'warning'
+             and give a background colour of red on white text.  -->
+
+        <styles:Style applied-class="warning">
+            <styles:Background color="#FF0000"/>
+            <styles:Fill color="#FFFFFF" />
+        </styles:Style>
+
+        <!-- This style will be applied to all components with a class of 'border'
+             and give a background colour of red with white text -->
+
+        <styles:Style applied-class="border">
+            <styles:Border color="#7777" width="1pt" style="Solid"/>
+            <styles:Fill color="#444" />
+        </styles:Style>
+
+        <!-- This style will be applied to all H1 Headings with a class of 'border'
+             and give a border colour of red with white text -->
+
+        <styles:Style applied-type="pdf:H1" applied-class="border">
+            <styles:Border color="#550000" />
+            <styles:Fill color="#550000" />
+        </styles:Style>
+
+        <!-- This style will only be applied to a component with ID 'FirstHead'
+             and give a font size of 48pt -->
+
+        <styles:Style applied-id="FirstHead">
+            <styles:Font size="48pt"/>
+        </styles:Style>
+
+    </Styles>
+
+
+.. note:: Currently scryber does not support the concept of nested or path styles as css e.g. div.class -> h1.class. It may be supported in the future.
+
+Applying Multiple Styles
+========================
+
+Every component supports the style:class attribute. And the value of this can be one or more class names.
+
+.. code-block:: xml
+
+    <pdf:H1 id="FirstHead" styles:class="warning border" styles:font-italic="true" >This is the Warning heading</pdf:H1>
 
 
 
+This will apply the H1 style, the 2 classes for the warning and border and increase the size based on the ID of first head.
+And then the inline italic style will be applied.
+
+.. image:: images/headingstyle.png
+
+
+Late binding of styles
+======================
+
+Even once you have parsed or built a document, the styles can still be modified or added to.
+Either on a component, or at a document level, as they are evaluated, allowing runtime alteration of the output.
+
+
+.. code-block:: xml
+
+    //change the style sheet based on a flag check
+    var sheet = checkflag ? "Sheet1.psfx" : "Sheet2.psfx"
+
+    var doc = PDFDocument.ParseDocument("MyPath.pdfx");
+
+    //Load the stylesheet as a referenced component
+    var styles = PDFComponent.Parse(sheet) as Styles.PDFStylesDocument;
+
+    //and add it to the document styles.
+    doc.Styles.Add(styles);
+
+
+Order and Precedence
+====================
+
+Scryber has a very basic precedence order - based on the order in the document.
+
+1. The style from the parent is collected.
+2. Any styles in the document are evaluated in the order they appear.
+3. If a stylesheet reference is encountered, then the styles within it will be evaluated before moving on to the following siblings
+4. Finally the styles directly applied will be evaluated, giving the final result.
+
+This will then be flattened and used in the layout and rendering of the component.
