@@ -30,5 +30,5 @@ namespace Scryber.Generation
     /// <returns></returns>
     public delegate object PDFXmlConverter(XmlReader reader, Type requiredType, PDFGeneratorSettings settings);
 
-    public delegate object PDFValueConverter(string value, Type requiredType, IFormatProvider formatProvider);
+    
 }

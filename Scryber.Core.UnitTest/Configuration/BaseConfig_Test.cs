@@ -43,7 +43,7 @@ namespace Scryber.UnitTests.Configuration
             Assert.IsNotNull(parsing, "The parsing options are null");
 
             Assert.AreEqual(parsing.MissingReferenceAction, ParserReferenceMissingAction.RaiseException, "The missing reference action is not to throw an error");
-            Assert.IsNull(parsing.Bindings,"Binding prefixes are not null");
+            Assert.IsNotNull(parsing.Bindings,"Binding prefixes are null");
 
             //We should have 3 namespaces by default for Scryber.Components, Scryber.Data and Scryber.Styles
             Assert.IsNotNull(parsing.Namespaces, "Namespace Mappings are null");
@@ -73,6 +73,26 @@ namespace Scryber.UnitTests.Configuration
             xml = parsing.GetXmlNamespaceForAssemblyNamespace(full);
             expected = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd";
             Assert.AreEqual(expected, xml, "The xml namepaces for the components do not match for " + full);
+
+
+            // Bindings check
+
+            Assert.AreEqual(3, parsing.Namespaces.Count, "There are not 3 namespaces");
+
+            var itemType = typeof(Scryber.Binding.BindingItemExpressionFactory);
+            var atType = typeof(Scryber.Binding.BindingItemExpressionFactory);
+            var xpathType = typeof(Scryber.Binding.BindingXPathExpressionFactory);
+
+            var bind = parsing.GetGetBindingFactoryForPrefix("item");
+            Assert.AreEqual(itemType, bind.GetType(), "The binding factory for the prefix 'item' does not match");
+
+
+            bind = parsing.GetGetBindingFactoryForPrefix("@");
+            Assert.AreEqual(atType, bind.GetType(), "The binding factory for the prefix '@' does not match");
+
+            bind = parsing.GetGetBindingFactoryForPrefix("xpath");
+            Assert.AreEqual(xpathType, bind.GetType(), "The binding factory for the prefix 'xpath' does not match");
+
 
         }
 

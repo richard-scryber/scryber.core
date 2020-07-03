@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scryber
+namespace Scryber.Binding
 {
     public class BindingItemExpressionFactory : IPDFBindingExpressionFactory
     {

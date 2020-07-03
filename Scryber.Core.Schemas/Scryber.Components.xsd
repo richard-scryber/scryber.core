@@ -168,7 +168,7 @@
     <xs:complexContent mixed="true">
       <xs:extension base="ItemTypeBase">
         <xs:attribute name="value" type="xs:string" use="optional" />
-        <xs:attribute name="key" type="xs:string" use="required" />
+        <xs:attribute name="id" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -187,7 +187,7 @@
       <xs:extension base="ItemTypeBase">
         <xs:attribute name="value" type="xs:string" use="optional" />
         <xs:attribute name="type" type="xs:string" use="required" />
-        <xs:attribute name="key" type="xs:string" use="required" />
+        <xs:attribute name="id" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -200,7 +200,7 @@
         <xs:sequence minOccurs="0" maxOccurs="1">
           <xs:any minOccurs="0" maxOccurs="1" processContents="lax" namespace="##any" />
         </xs:sequence>
-        <xs:attribute name="key" type="xs:string" use="required" />
+        <xs:attribute name="id" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -211,7 +211,7 @@
     <xs:complexContent mixed="true">
       <xs:extension base="ItemTypeBase" >
         <xs:group ref="AnyPageContentGroup" minOccurs="0" maxOccurs="unbounded" />
-        <xs:attribute name="key" type="xs:string" use="required" />
+        <xs:attribute name="id" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -330,7 +330,7 @@
     </xs:annotation>
     <xs:all>
       <xs:element name="Style" type="style:StyleType" minOccurs="0" maxOccurs="1" form="unqualified" />
-      <xs:element name="Items" type="ItemTypeList" minOccurs="0" maxOccurs="1" form="unqualified"/>
+      <xs:element name="Params" type="ItemTypeList" minOccurs="0" maxOccurs="1" form="unqualified"/>
       <xs:element name="Outline" type="OutlineDefinitionType" minOccurs="0" maxOccurs="1" form="unqualified" />
       <xs:element name="Header" type="AnyPageContentType" minOccurs="0" maxOccurs="1" form="unqualified" />
       <xs:element name="Content" type="AnyPageContentType" minOccurs="0" maxOccurs="1" form="unqualified" />

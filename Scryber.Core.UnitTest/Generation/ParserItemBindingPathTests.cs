@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Scryber.Generation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Dynamic;
+using Scryber.Binding;
 
 namespace Scryber.Core.UnitTests.Generation
 {

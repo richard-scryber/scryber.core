@@ -21,9 +21,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Generation;
-namespace Scryber
+
+namespace Scryber.Binding
 {
-    internal class BindingXPathExpressionFactory : IPDFBindingExpressionFactory
+    public class BindingXPathExpressionFactory : IPDFBindingExpressionFactory
     {
         public string BindingKey { get { return "xpath"; } }
 

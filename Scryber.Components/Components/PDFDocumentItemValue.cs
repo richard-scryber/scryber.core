@@ -124,15 +124,8 @@ namespace Scryber.Components
         }
 
         public object GetNativeValue(string key, IPDFComponent comp)
-        {
-            throw new NotSupportedException("Not Supported in .Net Core");
-            //if (this.QueryStringOverrides && null != System.Web.HttpContext.Current && null != System.Web.HttpContext.Current.Request)
-            //{
-            //    string qsvalue = System.Web.HttpContext.Current.Request.QueryString[this.ID];
-            //    return this.DoGetNativeValue(key, qsvalue, comp);
-            //}
-            //else
-            //    return this.DoGetNativeValue(key, null, comp);
+        { 
+            return this.DoGetNativeValue(key, null, comp);
         }
 
         protected abstract object DoGetNativeValue(string key, string qsValue, IPDFComponent comp);
@@ -140,13 +133,7 @@ namespace Scryber.Components
         
         public void Init()
         {
-            throw new NotSupportedException("Not Supported in .Net Core");
-            //if(this.QueryStringOverrides && null != System.Web.HttpContext.Current && null != System.Web.HttpContext.Current.Request)
-            //{
-            //    string qsvalue = System.Web.HttpContext.Current.Request.QueryString[this.ID];
-            //    if (!string.IsNullOrEmpty(qsvalue))
-            //        this.SetValue(this.ID, qsvalue, null);
-            //}
+            
         }
 
         public void SetValue(string key, string value, IPDFComponent owner)

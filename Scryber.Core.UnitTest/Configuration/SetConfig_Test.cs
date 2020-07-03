@@ -92,18 +92,17 @@ namespace Scryber.UnitTests.Configuration
 
             Assert.IsNotNull(parsing.Bindings, "Binding prefixes are null");
 
-            expectedLength = 2;
-            string expectedPrefix = "xpath";
+            expectedLength = 5;
+            string expectedPrefix = "custom";
+
             expectedAssm = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
             string expectedType = "Scryber.BindingXPathExpressionFactory";
 
-            Assert.AreEqual(expectedLength, parsing.Bindings.Length, "Namespace mappings length is not 1");
-            Assert.AreEqual(expectedPrefix, parsing.Bindings[1].Prefix);
-            Assert.AreEqual(expectedAssm, parsing.Bindings[1].FactoryAssembly);
-            Assert.AreEqual(expectedType, parsing.Bindings[1].FactoryType);
+            Assert.AreEqual(expectedLength, parsing.Bindings.Count, "Binding mappings length is not " + expectedLength);
+            Assert.AreEqual(expectedPrefix, parsing.Bindings[expectedLength-1].Prefix);
+            Assert.AreEqual(expectedAssm, parsing.Bindings[expectedLength - 1].FactoryAssembly);
+            Assert.AreEqual(expectedType, parsing.Bindings[expectedLength - 1].FactoryType);
 
-           
-            
         }
 
 

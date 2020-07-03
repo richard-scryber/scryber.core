@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scryber
+namespace Scryber.Binding
 {
     /// <summary>
     /// Instance of an {item:xxx} binding expression that is evaluated on the databinding event (using the called BindComponent delegate instance).

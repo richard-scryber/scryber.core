@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Binding;
 
 namespace Scryber.Generation
 {
@@ -87,7 +88,7 @@ namespace Scryber.Generation
                 {
                     var service = ServiceProvider.GetService<IScryberConfigurationService>();
                     var config = service.ParsingOptions.Bindings;
-                    if (null != config && config.Length > 0)
+                    if (null != config && config.Count > 0)
                     {
                         foreach (var ele in config)
                         {

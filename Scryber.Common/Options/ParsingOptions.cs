@@ -16,7 +16,7 @@ namespace Scryber.Options
 
         public List<NamespaceMappingOption> Namespaces { get; private set; }
 
-        public BindingPrefixOption[] Bindings { get; set; }
+        public List<BindingPrefixOption> Bindings { get; set; }
 
         public ParsingOptions()
         {
@@ -33,6 +33,20 @@ namespace Scryber.Options
             Namespaces.Add(new NamespaceMappingOption(){ Source = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd",
                                                         Namespace = "Scryber.Styles",
                                                         Assembly = "Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
+
+            Bindings = new List<BindingPrefixOption>();
+            Bindings.Add(new BindingPrefixOption() { Prefix = "item",
+                                                     FactoryType = "Scryber.Binding.BindingItemExpressionFactory",
+                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
+            Bindings.Add(new BindingPrefixOption() { Prefix = "@",
+                                                     FactoryType = "Scryber.Binding.BindingItemExpressionFactory",
+                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
+            Bindings.Add(new BindingPrefixOption(){ Prefix = "xpath",
+                                                    FactoryType = "Scryber.Binding.BindingXPathExpressionFactory",
+                                                    FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
         }
 
@@ -85,6 +99,22 @@ namespace Scryber.Options
             }
             //Not found
             return string.Empty;
+        }
+
+
+        public IPDFBindingExpressionFactory GetGetBindingFactoryForPrefix(string prefix)
+        {
+            if (string.IsNullOrEmpty(prefix) || this.Bindings == null || this.Bindings.Count == 0)
+                return null;
+
+            for(var i = 0; i < this.Bindings.Count; i++)
+            {
+                if (string.Equals(this.Bindings[i].Prefix, prefix))
+                    return this.Bindings[i].GetFactory();
+            }
+
+            //Not Found
+            return null;
         }
     }
 

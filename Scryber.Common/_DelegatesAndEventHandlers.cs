@@ -101,5 +101,14 @@ namespace Scryber
         }
     }
 
-    
+
+    /// <summary>
+    /// Delegate to convert a string value to the required type
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="requiredType"></param>
+    /// <param name="formatProvider"></param>
+    /// <returns></returns>
+    public delegate object PDFValueConverter(string value, Type requiredType, IFormatProvider formatProvider);
+
 }

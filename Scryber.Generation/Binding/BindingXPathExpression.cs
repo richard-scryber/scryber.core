@@ -19,14 +19,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Generation;
 
-namespace Scryber.Generation
+namespace Scryber.Binding
 {
     /// <summary>
     /// Base class for all Binding expressions built by the BindingXPathExpressionFactory
     /// and hooked into the events on the component.
     /// </summary>
-    internal abstract class BindingXPathExpression
+    public abstract class BindingXPathExpression
     {
 
         #region ivars
@@ -348,7 +349,7 @@ namespace Scryber.Generation
     /// <summary>
     /// Implements the BindingXPathExpression for an expression that results in a node set.
     /// </summary>
-    internal class BindingXPathNodeSetExpression : BindingXPathExpression
+    public class BindingXPathNodeSetExpression : BindingXPathExpression
     {
 
         #region protected override void DoBindComponent(object component, object data, PDFDataContext context)
@@ -392,7 +393,7 @@ namespace Scryber.Generation
     /// <summary>
     /// Implements the BindingXPathExpression for an expression that results in a single value
     /// </summary>
-    internal class BindingXPathValueExpression : BindingXPathExpression
+    public class BindingXPathValueExpression : BindingXPathExpression
     {
 
         #region protected override void DoBindComponent(object component, object data, PDFDataContext context)
@@ -448,7 +449,7 @@ namespace Scryber.Generation
     /// <summary>
     /// Implements the BindingXPathExpression for an expression that results in a boolean value
     /// </summary>
-    internal class BindingXPathBoolExpression : BindingXPathExpression
+    public class BindingXPathBoolExpression : BindingXPathExpression
     {
 
         #region protected override void DoBindComponent(object component, object data, PDFDataContext context)
@@ -490,7 +491,7 @@ namespace Scryber.Generation
     /// <summary>
     /// Implements the BindingXPathExpresion for an expression that results in another XPathNavigator expression
     /// </summary>
-    internal class BindingXPathNavigatorExpression : BindingXPathExpression
+    public class BindingXPathNavigatorExpression : BindingXPathExpression
     {
 
         #region protected override void DoBindComponent(object component, object data, PDFDataContext context)
