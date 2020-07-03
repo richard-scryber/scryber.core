@@ -120,7 +120,7 @@ namespace Scryber.Core.UnitTests.Generation
         {
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' 
-                                          controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.Core.UnitTests' ?>
+                                          controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.UnitTests' ?>
                                 <pdf:Document xmlns:pdf='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' compression='Compress' auto-bind='true'>
                                   <Pages>
@@ -179,7 +179,7 @@ namespace Scryber.Core.UnitTests.Generation
         {
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' 
-                                          controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.Core.UnitTests' ?>
+                                          controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.UnitTests' ?>
                                 <pdf:Document xmlns:pdf='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' compression='Compress' auto-bind='true'>
                                   <Pages>
@@ -199,7 +199,7 @@ namespace Scryber.Core.UnitTests.Generation
             PDFDocument parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.Other);
             }
 
             Assert.IsNotNull(parsed);

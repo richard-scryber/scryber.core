@@ -18,7 +18,7 @@ namespace Scryber.Core.UnitTests.Generation
         /// <summary>
         /// These are the fake classes used in the Parser testing, in ParserTestClasses.cs
         /// </summary>
-        public const string NamespaceAssembly = "Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, " 
+        public const string NamespaceAssembly = "Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, " 
                                                + "Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
 
         

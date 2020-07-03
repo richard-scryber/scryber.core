@@ -134,8 +134,8 @@ namespace Scryber.Core.UnitTests.Generation
         #region XML Valid 1
 
         string xmlValid1 = @"<?xml version='1.0' encoding='utf-8' ?>
-<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                               name='root component' >
        <Complex-Element other:concrete='implemented' index='24' size='2.5' />
 </Root1>";
@@ -216,8 +216,8 @@ namespace Scryber.Core.UnitTests.Generation
         #region XML Valid 2 - more complex
 
         string xmlValid2 = @"<?xml version='1.0' encoding='utf-8' ?>
-<r:Root1 xmlns:r='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:more='Scryber.Core.UnitTests.Generation.Fakes.More, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe' >
+<r:Root1 xmlns:r='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:more='Scryber.Core.UnitTests.Generation.Fakes.More, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe' >
 
 
        <Complex-Element r:concrete='implemented' index='4' size='1.5' />
@@ -306,8 +306,8 @@ namespace Scryber.Core.UnitTests.Generation
 
         string xmlValidProcess = @"<?xml version='1.0' encoding='utf-8' ?>
                              <?scryber parser-mode='Strict' parser-log='false' ?>
-<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                               name='root component' >
        <Complex-Element other:concrete='implemented' index='24' size='2.5' />
 </Root1>";
@@ -343,8 +343,8 @@ namespace Scryber.Core.UnitTests.Generation
         #region XML Valid Remote references
 
         string xmlValidRemote = @"<?xml version='1.0' encoding='utf-8' ?>
-<r:Root1 xmlns:r='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:more='Scryber.Core.UnitTests.Generation.Fakes.More, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe' >
+<r:Root1 xmlns:r='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:more='Scryber.Core.UnitTests.Generation.Fakes.More, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe' >
 
 
        <Complex-Element r:concrete='implemented' index='4' size='1.5' />
@@ -470,8 +470,8 @@ namespace Scryber.Core.UnitTests.Generation
 
         string xmlValidInvariant = @"<?xml version='1.0' encoding='utf-8' ?>
                              <?scryber parser-mode='Strict' parser-log='false' ?>
-<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                               name='root component' >
        <Complex-Element other:concrete='implemented' index='24' size='2.5' date='12/25/2015 1:30:24PM' />
 </Root1>";
@@ -481,8 +481,8 @@ namespace Scryber.Core.UnitTests.Generation
         /// </summary>
         string xmlValidExplicitGB = @"<?xml version='1.0' encoding='utf-8' ?>
                              <?scryber parser-mode='Strict' parser-log='false' parser-culture='en-GB' ?>
-<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                               name='root component' >
        <Complex-Element other:concrete='implemented' index='24' size='2.5' date='25/12/2015 1:30:24PM' />
 </Root1>";
@@ -492,8 +492,8 @@ namespace Scryber.Core.UnitTests.Generation
         /// </summary>
         string xmlValidExplicitFR = @"<?xml version='1.0' encoding='utf-8' ?>
                              <?scryber parser-mode='Strict' parser-log='false' parser-culture='fr-FR' ?>
-<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.Core.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+<Root1 xmlns='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+       xmlns:other='Scryber.Core.UnitTests.Generation.Fakes, Scryber.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                               name='root component' >
        <Complex-Element other:concrete='implemented' index='24' size='2,5' date='25 décembre 2015 13:30:24' />
 </Root1>";

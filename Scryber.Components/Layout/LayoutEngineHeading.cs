@@ -52,11 +52,11 @@ namespace Scryber.Layout
 
         private PDFHeadingNumbers GetOrCreateHeadingNumbersFromDocument()
         {
-            object found = this.Heading.Document.Items[HeadingNumbersKey];
+            object found = this.Heading.Document.Params[HeadingNumbersKey];
             if (null == found)
             {
                 found = new PDFHeadingNumbers();
-                this.Heading.Document.Items[HeadingNumbersKey] = found;
+                this.Heading.Document.Params[HeadingNumbersKey] = found;
             }
             return (PDFHeadingNumbers)found;
         }

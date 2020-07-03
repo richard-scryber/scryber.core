@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using Scryber.Components;
+using System.Drawing.Text;
 
 namespace Scryber.Data
 {
@@ -64,6 +65,20 @@ namespace Scryber.Data
         }
 
 
+
+        #region public object Value {get;set;}
+
+        /// <summary>
+        /// Gets the root bound value to loop over.
+        /// </summary>
+        [PDFAttribute("value", BindingOnly = true)]
+        public object Value
+        {
+            get;
+            set;
+        }
+
+        #endregion
 
         #region public virtual IPDFTemplate Template {get;}
 
@@ -137,7 +152,32 @@ namespace Scryber.Data
 
             //If we have a specific source then we use that otherwise we use the current datasource
             IPDFDataSource dataSource;
-            if(this.HasAssignedDataSourceComponent(context, out dataSource))
+
+            if (this.HasObjectValue(context, out data))
+            {
+                hasdata = true;
+                dataSource = null;
+
+                if(data is System.Xml.XmlElement)
+                {
+                    Data.PDFXMLDataSource source = new PDFXMLDataSource();
+                    this.Document.DataSources.Add(source);
+
+                    source.XmlNodeData = (System.Xml.XmlElement)data;
+                    data = source.Select(this.SelectPath, context);
+                    dataSource = source;
+                }
+                else if(data is System.Xml.XPath.XPathNavigator)
+                {
+                    Data.PDFXMLDataSource source = new PDFXMLDataSource();
+                    this.Document.DataSources.Add(source);
+
+                    source.XPathNavData = (System.Xml.XPath.XPathNavigator)data;
+                    data = source.Select(this.SelectPath, context);
+                    dataSource = source;
+                }                    
+            }
+            else if (this.HasAssignedDataSourceComponent(context, out dataSource))
             {
                 data = dataSource.Select(this.SelectPath, context);
                 if (null == data)
@@ -152,6 +192,7 @@ namespace Scryber.Data
                     context.TraceLog.Add(TraceLevel.Warning, "Data For Each", string.Format("NULL data was returned for the path '{0}' on the PDFForEach component {1} with data source {2}", this.SelectPath, this.ID, dataSource.ID));
                 hasdata = true;
             }
+            
             else
             {
                 data = context.DataStack.Current;
@@ -188,6 +229,12 @@ namespace Scryber.Data
                 return base.CreateEnumerator(enumerable);
             else
                 return new RangeEnumerator(enumerable.GetEnumerator(), this.StartIndex, this.MaxCount, this.Step);
+        }
+
+        protected bool HasObjectValue(PDFContextBase context, out object data)
+        {
+            data = this.Value;
+            return null != data;
         }
 
         #region private class RangeEnumerator : IEnumerator

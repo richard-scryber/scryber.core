@@ -31,8 +31,8 @@ namespace Scryber.Styles
 
         protected virtual void OnInit(PDFInitContext context)
         {
-            if(null != this.Initialized)
-                this.Initialized(this,new PDFInitEventArgs(context));
+            if (null != this.Initialized)
+                this.Initialized(this, new PDFInitEventArgs(context));
         }
 
         public event PDFLoadedEventHandler Loaded;
@@ -74,7 +74,7 @@ namespace Scryber.Styles
         [PDFArray(typeof(PDFStyle))]
         public PDFStyleCollection Styles
         {
-            get 
+            get
             {
                 if (null == _styles)
                     _styles = new PDFStyleCollection(this);
@@ -84,7 +84,7 @@ namespace Scryber.Styles
             {
                 if (null != _styles)
                     _styles.Owner = null;
-                
+
                 _styles = value;
 
                 if (null != _styles)
@@ -101,7 +101,7 @@ namespace Scryber.Styles
         /// </summary>
         public IPDFDocument Document
         {
-            get { return (null == _parent)? null : _parent.Document; }
+            get { return (null == _parent) ? null : _parent.Document; }
         }
 
         #endregion
@@ -152,8 +152,8 @@ namespace Scryber.Styles
         public string LoadedSource
         {
             get { return _source; }
-            set 
-            { 
+            set
+            {
                 this._source = value;
             }
         }
@@ -207,7 +207,7 @@ namespace Scryber.Styles
         /// </summary>
         [PDFElement("Items")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Items
+        public PDFItemCollection Params
         {
             get
             {
@@ -220,7 +220,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Returns true if this page has one or more specific stored items. Otherwise false
         /// </summary>
-        public bool HasItems
+        public bool HasParams
         {
             get { return null != this._items && _items.Count > 0; }
         }
@@ -291,7 +291,7 @@ namespace Scryber.Styles
         public override void MergeInto(Scryber.Styles.PDFStyle style, IPDFComponent Component, ComponentState state)
         {
             this.Styles.MergeInto(style, Component, state);
-            
+
         }
 
         ///// <summary>

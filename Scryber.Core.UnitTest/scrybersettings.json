@@ -20,20 +20,15 @@
       ],
       "Bindings": [
         {
-          "Prefix": "none",
-          "FactoryType": "",
-          "FactoryAssembly": ""
-        },
-        {
           "Prefix": "custom",
-          "FactoryType": "Scryber.BindingXPathExpressionFactory",
+          "FactoryType": "Scryber.Binding.BindingXPathExpressionFactory",
           "FactoryAssembly": "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
         }
       ]
     },
     "Output": {
       "Compression": "None",
-      "Compliance": "Other",
+      "Compliance": "None",
       "StringType": "Text",
       "NameOutput": "All",
       "PDFVersion": "1.4"
@@ -42,30 +37,21 @@
       "DefaultDirectory": "/Users/RichardHewitson/Library/Fonts",
       "UseSystemFonts": "false",
       "FontSubstitution": "true",
-      "DefaultFont": "Arial",
+      "DefaultFont": "Segoe UI",
       "Register": [
         {
-          "Family": "Gill Sans",
-          "File": "/Users/RichardHewitson/Other/GillSans.ttf"
+          "Family": "Segoe UI",
+          "File": "Mocks/Fonts/segoeui.ttf"
         },
         {
-          "Family": "Gill Sans",
+          "Family": "Segoe UI",
           "Style": "Bold",
-          "File": "/Users/RichardHewitson/Other/GillSansBold.ttf"
+          "File": "Mocks/Fonts/segoeuib.ttf"
         },
         {
-          "Family": "Gill Sans",
+          "Family": "Segoe UI",
           "Style": "Italic",
-          "File": "/Users/RichardHewitson/Other/GillSansItalic.ttf"
-        },
-        {
-          "Family": "Gill Sans",
-          "Style": "Bold, Italic",
-          "File": "/Users/RichardHewitson/Other/GillSansBoldItalic.ttf"
-        },
-        {
-          "Family": "Dingbats",
-          "File": "/Users/RichardHewitson/Other/WebDingbats.ttf"
+          "File": "Mocks/Fonts/segoeuii.ttf"
         }
       ]
     },
@@ -74,8 +60,8 @@
       "ImageCacheDuration": 60,
       "Factories": [
         {
-          "Match": "*.\\.dynamic\\.png",
-          "FactoryType": "Scryber.UnitTests.Mocks.DynamicImageFactory",
+          "Match": ".*.dynamic",
+          "FactoryType": "Scryber.UnitTests.Mocks.MockImageFactory",
           "FactoryAssembly": "Scryber.UnitTests"
         }
       ]
@@ -85,13 +71,13 @@
       "Loggers": [
         {
           "Name": "Spoof",
-          "FactoryType": "Scryber.UnitTests.Mocks.SpoofTraceLog",
+          "FactoryType": "Scryber.UnitTests.Mocks.MockTraceLog",
           "FactoryAssembly": "Scryber.UnitTests",
           "Enabled": "False"
         },
         {
           "Name": "Spoof2",
-          "FactoryType": "Scryber.UnitTests.Mocks.SpoofTraceLog2",
+          "FactoryType": "Scryber.UnitTests.Mocks.MockTraceLog2",
           "FactoryAssembly": "Scryber.UnitTests"
         }
       ]

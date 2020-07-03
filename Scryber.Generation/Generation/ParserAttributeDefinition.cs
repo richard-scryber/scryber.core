@@ -29,6 +29,8 @@ namespace Scryber.Generation
         PDFXmlConverter _converter;
         bool _customparse;
         bool _iscodedom;
+        bool _isBindableOnly;
+
 
         public PDFXmlConverter Converter
         {
@@ -58,12 +60,21 @@ namespace Scryber.Generation
             }
         }
 
-        internal ParserAttributeDefinition(string name, string ns, PropertyInfo info, PDFXmlConverter convert, bool iscustomparsable)
+        public bool IsBindableOnly
+        {
+            get
+            {
+                return _isBindableOnly;
+            }
+        }
+
+        internal ParserAttributeDefinition(string name, string ns, PropertyInfo info, PDFXmlConverter convert, bool iscustomparsable, bool isBindOnly)
             : base(name, ns, info, DeclaredParseType.Attribute)
         {
             this._converter = convert;
             this._customparse = iscustomparsable;
             this._iscodedom = Array.IndexOf<Type>(info.PropertyType.GetInterfaces(), typeof(IPDFSimpleExpressionValue)) > -1;
+            this._isBindableOnly = isBindOnly;
         }
 
         protected override object DoGetValue(XmlReader reader, PDFGeneratorSettings settings)

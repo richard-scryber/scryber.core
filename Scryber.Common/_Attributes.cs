@@ -185,6 +185,15 @@ namespace Scryber
             set { _namespace = value; }
         }
 
+        /// <summary>
+        /// By default this is false, if true, then the value of the attribute can only be set in code, or by binding to a value.
+        /// It does not support explicit setting of the value.
+        /// </summary>
+        public bool BindingOnly
+        {
+            get;
+            set;
+        }
         public PDFAttributeAttribute(string name)
             : this(name, string.Empty)
         {

@@ -239,10 +239,10 @@ namespace Scryber.Components
 
         #region public bool AutoBind {get;set;}
 
-        private bool _autobind = false;
+        private bool _autobind = true;
 
         /// <summary>
-        /// Flag to identify if the document should automatically call databaind when processing
+        /// Flag to identify if the document should automatically call databaind when processing. Default is true
         /// </summary>
         [PDFAttribute("auto-bind")]
         [PDFDesignable("Auto Bind", Ignore = true)]
@@ -340,7 +340,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFElement("Params")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Items
+        public PDFItemCollection Params
         {
             get
             {
@@ -353,7 +353,7 @@ namespace Scryber.Components
         /// <summary>
         /// Returns true if this page has one or more specific stored items. Otherwise false
         /// </summary>
-        public bool HasItems
+        public bool HasParams
         {
             get { return null != this._items && _items.Count > 0; }
         }
@@ -1327,7 +1327,7 @@ namespace Scryber.Components
         {
             PDFTraceLog log = this.TraceLog;
             PDFPerformanceMonitor perfmon = this.PerformanceMonitor;
-            PDFItemCollection items = this.Items;
+            PDFItemCollection items = this.Params;
 
             PDFInitContext icontext = CreateInitContext(log, perfmon, items);
 
@@ -1381,8 +1381,8 @@ namespace Scryber.Components
             if (this.GenerationStage != DocumentGenerationStage.None)
                 throw new PDFException(Errors.DocumentHasAlreadyBeenInitialized);
 
-            if (this.HasItems)
-                this.Items.Init(context);
+            if (this.HasParams)
+                this.Params.Init(context);
 
             if (this.HasAdditions)
                 this.Additions.Init(context);
@@ -1499,7 +1499,7 @@ namespace Scryber.Components
         {
             PDFTraceLog log = this.TraceLog;
             PDFPerformanceMonitor perfmon = this.PerformanceMonitor;
-            PDFItemCollection items = this.Items;
+            PDFItemCollection items = this.Params;
 
             PDFDataContext context = this.CreateDataContext(log, perfmon, items);
 
@@ -2050,7 +2050,7 @@ namespace Scryber.Components
 
             PDFStyle def = this.CreateDefaultStyle();
             PDFOutputFormatting format = this.GetOutputFormat(this.RenderOptions.OuptputCompliance);
-            PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, format, def, this.Items, log, perfmon);
+            PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, format, def, this.Params, log, perfmon);
 
             this.PopulateContextBase(context);
             return context;
@@ -2595,7 +2595,7 @@ namespace Scryber.Components
         {
             if (null == owner)
                 throw RecordAndRaise.ArgumentNull("owner");
-            if (string.IsNullOrEmpty(referencepath))
+            if (null == reader)
                 throw RecordAndRaise.ArgumentNull("reader");
             
             IPDFComponent comp;

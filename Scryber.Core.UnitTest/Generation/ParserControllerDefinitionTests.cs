@@ -175,7 +175,7 @@ namespace Scryber.Core.UnitTests.Generation
     [TestClass()]
     public class ParserControllerDefinitionTests
     {
-        const string TypeName = "Scryber.Core.UnitTests.Generation.TestParsedController, Scryber.Core.UnitTests";
+        const string TypeName = "Scryber.Core.UnitTests.Generation.TestParsedController, Scryber.UnitTests";
 
         #region public void TestParserControllerDefinition_Loading()
 

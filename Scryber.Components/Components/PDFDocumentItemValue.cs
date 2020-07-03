@@ -500,6 +500,8 @@ namespace Scryber.Components
                 try
                 {
                     Type eType = Type.GetType(this.EnumType);
+                    if (null == eType)
+                        throw new NullReferenceException("The binding enumeration type '" + this.EnumType + "' could not be found.");
                     parsed = Enum.Parse(eType, val);
                 }
                 catch (Exception ex)
@@ -569,6 +571,32 @@ namespace Scryber.Components
         {
             throw new NotSupportedException();
         }
+
+    }
+
+    [PDFParsableComponent("Object-Param")]
+    public class PDFObjectItemValue : PDFDocumentItemValue
+    {
+        public object Value
+        {
+            get;
+            set;
+        }
+
+
+        public PDFObjectItemValue() : base(typeof(Object))
+        { }
+
+        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        {
+            return this.Value;
+        }
+
+        protected override void DoSetNativeValueFromString(string value)
+        {
+            throw new NotSupportedException();
+        }
+
 
     }
 

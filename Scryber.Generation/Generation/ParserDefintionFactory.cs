@@ -643,6 +643,7 @@ namespace Scryber.Generation
                 PDFXmlConverter convert;
                 string name;
                 string ns = string.Empty;
+                bool bindOnly = false;
 
                 PDFParserIgnoreAttribute ignore = GetCustomAttribute<PDFParserIgnoreAttribute>(pi, true);
                 if (null != ignore && ignore.Ignore)
@@ -660,10 +661,15 @@ namespace Scryber.Generation
                         throw new PDFParserException(String.Format(Errors.ParserAttributeNameCannotBeEmpty, pi.Name, parsertype.FullName));
                     if (IsReservedName(name))
                         throw new PDFParserException(String.Format(Errors.ReservedAttributeNameCannotBeUsed, name, pi.Name));
-                    if (!IsKnownType(pi.PropertyType, out convert) && !IsCustomParsableType(pi.PropertyType, out convert, out iscustom))
-                        throw new PDFParserException(String.Format(Errors.ParserAttributeMustBeSimpleOrCustomParsableType, pi.Name, parsertype.FullName, pi.PropertyType));
 
-                    ParserAttributeDefinition ad = new ParserAttributeDefinition(name, ns, pi, convert, iscustom);
+                    if (!IsKnownType(pi.PropertyType, out convert) && !IsCustomParsableType(pi.PropertyType, out convert, out iscustom))
+                    {
+                        if (!attr.BindingOnly)
+                            throw new PDFParserException(String.Format(Errors.ParserAttributeMustBeSimpleOrCustomParsableType, pi.Name, parsertype.FullName, pi.PropertyType));
+                        else
+                            bindOnly = attr.BindingOnly;
+                    }
+                    ParserAttributeDefinition ad = new ParserAttributeDefinition(name, ns, pi, convert, iscustom, bindOnly);
                     defn.Attributes.Add(ad);
                 }
 

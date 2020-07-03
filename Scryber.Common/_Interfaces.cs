@@ -377,12 +377,12 @@ namespace Scryber
         /// <summary>
         /// Gets the Items defined and associated with this remote component
         /// </summary>
-        PDFItemCollection Items { get; }
+        PDFItemCollection Params { get; }
 
         /// <summary>
         /// Should return true if this remote component has one or more items declared on it.
         /// </summary>
-        bool HasItems { get; }
+        bool HasParams { get; }
 
         /// <summary>
         /// Registers a specific xml namespace that was declared on the parsed source.
@@ -433,7 +433,7 @@ namespace Scryber
     /// </summary>
     public interface IPDFOptimizeComponent : IPDFComponent
     {
-        bool Compress { get; set;  }
+        bool Compress { get; set; }
     }
 
     #endregion

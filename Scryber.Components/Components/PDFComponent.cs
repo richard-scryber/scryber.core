@@ -928,6 +928,10 @@ namespace Scryber.Components
 
                 this.OnDataBound(context);
             }
+            catch (PDFDataException)
+            {
+                throw;
+            }
             catch(Exception ex)
             {
                 if (context.Conformance == ParserConformanceMode.Lax)

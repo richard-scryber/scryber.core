@@ -61,7 +61,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFElement("Items")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Items
+        public PDFItemCollection Params
         {
             get
             {
@@ -74,7 +74,7 @@ namespace Scryber.Components
         /// <summary>
         /// Returns true if this page has one or more specific stored items. Otherwise false
         /// </summary>
-        public bool HasItems
+        public bool HasParams
         {
             get { return null != this._items && _items.Count > 0; }
         }
@@ -150,10 +150,10 @@ namespace Scryber.Components
         {
             _orgitems = context.Items;
 
-            if (this.HasItems)
+            if (this.HasParams)
             {
                 PDFItemCollection updated = _orgitems.Clone();
-                updated.Merge(this.Items);
+                updated.Merge(this.Params);
                 context.Items = updated;
 
             }
@@ -174,10 +174,10 @@ namespace Scryber.Components
         {
             _orgitems = context.Items;
 
-            if (this.HasItems)
+            if (this.HasParams)
             {
                 PDFItemCollection updated = _orgitems.Clone();
-                updated.Merge(this.Items);
+                updated.Merge(this.Params);
                 context.Items = updated;
             }
 
