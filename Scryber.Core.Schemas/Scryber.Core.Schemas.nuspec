@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Scryber.Core.Schemas</id>
-    <version>1.0.0.8</version>
+    <version>1.0.0.9</version>
     <title>Scryber Core Schemas</title>
     <authors>Silicon Reef</authors>
     <owners>Silicon Reef Limited</owners>
@@ -13,7 +13,8 @@
             an optional package for intellisense and document creation.
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and component separation in referenced files. 
 This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications. </description>
-    <releaseNotes>Release with the 1.0.0.5 Scryber.Core package. No dependencies</releaseNotes>
+    <releaseNotes>1.0.0.9 Updated for the parameters with ids, and added the ForEach value property.
+                  1.0.0.5 Initial Release with the 1.0.0.5 Scryber.Core package. No dependencies</releaseNotes>
     <copyright>Copyright 2020 Silicon Reef Ltd</copyright>
     <tags>Scryber; PDF</tags>
     <summary>The schema (xsd) files for the scryber library - PDF document creation using dotnet core </summary>

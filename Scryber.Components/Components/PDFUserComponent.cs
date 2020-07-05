@@ -59,7 +59,7 @@ namespace Scryber.Components
         /// Gets a page centered collection of objects that can be accessed by name or index. 
         /// The values will only be applied to this page and it's contents, rather than across the whole document
         /// </summary>
-        [PDFElement("Items")]
+        [PDFElement("Params")]
         [PDFArray(typeof(IKeyValueProvider))]
         public PDFItemCollection Params
         {

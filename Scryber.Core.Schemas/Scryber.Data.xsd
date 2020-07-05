@@ -34,7 +34,8 @@
         <xs:sequence>
           <xs:element name="Template" form="unqualified" minOccurs="0" maxOccurs="1" type="comp:AnyDocumentContentType" ></xs:element>
         </xs:sequence>
-        <xs:attribute name="select" type="comp:BindableXPathType" use="required" />
+        <xs:attribute name="select" type="comp:BindableXPathType" use="optional" />
+        <xs:attribute name="value" type="comp:BindableAttributeType" />
         <xs:attribute name="datasource-id" type="xs:string" use="optional" />
         <xs:attribute name="template" type="comp:BindableTemplateAttributeType" use="optional" />
         <xs:attributeGroup ref="DataElementAttributes" />

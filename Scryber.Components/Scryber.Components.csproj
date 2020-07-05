@@ -5,14 +5,24 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.8</PackageVersion>
+    <PackageVersion>1.0.0.10</PackageVersion>
     <Authors>Silicon Reef</Authors>
     <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.8
+    <PackageReleaseNotes>1.0.0.10
+-------------------------
+
+Updated the PDFUser Component to use Params not Items
+
+1.0.0.9
+-------------------------
+Updated the bindings and Params.
+Autobind on the document defaults to true.
+
+1.0.0.8
 -------------------------
 
 Added the binding expressions as default in the parsing options

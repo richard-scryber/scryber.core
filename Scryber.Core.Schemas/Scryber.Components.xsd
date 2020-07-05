@@ -218,6 +218,17 @@
 
   <xs:element name="Template-Param" type="ItemTemplateType" substitutionGroup="ItemBase" />
 
+
+  <xs:complexType name="ItemObjectType" >
+    <xs:complexContent>
+      <xs:extension base="ItemTypeBase">
+        <xs:attribute name="id" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Object-Param" type="ItemObjectType" substitutionGroup="ItemBase" />
+
   <!--
   Additions list witin the document element
   -->
@@ -371,6 +382,7 @@
       <xs:element name="Continuation-Footer" type="AnyPageContentType" minOccurs="0" maxOccurs="1" form="unqualified" />
     </xs:all>
   </xs:group>
+
   <!-- 
     Page-Ref and Section-Ref type
   -->
@@ -381,6 +393,10 @@
     </xs:annotation>
     <xs:complexContent>
       <xs:extension base="base:ScryberPageBaseType" >
+        <xs:sequence minOccurs="0" maxOccurs="1" >
+          <xs:element name="Params" minOccurs="0" maxOccurs="1"
+                  type="ItemTypeList" form="unqualified" />
+        </xs:sequence>
         <xs:attribute name="source" type="xs:string" use="optional" />
         <xs:attribute name="select" type="xs:string" use="optional" />
         <xs:attribute name="type" type="xs:string" use="optional" />
@@ -765,6 +781,10 @@
   <xs:complexType name="UserComponentRefType" >
     <xs:complexContent >
       <xs:extension base="base:ScryberContentBaseType" >
+        <xs:sequence minOccurs="0" maxOccurs="1" >
+          <xs:element name="Params" minOccurs="0" maxOccurs="1"
+                  type="ItemTypeList" form="unqualified" />
+        </xs:sequence>
         <xs:attribute name="source" use="optional" type="xs:anyURI" />
         <xs:attribute name="select" type="xs:string" use="optional" />
         <xs:attribute name="id" use="optional" type="BindableIDType" />
