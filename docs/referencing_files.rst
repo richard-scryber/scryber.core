@@ -1,3 +1,5 @@
+.. _referencing_files
+
 ==============================================
 Splitting your document(s) into multiple files
 ==============================================
@@ -89,7 +91,7 @@ This is the content of the `stylesheet.psfx`
     </styles:Styles>
 
 This file declares 2 style classes that can be applied to any element with class names `title` and `page-head`
-For more info about styles see `Styles in your template <document_styles.rst>`_
+For more info about styles see `Styles in your template <document_styles>`_
 
 HeaderPage.ppfx
 ===============
@@ -153,7 +155,7 @@ All being well, then when we bring it together we will get a 2 page document wit
 Overriding and passing data
 ===========================
 
-Using `document styles <document_styles.rst>`_ and `document parameters <document_model.rst>`_ it is possible to modify the content of the document when it is bound.
+Using `document styles <document_styles>`_ and `document parameters <document_model>`_ it is possible to modify the content of the document when it is bound.
 
 To start with we can alter the styles that we have loaded from the style sheet.
 
@@ -228,6 +230,55 @@ Rendering this will change the title for the header in the referenced component.
 .. image:: images/referencefilesoutput4.png
 
 .. note:: You are not limited to strings in parameters, you can provide colours, data, xml and actual scryber components into the parameters.
+
+
+Our full code for the `DocumentRefs.pdfx` file is
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
+                auto-bind="true" >
+    <Styles>
+        <styles:Styles-Ref source="./Styles/Stylesheet.psfx"/>
+
+        <styles:Style applied-class="title" >
+        <styles:Font bold="true" size="40"/>
+        <styles:Position h-align="Right"/>
+        </styles:Style>
+
+
+        <styles:Style applied-class="page-head" >
+        <styles:Border color="red" width="2pt"/>
+        <styles:Font size="10pt"/>
+        </styles:Style>
+        
+    </Styles>
+
+    <Params>
+        <pdf:String-Param id="doc-title" value="Referenced Files" />
+    </Params>
+    
+    <Pages>
+        <pdf:Page-Ref source="Pages/HeaderPage.ppfx">
+        <Params>
+            <pdf:String-Param id="doc-title" value="Different Section" />
+        </Params>
+        </pdf:Page-Ref>
+
+        <pdf:Page>
+        <Header>
+            <pdf:Component-Ref source="Components/StdHeader.pcfx"></pdf:Component-Ref>
+        </Header>
+        <Content>
+            <pdf:H1 styles:class="title" >This is the second Page </pdf:H1>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    </pdf:Document>
+
 
 Circular references
 ===================
