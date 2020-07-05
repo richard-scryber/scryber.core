@@ -126,4 +126,4 @@ You can read more about the what you can do with scryber here:
 * `Document Structure <document_structure>`_
 * `Component List <component_types>`_
 * `Styling your documents <document_styles>`_
-* :ref:`referencing_files`
+* referencing_files_

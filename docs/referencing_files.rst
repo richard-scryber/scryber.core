@@ -1,4 +1,4 @@
-.. referencing_files
+.. _referencing_files:
 
 ==============================================
 Splitting your document(s) into multiple files
