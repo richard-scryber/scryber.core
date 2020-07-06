@@ -6,24 +6,28 @@ At the root, the document has a number of capabilities that change the output co
 
 
 * Processing Instruction
-* View Options
-* Render Options
-* Styles
 * Params
+* Data
+* Styles
 * Pages
+* Viewer Options
+* Render Options
+
+
 
 Processing Instructions
 =======================
 
 .. code-block:: XML
 
+The scryber processing instruction is an optional entry at the very top of the xml file 
+or content stream to define explicit options for the way the file is handled.
+
     <?xml version="1.0" encoding="utf-8" ?>
     <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
     <pdf:Document ....
 
-
-The scryber processing instruction is an optional entry at the top of the xml file or content to define explicit options for the following content.
-As a processign instruction, the schema xsds do not support validation of the processing instruction, but the following are the supported options.
+As a processing instruction, the schema xsds do not support validation of the content, but the following are the supported options.
 
 * 'append-log' - If set to true, then once the document has been generated, a trace log of output will be appended to the resultant file, containing all the recorded entries.
 * 'log-level' - This is an enumeration of the granularity of the logging performed on the pdf file. Values supported (from least to most) are
@@ -37,6 +41,35 @@ As a processign instruction, the schema xsds do not support validation of the pr
 * 'parser-culture' - This specifies the culture of the document. It can be useful for reading number formats or dates from files e.g. es-es will read spanish nuber formats where . 'dot' is a thousand separator.
 * 'parser-mode' - Strict of Lax. If this is set to strict then exceptions will bubble up from the parsing and rendering of files. Lax is more complianant, where errors will be logged, but not cause the output to fail.
 * 'controller' - This is the full type name of a controller for the docucment, that can interact with and handle events on the document.
+
+Params
+======
+
+
+The 'Params' element (short for parameters) contains the strongly typed values that can be used in the document, to alter the final content output.
+They form a key part of the document creation process, and allow creators to pass information from their code into the template(s).
+
+In fact they are so key to PDF generation, they have their own section :doc:`document_parameters`
+
+Data
+====
+
+The `Data` element is a new element for version 1.0. Previously all data sources would be mixed into the content of the document.
+With the separation and full support for :doc:`document_databinding`, with a top level element it's easier to structure and separate and keep the visual content in Pages.
+
+.. note:: It's not an error to put your data components in the Pages section, as there can be times when it's really useful.
+
+Styles
+======
+
+The `Styles` element contains all the document style classes, along with any references to stylesheets.
+Document styles are fully bindable to any data components or prameters.
+
+Pages
+=====
+
+The `Pages` element contains the visual content of the document. Whether that is single pages, sections of multiple pages, or references to external pages.
+See :doc:`page_content` for more information on the visual content.
 
 
 Viewer Options
@@ -85,6 +118,10 @@ The following options are declared and supported in the Viewer element
 * `hide-menubar` - If true, then the window menu bar should be hidden.
 
 
+Render Options
+==============
+
+This element controls the output of the PDF content itself. Most of the default values are correct for the best output, but can be altered as needed.
 
 
 
