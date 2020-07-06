@@ -281,7 +281,7 @@
       <xs:enumeration value="SinglePage" />
       <xs:enumeration value="TwoPageLeft" />
       <xs:enumeration value="TwoPageRight" />
-      <xs:enumeration value="SingleColumn" />
+      <xs:enumeration value="OneColumn" />
       <xs:enumeration value="TwoColumnLeft" />
       <xs:enumeration value="TwoColumnRight" />
     </xs:restriction>
