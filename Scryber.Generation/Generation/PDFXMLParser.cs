@@ -350,7 +350,7 @@ namespace Scryber.Generation
             {
                 IPDFXMLParsedDocument xpdoc = parsed as IPDFXMLParsedDocument;
                 xpdoc.TraceLog = this.Settings.TraceLog;
-                //xpdoc.AppendTraceLog = this.Settings.AppendLog;
+                xpdoc.AppendTraceLog = this.Settings.AppendLog;
                 xpdoc.PerformanceMonitor = this.Settings.PerformanceMonitor;
                 xpdoc.ConformanceMode = this.Settings.ConformanceMode;
             }

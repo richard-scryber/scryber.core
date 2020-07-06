@@ -720,8 +720,6 @@ namespace Scryber.Components
         /// Gets or sets the append trace log flag, that indicates if the entire log output should be 
         /// appended to the document after is has been generated
         /// </summary>
-        [PDFAttribute("append-trace-log")]
-        [PDFDesignable("Append Log", Category = "Debug", Priority = 1, Type = "Boolean")]
         public bool AppendTraceLog
         {
             get;
@@ -819,7 +817,7 @@ namespace Scryber.Components
         protected virtual PDFPerformanceMonitor CreatePerformanceMonitor()
         {
             TraceRecordLevel level = this.TraceLog.RecordLevel;
-            bool measure = level >= TraceRecordLevel.Verbose;
+            bool measure = (level >= TraceRecordLevel.Verbose);
 
             //TODO: Make this look at the configuration
             return new PDFPerformanceMonitor(measure);

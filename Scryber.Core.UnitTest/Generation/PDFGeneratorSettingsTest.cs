@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
+using Scryber.Components;
 
 namespace Scryber.Core.UnitTests.Generation
 {
@@ -123,6 +124,37 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(expected, actual);
             
 
+        }
+
+        [TestMethod()]
+        [TestCategory("Parser")]
+        public void ProcessingInstructionTest()
+        {
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+                        <?scryber append-log='true' log-level='Messages' ?>
+                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                                    xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                                    xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                                     >
+
+                        <Pages>
+    
+                        <pdf:Section>
+                            <Content>
+                                <data:ForEach id='Foreach2' value='{@:xml}' select='//node/inner' template='{@:template}' ></data:ForEach>
+                            </Content>
+                        </pdf:Section>
+
+                        </Pages>
+                    </pdf:Document>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                Assert.AreEqual(true, doc.AppendTraceLog, "The append log is not set to true");
+                Assert.AreEqual(doc.TraceLog.RecordLevel, TraceRecordLevel.Messages, "The trace log is not set to Messages");
+            }
         }
 
         
