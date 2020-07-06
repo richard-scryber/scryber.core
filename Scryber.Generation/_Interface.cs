@@ -71,22 +71,29 @@ namespace Scryber
     #endregion
 
     /// <summary>
-    /// Interface for the
+    /// Interface for the parser factory
     /// </summary>
     public interface IPDFParserFactory
     {
         IPDFParser CreateParser(PDFGeneratorSettings settings);
     }
 
-    
+    /// <summary>
+    /// Interface all template generators should implement
+    /// </summary>
     public interface IPDFTemplateGenerator
     {
         void InitTemplate(string xmlContent, System.Xml.XmlNamespaceManager namespaces);
     }
 
+    /// <summary>
+    /// Interface for a text literal component that will be used by the parse when it encounters general textual content
+    /// </summary>
     public interface IPDFTextLiteral : IPDFComponent
     {
         string Text { get; set; }
         TextFormat ReaderFormat { get; set; }
     }
+
+    
 }

@@ -231,6 +231,8 @@ namespace Scryber.Generation
 
         #endregion
 
+        #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
+
         /// <summary>
         /// Top level Parse method which returns the complete component that was parsed from the source.
         /// </summary>
@@ -293,6 +295,8 @@ namespace Scryber.Generation
 
             return parsed;
         }
+
+        #endregion
 
         #region protected virtual void EnsureAllOutletsAreAssigned(XmlReader reader, IPDFComponent parsed)
 
@@ -943,6 +947,8 @@ namespace Scryber.Generation
         // support methods
         //
 
+        #region private void EnsureControllerInstance()
+
         /// <summary>
         /// If we have a controller type in the settings, then load the definition and instance.
         /// </summary>
@@ -962,6 +968,7 @@ namespace Scryber.Generation
             }
         }
 
+        #endregion
 
         #region private bool IsIDAttribute(string attrName, string prefix, string ns, ParserClassDefinition cdef)
 

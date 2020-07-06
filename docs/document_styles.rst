@@ -13,8 +13,8 @@ xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xs
 
 .. code-block:: xml
 
-    <pdf:Div *styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
-                styles:fill-color="#FFFFFF" styles:font-family="Arial" styles:font-size="20pt"*>
+    <pdf:Div styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
+                styles:fill-color="#FFFFFF" styles:font-family="Arial" styles:font-size="20pt" >
         <pdf:Label>Hello World, from scryber.</pdf:Label>
     </pdf:Div>
 
@@ -69,7 +69,7 @@ Along with appling styles directly to the components, Scryber supports the use o
             <pdf:Page>
                 <Content>
 
-                    <pdf:Div *styles:class="mystyle"*>
+                    <pdf:Div styles:class="mystyle">
                         <pdf:Label>Hello World, from scryber.</pdf:Label>
                     </pdf:Div>
                     
@@ -192,7 +192,7 @@ Even once you have parsed or built a document, the styles can still be modified 
 Either on a component, or at a document level, as they are evaluated, allowing runtime alteration of the output.
 
 
-.. code-block:: xml
+.. code-block:: csharp
 
     //change the style sheet based on a flag check
     var sheet = checkflag ? "Sheet1.psfx" : "Sheet2.psfx"

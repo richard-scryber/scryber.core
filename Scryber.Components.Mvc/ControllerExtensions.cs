@@ -131,8 +131,8 @@ namespace Scryber.Components.Mvc
         public static IActionResult PDF<T>(this ControllerBase controller, PDFDocument document, T model, bool inline = true, string outputFileName = "")
         {
             var ms = new System.IO.MemoryStream();
-            document.Items["Model"] = model;
-            document.Items["Controller"] = controller;
+            document.Params["Model"] = model;
+            document.Params["Controller"] = controller;
 
             document.ProcessDocument(ms);
             ms.Flush();
@@ -149,6 +149,7 @@ namespace Scryber.Components.Mvc
         }
 
         #endregion
+
 
         private static string GetDocumentName(PDFDocument doc, ControllerBase controller)
         {
