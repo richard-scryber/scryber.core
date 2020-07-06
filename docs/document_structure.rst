@@ -5,23 +5,59 @@ A Scryber XML Document structure
 At the root, the document has a number of capabilities that change the output content.
 
 
-* Processing Instruction
-* Params
-* Data
-* Styles
-* Pages
-* Viewer Options
-* Render Options
+* Scryber Processing Instruction
+* Params - The parameters or variables in a document
+* Data - Contains any referenced data sources in a document
+* Styles - Contains and styles (in document or referenced)
+* Pages - The visual page content in the document or referenced
+* Viewer Options - Options for how the document opens in the reader.
+* Render Options - Options for altering how the pdf is output
+* Info - Metadata options about the document itself.
 
+Example
+=======
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    
+        <Viewer hide-toolbar="true" page-layout="TwoColumnRight" center-window="true" />
+        <Render-Options ></Render-Options>
+        <Info></Info>
+        
+        <Styles>
+        </Styles>
+
+        <Params>
+            <pdf:String-Param id="MyTitle" value="Document Title" />
+        </Params>
+        
+        <Pages>
+            <pdf:Page outline-title="Third Page">
+            <Content>
+                <pdf:H1 styles:class="title" text="{@:MyTitle}" > </pdf:H1>
+            </Content>
+            </pdf:Page>
+        </Pages>
+    
+    </pdf:Document>
+
+.. note:: The order of the elements is not important, but it's a maximum of one each. It is not an error for a Document element to be completely empty, but it will be just that.
 
 
 Processing Instructions
 =======================
 
-.. code-block:: XML
-
 The scryber processing instruction is an optional entry at the very top of the xml file 
 or content stream to define explicit options for the way the file is handled.
+
+.. code-block:: XML
 
     <?xml version="1.0" encoding="utf-8" ?>
     <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
@@ -46,24 +82,24 @@ Params
 ======
 
 
-The 'Params' element (short for parameters) contains the strongly typed values that can be used in the document, to alter the final content output.
+The 'Params' element (short for parameters) contains the strongly typed values for parameters (aka variables) that can be used in the document, to alter the final content output.
 They form a key part of the document creation process, and allow creators to pass information from their code into the template(s).
 
-In fact they are so key to PDF generation, they have their own section :doc:`document_parameters`
+In fact they are so key to PDF generation, they have their own section, terminology, and functions (see: :doc:`document_parameters`).
 
 Data
 ====
 
-The `Data` element is a new element for version 1.0. Previously all data sources would be mixed into the content of the document.
-With the separation and full support for :doc:`document_databinding`, with a top level element it's easier to structure and separate and keep the visual content in Pages.
+The `Data` element is a new element for version 1.0. Previously all sources of data would be mixed into the content of the document.
+With the separation and full support for data binding (see: :doc:`document_databinding`), with a top level element it's easier to structure and separate and keep the visual content in Pages.
 
 .. note:: It's not an error to put your data components in the Pages section, as there can be times when it's really useful.
 
 Styles
 ======
 
-The `Styles` element contains all the document style classes, along with any references to stylesheets.
-Document styles are fully bindable to any data components or prameters.
+The `Styles` element contains all the document style class information that is not inline of the components themselves, along with any references to stylesheets.
+Document styles (:doc:`document_styles`) are fully bindable to any data components or prameters.
 
 Pages
 =====

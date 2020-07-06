@@ -17,6 +17,3 @@ Every Document can have parameters associated with it.
 These should be declared at the top of the Document, in the Params element for clarity to other developers (even if the default value is empty).
 
 
-
-
-

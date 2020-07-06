@@ -205,6 +205,47 @@ Either on a component, or at a document level, as they are evaluated, allowing r
     //and add it to the document styles.
     doc.Styles.Add(styles);
 
+Data binding Styles
+===================
+
+The process of data-binding (see: :doc:`document_lifecycle`, and :doc:`document_databinding`) can apply values to styles (and the referenced styles).
+
+e.g.
+
+.. code-block:: xml
+
+    <Params>
+        <pdf:Color-Param id='theme-bg' value='#FFFFFF'/>
+        <pdf:Color-Param id='theme-bg2 value='#AAAAAA'/>
+        <pdf:Color-Param id='theme-title-font' value='Helvetica'>
+    </Params>
+    <Styles>
+
+        <!-- This style will be applied at the document level specifying
+             the base level font, size and color for text. Because These
+             cascade down, then it will be inherited by components in the document. -->
+
+        <styles:Style applied-class="title" >
+            <style:Font family="{@:theme-title-font}" size="14pt" />
+            <style:Background color="{@:theme-by2}" />
+        </styles:Style>
+
+    </Styles>
+
+Here the font family and background for any component with the class title assigned, will pick up the default theme values.
+Were the code can override these values and provide new colours and fonts for output.
+
+.. code-block:: csharp
+
+    var doc = PDFDocument.ParseDocument(path);
+    doc.Params["theme-bg"] = new Scryber.Drawing.PDFColor(0.0, 0.0, 0.0);
+    doc.Params["theme-bg2"] = new Scryber.Drawing.PDFColor(0.3, 0.3, 0.3);
+    doc.Params["theme-title-fill"] = new Scryber.Drawing.PDFColor(1, 1, 1);
+    doc.Params["theme-title-font"] = "Gill Sans";
+
+    return this.PDF(doc);
+
+As per object databinding, you can even provide a specific class for binding.
 
 Order and Precedence
 ====================
