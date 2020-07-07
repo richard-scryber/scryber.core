@@ -65,7 +65,9 @@ or content stream to define explicit options for the way the file is handled.
 
 As a processing instruction, the schema xsds do not support validation of the content, but the following are the supported options.
 
-* 'append-log' - If set to true, then once the document has been generated, a trace log of output will be appended to the resultant file, containing all the recorded entries.
+* 'append-log' - Controls the tracing log output for a single document (see :doc:`document_logging`)
+    * false - This is the default and the document will be rendered and output as normal.
+    * true - If set to true, then once the document has been generated, a trace log of output will be appended to the resultant file, containing all the recorded entries.
 * 'log-level' - This is an enumeration of the granularity of the logging performed on the pdf file. Values supported (from least to most) are
     * Off - no entries be recorded.
     * Errors - only errors will be recorded (depending on the parser mode switch)
@@ -73,10 +75,17 @@ As a processing instruction, the schema xsds do not support validation of the co
     * Messages - This will output key stage messages for the generation of the file.
     * Verbose - A quantity of messages will be output for each of the compoents, and is a useful level to understand what is going wrong (if anything) with your document.
     * Diagnostic - Be carefull, this will generate a large log file and can slow the creation of a PDF file significnatly. But it's very informative.
-* 'parser-log' - If set to true, then both the reading of the content, to create the document, as well as the output of the content to PDF will be recorded.
-* 'parser-culture' - This specifies the culture of the document. It can be useful for reading number formats or dates from files e.g. es-es will read spanish nuber formats where . 'dot' is a thousand separator.
-* 'parser-mode' - Strict of Lax. If this is set to strict then exceptions will bubble up from the parsing and rendering of files. Lax is more complianant, where errors will be logged, but not cause the output to fail.
-* 'controller' - This is the full type name of a controller for the docucment, that can interact with and handle events on the document.
+* 'parser-log' - Controls the logging from the xml parser.
+    * true - then both the reading of the content, to create the document, as well as the output of the content to PDF will be recorded.
+    * false - then only messages from the content creation and output will be recorded.
+* 'parser-culture' - specifies the culture settings when parsing a file for interpreting dates and number formats in the xml. e.g.
+    * en-gb - This specifies the english, britsh culture. It can be useful for reading number formats or dates from files e.g. 
+    * es-es - This will read spanish nuber formats where . 'dot' is a thousand separator and , 'comma' is the decimal separator.
+* 'parser-mode' - Defines how errors will be recorded if fonts, images, or unknown attributes are invalid.
+    * Strict - Will raise exceptions to the top of the stack and must be handled in your code.
+    * Lax - If this is set  then the parser is more complianant, where errors will be logged, but not cause the output to fail.
+* 'controller' - This is the full type name of a controller for the docucment, that can interact with and handle events on the document. e.g.
+    * 'Namespace.TypeName, AssemblyName' - The class should have a parameterless constructor (see: :doc:`document_controllers`)
 
 Params
 ======
@@ -159,7 +168,7 @@ Render Options
 
 This element controls the output of the PDF content itself. Most of the default values are correct for the best output, but can be altered as needed.
 
-
+<Render-Options component-names="ExplicitOnly" compression-type="None" output-compliance="None" img-cache-mins="10" string-output="Hex" ></Render-Options>
 
 
 
