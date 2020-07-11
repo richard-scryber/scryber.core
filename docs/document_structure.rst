@@ -204,11 +204,13 @@ This information is also, open and indexed by many search engines and forms the 
 .. image:: images/documentproperties.png
 
 
-It is also fully bindable so can be recorded at runtime.
+It is also bindable on the main attributes 
+and named elements so can be changed at runtime. 
+(see ':doc:`document_parameters`' for more on the parameters and binding).
 
 .. code-block:: xml
 
-    <Info creator="Scryber Documentation Tooling"  >
+    <Info creator="Scryber Documentation"  >
         <Title>{@:Title}</Title>
         <Subject>{@:Subject}</Subject>
         <Keywords>{@:Keywords}</Keywords>
