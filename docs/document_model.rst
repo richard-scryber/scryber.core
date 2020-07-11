@@ -142,43 +142,42 @@ And with that we can bind the source into the document
 
 .. code-block:: xml
 
-<?xml version="1.0" encoding="utf-8" ?>
-<pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-              xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-              xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-  <Data>
-    <!-- This is a data source declared witin the document, that pulls the xml from the feed -->
-    <data:XMLDataSource id="XmlSource" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
-  </Data>
-  <Pages>
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+        <Data>
+            <!-- This is a data source declared witin the document, that pulls the xml from the feed -->
+            <data:XMLDataSource id="XmlSource" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
+        </Data>
+        <Pages>
+            
+            <pdf:Page styles:margins="20pt">
+            <Content>
+                <!-- Use the `data:With` component to specify a source and path within the xml as a starting point. -->
+                <data:With datasource-id="XmlSource" select="//DataSources" >
 
-    
-    <pdf:Page styles:margins="20pt">
-      <Content>
-        <!-- Use the `data:With` component to specify a source and path within the xml as a starting point. -->
-        <data:With datasource-id="XmlSource" select="//DataSources" >
+                <!-- And use it as the text on the heading -->
+                <pdf:H1 styles:class="title" text="{xpath:@title}" > </pdf:H1>
+                
+                <pdf:Ul>
+                    <!-- now we loop through the 'Entries' property -->
+                    <data:ForEach value="{xpath:Entries/Entry}" >
+                    <Template>
+                        <pdf:Li>
+                        <!-- and create a list item for each entry (. prefix) with the name property. -->
+                        <pdf:Text value="{xpath:@Name}" />
+                        </pdf:Li>
+                    </Template>
+                    </data:ForEach>
+                </pdf:Ul>
+                </data:With>
+                
+            </Content>
+            </pdf:Page>
+        </Pages>
 
-          <!-- And use it as the text on the heading -->
-          <pdf:H1 styles:class="title" text="{xpath:@title}" > </pdf:H1>
-          
-          <pdf:Ul>
-            <!-- now we loop through the 'Entries' property -->
-            <data:ForEach value="{xpath:Entries/Entry}" >
-              <Template>
-                <pdf:Li>
-                  <!-- and create a list item for each entry (. prefix) with the name property. -->
-                  <pdf:Text value="{xpath:@Name}" />
-                </pdf:Li>
-              </Template>
-            </data:ForEach>
-          </pdf:Ul>
-        </data:With>
-        
-      </Content>
-    </pdf:Page>
-  </Pages>
-
-</pdf:Document>
+    </pdf:Document>
 
 With the result of the output showing the content.
 
