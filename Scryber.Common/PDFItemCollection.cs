@@ -94,7 +94,10 @@ namespace Scryber
                 
                 return value;
             }
-            set { this.BaseSet(name, value); }
+            set {
+
+                this.BaseSet(name, value);
+            }
         }
 
         /// <summary>

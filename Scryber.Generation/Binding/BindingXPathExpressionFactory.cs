@@ -57,9 +57,17 @@ namespace Scryber.Binding
                 BindingXPathExpression expr = BindingXPathExpression.Create(expressionvalue, valConv, forProperty);
                 return new PDFDataBindEventHandler(expr.BindComponent);
             }
+            else if(forProperty.PropertyType == typeof(Object))
+            {
+                valConv = null;
+
+                var expr = BindingXPathExpression.Create(expressionvalue, valConv, forProperty);
+                return new PDFDataBindEventHandler(expr.BindComponent);
+            }
             else
                 throw new PDFParserException(string.Format(Errors.ParserAttributeMustBeSimpleOrCustomParsableType, forProperty.Name, forProperty.PropertyType));
         }
 
     }
+
 }

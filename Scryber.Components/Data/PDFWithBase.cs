@@ -19,7 +19,19 @@ namespace Scryber.Data
 
         public virtual string DataSourceID { get; set; }
 
-        public virtual object Data { get; set; }
+        #region public object Value {get;set;}
+
+        /// <summary>
+        /// Gets the root bound value to loop over.
+        /// </summary>
+        [PDFAttribute("value", BindingOnly = true)]
+        public virtual object Value
+        {
+            get;
+            set;
+        }
+
+        #endregion
 
 
         #region public PDFComponentList Contents {get;}
@@ -145,9 +157,9 @@ namespace Scryber.Data
             object data = null;
 
             //Get the datasource
-            if(null != this.Data)
+            if(null != this.Value)
             {
-                data = this.Data;
+                data = this.Value;
                 datasource = context.DataStack.HasData ? context.DataStack.Source : null;
                 hasdata = true;
             }

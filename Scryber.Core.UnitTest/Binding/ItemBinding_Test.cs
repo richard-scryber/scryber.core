@@ -345,5 +345,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             }
         }
+
+
     }
 }

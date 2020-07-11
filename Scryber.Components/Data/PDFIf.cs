@@ -31,13 +31,13 @@ namespace Scryber.Data
     public class PDFIf : PDFBindingTemplateComponent
     {
 
-        private string _test;
+        private bool _test;
 
         /// <summary>
-        /// Gets or sets the test expression for the if entry
+        /// Gets or sets the test binding expression for the if entry
         /// </summary>
-        [PDFAttribute("test")]
-        public string Test
+        [PDFAttribute("test", BindingOnly = true)]
+        public bool Test
         {
             get { return _test; }
             set
@@ -133,17 +133,8 @@ namespace Scryber.Data
 
         protected override void DoDataBindToContainer(PDFDataContext context, IPDFContainerComponent container)
         {
-            if (!string.IsNullOrEmpty(this.Test))
-            {
-                IPDFDataSource currSource = context.DataStack.Source;
-                object currData = context.DataStack.Current;
 
-                //check the result and only call the base method if the return value is true
-                this.Visible = this.EvaluateTestExpression(this.Test, currSource, currData, context);   
-            }
-
-
-            if(this.HasVisibleValue && this.Visible)
+            if(this.Test && this.Visible)
                 base.DoDataBindToContainer(context, container);
             
         }

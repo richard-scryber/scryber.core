@@ -100,33 +100,7 @@ namespace Scryber.Data
         }
 
 
-        //protected void DoDataBindTemplate(PDFDataContext context, IPDFContainerComponent container)
-        //{
-            //bool found = false;
-            //foreach (PDFChooseWhen where in this.Whens)
-            //{
-            //    if(where.EvaluateTest(context))
-            //    {
-            //        if (where.Template != null)
-            //        {
-            //            int oldindex = context.CurrentIndex;
-            //            int index = container.Content.IndexOf(this);
-            //            DoBindDataWithTemplate(container, index, where.Template, context);
-            //            context.CurrentIndex = oldindex;
-            //        }
-            //        found = true;
-            //        break;
-            //    }
-            //}
-            ////If we have a template and should be binding on it
-            //if (!found && this.Otherwise != null && this.Otherwise.Template != null)
-            //{
-            //    int oldindex = context.CurrentIndex;
-            //    int index = container.Content.IndexOf(this);
-            //    DoBindDataWithTemplate(container, index, this.Otherwise.Template, context);
-            //    context.CurrentIndex = oldindex;
-            //}
-        //}
+        
 
         protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {

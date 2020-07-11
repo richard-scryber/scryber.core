@@ -29,7 +29,7 @@ The Document parameters
 =======================
 
 Every Document can have parameters associated with it.
-These should be declared at the top of the Document, in the Params element for clarity to other developers 
+These should be declared at the top of the Document, in the Params element, for clarity to other developers
 (even if the default value is empty).
 
 .. code-block:: xml
@@ -120,8 +120,23 @@ See :doc:`document_parameters` for full details.
 The Datasources
 ===============
 
-The document data element should contain the datasources required by the document.
-They can be an XML file, or XML Http request, a SQL database call, or an object call
+Putting the document more in control of the data it uses, is supported from the available DataSources and Commands that sit in the `Data` element of the document.
+
+This element should contain all the datasources required by the document.
+They can be an XML file, or XML Http request, a SQL database call, an object call, or a json request
+
+e.g. This document has an xml content reference from a remote source. That returns the following content..
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <DataSources title="Testing Document Datasources">
+        <Entries>
+            <Entry Name="First" Id="FirstID" />
+            <Entry Name="Second" Id="SecondID" />
+        </Entries>
+    </DataSources>
+
 
 
 See :doc:`document_databinding` for more details.

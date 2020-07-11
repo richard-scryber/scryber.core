@@ -27,10 +27,10 @@ namespace Scryber.Data
     [PDFParsableComponent("When")]
     public class PDFChooseWhen : PDFChooseTemplateContainer
     {
-        private string _test;
+        private bool _test;
 
-        [PDFAttribute("test")]
-        public string Test
+        [PDFAttribute("test", BindingOnly = true)]
+        public bool Test
         {
             get { return _test; }
             set
@@ -75,15 +75,15 @@ namespace Scryber.Data
 
         public virtual bool EvaluateTest(PDFDataContext context)
         {
-            if (!string.IsNullOrEmpty(_test))
+            /* if (!string.IsNullOrEmpty(_test))
             {
                 IPDFDataSource currSource = context.DataStack.Source;
                 object currData = context.DataStack.Current;
 
                 this.Visible = this.EvaluateTestExpression(this.Test, currSource, currData, context);
-            }
+            } */
 
-            if (this.Visible)
+            if (this.Test && this.Visible)
                 return true;
             else
                 return false;

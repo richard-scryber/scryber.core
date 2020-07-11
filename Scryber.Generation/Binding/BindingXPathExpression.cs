@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Generation;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace Scryber.Binding
 {
@@ -300,8 +302,6 @@ namespace Scryber.Binding
         /// <returns>The expression that ban be attached to an event</returns>
         public static BindingXPathExpression Create(string expr, PDFValueConverter convert, System.Reflection.PropertyInfo property)
         {
-            if (null == convert)
-                throw new ArgumentNullException("convert");
             if (null == property)
                 throw new ArgumentNullException("property");
             if (string.IsNullOrEmpty(expr))
@@ -363,26 +363,49 @@ namespace Scryber.Binding
         protected override void DoBindComponent(object component, object data, PDFDataContext context)
         {
             System.Xml.XPath.XPathExpression expr = this.GetExpression(data, context);
+
             if (data is System.Xml.XPath.XPathNodeIterator)
                 data = ((System.Xml.XPath.XPathNodeIterator)data).Current;
-            System.Xml.XPath.XPathNavigator nav = (System.Xml.XPath.XPathNavigator)data;
 
-            nav = nav.SelectSingleNode(expr);
+            XPathNavigator nav = (System.Xml.XPath.XPathNavigator)data;
 
-            if (null != nav)
+            if (null == this.Converter)
             {
-                string result = nav.Value;
+                var iterator = nav.Select(expr);
 
-                if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the XPath binding expression '" + expr.Expression + "' to value '" + result + "'");
+                if (this.Property.PropertyType == typeof(XPathNavigator))
+                {
+                    this.Property.SetValue(component, iterator.Current);
+                }
+                else
+                {
+                    this.Property.SetValue(component, iterator);
+                }
 
-                SetToConvertedValue(component, result, context);
             }
             else
             {
-                if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "NULL value returned for expression '" + expr.Expression + "' so clearing property value '" + this.Property.Name + "'");
-                SetToEmptyValue(component, context);
+
+                nav = nav.SelectSingleNode(expr);
+
+                if (null != nav)
+                {
+                    string result = nav.Value;
+
+                    if (context.ShouldLogVerbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the XPath binding expression '" + expr.Expression + "' to value '" + result + "'");
+
+                    SetToConvertedValue(component, result, context);
+
+
+
+                }
+                else
+                {
+                    if (context.ShouldLogVerbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "NULL value returned for expression '" + expr.Expression + "' so clearing property value '" + this.Property.Name + "'");
+                    SetToEmptyValue(component, context);
+                }
             }
         }
 
@@ -508,22 +531,40 @@ namespace Scryber.Binding
 
             if (data is System.Xml.XPath.XPathNodeIterator)
                 data = ((System.Xml.XPath.XPathNodeIterator)data).Current;
+
             System.Xml.XPath.XPathNavigator nav = (System.Xml.XPath.XPathNavigator)data;
 
+            if (null == this.Converter)
+            {
+                var iterator = nav.Select(expr);
 
-            System.Xml.XPath.XPathNodeIterator itter = nav.Select(expr);
+                if (this.Property.PropertyType == typeof(XPathNavigator))
+                {
+                    this.Property.SetValue(component, iterator.Current);
+                }
+                else
+                {
+                    this.Property.SetValue(component, iterator);
+                }
 
-            if (itter.CurrentPosition < 0)
-                itter.MoveNext();
-            
-            string value = itter.Current.Value;
-            object converted = this.Converter(value, this.Property.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
+            }
+            else
+            {
+
+                System.Xml.XPath.XPathNodeIterator itter = nav.Select(expr);
+
+                if (itter.CurrentPosition < 0)
+                    itter.MoveNext();
+
+                string value = itter.Current.Value;
+                object converted = this.Converter(value, this.Property.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
 
 
-            if (context.ShouldLogVerbose)
-                context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the XPath binding expression '" + expr.Expression + "' to value '" + ((null == value) ? "NULL" : value) + "'");
-                    
-            this.Property.SetValue(component, converted, null);
+                if (context.ShouldLogVerbose)
+                    context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the XPath binding expression '" + expr.Expression + "' to value '" + ((null == value) ? "NULL" : value) + "'");
+
+                this.Property.SetValue(component, converted, null);
+            }
 
         }
 
