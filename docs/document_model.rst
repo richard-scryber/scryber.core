@@ -332,6 +332,6 @@ Which should I use?
 
 All 3 methods of generating dynamic content within your template have their own benefits, and they are not mutually exclusive.
 
-* The simplest is using parameters but the model can become too complex. :doc:`document_model`
-* Moving the model to a data source can be a quick solition. :doc:`document_databinding`
+* The simplest is using parameters but the model can become too complex. :doc:`document_parameters`
+* Moving the model to one or more data sources can be a quick solution as complexity increases :doc:`document_databinding`
 * Adding a controller gives complete 'control' for complex business logic. :doc:`handling_events`
