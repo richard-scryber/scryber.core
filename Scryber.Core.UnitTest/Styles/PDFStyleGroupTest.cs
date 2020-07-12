@@ -72,7 +72,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void PDFStyleGroupConstructorTest()
         {
-            Assert.Inconclusive("TODO: Not used type");
+            //Assert.Inconclusive("TODO: Not used type");
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void PDFStyleGroupConstructorTest1()
         {
-            Assert.Inconclusive("TODO: Not used type");
+            //Assert.Inconclusive("TODO: Not used type");
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void GetEnumeratorTest()
         {
-            Assert.Inconclusive("TODO: Not used type");
+            //Assert.Inconclusive("TODO: Not used type");
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void MatchClassTest()
         {
-            Assert.Inconclusive("TODO: Not used type");
+            //Assert.Inconclusive("TODO: Not used type");
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void MergeIntoTest()
         {
-            Assert.Inconclusive("TODO: Not used type");
+            //Assert.Inconclusive("TODO: Not used type");
         }
     }
 }

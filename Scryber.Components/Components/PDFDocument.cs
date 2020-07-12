@@ -28,6 +28,7 @@ using Scryber.Data;
 using Scryber.Generation;
 using Scryber.Layout;
 using Scryber.Options;
+using System.Runtime.CompilerServices;
 
 namespace Scryber.Components
 {
@@ -2495,7 +2496,7 @@ namespace Scryber.Components
         {
             ParserConformanceMode mode = ParserConformanceMode.Strict;
 
-            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
+            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             return Parse(fullpath, resolver, settings);
         }
 
@@ -2513,7 +2514,7 @@ namespace Scryber.Components
         public static IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Strict;
-            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
+            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             return Parse(source, stream, type, resolver, settings);
         }
 
@@ -2528,7 +2529,7 @@ namespace Scryber.Components
         public static IPDFComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Strict;
-            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
+            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             return Parse(source, textreader, type, resolver, settings);
         }
 
@@ -2543,7 +2544,8 @@ namespace Scryber.Components
         public static IPDFComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Strict;
-            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode);
+            PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
+            
             return Parse(source, xmlreader, type, resolver, settings);
         }
 
@@ -2606,6 +2608,8 @@ namespace Scryber.Components
             }
 
             PDFGeneratorSettings settings = this.DoCreateGeneratorSettings(resolver);
+            //settings.Controller = this.Controller;
+
             IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
 
             parser.RootComponent = owner;
@@ -2630,12 +2634,13 @@ namespace Scryber.Components
             PDFPerformanceMonitor monitor = this.PerformanceMonitor;
             ParserConformanceMode mode = this.ConformanceMode;
             ParserLoadType loadtype = this.LoadType;
+            object controller = this.Controller;
 
             return CreateGeneratorSettings(resolver, mode, 
-                loadtype, log, monitor);
+                loadtype, log, monitor, controller);
         }
 
-        private static PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver, ParserConformanceMode mode)
+        private static PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver, ParserConformanceMode mode, object controller)
         {
             ParserConformanceMode conformance = mode;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -2644,11 +2649,11 @@ namespace Scryber.Components
             PDFTraceLog log = config.TracingOptions.GetTraceLog();
             PDFPerformanceMonitor perfmon = new PDFPerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
 
-            return CreateGeneratorSettings(resolver, conformance, loadtype, log, perfmon);
+            return CreateGeneratorSettings(resolver, conformance, loadtype, log, perfmon, controller);
         }
 
         protected static PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver, 
-            ParserConformanceMode conformance, ParserLoadType loadtype, PDFTraceLog log, PDFPerformanceMonitor perfmon)
+            ParserConformanceMode conformance, ParserLoadType loadtype, PDFTraceLog log, PDFPerformanceMonitor perfmon, object controller)
         {
             PDFGeneratorSettings settings = new PDFGeneratorSettings(typeof(PDFTextLiteral)
                                                                     , typeof(PDFParsableTemplateGenerator)
@@ -2657,7 +2662,8 @@ namespace Scryber.Components
                                                                     conformance,
                                                                     loadtype,
                                                                     log,
-                                                                    perfmon);
+                                                                    perfmon,
+                                                                    controller);
             return settings;
         }
 

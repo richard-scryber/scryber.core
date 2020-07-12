@@ -5,14 +5,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.11</PackageVersion>
+    <PackageVersion>1.0.0.12</PackageVersion>
     <Authors>Silicon Reef</Authors>
     <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.11
+    <PackageReleaseNotes>1.0.0.12
+------------------------
+
+Passing any controller to the template generation so that it can be used to bind to events in templates.
+
+1.0.0.11
 ------------------------
 
 Updated the data components for ForEach, With, If, Choose:When to be able to use xpath and object binding expressions on the value property.

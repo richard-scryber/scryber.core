@@ -957,7 +957,12 @@ namespace Scryber.Generation
             if (this.Settings.ControllerType != null)
             {
                 this.ControllerDefinition = ParserDefintionFactory.GetControllerDefinition(this.Settings.ControllerType);
-                this.Controller = CreateInstance(this.Settings.ControllerType);
+
+                if (null == this.Settings.Controller)
+                    this.Controller = CreateInstance(this.Settings.ControllerType);
+                else
+                    this.Controller = this.Settings.Controller;
+
                 this.UnassignedOutlets = new List<ParserControllerOutlet>(this.ControllerDefinition.Outlets);
             }
             else

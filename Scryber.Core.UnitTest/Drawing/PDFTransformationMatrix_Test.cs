@@ -71,7 +71,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFTransformationMatrixConstructor_Test()
         {
             PDFTransformationMatrix target = new PDFTransformationMatrix();
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            //Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Drawing
             float scaleX = 0F; // TODO: Initialize to an appropriate value
             float scaleY = 0F; // TODO: Initialize to an appropriate value
             PDFTransformationMatrix target = new PDFTransformationMatrix(offsetX, offsetY, angle, scaleX, scaleY);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            //Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         
@@ -102,7 +102,7 @@ namespace Scryber.Core.UnitTests.Drawing
             //PDFTransformationMatrix target = new PDFTransformationMatrix(); // TODO: Initialize to an appropriate value
             //double[] actual;
             //actual = target.Components;
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            //Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }

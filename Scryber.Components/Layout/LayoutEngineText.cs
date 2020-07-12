@@ -985,15 +985,13 @@ namespace Scryber.Layout
 
                 if (this._count > ZeroCharactersPerThreshold)
                 {
-                    if(context.Conformance == ParserConformanceMode.Strict)
-                        throw new InvalidOperationException("Error: Fell into a suspected never ending loop of laying out zero characters per line. Breaking out ungracefully");
-                    else
-                    {
-                        context.TraceLog.Add(TraceLevel.Error, "Text Layout", "Fell into a suspected never ending loop of laying out zero characters per line. Breaking out ungracefully");
-                        return false;
-                    }
+
+                    context.TraceLog.Add(TraceLevel.Error, "Text Layout", "Fell into a suspected never ending loop of laying out zero characters per line. Breaking out ungracefully");
+                    return false;
+
                 }
-                return true;
+                else
+                    return true;
             }
 
             public void Reset()

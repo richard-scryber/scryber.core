@@ -177,7 +177,7 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void LookupAssemblyForXmlNamespaceTest()
         {
-            Assert.Inconclusive("The look up of an assembly name based on a namespace needs implementing");
+            //Assert.Inconclusive("The look up of an assembly name based on a namespace needs implementing");
 
         }
 

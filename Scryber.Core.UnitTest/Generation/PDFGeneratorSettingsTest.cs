@@ -81,7 +81,9 @@ namespace Scryber.Core.UnitTests.Generation
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PDFPerformanceMonitor mon = new PDFPerformanceMonitor(true);
-            PDFGeneratorSettings target = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon);
+            Mocks.MockControllerClass controller = new Mocks.MockControllerClass();
+
+            PDFGeneratorSettings target = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, controller);
 
             Assert.IsNotNull(target);
             Assert.AreSame(literaltype, target.TextLiteralType);
@@ -91,6 +93,8 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(loadtype, target.LoadType);
             Assert.AreSame(log, target.TraceLog);
             Assert.AreSame(mon, target.PerformanceMonitor);
+            Assert.AreSame(controller, target.Controller);
+            Assert.AreEqual(controller.GetType(), target.ControllerType);
         }
 
         IPDFComponent ShimResolver(string filename, string xpath, PDFGeneratorSettings settings)
@@ -113,7 +117,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PDFPerformanceMonitor mon = new PDFPerformanceMonitor(true);
-            PDFGeneratorSettings target = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon);
+            PDFGeneratorSettings target = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, null);
 
             Assert.AreEqual(conformance, target.ConformanceMode);
 

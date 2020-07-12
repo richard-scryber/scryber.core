@@ -81,7 +81,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PDFPerformanceMonitor perfmon = new PDFPerformanceMonitor(true);
-            PDFGeneratorSettings settings = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon);
+            PDFGeneratorSettings settings = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
 
             return settings;
         }

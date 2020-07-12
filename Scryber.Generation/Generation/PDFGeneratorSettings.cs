@@ -54,7 +54,8 @@ namespace Scryber.Generation
         private PDFReferenceResolver _resolver;
         private PDFPerformanceMonitor _perfmon;
         private bool _appendLog;
-        private Type _controller;
+        private Type _controllerType;
+        private object _controllerInstance;
         private System.Globalization.CultureInfo _specificCulture;
         private ParserReferenceMissingAction _missingRefAction;
 
@@ -150,8 +151,25 @@ namespace Scryber.Generation
         /// </summary>
         public Type ControllerType
         {
-            get { return _controller; }
-            set { _controller = value; }
+            get { return _controllerType; }
+            set
+            {
+                _controllerType = value;
+                _controllerInstance = null;
+            }
+        }
+
+        public object Controller
+        {
+            get { return this._controllerInstance; }
+            set
+            {
+                this._controllerInstance = value;
+                if (null == _controllerInstance)
+                    this._controllerType = null;
+                else
+                    this._controllerType = this._controllerInstance.GetType();
+            }
         }
 
         public System.Globalization.CultureInfo SpecificCulture
@@ -173,7 +191,7 @@ namespace Scryber.Generation
 
         public PDFGeneratorSettings(Type literaltype, Type templategenerator, Type templateinstance, 
                                 PDFReferenceResolver resolver, ParserConformanceMode conformance, ParserLoadType loadtype,
-                                PDFTraceLog log, PDFPerformanceMonitor perfmon)
+                                PDFTraceLog log, PDFPerformanceMonitor perfmon, object controllerInstance)
         {
             this._textLiteralType = literaltype;
             this._tempateGenType = templategenerator;
@@ -183,6 +201,8 @@ namespace Scryber.Generation
             this._loadtype = loadtype;
             this._log = log;
             this._perfmon = perfmon;
+            this._controllerInstance = controllerInstance;
+            this._controllerType = (null == controllerInstance) ? null : controllerInstance.GetType();
 
             //Get the default culture from the config - can be overridden in the processing instructions, or at generation time in code
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
