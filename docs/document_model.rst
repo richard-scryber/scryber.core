@@ -2,7 +2,7 @@
 Passing data to your document template
 ======================================
 
-A document template  is just that, a template.
+A document template is just that, a template.
 In your code you can add any source of information to be included.
 
 * As an value or model for the parameters
@@ -191,11 +191,20 @@ See :doc:`document_databinding` for more details.
 The Document Controller
 =======================
 
-The document file or referenced files can also have Controllers associated with them to handle events and properties.
+The most complex, but utlimately most adaptable is specifying a controller class on your template
+
+The document file or referenced files have Controllers associated with them to handle events and properties.
 This gives complete control back to your code during the lifecycle of the document.
 
-This is based on providing a type on the scryber processing instruction `<?scryber controller='Full.Tyoe.Name, Assembly.Name' ?>` 
-More details of which can be found in the :doc:document_structure document.
+It is based on providing a type on the scryber processing instruction 
+
+.. code-block:: xml
+
+    <?scryber controller='Full.Type.Name, Assembly.Name' ?>
+    
+.. note:: More details of the scryber processing instruction can be found in the :doc:document_structure document.
+
+A full document file example is below.
 
 .. code-block:: xml
 
@@ -230,8 +239,14 @@ More details of which can be found in the :doc:document_structure document.
 
     </pdf:Document>
 
-Here the document has declared the on-loaded event; it has a heading with ID of Title; then a ForEach and List item which have binding events mapped.
-In our controller we can declare explicitly our outlets (properties) and actions (methods).
+The document has declared:
+
+* The on-loaded event for LoadDocument.
+* It has a heading with ID of Title. 
+* A ForEach with a databinding handler
+* And a List item inside the template which has binding mapped to another handler.
+
+In our controller we declare explicitly our outlets (properties) and actions (methods).
 
 .. code-block:: csharp
 
@@ -242,7 +257,7 @@ In our controller we can declare explicitly our outlets (properties) and actions
             /// <summary>
             /// The Heading will be set on a controller instance from the parser
             /// </summary>
-            [PDFOutlet(Required = true)]
+            [PDFOutlet()]
             public PDFHead1 Title
             {
                 get;set;
@@ -259,11 +274,11 @@ In our controller we can declare explicitly our outlets (properties) and actions
             [PDFAction()]
             public void LoadDocument(object sender, PDFLoadEventArgs args)
             {
-                //We know this property is set as we have flagged it
-                //as Required. Otherwise, check it's set.
+                //Document loaded, so set the title text
                 this.Title.Text = "Test Controller Title";
             }
 
+            //Just some sample data.
             string[] data = new[] { "First", "Second", "Third" };
 
             /// <summary>
@@ -310,3 +325,13 @@ The result should come out with the content dynamically assigned.
 
 
 For more information on controllers and the event model see :doc:`handling_events` and :doc:`document_lifecycle`
+
+
+Which should I use?
+===================
+
+All 3 methods of generating dynamic content within your template have their own benefits, and they are not mutually exclusive.
+
+* The simplest is using parameters but the model can become too complex. :doc:`document_model`
+* Moving the model to a data source can be a quick solition. :doc:`document_databinding`
+* Adding a controller gives complete 'control' for complex business logic. :doc:`handling_events`

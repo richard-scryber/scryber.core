@@ -51,9 +51,9 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     gui_controller_full
     code_vs_xml
     document_structure
-    document_model
     document_styles
     referencing_files
+    document_model
     component_positioning
     drawing_colors
     drawing_fonts
