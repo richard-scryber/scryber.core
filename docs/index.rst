@@ -2,9 +2,55 @@
 Scryber Core
 =============
 
-Create dynamic PDF documents quickly and easily.
+Create dynamic PDF documents quickly and easily with consistant styles and easy flowing layout.
+Scryber is an open source, flexible and data driven PDF document generation tool.
 
-Scryber is an open source flexible PDF document generation tool with:
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+        <Params>
+            <pdf:String-Param id="Title" value="Document Title" />
+        </Params>
+        
+        <Data>
+            <data:JsonDataSource id="XmlSource" source-path="http://localhost:5000/Home/Json" ></data:JsonDataSource>
+        </Data>
+        
+        <Styles>
+            <styles:Style applied-type="pdf:H1" applied-class="title" >
+                <styles:Background color="#336666"/>
+                <styles:Fill color="#FFFFFF"/>
+                <styles:Font family="Gill Sans" size="24pt" italic="true"/>
+            </styles:Style>
+        </Styles>
+        
+        <Pages>
+
+            <pdf:Page styles:margins="20pt">
+                <Content>
+                    <data:With datasource-id="JsonSource"  >
+
+                    <pdf:H1 styles:class="title" text="{@:Title}" > </pdf:H1>
+                    
+                    <pdf:Ul>
+                        <data:ForEach value="{@:.Entries/Entry}" >
+                        <Template>
+                            <pdf:Li>
+                            <pdf:Text value="{@:.Name}" />
+                            </pdf:Li>
+                        </Template>
+                        </data:ForEach>
+                    </pdf:Ul>
+                    </data:With>
+                    
+                </Content>
+            </pdf:Page>
+        </Pages>
+
+    </pdf:Document>
 
 Easy, and intuitive structure
 -----------------------------
