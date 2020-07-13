@@ -122,8 +122,8 @@ Further reading
 
 You can read more about what you can do with scryber here
 
-* `Passing Data to your Document <document_model>`_
-* `Document Structure <document_structure>`_
-* `Component List <component_types>`_
-* `Styling your documents <document_styles>`_
-* `Splitting your content <referencing_files>`_
+* :doc:`document_model`
+* :doc:`document_structure`
+* :doc:`component_types`
+* :doc:`document_styles`
+* :doc:`referencing_files`

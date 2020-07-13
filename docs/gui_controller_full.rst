@@ -1,5 +1,5 @@
 ================================
-GUI Controller - Getting Started
+Console or GUI - Getting Started
 ================================
 
 A Complete example for creating a hello world PDF file in a console application or GUI front end.
