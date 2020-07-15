@@ -294,6 +294,7 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+
         [TestMethod()]
         [TestCategory("Binding")]
         public void BindXmlAndTemplateObject()
@@ -567,6 +568,86 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.IsTrue(caught, "No exception was raised.");
 
                 
+            }
+
+
+        }
+
+
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindDynamicStyles()
+        {
+
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                                    xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                                    xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                                     >
+                        <Params>
+                            <pdf:Object-Param id='dynamic' ></pdf:Object-Param>
+                        </Params>
+
+                        <Styles>
+
+                            <styles:Style applied-class='head'>
+                                <styles:Background color='{@:dynamic.Theme.TitleBg}' />
+                                <styles:Font family='{@:dynamic.Theme.TitleFont}' />
+                            </styles:Style>
+
+                            <styles:Style applied-class='body'>
+                                <styles:Font family='{@:dynamic.Theme.BodyFont}' size='{@:dynamic.Theme.BodySize}' />
+                            </styles:Style>
+    
+                        </Styles>
+
+                        <Pages>
+    
+                        <pdf:Section>
+                            <Content>
+                                <pdf:H1 styles:class='head' text='{@:Title}' ></pdf:H1>
+                                <data:ForEach value='{@:dynamic.List}' >
+                                    <Template>
+                                        <pdf:Label styles:class='body' id='{@:.Id}' text='{@:.Name}' ></pdf:Label>
+                                        <pdf:Br/>
+                                    </Template>
+                                </data:ForEach>
+
+                            </Content>
+                        </pdf:Section>
+
+                        </Pages>
+                    </pdf:Document>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["dynamic"] = new
+                {
+                    Color = Scryber.Drawing.PDFColors.Aqua,
+                    List = new[] {
+                        new { Name = "First", Id = "FirstID"},
+                        new { Name = "Second", Id = "SecondID" }
+                    }
+                };
+
+
+                doc.InitializeAndLoad();
+                doc.DataBind();
+
+                //For the ForEach template with an object source.
+                var first = doc.FindAComponentById("FirstID") as PDFLabel;
+                Assert.IsNotNull(first, "Could not find the first label");
+                Assert.AreEqual("First", first.Text, "The first label does not have the correct Name value");
+
+                var second = doc.FindAComponentById("SecondID") as PDFLabel;
+                Assert.IsNotNull(second, "Could not find the second label");
+                Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
+
+                var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.BgColorKey), "The background color is not assigned");
+                Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color, "The background colors do not match");
             }
 
 
