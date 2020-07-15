@@ -31,4 +31,18 @@ namespace Scryber.Core.UnitTests.Mocks
             this.Background = new PDFColor(1, 0, 0);
         }
     }
+
+    public class MockOtherParameter
+    {
+        public string Title { get; set; }
+
+        public bool BoldTitle { get; set; }
+
+        public PDFColor Background { get; set; }
+
+        public MockOtherParameter()
+        {
+        }
+    }
+
 }

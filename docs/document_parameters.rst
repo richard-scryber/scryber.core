@@ -141,11 +141,74 @@ There are 3 other parameter types available XML, Template and Object which are d
 Complex Object Parameters
 =========================
 
+Whilst Scryber Parameters can be simple types, it also supports complex objects that can be traversed.
+
+Our previous example could have been written with a single parameter rather than the 3 individual ones, 
+an the values retrieved from the properties on that object.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+        <Params>
+            <!-- Declare the parameters -->
+            <pdf:Object-Param id="Heading" />
+        </Params>
+        
+        <Pages>
+            <!-- Use the 'MyTitle' parameter for the outline. -->
+            <pdf:Page outline-title="{@:Heading.Title}" styles:margins="20pt" styles:font-size="12pt">
+            <Content>
+                <!-- And use it as the text on the heading -->
+                <pdf:H1 visible="{@:Heading.Visible}" styles:bg-color="{@:Heading.Background}"  text="{@:Heading.Title}" > </pdf:H1>
+                <pdf:Para >This is the content of the document</pdf:Para>
+            </Content>
+            </pdf:Page>
+        </Pages>
+    
+    </pdf:Document>
 
 
+The dot notation is evaluated at runtime to bind the appropriate value.
 
-Where can parameters be referenced?
-===================================
+.. code-block:: csharp
+
+        [HttpGet]
+        public IActionResult DocumentParameters()
+        {
+            var path = _rootPath;
+            path = System.IO.Path.Combine(path,"Views", "PDF", "DocumentParameters.pdfx");
+            var doc = PDFDocument.ParseDocument(path);
+
+            //Set the heading param to a new dynamic type.
+            doc.Params["Heading"] = new
+            {
+                Title = "Model Document Title",
+                Visible = true,
+                Background = "#FF0000"
+            };
+
+            return this.PDF(doc);
+        }
+
+
+It is also possible to stronly type the object parameter by specifying the expected **full** type name, so you can be sure the content coming into the template matches.
+Inherited types will be acceptable as will interfaces.
+
+.. code-block:: xml
+
+    <Params>
+        <!-- Declare the parameters -->
+        <pdf:Object-Param id="Heading" type="MyNamespace.MyType, MyAssembly" />
+    </Params>
+
+.. code-block:: csharp
+
+    doc.Params["Heading"] = new MyNamespace.MyType("Title",true, "#FF0000");
+
+.. note:: If you provide a class that is not assignable to the parameter type a PDFDataException will be raised directly on assignment, so easily troubleshooted.
+
 
 
 The MVC model

@@ -509,7 +509,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:Object-Param id='obj' type='Scryber.Core.UnitTests.Mocks.MockParameter, Scryber.Core.UnitTests' ></pdf:String-Param>
+                            <pdf:Object-Param id='obj' type='Scryber.Core.UnitTests.Mocks.MockParameter, Scryber.UnitTests' ></pdf:Object-Param>
                         </Params>
 
                         <Pages>
@@ -546,6 +546,27 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual(param.Size, first.FontSize);
 
 
+            }
+
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var param = new Mocks.MockOtherParameter();
+
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var caught = false;
+                try
+                {
+                    doc.Params["obj"] = param;
+                }
+                catch(Scryber.PDFDataException)
+                {
+                    caught = true;
+                }
+
+                Assert.IsTrue(caught, "No exception was raised.");
+
+                
             }
 
 

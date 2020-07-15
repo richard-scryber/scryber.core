@@ -100,6 +100,9 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_styles
     referencing_files
     document_model
+    document_parameters
+    document_databinding
+    document_controllers
     component_positioning
     drawing_colors
     drawing_fonts
