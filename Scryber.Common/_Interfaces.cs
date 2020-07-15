@@ -639,8 +639,13 @@ namespace Scryber
     public interface IKeyValueProvider
     {
         string ID { get; }
+
         object GetNativeValue(string key, IPDFComponent comp);
+
         void SetValue(string key, string value, IPDFComponent owner);
+
+        void SetNativeValue(string key, object value, IPDFComponent owner);
+
         void Init();
     }
 

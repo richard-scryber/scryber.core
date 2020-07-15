@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Core.UnitTests.Mocks;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -346,6 +347,209 @@ namespace Scryber.Core.UnitTests.Binding
             }
         }
 
+
+        /// <summary>
+        /// Check that the correct types are assigned at runtime
+        /// </summary>
+        [TestMethod()]
+        public void BindingTypeSafety()
+        {
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                                    xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                                    xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                                     >
+                        <Params>
+                            <pdf:String-Param id='string' ></pdf:String-Param>
+                            <pdf:Int-Param id='int' ></pdf:Int-Param>
+                            <pdf:Color-Param id='color' ></pdf:Color-Param>
+                        </Params>
+
+
+                        <Pages>
+                            <pdf:Section>
+                                <Content>
+                                    <pdf:Label id='{@:int}' text='{@:string}' styles:bg-color='{@:color}' ></pdf:Label>
+                                </Content>
+                            </pdf:Section>
+                        </Pages>
+                    </pdf:Document>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var color = new Scryber.Drawing.PDFColor(1, 0, 0);
+                var text = "This is the title";
+                var date = DateTime.Now;
+                var i = 5;
+
+                doc.Params["color"] = color;
+                doc.Params["string"] = text;
+                doc.Params["int"] = i;
+
+                doc.InitializeAndLoad();
+                doc.DataBind();
+
+
+                //Find the label as the value should be converted to a string.
+                var first = doc.FindAComponentById(i.ToString()) as PDFLabel;
+                Assert.IsNotNull(first, "Could not find the label");
+
+                //Check that the text matches
+                Assert.AreEqual(text, first.Text, "The first label does not have the correct text value");
+
+                //Check that the color matches
+                Assert.AreEqual(color, first.BackgroundColor, "Background colours do not match");
+
+
+            }
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var color = new Scryber.Drawing.PDFColor(1, 0, 0);
+                var text = "This is the title";
+                var date = DateTime.Now;
+                var i = 5;
+
+                bool caught = false;
+
+                try
+                {
+
+                    //This should not be allowed 
+                    doc.Params["color"] = text;
+                    doc.Params["string"] = text;
+                    doc.Params["int"] = i;
+
+                    doc.InitializeAndLoad();
+                    //doc.DataBind();
+                }
+                catch(Scryber.PDFDataException)
+                {
+                    caught = true;
+                }
+
+                Assert.IsTrue(caught, "The assignment of an incorrect type onto the parameter did not raise an error");
+
+
+            }
+        }
+
+
+        /// <summary>
+        /// Checks the asssignment of a string onto items
+        /// </summary>
+        [TestMethod()]
+        public void BindingParamToString()
+        {
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                                    xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                                    xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                                     >
+                        <Params>
+                            <pdf:String-Param id='string' ></pdf:String-Param>
+                            <pdf:Int-Param id='int' ></pdf:Int-Param>
+                            <pdf:Color-Param id='color' ></pdf:Color-Param>
+                        </Params>
+
+
+                        <Pages>
+                            <pdf:Section>
+                                <Content>
+                                    <pdf:Label id='{@:int}' text='{@:string}' styles:bg-color='{@:color}' ></pdf:Label>
+                                </Content>
+                            </pdf:Section>
+                        </Pages>
+                    </pdf:Document>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var color = new Scryber.Drawing.PDFColor(1, 0, 0);
+                var text = "This is the title";
+                var date = DateTime.Now;
+                var i = 5;
+
+                doc.Params["color"] = color.ToString();
+                doc.Params["string"] = text;
+                doc.Params["int"] = i.ToString();
+
+                doc.InitializeAndLoad();
+                doc.DataBind();
+
+
+                //Find the label as the value should be converted to a string.
+                var first = doc.FindAComponentById(i.ToString()) as PDFLabel;
+                Assert.IsNotNull(first, "Could not find the label");
+
+                //Check that the text matches
+                Assert.AreEqual(text, first.Text, "The first label does not have the correct text value");
+
+                //Check that the color matches
+                Assert.AreEqual(color, first.BackgroundColor, "Background colours do not match");
+
+
+            }
+
+            
+        }
+
+
+        /// <summary>
+        /// Checks the asssignment of a subclass object onto as strongly typed object
+        /// </summary>
+        [TestMethod()]
+        public void BindingParamToStrongObject()
+        {
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                                    xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                                    xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                                     >
+                        <Params>
+                            <pdf:Object-Param id='obj' type='Scryber.Core.UnitTests.Mocks.MockParameter, Scryber.Core.UnitTests' ></pdf:String-Param>
+                        </Params>
+
+                        <Pages>
+                            <pdf:Section>
+                                <Content>
+                                    <pdf:Label id='MyTitle' styles:font-bold='{@:obj.BoldTitle}' text='{@:obj.Title}' styles:font-size='{@:obj.Size}' styles:bg-color='{@:obj.Background}' ></pdf:Label>
+                                </Content>
+                            </pdf:Section>
+                        </Pages>
+                    </pdf:Document>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var param = new Mocks.MockSubParameter();
+
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                doc.Params["obj"] = param;
+
+                doc.InitializeAndLoad();
+                doc.DataBind();
+
+
+                //Find the label as the value should be converted to a string.
+                var first = doc.FindAComponentById("MyTitle") as PDFLabel;
+                Assert.IsNotNull(first, "Could not find the label");
+
+                //Check that the text matches
+                Assert.AreEqual(param.Title, first.Text, "The first label does not have the correct text value");
+
+                //Check that the color matches
+                Assert.AreEqual(param.Background, first.BackgroundColor, "Background colours do not match");
+
+                Assert.AreEqual(param.Size, first.FontSize);
+
+
+            }
+
+
+        }
 
     }
 }

@@ -19,7 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
 using Scryber.Drawing;
 namespace Scryber.Components
 {
@@ -136,14 +138,38 @@ namespace Scryber.Components
             
         }
 
-        public void SetValue(string key, string value, IPDFComponent owner)
+        public void SetNativeValue(string key, object value, IPDFComponent owner)
         {
-            this.DoSetNativeValueFromString(value);
+            if (key != this.ID)
+                throw new InvalidOperationException("The keys do not match");
+
+            try
+            {
+                if (value is String)
+                    this.DoSetNativeValueFromString(value as string, owner);
+                else
+                    this.DoSetNativeValue(value, owner);
+            }
+            catch (Exception ex)
+            {
+                throw new Scryber.PDFDataException("Could not convert the value to a native type " + this.ItemType.ToString(), ex);
+            }
         }
 
-        protected abstract void DoSetNativeValueFromString(string value);
+        public void SetValue(string key, string value, IPDFComponent owner)
+        {
+            if (key != this.ID)
+                throw new InvalidOperationException("The keys do not match");
+
+            this.DoSetNativeValueFromString(value, owner);
+        }
+
+        protected abstract void DoSetNativeValueFromString(string value, IPDFComponent owner);
+
+        protected abstract void DoSetNativeValue(object value, IPDFComponent owner);
 
     }
+
 
     [PDFParsableComponent("Int-Param")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_documentParam")]
@@ -184,13 +210,24 @@ namespace Scryber.Components
                 return false;
 
         }
-        protected override void DoSetNativeValueFromString(string value)
+
+        
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             int val;
             if (int.TryParse(value, out val))
                 this.Value = val;
             else
                 this.Value = 0;
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = 0;
+            else
+                this.Value = (int)value;
+
         }
     }
 
@@ -223,11 +260,20 @@ namespace Scryber.Components
             else
                 return this.Value;
         }
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             this.Value = value;
         }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = null;
+            else
+                this.Value = value.ToString();
+        }
     }
+
 
     [PDFParsableComponent("Guid-Param")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_documentParam")]
@@ -252,13 +298,22 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             Guid val;
             if (Guid.TryParse(value, out val))
                 this.Value = val;
             else
                 this.Value = Guid.Empty;
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = Guid.Empty;
+             else
+                this.Value = (Guid)value;
+
         }
     }
 
@@ -286,7 +341,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             double val;
             if (double.TryParse(value, out val))
@@ -294,7 +349,16 @@ namespace Scryber.Components
             else
                 this.Value = 0;
         }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = 0;
+            else
+                this.Value = (double)value;
+        }
     }
+
 
     [PDFParsableComponent("Bool-Param")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_documentParam")]
@@ -319,7 +383,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             bool val;
             if (bool.TryParse(value, out val))
@@ -327,7 +391,16 @@ namespace Scryber.Components
             else
                 this.Value = false;
         }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = false;
+            else
+                this.Value = (bool)value;
+        }
     }
+
 
     [PDFParsableComponent("Date-Param")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_documentParam")]
@@ -352,13 +425,21 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             DateTime val;
             if (DateTime.TryParse(value, out val))
                 this.Value = val;
             else
                 this.Value = DateTime.MinValue;
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = DateTime.MinValue;
+            else
+                this.Value = (DateTime)value;
         }
     }
 
@@ -386,7 +467,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             PDFUnit val;
             if (PDFUnit.TryParse(value, out val))
@@ -394,8 +475,15 @@ namespace Scryber.Components
             else
                 this.Value = PDFUnit.Empty;
         }
-    }
 
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = PDFUnit.Empty;
+            else
+                this.Value = (PDFUnit)value;
+        }
+    }
 
 
     [PDFParsableComponent("Color-Param")]
@@ -421,13 +509,24 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             PDFColor val;
-            if (PDFColor.TryParse(value, out val))
+            if (string.IsNullOrEmpty(value))
+                this.Value = PDFColor.Transparent;
+
+            else if (PDFColor.TryParse(value, out val))
                 this.Value = val;
             else
+                throw new InvalidCastException("Could not parse the value '" + value + "' to a PDFColor");
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
                 this.Value = PDFColor.Transparent;
+            else
+                this.Value = (PDFColor)value;
         }
     }
 
@@ -455,13 +554,21 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             PDFThickness val;
             if (PDFThickness.TryParse(value, out val))
                 this.Value = val;
             else
                 this.Value = PDFThickness.Empty();
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.Value = PDFThickness.Empty();
+            else
+                this.Value = (PDFThickness)value;
         }
     }
 
@@ -513,9 +620,25 @@ namespace Scryber.Components
             }
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             this.EnumValue = value;
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.EnumValue = null;
+            else
+            {
+                Type eType = Type.GetType(this.EnumType);
+                if (null == eType)
+                    throw new NullReferenceException("The binding enumeration type '" + this.EnumType + "' could not be found.");
+
+                object parsed = Enum.Parse(eType, value.ToString());
+
+                this.EnumValue = parsed.ToString();
+            }
         }
 
     }
@@ -537,9 +660,25 @@ namespace Scryber.Components
             return this.XmlData;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
-            throw new NotSupportedException();
+            if (string.IsNullOrEmpty(value))
+                this.XmlData = null;
+            else
+            {
+                var doc = new XmlDocument();
+                doc.InnerXml = value;
+                this.XmlData = doc.FirstChild;
+            }
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (null == value)
+                this.XmlData = null;
+            else
+                this.XmlData = (XmlNode)value;
+            
         }
 
     }
@@ -560,6 +699,7 @@ namespace Scryber.Components
         public PDFTemplateItemValue()
             : base(typeof(IPDFTemplate))
         {
+
         }
 
         protected override object DoGetNativeValue(string key, string sqValue, IPDFComponent comp)
@@ -567,7 +707,12 @@ namespace Scryber.Components
             return this.Template;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
         {
             throw new NotSupportedException();
         }
@@ -584,6 +729,13 @@ namespace Scryber.Components
         }
 
 
+        [PDFAttribute("type")]
+        public string ObjectType
+        {
+            get;
+            set;
+        }
+
         public PDFObjectItemValue() : base(typeof(Object))
         { }
 
@@ -592,11 +744,29 @@ namespace Scryber.Components
             return this.Value;
         }
 
-        protected override void DoSetNativeValueFromString(string value)
+        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
             throw new NotSupportedException();
         }
 
+        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        {
+            if (!string.IsNullOrEmpty(this.ObjectType))
+            {
+                var t = Type.GetType(this.ObjectType);
+                if (null == t)
+                    throw new NullReferenceException("The object type '" + this.ObjectType + "' could not be found");
+
+                if (null == value)
+                    this.Value = null;
+                else if (t.IsAssignableFrom(value.GetType()))
+                    this.Value = value;
+                else
+                    throw new InvalidCastException("The value cannot be assigned to the parameter as the types are not compatible");
+            }
+            else
+                this.Value = value;
+        }
 
     }
 

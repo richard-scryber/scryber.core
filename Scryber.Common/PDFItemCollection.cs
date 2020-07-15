@@ -95,8 +95,12 @@ namespace Scryber
                 return value;
             }
             set {
+                object curr = this.BaseGet(name);
 
-                this.BaseSet(name, value);
+                if (null != curr && curr is IKeyValueProvider)
+                    ((IKeyValueProvider)curr).SetNativeValue(name, value, this._ownercomp);
+                else
+                    this.BaseSet(name, value);
             }
         }
 

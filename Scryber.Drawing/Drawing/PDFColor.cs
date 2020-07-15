@@ -179,7 +179,7 @@ namespace Scryber.Drawing
         public override string ToString()
         {
             System.Text.StringBuilder sb = new StringBuilder(20);
-            sb.Append(this.ColorSpace.ToString());
+            sb.Append(this.ColorSpace.ToString().ToLower());
             sb.Append(" (");
             switch (this.ColorSpace)
             {
@@ -243,11 +243,11 @@ namespace Scryber.Drawing
                     return false;
 
                 value = value.Substring(0, close);//remove closing bracket
-
-                if (Enum.IsDefined(typeof(ColorSpace), s) == false)
+                object parsedCs;
+                if (Enum.TryParse(typeof(ColorSpace), s, true, out parsedCs) == false)
                     return false;
                 else
-                    cs = (ColorSpace)Enum.Parse(typeof(ColorSpace), s.Trim());
+                    cs = (ColorSpace)parsedCs;
 
                 string[] vals = value.Split(',');
                 int[] rgbs = new int[3];

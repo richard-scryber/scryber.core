@@ -31,6 +31,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var controllerType = "Scryber.Core.UnitTests.Mocks.MockControllerClass, Scryber.UnitTests";
+
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
 <?scryber controller='" + controllerType + @"' ?>
 
