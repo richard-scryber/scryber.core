@@ -30,6 +30,17 @@ namespace Scryber.Data
         private string _toparse;
         private bool _initialised;
 
+        /// <summary>
+        /// Gets or sets the XML content for this template
+        /// </summary>
+        public string XmlContent
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<string,string> NamespacePrefixMappings { get; set; }
+
         public PDFParsableTemplateGenerator()
         {
             _initialised = false;
@@ -38,7 +49,10 @@ namespace Scryber.Data
         public PDFParsableTemplateGenerator(string xmlcontent, System.Xml.XmlNamespaceManager namespaces)
             : this()
         {
-            InitTemplate(xmlcontent, namespaces);
+            this.XmlContent = xmlcontent;
+            this.NamespacePrefixMappings = GetNamespacesFromManager(namespaces);
+
+            //InitTemplate(xmlcontent, namespaces);
         }
 
         public void InitTemplate(string xmlcontent, System.Xml.XmlNamespaceManager namespaces)
@@ -49,7 +63,26 @@ namespace Scryber.Data
             if (null == xmlcontent)
                 xmlcontent = string.Empty;
 
-            string doc = WrapContentAsDocument(xmlcontent, namespaces);
+            this.XmlContent = xmlcontent;
+            this.NamespacePrefixMappings = GetNamespacesFromManager(namespaces);
+
+            this.InitTemplate(this.XmlContent, this.NamespacePrefixMappings);
+
+            
+        }
+
+        protected virtual IDictionary<string,string> GetNamespacesFromManager(XmlNamespaceManager manager)
+        {
+            return manager.GetNamespacesInScope(XmlNamespaceScope.All);
+        }
+
+        public void InitTemplate(string xmlcontent, IDictionary<string,string> prefixNamespaces)
+        {
+            if (null == prefixNamespaces)
+                prefixNamespaces = new Dictionary<string, string>();
+
+            string doc = WrapContentAsDocument(xmlcontent, prefixNamespaces);
+
             _toparse = doc;
             _initialised = true;
         }
@@ -60,17 +93,23 @@ namespace Scryber.Data
         /// <param name="xmlcontent"></param>
         /// <param name="namespaces"></param>
         /// <returns></returns>
-        protected virtual string WrapContentAsDocument(string xmlcontent, System.Xml.XmlNamespaceManager namespaces)
+        protected virtual string WrapContentAsDocument(string xmlcontent, IDictionary<string, string> prefixNamespaces)
         {
             string ns = Const.PDFDataNamespace;
 
             StringBuilder sb = new StringBuilder();
-            string prefix = namespaces.LookupPrefix(ns);
+            string dataprefix = GetOrAddNamespace(ns, "data", prefixNamespaces);
+            
             sb.Append("<");
+            if(!string.IsNullOrEmpty(dataprefix))
+            {
+                sb.Append(dataprefix);
+                sb.Append(":");
+            }
             sb.Append("TemplateInstance ");
 
-            IDictionary<string,string> all = namespaces.GetNamespacesInScope(XmlNamespaceScope.All);
-            foreach (KeyValuePair<string,string> declared in all)
+            
+            foreach (KeyValuePair<string,string> declared in prefixNamespaces)
             {
                 sb.Append("xmlns");
                 if (!string.IsNullOrEmpty(declared.Key))
@@ -82,10 +121,11 @@ namespace Scryber.Data
                 sb.Append(declared.Value);
                 sb.Append("' ");
             }
+
             //Declare the ParsableTemplate namespace as the DataNamespace
-            sb.Append("xmlns='");
-            sb.Append(ns);
-            sb.Append("' ><Content>");
+            //sb.Append("xmlns='");
+            //sb.Append(ns);
+            sb.Append("><Content>");
 
             //Append the actual content
             sb.Append(xmlcontent);
@@ -93,17 +133,61 @@ namespace Scryber.Data
             //Close the parsabletemplate element
             sb.Append("</Content></");
 
+            if (!string.IsNullOrEmpty(dataprefix))
+            {
+                sb.Append(dataprefix);
+                sb.Append(":");
+            }
             sb.Append("TemplateInstance");
             sb.Append(">");
             
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Looks for an existing namespace declaration (that could be mapped in the options), and
+        /// returns the prefix. If there is no exsiting, then it's added with the defined prefix and returned.
+        /// </summary>
+        /// <param name="ns"></param>
+        /// <param name="prefix"></param>
+        /// <param name="declared"></param>
+        /// <returns>The prefix for the namepsace</returns>
+        private string GetOrAddNamespace(string ns, string prefix, IDictionary<string,string> declared)
+        {
+            var service = ServiceProvider.GetService<Scryber.IScryberConfigurationService>();
+            string xml = service.ParsingOptions.GetXmlNamespaceForAssemblyNamespace(ns);
+
+            if(string.IsNullOrEmpty(xml))
+            {
+                //There is no mapping for the namespace, so use the original
+                xml = ns;
+            }
+
+            foreach (var kvp in declared)
+            {
+                if(kvp.Value.Equals(xml))
+                {
+                    //We have found the declaration, so don't need to add,
+                    //just return the key.
+                    return kvp.Key;
+                }
+            }
+
+            //not found so add and return
+            declared.Add(prefix, xml);
+            return prefix;
+        }
+
+
+        //
+        // IPDFTemplate Instantiate method.
+        //
+
         public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
         {
-            
+
             if (!_initialised)
-                throw new InvalidOperationException(Errors.TemplateHasNotBeenInitialised);
+                this.InitTemplate(this.XmlContent, this.NamespacePrefixMappings);
 
             if (null == owner)
                 throw new ArgumentNullException("owner");

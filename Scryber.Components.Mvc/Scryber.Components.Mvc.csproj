@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>1.0.0.12</PackageVersion>
+    <PackageVersion>1.0.0.13</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
 
@@ -15,7 +15,9 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>v1.0.0.12 - Updated to the latest Scryber.Core with template item controller binding.
+    <PackageReleaseNotes>v1.0.0.13 - Updated to the latest Scryber.Core with Strongly typed parameter settings.
+
+v1.0.0.12 - Updated to the latest Scryber.Core with template item controller binding.
 
 v1.0.0.11 - Updated to the latest Scryber.Core version with new features in ForEach, With, If and Choose for the Value property
 
@@ -29,6 +31,6 @@ v1.0.0.5 - Updated for of the Core library with atomatic inclusion of the http n
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Scryber.Core" Version="1.0.0.12" />
+    <PackageReference Include="Scryber.Core" Version="1.0.0.13" />
   </ItemGroup>
 </Project>

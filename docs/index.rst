@@ -2,8 +2,8 @@
 Scryber Core
 =============
 
-Create dynamic PDF documents quickly and easily with consistant styles and easy flowing layout.
-Scryber is an open source, flexible and data driven PDF document generation tool written entirely in C# for dotnet core.
+Scryber.Core is **the** engine to create dynamic PDF documents quickly and easily with consistant styles and easy flowing layout.
+It's open source; flexible, styles based and data driven. A document generation tool written entirely in C# for dotnet core.
 
 .. code-block:: xml
 

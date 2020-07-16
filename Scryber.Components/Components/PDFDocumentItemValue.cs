@@ -676,8 +676,29 @@ namespace Scryber.Components
         {
             if (null == value)
                 this.XmlData = null;
-            else
+            else if (value is System.Xml.Linq.XNode)
+            {
+                using (var reader = ((System.Xml.Linq.XNode)value).CreateReader())
+                {
+                    var doc = new System.Xml.XmlDocument();
+                    doc.Load(reader);
+                    this.XmlData = doc.DocumentElement;
+                }
+            }
+            else if (value is System.Xml.XPath.XPathNavigator)
+            {
+                using (var reader = ((System.Xml.XPath.XPathNavigator)value).ReadSubtree())
+                {
+                    var doc = new System.Xml.XmlDocument();
+                    doc.Load(reader);
+                    this.XmlData = doc.DocumentElement;
+                }
+            }
+            else if (value is XmlNode)
                 this.XmlData = (XmlNode)value;
+
+            else
+                throw new InvalidCastException("Could not convert the value to an XmlNode, value should be provided as an XmlNode, XPathNavigator or a Linq XNode");
             
         }
 

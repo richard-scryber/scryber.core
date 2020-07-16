@@ -257,6 +257,7 @@ And in your template, you can specify the model type you are expecting.
     
     </pdf:Document>
 
+
 Combining selector paths
 ========================
 
@@ -420,9 +421,109 @@ Very quickly our document complexity can grow and then it becomes more important
 :doc:`document_datasources` and :doc:`document_controllers`
 
 
-XML and Template parameters
-===========================
+XML parameters
+===============
 
+Along with the object parameters, scryber supports the use of XML as a parameter.
+These are just as poweful as objects.
+
+The xml data parameter, similar to the object parameter supports full xpath deep binding, and functions such as substring and concat.
+For more details on the xpath syntax see the :doc:`document_datasources`
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Params>
+        <!-- Declare the parameters -->
+        <pdf:String-Param id="MyTitle" value="Document Title" />
+        
+        <!-- This is the xml content that will be used by default -->
+        <pdf:Xml-Param id="MyData" >
+        <Root>
+            <Entry id="First">First Name</Entry>
+            <Entry id="Second">Second Name</Entry>
+            <Entry id="Third">Third Name</Entry>
+        </Root>
+        </pdf:Xml-Param>
+        
+    </Params>
+
+    <Pages>
+        <!-- Use the 'MyTitle' parameter for the outline. -->
+        <pdf:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
+        <Content>
+            <!-- And use it as the text on the heading with a visble flag and background -->
+            <pdf:H1  text="{@:MyTitle}" > </pdf:H1>
+            <pdf:Para >This is the content of the xml document</pdf:Para>
+            
+            <pdf:Ul>
+                <!-- Now bind the content of the MyData parameter into a foreach, with the selector of //Root/Entry 
+                    to loop through each one in turn -->
+                <data:ForEach value="{@:MyData}" select="//Root/Entry" >
+                <Template>
+                    <pdf:Li >
+                    <pdf:Text value="{xpath:text()}" />
+                    </pdf:Li>
+                </Template>
+                </data:ForEach>
+            </pdf:Ul>
+            
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+If we generate this content as is the xml will be bound to the unordered list and created.
+
+.. code-block:: csharp
+
+    [HttpGet]
+    public IActionResult DocumentXmlParameters()
+    {
+        var path = _rootPath;
+        path = System.IO.Path.Combine(path, "Views", "PDF", "DocumentXmlParameters.pdfx");
+        var doc = PDFDocument.ParseDocument(path);
+
+        doc.Params["MyTitle"] = "New Document Title";
+
+        return this.PDF(doc);
+    }
+
+
+.. image:: images/documentxmlparameters.png
+
+By using the xml data as a template we can generate this dynamically too, or load it from a file, or pull from a service.
+The xml parameter will accept XmlNode values, XPathNavigators, and Linq XElements for values, along with strings.
+
+.. code-block:: csharp
+
+    [HttpGet]
+    public IActionResult DocumentXmlParameters()
+    {
+        var path = _rootPath;
+        path = System.IO.Path.Combine(path, "Views", "PDF", "DocumentXmlParameters.pdfx");
+        var doc = PDFDocument.ParseDocument(path);
+
+        doc.Params["MyTitle"] = "Xml Document Title";
+
+        //Replace the xml content in the MyData parameter
+        var ele = new XElement("Root",
+            new XElement("Entry", new XAttribute("id", "Fourth"), new XText("Fourth Name")),
+            new XElement("Entry", new XAttribute("id", "Fifth"), new XText("Fifth Name")),
+            new XElement("Entry", new XAttribute("id", "Sixth"), new XText("Sixth Name"))
+            );
+        doc.Params["MyData"] = ele;
+
+        return this.PDF(doc);
+    }
+
+Generating this file again will render the content with the new xml data.
+
+.. image:: images/documentxmlparameters2.png
 
 
 Passing parameters to References

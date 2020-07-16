@@ -15,7 +15,7 @@
     <PackageReleaseNotes>1.0.0.13
 ---------------------------------------
 
-Stronger typing on the parameters and object parameter
+Stronger typing on the parameters and object parameter, and support for XML pararmeters as XPath or XNode values.
 
 1.0.0.12
 ------------------------

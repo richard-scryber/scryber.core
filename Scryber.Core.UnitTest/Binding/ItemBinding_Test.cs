@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.Core.UnitTests.Mocks;
 
 namespace Scryber.Core.UnitTests.Binding
@@ -594,6 +595,7 @@ namespace Scryber.Core.UnitTests.Binding
                             <styles:Style applied-class='head'>
                                 <styles:Background color='{@:dynamic.Theme.TitleBg}' />
                                 <styles:Font family='{@:dynamic.Theme.TitleFont}' />
+                                <styles:Fill color='{@:dynamic.Theme.TitleColor}' />
                             </styles:Style>
 
                             <styles:Style applied-class='body'>
@@ -623,16 +625,25 @@ namespace Scryber.Core.UnitTests.Binding
             using (var reader = new System.IO.StringReader(src))
             {
                 var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
-                doc.Params["dynamic"] = new
+
+                var binding = new
                 {
-                    Color = Scryber.Drawing.PDFColors.Aqua,
+                    Title = "This is the document title",
                     List = new[] {
-                        new { Name = "First", Id = "FirstID"},
-                        new { Name = "Second", Id = "SecondID" }
+                    new { Name = "First", Id = "FirstID" },
+                    new { Name = "Second", Id = "SecondID" }
+                },
+                    Theme = new
+                    {
+                        TitleBg = new PDFColor(1, 0, 0),
+                        TitleColor = new PDFColor(1, 1, 1),
+                        TitleFont = "Segoe UI Light",
+                        BodyFont = "Segoe UI",
+                        BodySize = (PDFUnit)12
                     }
                 };
 
-
+                doc.Params["dynamic"] = binding;
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
@@ -647,7 +658,13 @@ namespace Scryber.Core.UnitTests.Binding
 
                 var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.BgColorKey), "The background color is not assigned");
-                Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color, "The background colors do not match");
+                Assert.AreEqual(binding.Theme.TitleBg, style.Background.Color, "The background colors do not match");
+                Assert.AreEqual(binding.Theme.TitleColor, style.Fill.Color, "The foreground colours do not match");
+
+                style = doc.Styles[1] as Scryber.Styles.PDFStyle;
+                Assert.AreEqual(binding.Theme.BodyFont, style.Font.FontFamily, "Body fonts do not match");
+                Assert.AreEqual(binding.Theme.BodySize, style.Font.FontSize, "Body font sizes do not match");
+
             }
 
 
