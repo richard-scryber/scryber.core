@@ -201,6 +201,7 @@
           <xs:any minOccurs="0" maxOccurs="1" processContents="lax" namespace="##any" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="value" type="BindableStringType" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

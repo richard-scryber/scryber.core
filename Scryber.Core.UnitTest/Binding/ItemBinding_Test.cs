@@ -350,6 +350,94 @@ namespace Scryber.Core.UnitTests.Binding
         }
 
 
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindTemplatePlaceholder()
+        {
+            var expectedXml = @"<node value='1' >
+                                    <inner value='1' />
+                                    <inner value='2' />
+                                </node>";
+
+            var expectedTemplate = @"<pdf:Div id='{xpath:concat(""xmlInnerDiv"",@value)}' >
+                                        <pdf:Label id='{xpath:concat(""xmlLabel"",@value)}' text='{xpath:@value}' />
+                                     </pdf:Div>";
+
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                                    xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                                    xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                                     >
+
+                        <Params>
+                            <pdf:Xml-Param id='xml' >" + expectedXml + @"</pdf:Xml-Param>
+                            <pdf:Template-Param id='template' >" + expectedTemplate + @"</pdf:Template-Param>
+                        </Params>
+
+                        <Pages>
+    
+                            <pdf:Section>
+                                <Content>
+                                
+                                    <data:ForEach id='Foreach2' value='{@:xml}' select='//node/inner' >
+                                        <Template>
+                                            <pdf:PlaceHolder template='{@:template}' />
+                                        </Template>
+                                    </data:ForEach>
+
+                                </Content>
+                            </pdf:Section>
+
+                        </Pages>
+                    </pdf:Document>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                doc.InitializeAndLoad();
+                doc.DataBind();
+
+                //For the ForEach template with an object source.
+                var first = doc.FindAComponentById("xmlInnerDiv1") as PDFDiv;
+                Assert.IsNotNull(first, "Could not find inner div");
+
+                var second = doc.FindAComponentById("xmlLabel2") as PDFLabel;
+                Assert.IsNotNull(second, "Could not find the second label");
+
+                Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
+
+
+
+            }
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                doc.Params["template"] = @"<pdf:H1 id='{xpath:concat(""xmlH"",@value)}' >
+                                        <pdf:Text id='{xpath:concat(""xmlText"",@value)}' value='{xpath:@value}' />
+                                     </pdf:H1>";
+                doc.InitializeAndLoad();
+                doc.DataBind();
+
+                //For the ForEach template with an object source.
+                var first = doc.FindAComponentById("xmlH1") as PDFHead1;
+                Assert.IsNotNull(first, "Could not find inner heading");
+
+                var second = doc.FindAComponentById("xmlText2") as PDFTextLiteral;
+                Assert.IsNotNull(second, "Could not find the second text");
+
+                Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
+
+
+
+            }
+
+
+        }
+
+
         /// <summary>
         /// Check that the correct types are assigned at runtime
         /// </summary>

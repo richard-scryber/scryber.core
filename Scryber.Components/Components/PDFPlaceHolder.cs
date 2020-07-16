@@ -35,6 +35,7 @@ namespace Scryber.Components
 
         private bool _parsed = false;
         string _data;
+        IPDFTemplate _template;
 
         [PDFAttribute("contents")]
         [PDFElement()]
@@ -53,6 +54,19 @@ namespace Scryber.Components
         }
 
         #endregion
+
+        [PDFAttribute("template")]
+        public IPDFTemplate Template
+        {
+            get { return this._template; }
+            set
+            {
+                if(_parsed)
+                    throw new InvalidOperationException(Errors.CannotChangeTheContentsOfAPlaceHolderOnceParsed);
+                _template = value;
+                _parsed = false;
+            }
+        }
 
         #region public PDFXmlNamespaceCollection Namespaces
 
@@ -91,6 +105,8 @@ namespace Scryber.Components
         {
             get { return this._parsed; }
         }
+
+
         public PDFPlaceHolder()
             : this(Scryber.PDFObjectTypes.PlaceHolder)
         {
@@ -104,14 +120,15 @@ namespace Scryber.Components
         protected override void DoLoad(PDFLoadContext context)
         {
             base.DoLoad(context);
-            this.EnsureContentsParsed(this.ParsableContents, context);
+
+            //this.EnsureContentsParsed(this.ParsableContents, context);
         }
 
         protected override void OnDataBinding(PDFDataContext context)
         {
             base.OnDataBinding(context);
 
-            this.EnsureContentsParsed(this.ParsableContents, context);
+            //this.EnsureContentsParsed(this.ParsableContents, context);
         }
 
 
@@ -121,7 +138,7 @@ namespace Scryber.Components
 
             //If we did actually parse the contents here, then we should honour the lifcycle and DataBind ourselves.
             //If the content was previously parsed, then this would be automatic as the components were already in the collection.
-            bool parsed = this.EnsureContentsParsed(this.ParsableContents, context);
+            bool parsed = this.EnsureContentsParsed(context);
 
             if (parsed)
                 this.Contents.DataBind(context);
@@ -143,11 +160,11 @@ namespace Scryber.Components
         /// <param name="data"></param>
         /// <param name="context"></param>
         /// <returns>True if we did do the actual parsing when this method was called, otherwise false.</returns>
-        protected virtual bool EnsureContentsParsed(string data, PDFContextBase context)
+        protected virtual bool EnsureContentsParsed(PDFContextBase context)
         {
-            if (!this._parsed && !string.IsNullOrEmpty(data))
+            if (!this._parsed)
             {
-                IEnumerable<IPDFComponent> all = DoParseContents(data, context);
+                IEnumerable<IPDFComponent> all = DoParseContents(context);
 
                 foreach (IPDFComponent child in all)
                 {
@@ -177,13 +194,24 @@ namespace Scryber.Components
                 return false;
         }
 
-        protected virtual IEnumerable<IPDFComponent> DoParseContents(string data, PDFContextBase context)
+        protected virtual IEnumerable<IPDFComponent> DoParseContents(PDFContextBase context)
         {
             System.Xml.XmlNamespaceManager mgr = GetNamespaceManager();
-            Scryber.Data.PDFParsableTemplateGenerator gen = new Data.PDFParsableTemplateGenerator(data, mgr);
-            IEnumerable<IPDFComponent> all = gen.Instantiate(0, this);
+            IPDFTemplate gen = null;
 
-            return all;
+            if (!string.IsNullOrEmpty(this.ParsableContents))
+                gen = new Data.PDFParsableTemplateGenerator(this.ParsableContents, mgr);
+            else if (null != this.Template)
+                gen = this.Template;
+
+            if (null != gen)
+            {
+                IEnumerable<IPDFComponent> all = gen.Instantiate(0, this);
+
+                return all;
+            }
+            else
+                return new IPDFComponent[] { };
         }
 
 

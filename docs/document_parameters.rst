@@ -415,7 +415,7 @@ And we can generate this content by providing the Theme as well as the List.
 
 These styles should then be used in the creation of the document
 
-..image:: images/documentstyleparameters.png
+.. image:: images/documentstyleparameters.png
 
 Very quickly our document complexity can grow and then it becomes more important to split the data from the content, and we can do that using the
 :doc:`document_datasources` and :doc:`document_controllers`
@@ -524,6 +524,92 @@ The xml parameter will accept XmlNode values, XPathNavigators, and Linq XElement
 Generating this file again will render the content with the new xml data.
 
 .. image:: images/documentxmlparameters2.png
+
+
+Template Parameters
+===================
+
+Along with the XML parameter, scryber supports the Template parameter, which is xml content of scryber components.
+So you can provide both dynamic data, and dynamic structure to your document at generation time.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Params>
+        <!-- Declare the parameters -->
+        <pdf:String-Param id="MyTitle" value="Document Title" />
+        
+        <!-- This is the xml content that will be used by default -->
+        <pdf:Xml-Param id="MyData" >
+        <Root>
+            <Entry id="First">First Name</Entry>
+            <Entry id="Second">Second Name</Entry>
+            <Entry id="Third">Third Name</Entry>
+        </Root>
+        </pdf:Xml-Param>
+
+        <!-- this is the template content. -->
+        <pdf:Template-Param id="MyContent" >
+            <pdf:Li><pdf:Text value="{xpath:text()}" /></pdf:Li>
+        </pdf:Template-Param>
+
+    </Params>
+
+    <Pages>
+        <!-- Use the 'MyTitle' parameter for the outline. -->
+        <pdf:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
+        <Content>
+            <!-- And use it as the text on the heading with a visble flag and background -->
+            <pdf:H1  text="{@:MyTitle}" > </pdf:H1>
+            <pdf:Para >This is the content of the xml document</pdf:Para>
+            
+            <pdf:Ul>
+                <!-- Now we specify the template content from the parameter -->
+                <data:ForEach value="{@:MyData}" select="//Root/Entry" template="{@:MyContent}" ></data:ForEach>
+            </pdf:Ul>
+
+            
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+Creating this document at runtime pulls the template data from the parameter `MyContent`
+
+We can then change the value in code to use a different template as well as the xml (including any binding statements).
+
+.. code-block:: csharp
+
+     [HttpGet]
+    public IActionResult DocumentTemplateParameters()
+    {
+        var path = _rootPath;
+        path = System.IO.Path.Combine(path, "Views", "PDF", "DocumentTemplateParameters.pdfx");
+        var doc = PDFDocument.ParseDocument(path);
+
+        doc.Params["MyTitle"] = "Xml Document Title";
+        var ele = new XElement("Root",
+            new XElement("Entry", new XAttribute("id", "Fourth"), new XText("Fourth Name")),
+            new XElement("Entry", new XAttribute("id", "Fifth"), new XText("Fifth Name")),
+            new XElement("Entry", new XAttribute("id", "Sixth"), new XText("Sixth Name"))
+            );
+        doc.Params["MyData"] = ele;
+
+        //Just a simple example to change the template.
+        doc.Params["MyTemplate"] = "<pdf:Li><pdf:H1 text='{xpath:text()}' /></pdf:Li>";
+
+        return this.PDF(doc);
+    }
+
+The document will then be generated with headings as the content of the list items, rather than just text values.
+
+.. image:: images/documenttemplateparameters.png
+
+
 
 
 Passing parameters to References

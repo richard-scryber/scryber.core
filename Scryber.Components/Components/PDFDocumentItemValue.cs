@@ -647,6 +647,7 @@ namespace Scryber.Components
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_documentParam")]
     public class PDFXmlItemValue : PDFDocumentItemValue
     {
+        [PDFAttribute("value")]
         [PDFElement()]
         public System.Xml.XmlNode XmlData { get; set; }
 
@@ -730,12 +731,51 @@ namespace Scryber.Components
 
         protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
         {
-            throw new NotSupportedException();
+            var namespaceManager = GetNamespaceManager(owner);
+            this.Template = new Data.PDFParsableTemplateGenerator(value, namespaceManager);
         }
 
         protected override void DoSetNativeValue(object value, IPDFComponent owner)
         {
-            throw new NotSupportedException();
+            this.Template = (IPDFTemplate)value;
+        }
+
+        protected virtual XmlNamespaceManager GetNamespaceManager(IPDFComponent owner)
+        {
+            System.Xml.NameTable nt = new System.Xml.NameTable();
+            System.Xml.XmlNamespaceManager mgr = new System.Xml.XmlNamespaceManager(nt);
+            IPDFRemoteComponent parsed = this.GetParsedParent(owner);
+            IDictionary<string, string> parsedNamespaces = null;
+
+            //add the namespaces of the last parsed document so we can infer any declarations
+            if (null != parsed)
+            {
+                parsedNamespaces = parsed.GetDeclaredNamespaces();
+                if (null != parsedNamespaces)
+                {
+                    foreach (string prefix in parsedNamespaces.Keys)
+                    {
+                        mgr.AddNamespace(prefix, parsedNamespaces[prefix]);
+                    }
+                }
+            }
+
+            
+            return mgr;
+        }
+
+        protected IPDFRemoteComponent GetParsedParent(IPDFComponent component)
+        {
+            if (component is IPDFRemoteComponent)
+            {
+                IPDFRemoteComponent remote = (IPDFRemoteComponent)component;
+                return remote;
+            }
+
+            if (null != component.Parent)
+                return GetParsedParent(component.Parent);
+            else
+                return null;
         }
 
     }

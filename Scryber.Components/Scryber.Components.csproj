@@ -5,14 +5,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.13</PackageVersion>
+    <PackageVersion>1.0.0.14</PackageVersion>
     <Authors>Silicon Reef</Authors>
     <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.13
+    <PackageReleaseNotes>1.0.0.14
+---------------------------------------
+
+Added the template property to the Placeholder, and support for updating templates to parameters
+
+1.0.0.13
 ---------------------------------------
 
 Stronger typing on the parameters and object parameter, and support for XML pararmeters as XPath or XNode values.
