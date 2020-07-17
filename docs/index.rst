@@ -98,11 +98,12 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     code_vs_xml
     document_structure
     document_styles
-    referencing_files
     document_model
+    document_components
     document_parameters
     document_databinding
     document_controllers
+    referencing_files
     component_positioning
     drawing_colors
     drawing_fonts

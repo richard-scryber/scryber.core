@@ -609,13 +609,24 @@ The document will then be generated with headings as the content of the list ite
 
 .. image:: images/documenttemplateparameters.png
 
+The following components support the use of the template attrobute to pull the value from a parameter.
 
+* ForEach (see :doc:`reference/data_foreach`)
+* PlaceHolder (see :doc:`reference/pdf_placeholder`)
+* DataTemplateColumn (see :doc:`reference/data_templatecolumn`)
+* Choose When (see :doc:`reference/data_choose`)
+* Choose Otherwise (see :doc:`reference/data_choose`)
+* If (see :doc:`reference/data_if`)
 
 
 Passing parameters to References
 ================================
 
+The final capability for discussion is the use of the parameters when loading referenced files.
 
+This is discussed in detail in the `Overriding and passing data` section of :doc:`referencing_files` and any type of data can be passed
+including templates and objects.
 
+It starts to get really fun what you can do!
 
 

@@ -62,18 +62,22 @@ namespace Scryber.Data
         //
 
         [PDFTemplate()]
+        [PDFAttribute("item-template")]
         [PDFElement("ItemTemplate")]
         public IPDFTemplate ItemTemplate { get; set; }
 
         [PDFTemplate()]
+        [PDFAttribute("alternate-item-template")]
         [PDFElement("AlternatingItemTemplate")]
         public IPDFTemplate AlternatingItemTemplate { get; set; }
 
         [PDFTemplate()]
+        [PDFAttribute("header-template")]
         [PDFElement("HeaderTemplate")]
         public IPDFTemplate HeaderTemplate { get; set; }
 
         [PDFTemplate()]
+        [PDFAttribute("footer-template")]
         [PDFElement("FooterTemplate")]
         public IPDFTemplate FooterTemplate { get; set; }
 
