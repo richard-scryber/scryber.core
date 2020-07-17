@@ -1,6 +1,6 @@
-================================
-Data Binding in Scryber
-================================
+=================================
+Available Data Sources in Scryber
+=================================
 
 Content to complete
 
