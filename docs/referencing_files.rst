@@ -1,5 +1,5 @@
 ==============================================
-Splitting your document(s) into multiple files
+Splitting into multiple files
 ==============================================
 
 For large documents or projects, it's often easier to split your templates into multiple files.

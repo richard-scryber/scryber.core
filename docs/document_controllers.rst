@@ -1,5 +1,5 @@
 ==========================================
-Using controllers with your documents - td
+Using controllers with your templates - td
 ==========================================
 
 Content to complete

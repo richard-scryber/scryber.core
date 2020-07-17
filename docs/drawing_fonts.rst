@@ -1,5 +1,5 @@
 ======================================
-Document drawing fonts and styles - td
+Document fonts and font styles - td
 ======================================
 
 Fonts are by detault automatically loaded at startup, and can be referenced by name.

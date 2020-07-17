@@ -1,5 +1,5 @@
 ======================================
-Passing data to your document template
+Passing data to your template
 ======================================
 
 A document template is just that, a template.
@@ -324,7 +324,7 @@ The result should come out with the content dynamically assigned.
 .. image:: images/documentcontrollerssimple.png
 
 
-For more information on controllers and the event model see :doc:`handling_events` and :doc:`document_lifecycle`
+For more information on controllers and the event model see :doc:`document_controllers` and :doc:`document_lifecycle`
 
 
 Which should I use?
@@ -332,6 +332,9 @@ Which should I use?
 
 All 3 methods of generating dynamic content within your template have their own benefits, and they are not mutually exclusive.
 
-* The simplest is using parameters but the model can become too complex. :doc:`document_parameters`
-* Moving the model to one or more data sources can be a quick solution as complexity increases :doc:`document_databinding`
-* Adding a controller gives complete 'control' for complex business logic. :doc:`handling_events`
+* The simplest is using parameters but the model can become too complex. 
+    * :doc:`document_parameters`
+* Moving the model to one or more data sources can be a quick solution as complexity increases 
+    * :doc:`document_databinding`
+* Adding a controller gives complete 'control' for complex business logic. 
+    * :doc:`document_controllers`

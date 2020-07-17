@@ -97,9 +97,9 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     gui_controller_full
     code_vs_xml
     document_structure
+    document_components
     document_styles
     document_model
-    document_components
     document_parameters
     document_databinding
     document_controllers

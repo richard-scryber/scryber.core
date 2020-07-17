@@ -45,7 +45,7 @@ Why use one over the other
 --------------------------
 
 We always think that the declarative is better for what you need, but sometimes building in code works.
-Using the `event model <handling_events>`_ allows you to hook content back into a document template.
+Using the :doc:`document_controllers` allows you to hook content back into a document template.
 
 In this documentation, we will concentrate on the use of the declarative XML with code where appropriate, but remember that 
 everything that is declared can be coded too.
