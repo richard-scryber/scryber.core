@@ -1,6 +1,6 @@
-========================
-Positioning your content
-========================
+==============================
+Positioning your content - td
+==============================
 
 Scryber has an intelligent layout engine. By default eveything will be laid out as per the flowing layout of the document Pages and columns.
 Each component, be it block level or inline will have a position next to its siblings and move and following content along in the document.
