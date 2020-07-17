@@ -65,6 +65,14 @@ Standard structural components
 * Component-Ref
     * A reference to an external file or stream that will be injected into the page at runtime.
     * see :doc:`referencing_files` 
+* Column break
+    * Stops the flow of content within the current region, and moves any following content onto the next available column.
+    * Can be positioned at any depth within a multicolumn layout.
+    * see :doc:`document_layout` and :doc:`reference/pdf_columnbreak`
+* Page break
+    * Stops the flow of content within the current page, and moves any following content onto the next available page.
+    * Can be positioned at any depth within a layout.
+    * see :doc:`document_layout` and :doc:`reference/pdf_pagebreak`
 
 
 Textual components
@@ -95,6 +103,12 @@ Textual components
     * A textual compenent that displays the page number of a referenced component.
     * Supports the use of page section counting and total document page count.
     * see :doc:`reference/pdf_pageof`
+* Link
+    * A hyper link to a location within the current document, or another document, or a web resource.
+    * Content within can be styled appropriately.
+    * Document references can be based on ID or name.
+    * Page links can be First, Previous, Next, Last or numbered.
+    * see :doc:`document_linking` and :doc:`reference/pdf_link`
 
 
 Graphical components
@@ -176,20 +190,4 @@ Html components
     * see :doc:`using_html` for more information on Html in scryber.
     * see :doc:`reference/pdf_htmlfragment`
 
-Navigational components
-=======================
 
-* Link
-    * A hyper link to a location within the current document, or another document, or a web resource.
-    * Content within can be styled appropriately.
-    * Document references can be based on ID or name.
-    * Page links can be First, Previous, Next, Last or numbered.
-    * see :doc:`document_linking` and :doc:`reference/pdf_link`
-* Column break
-    * Stops the flow of content within the current region, and moves any following content onto the next available column.
-    * Can be positioned at any depth within a multicolumn layout.
-    * see :doc:`document_layout` and :doc:`reference/pdf_columnbreak`
-* Page break
-    * Stops the flow of content within the current page, and moves any following content onto the next available page.
-    * Can be positioned at any depth within a layout.
-    * see :doc:`document_layout` and :doc:`reference/pdf_pagebreak`
