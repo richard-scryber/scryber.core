@@ -104,20 +104,25 @@ They also support :doc:`document_columns`
             This is the content of the page, 
             
             <pdf:Div styles:fill-color="maroon" styles:margins="20pt 10pt 10pt 10pt" >This will always 
-            be on a new on the line, and it's content will then continue inline 
-            until it reaches the end and then flow onto the next line.</pdf:Div> 
+                be on a new on the line, and it's content will then continue inline 
+                until it reaches the end and then flow onto the next line.
+            </pdf:Div> 
             
             After a block, this with then continue with the previous flow on the next line.<pdf:Br/>
             A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
             
             <pdf:Div styles:fill-color="#666600" styles:bg-color="#BBBB00" styles:padding="10pt"
-                    styles:column-count="2">
-            Blocks also supports the use of inline and block content within them
-            <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
-            adjusting the line height as needed.</pdf:Span>
-            <!-- breaking onto a new column-->
-            <pdf:ColumnBreak />
-            <pdf:Div styles:fill-color="black" styles:bg-color="white" >As a separate block within the container</pdf:Div>
+                     styles:margins="10pt" styles:column-count="2">
+                Blocks also supports the use of inline and block content within them
+
+                <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
+                    adjusting the line height as needed.</pdf:Span>
+                    
+                <!-- breaking onto a new column-->
+                <pdf:ColumnBreak />
+
+                <pdf:Div styles:fill-color="black" styles:bg-color="white" >As a separate block within the container</pdf:Div>
+                And coming after the child block.
             </pdf:Div>
             
         </Content>
