@@ -86,10 +86,47 @@ Examples of blocks are Div's, Paragraphs, Tables, BlockQuotes, Headings, Images,
 
     </pdf:Document>
 
+.. image:: images/documentpositioningblocks.png
+
 Blocks also support the use of backgrounds, borders, margins and padding.
 They also support :doc:`document_columns`
 
-.. image:: images/documentpositioninginline.png
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                  xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            This is the content of the page, 
+            
+            <pdf:Div styles:fill-color="maroon" styles:margins="20pt 10pt 10pt 10pt" >This will always 
+            be on a new on the line, and it's content will then continue inline 
+            until it reaches the end and then flow onto the next line.</pdf:Div> 
+            
+            After a block, this with then continue with the previous flow on the next line.<pdf:Br/>
+            A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
+            
+            <pdf:Div styles:fill-color="#666600" styles:bg-color="#BBBB00" styles:padding="10pt"
+                    styles:column-count="2">
+            Blocks also supports the use of inline and block content within them
+            <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
+            adjusting the line height as needed.</pdf:Span>
+            <!-- breaking onto a new column-->
+            <pdf:ColumnBreak />
+            <pdf:Div styles:fill-color="black" styles:bg-color="white" >As a separate block within the container</pdf:Div>
+            </pdf:Div>
+            
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+.. image:: images/documentpositioningblocks2.png
 
 
 Changing the position-mode
