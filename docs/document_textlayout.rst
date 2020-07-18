@@ -1,5 +1,5 @@
 ================================
-Laying out content in pages - td
+Textual Layout - td
 ================================
 
 Content to complete

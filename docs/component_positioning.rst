@@ -6,6 +6,83 @@ Scryber has an intelligent layout engine. By default eveything will be laid out 
 Each component, be it block level or inline will have a position next to its siblings and move and following content along in the document.
 If the content comes to the end of the page and cannot be fitted, then if allowed, it will be moved to the next page.
 
+Inline Positioning
+==================
+
+Inline components such as text and spans will continue on the current line, and if they do not fit all the contnet, then they will 
+flow onto the next line (or column or page). If the content moves, so the inline content will move with the container.
+
+Examples of inline components are spans, labels, text literals, page numbers,
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            This is the content of the page, <pdf:Span styles:fill-color="maroon" >and this will continue on the current line until it reaches the end
+            and then flow onto the next line.</pdf:Span> This with then flow after the line.<pdf:Br/>
+            A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
+            <pdf:Span styles:fill-color="maroon" styles:font-size="30pt" >It also supports the use of multiple font sizes</pdf:Span> in multiple lines, 
+            adjusting the line height as needed.
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+Generating this document will create the following output (see :doc:`mvc_controller_full` or :doc:`gui_controller_full`).
+
+.. image:: images/documentpositioninginline.png
+
+Block Positioning
+=================
+
+A block starts on a new line in the content of the page. Children will be laid out within the block (unless absolutely positioned), and
+content after the block will also begin a new line.
+
+Examples of blocks are Div's, Paragraphs, Tables, BlockQuotes, Headings, Images, and Shapes.
+
+[Example TBD]
+
+Blocks also support the use of backgrounds, borders, margins and padding.
+They also support :doc:`document_columns`
+
+[Example TBD]
+
+
+Changing the position-mode
+==========================
+
+It is posible to change the default position mode for many components on the page. A span can be a block and a div can be a span.
+
+Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also support the use of the the position mode.
+
+[Example TBD]
+
+The full-width attribute
+========================
+
+The attribute full-width makes any block component automatically fill the available width of the region. Even if the inner content does not need it.
+It's effectivly set as 100% width.
+
+If it's set to false, the block will be as wide as needed (without going beyond the boundaries of it's own containing region).
+This applies to the page, or a column containing the block.
+
+By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and Lists are not.
+
+[Example TBD]
+
+Flowing around components
+=========================
+
+At the moment scryber does not support flowing content around other components.
+It is something we are looking at supporting. If you want to help, please get in touch.
+
 Relative Positioning
 ====================
 
@@ -47,15 +124,12 @@ Units of position can either be specified in
 * millimeters e.g. `12.7mm`
 
 
-If no units are specified then the default is points. See `Scryber Units <drawing_units>`_ for more information
+If no units are specified then the default is points. See :doc:`drawing_units` for more information.
 
-Inner content
-=============
-
-Whether a block is relative or absolutely positioned does not matter to the inner content. 
-The inner content will continue to flow as normal, or also be relatively or absolutely positioned.
+By specifying an x (left) value, and / or a y (top) value the component will be moved relative to its container, or the page.
 
 [Example TBD]
+
 
 Rendering Order
 ===============
@@ -65,10 +139,12 @@ If a block is relatively positioned, it will overlay any content that preceded i
 
 [Example TBD]
 
-Positioning components
+
+
+Positioned components
 ======================
 
 There are 2 components that take advantage of the positioning within Scryber.
 
-1. **The Canvas** positions all direct child components in the canvas as relative, whether they have been decared as such or not.
-2. **The Layer Group** has a collection of child Layers. These will be relatively positioned to the group.
+1. :doc:`reference/pdf_canvas` positions all direct child components in the canvas as relative, whether they have been decared as such or not.
+2. :doc:`reference/pdf_layergroup` has a collection of child Layers. These will be relatively positioned to the group.

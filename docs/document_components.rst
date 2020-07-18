@@ -22,7 +22,8 @@ Document level visual components
 * Page-Ref
     * A reference to one of the above components in a separate file.
     * Specified via a required source attribute.
-    * see :doc:`referencing_files` 
+    * see :doc:`referencing_files` and :doc:`reference/pdf_page`
+
 
 Standard structural components
 ==============================
