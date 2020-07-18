@@ -12,6 +12,9 @@ Inline Positioning
 Inline components such as text and spans will continue on the current line, and if they do not fit all the contnet, then they will 
 flow onto the next line (or column or page). If the content moves, so the inline content will move with the container.
 
+Carriager returns within the content of the xml file are ignored by default, 
+as per html (see :doc:`reference/pdf_pre` if you don't want them to be.).
+
 Examples of inline components are spans, labels, text literals, page numbers,
 
 .. code-block:: xml
@@ -23,21 +26,27 @@ Examples of inline components are spans, labels, text literals, page numbers,
     <Pages>
     
         <pdf:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            This is the content of the page, <pdf:Span styles:fill-color="maroon" >and this will continue on the current line until it reaches the end
-            and then flow onto the next line.</pdf:Span> This with then flow after the line.<pdf:Br/>
-            A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
-            <pdf:Span styles:fill-color="maroon" styles:font-size="30pt" >It also supports the use of multiple font sizes</pdf:Span> in multiple lines, 
-            adjusting the line height as needed.
-        </Content>
+            <Content>
+                This is the content of the page, 
+                <pdf:Span styles:fill-color="maroon" >and this will continue on the current line until it reaches the end
+                and then flow onto the next line.</pdf:Span> 
+                This with then flow after the line.<pdf:Br/>
+                A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
+                <pdf:Span styles:fill-color="maroon" styles:font-size="30pt" >It also supports the use of multiple font sizes</pdf:Span> in multiple lines, 
+                adjusting the line height as needed.
+            </Content>
         </pdf:Page>
     </Pages>
 
     </pdf:Document>
 
-Generating this document will create the following output (see :doc:`mvc_controller_full` or :doc:`gui_controller_full`).
+Generating this document will create the following output 
+(see :doc:`mvc_controller_full` or :doc:`gui_controller_full` to understand how to do this).
 
 .. image:: images/documentpositioninginline.png
+
+For more information on laying out textual content see :doc:`documenttextlayout`
+
 
 Block Positioning
 =================
@@ -47,19 +56,46 @@ content after the block will also begin a new line.
 
 Examples of blocks are Div's, Paragraphs, Tables, BlockQuotes, Headings, Images, and Shapes.
 
-[Example TBD]
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+        <Pages>
+        
+            <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+                <Content>
+                    This is the content of the page, 
+                    
+                    <pdf:Div styles:fill-color="maroon" >This will always be on a new on the line, and it's content will then continue inline until it reaches the end
+                    and then flow onto the next line.</pdf:Div> 
+                    
+                    After a block, this with then continue with the previous flow on the next line.<pdf:Br/>
+                    A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
+                    
+                    <pdf:Div styles:fill-color="#666600" >
+                    Blocks also supports the use of inline and block content within them
+                    <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, adjusting the line height as needed.</pdf:Span>
+                    <pdf:Div >As a separate block within the container</pdf:Div>
+                    </pdf:Div>
+                    
+                </Content>
+            </pdf:Page>
+        </Pages>
+
+    </pdf:Document>
 
 Blocks also support the use of backgrounds, borders, margins and padding.
 They also support :doc:`document_columns`
 
-[Example TBD]
+.. image:: images/documentpositioninginline.png
 
 
 Changing the position-mode
 ==========================
 
 It is posible to change the default position mode for many components on the page. A span can be a block and a div can be a span.
-
 Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also support the use of the the position mode.
 
 [Example TBD]
