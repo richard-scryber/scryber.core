@@ -117,7 +117,7 @@ They also support :doc:`document_columns`
 
                 <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
                     adjusting the line height as needed.</pdf:Span>
-                    
+
                 <!-- breaking onto a new column-->
                 <pdf:ColumnBreak />
 
@@ -140,7 +140,48 @@ Changing the position-mode
 It is posible to change the default position mode for many components on the page. A span can be a block and a div can be a span.
 Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also support the use of the the position mode.
 
-[Example TBD]
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                  xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+            <Content>
+                <pdf:Div styles:border-color="black" styles:border-width="1pt" >
+                    The content of this div is all as a block (by default)
+                    
+                    <pdf:Div styles:fill-color="maroon" >This div is positioned as a block.</pdf:Div>
+
+                    <!-- Images are by detault displayed as blocks -->
+                    <pdf:Image styles:width="60pt" src="../../Content/Images/group.png" />
+                    
+                    After the content.
+                </pdf:Div>
+
+                <pdf:Div styles:border-color="black" styles:border-width="1pt" >
+                    The content of this div is set explicity to inline.
+                    
+                    <pdf:Div styles:position-mode="Inline" styles:fill-color="maroon">This div is positioned as a block.</pdf:Div>
+
+                    <!-- Image is also set to inline but will increase the line height automatically -->
+                    <pdf:Image styles:position-mode="Inline" styles:width="60pt"  src="../../Content/Images/group.png" />
+
+                    After the content.
+                </pdf:Div>
+                
+            
+            </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+
+.. image:: images/documentpositioningblocks2.png
+
 
 The full-width attribute
 ========================

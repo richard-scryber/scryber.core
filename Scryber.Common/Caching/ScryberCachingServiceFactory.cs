@@ -1,10 +1,16 @@
 ﻿using System;
-namespace Scryber.Common.Caching
+
+namespace Scryber.Caching
 {
-    public class ScryberCachingServiceFactory
+    public class ScryberCachingServiceFactory : IScryberCachingServiceFactory
     {
         public ScryberCachingServiceFactory()
         {
+        }
+
+        public IPDFCacheProvider GetProvider()
+        {
+            return new PDFStaticCacheProvider();
         }
     }
 }

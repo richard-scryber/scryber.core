@@ -32,6 +32,7 @@
     <Folder Include="Binding\" />
     <Folder Include="Mocks\" />
     <Folder Include="Mocks\Fonts\" />
+    <Folder Include="Content\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />

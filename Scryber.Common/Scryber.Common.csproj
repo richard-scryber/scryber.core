@@ -24,5 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Options\" />
+    <Folder Include="Caching\" />
   </ItemGroup>
 </Project>

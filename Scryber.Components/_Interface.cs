@@ -370,25 +370,7 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFCacheProvider
-
-    /// <summary>
-    /// Defines the contract all CacheProviders must conform to 
-    /// in order to support access to the data cache
-    /// </summary>
-    public interface IPDFCacheProvider
-    {
-        bool TryRetrieveFromCache(string type, string key, out object data);
-
-        void AddToCache(string type, string key, object data);
-
-        void AddToCache(string type, string key, object data, TimeSpan duration);
-
-        void AddToCache(string type, string key, object data, DateTime expires);
-
-    }
-
-    #endregion
+    
 
     //
     // Data Interfaces

@@ -620,13 +620,15 @@ namespace Scryber.Components
             }
         }
 
+        /// <summary>
+        /// Gets an instance of the ICaching provider from the service provider.
+        /// </summary>
+        /// <returns></returns>
         protected virtual IPDFCacheProvider CreateCacheProvider()
         {
-            throw new NotSupportedException("Use the services provider");
-            //if (this.IsWebDocument)
-            //    return Caching.PDFCacheProvider.GetWeb();
-            //else
-            //    return Caching.PDFCacheProvider.GetStatic();
+
+            var factory = ServiceProvider.GetService<IScryberCachingServiceFactory>();
+            return factory.GetProvider();
         }
 
         #endregion

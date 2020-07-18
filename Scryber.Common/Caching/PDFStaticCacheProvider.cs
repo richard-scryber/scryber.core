@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber;
-using Scryber.Drawing;
 
 namespace Scryber.Caching
 {
@@ -175,9 +174,9 @@ namespace Scryber.Caching
         private static string CombineKey(string type, string key)
         {
             if (null == type)
-                throw RecordAndRaise.ArgumentNull("type");
+                throw new ArgumentNullException("type");
             else if (null == key)
-                throw RecordAndRaise.ArgumentNull("key");
+                throw new ArgumentNullException("key");
             else
                 return String.Concat("pdf:", type, ":", key);
         }

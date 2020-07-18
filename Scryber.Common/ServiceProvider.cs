@@ -124,8 +124,11 @@ namespace Scryber
             private static IDictionary<Type,object> InitFirst()
             {
                 var initialized = new Dictionary<Type, object>();
+
                 initialized.Add(typeof(IPDFPathMappingService), new Utilities.LocalFilePathMappingService());
                 initialized.Add(typeof(IScryberConfigurationService), new Utilities.ScryberDefaultConfigurationService());
+                initialized.Add(typeof(IScryberCachingServiceFactory), new Caching.ScryberCachingServiceFactory());
+
                 return initialized;
             }
         }

@@ -458,6 +458,9 @@ namespace Scryber
 
     #endregion
 
+    /// <summary>
+    /// Interface for the 
+    /// </summary>
     public interface IScryberConfigurationService
     {
         Options.FontOptions FontOptions { get; }
@@ -474,6 +477,34 @@ namespace Scryber
 
         void Reset();
     }
+
+    /// <summary>
+    /// Service for getting a caching provider
+    /// </summary>
+    public interface IScryberCachingServiceFactory
+    {
+        IPDFCacheProvider GetProvider();
+    }
+
+    #region public interface IPDFCacheProvider
+
+    /// <summary>
+    /// Defines the contract all CacheProviders must conform to 
+    /// in order to support access to the data cache
+    /// </summary>
+    public interface IPDFCacheProvider
+    {
+        bool TryRetrieveFromCache(string type, string key, out object data);
+
+        void AddToCache(string type, string key, object data);
+
+        void AddToCache(string type, string key, object data, TimeSpan duration);
+
+        void AddToCache(string type, string key, object data, DateTime expires);
+
+    }
+
+    #endregion
 
     #region public interface IPDFDocument : IPDFLoadableComponent
 
