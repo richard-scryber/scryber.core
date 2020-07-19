@@ -166,7 +166,7 @@ Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also sup
                     
                     <pdf:Div styles:position-mode="Inline" styles:fill-color="maroon">This div is positioned as a block.</pdf:Div>
 
-                    <!-- Image is also set to inline but will increase the line height automatically -->
+                    <!-- Image is also set to inline and will increase the line height automatically -->
                     <pdf:Image styles:position-mode="Inline" styles:width="60pt"  src="../../Content/Images/group.png" />
 
                     After the content.
@@ -180,7 +180,7 @@ Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also sup
     </pdf:Document>
 
 
-.. image:: images/documentpositioningblocks2.png
+.. image:: images/documentpositioningblocks3.png
 
 
 The full-width attribute
@@ -194,7 +194,74 @@ This applies to the page, or a column containing the block.
 
 By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and Lists are not.
 
-[Example TBD]
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Styles>
+        <!-- Using a style to repeat the border is easier -->
+        <styles:Style applied-class="bordered" >
+            <styles:Border color="black" style="Solid" width="1pt"/>
+            <styles:Padding all="5pt"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            <pdf:Div styles:class="bordered" >
+                This div is full width<pdf:Br/>
+                And will extend beyond the content.<pdf:Br/>
+                To the width of its container.
+            </pdf:Div>
+            <pdf:Br/>
+            <pdf:Div styles:class="bordered" styles:full-width="false" >
+                This div is NOT full width<pdf:Br/>
+                And will only size to the content.<pdf:Br/>
+            </pdf:Div>
+            <pdf:Br/>
+            <pdf:Div styles:class="bordered" styles:full-width="false" >
+                This div is NOT full width,
+                but will  size to the content available in the container,
+                and then flow to the next line.
+            </pdf:Div>
+            <pdf:Br/>
+            <!-- Tables are not by default full width-->
+            <pdf:Table>
+                <pdf:Row>
+                    <pdf:Cell styles:class="bordered">First</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Second</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Third</pdf:Cell>
+                </pdf:Row>
+                <pdf:Row>
+                    <pdf:Cell styles:class="bordered">Fourth</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Fifth</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Sixth</pdf:Cell>
+                </pdf:Row>
+            </pdf:Table>
+            <pdf:Br/>
+            <!-- Tables are not by default full width-->
+            <pdf:Table styles:full-width="true">
+                <pdf:Row>
+                    <pdf:Cell styles:class="bordered">First</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Second</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Third</pdf:Cell>
+                </pdf:Row>
+                <pdf:Row>
+                    <pdf:Cell styles:class="bordered">Fourth</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Fifth</pdf:Cell>
+                    <pdf:Cell styles:class="bordered">Sixth</pdf:Cell>
+                </pdf:Row>
+            </pdf:Table>
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+.. image:: images/documentpositioningfullwidth.png
 
 Flowing around components
 =========================
