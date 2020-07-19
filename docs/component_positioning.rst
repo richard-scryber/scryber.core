@@ -313,6 +313,8 @@ The component will no longer be in the flow of any inline content, nor alter the
 
     </pdf:Document>
 
+.. image:: images/documentpositioningrelative.png
+
 By default the position will be 0,0 (top, left), but using the x and y attributes it can be altered.
 The parent block will grow to accomodate the content including any of it's relatively positioned content.
 And push any content after the block down.
@@ -353,6 +355,7 @@ And push any content after the block down.
 
     </pdf:Document>
 
+.. image:: images/documentpositioningrelative2.png
 
 Absolute Positioning
 ====================
@@ -411,7 +414,8 @@ Numeric Positioning
 ===================
 
 All content positioning is from the top left corner of the page or parent. 
-This is a natural positioning mechanism for most cultures and developers.
+This is a natural positioning mechanism for most cultures and developers. 
+(unlike PDF, which is bottom left to top right).
 
 Units of position can either be specified in 
 
@@ -421,10 +425,6 @@ Units of position can either be specified in
 
 
 If no units are specified then the default is points. See :doc:`drawing_units` for more information.
-
-By specifying an x (left) value, and / or a y (top) value the component will be moved relative to its container, or the page.
-
-[Example TBD]
 
 
 Rendering Order
