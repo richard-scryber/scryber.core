@@ -242,7 +242,7 @@ By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and L
                 </pdf:Row>
             </pdf:Table>
             <pdf:Br/>
-            <!-- Tables are not by default full width-->
+            <!-- But can be set to full width explicitly or in styles -->
             <pdf:Table styles:full-width="true">
                 <pdf:Row>
                     <pdf:Cell styles:class="bordered">First</pdf:Cell>
@@ -263,6 +263,8 @@ By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and L
 
 .. image:: images/documentpositioningfullwidth.png
 
+For more on styles see :doc:`document_styles`
+
 Flowing around components
 =========================
 
@@ -272,30 +274,138 @@ It is something we are looking at supporting. If you want to help, please get in
 Relative Positioning
 ====================
 
-This declares the position of the component relative to the block parent.
-By default the position will be 0,0 (top, left), but using the x and y attributes it can be altered.
-
+When you set the position-mode to Relative, it declares the position of that component relative to the block parent.
 The component will no longer be in the flow of any inline content, nor alter the layout of the following components.
 
-The parent block will however grow to accomodate the content including it's relative positioning.
+.. code-block:: xml
 
-[Example TBD]
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <Styles>
+        <styles:Style applied-class="bordered">
+        <styles:Border color="black" style="Solid" width="1pt"/>
+        <styles:Padding all="5pt"/>
+        <styles:Background color="#AAAAAA" />
+        <styles:Margins top="5pt"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            This is the content of the page, 
+            
+            <pdf:Div styles:class="bordered" >This is the content above the block.</pdf:Div>
+
+            <pdf:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
+                <pdf:Span styles:position-mode="Relative" styles:bg-color="aqua" >This is relative</pdf:Span>
+                with the content within it.
+            </pdf:Div>
+
+            <pdf:Div styles:class="bordered">
+            After a block, this will then continue with the previous flow of content.
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+By default the position will be 0,0 (top, left), but using the x and y attributes it can be altered.
+The parent block will grow to accomodate the content including any of it's relatively positioned content.
+And push any content after the block down.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <Styles>
+        <styles:Style applied-class="bordered">
+        <styles:Border color="black" style="Solid" width="1pt"/>
+        <styles:Padding all="5pt"/>
+        <styles:Background color="#AAAAAA"/>
+        <styles:Margins top="5pt"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            This is the content of the page, 
+            
+            <pdf:Div styles:class="bordered" >This is the content above the block.</pdf:Div>
+
+            <pdf:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
+                <pdf:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is relative</pdf:Span>
+                with the content within it.
+            </pdf:Div>
+
+            <pdf:Div styles:class="bordered">
+            After a block, this will then continue with the previous flow of content.
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
 
 
 Absolute Positioning
 ====================
 
-The declares the position of the component relative to the current output page.
-By default the position will again be 0,0 (top, left), but using the x and y attributes it can be altered.
-
+Changing the positioning mode to Absolute makes the positioning relative to the current page being rendered.
 The component will no longer be in the flow of any content, nor alter the layout of following components.
 
-The parent block will NOT grow to accomodate the content, it is outside of the document flow completely.
+The parent block will NOT grow to accomodate the content.
+The content within the absolutely positioned component will be flowed within the available width and height of the page,
+but if a size is specified, then this will be honoured over and above the page size.
 
-If the absolutely positioned component is too big to fit on the page it will be clipped and not cause any overflow.
+.. code-block:: xml
 
-[Example TBD]
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <Styles>
+        <styles:Style applied-class="bordered">
+        <styles:Border color="black" style="Solid" width="1pt"/>
+        <styles:Padding all="5pt"/>
+        <styles:Background color="#AAAAAA" />
+        <styles:Margins top="5pt"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            This is the content of the page
+            
+            <pdf:Div styles:class="bordered" >This is the content above the block.</pdf:Div>
 
+            <pdf:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
+                <!-- Absolutely positioned content -->
+                <pdf:Span styles:position-mode="Absolute" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is absolute</pdf:Span>
+                with the content within it.
+            </pdf:Div>
+
+            <pdf:Div styles:class="bordered">
+                After a block, this will then continue with the previous flow of content.
+            </pdf:Div>
+            
+            <!-- Absolute postitioning can be applied to any component, and size can be specified. -->
+            <pdf:Image styles:position-mode="Absolute" src="../../Content/Images/group.png" styles:fill-opacity="0.7"
+                    styles:x="500pt" styles:y="150pt" styles:width="150pt" styles:height="150pt" />
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+
+.. image:: images/documentpositioningabsolute.png
 
 Numeric Positioning
 ===================
