@@ -91,27 +91,49 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
 
 .. toctree::
-    :maxdepth: 0
+    :caption: Getting Started
+    :maxdepth: 2
 
+    index
     mvc_controller_full
     gui_controller_full
+
+.. toctree::
+    :caption: Documents
+    :maxdepth: 2
+
     code_vs_xml
     document_structure
     document_components
     document_styles
     document_model
-    document_parameters
-    document_databinding
-    document_controllers
     referencing_files
     component_positioning
     drawing_colors
     drawing_fonts
     drawing_units
-    handling_events
+    
+.. toctree::
+    :caption: Binding data
+    :maxdepth: 2
+
+    document_parameters
+    document_databinding
+    document_controllers
+
+.. toctree::
+    :caption: Extending Scryber
+    :maxdepth: 2
+
     namespaces_and_assemblies
+    document_lifecycle
     scryber_configuration
     extending_scryber
+
+.. toctree::
+    :caption: Reference
+    :maxdepth: 2
+
     libgdiplus
     version_history
     reference/index
