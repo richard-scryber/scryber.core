@@ -477,6 +477,11 @@ By using this rule interesting effects can be designed.
 
 .. image:: images/documentpositioningover.png
 
+Position z-index
+================
+
+It's not currently supported, within scryber to specify a z-index on components. It may be supported in future.
+
 
 Positioned components
 ======================
