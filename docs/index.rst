@@ -92,15 +92,14 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
 .. toctree::
     :caption: Getting Started
-    :maxdepth: 2
+    :maxdepth: 1
 
-    index
     mvc_controller_full
     gui_controller_full
 
 .. toctree::
     :caption: Documents
-    :maxdepth: 2
+    :maxdepth: 1
 
     code_vs_xml
     document_structure
@@ -115,7 +114,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     
 .. toctree::
     :caption: Binding data
-    :maxdepth: 2
+    :maxdepth: 1
 
     document_parameters
     document_databinding
@@ -123,7 +122,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
 .. toctree::
     :caption: Extending Scryber
-    :maxdepth: 2
+    :maxdepth: 1
 
     namespaces_and_assemblies
     document_lifecycle
@@ -132,7 +131,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
 .. toctree::
     :caption: Reference
-    :maxdepth: 2
+    :maxdepth: 1
 
     libgdiplus
     version_history
