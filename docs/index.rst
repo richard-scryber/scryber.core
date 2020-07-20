@@ -98,7 +98,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     gui_controller_full
 
 .. toctree::
-    :caption: Documents
+    :caption: Layout Content.
     :maxdepth: 1
 
     code_vs_xml
@@ -113,7 +113,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     drawing_units
     
 .. toctree::
-    :caption: Binding data
+    :caption: Binding to data
     :maxdepth: 1
 
     document_parameters
