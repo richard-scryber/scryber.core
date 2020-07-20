@@ -433,8 +433,49 @@ Rendering Order
 All relative or absolutely positioned content will be rendered to the output in the order it appears in the document.
 If a block is relatively positioned, it will overlay any content that preceded it, but anything coming after will be over the top.
 
-[Example TBD]
+.. code-block:: xml
 
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <Styles>
+        <styles:Style applied-class="bordered">
+        <styles:Border color="black" style="Solid" width="1pt"/>
+        <styles:Padding all="5pt"/>
+        <styles:Background color="#AAAAAA" opacity="0.2"/>
+        <styles:Margins top="5pt"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <Content>
+            This is the content of the page, 
+            
+            <pdf:Div styles:class="bordered" >This is the flowing content within the block that 
+                will span over multiple lines
+                <pdf:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="25pt" 
+                            styles:y="20pt" styles:padding="4pt" >This is relative positioned</pdf:Span>
+                with this content over the top.
+            </pdf:Div>
+
+            <pdf:Div styles:class="bordered" styles:padding="10 60 10 10">
+                <pdf:Image src="../../Content/Images/group.png" styles:position-mode="Relative" 
+                            styles:x="-40pt" styles:y="-10pt" styles:width="100pt" styles:fill-opacity="0.5" />
+                This is the content that will flow over the top with the 60 point left padding and the 
+                image set at -40, -10 relative to the container with a width of 100pt
+                and a 50% opacity.
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+By using this rule interesting effects can be designed.
+
+.. image:: images/documentpositioningover.png
 
 
 Positioned components
