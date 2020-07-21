@@ -46,7 +46,7 @@ Loading from a stream
 It is always possible to mix the declarative with the code.
 For example we can load the XML as a string or stream and inject the data as needed.
 
-.. code-block:: java
+.. code-block:: csharp
 
         public IActionResult DocumentDynamic(string title = "New Document")
         {
@@ -74,15 +74,19 @@ For example we can load the XML as a string or stream and inject the data as nee
                                 <Content>
                                     <data:ForEach id='Foreach2' value='{@:Model.Entries}' >
                                         <Template>
-                                            <pdf:Label text='{@:.Name}' />
+                                            <pdf:Label text='{@:.Name}' /><pdf:Br/>
                                         </Template>
                                     </data:ForEach>
                                 </Content>
+                                <Footer>
+                                    <pdf:Div styles:padding='5pt' styles:h-align='Center' >
+                                        <pdf:PlaceHolder contents='{@:Model.Footer}' />
+                                    </pdf:Div>
                             </pdf:Section>
                         </Pages>
                     </pdf:Document>";
 
-            //With a string reader, but could be any stream or source.
+            //With a string reader, but could be any stream, text reader, xml reader or other source.
             using (var reader = new System.IO.StringReader(content))
             {
                 return PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
@@ -98,10 +102,13 @@ For example we can load the XML as a string or stream and inject the data as nee
                     {
                         new { Name = "First", Id = "FirstID"},
                         new { Name = "Second", Id = "SecondID"}
-                    }
+                    },
+                Footer = "<pdf:PageNumber />"
             };
             return data;
         }
+
+.. note:: When loading from a stream, there is no relative reference to a local file. If you need to reference other files do so relative to the working directory, or pass in your own IPDF_ReferenceResolver
 
 
 Why use one over the other
