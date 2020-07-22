@@ -38,7 +38,7 @@ namespace Scryber.Components
         /// Cannot be set if there is an existing 'DataSource' value.
         /// </summary>
         [PDFAttribute("datasource-id")]
-        [PDFDesignable("Data Source", Category="Data",Priority = 2,Type ="SelectDataSource")]
+        [PDFDesignable("Data Source", Category = "Data", Priority = 2, Type = "SelectDataSource")]
         public string DataSourceID
         {
             get { return _srcid; }
@@ -57,7 +57,7 @@ namespace Scryber.Components
         /// Gets or sets any XPath expression to use to extract the results
         /// </summary>
         [PDFAttribute("select")]
-        [PDFDesignable("Select", Priority = 2, Category = "Data", Type = "SelectDataPicker", JSOptions ="{\"context\":\"@datasource-id\",\"type\":\"Collection\"}")]
+        [PDFDesignable("Select", Priority = 2, Category = "Data", Type = "SelectDataPicker", JSOptions = "{\"context\":\"@datasource-id\",\"type\":\"Collection\"}")]
         public string SelectPath
         {
             get { return _sourcepath; }
@@ -118,7 +118,7 @@ namespace Scryber.Components
 
             return datasourceComponent;
         }
-        
-        
+
+
     }
 }

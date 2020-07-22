@@ -1,5 +1,5 @@
 ============================
-Scryber.Components.PDFPTable
+Scryber.Components.PDFTable
 ============================
 
 The page component is a single page. It does not normally flow onto multiple output pages.

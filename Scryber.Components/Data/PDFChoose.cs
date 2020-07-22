@@ -24,7 +24,7 @@ using Scryber.Components;
 namespace Scryber.Data
 {
     [PDFParsableComponent("Choose")]
-    public class PDFChoose : PDFBindingTemplateComponent
+    public class PDFChoose :  BBindingTemplateComponent
     {
 
         object _setvisible = null;

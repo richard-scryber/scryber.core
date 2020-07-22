@@ -108,7 +108,7 @@ For example we can load the XML as a string or stream and inject the data as nee
             return data;
         }
 
-.. note:: When loading from a stream, there is no relative reference to a local file. If you need to reference other files do so relative to the working directory, or pass in your own IPDF_ReferenceResolver
+.. note:: When loading from a stream, there is no relative reference to a local file. If you need to reference other files do so relative to the working directory, or pass in your own IPDFReferenceResolver
 
 
 Why use one over the other

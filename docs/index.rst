@@ -2,8 +2,10 @@
 Scryber Core
 =============
 
-Scryber.Core is **the** engine to create dynamic PDF documents quickly and easily with consistant styles and easy flowing layout.
-It's open source; flexible, styles based and data driven. A document generation tool written entirely in C# for dotnet core.
+Scryber.Core is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
+It's open source; flexible; styles based; data driven and with a low learning curve. 
+
+A document generation tool written entirely in C# for dotnet core.
 
 .. code-block:: xml
 
@@ -105,17 +107,22 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_structure
     document_components
     document_styles
-    document_model
     referencing_files
     component_positioning
-    drawing_colors
-    drawing_fonts
+    component_sizing
+    document_columns
     drawing_units
+    drawing_colors
+    drawing_images
+    drawing_fonts
+    drawing_paths
+    document_outline
     
 .. toctree::
     :caption: Binding to data
     :maxdepth: 1
 
+    document_model
     document_parameters
     document_databinding
     document_controllers
@@ -124,8 +131,9 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     :caption: Extending Scryber
     :maxdepth: 1
 
-    namespaces_and_assemblies
     document_lifecycle
+    dynamic_loading
+    namespaces_and_assemblies
     scryber_configuration
     extending_scryber
 

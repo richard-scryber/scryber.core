@@ -426,7 +426,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.IsNotNull(first, "Could not find inner heading");
 
                 var second = doc.FindAComponentById("xmlText2") as PDFTextLiteral;
-                Assert.IsNotNull(second, "Could not find the second text");
+                Assert.IsNotNull(second, "Could not find the second label");
 
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
 

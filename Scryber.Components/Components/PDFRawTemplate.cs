@@ -23,7 +23,7 @@ using System.Text;
 
 namespace Scryber.Components
 {
-    public class PDFRawTemplate : PDFBindingTemplateComponent
+    public class PDFRawTemplate :  BBindingTemplateComponent
     {
 
         public PDFRawTemplate()

@@ -28,7 +28,7 @@ namespace Scryber.Data
     /// if the test expression returns true or not null
     /// </summary>
     [PDFParsableComponent("If")]
-    public class PDFIf : PDFBindingTemplateComponent
+    public class PDFIf :  BBindingTemplateComponent
     {
 
         private bool _test;
