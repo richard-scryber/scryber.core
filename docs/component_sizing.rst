@@ -201,11 +201,88 @@ If not set then the values will be zero.
 Clipping
 ========
 
-Minimum size
-============
+The block level components also support the use of a clipping (with overflow action) to reduce the size of the visible area within the block
+By default, content is truncated when an explicit size is reached. It cannot overflow, because of the size, so is truncated.
+When the overflow action is set to Clip, however, all the inner content of the block will be rendered, but effectively in a window on top of the content.
+The content outside the view of the window is still there, but not visible.
 
-Maximum size
-============
+Along with the overflow action on a style a clipping can be applied in the same way as margins and padding.
+This will alter the 'size of the window' that content is seen through.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Styles>
+        
+        <styles:Style applied-type="pdf:Page" >
+            <styles:Font size="12pt"/>
+            <styles:Margins all="20pt"/>
+        </styles:Style>
+        
+        <styles:Style applied-class="bordered" >
+            <styles:Border color="#777" width="1pt" style="Solid"/>
+            <styles:Background color="#EEE"/>
+        </styles:Style>
+
+        <styles:Style applied-class="red">
+            <styles:Border color="red"/>
+        </styles:Style>
+
+        <!-- Our clipping style applies 10pt all around. 
+             It's NOT the same as padding.  -->
+             
+        <styles:Style applied-class="clipped" >
+            <styles:Clipping all="10pt"/>
+            <styles:Overflow action="Clip"/>
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:class="bordered" > <!--Styles applied to the page type -->
+            <Content>
+                <pdf:B>Content truncated by default</pdf:B>
+                <pdf:Div styles:class="bordered red" styles:height="35pt" >
+                    The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit, 
+                    it will be truncated to the last word an no other content shown. So this content will not be visible, as it cannot be completely laid out.
+                </pdf:Div>
+                <pdf:Br/>
+                <pdf:B>Content clipped, not truncated</pdf:B>
+                <pdf:Div styles:class="bordered red" styles:height="35pt" styles:overflow-action="Clip" >
+                    The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit,
+                    it will still be rendered on the page, but clipped to the bounds. So this content will be there, in part.
+                </pdf:Div>
+
+                <pdf:Br/>
+                <pdf:B>Content clipped, with inset of 10pt</pdf:B>
+                <pdf:Div styles:class="bordered red clipped" styles:height="35pt" >
+                    The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit,
+                    it will still be rendered on the page, but clipped to the bounds. So this content will be there, in part.
+                </pdf:Div>
+
+                <pdf:Br/>
+                <pdf:B>Image clipped by container, with inset of 10pt</pdf:B>
+                <pdf:Div styles:class="bordered red clipped" styles:width="100pt" >
+                    <pdf:Image src="../../Content/Images/landscape.jpg" />
+                </pdf:Div>
+            </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+
+.. note:: The clipping only applies to the inner content. It's effectively drawn and then clipped to shape. This means that clipping directly on images is not supported.
+
+.. image:: images/documentsizingclipping.png
+
+
+Minimum and Maximum size
+========================
+
 
 
 Sizing Grid
