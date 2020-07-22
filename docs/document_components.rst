@@ -36,7 +36,7 @@ Standard structural components
     * see :doc:`reference/pdf_span`
 * Table
     * A grid of rows and cells (that can be spanned across columns.
-    * see :doc:`reference/pdf_tablegrid`
+    * see :doc:`reference/pdf_table`
 * Lists
     * Ordered lists with numbering styles.
     * Unodered lists with a bullet styles.
@@ -120,21 +120,21 @@ Graphical components
     * Supports the use of full, relative or dynamic url references.
     * Supports png, jpeg and tiff file formats.
     * Supports alpha channels where available in the source.
-    * see :doc:`document_images` and :doc:`reference/pdf_image`
+    * see :doc:`drawing_images` and :doc:`reference/pdf_image`
 * Horizontal Rule
     * A single line within the flow of the document.
     * Can be styled as a independant component.
     * see :doc:`reference/pdf_hr`
 * Line, Rect, Polygon, Ellipse, Path
     * Standard drawing components that can be used either within the flow of the content or for drawing/designs.
-    * see :doc:`document_paths` 
+    * see :doc:`drawing_paths` 
     * and for individual components :doc:`reference/pdf_line`, :doc:`reference/pdf_rect`, :doc:`reference/pdf_ellipse`, :doc:`reference/pdf_polygon`, :doc:`reference/pdf_path`
 
 
 Data visual components
 ======================
 
-For a general use of the data components see :doc:`document_databinding`.
+For a general use of the data components see :doc:`document_model` and  :doc:`document_databinding`.
 And for an overview of the data sources available see :doc:`document_datasources`
 
 * ForEach

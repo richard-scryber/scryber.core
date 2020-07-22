@@ -1,8 +1,8 @@
 ================================
-A Scryber XML Document structure
+A Scryber XML File structure
 ================================
 
-At the root, the document has a number of capabilities that change the output content.
+At the root, the Document file (.pdfx) has a number of capabilities that change the output content.
 
 
 * Scryber Processing Instruction
@@ -103,16 +103,20 @@ Scryber requires the use of a prefix for all of the namespaces (as there are con
     * These are the main visual and structural components in a file or document.
     * e.g. pdf:Document; pdf:Page; pdf:Label.
     * It refers to the assembly namespace `Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
+    * see :doc:`document_components` for more on teh content elements of a document.
 * `data` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd
     * These are either non visual components that load data from other sources, change content based on rules in data sources, or create inner content based on available data.
     * e.g. data:DataGrid; data:XmlDataSource; data:If.
     * It refers to the assembly namespace `Scryber.Data, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
+    * see :doc:`document_databinding` for more on working with data.
 * `styles` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd
     * These apply colour, size and other visual style to the components, both as Style elements and as attributes on pdf:Compontents
     * e.g. styles:Style; styles:bg-color; styles:width.
     * It refers to the assembly namespace `Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
+    * see :doc:`document_styles` for more on working with styles.
 
-For more information on how these are mapped, and also adding your own namespaces see :doc:`namespaces_and_assemblies` along with `scryber_configuration`
+
+For more information on how these are mapped, and also adding your own namespaces see :doc:`namespaces_and_assemblies` along with :doc:`scryber_configuration`
 
 Params
 ======

@@ -60,6 +60,56 @@ All block components support an explicit width and / or height value. If it's wi
 Images with width and height
 ==============================
 
+Scryber handles the sizing of images based on the natural size of the image. If no explicit size or positioning is provided, then it will be rendered
+at the native size for the image.
+
+If the available space within the container is not sufficuent to hold the image at it's natural size, then the image render size will be reduced
+proportionally to fit the space available.
+
+If either a width **or** height is assigned, then this will be used to proportionally resize the image to that height or width.
+
+If both a width **and** height are assigned, then they will both be used to fit the image to that space. No matter what the originals' proportions are.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <Pages>
+        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+            <Content>
+                
+                <pdf:Span >An image will natually size to it's dimensions without space restriction.</pdf:Span>
+                <pdf:Image src="../../Content/Images/landscape.jpg" />
+
+                <pdf:Div styles:column-count="4" styles:margins="10 0 0 0" >
+                    <pdf:B>First Column</pdf:B><pdf:Br/>
+                    An image will fit to it's container if no explicit size is set.
+                    <pdf:Image src="../../Content/Images/landscape.jpg" />
+                    <pdf:ColumnBreak/>
+                    <pdf:B>Second Column</pdf:B><pdf:Br/>
+                    If a width is set, then the sizing will be proportional.
+                    <pdf:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
+                    <pdf:ColumnBreak/>
+                    <pdf:B>Third Column</pdf:B><pdf:Br/>
+                    If a height is set, then the sizing will be proportional.
+                    <pdf:Image src="../../Content/Images/landscape.jpg" styles:height="50pt" />
+                    
+                    <pdf:ColumnBreak/>
+                    <pdf:B>Third Column</pdf:B><pdf:Br/>
+                    If a width and height are set these will be used explicitly.
+                    <pdf:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" styles:height="50pt" />
+                </pdf:Div>
+
+                <!-- Photo by Bailey Zindel on Unsplash -->
+            </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+.. image:: images/documentsizingimages.png
+
 Margins and Padding
 ====================
 
