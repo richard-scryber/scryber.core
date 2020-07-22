@@ -6,12 +6,13 @@ At the root, the document has a number of capabilities that change the output co
 
 
 * Scryber Processing Instruction
-* Params - The parameters or variables in a document
-* Data - Contains any referenced data sources in a document
-* Styles - Contains and styles (in document or referenced)
-* Pages - The visual page content in the document or referenced
+* Namespaces - The namespaces used in the document.
+* Params - The parameters or variables in a document.
+* Data - Contains any referenced data sources in a document.
+* Styles - Contains and styles (in document or referenced).
+* Pages - The visual page content in the document or referenced.
 * Viewer Options - Options for how the document opens in the reader.
-* Render Options - Options for altering how the pdf is output
+* Render Options - Options for altering how the pdf is output.
 * Info - Metadata options about the document itself.
 
 Example
@@ -86,6 +87,32 @@ As a processing instruction, the schema xsds do not support validation of the co
     * Lax - If this is set  then the parser is more complianant, where errors will be logged, but not cause the output to fail. (Good for Prod).
 * 'controller' - This is the full type name of a controller for the docucment, that can interact with and handle events on the document. e.g.
     * 'Namespace.TypeName, AssemblyName' - The class should have a parameterless constructor (see: :doc:`document_controllers`)
+
+
+Namespaces
+==========
+
+Scryber is dynamic and extensible. The xml namespaces refer directly to namespaces (and assemblies) in the library.
+There are 3 primary namespaces, and a convention for the prefixes for those namespaces.
+
+By using explicit namespaces the xml can be read and which class an element rerers to determined.
+Scryber requires the use of a prefix for all of the namespaces (as there are content elements defined without a prefix).
+
+
+* `pdf` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd
+    * These are the main visual and structural components in a file or document.
+    * e.g. pdf:Document; pdf:Page; pdf:Label.
+    * It refers to the assembly namespace `Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
+* `data` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd
+    * These are either non visual components that load data from other sources, change content based on rules in data sources, or create inner content based on available data.
+    * e.g. data:DataGrid; data:XmlDataSource; data:If.
+    * It refers to the assembly namespace `Scryber.Data, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
+* `styles` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd
+    * These apply colour, size and other visual style to the components, both as Style elements and as attributes on pdf:Compontents
+    * e.g. styles:Style; styles:bg-color; styles:width.
+    * It refers to the assembly namespace `Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
+
+For more information on how these are mapped, and also adding your own namespaces see :doc:`namespaces_and_assemblies` along with `scryber_configuration`
 
 Params
 ======
