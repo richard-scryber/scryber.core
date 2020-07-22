@@ -397,12 +397,12 @@ namespace Scryber.Drawing
         public static PDFThickness Parse(string value)
         {
             if (String.IsNullOrEmpty(value))
-                throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R] OR [All]"));
+                throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R], [TB RL] OR [All]"));
 
             if (value.StartsWith(ThicknessStartChar.ToString()) || value.EndsWith(ThicknessEndChar.ToString()))
                 value = value.Substring(1, value.Length - 2);
             else if(ThicknessStartAndEndRequired)
-                throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R] OR [All]"));
+                throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
 
             PDFUnit t, l, b, r;
 
@@ -410,22 +410,30 @@ namespace Scryber.Drawing
             if (thick.Length == 1)
             {
                 if (PDFUnit.TryParse(thick[0], out t) == false)
-                    throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R] OR [All]"));
+                    throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
                 else
                 {
                     l = b = r = t;
                 }
             }
+            else if(thick.Length == 2)
+            {
+                if (PDFUnit.TryParse(thick[0], out t) == false ||
+                    PDFUnit.TryParse(thick[1], out r) == false)
+                    throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
+                b = t;
+                l = r;
+            }
             else if (thick.Length != 4)
-                throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R] OR [All]"));
+                throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
             else
             {
 
                 if (PDFUnit.TryParse(thick[0], out t) == false ||
-                    PDFUnit.TryParse(thick[1], out l) == false ||
+                    PDFUnit.TryParse(thick[1], out r) == false ||
                     PDFUnit.TryParse(thick[2], out b) == false ||
-                    PDFUnit.TryParse(thick[3], out r) == false)
-                    throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R] OR [All]"));
+                    PDFUnit.TryParse(thick[3], out l) == false)
+                    throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
             }
             return new PDFThickness(t, l, b, r);
         }

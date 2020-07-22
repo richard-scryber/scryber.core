@@ -110,8 +110,93 @@ If both a width **and** height are assigned, then they will both be used to fit 
 
 .. image:: images/documentsizingimages.png
 
+
+Page Sizes
+==========
+
 Margins and Padding
 ====================
+
+All block level elements support padding and margins.
+Unlike html, scryber does not count the width of the border as part of the box dimensions (on purpose).
+
+Dimensions can be set either directly on the component, or on a style applied to the components (see: :doc:`document_styles`).
+
+The `Margins` and `Padding` style have 5 properties that can be set.
+
+* All
+* Top
+* Right
+* Bottom
+* and Left
+
+If an individual side property is set, then this will override any value set on all.
+
+The margins or padding attributes on elements can be set with 1, 2 or 4 values. If only one is provided it will be applied to each.
+If 4 are provided, they will be applied to each individual value in the `top`, `right`, `bottom`, `left` (as per html padding). If 
+2 are provided the first will be applied to the top and bottom, the second to the left and right.
+
+.. note:: If any margins or padding attribute is set on the component, it will override ALL values set in any style.
+
+If not set then the values will be zero.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Styles>
+        
+        <styles:Style applied-type="pdf:Page" >
+            <styles:Font size="12pt"/>
+            <styles:Margins all="20pt"/>
+        </styles:Style>
+        
+        <styles:Style applied-class="bordered" >
+            <styles:Border color="#777" width="1pt" style="Solid"/>
+            <styles:Background color="#EEE"/>
+        </styles:Style>
+
+        <styles:Style applied-class="red">
+            <styles:Border color="red"/>
+        </styles:Style>
+        
+        <styles:Style applied-class="spaced" >
+            <styles:Margins all="20pt" left="10pt" right="10pt"/>
+            <styles:Padding all="5pt"/>
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:class="bordered" > <!--Styles applied to the page type -->
+            <Content>
+                <pdf:B>First Example</pdf:B>
+                <pdf:Div styles:class="bordered red" >
+                    The content of this div has a red border with no padding or margins.
+                </pdf:Div>
+
+                <pdf:B>Second Example</pdf:B>
+                <pdf:Div styles:class="bordered red spaced" >
+                    The content of this div has a red border with both margins and padding set from the style.
+                </pdf:Div>
+
+                <pdf:B>Third Example</pdf:B>
+                <pdf:Div styles:class="bordered red spaced" styles:padding="20pt" >
+                    The content of this div has a red border with margins set from the style and padding overridden explicitly on the component.
+                </pdf:Div>
+
+                <pdf:B>Borders are supported on images and other blocks too, and will respect the width and or height properties.</pdf:B>
+                <pdf:Image src="../../Content/Images/landscape.jpg" styles:class="bordered spaced" styles:width="100pt" />
+                <pdf:H1 styles:class="bordered spaced">Heading with spacing.</pdf:H1>
+            </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+.. image:: images/documentsizingmargins
 
 Clipping
 ========
@@ -123,6 +208,6 @@ Maximum size
 ============
 
 
-Sizing Tables
+Sizing Grid
 =============
 
