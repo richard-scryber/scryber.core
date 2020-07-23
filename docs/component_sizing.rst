@@ -331,6 +331,13 @@ ensure the content, never grows beyond that specified value.
             </pdf:Div>
 
             <pdf:Br/>
+            <pdf:B>Minimum Size, width reached</pdf:B>
+            <pdf:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
+                This div has a red border with min size, but the content will push this out beyond the minimum width to the
+                space in the container, and then flow as normal.
+            </pdf:Div>
+
+            <pdf:Br/>
             <pdf:B>Maximum Size, not reached</pdf:B>
             <pdf:Div styles:class="bordered red sized" >
                 This div has a red border with max size.
@@ -354,3 +361,17 @@ ensure the content, never grows beyond that specified value.
 Sizing Grid
 =============
 
+In order to visually measure your sizes, position and content - Scryber supports the use of an overlay grid.
+This can only be set on a style, rather than inline to components. But it does have the ability for position,
+spacing and offsets.
+
+.. code-block:: xml
+
+    <styles:Style applied-type="pdf:Page" >
+      <styles:Font size="12pt"/>
+      <styles:Margins all="20pt"/>
+      <styles:Overlay-Grid color="aqua" spacing="50pt" show="true"/>
+    </styles:Style>
+
+
+.. image:: images/documentsizinggrid.png
