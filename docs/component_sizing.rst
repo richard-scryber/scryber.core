@@ -196,7 +196,7 @@ If not set then the values will be zero.
 
     </pdf:Document>
 
-.. image:: images/documentsizingmargins
+.. image:: images/documentsizingmargins.png
 
 Clipping
 ========
@@ -233,7 +233,7 @@ This will alter the 'size of the window' that content is seen through.
 
         <!-- Our clipping style applies 10pt all around. 
              It's NOT the same as padding.  -->
-             
+
         <styles:Style applied-class="clipped" >
             <styles:Clipping all="10pt"/>
             <styles:Overflow action="Clip"/>
@@ -283,7 +283,73 @@ This will alter the 'size of the window' that content is seen through.
 Minimum and Maximum size
 ========================
 
+Along with the use of width and height, scryber also supports the use of minimum height/width and maximum height/width.
 
+As you might expect, the minimum will ensure that a container is at least as big as the specified value, and that the maximum will 
+ensure the content, never grows beyond that specified value.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+
+    <Styles>
+        
+        <styles:Style applied-type="pdf:Page" >
+            <styles:Font size="12pt"/>
+            <styles:Margins all="20pt"/>
+        </styles:Style>
+        
+        <styles:Style applied-class="bordered" >
+            <styles:Border color="#777" width="1pt" style="Solid"/>
+            <styles:Background color="#EEE"/>
+        </styles:Style>
+
+        <styles:Style applied-class="red">
+            <styles:Border color="red"/>
+        </styles:Style>
+
+        <styles:Style applied-class="sized" >
+            <styles:Size full-width="false" max-height="60pt" max-width="350pt"/>
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+    
+        <pdf:Page styles:class="bordered" > <!--Styles applied to the page type -->
+        <Content>
+            <pdf:B>Minimum Size, not reached</pdf:B>
+            <pdf:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
+                This div has a red border with min size.
+            </pdf:Div>
+
+            <pdf:Br/>
+            <pdf:B>Minimum Size, width reached</pdf:B>
+            <pdf:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
+                This div has a red border with min size, but the content will push this out beyond the minimum width.
+            </pdf:Div>
+
+            <pdf:Br/>
+            <pdf:B>Maximum Size, not reached</pdf:B>
+            <pdf:Div styles:class="bordered red sized" >
+                This div has a red border with max size.
+            </pdf:Div>
+
+            <pdf:Br/>
+            <pdf:B>Maximum Size, width reached</pdf:B>
+            <pdf:Div styles:class="bordered red sized" >
+                This div has a red border with max size, and the content will flow as the max-width is reached with the text.
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+
+.. image:: images/documentsizingminmax.png
 
 Sizing Grid
 =============
