@@ -1,5 +1,5 @@
 ==============================
-Sizing your content - td
+Sizing your content
 ==============================
 
 Scryber has an intelligent layout engine. By default eveything will be laid out as per the flowing layout of the document Pages and columns.
@@ -113,6 +113,9 @@ If both a width **and** height are assigned, then they will both be used to fit 
 
 Page Sizes
 ==========
+
+Pages are generally sized differently to components on a page, as they use the standard ISO and Imperial page enumeration.
+But they can also be a custom size. See :doc:`document_pages` for details on how to alter the size of pages.
 
 Margins and Padding
 ====================

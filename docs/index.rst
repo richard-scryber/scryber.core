@@ -109,6 +109,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_styles
     component_positioning
     component_sizing
+    document_pages
     document_columns
     referencing_files
     drawing_units

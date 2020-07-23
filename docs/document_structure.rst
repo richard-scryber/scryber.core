@@ -146,7 +146,7 @@ Pages
 =====
 
 The `Pages` element contains the visual content of the document. Whether that is single pages, sections of multiple pages, or references to external pages.
-See :doc:`page_content` for more information on the visual content.
+See :doc:`document_pages` for more information on the visual content.
 
 
 Viewer Options
