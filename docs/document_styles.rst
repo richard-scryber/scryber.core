@@ -168,6 +168,16 @@ e.g.
 
 .. note:: Currently scryber does not support the concept of nested or path styles as css e.g. div.class -> h1.class. It may be supported in the future.
 
+The Applied Type
+=================
+
+A style definition with an applied-type attribute is used on all components of that type.
+It also supports inheritance. The format is based on the qualified component name.
+
+A sample set is give in the schema intellisense if used, but as long as the type name is known the it can be used.
+Even invisible components such as data:ForEach can have styles applied.
+
+
 Applying Multiple Styles
 ========================
 

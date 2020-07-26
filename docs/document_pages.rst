@@ -97,6 +97,7 @@ and it also has allows for a definition of a continuation header and footer.
 If defined, then the continuation headers and footers will be shown on the following pages, after the first.
 If not defined, then the main page headers and footers will be shown.
 
+So if we change our `pdf:Page` element to a `pdf:Section` we can add a continuation header and flow onto multiple pages.
 
 .. code-block:: xml
 
@@ -148,3 +149,99 @@ And the continuation header is shown on the second page.
 The footer is consistent throughout, so shows on both output pages.
 
 .. image:: images/documentpages3.png
+
+Page breaks
+============
+
+When using an overflowing section it's possible to explicitly force a break in the pages using the
+`pdf:PageBreak` component. This can appear within any block, and will force all the other parent components to stop
+their layout on the current layout page, and move to the next layout page. Borders, margins and padding will (should) be preserved.
+
+As with other components, it is also possible to bind the visibility of a page break too. If it's visible then the break will occur if not then the\
+content will flow as normal.
+
+see `Page size and orientation`_ below for an example of using a page break.
+
+Page size and orientation
+==========================
+
+When outputting a page the default paper size is ISO A4 Portrait (210mm x 29.7mm), however Scryber supports setting the paper size 
+either on the page or via styles to the standard ISO or Imperial page sizes, in landscape or portrait, or even a custom size.
+
+* ISO 216 Standard Paper sizes
+    * A0 to A9
+    * B0 to B9
+    * C0 to C9
+    * see: `https://papersizes.io/a/`_, `https://papersizes.io/b/`_, `https://papersizes.io/c/`_
+* Imperial Paper Sizes
+    * Quarto, Foolscap, Executive, GovermentLetter, Letter, Legal, Tabloid, Post, Crown, LargePost, Demy, Medium, Royal, Elephant, DoubleDemy, QuadDemy, Statement,
+    * see: `https://papersizes.io/imperial/`_
+
+A section can only be 1 size of paper, but different sections and different pages can have different sizes.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        
+        <!-- changing the default page size to A3 Landscape -->
+        <styles:Style applied-type="pdf:Page" >
+        <styles:Page size="A3" orientation="Landscape"/>
+        </styles:Style>
+
+        <!-- a style for portrait pages-->
+        <styles:Style applied-class="long" >
+        <styles:Page orientation="Portrait"/>
+        </styles:Style>
+
+        <!-- set up the default style for a heading 1-->
+        <styles:Style applied-type="pdf:H1" >
+        <styles:Border color="green" width="2"/>
+        <styles:Padding all="5pt"/>
+        <styles:Margins all="10pt"/>
+        <styles:Font size="60pt"/>
+        <styles:Position h-align="Center"/>
+        </styles:Style>
+    </Styles>
+    
+    <Pages>
+        <pdf:Page>
+        <Content>
+            <pdf:H1>This is the content on a default page size</pdf:H1>
+        </Content>
+        </pdf:Page>
+
+        <pdf:Page styles:class="long">
+        <Content>
+            <pdf:H1>This is the content on a portrait page</pdf:H1>
+        </Content>
+        </pdf:Page>
+
+        <pdf:Section styles:class="long" styles:paper-size="A4">
+        <Content>
+            <pdf:H1>This is the content on an explict page size</pdf:H1>
+            <!-- Force a break in the page -->
+            <pdf:PageBreak/>
+            <pdf:H1 >That continues to the next page</pdf:H1>
+        </Content>
+        </pdf:Section>
+
+        <pdf:Section>
+        <Content>
+            <pdf:H1>And back to the default size</pdf:H1>
+        </Content>
+        </pdf:Section>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentpagesizes.png
+
+
+Page Groups
+============
+
