@@ -386,9 +386,9 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.IsNotNull(convert);
             Scryber.Drawing.PDFThickness thick = (Scryber.Drawing.PDFThickness)convert(thickvalue, type, invariant);
             Assert.AreEqual(thick.Top, (Scryber.Drawing.PDFUnit)12);
-            Assert.AreEqual(thick.Left, new Scryber.Drawing.PDFUnit(45.3, Scryber.Drawing.PageUnits.Inches));
+            Assert.AreEqual(thick.Right, new Scryber.Drawing.PDFUnit(45.3, Scryber.Drawing.PageUnits.Inches));
             Assert.AreEqual(thick.Bottom, (Scryber.Drawing.PDFUnit)12.5);
-            Assert.AreEqual(thick.Right, new Scryber.Drawing.PDFUnit(4, Scryber.Drawing.PageUnits.Millimeters));
+            Assert.AreEqual(thick.Left, new Scryber.Drawing.PDFUnit(4, Scryber.Drawing.PageUnits.Millimeters));
 
             type = typeof(Scryber.Drawing.PDFPen); //pen is not parsable
             expected = false;

@@ -533,9 +533,9 @@ namespace Scryber.Core.UnitTests.Layout
             Assert.IsNotNull(panelBlock, "The layout block in the page column should not be null");
 
             //block width and height should be greater than the minimum width, but not beyond the height.
-            Assert.IsTrue(expectedMinWidth < panelBlock.Width, "Panel block should be greater than " + expectedMinWidth + " wide");
+            Assert.IsTrue(expectedMinWidth < panelBlock.Width, "Panel block with width '" + panelBlock.Width + " should be greater than " + expectedMinWidth + " wide");
             Assert.IsTrue(PageWidth > panelBlock.Width, "Panel block should not go beyond the page width");
-            Assert.AreEqual(expectedMinHeight, panelBlock.Height, "Panel block should be " + expectedMinHeight + " high");
+            Assert.AreEqual(expectedMinHeight, panelBlock.Height, "Panel block with height '" + panelBlock.Height + " should be " + expectedMinHeight + " high");
 
 
         }

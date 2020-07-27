@@ -116,7 +116,7 @@ namespace Scryber.Drawing
         /// <param name="left">The left thickness</param>
         /// <param name="bottom">The bottom thickness</param>
         /// <param name="right">The right thickness</param>
-        public PDFThickness(PDFUnit top, PDFUnit left, PDFUnit bottom, PDFUnit right)
+        public PDFThickness(PDFUnit top, PDFUnit right, PDFUnit bottom, PDFUnit left)
         {
             this._left = left;
             this._top = top;
@@ -203,7 +203,7 @@ namespace Scryber.Drawing
         /// <param name="left">The value to increase the left edge by</param>
         /// <param name="bottom">The value to increase the bottom edge by</param>
         /// <param name="right">The value to increase the right edge by</param>
-        public void Inflate(PDFUnit top, PDFUnit left, PDFUnit bottom, PDFUnit right)
+        public void Inflate(PDFUnit top, PDFUnit right, PDFUnit bottom, PDFUnit left)
         {
             this.Top += top;
             this.Bottom += bottom;
@@ -269,7 +269,7 @@ namespace Scryber.Drawing
         public static PDFThickness Add(PDFThickness one, PDFThickness two)
         {
             return new PDFThickness(one.Top + two.Top,
-                one.Left + two.Left, one.Bottom + two.Bottom, one.Right + two.Right);
+                one.Right + two.Right, one.Bottom + two.Bottom, one.Left + two.Left);
 
         }
 
@@ -282,7 +282,7 @@ namespace Scryber.Drawing
         public static PDFThickness Subtract(PDFThickness one, PDFThickness two)
         {
             return new PDFThickness(one.Top - two.Top,
-                one.Left - two.Left, one.Bottom - two.Bottom, one.Right - two.Right);
+                one.Right - two.Right, one.Bottom - two.Bottom, one.Left - two.Left);
         }
 
         #endregion
@@ -336,7 +336,7 @@ namespace Scryber.Drawing
         /// <returns>The new thickness</returns>
         public PDFThickness Clone()
         {
-            return new PDFThickness(this.Top, this.Left, this.Bottom, this.Right);
+            return new PDFThickness(this.Top, this.Right, this.Bottom, this.Left);
         }
 
         #endregion
@@ -353,11 +353,11 @@ namespace Scryber.Drawing
             sb.Append(ThicknessStartChar);
             sb.Append(this.Top);
             sb.Append(ThicknessSeparatorChar);
-            sb.Append(this.Left);
+            sb.Append(this.Right);
             sb.Append(ThicknessSeparatorChar);
             sb.Append(this.Bottom);
             sb.Append(ThicknessSeparatorChar);
-            sb.Append(this.Right);
+            sb.Append(this.Left);
             sb.Append(ThicknessEndChar);
             return sb.ToString();
         }
@@ -435,7 +435,7 @@ namespace Scryber.Drawing
                     PDFUnit.TryParse(thick[3], out l) == false)
                     throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
             }
-            return new PDFThickness(t, l, b, r);
+            return new PDFThickness(t, r, b, l);
         }
 
 
@@ -460,7 +460,7 @@ namespace Scryber.Drawing
                 Expression left = this.Left.GetConstructorExpression();
                 Expression bottom = this.Bottom.GetConstructorExpression();
                 Expression right = this.Right.GetConstructorExpression();
-                Expression create = Expression.New(fullParam, top, left, bottom, right);
+                Expression create = Expression.New(fullParam, top, right, bottom, left);
                 return create;
             }
         }

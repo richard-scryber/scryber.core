@@ -15,7 +15,7 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>v1.0.0.16 - Updated for the Caching Provider
+    <PackageReleaseNotes>v1.0.0.16 - Updated for the Caching Provider, and the pages style
 
 v1.0.0.15 - Forcing the update to the PDFTemplateItemValue
 
@@ -37,6 +37,6 @@ v1.0.0.5 - Updated for of the Core library with atomatic inclusion of the http n
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Scryber.Core" Version="1.0.0.15" />
+    <PackageReference Include="Scryber.Core" Version="1.0.0.16" />
   </ItemGroup>
 </Project>

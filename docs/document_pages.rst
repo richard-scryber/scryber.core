@@ -245,3 +245,83 @@ A section can only be 1 size of paper, but different sections and different page
 Page Groups
 ============
 
+The `pdf:PageGroup` allows for consistency across a set of pages. They will pass styles, page numbers, parameters, headers etc. 
+down to any pages within the group.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+
+        <!-- set up the default style for the header -->
+        <styles:Style applied-type="pdf:Div" applied-class="header" >
+            <styles:Border color="aqua" width="2" sides="Bottom"/>
+            <styles:Padding all="5pt"/>
+            <styles:Margins all="10pt"/>
+            <styles:Columns count="3"/>
+            <styles:Font size="12pt"/>
+            <styles:Position h-align="Center"/>
+        </styles:Style>
+
+        <!-- a page numbering style for the page groups -->
+        <styles:Style applied-type="pdf:PageGroup" >
+            <styles:Page number-prefix="Page #" number-style="Decimals"/>
+        </styles:Style>
+    </Styles>
+    
+    <Pages>
+
+        <pdf:PageGroup>
+            <Params>
+                <!-- Set parameters, just for this group -->
+                <pdf:String-Param id="sectTitle" value="Page Group Definitions" ></pdf:String-Param>
+            </Params>
+            <!-- consistent header across the pages in this group (split into 3 columns -->
+            <Header>
+                <pdf:Div styles:class="header" >
+                <pdf:Label text="{@:sectTitle}" />
+                <pdf:ColumnBreak/>
+                <pdf:PageNumber />
+                <pdf:ColumnBreak/>
+                <pdf:Date styles:date-format="dd MMMM yyyy" />
+                </pdf:Div>
+            </Header>
+
+            <Pages>
+
+                <pdf:Page>
+                <Content>
+                    <pdf:H3 >This is the first page</pdf:H3>
+                </Content>
+                </pdf:Page>
+
+                <pdf:Section>
+                <Content>
+                    <pdf:H3>This is the second page</pdf:H3>
+                    <pdf:PageBreak/>
+                    <pdf:H3>This is the third page</pdf:H3>
+                </Content>
+                </pdf:Section>
+                
+            </Pages>
+        </pdf:PageGroup>
+        
+        <pdf:Page>
+            <Content>
+                <pdf:H3 >This is after the group</pdf:H3>
+            </Content>
+        </pdf:Page>
+    
+    </Pages>
+    
+    </pdf:Document>
+
+
+By applying a header at the group level, we can be sure that it is repeated across all pages.
+
+.. image:: images/documentpagegroups.png
+

@@ -424,7 +424,7 @@
         <xs:all minOccurs="0" >
           <xs:element name="Outline" minOccurs="0" maxOccurs="1"
                       type="OutlineDefinitionType" form="unqualified" ></xs:element>
-          <xs:element name="Items" type="ItemTypeList" minOccurs="0" maxOccurs="1" form="unqualified"/>
+          <xs:element name="Params" type="ItemTypeList" minOccurs="0" maxOccurs="1" form="unqualified"/>
           <xs:element name="Style" minOccurs="0" maxOccurs="1"
                       type="style:StyleType" form="unqualified" ></xs:element>
           <xs:element name="Pages" minOccurs="0" maxOccurs="1"

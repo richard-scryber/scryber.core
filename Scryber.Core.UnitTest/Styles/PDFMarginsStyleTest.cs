@@ -104,7 +104,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Right = 14;
             target.Top = 15;
             target.Bottom = 16;
-            expected = new PDFThickness(15, 13, 16, 14);
+            expected = new PDFThickness(15, 14, 16, 13);
 
             result = target.TryGetThickness(out actual);
             Assert.IsTrue(result);
@@ -133,7 +133,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Top = 15;
             target.Bottom = 16;
 
-            PDFThickness thickness = new PDFThickness(21, 22, 23, 24); //T,L,B,R
+            PDFThickness thickness = new PDFThickness(21, 24, 23, 22); //T,R,B,L
             target.SetThickness(thickness);
 
             Assert.AreEqual((PDFUnit)21, target.Top);

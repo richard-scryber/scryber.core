@@ -25,14 +25,27 @@ namespace Scryber.UnitTests.Configuration
             }
         }
 
-        [ClassInitialize()]
-        public static void ConfigClassInitialize(TestContext testContext)
+        [TestCleanup()]
+        public void ConfigClassCleanup()
         {
-            var path = testContext.TestRunDirectory;
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            config.Reset();
+
+            ServiceProvider.Init(true);
+
+            var service = ServiceProvider.GetService<IConfiguration>();
+
+            Assert.IsNull(service, "The config service was not removed");
+        }
+
+        [TestInitialize()]
+        public void ConfigClassInitialize()
+        {
+            var path = this.TestContext.TestRunDirectory;
             path = Path.GetFullPath(Path.Combine(path, "../../../scrybersettings.json"));
             if (!File.Exists(path))
             {
-                path = Path.Combine(testContext.DeploymentDirectory, "../../../scrybersettings.json");
+                path = Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
                 path = Path.GetFullPath(path);
 
                 if (!File.Exists(path))
@@ -53,7 +66,7 @@ namespace Scryber.UnitTests.Configuration
 
             ServiceProvider.SetProvider(services);
             ServiceProvider.GetService<IScryberConfigurationService>().Reset();
-            testContext.WriteLine("Loaded the appsettings file and added it to the services with a reset");
+            this.TestContext.WriteLine("Loaded the appsettings file and added it to the services with a reset");
         }
 
         [TestMethod()]

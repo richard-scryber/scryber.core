@@ -405,7 +405,8 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             PDFRect target = new PDFRect(10, 20, 30, 40);
             PDFThickness thickness = new PDFThickness(1, 2, 3, 4);
-            PDFRect expected = new PDFRect(12, 21, 24, 36);
+
+            PDFRect expected = new PDFRect(14, 21, 24, 36);
             PDFRect actual;
             actual = target.Inset(thickness);
             Assert.AreEqual(expected, actual);
@@ -551,7 +552,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             PDFRect target = new PDFRect(10, 20, 30, 40);
             PDFThickness thickness = new PDFThickness(1, 2, 3, 4);
-            PDFRect expected = new PDFRect(8, 19, 36, 44);
+            PDFRect expected = new PDFRect(6, 19, 36, 44);
             PDFRect actual;
             actual = target.Outset(thickness);
             Assert.AreEqual(expected, actual);

@@ -9,6 +9,13 @@
   },
   "AllowedHosts": "*",
   "Scryber": {
+    "Output": {
+      "Compression": "None",
+      "Compliance": "None",
+      "StringType": "Text",
+      "NameOutput": "All",
+      "PDFVersion": "1.4"
+    },
     "Parsing": {
       "MissingReferenceAction": "LogError",
       "Namespaces": [
@@ -25,13 +32,6 @@
           "FactoryAssembly": "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
         }
       ]
-    },
-    "Output": {
-      "Compression": "None",
-      "Compliance": "None",
-      "StringType": "Text",
-      "NameOutput": "All",
-      "PDFVersion": "1.4"
     },
     "Fonts": {
       "DefaultDirectory": "/Users/RichardHewitson/Library/Fonts",

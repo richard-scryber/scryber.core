@@ -27,7 +27,7 @@ namespace Scryber
             _services = provider;
         }
 
-        public static void Init()
+        public static void Init(bool clean = false)
         {
             IServiceProvider first = new FirstServices();
             IServiceProvider prev = null;
@@ -37,7 +37,9 @@ namespace Scryber
 
             _services = first;
 
-            if (null != prev)
+            //If we are not cleaning and have a previous services
+            //then make sure we keep a reference.
+            if (null != prev && !clean)
                 _services = new FallBackServiceProvider(prev, _services);
 
             _initialized = true;

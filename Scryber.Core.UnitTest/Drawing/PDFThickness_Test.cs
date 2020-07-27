@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit left = new PDFUnit(20); 
             PDFUnit bottom = new PDFUnit(30); 
             PDFUnit right = new PDFUnit(40);
-            PDFThickness target = new PDFThickness(top, left, bottom, right);
+            PDFThickness target = new PDFThickness(top, right, bottom, left);
 
             Assert.AreEqual(left, target.Left);
             Assert.AreEqual(top, target.Top);
@@ -273,10 +273,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Inflate_Test()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness target = new PDFThickness(t,l,b,r);
+            PDFUnit l = 30;
+            PDFThickness target = new PDFThickness(t,r,b,l);
             PDFUnit w = new PDFUnit(5);
             PDFUnit h = new PDFUnit(10);
             target.Inflate(w, h);
@@ -296,10 +296,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Inflate_Test1()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness target = new PDFThickness(t, l, b, r);
+            PDFUnit l = 30;
+            PDFThickness target = new PDFThickness(t, r, b, l);
             PDFUnit all = new PDFUnit(10);
             target.Inflate(all);
 
@@ -317,13 +317,13 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Inflate_Test2()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness target = new PDFThickness(t, l, b, r);
+            PDFUnit l = 30;
+            PDFThickness target = new PDFThickness(t, r, b, l);
 
             
-            target.Inflate(t, l, b, r);
+            target.Inflate(t, r, b, l);
 
             Assert.AreEqual(l + l, target.Left);
             Assert.AreEqual(r + r, target.Right);
@@ -359,10 +359,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void SetAll_Test()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness target = new PDFThickness(t, l, b, r);
+            PDFUnit l = 30;
+            PDFThickness target = new PDFThickness(t, r, b, l);
 
             PDFUnit all = new PDFUnit(10);
             target.SetAll(all);
@@ -381,13 +381,13 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Subtract_Test()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFUnit l = 30;
+            PDFThickness one = new PDFThickness(t, r, b, l);
 
             PDFThickness two = new PDFThickness(1, 2, 3, 4);
-            PDFThickness expected = new PDFThickness(t - 1, l - 2, b - 3, r - 4);
+            PDFThickness expected = new PDFThickness(t - 1, r - 2, b - 3, l - 4);
             PDFThickness actual;
             actual = PDFThickness.Subtract(one, two);
             Assert.AreEqual(expected, actual);
@@ -402,12 +402,12 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Clone_Test1()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFUnit l = 30;
+            PDFThickness one = new PDFThickness(t, r, b, l);
             ICloneable target = one;
-            object expected = new PDFThickness(t, l, b, r);
+            object expected = new PDFThickness(t, r, b, l);
             object actual;
             actual = target.Clone();
             Assert.AreEqual(expected, actual);
@@ -422,10 +422,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ToString_Test()
         {
             PDFUnit t = 10;
-            PDFUnit l = 20;
+            PDFUnit r = 20;
             PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness target = new PDFThickness(t, l, b, r);
+            PDFUnit l = 30;
+            PDFThickness target = new PDFThickness(t, r, b, l);
             string expected = "[10 20 40 30]";
             string actual;
             actual = target.ToString();
@@ -444,10 +444,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit l = 20;
             PDFUnit b = 40;
             PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFThickness one = new PDFThickness(t, r, b, l);
 
             PDFThickness two = new PDFThickness(1, 2, 3, 4);
-            PDFThickness expected = new PDFThickness(t + 1, l + 2, b + 3, r + 4);
+            PDFThickness expected = new PDFThickness(t + 1, r + 2, b + 3, l + 4);
             PDFThickness actual;
             actual = (one + two);
             Assert.AreEqual(expected, actual);
@@ -465,10 +465,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit l = 20;
             PDFUnit b = 40;
             PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFThickness one = new PDFThickness(t, r, b, l);
 
             PDFThickness two = new PDFThickness(1, 2, 3, 4);
-            PDFThickness expected = new PDFThickness(t - 1, l - 2, b - 3, r - 4);
+            PDFThickness expected = new PDFThickness(t - 1, r - 2, b - 3, l - 4);
 
             PDFThickness actual;
             actual = (one - two);
@@ -487,7 +487,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit l = 20;
             PDFUnit b = 40;
             PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFThickness one = new PDFThickness(t, r, b, l);
 
             PDFUnit expected = b;
             PDFUnit actual = one.Bottom;
@@ -543,7 +543,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit l = 20;
             PDFUnit b = 40;
             PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFThickness one = new PDFThickness(t, r, b, l);
 
             PDFUnit expected = l;
             PDFUnit actual = one.Left;
@@ -566,7 +566,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit l = 20;
             PDFUnit b = 40;
             PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFThickness one = new PDFThickness(t, r, b, l);
 
             PDFUnit expected = r;
             PDFUnit actual = one.Right;
@@ -589,7 +589,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit l = 20;
             PDFUnit b = 40;
             PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, l, b, r);
+            PDFThickness one = new PDFThickness(t, r, b, l) ;
 
             PDFUnit expected = t;
             PDFUnit actual = one.Top;
