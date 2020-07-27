@@ -5,14 +5,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.16</PackageVersion>
+    <PackageVersion>1.0.0.17</PackageVersion>
     <Authors>Silicon Reef</Authors>
     <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.16
+    <PackageReleaseNotes>1.0.0.17
+------------------------------
+
+Removed the Page number prefix instead only supprting the page number display format
+
+1.0.0.16
 -------------------------------------------
 
 Set the page style attributes as inherited, so they flow down from a document or group to the pages themselves.

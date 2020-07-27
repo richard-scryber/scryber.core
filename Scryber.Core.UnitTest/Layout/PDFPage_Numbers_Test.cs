@@ -339,31 +339,30 @@ namespace Scryber.Core.UnitTests.Layout
 <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
-  <Render-Options compression-type='None' string-output='Text' />
   <Styles>
-    <styles:Style applied-class='pg-num1' >
+    <styles:Style applied-class='pg-num' >
       <styles:Padding all='20pt'/>
-      <styles:Font size='100pt'/>
+      <styles:Font size='60pt'/>
     </styles:Style>
 
-    <styles:Style applied-type='pdf:Section' >
-      <styles:Page display-format='Page {0}' number-start-index='1' />
+    <styles:Style applied-type='pdf:PageNumber' >
+      <styles:Page styles:display-format='Page {0}'/>
     </styles:Style>
 
     <styles:Style applied-class='appendix' >
-      <styles:Page display-format='Appendix {0}' number-style='UppercaseLetters' number-start-index='1' />
+      <styles:Page number-style='UppercaseLetters' number-start-index='1' styles:display-format='Appendix {0}'  />
     </styles:Style>
   </Styles>
   
   <Pages>
-    <pdf:Page styles:class='pg-num1'>
+    <pdf:Page styles:page-number-style='None' styles:class='pg-num' >
       <Content>
         <!-- Page 1 -->
-        This is the Page content of <pdf:PageNumber />
+        This is the Header Page '<pdf:PageNumber styles:display-format='Header {0}'  />'
       </Content>
     </pdf:Page>
 
-    <pdf:Section styles:class='pg-num1'>
+    <pdf:Section styles:class='pg-num'>
       <Content>
         <!-- Page 2 -->
         This is the content of <pdf:PageNumber />
@@ -376,13 +375,13 @@ namespace Scryber.Core.UnitTests.Layout
       </Content>
     </pdf:Section>
 
-    <pdf:Section styles:class='pg-num1 appendix'>
+    <pdf:Section styles:class='pg-num appendix'>
       <Content>
         <!-- Page 5 -->
-        This is the Appendix content of <pdf:PageNumber />
+        This is the Appendix content of <pdf:PageNumber styles:class='appendix' />
         <pdf:PageBreak />
         <!-- Page 6 -->
-        This is the Appendix content of <pdf:PageNumber />
+        This is the Appendix content of <pdf:PageNumber styles:class='appendix' />
       </Content>
     </pdf:Section>
   </Pages>
