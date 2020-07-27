@@ -74,8 +74,6 @@ namespace Scryber
 
             public int StartNumber { get; set; }
 
-            public string Prefix { get; set; }
-
         }
 
         #endregion
@@ -142,17 +140,7 @@ namespace Scryber
 
         #endregion
 
-        #region public string NumberPrefix{ get;}
-
-        /// <summary>
-        /// Gets the numbering prefix for this group
-        /// </summary>
-        public string NumberPrefix
-        {
-            get { return this._options.Prefix; }
-        }
-
-        #endregion
+        
 
         #region public PageNumberStyle NumberStyle {get;}
 
@@ -170,12 +158,12 @@ namespace Scryber
         // ctor
         //
 
-        public PDFPageNumberGroup(PDFPageNumbers owner, string groupName, PageNumberStyle style, int startindex, string prefix)
+        public PDFPageNumberGroup(PDFPageNumbers owner, string groupName, PageNumberStyle style, int startindex)
         {
             this.Owner = owner;
             this.GroupName = groupName;
             this.GroupPageCount = 0;
-            this._options = new NumberGroupOptions() { Style = style, Prefix = prefix, StartNumber = startindex };
+            this._options = new NumberGroupOptions() { Style = style, StartNumber = startindex };
             this._currSequence = null;
         }
 
@@ -192,8 +180,8 @@ namespace Scryber
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Number group '{3}': {0}, '{1}', {2}, Page count: {4}", 
-                this.NumberStyle, this.NumberPrefix, this.NumberStart, this.GroupName, this.GroupPageCount);
+            return string.Format("Number group '{2}': {0}, {1}, Page count: {3}", 
+                this.NumberStyle, this.NumberStart, this.GroupName, this.GroupPageCount);
         }
 
         #endregion
@@ -289,9 +277,7 @@ namespace Scryber
                 default:
                     throw new IndexOutOfRangeException("group.NumberStyle");
             }
-            if (!string.IsNullOrEmpty(this._options.Prefix))
-                value = this._options.Prefix + value;
-
+            
             return value;
 
         }

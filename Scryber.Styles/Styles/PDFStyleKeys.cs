@@ -199,7 +199,6 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<PDFUnit> PageHeightKey = PDFStyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"heit", PageItemKey);
         public static readonly PDFStyleKey<int> PageAngle = PDFStyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"angl", PageItemKey);
         public static readonly PDFStyleKey<PageNumberStyle> PageNumberStyleKey = PDFStyleKey.InternalCreateStyleValueKey<PageNumberStyle>((PDFObjectType)"styl", PageItemKey);
-        public static readonly PDFStyleKey<string> PageNumberPrefixKey = PDFStyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"pref", PageItemKey);
         public static readonly PDFStyleKey<int> PageNumberStartKey = PDFStyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"strt", PageItemKey);
         public static readonly PDFStyleKey<string> PageNumberGroupKey = PDFStyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"grup", PageItemKey);
         public static readonly PDFStyleKey<string> PageNumberFormatKey = PDFStyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"fomt", PageItemKey);

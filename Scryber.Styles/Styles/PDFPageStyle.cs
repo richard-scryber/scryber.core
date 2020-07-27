@@ -170,39 +170,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public string NumberPrefix {get;set;} + RemoveNumberPrefix()
-
-        /// <summary>
-        /// Gets or sets the number prefix for the page numbering
-        /// </summary>
-        [PDFAttribute("number-prefix")]
-        [PDFDesignable("Number Prefix", Category = "Paper", Priority = 1)]
-        public string NumberPrefix
-        {
-            get
-            {
-                string pref;
-                if (this.TryGetValue(PDFStyleKeys.PageNumberPrefixKey, out pref))
-                    return pref;
-                else
-                    return string.Empty;
-            }
-            set
-            {
-                this.SetValue(PDFStyleKeys.PageNumberPrefixKey, value);
-            }
-        }
-
-        /// <summary>
-        /// Removes any explict page numbering on this style
-        /// </summary>
-        public void RemoveNumberPrefix()
-        {
-            this.RemoveValue(PDFStyleKeys.PageNumberPrefixKey);
-        }
-
-        #endregion
-
+        
         #region public int NumberStartIndex {get;set;}
 
         /// <summary>

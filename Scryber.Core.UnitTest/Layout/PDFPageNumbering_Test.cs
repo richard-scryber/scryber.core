@@ -30,7 +30,7 @@ namespace Scryber.Core.UnitTests.Layout
         public void PageRegistrations()
         {
 
-            PDFPageNumberGroup grp = new PDFPageNumberGroup(null, "", PageNumberStyle.Decimals, 1, "");
+            PDFPageNumberGroup grp = new PDFPageNumberGroup(null, "", PageNumberStyle.Decimals, 1);
             PDFPageNumberRegistration reg = new PDFPageNumberRegistration(0, 10, grp);
 
             for (int i = 0; i < 10; i++)
@@ -40,7 +40,7 @@ namespace Scryber.Core.UnitTests.Layout
             }
 
 
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1, "");
+            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1);
             reg = new PDFPageNumberRegistration(0, 10, grp);
 
             for (int i = 0; i < 10; i++)
@@ -52,7 +52,7 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(pg, reg.GetPageLabel(i), "Block 2: Page index " + i + " does not match " + pg);
             }
 
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.Decimals, 1, "");
+            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.Decimals, 1);
             reg = new PDFPageNumberRegistration(0, 10, grp);
             reg.PreviousLinkedRegistrationPageCount = 5;
 
@@ -62,7 +62,7 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(pg, reg.GetPageLabel(i));
             }
 
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1, "");
+            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1);
             reg = new PDFPageNumberRegistration(0, 10, grp);
             reg.PreviousLinkedRegistrationPageCount = 6;
 
@@ -77,7 +77,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             // A registration of UpperCase letter from pg 15 to 25
             // with a previous count of 6 pages
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.UppercaseLetters, 1, "");
+            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.UppercaseLetters, 1);
             reg = new PDFPageNumberRegistration(15, 25, grp);
             reg.PreviousLinkedRegistrationPageCount = 6;
 
@@ -322,34 +322,6 @@ namespace Scryber.Core.UnitTests.Layout
 
         #endregion
 
-        #region public void PagePrefixOnlyCollection()
-
-        [TestMethod()]
-        [TestCategory("Page Numbering")]
-        public void PagePrefixOnlyCollection()
-        {
-            int repeatcount = 20;
-            string prefix = "Page Label ";
-            PDFPageNumbers col = new PDFPageNumbers();
-            PDFStyle style = new PDFStyle();
-            style.PageStyle.NumberStyle = PageNumberStyle.None;
-            style.PageStyle.NumberPrefix = prefix;
-            col.StartNumbering(style.CreatePageNumberOptions());
-
-            col.Register(0);
-            col.UnRegister(19);
-            col.EndNumbering();
-
-            for (int i = 0; i < repeatcount; i++)
-            {
-                string actual = col.GetPageLabel(i);
-                string expected = prefix; //No page number, so just the prefix
-                Assert.AreEqual(expected, actual);
-            }
-        }
-
-        #endregion
-
         #region public void PageRomanUpperWithPrefixCollection()
 
         [TestMethod()]
@@ -359,13 +331,11 @@ namespace Scryber.Core.UnitTests.Layout
             int repeatcount = 20;
             //index                0    1      2      3    4    5      6       7     8     9    10     11    12      13     14    15      16      17       18    19
             string[] expected = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
-            string prefix = "Page ";
-
+            
             PDFPageNumbers col = new PDFPageNumbers();
             
             PDFStyle style = new PDFStyle();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
-            style.PageStyle.NumberPrefix = prefix;
             col.StartNumbering(style.CreatePageNumberOptions());
 
             col.Register(0);
@@ -375,7 +345,7 @@ namespace Scryber.Core.UnitTests.Layout
             for (int i = 0; i < repeatcount; i++)
             {
                 string actual = col.GetPageLabel(i);
-                Assert.AreEqual(prefix + expected[i], actual);
+                Assert.AreEqual(expected[i], actual);
             }
 
         }
@@ -423,13 +393,11 @@ namespace Scryber.Core.UnitTests.Layout
             int repeatcount = 20;
             //index                0     1    2      3      4      5     6    7      8      9      10     11    12     13       14      15    16     17      18      19
             string[] expected = { "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII" };
-            string prefix = "Page ";
-
+            
             PDFPageNumbers col = new PDFPageNumbers();
             PDFStyle style = new PDFStyle();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             style.PageStyle.NumberStartIndex = startindex;
-            style.PageStyle.NumberPrefix = prefix;
             col.StartNumbering(style.CreatePageNumberOptions());
 
             col.Register(0);
@@ -440,7 +408,7 @@ namespace Scryber.Core.UnitTests.Layout
             {
                 string actual = col.GetPageLabel(i);
                 
-                Assert.AreEqual(prefix + expected[i], actual);
+                Assert.AreEqual(expected[i], actual);
             }
 
         }
@@ -458,8 +426,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageCollection_DefaultAndBack()
         {
-            // page indices                          0,    1,   2,   3,   4,   5,   6,     7,    8,    9,   10,    11 ,   12,    13,    14,   15,  16,  17,  18,   19
-            string[] expectedlabels = new string[] { "1", "2", "3", "4", "5", "i", "ii", "iii", "iv", "v", "P B", "P C", "P D", "P E", "P F", "6", "7", "8", "9", "10" };
+            // page indices                          0,    1,   2,   3,   4,   5,   6,     7,    8,    9,  10,  11 , 12,  13,  14,  15,  16,  17,  18,   19
+            string[] expectedlabels = new string[] { "1", "2", "3", "4", "5", "i", "ii", "iii", "iv", "v", "B", "C", "D", "E", "F", "6", "7", "8", "9", "10" };
 
             PDFPageNumbers col = new PDFPageNumbers();
             PDFStyle def = new PDFStyle();
@@ -476,7 +444,6 @@ namespace Scryber.Core.UnitTests.Layout
             PDFStyle alpha = new PDFStyle();
             alpha.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
             alpha.PageStyle.NumberStartIndex = 2;
-            alpha.PageStyle.NumberPrefix = "P ";
 
             col.Register(0);
             col.Register(1);
@@ -577,118 +544,6 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(expectedLastLabels[i], number.LastLabel, "Page Last labels did not match for index " + i);
             }
         }
-
-        #region public void PageCollection_BookNumbers()
-
-        /// <summary>
-        /// Use of the PDFPageNumbers and registering into the PDFPageNumberingCollection
-        /// to validate that all the info returned is correct in the instance.
-        /// </summary>
-        [TestMethod()]
-        [TestCategory("Page Numbering")]
-        public void PageCollection_BookNumbers()
-        {
-            // structure                  |  None      | Intro                 | Pages                                 | Appendices                                            | References
-            // output                     | 0   1   2  | 3    4      5     6   | 7    8     9   10  11   12   13   14  | 15            16            17            18          | 19       20       21
-            string[] expectedLabels =     { "", "", "", "i", "ii", "iii", "iv", "1", "2", "3", "4", "5", "6", "7", "8", "Appendix A", "Appendix A", "Appendix B", "Appendix C", "Ref 1", "Ref 2", "Ref 3" };
-            string[] expectedLastLabels = { "", "", "", "iv", "iv", "iv", "iv", "8", "8", "8", "8", "8", "8", "8", "8", "Appendix A", "Appendix A", "Appendix B", "Appendix C", "Ref 3", "Ref 3", "Ref 3" };
-            int[] expectedPageIndex = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
-            int expectedTotalPageIndex = 22;
-            int[] expectedGroupNumber = { 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 1, 1, 1, 2, 3 };
-            int[] expectedGroupMax =    { 3, 3, 3, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2, 1, 1, 3, 3, 3 };
-            PDFPageNumbers col = new PDFPageNumbers();
-            col.StartNumbering(null);
-
-            PDFStyle none = new PDFStyle();
-            none.PageStyle.NumberStyle = PageNumberStyle.None;
-            int noneReg = 0;
-            int noneUnReg = 2;
-            PDFPageNumberGroup grp = col.PushPageNumber(none.CreatePageNumberOptions());
-            col.Register(noneReg);
-            col.UnRegister(noneUnReg);
-            col.PopNumberStyle(grp);
-
-            PDFStyle intro = new PDFStyle();
-            intro.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
-            intro.PageStyle.NumberStartIndex = 1;
-            grp = col.PushPageNumber(intro.CreatePageNumberOptions());
-
-            int introReg = 3;
-            int introUnreg = 6;
-            col.Register(introReg);
-            col.UnRegister(introUnreg);
-            col.PopNumberStyle(grp);
-
-            PDFStyle pages = new PDFStyle();
-            pages.PageStyle.NumberStyle = PageNumberStyle.Decimals;
-            pages.PageStyle.NumberStartIndex = 1;
-            grp = col.PushPageNumber(pages.CreatePageNumberOptions());
-            int pagesReg = 7;
-            int pagesUnReg = 14;
-            col.Register(pagesReg);
-            col.UnRegister(pagesUnReg);
-            col.PopNumberStyle(grp);
-
-            PDFStyle appendixA = new PDFStyle();
-            appendixA.PageStyle.NumberStyle = PageNumberStyle.None;
-            appendixA.PageStyle.NumberPrefix = "Appendix A";
-            grp = col.PushPageNumber(appendixA.CreatePageNumberOptions());
-
-            int appendAReg = 15;
-            int appendAUnReg = 16;
-            col.Register(appendAReg);
-            col.UnRegister(appendAUnReg);
-            col.PopNumberStyle(grp);
-
-            PDFStyle appendixB = new PDFStyle();
-            appendixB.PageStyle.NumberPrefix = "Appendix B";
-            appendixB.PageStyle.NumberStyle = PageNumberStyle.None;
-            grp = col.PushPageNumber(appendixB.CreatePageNumberOptions());
-            int appendBReg = 17;
-            int appendBUnReg = 17;
-            col.Register(appendBReg);
-            col.UnRegister(appendBUnReg);
-            col.PopNumberStyle(grp);
-
-            PDFStyle appendixC = new PDFStyle();
-            appendixC.PageStyle.NumberPrefix = "Appendix C";
-            appendixC.PageStyle.NumberStyle = PageNumberStyle.None;
-            grp = col.PushPageNumber(appendixC.CreatePageNumberOptions());
-
-            int appendCReg = 18;
-            int appendCUnReg = 18;
-            col.Register(appendCReg);
-            col.UnRegister(appendCUnReg);
-            col.PopNumberStyle(grp);
-
-            PDFStyle refs = new PDFStyle();
-            refs.PageStyle.NumberPrefix = "Ref ";
-            refs.PageStyle.NumberStyle = PageNumberStyle.Decimals;
-            refs.PageStyle.NumberStartIndex = 1;
-            grp = col.PushPageNumber(refs.CreatePageNumberOptions());
-
-            int refsReg = 19;
-            int refsUnReg = 21;
-            col.Register(refsReg);
-            col.UnRegister(refsUnReg);
-            col.PopNumberStyle(grp);
-
-            col.EndNumbering();
-            
-            for (int i = 0; i < expectedLabels.Length; i++)
-            {
-                PDFPageNumberData number = col.GetPageData(i);
-                Assert.AreEqual(expectedLabels[i], number.Label, "Page labels did not match for index " + i);
-                Assert.AreEqual(expectedLastLabels[i], number.LastLabel, "Page last labels did not match for index " + i);
-                Assert.AreEqual(expectedGroupNumber[i], number.GroupNumber, "Page group number did not match for index " + i);
-                Assert.AreEqual(expectedGroupMax[i], number.GroupLastNumber, "Page group last number did not match for index " + i);
-                Assert.AreEqual(expectedPageIndex[i], number.PageNumber, "Page number did not match for index " + i);
-                Assert.AreEqual(expectedTotalPageIndex, number.LastPageNumber, "Page last page number did not match for index " + i);
-            }
-
-        }
-
-        #endregion
 
     }
 }

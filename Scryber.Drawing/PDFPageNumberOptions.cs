@@ -11,8 +11,6 @@ namespace Scryber
 
         public PageNumberStyle? NumberStyle { get; set; }
 
-        public string Prefix { get; set; }
-
         public string Format { get; set; }
 
         public int? StartIndex { get; set; }

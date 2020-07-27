@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             // numbering                           | Default                 | Lower roman                | Upper letter with prefix        | Back to default
             // page indices                          0,    1,   2,   3,   4,   5,   6,     7,    8,    9,   10,    11 ,   12,    13,    14,   15,  16,  17,  18,   19
-            string[] expectedlabels = new string[] { "1", "2", "3", "4", "5", "i", "ii", "iii", "iv", "v", "P B", "P C", "P D", "P E", "P F", "6", "7", "8", "9", "10" };
+            string[] expectedlabels = new string[] { "1", "2", "3", "4", "5", "i", "ii", "iii", "iv", "v", "B", "C", "D", "E", "F", "6", "7", "8", "9", "10" };
 
             for (int i = 0; i < 4; i++)
             {
@@ -135,7 +135,6 @@ namespace Scryber.Core.UnitTests.Layout
                 {
                     group.Style.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
                     group.Style.PageStyle.NumberStartIndex = 2;
-                    group.Style.PageStyle.NumberPrefix = "P ";
                 }
                 doc.Pages.Add(group);
 
@@ -199,8 +198,8 @@ namespace Scryber.Core.UnitTests.Layout
                     index -= 10;
                     Assert.AreEqual(index + 1, num.GroupNumber);
                     Assert.AreEqual(5, num.GroupLastNumber);
-                    Assert.AreEqual("P " + Scryber.Utilities.NumberHelper.GetLetterUpper(index + 2), num.Label);
-                    Assert.AreEqual("P F", num.LastLabel);
+                    Assert.AreEqual(Scryber.Utilities.NumberHelper.GetLetterUpper(index + 2), num.Label);
+                    Assert.AreEqual("F", num.LastLabel);
                 }
                 else
                 {
@@ -286,7 +285,7 @@ namespace Scryber.Core.UnitTests.Layout
                 {
                     group.Style.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
                     group.Style.PageStyle.NumberStartIndex = 2;
-                    group.Style.PageStyle.NumberPrefix = "P ";
+
                 }
                 doc.Pages.Add(group);
 
@@ -305,8 +304,8 @@ namespace Scryber.Core.UnitTests.Layout
                 new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
             Scryber.Layout.PDFLayoutDocument ldoc = doc.ComposeLayout(context, style);
 
-            // page indices                          0,    1,   2,   3,   4,   5,   6,     7,    8,    9,   10,    11 ,   12,    13,    14,   15,  16,  17,  18,   19
-            string[] expectedlabels = new string[] { "a", "b", "c", "d", "e", "i", "ii", "iii", "iv", "v", "P B", "P C", "P D", "P E", "P F", "1", "2", "3", "4", "5" };
+            // page indices                          0,    1,   2,   3,   4,   5,   6,    7,    8,    9,   10,  11 , 12,  13,  14,  15,  16,  17,  18,   19
+            string[] expectedlabels = new string[] { "a", "b", "c", "d", "e", "i", "ii", "iii", "iv", "v", "B", "C", "D", "E", "F", "1", "2", "3", "4", "5" };
 
             int index = -1;
 
@@ -351,8 +350,8 @@ namespace Scryber.Core.UnitTests.Layout
                     index -= 10;
                     Assert.AreEqual(index + 1, num.GroupNumber);
                     Assert.AreEqual(5, num.GroupLastNumber);
-                    Assert.AreEqual("P " + Scryber.Utilities.NumberHelper.GetLetterUpper(index + 2), num.Label);
-                    Assert.AreEqual("P F", num.LastLabel);
+                    Assert.AreEqual(Scryber.Utilities.NumberHelper.GetLetterUpper(index + 2), num.Label);
+                    Assert.AreEqual("F", num.LastLabel);
                 }
                 else
                 {

@@ -618,15 +618,13 @@ namespace Scryber.Layout
             }
             if (!string.IsNullOrEmpty(type))
                 writer.WriteDictionaryNameEntry("S", type);
-            if (!string.IsNullOrEmpty(entry.Group.NumberPrefix))
-                writer.WriteDictionaryStringEntry("P", entry.Group.NumberPrefix);
             if (entry.Group.NumberStart > 0)
                 writer.WriteDictionaryNumberEntry("St", entry.Group.NumberStart + entry.PreviousLinkedRegistrationPageCount);
             writer.EndDictionary();
             writer.EndArrayEntry();
 
             if(context.ShouldLogVerbose)
-                context.TraceLog.Add(TraceLevel.Verbose,"Page Labels", "Output the page label entry starting at page index " + entry.FirstPageIndex + " with style " + entry.Group.NumberStyle + ", starting at " + entry.Group.NumberStart + ", with prefix " + (entry.Group.NumberPrefix ?? "[None]"));
+                context.TraceLog.Add(TraceLevel.Verbose,"Page Labels", "Output the page label entry starting at page index " + entry.FirstPageIndex + " with style " + entry.Group.NumberStyle + ", starting at " + entry.Group.NumberStart);
 
         }
 

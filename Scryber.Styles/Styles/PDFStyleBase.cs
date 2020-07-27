@@ -1070,7 +1070,6 @@ namespace Scryber.Styles
         {
             PDFPageNumberOptions opts = new PDFPageNumberOptions();
             PDFStyleValue<PageNumberStyle> style;
-            PDFStyleValue<string> prefix;
             PDFStyleValue<string> grp;
             PDFStyleValue<int> start;
             PDFStyleValue<string> format;
@@ -1082,11 +1081,6 @@ namespace Scryber.Styles
             if(this.TryGetValue(PDFStyleKeys.PageNumberStyleKey,out style))
             {
                 opts.NumberStyle = style.Value;
-                hasvalues = true;
-            }
-            if (this.TryGetValue(PDFStyleKeys.PageNumberPrefixKey, out prefix))
-            {
-                opts.Prefix = prefix.Value;
                 hasvalues = true;
             }
             if (this.TryGetValue(PDFStyleKeys.PageNumberGroupKey, out grp))

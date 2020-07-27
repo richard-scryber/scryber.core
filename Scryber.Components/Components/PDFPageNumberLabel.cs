@@ -165,7 +165,8 @@ namespace Scryber.Components
 
         private string GetDisplayText(bool rendering)
         {
-            return this.GetDisplayText(this._renderpageindex, this._fullstyle, rendering);
+            var text = this.GetDisplayText(this._renderpageindex, this._fullstyle, rendering);
+            return text;
         }
 
         /// <summary>

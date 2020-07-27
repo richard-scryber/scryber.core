@@ -338,7 +338,7 @@ namespace Scryber
         /// <returns></returns>
         private PDFPageNumberGroup GetDefaultGrouping()
         {
-            PDFPageNumberGroup group = new PDFPageNumberGroup(this, string.Empty, PageNumberStyle.Decimals, 1, string.Empty);
+            PDFPageNumberGroup group = new PDFPageNumberGroup(this, string.Empty, PageNumberStyle.Decimals, 1);
             return group;
         }
 
@@ -362,7 +362,6 @@ namespace Scryber
             bool modified = false;
             PageNumberStyle numStyle = template.NumberStyle;
             int numStart = template.NumberStart;
-            string numPrefix = template.NumberPrefix;
             string grpName = template.GroupName;
             
 
@@ -374,12 +373,7 @@ namespace Scryber
                 modified = true;
             }
 
-            if (!string.Equals(template.NumberPrefix, opts.Prefix))// && style.NumberPrefix != template.NumberPrefix)
-            {
-                modified = true;
-                numPrefix = opts.Prefix;
-            }
-
+            
             if (opts.NumberStyle.HasValue)// && style.NumberStyle != numStyle)
             {
                 modified = true;
@@ -394,7 +388,7 @@ namespace Scryber
 
             if (modified)
             {
-                updated = new PDFPageNumberGroup(template.Owner, grpName, numStyle, numStart, numPrefix);
+                updated = new PDFPageNumberGroup(template.Owner, grpName, numStyle, numStart);
                 return modified;
             }
             else

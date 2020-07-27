@@ -90,7 +90,6 @@ namespace Scryber.Core.UnitTests.Layout
             //Add a catch all number style definition for upper letter with Prefix
             PDFStyleDefn pgNumStyle = new PDFStyleDefn();
             pgNumStyle.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
-            pgNumStyle.PageStyle.NumberPrefix = "#";
             doc.Styles.Add(pgNumStyle);
 
 
@@ -127,7 +126,7 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(totalcount, data.GroupLastNumber, "Last Group number failed");
 
                 //Should be upper letter with hash prefix
-                string output = "#" + ((char)((int)'A' + i)).ToString();
+                string output = ((char)((int)'A' + i)).ToString();
                 Assert.AreEqual(output, data.ToString(), "String result failed");
             }
         }
@@ -146,7 +145,7 @@ namespace Scryber.Core.UnitTests.Layout
                 {
                     PDFSection section = new PDFSection();
                     section.PageNumberStyle = PageNumberStyle.UppercaseLetters;
-                    section.PageNumberPrefix = "#";
+                    
                     doc.Pages.Add(section);
 
                     for (int j = 0; j < 4; j++) //4 page breaks = 5 pages
@@ -170,8 +169,8 @@ namespace Scryber.Core.UnitTests.Layout
                 doc.LayoutComplete += Doc_LayoutCompleted;
                 doc.ProcessDocument(ms);
             }
-            string[] allpages = new string[] { "1", "2", "3", "4", "5", "#A", "#B", "#C", "#D", "#E", "6", "7", "8", "9" };
-            string[] grptotal = new string[] { "5", "5", "5", "5", "5", "#E", "#E", "#E", "#E", "#E", "9", "9", "9", "9" };
+            string[] allpages = new string[] { "1", "2", "3", "4", "5", "A", "B", "C", "D", "E", "6", "7", "8", "9" };
+            string[] grptotal = new string[] { "5", "5", "5", "5", "5", "E", "E", "E", "E", "E", "9", "9", "9", "9" };
 
             for (int i = 0; i < allpages.Length; i++)
             {
@@ -196,7 +195,6 @@ namespace Scryber.Core.UnitTests.Layout
             PDFPage pg = new PDFPage();
             doc.Pages.Add(pg);
             //First page with 
-            pg.Style.PageStyle.NumberPrefix = "#";
             pg.Style.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
 
             PDFPageNumberLabel lbl = new PDFPageNumberLabel();
@@ -224,7 +222,7 @@ namespace Scryber.Core.UnitTests.Layout
             //check page 1
             PDFLayoutLine line = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine; //first line of the first region, of the first group of the first page
             PDFTextRunProxy chars = (PDFTextRunProxy)line.Runs[1]; //Start text, Chars, End Text
-            Assert.AreEqual("#A", chars.Proxy.Text);
+            Assert.AreEqual("A", chars.Proxy.Text);
 
             //check page 2
             line = layout.AllPages[1].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine; //first line of the first region, of the first group of the second page
@@ -246,7 +244,7 @@ namespace Scryber.Core.UnitTests.Layout
             // Blank title page, followed by 2 pages with lower roman, 3 pages in the page group, 
             // then inner section of lower alpha and back to a page group single page.
 
-            string[] pgNums = new string[] { "", "Pi", "Pii", "1", "2", "3", "e", "f", "g", "4" };
+            string[] pgNums = new string[] { "", "i", "ii", "1", "2", "3", "e", "f", "g", "4" };
 
             //set up the styles
 
@@ -255,7 +253,6 @@ namespace Scryber.Core.UnitTests.Layout
             //catch all style will be applied to the document
             PDFStyleDefn catchall = new PDFStyleDefn();
             catchall.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
-            catchall.PageStyle.NumberPrefix = "P";
             doc.Styles.Add(catchall);
 
             //style for the page group
@@ -333,6 +330,74 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(expected, actual);
                 TestContext.WriteLine("Expected '{0}', Actual '{1}'", expected, actual);
             }
+        }
+
+        [TestMethod()]
+        public void TestingNumberPrefixLayou()
+        {
+            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Render-Options compression-type='None' string-output='Text' />
+  <Styles>
+    <styles:Style applied-class='pg-num1' >
+      <styles:Padding all='20pt'/>
+      <styles:Font size='100pt'/>
+    </styles:Style>
+
+    <styles:Style applied-type='pdf:Section' >
+      <styles:Page display-format='Page {0}' number-start-index='1' />
+    </styles:Style>
+
+    <styles:Style applied-class='appendix' >
+      <styles:Page display-format='Appendix {0}' number-style='UppercaseLetters' number-start-index='1' />
+    </styles:Style>
+  </Styles>
+  
+  <Pages>
+    <pdf:Page styles:class='pg-num1'>
+      <Content>
+        <!-- Page 1 -->
+        This is the Page content of <pdf:PageNumber />
+      </Content>
+    </pdf:Page>
+
+    <pdf:Section styles:class='pg-num1'>
+      <Content>
+        <!-- Page 2 -->
+        This is the content of <pdf:PageNumber />
+        <pdf:PageBreak/>
+        <!-- Page 3 -->
+        This is the content of <pdf:PageNumber />
+        <pdf:PageBreak />
+        <!-- Page 4 -->
+        This is the content of <pdf:PageNumber />
+      </Content>
+    </pdf:Section>
+
+    <pdf:Section styles:class='pg-num1 appendix'>
+      <Content>
+        <!-- Page 5 -->
+        This is the Appendix content of <pdf:PageNumber />
+        <pdf:PageBreak />
+        <!-- Page 6 -->
+        This is the Appendix content of <pdf:PageNumber />
+      </Content>
+    </pdf:Section>
+  </Pages>
+  
+</pdf:Document>";
+
+            var ms = new System.IO.StringReader(src);
+            var doc = PDFDocument.ParseDocument(ms, ParseSourceType.DynamicContent);
+
+            var path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            path = System.IO.Path.Combine(path, "PageNumberTest.pdf");
+
+            doc.ProcessDocument(path, System.IO.FileMode.OpenOrCreate);
+
+            Assert.IsTrue(System.IO.File.Exists(path));
         }
     }
 }

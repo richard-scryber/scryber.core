@@ -306,10 +306,9 @@
         <xs:attribute name="height" type="comp:BindableUnitType" use="optional" />
         <xs:attribute name="number-style" type="comp:BindablePageNumberingEnum" use="optional" />
         <xs:attribute name="number-start-index" type="comp:BindableIntgerType" use="optional" default="1" />
-        <xs:attribute name="number-prefix" type="comp:BindableStringType" use="optional" />
-        <xs:attribute name="display-format" type="comp:BindableStringType" use="optional" form="qualified" />
-        <xs:attribute name="group-count-hint" type="comp:BindableIntgerType" use="optional" form="qualified" />
-        <xs:attribute name="total-count-hint" type="comp:BindableIntgerType" use="optional" form="qualified" />
+        <xs:attribute name="display-format" type="comp:BindableStringType" use="optional"  />
+        <xs:attribute name="group-count-hint" type="comp:BindableIntgerType" use="optional" />
+        <xs:attribute name="total-count-hint" type="comp:BindableIntgerType" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -417,7 +416,6 @@
 
   <xs:attributeGroup name="PageNumberAttributes" >
     <xs:attribute name="page-number-style" type="comp:BindablePageNumberingEnum" use="optional" form="qualified" />
-    <xs:attribute name="page-number-prefix" type="comp:BindableStringType" use="optional" form="qualified" />
     <xs:attribute name="page-number-start-index" type="comp:BindableIntgerType" use="optional" form="qualified" />
   </xs:attributeGroup>
 

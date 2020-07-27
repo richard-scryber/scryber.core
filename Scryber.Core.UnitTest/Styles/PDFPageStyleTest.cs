@@ -191,33 +191,6 @@ namespace Scryber.Core.UnitTests.Styles
             
         }
 
-        /// <summary>
-        ///A test for NumberPrefix
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Style Values")]
-        public void Page_NumberPrefixTest()
-        {
-            PDFPageStyle target = new PDFPageStyle();
-            string expected = String.Empty;
-
-            Assert.AreEqual(expected, target.NumberPrefix);
-
-            expected = "Page ";
-            target.NumberPrefix = expected;
-            Assert.AreEqual(expected, target.NumberPrefix);
-
-            expected = "Another ";
-            target.NumberPrefix = expected;
-            Assert.AreEqual(expected, target.NumberPrefix);
-
-            expected = String.Empty;
-            target.RemoveNumberPrefix();
-            Assert.AreEqual(expected, target.NumberPrefix);
-
-            target.NumberPrefix = expected;
-            Assert.AreEqual(expected, target.NumberPrefix);
-        }
 
         /// <summary>
         ///A test for NumberFormat

@@ -169,13 +169,12 @@ When outputting a page the default paper size is ISO A4 Portrait (210mm x 29.7mm
 either on the page or via styles to the standard ISO or Imperial page sizes, in landscape or portrait, or even a custom size.
 
 * ISO 216 Standard Paper sizes
-    * A0 to A9
-    * B0 to B9
-    * C0 to C9
-    * see: `https://papersizes.io/a/`_, `https://papersizes.io/b/`_, `https://papersizes.io/c/`_
+    * `A0 to A9 <https://papersizes.io/a/>`_
+    * `B0 to B9 <https://papersizes.io/b/>`_
+    * `C0 to C9 <https://papersizes.io/c/>`_
 * Imperial Paper Sizes
     * Quarto, Foolscap, Executive, GovermentLetter, Letter, Legal, Tabloid, Post, Crown, LargePost, Demy, Medium, Royal, Elephant, DoubleDemy, QuadDemy, Statement,
-    * see: `https://papersizes.io/imperial/`_
+
 
 A section can only be 1 size of paper, but different sections and different pages can have different sizes.
 
@@ -262,7 +261,6 @@ down to any pages within the group.
             <styles:Border color="aqua" width="2" sides="Bottom"/>
             <styles:Padding all="5pt"/>
             <styles:Margins all="10pt"/>
-            <styles:Columns count="3"/>
             <styles:Font size="12pt"/>
             <styles:Position h-align="Center"/>
         </styles:Style>
@@ -282,12 +280,12 @@ down to any pages within the group.
             </Params>
             <!-- consistent header across the pages in this group (split into 3 columns -->
             <Header>
-                <pdf:Div styles:class="header" >
-                <pdf:Label text="{@:sectTitle}" />
-                <pdf:ColumnBreak/>
-                <pdf:PageNumber />
-                <pdf:ColumnBreak/>
-                <pdf:Date styles:date-format="dd MMMM yyyy" />
+                <pdf:Div styles:class="header" styles:column-count="3" >
+                    <pdf:Label text="{@:sectTitle}" />
+                    <pdf:ColumnBreak/>
+                    <pdf:PageNumber />
+                    <pdf:ColumnBreak/>
+                    <pdf:Date styles:date-format="dd MMMM yyyy" />
                 </pdf:Div>
             </Header>
 
@@ -324,4 +322,12 @@ down to any pages within the group.
 By applying a header at the group level, we can be sure that it is repeated across all pages.
 
 .. image:: images/documentpagegroups.png
+
+Page numbering
+==============
+
+In the previous example we saw use of the :doc:`reference/pdf_pagenumber` component to display the current page number on a page.
+The actual numbering is held at a document level, but can be altered for each group, section or individual page.
+
+See :doc:`document_pagenumbers` for a complete example.
 

@@ -171,17 +171,6 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public string PageNumberPrefix {get;set;}
-
-        [PDFAttribute("page-number-prefix", Const.PDFStylesNamespace)]
-        public string PageNumberPrefix
-        {
-            get { return this.Style.PageStyle.NumberPrefix; }
-            set { this.Style.PageStyle.NumberPrefix = value; }
-        }
-
-        #endregion
-
         #region public OverflowAction OverflowAction {get;set;}
 
         /// <summary>
