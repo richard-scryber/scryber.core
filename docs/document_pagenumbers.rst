@@ -105,7 +105,6 @@ The number styles will be automatically used with any format string.
     <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                 xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                 xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
-    <Render-Options compression-type='None' string-output='Text' />
     <Styles>
         <styles:Style applied-class='pg-num' >
         <styles:Padding all='20pt'/>
@@ -189,4 +188,71 @@ To improve layout, it's possible to set the group-count-hint and total-count-hin
 
 Page of a different component
 ==============================
+
+Providing the current page number using the `PageNumber` component is based around the current page. But it's also good to know the layout page a different 
+component was placed on.
+
+This is achieved by the `PageOf` component. You can identify the component to be referenced either by name or id.
+Use the `#` prefix to reference via id.
+
+The number style of the page being referenced will be used, and the display format can also be used. 
+But formats set for the page will not be used.
+
+
+.. code-block:: xml
+
+    <?xml version='1.0' encoding='utf-8' ?>
+    <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+    <Styles>
+        <styles:Style applied-class='pg-num' >
+        <styles:Padding all='20pt'/>
+        <styles:Font size='40pt' family='Helvetica'/>
+        <styles:Page display-format='Page {0} of {1}' />
+        </styles:Style>
+
+        <styles:Style applied-class='intro' >
+        <styles:Page number-style='LowercaseRoman'/>
+        </styles:Style>
+
+        <styles:Style applied-class='appendix' >
+        <styles:Page display-format='Appendix {0}'  number-style='UppercaseLetters' number-start-index='1' />
+        </styles:Style>
+    </Styles>
+    
+    <Pages>
+
+        <pdf:Section name='IntroSection' styles:class='pg-num intro'>
+            <Content>
+                <pdf:Div>Introductions with lowercase roman.</pdf:Div>
+                <!-- Page 1 -->
+                <pdf:PageNumber />
+                <pdf:Div >Reference to the content on page <pdf:PageOf component='#Page2' /></pdf:Div>
+            </Content>
+        </pdf:Section>
+
+        <pdf:Section styles:class='pg-num' styles:page-number-start-index='1' >
+            <Content>
+                <pdf:Div>These are the page numbers shown on each of the pages</pdf:Div>
+                <!-- Page 1 -->
+                <pdf:PageNumber id='Page1' />
+                <pdf:PageBreak/>
+                <!-- Page 2 -->
+                <pdf:PageNumber id='Page2' />
+                <pdf:Div >
+                    Reference back the intro content 
+                    <pdf:PageOf component='IntroSection' styles:display-format='on page {0} ({2})' ></pdf:PageOf>
+                </pdf:Div>
+            </Content>
+        </pdf:Section>
+
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentpageof.png
+
+
 
