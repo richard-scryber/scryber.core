@@ -255,4 +255,5 @@ But formats set for the page will not be used.
 .. image:: images/documentpageof.png
 
 
+The page numbers can also be used nicely within :doc:`document_linking`
 

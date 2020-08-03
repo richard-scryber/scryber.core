@@ -112,6 +112,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_pages
     document_columns
     referencing_files
+    document_pagenumbers
     drawing_units
     drawing_colors
     drawing_images
