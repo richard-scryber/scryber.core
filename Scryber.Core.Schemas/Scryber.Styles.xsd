@@ -417,6 +417,7 @@
   <xs:attributeGroup name="PageNumberAttributes" >
     <xs:attribute name="page-number-style" type="comp:BindablePageNumberingEnum" use="optional" form="qualified" />
     <xs:attribute name="page-number-start-index" type="comp:BindableIntgerType" use="optional" form="qualified" />
+    <xs:attribute name="page-number-display-format" type="comp:BindableStringType" use="optional" form="qualified" />
   </xs:attributeGroup>
 
   <xs:attributeGroup name="PageNumberDisplayAttributes" >

@@ -7,6 +7,8 @@ using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Layout;
 using LD = Scryber.Layout.PDFLayoutDocument;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace Scryber.Core.UnitTests.Layout
 {
@@ -333,70 +335,99 @@ namespace Scryber.Core.UnitTests.Layout
         }
 
         [TestMethod()]
-        public void TestingNumberPrefixLayou()
+        public void TestingNumberOutputFormat()
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
+
 <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Render-Options compression-type='None' string-output='Text' />
   <Styles>
     <styles:Style applied-class='pg-num' >
       <styles:Padding all='20pt'/>
-      <styles:Font size='60pt'/>
+      <styles:Font size='60pt' family='Helvetica'/>
+      <styles:Page display-format='Page {0} of {1}'/>
     </styles:Style>
 
-    <styles:Style applied-type='pdf:PageNumber' >
-      <styles:Page styles:display-format='Page {0}'/>
+    <styles:Style applied-class='intro' >
+      <styles:Page number-style='LowercaseRoman'/>
     </styles:Style>
 
     <styles:Style applied-class='appendix' >
-      <styles:Page number-style='UppercaseLetters' number-start-index='1' styles:display-format='Appendix {0}'  />
+      <styles:Page display-format='Appendix {0}'  number-style='UppercaseLetters' number-start-index='1' />
     </styles:Style>
   </Styles>
   
   <Pages>
-    <pdf:Page styles:page-number-style='None' styles:class='pg-num' >
-      <Content>
-        <!-- Page 1 -->
-        This is the Header Page '<pdf:PageNumber styles:display-format='Header {0}'  />'
-      </Content>
-    </pdf:Page>
 
-    <pdf:Section styles:class='pg-num'>
+    <pdf:Section styles:class='pg-num intro'>
       <Content>
-        <!-- Page 2 -->
-        This is the content of <pdf:PageNumber />
+        <pdf:Div>Introductions with lowercase roman</pdf:Div>
+        <!-- Page 1 -->
+        <pdf:PageNumber id='IntroNumber1'/>
         <pdf:PageBreak/>
-        <!-- Page 3 -->
-        This is the content of <pdf:PageNumber />
+        <!-- Page 2 -->
+        <pdf:PageNumber />
         <pdf:PageBreak />
-        <!-- Page 4 -->
-        This is the content of <pdf:PageNumber />
+        <!-- Page 3 -->
+        <pdf:PageNumber id='IntroNumber3'/>
+      </Content>
+    </pdf:Section>
+
+    <pdf:Section styles:class='pg-num' styles:page-number-start-index='1' >
+      <Content>
+        <pdf:Div>These are the page numbers shown on each of the pages</pdf:Div>
+        <!-- Page 1 -->
+        <pdf:PageNumber id='StandardNumber' />
+        <pdf:PageBreak/>
+        <!-- Page 2 -->
+        <pdf:PageNumber />
+        <pdf:PageBreak />
+        <!-- Page 3 -->
+        <pdf:Div>With a different format</pdf:Div>
+        <pdf:PageNumber id='ExplicitPageNum' styles:display-format='Page {0} of {1} (Total {2} of {3})' />
       </Content>
     </pdf:Section>
 
     <pdf:Section styles:class='pg-num appendix'>
       <Content>
-        <!-- Page 5 -->
-        This is the Appendix content of <pdf:PageNumber styles:class='appendix' />
+        <pdf:Div>The appendix style has upper case letters with a formatted value to show the current appendix letter.</pdf:Div>
+        <!-- Page 4 -->
+        <pdf:PageNumber id='AppendixNumber1' />
         <pdf:PageBreak />
-        <!-- Page 6 -->
-        This is the Appendix content of <pdf:PageNumber styles:class='appendix' />
+        <!-- Page 5 -->
+        <pdf:PageNumber id='AppendixNumber2' />
       </Content>
     </pdf:Section>
+
   </Pages>
   
 </pdf:Document>";
 
-            var ms = new System.IO.StringReader(src);
-            var doc = PDFDocument.ParseDocument(ms, ParseSourceType.DynamicContent);
+            var sr = new System.IO.StringReader(src);
+            var doc = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
 
-            var path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            path = System.IO.Path.Combine(path, "PageNumberTest.pdf");
+            using (var ms = new MemoryStream())
+            {
+                doc.ProcessDocument(ms);
 
-            doc.ProcessDocument(path, System.IO.FileMode.OpenOrCreate);
+                //First intro
+                var lbl = doc.FindAComponentById("IntroNumber1") as PDFPageNumberLabel;
+                Assert.AreEqual("Page i of iii", lbl.Proxy.Text, "Intro1 failed");
 
-            Assert.IsTrue(System.IO.File.Exists(path));
+                //3rd intro
+                lbl = doc.FindAComponentById("IntroNumber3") as PDFPageNumberLabel;
+                Assert.AreEqual("Page iii of iii", lbl.Proxy.Text, "Intro 3 failed");
+
+                //Normal pages
+                lbl = doc.FindAComponentById("StandardNumber") as PDFPageNumberLabel;
+                Assert.AreEqual("Page 1 of 3", lbl.Proxy.Text, "Normal Number failed");
+
+                //Explicit page number format
+                lbl = doc.FindAComponentById("ExplicitPageNum") as PDFPageNumberLabel;
+                Assert.AreEqual("Page 3 of 3 (Total 6 of 8)", lbl.Proxy.Text, "Explicit number failed");
+            }
         }
     }
 }

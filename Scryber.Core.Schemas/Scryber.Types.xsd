@@ -516,6 +516,7 @@
   <!-- An enumeration of the supported page number types -->
   <xs:simpleType name="PageNumberingEnum" >
     <xs:restriction base="xs:string" >
+      <xs:enumeration value="None" />
       <xs:enumeration value="Decimals" />
       <xs:enumeration value="UppercaseRoman" />
       <xs:enumeration value="LowercaseRoman" />
