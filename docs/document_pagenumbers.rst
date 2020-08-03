@@ -172,6 +172,21 @@ The number styles will be automatically used with any format string.
 .. image:: images/documentpagenumbers2.png
 
 
+Page count hints
+================
+
+During layout scryber has no ability to know the group or total page counts. However, it needs to layout the content 
+in order to put everything on the page.
+
+Often this is not an issue as page numbers tend to be isolated. However when mixed inline with other text it can cause a flow inconsistency.
+
+As such scryber uses standard hint values for the total number of pages, and the number of pages in a group. During the 
+layout phase (see: :doc:`document_lifecycle`) scryber will use 10 and 100 for the group and total page counts. as hints for layout.
+These will be replaced at the end of layout, with the actual grouop and total values, for rendering.
+
+To improve layout, it's possible to set the group-count-hint and total-count-hint in the Page styles so they will be used to improve the text flow.
+
+
 Page of a different component
 ==============================
 
