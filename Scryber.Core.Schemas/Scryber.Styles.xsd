@@ -199,6 +199,7 @@
     <xs:complexContent >
       <xs:extension base="AStyleItemBase">
         <xs:attribute name="count" type="comp:BindableIntgerType" use="optional" />
+        <xs:attribute name="widths" type="comp:BindableStringType" use="optional" />
         <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" />
       </xs:extension>
     </xs:complexContent>
@@ -378,6 +379,7 @@
   
   <xs:attributeGroup name="ColumnAttributes" >
     <xs:attribute name="column-count" type="comp:BindableIntgerType" use="optional" form="qualified" />
+    <xs:attribute name="column-widths" type="comp:BindableStringType" use="optional" form="qualified" />
     <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" form="qualified" />
   </xs:attributeGroup>
 

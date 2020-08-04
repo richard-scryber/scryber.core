@@ -133,7 +133,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Gets or sets the variable width of the columns on a block
         /// </summary>
-        [PDFAttribute("column-widths")]
+        [PDFAttribute("widths")]
         public PDFColumnWidths ColumnWidths
         {
             get

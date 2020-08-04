@@ -126,13 +126,13 @@ This will allow the headers to be full width, with the content flowing within th
 Column and Alley Widths
 ========================
 
-Along with changing the number of column scryber also supports the use of column and alley widths that can either be set on the style or
+Along with changing the number of columns, scryber also supports the use of column and alley widths that can either be set on the style or
 component itself.
 
 Alleys are the margins between each column that defaults to 10pt, but can be specified as a single unit value, e.g. 20pt or 5mm
 (see :doc:`drawing_units` for more on scryber measurements).
 
-The column-widths attribute takes multiple fraction values (0.0 to 1.0), for one or more columns.
+The `column-widths` attribute (or `widths` on a style definition) takes multiple fraction values (0.0 to 1.0), for one or more columns.
 It also supports the use of the `*` character for variable width.
 If a column is not specified then it will use the remainder of the space.
 
@@ -147,7 +147,7 @@ If for example we have 4 columns on a container that is 430pt wide with a 10pt a
 * `0.2 * 0.2`
     * The first and the 3rd column would be 1/5th of the available space (80pt)
     * The second and last columns will be 3/10ths of the available space (120pt)
-    * If the column count were to increase to 5 then the variable columns would accomodate and ultimately all be the same width
+    * If the column count were to increase to 5, then the variable columns would accomodate and ultimately all be the same width
 
 .. warning:: It is an error to specify column widths that add up to over 1.0 (100%). An exception will be thrown.
 
@@ -196,9 +196,57 @@ The layout engine adjusts all content automatically within the column widths.
 .. image:: images/documentcolumns3.png
 
 
+Balanced Columns
+=================
+
+As can be seen in the above image, scryber does not balance columns across the page (matching height).
+At the moment this is due to rendering speed, and the need to recaclulate all inner content again (and again),
+in order to match the spacing etc.
+
+.. note:: It's being looked into and may be supported in the future. Even if it's just for equally spaced columns.
+
 Images and Shapes in columns
 ==============================
 
+As with :doc:`component_sizing` images and shapes that do not have an explicit size, take their natural width up to the size of the container.
+
+This also applies to columns. If an image is too wide for the column it will be proportionally resized to fit within the column.
+
+.. code-block:: xml
+
+    <pdf:Section styles:paper-orientation="Landscape" >
+        <Header>
+            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+        </Header>
+        <Content>
+            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
+            <pdf:Div styles:column-count="4" styles:column-widths="0.2 0.0 0.2" 
+                 styles:alley-width="20pt" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
+          tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
+          <pdf:Image src="../../content/images/group.png" />
+          mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
+          pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
+          convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
+          <pdf:Br/>
+          <!-- Truncated for brevity
+            .
+            . -->
+         <pdf:Image src="../../content/images/group.png" />
+          Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
+          ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
+          maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
+          nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<pdf:Br/>
+      </pdf:Div>
+        <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+        </Content>
+        <Footer>
+            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+        </Footer>
+    </pdf:Section>
+
+
+.. image:: images/documentcolumns4.png
 
 Nested columns
 ==============
@@ -208,5 +256,3 @@ Breaking columns
 =================
 
 
-Balanced Columns
-=================
