@@ -7,8 +7,8 @@ Scryber supports flowing content layout. No matter the font, content type or str
 It also supports the same with columns, at the page and container level.
 
 
-Specifying columns
-==================
+Specifying columns on Pages
+===========================
 
 All block level components (see :doc:`component_positioning`) support the use of columns.
 
@@ -42,11 +42,9 @@ column and then ulimately the next page.
             pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
             convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
             <pdf:Br/>
-            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit, 
-            non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis 
-            <!-- 
-                truncated
-            -->
+            <!-- Truncated for brevity
+            .
+            . -->
             Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
             non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
             dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
@@ -56,6 +54,7 @@ column and then ulimately the next page.
             maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
             nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<pdf:Br/>
         </pdf:Div>
+        <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
         </Content>
         <Footer>
             <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
@@ -65,7 +64,48 @@ column and then ulimately the next page.
     
     </pdf:Document>
 
-.. image images/documentcolumns1.png
+.. image:: images/documentcolumns1.png
+
+
+Here the page is set to 3 columns across the layout page. The headers are independent of the column setting, but the inner content 
+flows down the first column, and then moves to the next when no more can be fitted, and so on until it reaches the end of the layout page. 
+
+As we can overflow, a new layout page is added, and the content latout continues until the end.
+
+.. note:: The borders and any background will be based around the container and show on each column.
+
+Columns on containers
+=====================
+
+As we can see above, the headings were also part of the column layout on the page. 
+
+Scryber supports the use of columns on containers too. So our layout can be improved if we remove the columns from the page,
+and set them on the `pdf:Div` itself.
+
+This will allow the headers to be full width, with the content flowing within the columns of the container.
+
+
+.. code-block:: xml
+
+    <pdf:Section >
+        <Header>
+            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+        </Header>
+        <Content>
+            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
+            <pdf:Div styles:column-count="3" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
+
+
+.. image:: images/documentcolumns2.png
+
+
+Column Widths
+==============
+
+
+Balanced Columns
+================
+
 
 Nested columns
 ==============
@@ -74,7 +114,3 @@ Nested columns
 
 Breaking columns
 =================
-
-
-Column Widths
-=============
