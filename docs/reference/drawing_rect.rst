@@ -1,5 +1,5 @@
 ============================
-Scryber.Components.PDFRect
+Scryber.Drawing.PDFRect
 ============================
 
 Content to come
