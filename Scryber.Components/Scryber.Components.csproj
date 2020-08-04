@@ -5,16 +5,17 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.21</PackageVersion>
+    <PackageVersion>1.0.0.22</PackageVersion>
     <Authors>Silicon Reef</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.21
+    <PackageReleaseNotes>1.0.0.22
 -------------------
 Package for release to Nuget Public
+Added column-widths to the components and styles, with support for varable widths.
 Page numbering falls back to the page number format set on the page if not explicitly set.
 
 Removed the Page number prefix instead only supprting the page number display format
