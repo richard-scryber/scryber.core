@@ -208,7 +208,7 @@ in order to match the spacing etc.
 Images and Shapes in columns
 ==============================
 
-As with :doc:`component_sizing` images and shapes that do not have an explicit size, take their natural width up to the size of the container.
+As with :doc:`component_sizing`, images and shapes that do not have an explicit size, take their natural width up to the size of the container.
 
 This also applies to columns. If an image is too wide for the column it will be proportionally resized to fit within the column.
 
@@ -245,14 +245,86 @@ This also applies to columns. If an image is too wide for the column it will be 
         </Footer>
     </pdf:Section>
 
+With this layout the images are taking the full width available within the variable columns.
 
 .. image:: images/documentcolumns4.png
 
-Nested columns
-==============
-
-
 Breaking columns
 =================
+
+Withing the content flow of the document, it's possible just as with page breaks to stop any layout in the current column, and move to the next
+using the `pdf:ColumnBreak` ( :doc:`reference/pdf_ColumnBreak`). 
+
+When a column break appears, the heirarchy will be traversed upwards to find
+
+.. note:: When a column break appears, the heirarchy will be traversed upwards to find the next container with multiple columns. If it gets to the top, a new page will be created for the columns.
+
+See the Nested containers and columns below for an example.
+
+Nested containers and columns
+==============================
+
+Scryber fully supports nested columns whether that be at the page or multiple container level.
+Again mixed content can be used within the columns, and the content will flow as normal.
+
+.. code-block:: xml
+
+    <pdf:Section styles:paper-orientation="Landscape" >
+        <Header>
+            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+        </Header>
+        <Content>
+            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
+            <!--
+                2 columns on the outer div
+             -->
+            <pdf:Div styles:column-count="2"
+                    styles:alley-width="20pt" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
+            tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
+            
+            mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
+            pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
+            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
+            <!-- 
+                Inner div with 2 columns for an image and a bit of text 
+            -->
+            <pdf:Div styles:column-count="2" styles:column-widths="0.4 0.6"
+                    styles:margins="5pt" styles:font-size="12pt" styles:font-italic="true" 
+                    styles:border-width="1pt" styles:border-color="red">
+                <pdf:Image src="../../content/images/group.png" />
+                <!-- 
+                    Explicit column break after 
+                    the image to go on a new line
+                -->
+                <pdf:ColumnBreak />
+                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
+                non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
+                dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
+                quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
+                dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
+                ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
+                maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
+                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.
+            </pdf:Div>
+            After the inner columns. Nunc suscipit ex ligula, eget ultricies lectus euismod in. Ut vestibulum condimentum faucibus. Nulla
+            tincidunt dui eu feugiat euismod. Quisque sodales odio id augue luctus, ac viverra risus tincidunt.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pellentesque velit quis erat
+            eleifend placerat. Quisque auctor mi id efficitur malesuada. Donec eros dui, mollis et faucibus non,
+
+            <!-- Truncated for brevity
+            .
+            . -->
+
+        </pdf:Div>
+            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+        </Content>
+        <Footer>
+            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+        </Footer>
+    </pdf:Section>
+
+
+.. image:: images/documentcolumns5.png
 
 
