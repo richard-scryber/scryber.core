@@ -75,7 +75,10 @@ Manual Execution
 
          doc.DataBind();
 
-         // everything is all set to generate
+         // access any components in templates that
+         // are created during databinding
+
+         // all set and ready to output
 
          doc.RenderToPDF(output);
     }

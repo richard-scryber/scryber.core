@@ -152,7 +152,6 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     :caption: Extending Scryber
     :maxdepth: 1
 
-    document_lifecycle
     dynamic_loading
     namespaces_and_assemblies
     scryber_configuration
