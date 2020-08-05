@@ -131,27 +131,27 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     :caption: Using Components
     :maxdepth: 1
 
-    compount_blocks
-    compound_tables
-    compound_lists
-    compound_links
-    compound_headings
-    compound_code
-    compound_html
+    container_blocks
+    container_tables
+    container_lists
+    container_links
+    container_headings
+    container_code
+    container_html
 
     
 .. toctree::
     :caption: Binding to data
     :maxdepth: 1
 
-    document_model
-    document_parameters
+    binding_model
+    binding_parameters
     binding_parameterrefs
     binding_databinding
     binding_choices
     binding_gridsandlists
-    binding_dataxmlsources
-    document_controllers
+    binding_xmlsources
+    binding_controllers
 
 .. toctree::
     :caption: Extending Scryber
