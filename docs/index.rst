@@ -128,9 +128,10 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     component_alignment
     
 .. toctree::
-    :caption: Compound Components
+    :caption: Using Components
     :maxdepth: 1
 
+    compount_blocks
     compound_tables
     compound_lists
     compound_links
@@ -149,6 +150,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     binding_databinding
     binding_choices
     binding_gridsandlists
+    binding_dataxmlsources
     document_controllers
 
 .. toctree::
