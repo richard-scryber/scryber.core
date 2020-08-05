@@ -97,4 +97,3 @@ The following were supported with Acrobat Reader, but not with other viewers. Th
 * styles:color - #RRGGBB. A colour component that the title text should be displayed in. Again, not fully supported in all readers.
 
 
-

@@ -103,14 +103,14 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     :caption: Documents and Pages.
     :maxdepth: 1
 
-    code_vs_xml
+    document_code_vs_xml
     document_structure
     document_lifecycle
     document_components
     document_styles
     document_pages
     document_columns
-    referencing_files
+    document_references
     document_pagenumbers
     document_outline
 
