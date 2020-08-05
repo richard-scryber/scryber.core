@@ -20,7 +20,7 @@ Simple Outline
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <!-- Document outline -->
-    <Outline title="Top Level Document" styles:open="true" />
+    <Outline title="Top Level Document" />
 
     <Pages>
 
@@ -65,7 +65,7 @@ Simple Outline
     </pdf:Document>
 
 
-When output the viewer application or browser can show the content of the outline.
+When output the reader application or browser can show the content of the outline.
 Selecting any of the bookmark items should navigate directly to the page the content is on.
 
 .. image:: images/documentoutline1.png
@@ -77,7 +77,24 @@ Selecting any of the bookmark items should navigate directly to the page the con
 Show or Hide the outline
 ========================
 
+The viewer options on the document control how a the reader application should show the document outline.
+
+See :doc:`document_structure` for more information on the `Viewer` element.
+
 
 Styling the outline
 ===================
+
+The Outline element, or Outline style on an element, control how an outline or bookmark appears.
+It supports the following options.
+
+* styles:open - true or false. If true the outline will show any children by default, but can be closed.
+
+The following were supported with Acrobat Reader, but not with other viewers. They may be supported again in future.
+
+* styles:bold - true or false. If true then the font used to show the bookmark will be em-boldened. Not fully supported in all readers.
+* styles:italic - true or false. If true then the font used to show the bookmark will be italicised. Not fully supported in all readers.
+* styles:color - #RRGGBB. A colour component that the title text should be displayed in. Again, not fully supported in all readers.
+
+
 
