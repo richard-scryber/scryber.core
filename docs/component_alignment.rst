@@ -1,5 +1,5 @@
 ==============================
-Aligning your content - td
+Aligning your content
 ==============================
 
 Alignment of components in pages, containers and tables is fully supported, as is text alignment.
@@ -126,7 +126,7 @@ Along with horizontal alignment vertical alignment can be applied to the page or
 
 .. image:: images/documentvalign.png
 
-.. note:: With containers unless they have a specific width there gerenally will not be any vertical change. Because they shrink to their respective heights. However actual heights will support the alligment.
+.. note:: With containers unless they have a specific height there gerenally will not be any vertical change, because they shrink to their respective heights. However actual heights will support the alligment.
 
 
 

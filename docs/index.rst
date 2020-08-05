@@ -100,7 +100,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     gui_controller_full
 
 .. toctree::
-    :caption: Layout Content.
+    :caption: Documents and Pages.
     :maxdepth: 1
 
     code_vs_xml
@@ -108,9 +108,6 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_lifecycle
     document_components
     document_styles
-    component_positioning
-    component_sizing
-    component_alignment
     document_pages
     document_columns
     referencing_files
@@ -118,7 +115,7 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     document_outline
 
 .. toctree::
-    :caption: Drawing, text and colours.
+    :caption: Layout Content.
     :maxdepth: 1
 
     drawing_units
@@ -126,7 +123,10 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     drawing_images
     drawing_fonts
     drawing_paths
-
+    component_positioning
+    component_sizing
+    component_alignment
+    
 .. toctree::
     :caption: Compound Components
     :maxdepth: 1
@@ -145,7 +145,10 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
     document_model
     document_parameters
-    document_databinding
+    binding_parameterrefs
+    binding_databinding
+    binding_choices
+    binding_gridsandlists
     document_controllers
 
 .. toctree::
