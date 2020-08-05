@@ -3,7 +3,7 @@ Dynamic loading of content
 ================================
 
 With scryber it is perfectly possible and fully supported to load content from a string,
-a compound string, an XMLReader, or a http response stream.
+a compound string, an XMLReader, a sql blob, or a http response stream.
 
 Ultimately the source of the template is up to the developer.
 
@@ -23,7 +23,7 @@ Ultimately the source of the template is up to the developer.
 
         protected PDFDocument GetDocument(string title)
         {
-        
+
             //This content could be from anywhere, by any means.
 
             string content = @"<?xml version='1.0' encoding='utf-8' ?>
