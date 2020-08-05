@@ -105,20 +105,39 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
 
     code_vs_xml
     document_structure
+    document_lifecycle
     document_components
     document_styles
     component_positioning
     component_sizing
+    component_alignment
     document_pages
     document_columns
     referencing_files
     document_pagenumbers
+    document_outline
+
+.. toctree::
+    :caption: Drawing, text and colours.
+    :maxdepth: 1
+
     drawing_units
     drawing_colors
     drawing_images
     drawing_fonts
     drawing_paths
-    document_outline
+
+.. toctree::
+    :caption: Compound Components
+    :maxdepth: 1
+
+    compound_tables
+    compound_lists
+    compound_links
+    compound_headings
+    compound_code
+    compound_html
+
     
 .. toctree::
     :caption: Binding to data
