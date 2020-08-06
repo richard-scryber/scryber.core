@@ -86,6 +86,7 @@ The background is simply a solid colour from the Grayscale or RGB ranges. The ba
         <styles:Style applied-class="floating" >
             <styles:Position mode="Absolute" x="230" y="70"/>
             <styles:Size width="300pt"/>
+            <styles:Background color="fuchsia" opacity="0.5"/>
         </styles:Style>
         
     </Styles>
@@ -100,7 +101,7 @@ The background is simply a solid colour from the Grayscale or RGB ranges. The ba
                 </pdf:Div>
 
                 <!-- values from the enumeration with transparency -->
-                <pdf:Div styles:class="floating" styles:bg-color="fuchsia" styles:bg-opacity="0.5" >
+                <pdf:Div styles:class="floating" >
                     This is the content in a semi-opaque fuschia background ontop of the page.
                 </pdf:Div>
             </Content>
@@ -113,6 +114,8 @@ The background is simply a solid colour from the Grayscale or RGB ranges. The ba
 
 .. image:: images/documentbgcolor.png
 
+.. note:: Backgrounds also support the use of single or repeating images. See :doc:`drawing_images` for details on using images backgrounds.
+
 Using border colors
 ====================
 
@@ -122,24 +125,48 @@ Margins are outside of the border, and padding is inside. But borders do not aff
 
 .. code-block:: xml
 
-    <!-- Page background with 40pt top padding -->
-    <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
-    <Content>
-    
-    
-    <!--  Borders set on a full width div. -->
-        <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
-                    styles:border-color="#C77" styles:border-width="3pt" >
-            Light pink with a border around.
-        </pdf:Div>
+    <?xml version="1.0" encoding="utf-8" ?>
 
-        <!-- Thick border will overlay the inner content -->
-        <pdf:Div styles:class="floating" styles:bg-color="fuchsia" styles:bg-opacity="0.5"
-                    styles:border-color="maroon" styles:border-width="15pt" styles:border-opacity="0.5">
-            Semi-opaque fuschia background with a thick border.
-        </pdf:Div>
-    </Content>
-    </pdf:Page>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        
+        <!-- catch all style-->
+        <styles:Style >
+            <styles:Font family="Arial" size="20pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="floating" >
+            <styles:Position mode="Absolute" x="230" y="90"/>
+            <styles:Size width="300pt"/>
+            <styles:Background color="fuchsia" opacity="0.5"/>
+            <styles:Border color="maroon" width="15pt" opacity="0.5" />
+        </styles:Style>
+        
+    </Styles>
+    <Pages>
+        
+        <!-- Page background with 40pt top padding -->
+        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <Content>
+        
+        
+            <!--  Borders set on a full width div. -->
+            <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
+                        styles:border-color="#C77" styles:border-width="3pt" >
+                Light pink with a border.
+            </pdf:Div>
+
+            <!-- Thick border will overlay the inner content -->
+            <pdf:Div styles:class="floating" >
+                Semi-opaque fuschia background with a thick border.
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
 
 
 .. image:: images/documentbordercolor.png
@@ -163,24 +190,49 @@ If the sides and corner radii are combined, only the sides that create a corner 
 
 .. code-block:: xml
 
-    <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
-     <Content>
-       
-       
-       <!--  Borders set on a full width div. -->
-       <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
-                styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt" >
-         Light pink with a border around.
-       </pdf:Div>
+    <?xml version="1.0" encoding="utf-8" ?>
 
-       <!-- Thick border will overlay the inner content -->
-       <pdf:Div styles:class="floating" styles:bg-color="fuchsia" styles:bg-opacity="0.5"
-                styles:border-color="maroon" styles:border-width="15pt" styles:border-opacity="0.5"
-                styles:border-corner-radius="15pt" styles:border-sides="Bottom Left Right">
-         Semi-opaque fuschia background with a thick sided border.
-       </pdf:Div>
-      </Content>
-    </pdf:Page>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        
+        <!-- catch all style-->
+        <styles:Style >
+            <styles:Font family="Arial" size="20pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="floating" >
+            <styles:Position mode="Absolute" x="230" y="90"/>
+            <styles:Size width="300pt"/>
+            <styles:Background color="fuchsia" opacity="0.5"/>
+            <styles:Border color="maroon" width="15pt" opacity="0.5"
+                           corner-radius="15pt" sides="Bottom Left Right"/>
+        </styles:Style>
+        
+    </Styles>
+    <Pages>
+        
+        <!-- Page background with 40pt top padding -->
+        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <Content>
+        
+        
+        <!--  Borders set on a full width div. -->
+            <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
+                        styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt">
+                Light pink with a border around.
+            </pdf:Div>
+
+            <!-- Thick border will overlay the inner content -->
+            <pdf:Div styles:class="floating" >
+                Semi-opaque fuschia background with a thick sided border.
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
 
 .. image:: images/documentbordersides.png
 
@@ -188,7 +240,69 @@ If the sides and corner radii are combined, only the sides that create a corner 
 Using fill colors
 ===================
 
-The fill color applies to
+The fill color applies to shapes and text. 
+It is independent of background, however the same attributes apply to fills as to backgrounds.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        
+        <!-- catch all style-->
+        <styles:Style >
+            <styles:Font family="Arial" size="20pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="floating" >
+            <styles:Position mode="Absolute" x="230" y="90"/>
+            <styles:Size width="300pt"/>
+            <styles:Background color="fuchsia" opacity="0.5"/>
+            <styles:Border color="maroon" width="15pt" opacity="0.5"
+                            corner-radius="15pt" sides="Bottom Left Right"/>
+        </styles:Style>
+        
+    </Styles>
+    <Pages>
+        
+        <!-- Page background with 40pt top padding -->
+        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <Content>
+        
+        
+            <!--  Borders set on a full width div. -->
+            <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
+                        styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt"
+                        styles:fill-color="aqua" styles:font-bold="true" styles:font-size="40pt">
+                Light pink bg with aqua Text.
+            </pdf:Div>
+
+            <!-- Thick border will overlay the inner content -->
+            <pdf:Div styles:class="floating" >
+                <pdf:Span styles:fill-color="white" styles:fill-opacity="0.7">
+                Semi-opaque fuschia with white semi-transparent text.
+                </pdf:Span>
+            </pdf:Div>
+
+            <!-- Rectangle with a fill colour, no background or border -->
+            <pdf:Rect styles:fill-color="lime" styles:fill-opacity="0.9"
+                        styles:position-mode="Absolute" 
+                        styles:x="120" styles:y="120" styles:width="120" styles:height="120" ></pdf:Rect>
+        
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentbordertextfill.png
+
+
+.. note:: Fills also support the use of single or repeating images. See :doc:`drawing_images` for details on using images for fills.
 
 
 Using stroke colors
@@ -199,3 +313,6 @@ Using stroke colors
 Border and stroke dashes
 ========================
 
+
+Binding Colors and fills
+=========================
