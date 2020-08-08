@@ -299,7 +299,7 @@ It is independent of background, however the same attributes apply to fills as t
     </pdf:Document>
 
 
-.. image:: images/documentbordertextfill.png
+.. image:: images/documentbordertextfillrect.png
 
 
 .. note:: Fills also support the use of single or repeating images. See :doc:`drawing_images` for details on using images for fills.
@@ -308,11 +308,221 @@ It is independent of background, however the same attributes apply to fills as t
 Using stroke colors
 ====================
 
+The stroke is around the shape or text. It supports the same properties as the border.
 
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        
+        <!-- catch all style-->
+        <styles:Style >
+            <styles:Font family="Arial" size="20pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="floating" >
+            <styles:Position mode="Absolute" x="230" y="90"/>
+            <styles:Size width="300pt"/>
+            <styles:Background color="fuchsia" opacity="0.5"/>
+            <styles:Border color="maroon" width="15pt" opacity="0.5"
+                            corner-radius="15pt" sides="Bottom Left Right"/>
+        </styles:Style>
+
+        <!-- Added the stroked class -->
+        <styles:Style applied-class="stroked" >
+            <styles:Stroke color="#C77" style="Solid" width="2pt" />
+        </styles:Style>
+    </Styles>
+    <Pages>
+        
+        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <Content>
+        
+            <!--  Set the ctroked class for the text -->
+            <pdf:Div styles:class="stroked" styles:bg-color="#FAA" styles:padding="20pt" 
+                        styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt"
+                        styles:fill-color="aqua" styles:font-bold="true" styles:font-size="40pt">
+                Light pink bg with aqua Text.
+            </pdf:Div>
+
+            <pdf:Div styles:class="floating" >
+                <pdf:Span styles:fill-color="white" styles:fill-opacity="0.7">
+                Semi-opaque fuschia with white semi-transparent text.
+                </pdf:Span>
+            </pdf:Div>
+
+            <!-- Added the stroke to the rectangle shape too -->
+            <pdf:Rect styles:class="stroked" styles:fill-color="lime" styles:fill-opacity="0.9"
+                        styles:position-mode="Absolute" 
+                        styles:x="120" styles:y="120" styles:width="120" styles:height="120" ></pdf:Rect>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentbordertextstroke.png
 
 Border and stroke dashes
 ========================
 
+Both the border and stroke styles support the use of dashes.
+Simply changing the stroke or border style to Dashed will apply s simple dash style.
+
+.. code-block:: xml
+
+    <styles:Style applied-class="stroked" >
+      <styles:Stroke color="#C77" style="Dash" width="2pt" />
+    </styles:Style>
+
+
+.. image:: images/documentborderdash.png
+
+
+Dash Styles
+============
+
+The type of dash can also be modified either with the enumeration values:
+
+* Dot
+* Sparse-Dot
+* Dash
+* Long-Dash
+* Long-Dash-Dot
+* Long-Dash-Dot-Dot
+
+Or an explicit pattern array and phase offset. e.g. `[10, 3, 1, 3], 0`
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Pages>
+        
+        <!-- Page background with 40pt top padding -->
+        <pdf:Page styles:padding="40 0 0 0" >
+        <Content>
+        
+        
+            <!--  Dash styles. -->
+            <pdf:Div styles:padding="10pt">
+                Dot '[1,1] 0' <pdf:Line styles:stroke-dash="Dot" styles:stroke-width="2pt"  />
+            </pdf:Div>
+            
+            <pdf:Div styles:padding="10pt">
+                Sparse Dot '[1, 4] 0' <pdf:Line styles:stroke-dash="Sparse-Dot" styles:stroke-width="2pt"  />
+            </pdf:Div>
+            
+            <pdf:Div styles:padding="10pt">
+                Dash '[4, 3] 0' <pdf:Line styles:stroke-dash="Dash" styles:stroke-width="2pt"  />
+            </pdf:Div>
+            
+            <pdf:Div styles:padding="10pt">
+                Long Dash '[9, 3] 0' <pdf:Line styles:stroke-dash="Long-Dash" styles:stroke-width="2pt"  />
+            </pdf:Div>
+
+            <pdf:Div styles:padding="10pt">
+                Long Dash Dot '[9, 3, 1, 3] 0' <pdf:Line styles:stroke-dash="Long-Dash-Dot" styles:stroke-width="2pt"  />
+            </pdf:Div>
+
+            <pdf:Div styles:padding="10pt">
+                Long Dash Dot Dot '[9, 3, 1, 3, 1, 3] 0' <pdf:Line styles:stroke-dash="Long-Dash-Dot-Dot" styles:stroke-width="2pt"  />
+            </pdf:Div>
+            
+            <pdf:Div styles:padding="10pt">
+                '[24, 3, 1, 9, 1, 3] 18' <pdf:Line styles:stroke-dash="[24, 3, 1, 9, 1, 3] 18" styles:stroke-width="2pt"  />
+            </pdf:Div>
+
+        
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentborderdashstyles.png
+
+
+
+The custom style defines an initial integer array or on, off, on etc. And the trainling phase defines how far along
+the pattern the line drawing will start at.
+
+e.g. [24, 3, 1, 9, 1, 3] 18 has a 24pt on, a 3pt off, 1pt on, 9pt off, 1pt on, 3pt off, and then repeat. 
+But the line drawing starts 18pts into the first long 24pt dash.
+
 
 Binding Colors and fills
 =========================
+
+As with all things scryber. The colors fills etc. are all bindable to parameters and data, so regular colours could be defined
+and then used in places throughout the styles and components.
+
+.. note:: Scryber is strongly typed. If it's a color use a Color param, or a string (that can be converted).
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Params>
+        <!-- Declare the parameters for the colours and units -->
+        <pdf:Color-Param value="#FAA" id="bg-color" />
+        <pdf:Color-Param value="#C77" id="border-color" />
+        <pdf:Unit-Param value="2pt" id="border-width" />
+    </Params>
+    <Styles>
+        
+        <styles:Style >
+        <styles:Font family="Arial" size="20pt"/>
+        </styles:Style>
+
+        <!-- Reference the parameters with the bindings -->
+
+        <styles:Style applied-class="floating" >
+            <styles:Position mode="Absolute" x="230" y="90"/>
+            <styles:Size width="300pt"/>
+            <styles:Background color="{@:bg-color}" />
+            <styles:Border color="{@:border-color}" width="{@:border-width}" />
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <!-- Page background with 40pt top padding -->
+        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <Content>
+        
+        
+            <!--  Bind explicitly to the parameters. -->
+            <pdf:Div styles:bg-color="{@:bg-color}" styles:padding="20pt" 
+                        styles:border-color="{@:border-color}" styles:border-width="{@:border-width}">
+                Bound background and border
+            </pdf:Div>
+
+            <!-- Or use the style that has been bound -->
+            <pdf:Div styles:class="floating" >
+                Bound background and border on a style.
+            </pdf:Div>
+
+        
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentbroderbound.png

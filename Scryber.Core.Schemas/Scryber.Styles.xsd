@@ -439,12 +439,14 @@
     <xs:attribute name="bg-repeat" form="qualified" use="optional" type="comp:BindableImageRepeatEnum" />
     <xs:attribute name="bg-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
     <xs:attribute name="border-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
+    <xs:attribute name="border-style" form="qualified" use="optional" type="comp:BindableLineStyleEnum" />
     <xs:attribute name="border-width" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="border-dash" form="qualified" use="optional" type="comp:BindableDashType" />
     <xs:attribute name="border-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
     <xs:attribute name="border-sides" form="qualified" use="optional" type="comp:BindableSideFlagsEnum" />
     <xs:attribute name="border-corner-radius" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="stroke-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
+    <xs:attribute name="stroke-style" form="qualified" use="optional" type="comp:BindableLineStyleEnum" />
     <xs:attribute name="stroke-width" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="stroke-dash" form="qualified" use="optional" type="comp:BindableDashType" />
     <xs:attribute name="stroke-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />

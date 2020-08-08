@@ -870,10 +870,25 @@
         The format of a custom dash phase should be '[n n ...] n' or '[n,n,n] n'
       </xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:string" >
-      <xs:pattern value="\[(\d+\s?)+\]\s?\d+" />
-    </xs:restriction>
+    <xs:union >
+      <xs:simpleType>
+        <xs:restriction base="xs:string" >
+          <xs:enumeration value="Dot" />
+          <xs:enumeration value="Sparse-Dot" />
+          <xs:enumeration value="Dash" />
+          <xs:enumeration value="Long-Dash" />
+          <xs:enumeration value="Long-Dash-Dot" />
+          <xs:enumeration value="Long-Dash-Dot-Dot" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" >
+          <xs:pattern value="\[(\d+,?\s?)+\]\s?\d+" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
   </xs:simpleType>
+
 
   <xs:simpleType name="BindableDashType" >
     <xs:union memberTypes="DashType BindableAttributeType" />
