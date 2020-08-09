@@ -415,31 +415,38 @@ Or an explicit pattern array and phase offset. e.g. `[10, 3, 1, 3], 0`
         
             <!--  Dash styles. -->
             <pdf:Div styles:padding="10pt">
-                Dot '[1,1] 0' <pdf:Line styles:stroke-dash="Dot" styles:stroke-width="2pt"  />
+                Dot '[1,1] 0' 
+                <pdf:Line styles:stroke-dash="Dot" styles:stroke-width="2pt"  />
             </pdf:Div>
             
             <pdf:Div styles:padding="10pt">
-                Sparse Dot '[1, 4] 0' <pdf:Line styles:stroke-dash="Sparse-Dot" styles:stroke-width="2pt"  />
+                Sparse Dot '[1, 4] 0' 
+                <pdf:Line styles:stroke-dash="Sparse-Dot" styles:stroke-width="2pt"  />
             </pdf:Div>
             
             <pdf:Div styles:padding="10pt">
-                Dash '[4, 3] 0' <pdf:Line styles:stroke-dash="Dash" styles:stroke-width="2pt"  />
+                Dash '[4, 3] 0' 
+                <pdf:Line styles:stroke-dash="Dash" styles:stroke-width="2pt"  />
             </pdf:Div>
             
             <pdf:Div styles:padding="10pt">
-                Long Dash '[9, 3] 0' <pdf:Line styles:stroke-dash="Long-Dash" styles:stroke-width="2pt"  />
+                Long Dash '[9, 3] 0' 
+                <pdf:Line styles:stroke-dash="Long-Dash" styles:stroke-width="2pt"  />
             </pdf:Div>
 
             <pdf:Div styles:padding="10pt">
-                Long Dash Dot '[9, 3, 1, 3] 0' <pdf:Line styles:stroke-dash="Long-Dash-Dot" styles:stroke-width="2pt"  />
+                Long Dash Dot '[9, 3, 1, 3] 0' 
+                <pdf:Line styles:stroke-dash="Long-Dash-Dot" styles:stroke-width="2pt"  />
             </pdf:Div>
 
             <pdf:Div styles:padding="10pt">
-                Long Dash Dot Dot '[9, 3, 1, 3, 1, 3] 0' <pdf:Line styles:stroke-dash="Long-Dash-Dot-Dot" styles:stroke-width="2pt"  />
+                Long Dash Dot Dot '[9, 3, 1, 3, 1, 3] 0' 
+                <pdf:Line styles:stroke-dash="Long-Dash-Dot-Dot" styles:stroke-width="2pt"  />
             </pdf:Div>
             
             <pdf:Div styles:padding="10pt">
-                '[24, 3, 1, 9, 1, 3] 18' <pdf:Line styles:stroke-dash="[24, 3, 1, 9, 1, 3] 18" styles:stroke-width="2pt"  />
+                '[24, 3, 1, 9, 1, 3] 18' 
+                <pdf:Line styles:stroke-dash="[24, 3, 1, 9, 1, 3] 18" styles:stroke-width="2pt"  />
             </pdf:Div>
 
         
@@ -454,10 +461,13 @@ Or an explicit pattern array and phase offset. e.g. `[10, 3, 1, 3], 0`
 
 
 
-The custom style defines an initial integer array or on, off, on etc. And the trainling phase defines how far along
+The custom style defines an initial integer array of on, off, on etc. And the trailing phase defines how far along
 the pattern the line drawing will start at.
 
-e.g. [24, 3, 1, 9, 1, 3] 18 has a 24pt on, a 3pt off, 1pt on, 9pt off, 1pt on, 3pt off, and then repeat. 
+e.g. 
+
+[24, 3, 1, 9, 1, 3] 18 has:
+A 24pt on, a 3pt off, 1pt on, 9pt off, 1pt on, 3pt off, and then repeat. 
 But the line drawing starts 18pts into the first long 24pt dash.
 
 
@@ -525,4 +535,4 @@ and then used in places throughout the styles and components.
     </pdf:Document>
 
 
-.. image:: images/documentbroderbound.png
+.. image:: images/documentborderbound.png
