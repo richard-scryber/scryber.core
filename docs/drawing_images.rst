@@ -10,19 +10,25 @@ Scryber supports most standard image types, including the following.
 * JPEG - 24 bit RGB.
 
 Adding an image to the output is as simple as putting an `<pdf:Image src='[path]' />` in the template.
+If the image has an alpha channel this will automatically be applied to the image.
 
-
-
-Referencing a relative image.
+Rendering an image.
 =============================
+
 
 Images paths can be referenced relative to the file path of the parsed document.
 
 e.g. ../../Content/images/filename.ext
 
-That path can even be specified in a parameter.
+Or it can be the full url or full file path to the image.
 
-If the image has an alpha channel this will automatically be applied to the image.
+e.g. http://localhost:5000/images/Toroid32.tiff
+
+
+The path can even be specified in a parameter.
+
+.. note:: If the image component is declared on a file referenced from the document, then the image path should still be relative to the file where the image component is declared. Not the top level document. 
+
 
 .. code-block:: xml
 
@@ -78,11 +84,11 @@ If the image has an alpha channel this will automatically be applied to the imag
             <pdf:Div styles:class="img-wrap">
 
                 <pdf:Span> TIFF 24bit Image</pdf:Span>
-                <pdf:Image src="../../Content/Images/Toroid24.tiff" />
+                <pdf:Image src="http://localhost:5000/images/Toroid24.tiff" />
                 <pdf:ColumnBreak/>
                 
                 <pdf:Span> TIFF 32bit Image with alpha</pdf:Span>
-                <pdf:Image src="../../Content/Images/Toroid32.tiff" />
+                <pdf:Image src="http://localhost:5000/images/Toroid32.tiff" />
 
             </pdf:Div>
         
@@ -94,18 +100,6 @@ If the image has an alpha channel this will automatically be applied to the imag
 
 .. image:: images/documentimagesformat.png
 
-
-.. note:: If the image component is declared on a file referenced from the document, then the image path should still be relative to the file where the image component is declared. Not the top level document. 
-
-
-Root image file reference
-=========================
-
-Remote file reference
-=====================
-
-Image Caching
-=============
 
 Explicit image data
 ===================
