@@ -5,49 +5,83 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.22</PackageVersion>
+    <PackageVersion>1.0.0.17</PackageVersion>
     <Authors>Silicon Reef</Authors>
-    <Copyright>Richard Hewitson 2020</Copyright>
+    <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Owners>richard@scryber.co.uk</Owners>
+    <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.22
--------------------
-Package for release to Nuget Public
-Added column-widths to the components and styles, with support for varable widths.
-Page numbering falls back to the page number format set on the page if not explicitly set.
+    <PackageReleaseNotes>1.0.0.17
+------------------------------
 
 Removed the Page number prefix instead only supprting the page number display format
 
+1.0.0.16
+-------------------------------------------
+
+Set the page style attributes as inherited, so they flow down from a document or group to the pages themselves.
+
+1.0.0.15
+-------------------------------------------
+
 Updated to add the static cache provider service
+
+1.0.0.14
+---------------------------------------
 
 Added the template property to the Placeholder, and support for updating templates to parameters
 
+1.0.0.13
+---------------------------------------
+
 Stronger typing on the parameters and object parameter, and support for XML pararmeters as XPath or XNode values.
+
+1.0.0.12
+------------------------
 
 Passing any controller to the template generation so that it can be used to bind to events in templates.
 
+1.0.0.11
+------------------------
+
 Updated the data components for ForEach, With, If, Choose:When to be able to use xpath and object binding expressions on the value property.
+
+
+1.0.0.10
+-------------------------
 
 Updated the PDFUser Component to use Params not Items
 
-Updated the bindings and Params. Autobind on the document defaults to true.
+1.0.0.9
+-------------------------
+Updated the bindings and Params.
+Autobind on the document defaults to true.
+
+1.0.0.8
+-------------------------
 
 Added the binding expressions as default in the parsing options
 
+1.0.0.7
+-------------------------
+
 Fixed the query string overrides on the item native values
 
-PDFDocument fix for remote references.
+1.0.0.6
+-----------------------------
 
+PDFDocument fix for remote references.
+Updated the docs
 
 1.0.0.5
+------------------------------
 
 Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package
 
 Added the default namespaces to the ParsingOptions, and updated version to match MVC and OpenType</PackageReleaseNotes>
-    <Summary>The scryber library for easy, dynamic PDF document creation using dotnet core</Summary>
-    <PackageTags>Scryber; PDF; dotnet core</PackageTags>
+    <Summary>The scryber library for PDF document creation using dotnet core</Summary>
+    <PackageTags>Scryber; PDF</PackageTags>
     <Title>Scryber</Title>
     <Description>The Scryber PDF Generation library for dotnet core 3.1
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and component separation in referenced files. 

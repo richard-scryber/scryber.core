@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace Scryber.Core.UnitTests.Configuration
+namespace Scryber.UnitTests.Configuration
 {
     /// <summary>
     /// Tests the configuration with any appsettings.json

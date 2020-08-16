@@ -474,7 +474,7 @@ namespace Scryber.Layout
                         if (i >= widths.Length)
                             break;
 
-                        else if(todefine[i] > PDFColumnWidths.UndefinedWidth)
+                        else if(todefine[i] > 0.0)
                         {
                             allocated += todefine[i];
                             allocCount++;
@@ -490,7 +490,7 @@ namespace Scryber.Layout
                         {
                             if (i >= todefine.Length) //after the end of the defined columns
                                 widths[i] = totalAvailableWidth * remainderAlloc;
-                            else if (todefine[i] == PDFColumnWidths.UndefinedWidth) //we have a non-explicit width
+                            else if (todefine[i] == 0.0) //we have a non-explicit width
                                 widths[i] = totalAvailableWidth * remainderAlloc;
                             else //this is explicit
                                 widths[i] = totalAvailableWidth * todefine[i];

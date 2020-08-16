@@ -91,9 +91,6 @@ namespace Scryber.Components
 
         //local reference to the full style of this label
         private PDFStyle _fullstyle = null;
-
-        //local reference to the full style of the layout page
-        private PDFStyle _pgstyle = null;
         
         //The text proxy op who's text will be replaced with the page number on render complete.
         Scryber.Text.PDFTextProxyOp _numberProxy;
@@ -109,14 +106,6 @@ namespace Scryber.Components
                 throw new InvalidOperationException(Errors.CannotSetBaseTextOfPageNumber);
                 //Do Nothing
             }
-        }
-
-        /// <summary>
-        /// Gets the actual text proxy for this page number.
-        /// </summary>
-        public Scryber.Text.PDFTextProxyOp Proxy
-        {
-            get { return _numberProxy; }
         }
 
 
@@ -136,7 +125,6 @@ namespace Scryber.Components
             _doc = context.DocumentLayout;
             _renderpageindex = _doc.CurrentPageIndex;
             _fullstyle = style;
-            _pgstyle = context.DocumentLayout.CurrentPage.FullStyle;
 
             string text = this.GetDisplayText(_renderpageindex, style, false);
             Scryber.Text.PDFTextProxyOp op = new Text.PDFTextProxyOp(this, "PageNumber", text);
@@ -160,7 +148,6 @@ namespace Scryber.Components
             {
                 this._renderpageindex = arrange.PageIndex;
                 this._fullstyle = arrange.FullStyle;
-                this._pgstyle = context.DocumentLayout.CurrentPage.FullStyle;
             }
 
             if (null != this._doc && null != this._numberProxy)
@@ -178,9 +165,6 @@ namespace Scryber.Components
 
         private string GetDisplayText(bool rendering)
         {
-            if (null == this._doc)
-                return string.Empty;
-
             var text = this.GetDisplayText(this._renderpageindex, this._fullstyle, rendering);
             return text;
         }
@@ -207,7 +191,7 @@ namespace Scryber.Components
             if (null == num)
                 throw new NullReferenceException("No numbering data was returned for the specified page index '" + pageindex + "'");
 
-            string format = GetPageFormat(style);
+            string format = style.GetValue(PDFStyleKeys.PageNumberFormatKey, string.Empty);
 
             //If we just want the page label - we can skip the rest and return
             if (string.IsNullOrEmpty(format))
@@ -230,45 +214,7 @@ namespace Scryber.Components
 
         #endregion
 
-        private string GetPageFormat(PDFStyle full)
-        {
-            string format = this.Style.GetValue(PDFStyleKeys.PageNumberFormatKey, string.Empty);
-
-            if (!string.IsNullOrEmpty(format))
-                return format;
-
-            format = _pgstyle.GetValue(PDFStyleKeys.PageNumberFormatKey, string.Empty);
-
-            if (!string.IsNullOrEmpty(format))
-                return format;
-
-            //Not defined on this component - so search the hierarchy.
-
-            var stack = new List<PDFStyle>();
-            var parent = this.Parent;
-
-            while(null != parent)
-            {
-                if(parent is IPDFStyledComponent)
-                {
-                    var styled = (IPDFStyledComponent)parent;
-                    if (styled.HasStyle)
-                        stack.Add(styled.Style);
-                }
-                parent = parent.Parent;
-
-            }
-
-            foreach (var style in stack)
-            {
-                PDFStyleValue<string> val;
-                if (style.TryGetValue(PDFStyleKeys.PageNumberFormatKey, out val))
-                    format = val.Value;
-            }
-
-            return format;
-
-        }
+        
 
     }
 }

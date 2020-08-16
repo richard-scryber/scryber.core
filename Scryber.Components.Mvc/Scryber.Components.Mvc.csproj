@@ -4,31 +4,34 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>1.0.0.21</PackageVersion>
+    <PackageVersion>1.0.0.17</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
 
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML Templates and code, including styles, binding and component references. 
 Written entirely in C# for the dotnet core framework, without reliance on 3rd party tools or command line libraries.</Description>
-    <Copyright>Richard Hewitson 2020</Copyright>
+    <Copyright>Silicon Reef 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Owners>richard@scryber.co.uk</Owners>
+    <Owners>Silicon Reef Limited</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>v1.0.0.21
-Release package for Nuget
-Updated for the page numbering fallback
-Updated for the code Page Numbering display format
-Updated for the Caching Provider, and the pages style
- Forcing the update to the PDFTemplateItemValue
-Template Parameters values and Placeholder templates
-Strongly typed parameter settings.
-Updated to the latest Scryber.Core with template item controller binding.
-Updated with new features in ForEach, With, If and Choose for the Value property
-Linked to the Scryber.Core of the same version.
+    <PackageReleaseNotes>v1.0.0.17 - Updated for the code Page Numbering display format
 
-v1.0.0.5
-Updated for of the Core library with atomatic inclusion of the http namespace references, and also added the model extension methods</PackageReleaseNotes>
+v1.0.0.16 - Updated for the Caching Provider, and the pages style
+
+v1.0.0.15 - Forcing the update to the PDFTemplateItemValue
+
+v1.0.0.14 - Template Parameters values and Placeholder templates
+
+v1.0.0.13 - Strongly typed parameter settings.
+
+v1.0.0.12 - Updated to the latest Scryber.Core with template item controller binding.
+
+v1.0.0.11 - Updated to the latest Scryber.Core version with new features in ForEach, With, If and Choose for the Value property
+
+v1.0.0.9 - Linked to the Scryber.Core of the same version.
+
+v1.0.0.5 - Updated for of the Core library with atomatic inclusion of the http namespace references, and also added the model extension methods</PackageReleaseNotes>
     <Summary>The MVC extensions for the Scryber PDF creation library</Summary>
     <PackageTags>Scryber; PDF; dotnet core; MVC</PackageTags>
     <Title>Scryber MVC Extensions</Title>
@@ -36,6 +39,6 @@ Updated for of the Core library with atomatic inclusion of the http namespace re
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Scryber.Core" Version="1.0.0.21" />
+    <PackageReference Include="Scryber.Core" Version="1.0.0.17" />
   </ItemGroup>
 </Project>

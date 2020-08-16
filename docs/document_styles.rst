@@ -80,7 +80,7 @@ Along with appling styles directly to the components, Scryber supports the use o
     </pdf:Document>
 
 By using styles, it's the same as html and css. It cleans the code and makes it easier to standardise and change later on.
-This can either be within the document itself, or in a separate files (see: :doc:`referencing_files`)
+This can either be within the document itself, or in a `referenced stylesheet <referencing_files>`_
 
 
 
@@ -192,7 +192,7 @@ Every component supports the style:class attribute. And the value of this can be
 This will apply the H1 style, the 2 classes for the warning and border and increase the size based on the ID of first head.
 And then the inline italic style will be applied.
 
-.. image:: images/helloworldpage_styled.png
+.. image:: images/headingstyle.png
 
 
 Late binding of styles

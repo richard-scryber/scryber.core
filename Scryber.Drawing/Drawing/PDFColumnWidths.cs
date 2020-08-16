@@ -9,7 +9,6 @@ namespace Scryber.Drawing
     [PDFParsableValue()]
     public struct PDFColumnWidths
     {
-        public const double UndefinedWidth = 0.0;
         private static readonly double[] _emptyWidths = new double[] { };
         private static readonly char[] _splitChars = new char[] { ' ' };
         private double[] _widths;
@@ -56,11 +55,7 @@ namespace Scryber.Drawing
             double sum = 0;
             for(var i = 0; i < all.Length; i++)
             {
-                double one;
-                if (all[i] == "*")
-                    one = UndefinedWidth;
-                else
-                    one = double.Parse(all[i]);
+                var one = double.Parse(all[i]);
 
                 sum += one;
                 if (sum > 1.0)
