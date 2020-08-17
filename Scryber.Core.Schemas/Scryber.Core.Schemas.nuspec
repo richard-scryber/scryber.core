@@ -1,42 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Scryber.Core.Schemas</id>
-    <version>1.0.0.9</version>
-    <title>Scryber Core Schemas</title>
-    <authors>Silicon Reef</authors>
-    <owners>Silicon Reef Limited</owners>
-    <licenseUrl>https://opensource.org/licenses/LGPL-3.0</licenseUrl>
-    <projectUrl>https://github.com/richard-scryber/scryber.core</projectUrl>
-     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>The Scryber PDF Generation library XML Schema files, samples, and associated configuration options. This is
-            an optional package for intellisense and document creation.
-Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and component separation in referenced files. 
-This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications. </description>
-    <releaseNotes>1.0.0.9 Updated for the parameters with ids, and added the ForEach value property.
-                  1.0.0.5 Initial Release with the 1.0.0.5 Scryber.Core package. No dependencies</releaseNotes>
-    <copyright>Copyright 2020 Silicon Reef Ltd</copyright>
-    <tags>Scryber; PDF</tags>
-    <summary>The schema (xsd) files for the scryber library - PDF document creation using dotnet core </summary>
-    <contentFiles>
-      <files include="any/any/schemas/samples/SampleDocument.pdfx" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/samples/SamplePage.ppfx" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/samples/SampleStyles.psfx" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/Scryber.Base.xsd" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/Scryber.Components.xsd" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/Scryber.Data.xsd" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/Scryber.Types.xsd" buildAction="none" copyToOutput="false" />
-      <files include="any/any/schemas/Scryber.Styles.xsd" buildAction="none" copyToOutput="false" />
-    </contentFiles>
+    <version>1.0.0</version>
+    <title>Scryber Core Schema Files</title>
+    <authors>richard@scryber.co.uk</authors>
+    <owners>richard@scryber.co.uk</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Scryber.Core.Schemas</description>
+    <summary>The xml schema files for the Scryber Core Library</summary>
+    <releaseNotes></releaseNotes>
+    <copyright>Richard Hewitson 2020</copyright>
+    <language></language>
+    <tags>Scryber; PDF; Schemas</tags>
+    <dependencies />
   </metadata>
-  <files>
-    <file src="SampleDocument.pdfx" target="contentFiles\any\any\schemas\samples" />
-    <file src="SamplePage.ppfx" target="contentFiles\any\any\schemas\samples" />
-    <file src="SampleStyles.psfx" target="contentFiles\any\any\schemas\samples" />
-    <file src="Scryber.Base.xsd" target="contentFiles\any\any\schemas" />
-    <file src="Scryber.Components.xsd" target="contentFiles\any\any\schemas" />
-    <file src="Scryber.Data.xsd" target="contentFiles\any\any\schemas" />
-    <file src="Scryber.Types.xsd" target="contentFiles\any\any\schemas" />
-    <file src="Scryber.Styles.xsd" target="contentFiles\any\any\schemas" />
-  </files>
 </package>

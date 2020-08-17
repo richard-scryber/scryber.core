@@ -5,16 +5,18 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.22</PackageVersion>
-    <Authors>Silicon Reef</Authors>
+    <PackageVersion>1.0.0.24</PackageVersion>
+    <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.22
+    <PackageReleaseNotes>1.0.0.24
 -------------------
 Package for release to Nuget Public
+Added the xsd files to the root of the components project
+Added a readme.txt file
 Added column-widths to the components and styles, with support for varable widths.
 Page numbering falls back to the page number format set on the page if not explicitly set.
 
@@ -92,7 +94,7 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
     <Resource Include="Resources\scryber_generatedby_wob.png" />
     <Resource Include="Resources\scryber_NotFoundLogo.png" />
   </ItemGroup>
-  <ItemGroup>
+   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -105,4 +107,11 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+    
+  <ItemGroup>
+    <None Include="readme.txt" pack="true">
+      <IncludeInPackage>true</IncludeInPackage>
+    </None>
+  </ItemGroup>
+  
 </Project>

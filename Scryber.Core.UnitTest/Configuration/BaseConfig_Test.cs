@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Scryber.UnitTests.Configuration
+namespace Scryber.Core.UnitTests.Configuration
 {
     /// <summary>
     /// Tests the configuration without any appsettings.json

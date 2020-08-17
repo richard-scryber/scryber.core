@@ -14,18 +14,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components", "Scryb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.UnitTests", "Scryber.Core.UnitTest\Scryber.UnitTests.csproj", "{D30F3AD9-2541-46A1-BA4E-E6D68D457764}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Components.Mvc", "Scryber.Components.Mvc\Scryber.Components.Mvc.csproj", "{B335EFBC-5BE1-4CAD-AD75-7075FA643EE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components.Mvc", "Scryber.Components.Mvc\Scryber.Components.Mvc.csproj", "{B335EFBC-5BE1-4CAD-AD75-7075FA643EE2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scryber.Core.Schemas", "Scryber.Core.Schemas", "{75B6EFDC-0508-4DA7-A090-D393E4416049}"
 	ProjectSection(SolutionItems) = preProject
-		Scryber.Core.Schemas\SampleDocument.pdfx = Scryber.Core.Schemas\SampleDocument.pdfx
-		Scryber.Core.Schemas\SamplePage.ppfx = Scryber.Core.Schemas\SamplePage.ppfx
-		Scryber.Core.Schemas\SampleStyles.psfx = Scryber.Core.Schemas\SampleStyles.psfx
-		Scryber.Core.Schemas\Scryber.Base.xsd = Scryber.Core.Schemas\Scryber.Base.xsd
-		Scryber.Core.Schemas\Scryber.Components.xsd = Scryber.Core.Schemas\Scryber.Components.xsd
 		Scryber.Core.Schemas\Scryber.Data.xsd = Scryber.Core.Schemas\Scryber.Data.xsd
 		Scryber.Core.Schemas\Scryber.Styles.xsd = Scryber.Core.Schemas\Scryber.Styles.xsd
 		Scryber.Core.Schemas\Scryber.Types.xsd = Scryber.Core.Schemas\Scryber.Types.xsd
+		Scryber.Core.Schemas\Scryber.Base.xsd = Scryber.Core.Schemas\Scryber.Base.xsd
+		Scryber.Core.Schemas\Scryber.Components.xsd = Scryber.Core.Schemas\Scryber.Components.xsd
 		Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec = Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec
 	EndProjectSection
 EndProject

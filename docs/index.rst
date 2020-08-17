@@ -18,7 +18,7 @@ A document generation tool written entirely in C# for dotnet core.
         </Params>
         
         <Data>
-            <data:JsonDataSource id="XmlSource" source-path="http://localhost:5000/Home/Json" ></data:JsonDataSource>
+            <data:XmlDataSource id="XmlSource" source-path="http://localhost:5000/Home/Xml" ></data:XmlDataSource>
         </Data>
         
         <Styles>
@@ -33,15 +33,15 @@ A document generation tool written entirely in C# for dotnet core.
 
             <pdf:Page styles:margins="20pt">
                 <Content>
-                    <data:With datasource-id="JsonSource"  >
+                    <data:With datasource-id="XmlSource"  >
 
-                    <pdf:H1 styles:class="title" text="{@:Title}" > </pdf:H1>
+                    <pdf:H1 styles:class="title" text="{xpath:Title}" > </pdf:H1>
                     
                     <pdf:Ul>
-                        <data:ForEach value="{@:.Entries/Entry}" >
+                        <data:ForEach value="{xpath:Entries/Entry}" >
                         <Template>
                             <pdf:Li>
-                            <pdf:Text value="{@:.Name}" />
+                            <pdf:Text value="{xpath:Name}" />
                             </pdf:Li>
                         </Template>
                         </data:ForEach>

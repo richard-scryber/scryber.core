@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>1.0.0.21</PackageVersion>
+    <PackageVersion>1.0.0.23</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
 
@@ -15,8 +15,9 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>v1.0.0.21
+    <PackageReleaseNotes>v1.0.0.23
 Release package for Nuget
+Added read me
 Updated for the page numbering fallback
 Updated for the code Page Numbering display format
 Updated for the Caching Provider, and the pages style
@@ -36,6 +37,17 @@ Updated for of the Core library with atomatic inclusion of the http namespace re
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Scryber.Core" Version="1.0.0.21" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Scryber.Core" Version="1.0.0.23" />
   </ItemGroup>
+      
+  <ItemGroup>
+    <None Include="readme.txt" pack="true">
+      <IncludeInPackage>true</IncludeInPackage>
+    </None>
+  </ItemGroup>
+    
 </Project>
