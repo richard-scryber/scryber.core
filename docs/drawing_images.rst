@@ -226,13 +226,122 @@ change the behaviour to allow missing images.
 * On the image itself, if you know it may not be found, simply set the attribute allow-missing-images to true.
 * Change the behaviour of scryber as a whole to allow missing images using the configuration options. See :doc:`scryber_configuration`
 
+If the configuration is set to allow missing images, the attribute will override and cause an exception if set to false.
+The attribute also supports binding, but is not styles based.
 
-Images as backgrounds
-=====================
+Images as backgrounds and fills
+===============================
 
-Images as fills
-================
+Images are also supported on the backgrounds of block level components (see :doc:`component_positioning`),
+and of fills for shapes, text, etc.
 
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        <!-- Div style -->
+        <styles:Style applied-class="img-wrap">
+            <styles:Columns count="3" alley-width="5pt"/>
+            <styles:Font size="12pt"/>
+            <styles:Position h-align="Center"/>
+            <!-- Set a backgrouns image for the div relative to the document -->
+            <styles:Background img-src="../../Content/Images/Landscape.jpg"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+        
+        <pdf:Page styles:padding="40 10 20 10" >
+        <Content>
+            <!-- Minimum height, so we can see the pattern -->
+            <pdf:Div styles:class="img-wrap" styles:min-height="260pt" >
+                <pdf:Span> Background image with default settings on the div</pdf:Span>
+            </pdf:Div>
+        
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/drawingImagesBackgrounds.png
+
+The background has been drawn with the image repeating from the top left corner at its natural size, 
+clipped to the boundary of the container.
+
+Along with specifying the image background, there are various other options for how the pattern is laid out
+that will change the defaults of how the image repeats. Only the background repeat is available on the
+component itself, the other 
+
+* The Repeat - 'repeat' or 'styles:bg-repeat' on the component.
+    * None - The background will only be shown once.
+    * RepeatX - The background will only repeat in the X (horizontal) direction.
+    * RepeatY - The background will only repeat in the Y (vertical) direction.
+    * Both - The default value, where the image repeats both X and Y directions.
+    * Fill - The image will only be shown once, but fill the available container size **(also overrides any of the following size options)**.
+* The size of the image of the rendered image.
+    * x-size - Determines the vertical height of the rendered background image in units.
+    * y-size - Determines the vertical height of the rendered background image in units.
+* The starting position of the pattern.
+    * x-pos - Determines the horizontal offset of the rendered background image in units.
+    * y-pos - Determines the vertical  offset of the rendered background image in units.
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        <!-- Div style -->
+        <styles:Style applied-class="img-wrap">
+        <styles:Font size="20pt" bold="true"/>
+        <styles:Position h-align="Center"/>
+        <styles:Border color="fuchsia"/>
+        <styles:Background img-src="../../Content/Images/Landscape.jpg" x-size="60pt" />
+        </styles:Style>
+
+        <styles:Style applied-class="bg-pos">
+        <styles:Margins top="5pt"/>
+        <styles:Background x-pos="30pt" y-pos="-15pt" x-step="70pt" y-step="60pt" />
+        <styles:Size min-height="100pt"/>
+        </styles:Style>
+
+        <styles:Style applied-type="pdf:Span">
+        <styles:Fill color="fuchsia"/>
+        </styles:Style>
+    </Styles>
+    <Pages> 
+        
+        <pdf:Page styles:padding="40 10 20 10" >
+        <Content>
+
+        <pdf:Div styles:class="img-wrap" styles:min-height="160pt" >
+            <pdf:Span> Background image x-size only</pdf:Span>
+        </pdf:Div>
+        
+        <pdf:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatX" >
+            <pdf:Span> Background image with X repeat only</pdf:Span>
+        </pdf:Div>
+
+        <pdf:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatY" >
+            <pdf:Span> Background image with Y repeat only</pdf:Span>
+        </pdf:Div>
+
+        <pdf:Div styles:class="img-wrap bg-pos" styles:bg-repeat="Fill" >
+            <pdf:Span> Background image with Fill, overriding other settings</pdf:Span>
+        </pdf:Div>
+            
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/drawingImagesbgsize.png
 
 Dynamic Images
 ==============
