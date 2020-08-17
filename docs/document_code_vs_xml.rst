@@ -6,6 +6,7 @@ Scryber does not rely on xml, but it makes life easier and is more visual and st
 But it does hand in hand you code. When ever you parse a PDFDocument or component you are simply
 creating the same as you could in code.
 
+
 XML Template
 ------------
 
