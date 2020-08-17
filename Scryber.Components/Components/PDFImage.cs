@@ -66,13 +66,6 @@ namespace Scryber.Components
             }
         }
 
-        [PDFAttribute("hide-on-fail")]
-        [PDFDesignable("Hide if fail", Category = "General", Priority = 5, Type = "Boolean")]
-        public bool HideOnFail
-        {
-            get;
-            set;
-        }
         
         
         public PDFImage()
@@ -117,19 +110,31 @@ namespace Scryber.Components
                 }
                 catch (Exception ex)
                 {
-                    if (this.HideOnFail)
-                        this.Visible = false;
-                    else
-                        throw new PDFMissingImageException(string.Format(Errors.CouldNotLoadImageFromPath, this.Source), ex);
+                    throw new PDFMissingImageException(string.Format(Errors.CouldNotLoadImageFromPath, this.Source), ex);
                 }
 
                 if(null == xobj)
                 {
-                    PDFImageData data = this.Document.LoadImageData(this, fullpath);
-                    string name = this.Document.GetIncrementID(PDFObjectTypes.ImageXObject);
-                    xobj = PDFImageXObject.Load(data, name);
-                    
-                    this.Document.SharedResources.Add(xobj);
+
+                    PDFImageData data = null;
+                    try
+                    {
+                        data = this.Document.LoadImageData(this, fullpath);
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new PDFMissingImageException(string.Format(Errors.CouldNotLoadImageFromPath, this.Source), ex);
+                    }
+
+                    if (null != data)
+                    {
+                        string name = this.Document.GetIncrementID(PDFObjectTypes.ImageXObject);
+                        xobj = PDFImageXObject.Load(data, name);
+
+                        this.Document.SharedResources.Add(xobj);
+                    }
+                    else
+                        throw new PDFMissingImageException(string.Format(Errors.CouldNotLoadImageFromPath, this.Source));
                 }
             }
 

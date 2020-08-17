@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber.Components;
 
-namespace Scryber.UnitTests.Configuration
+namespace Scryber.Core.UnitTests.Configuration
 {
     /// <summary>
     /// Tests the configuration without any appsettings.json
@@ -153,6 +154,94 @@ namespace Scryber.UnitTests.Configuration
             var trace = service.TracingOptions;
             Assert.IsNotNull(trace, "The tracing options are null");
 
+        }
+
+
+        [TestMethod()]
+        public void MissingImageException_Test()
+        {
+
+            var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
+<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Params>
+    <pdf:Object-Param id='MyImage' />
+  </Params>
+  <Pages>
+
+    <pdf:Page styles:margins='20pt'>
+      <Content>
+        <pdf:Image id='LoadedImage' src='DoesNotExist.png' />
+        
+      </Content>
+    </pdf:Page>
+  </Pages>
+
+</pdf:Document>";
+
+            bool caught = false;
+
+            try
+            {
+                PDFDocument doc;
+                using (var reader = new System.IO.StringReader(pdfx))
+                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = new System.IO.MemoryStream())
+                    doc.ProcessDocument(stream);
+            }
+            catch (Exception ex)
+            {
+                caught = true;
+            }
+
+            Assert.IsTrue(caught, "No Exception was raised for a missing image");
+        }
+
+
+
+        /// <summary>
+        /// Ensures that even though the default is to raise an
+        /// excpetion the attribute value is honoured
+        /// </summary>
+        [TestMethod()]
+        public void MissingImageExplicitException_Test()
+        {
+
+            var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
+<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Pages>
+
+    <pdf:Page styles:margins='20pt'>
+      <Content>
+        <pdf:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='true' />
+        
+      </Content>
+    </pdf:Page>
+  </Pages>
+
+</pdf:Document>";
+
+            bool caught = false;
+
+            try
+            {
+                PDFDocument doc;
+                using (var reader = new System.IO.StringReader(pdfx))
+                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = new System.IO.MemoryStream())
+                    doc.ProcessDocument(stream);
+            }
+            catch (Exception ex)
+            {
+                caught = true;
+            }
+
+            Assert.IsFalse(caught, "Exception was raised for a missing image, that should be allowed");
         }
 
     }

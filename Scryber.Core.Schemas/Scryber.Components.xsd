@@ -501,6 +501,7 @@
         </xs:all>
         <xs:attribute name="src" type="xs:string" />
         <xs:attribute name="img-data" type="BindableStringType" />
+        <xs:attribute name="allow-missing-images" type="BindableBooleanType" />
         <xs:attributeGroup ref="PageElementAttributes" />
         <xs:attributeGroup ref="style:InlineElementStyleAttributes" />
       </xs:extension>

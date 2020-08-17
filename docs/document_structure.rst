@@ -1,5 +1,5 @@
 ================================
-A Scryber XML File structure
+Document XML File structure
 ================================
 
 At the root, the Document file (.pdfx) has a number of capabilities that change the output content.

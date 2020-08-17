@@ -2,8 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Scryber.Components;
 
-namespace Scryber.UnitTests.Configuration
+namespace Scryber.Core.UnitTests.Configuration
 {
     /// <summary>
     /// Tests the configuration with any appsettings.json
@@ -234,6 +235,92 @@ namespace Scryber.UnitTests.Configuration
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockTraceLog2", trace.Loggers[1].FactoryType, "The second logger type does not match");
             Assert.AreEqual("Scryber.UnitTests", trace.Loggers[1].FactoryAssembly, "The second loggers assembly does not match");
             Assert.IsTrue(trace.Loggers[1].Enabled, "The default for a logger should be enabled");
+        }
+
+        [TestMethod()]
+        public void MissingImageException_Test()
+        {
+
+            var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
+<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Params>
+    <pdf:Object-Param id='MyImage' />
+  </Params>
+  <Pages>
+
+    <pdf:Page styles:margins='20pt'>
+      <Content>
+        <pdf:Image id='LoadedImage' src='DoesNotExist.png' />
+        
+      </Content>
+    </pdf:Page>
+  </Pages>
+
+</pdf:Document>";
+
+            bool caught = false;
+
+            try
+            {
+                PDFDocument doc;
+                using (var reader = new System.IO.StringReader(pdfx))
+                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = new System.IO.MemoryStream())
+                    doc.ProcessDocument(stream);
+            }
+            catch (Exception ex)
+            {
+                caught = true;
+            }
+
+            Assert.IsFalse(caught, "An Exception was raised for a missing image");
+        }
+
+
+        /// <summary>
+        /// Ensures that even though the default is to raise an
+        /// excpetion the attribute value is honoured
+        /// </summary>
+        [TestMethod()]
+        public void MissingImageExplicitException_Test()
+        {
+
+            var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
+<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Pages>
+
+    <pdf:Page styles:margins='20pt'>
+      <Content>
+        <pdf:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='false' />
+        
+      </Content>
+    </pdf:Page>
+  </Pages>
+
+</pdf:Document>";
+
+            bool caught = false;
+
+            try
+            {
+                PDFDocument doc;
+                using (var reader = new System.IO.StringReader(pdfx))
+                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = new System.IO.MemoryStream())
+                    doc.ProcessDocument(stream);
+            }
+            catch (Exception ex)
+            {
+                caught = true;
+            }
+
+            Assert.IsTrue(caught, "Exception was not raised for a missing image, that should not be allowed");
         }
 
     }

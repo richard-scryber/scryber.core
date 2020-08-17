@@ -52,7 +52,7 @@ namespace Scryber.Data
                 this.ImageSource = AssertGetDataItemValue(this._autobindItemPath, args) as string;
 
             img.Source = this.ImageSource;
-            img.HideOnFail = this.HideOnFail;
+            img.AllowMissingImages = this.HideOnFail;
             img.Visible = this.Visible;
             
         }
