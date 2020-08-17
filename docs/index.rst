@@ -18,7 +18,7 @@ A document generation tool written entirely in C# for dotnet core.
         </Params>
         
         <Data>
-            <data:XmlDataSource id="XmlSource" source-path="http://localhost:5000/Home/Xml" ></data:XmlDataSource>
+            <data:JsonDataSource id="XmlSource" source-path="http://localhost:5000/Home/Json" ></data:JsonDataSource>
         </Data>
         
         <Styles>
@@ -33,15 +33,15 @@ A document generation tool written entirely in C# for dotnet core.
 
             <pdf:Page styles:margins="20pt">
                 <Content>
-                    <data:With datasource-id="XmlSource"  >
+                    <data:With datasource-id="JsonSource"  >
 
-                    <pdf:H1 styles:class="title" text="{xpath:Title}" > </pdf:H1>
+                    <pdf:H1 styles:class="title" text="{@:Title}" > </pdf:H1>
                     
                     <pdf:Ul>
-                        <data:ForEach value="{xpath:Entries/Entry}" >
+                        <data:ForEach value="{@:.Entries/Entry}" >
                         <Template>
                             <pdf:Li>
-                            <pdf:Text value="{xpath:Name}" />
+                            <pdf:Text value="{@:.Name}" />
                             </pdf:Li>
                         </Template>
                         </data:ForEach>
@@ -100,63 +100,39 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     gui_controller_full
 
 .. toctree::
-    :caption: Documents and Pages.
-    :maxdepth: 1
-
-    document_code_vs_xml
-    document_structure
-    document_lifecycle
-    document_components
-    document_styles
-    document_pages
-    document_columns
-    document_references
-    document_pagenumbers
-    document_outline
-
-.. toctree::
     :caption: Layout Content.
     :maxdepth: 1
 
+    code_vs_xml
+    document_structure
+    document_components
+    document_styles
+    component_positioning
+    component_sizing
+    document_pages
+    document_columns
+    referencing_files
     drawing_units
     drawing_colors
     drawing_images
     drawing_fonts
     drawing_paths
-    component_positioning
-    component_sizing
-    component_alignment
-    
-.. toctree::
-    :caption: Using Components
-    :maxdepth: 1
-
-    container_blocks
-    container_tables
-    container_lists
-    container_links
-    container_headings
-    container_code
-    container_html
-
+    document_outline
     
 .. toctree::
     :caption: Binding to data
     :maxdepth: 1
 
-    binding_model
-    binding_parameters
-    binding_parameterrefs
-    binding_databinding
-    binding_choices
-    binding_gridsandlists
-    binding_xmlsources
-    binding_controllers
+    document_model
+    document_parameters
+    document_databinding
+    document_controllers
 
 .. toctree::
     :caption: Extending Scryber
     :maxdepth: 1
 
+    document_lifecycle
     dynamic_loading
     namespaces_and_assemblies
     scryber_configuration

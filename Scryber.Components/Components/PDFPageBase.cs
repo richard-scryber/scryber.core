@@ -171,17 +171,6 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public int PageNumberStartIndex {get;set;}
-
-        [PDFAttribute("page-number-display-format", Const.PDFStylesNamespace)]
-        public string PageNumberDisplayFormat
-        {
-            get { return this.Style.PageStyle.PageNumberFormat; }
-            set { this.Style.PageStyle.PageNumberFormat = value; }
-        }
-
-        #endregion
-
         #region public OverflowAction OverflowAction {get;set;}
 
         /// <summary>

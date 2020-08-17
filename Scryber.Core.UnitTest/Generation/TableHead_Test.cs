@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 
-namespace Scryber.Core.UnitTests.Generation
+namespace Scryber.UnitTests.Generation
 {
     [TestClass()]
     public class TableHead_Test

@@ -199,7 +199,6 @@
     <xs:complexContent >
       <xs:extension base="AStyleItemBase">
         <xs:attribute name="count" type="comp:BindableIntgerType" use="optional" />
-        <xs:attribute name="widths" type="comp:BindableStringType" use="optional" />
         <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" />
       </xs:extension>
     </xs:complexContent>
@@ -379,7 +378,6 @@
   
   <xs:attributeGroup name="ColumnAttributes" >
     <xs:attribute name="column-count" type="comp:BindableIntgerType" use="optional" form="qualified" />
-    <xs:attribute name="column-widths" type="comp:BindableStringType" use="optional" form="qualified" />
     <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" form="qualified" />
   </xs:attributeGroup>
 
@@ -419,7 +417,6 @@
   <xs:attributeGroup name="PageNumberAttributes" >
     <xs:attribute name="page-number-style" type="comp:BindablePageNumberingEnum" use="optional" form="qualified" />
     <xs:attribute name="page-number-start-index" type="comp:BindableIntgerType" use="optional" form="qualified" />
-    <xs:attribute name="page-number-display-format" type="comp:BindableStringType" use="optional" form="qualified" />
   </xs:attributeGroup>
 
   <xs:attributeGroup name="PageNumberDisplayAttributes" >
@@ -439,14 +436,12 @@
     <xs:attribute name="bg-repeat" form="qualified" use="optional" type="comp:BindableImageRepeatEnum" />
     <xs:attribute name="bg-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
     <xs:attribute name="border-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
-    <xs:attribute name="border-style" form="qualified" use="optional" type="comp:BindableLineStyleEnum" />
     <xs:attribute name="border-width" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="border-dash" form="qualified" use="optional" type="comp:BindableDashType" />
     <xs:attribute name="border-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />
     <xs:attribute name="border-sides" form="qualified" use="optional" type="comp:BindableSideFlagsEnum" />
     <xs:attribute name="border-corner-radius" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="stroke-color" form="qualified" use="optional" type="comp:BindableColorEnum" />
-    <xs:attribute name="stroke-style" form="qualified" use="optional" type="comp:BindableLineStyleEnum" />
     <xs:attribute name="stroke-width" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="stroke-dash" form="qualified" use="optional" type="comp:BindableDashType" />
     <xs:attribute name="stroke-opacity" form="qualified" use="optional" type="comp:BindableFloatType" />

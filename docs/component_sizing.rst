@@ -6,8 +6,7 @@ Scryber has an intelligent layout engine. By default eveything will be laid out 
 Each component, be it block level or inline will have a position next to its siblings and move and following content along in the document.
 If the content comes to the end of the page and cannot be fitted, then if allowed, it will be moved to the next page.
 
-However it is very easy to size and position (see :doc:`component_positioning`) the content. All measusements are using the scryber unit and thickness
-(see :doc:`drawing_units` for more on the use of measurements and dimensions).
+However it is very easy to size and position (see :doc:`component_positioning`) the content.
 
 Width and Height
 ================
