@@ -75,11 +75,11 @@ It does not support postscript font files but does support.
 
 
 Fonts should be referred to by their Unicode Name, usually displayed through the font browser of the underlying operating system.
+Rather than the file name of the ttf or ttc file.
 
 .. image:: images/drawingFontsSelect.png
 
-Rather than the file name of the ttf or ttc file.
-
+The following uses 4 different ttf fonts installed on the machine generating the document.
 
 .. code-block:: xml
 
@@ -126,16 +126,82 @@ Rather than the file name of the ttf or ttc file.
     
     </pdf:Document>
 
-.. image:: images/drawingfontssystem.png
+.. image:: images/drawingfontsSystem.png
 
+As the font is set to inherit, all child text components will use the specified font of the parent. If the
+font is changed, then all children will use the new font.
 
 .. note:: .woff files are not currently supported, but these can be easily converted to their ttf components online. They may be supported in future.
 
-Font Sizes
-==========
-
 Font styles
 ===========
+
+Along with the font family scryber supports the use of 'Bold', 'Italic' and 'Bold Italic' within the font to change the style.
+
+The use of the <pdf:B></pdf:B> and <pdf:I></pdf:I> components also applies the Bold and Italic flags based on the style. They can be applied 
+individually or nested, but they cannot be mixed inconsistently (breaking the rules of XML).
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Font size="20pt" />
+        <styles:Background color="#AAA"/>
+        <styles:Padding all="4pt"/>
+        <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font on the page, rather than at each level. -->
+        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <Content>
+        
+            <pdf:Div styles:class="std-font" >
+                <pdf:Span>Regular Segoe UI.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font" 
+                        styles:font-bold="true" >
+                <pdf:Span>Segoe UI has a bold variant.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font"
+                        styles:font-italic="true" >
+                <pdf:Span>Segoe UI is also available in italic.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font" styles:font-italic="true" >
+                <pdf:B>This is Segoe UI within a Bold span, with italic on the div.</pdf:B>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
+                <pdf:Span>This is the light variant of the font <pdf:I>with Italic inside</pdf:I> the span.</pdf:Span>
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/drawingfontsStyles.png
+
+.. warn:: If the bold or italic variants are not available as a font, by default, an exception will be raised.
+    e.g. There is no bold variant of 'Segoe UI Light' as you might understand.
+
+
+Font Decoration
+===============
+
+
+Font Sizes
+==========
 
 
 Font Fallback
