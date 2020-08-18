@@ -60,7 +60,7 @@
       "ImageCacheDuration": 60,
       "Factories": [
         {
-          "Match": ".*.dynamic",
+          "Match": ".*\\.dynamic",
           "FactoryType": "Scryber.UnitTests.Mocks.MockImageFactory",
           "FactoryAssembly": "Scryber.UnitTests"
         }

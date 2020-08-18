@@ -35,17 +35,17 @@ A document generation tool written entirely in C# for dotnet core.
                 <Content>
                     <data:With datasource-id="XmlSource"  >
 
-                    <pdf:H1 styles:class="title" text="{xpath:Title}" > </pdf:H1>
-                    
-                    <pdf:Ul>
-                        <data:ForEach value="{xpath:Entries/Entry}" >
-                        <Template>
-                            <pdf:Li>
-                            <pdf:Text value="{xpath:Name}" />
-                            </pdf:Li>
-                        </Template>
-                        </data:ForEach>
-                    </pdf:Ul>
+                        <pdf:H1 styles:class="title" text="{@:Title}" > </pdf:H1>
+                        
+                        <pdf:Ul>
+                            <data:ForEach value="{xpath:Entries/Entry}" >
+                            <Template>
+                                <pdf:Li>
+                                <pdf:Text value="{xpath:Name}" />
+                                </pdf:Li>
+                            </Template>
+                            </data:ForEach>
+                        </pdf:Ul>
                     </data:With>
                     
                 </Content>

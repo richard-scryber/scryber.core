@@ -354,7 +354,8 @@ Images as fills
 An image can also be used as the fill for text or shapes. It has the same properties and options as 
 the background. But will be trimmed around the shape of the component it is filling.
 
-The background and fill are also independent and can be used together for multiple patterns.
+The background and fill are also independent, so can be used together for multiple patterns 
+as in the rectangle in the example below.
 
 
 .. code-block:: xml
@@ -423,3 +424,113 @@ The background and fill are also independent and can be used together for multip
 
 Dynamic Images
 ==============
+
+Sometimes it's not possible to reference an image file, or practical to reference image data in parameters.
+There could be a standard source of image data, that you want to use, not directly supported by scryber.
+
+In this case, the best option is to use dynamic image factories. 
+
+With an image factory in the configuration options, any class supporting the IPDFImageDataFactory interface can return a 
+dynamic image to the scryber layout engine.
+
+.. code-block:: csharp
+
+    using System;
+    using Scryber.Drawing;
+    using System.Drawing;
+
+    namespace Scryber.Mocks
+    {
+        //Must implement the IPDFImageDataFactory interface
+
+        public class MockImageFactory : IPDFImageDataFactory
+        {
+                
+            public bool ShouldCache { get { return false; } }
+
+            public PDFImageData LoadImageData(IPDFDocument document, IPDFComponent owner, string path)
+            {
+                
+                try
+                {
+                    var uri = new Uri(path);
+                    var param = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
+                    var name = System.IO.Path.GetFileNameWithoutExtension(param);
+
+                    // Standard System.Drawing routines to draw a bitmap
+                    // could load an image from SQL, use parameters, whatever is needed
+
+                    Bitmap bmp = new Bitmap(300, 100);
+                    using (Graphics graphics = Graphics.FromImage(bmp))
+                    {
+                        graphics.FillRectangle(new SolidBrush(Color.LightBlue), new Rectangle(0, 0, 300, 100));
+                        graphics.DrawString(name, new Font("Times", 12), new SolidBrush(Color.Blue), PointF.Empty);
+                        graphics.Flush();
+                    }
+                    var dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    var png = System.IO.Path.Combine(dir, "Temp.png");
+                    bmp.Save(png);
+
+                    PDFImageData data = PDFImageData.LoadImageFromBitmap(path, bmp, false);
+                    return data;
+                }
+                catch(Exception ex)
+                {
+                    throw new ArgumentException("The image creation failed", ex);
+                }
+            }
+        }
+    }
+
+
+For the app settings specify the Factory with a regular expression match on the path 
+(in this case '[anything].dynamic', and then specify the type and assembly where 
+
+.. code-block:: json
+
+    {
+        "Scryber": {
+            "Imaging": {
+            "AllowMissingImages": "True",
+            "ImageCacheDuration": 60,
+            "Factories": [
+                {
+                "Match": ".*\\.dynamic",
+                "FactoryType": "Scryber.Mocks.MockImageFactory",
+                "FactoryAssembly": "Scryber.UnitTests"
+                }
+            ]
+            }
+        }
+    }
+
+And then in your template simply specify the image matching the pattern, to invoke the Image Data Factory.
+
+.. code-block:: xml
+
+    <?xml version='1.0' encoding='utf-8' ?>
+    <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+    <Pages>
+
+        <pdf:Page styles:margins='20pt'>
+        <Content>
+            <pdf:Span>This is before the image</pdf:Span>
+
+            <!-- A dynamic image that will be generated on the fly -->
+            <pdf:Image id='LoadedImage' src='This+is+an+image.dynamic' />
+
+            <pdf:Span>This is after the image</pdf:Span>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+
+.. image:: images/documentimagesdynamic.png
+
+
+.. note:: Only one instance of the image factory will be created, and it MUST have a parameterless constructor.

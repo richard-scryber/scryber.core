@@ -35,10 +35,10 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the image data associated with this instance.
         /// </summary>
-        protected PDFImageXObject XObject
+        public PDFImageXObject XObject
         {
             get { return _xobj; }
-            set { _xobj = value; }
+            protected set { _xobj = value; }
         }
 
         private bool _compress = false;

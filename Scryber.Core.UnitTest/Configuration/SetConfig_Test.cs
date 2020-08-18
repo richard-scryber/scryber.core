@@ -207,7 +207,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.IsNotNull(img.Factories, "The image factories are null");
 
             Assert.AreEqual(1, img.Factories.Length);
-            Assert.AreEqual(".*.dynamic", img.Factories[0].Match, "The img factory match path is incorrect");
+            Assert.AreEqual(".*\\.dynamic", img.Factories[0].Match, "The img factory match path is incorrect");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockImageFactory", img.Factories[0].FactoryType, "The image factory type is not correct");
             Assert.AreEqual("Scryber.UnitTests", img.Factories[0].FactoryAssembly, "The image factory assembly is not correct");
         }
@@ -321,6 +321,43 @@ namespace Scryber.Core.UnitTests.Configuration
             }
 
             Assert.IsTrue(caught, "Exception was not raised for a missing image, that should not be allowed");
+        }
+
+
+        [TestMethod()]
+        public void DyanamicImage_Test()
+        {
+
+            var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
+<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Pages>
+
+    <pdf:Page styles:margins='20pt'>
+      <Content>
+        <pdf:Span>This is before the image</pdf:Span>
+        <pdf:Image id='LoadedImage' src='This+is+an+image.dynamic' />
+        <pdf:Span>This is after the image</pdf:Span>
+      </Content>
+    </pdf:Page>
+  </Pages>
+
+</pdf:Document>";
+
+
+
+            PDFDocument doc;
+            using (var reader = new System.IO.StringReader(pdfx))
+                doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+            
+            using (var stream = new System.IO.MemoryStream())
+                doc.ProcessDocument(stream);
+
+            //Check that the image was loaded and used.
+            var img = doc.FindAComponentById("LoadedImage") as PDFImage;
+            Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
+            
         }
 
     }

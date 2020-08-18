@@ -264,14 +264,23 @@ namespace Scryber.Drawing
 
         #region public PDFSize GetSize()
 
+        private const double DefaultResolution = 72.0;
+
         /// <summary>
         /// Gets the natural size of the image in page units
         /// </summary>
         /// <returns></returns>
         public PDFSize GetSize()
         {
-            double w = ((double)this.PixelWidth) / (double)this.HorizontalResolution;
-            double h = ((double)this.PixelHeight) / (double)this.VerticalResolution;
+            double hres = (double)this.HorizontalResolution;
+            if (hres < 1.0)
+                hres = DefaultResolution;
+            double vres = (double)this.VerticalResolution;
+            if (vres <= 1)
+                vres = DefaultResolution;
+
+            double w = ((double)this.PixelWidth) / hres;
+            double h = ((double)this.PixelHeight) / vres;
 
             return new PDFSize(new PDFUnit(w, PageUnits.Inches), new PDFUnit(h, PageUnits.Inches));
         }
