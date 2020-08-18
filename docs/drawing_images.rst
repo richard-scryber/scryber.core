@@ -1,5 +1,5 @@
 ======================================
-Images in documents - td
+Images in documents
 ======================================
 
 Scryber supports most standard image types, including the following.
