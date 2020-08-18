@@ -479,11 +479,70 @@ They are less frequently used, but can help in adjusting fonts that are too narr
     </pdf:Document>
 
 
-.. image:: images/DrawingfontsSpacing.png
+.. image:: images/drawingfontsSpacing.png
 
 
 Multi-byte Characters
 =====================
+
+Scryber supports multi-byte characters, anywhere in the document. Whether that is only a couple of characters, or whole paragraphs.
+
+.. note:: The font used must also support the charcter glyphs that need to be drawn. If they are not in the font, then they cannot be rendered by the reader.
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+            <styles:Background color="#AAA"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+        <styles:Style applied-class="wide" >
+            <styles:Text char-spacing="5pt"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font to a chinese traditional. -->
+        <pdf:Page styles:padding="10" styles:font-family="Microsoft JhengHei UI" >
+        <Content>
+            <pdf:Div styles:column-count="3" styles:font-size="14pt" styles:height="150pt">
+            記第功際被治年待中所正向持。害供雪指載載道表職渉彩明文界早琶。本要逆使健貿市執多格紙録指璧。
+            高規要来広北的夜競語進文務配界重報史。松強約協交均刊後旅昼毎民御年必荒人稿線塁。
+            代細募問毒会順債著用育探重早価時職。
+            生出型掲事険市映女員雑誌賞盆山注医王放北。真催英落業投提協金策結状士社更観。
+            好角野成集顧演委事被対断陣前考武。<pdf:Br/>
+            <pdf:Br/>
+            <pdf:Span styles:font-bold="true">
+            意能自至診発億間誕作業丹製橋内。大起阪企昌重週向入村着体首産優深男米。三外高本墨度投右未掲玲予伏望着。
+            経鈴向表田週健会断縄駅夜長。受稿照主著運国果暮治待困。極面五遺間方天質聞査違武梨整許削武祉。
+            合第面歳多料夜産選禁連聞旅可章勝策高十近。車氏意技済覇対思数祭町検開面玲術道給提座。
+            泉南追夜育挙性成卵要本物似界知減塾奈傷。</pdf:Span>
+            </pdf:Div>
+            <!-- mixed character sets, with leading and spacing -->
+            <pdf:Div styles:class="wide" styles:text-leading="35pt" >
+            We can intermix the characters 記第功際被治年待中所正向持。害供雪指載載道表職渉彩明文界早琶。本要逆使健貿市執多格紙録指璧。
+            高規要来広北的夜競語進文務配界重報史。松強約協交均刊後旅昼毎民御年必荒人稿線塁。
+            <pdf:Span styles:font-family="Segoe UI"  >代細募問毒会順債著用育探重早価時職。
+            But the font must contain the glyphs.</pdf:Span> 
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/drawingfontsUnicode.png
 
 
 Right to Left
