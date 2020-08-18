@@ -287,6 +287,8 @@ component itself, the other
 * The starting position of the pattern.
     * x-pos - Determines the horizontal offset of the rendered background image in units.
     * y-pos - Determines the vertical  offset of the rendered background image in units.
+* The pattern repeat step.
+    * x-step
 
 
 .. code-block:: xml
@@ -301,11 +303,13 @@ component itself, the other
         <styles:Font size="20pt" bold="true"/>
         <styles:Position h-align="Center"/>
         <styles:Border color="fuchsia"/>
+        <!-- x-size (or y-size) alone will keep the natural proportions of the image -->
         <styles:Background img-src="../../Content/Images/Landscape.jpg" x-size="60pt" />
         </styles:Style>
 
         <styles:Style applied-class="bg-pos">
         <styles:Margins top="5pt"/>
+        <!-- aplying a specific stating position and step -->
         <styles:Background x-pos="30pt" y-pos="-15pt" x-step="70pt" y-step="60pt" />
         <styles:Size min-height="100pt"/>
         </styles:Style>
@@ -341,7 +345,7 @@ component itself, the other
     
     </pdf:Document>
 
-.. image:: images/drawingImagesbgsize.png
+.. image:: images/documentimagesbgsize.png
 
 Dynamic Images
 ==============
