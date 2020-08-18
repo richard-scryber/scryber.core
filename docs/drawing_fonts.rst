@@ -554,8 +554,12 @@ Right to Left
 Scryber doesn't currently support Right to left (or vertical) typography. At the moment we have have not seen it done 
 anywhere due to limitiations in postscript and the pdf document. But we will keep trying.
 
+Font Configuration Options
+============
+
+
 Missing Font Fallback
-=====================
+---------------------
 
 As mentioned in `Font Styles`_ if a font (or style variant) is not available, then the default action is to raise an error.
 
@@ -649,18 +653,44 @@ will be rendered with the Courier built in font.
 
 .. note:: This is a good setting for production systems, and leaving dev / qa for the default setting.
 
-Changing the default font
-=========================
 
 Font Folders
-============
+------------
 
+By default the scryber engine will use system fonts registered on the OS. Any of the true type (open type) fonts
+within this folder can be used for outputting content.
 
-Explict font Folders
-====================
+Setting the UseSystemFonts flag to false will stop this behaviour and only use either the default font folder,
+or the explicit fonts. 
+If you are not sure if your fonts will be there, set this up and make them explicit.
 
+By specifiying a default firectory for your fonts you can add them to your deployments and standardise the output.
 
 Explicit Fonts
-==============
+--------------
+
+With explicit fonts, you can specify any name and style for a font file and use it directly. If there are custom fonts
+users will never have on their system, they do not need to be installed at the OS level, but are accessible to the application or site.
+
+Changing the default font
+-------------------------
+
+As we can see from the options above, it is also possible to set a different font as the default used by documents.
+This can be any of the System fonts, Other fonts from the font folder, or explicitly registered fonts can be the default.
+And also changed direclty within the application.
+
+Custom Font layout
+==================
+
+Here we have no system fonts, 3 fonts in our explicit directory, that is deployed with our site, and one of these is set to the default.
+We then have another that is named directly for the client on their installation.
+
+This gives independence of OS and capabilities.
+
+
+
+
+
+
 
 

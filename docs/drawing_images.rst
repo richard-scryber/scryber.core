@@ -433,7 +433,7 @@ In this case, the best option is to use dynamic image factories.
 With an image factory in the configuration options, any class supporting the IPDFImageDataFactory interface can return a 
 dynamic image to the scryber layout engine.
 
-.. code-block:: csharp
+.. code-block:: c#
 
     using System;
     using Scryber.Drawing;
