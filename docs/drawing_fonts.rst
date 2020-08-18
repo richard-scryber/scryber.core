@@ -1,5 +1,5 @@
 ======================================
-Document fonts and font styles - td
+Document fonts and text styles
 ======================================
 
 Fonts are by detault automatically loaded at startup, and can be referenced by name.
@@ -273,20 +273,144 @@ Underline also has a convenience component <pdf:U></pdf:U> (which will also clea
 Font Sizes
 ==========
 
+Scryber can use any font-size needed. This can either be set on a block or within an inline component.
+The layout engine will attempt to keep line heights consistent, baselines level, along with decorations and styles.
 
-Font Fallback
-=============
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+            <styles:Font size="20pt" />
+            <styles:Background color="#AAA"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font on the page, rather than at each level. -->
+        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <Content>
+        
+            <pdf:Div styles:class="std-font" styles:text-decoration="Underline" >
+                <pdf:Span styles:font-size="10pt">Underlined Segoe UI in 10pt.</pdf:Span>
+            </pdf:Div>
+
+            <pdf:Div styles:class="std-font" styles:text-decoration="Underline" >
+                <pdf:Span styles:font-size="30pt">Underlined Segoe UI in 30pt.</pdf:Span>
+            </pdf:Div>
+            
+            <pdf:Div styles:class="std-font" 
+                        styles:font-bold="true" >
+                <pdf:Span>Segoe UI as a<pdf:Span styles:font-size="30pt">
+                bold variant with
+                <pdf:Span styles:font-size="50pt" styles:text-decoration="Underline">various</pdf:Span>
+                </pdf:Span>sizes.</pdf:Span>
+            </pdf:Div>
 
 
-Leading and spacing
-===================
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
 
+.. image:: images/drawingfontSizes.png
+
+
+
+Line Leading
+============
+
+The leading is the height of the lines including ascenders and descenders. 
+The default is set by the font (usually about 120% of the font size), but can be manually adjustsed as needed.
+
+Inline components will ignore the block level style for leading.
+
+The leading value is a unit value rather than a relative percent.
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Background color="#AAA"/>
+        <styles:Padding all="4pt"/>
+        <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+        <!-- Alter the default bold component -->
+        <styles:Style applied-type="pdf:B">
+        <styles:Font size="25pt" italic="true"/>
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font on the page, rather than at each level. -->
+        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <Content>
+            <pdf:Div styles:column-count="3" styles:font-size="10pt">
+                <pdf:Div styles:class="std-font" >
+                    Segoe UI in 10pt font size with the default
+                    leading used on each line of the paragraph. So the text looks well spaced and consistent.
+                </pdf:Div>
+                <pdf:ColumnBreak/>
+                
+                <pdf:Div styles:class="std-font" styles:text-leading="20pt">
+                    Segoe UI in 10pt font size with the leading increased to 20pt
+                    on each line of the paragraph. So the text is more spaced out.
+                </pdf:Div>
+                <pdf:ColumnBreak/>
+                <pdf:Div styles:class="std-font"  styles:text-leading="7pt">
+                    Segoe UI in 10pt font size with the leading reduced to 8pt
+                    on each line of the paragraph. It is not an error for the letters to collide.
+                </pdf:Div>
+            </pdf:Div>
+
+            <pdf:Div styles:class="std-font"  styles:text-leading="17pt">
+                Even using various 
+                <pdf:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</pdf:Span>
+                will not affect the fixed size of the leading, 
+                but may impact the <pdf:B>baselines of the content</pdf:B>.
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/drawingfontsLeading.png
+
+Character and Word Spacing
+==========================
 
 Multi-byte Characters
 =====================
 
 
 Right to Left
+=============
+
+
+Font Fallback
 =============
 
 
