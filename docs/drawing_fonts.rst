@@ -545,13 +545,109 @@ Scryber supports multi-byte characters, anywhere in the document. Whether that i
 .. image:: images/drawingfontsUnicode.png
 
 
+.. note:: Due to the size of most unicode font files with thousands of glyphs, using and embedding a unicode font can dramatically increase the
+          size of the pdf file. The example above came in at 23Mb without any images. Beware!
+
 Right to Left
 =============
 
+Scryber doesn't currently support Right to left (or vertical) typography. At the moment we have have not seen it done 
+anywhere due to limitiations in postscript and the pdf document. But we will keep trying.
 
-Font Fallback
-=============
+Missing Font Fallback
+=====================
 
+As mentioned in `Font Styles`_ if a font (or style variant) is not available, then the default action is to raise an error.
+
+This behaviour can be changed with the :doc:`scryber_configuration`. 
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+            <styles:Font size="20pt" />
+            <styles:Background color="#AAA"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font on the page, rather than at each level. -->
+        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <Content>
+        
+            <pdf:Div styles:class="std-font" >
+                <pdf:Span>Regular Segoe UI.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font" 
+                        styles:font-bold="true" >
+                <pdf:Span>Segoe UI has a bold variant.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font"
+                        styles:font-italic="true" >
+                <pdf:Span>Segoe UI is also available in italic.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font"
+                        styles:font-italic="true" >
+                <pdf:B>This is Segoe UI within a Bold span, with italic on the div.</pdf:B>
+            </pdf:Div>
+            <!-- This would fail as there is no bold version of Segoe UI Light -->
+            <pdf:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
+                <pdf:Span styles:font-bold="true">This is the light variant of the font <pdf:I>with Italic inside</pdf:I> the span.</pdf:Span>
+            </pdf:Div>
+
+            <pdf:Div styles:font-family="DoesNotExist" >
+                This is with an unknown font name.
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+The document above would fail due to the request for bold of a light font variant, and also a font family that cannot be resolved.
+
+However if we apply our configuration options for the fonts we can maintain a fall back position using the `FontSubstitution` flag.
+
+.. code-block:: json
+
+    {
+        "Scryber": {
+            "Imaging": {
+            "AllowMissingImages": "True"
+            },
+            "Fonts": {
+            "DefaultDirectory": "/System/Library/Fonts",
+            "UseSystemFonts": "True",
+            "FontSubstitution": "True",
+            "DefaultFont": "Helvetica",
+            "RegisteredFonts": [
+                {
+                "FamilyName": "Segoui Light",
+                "FontStyle": "Regular",
+                "FontFile": "/Users/richardhewitson/Library/Fonts/SeouiLight.ttf"
+                }
+            ]
+            }
+        }
+    }
+
+Now when we render the document the Bold option (and also Bold Italic) will default back to the regular style. And a font that does not exist
+will be rendered with the Courier built in font.
+
+.. image:: images/drawingFontsFallback.png
+
+.. note:: This is a good setting for production systems, and leaving dev / qa for the default setting.
 
 Changing the default font
 =========================
