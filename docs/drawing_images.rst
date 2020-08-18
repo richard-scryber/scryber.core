@@ -229,8 +229,8 @@ change the behaviour to allow missing images.
 If the configuration is set to allow missing images, the attribute will override and cause an exception if set to false.
 The attribute also supports binding, but is not styles based.
 
-Images as backgrounds and fills
-===============================
+Images as backgrounds
+=====================
 
 Images are also supported on the backgrounds of block level components (see :doc:`component_positioning`),
 and of fills for shapes, text, etc.
@@ -288,7 +288,8 @@ component itself, the other
     * x-pos - Determines the horizontal offset of the rendered background image in units.
     * y-pos - Determines the vertical  offset of the rendered background image in units.
 * The pattern repeat step.
-    * x-step
+    * x-step - Sets the horizontal offset between repeating patterns, which can be more or less than the size of the rendered image.
+    * y-step - Sets the vertical offset between repeating patterns, which can be more or less than the size of the rendered image.
 
 
 .. code-block:: xml
@@ -346,6 +347,79 @@ component itself, the other
     </pdf:Document>
 
 .. image:: images/documentimagesbgsize.png
+
+Images as fills
+===============
+
+An image can also be used as the fill for text or shapes. It has the same properties and options as 
+the background. But will be trimmed around the shape of the component it is filling.
+
+The background and fill are also independent and can be used together for multiple patterns.
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+        <!-- Div style -->
+        <styles:Style applied-class="img-wrap">
+            <styles:Font size="40pt" bold="true"/>
+            <styles:Position h-align="Center"/>
+            <styles:Border color="fuchsia"/>
+            <!-- x-size (or y-size) alone will keep the natural proportions of the image -->
+            <styles:Fill img-src="../../Content/Images/Landscape.jpg" x-size="60pt" />
+        </styles:Style>
+
+        <styles:Style applied-class="fill-pos">
+            <styles:Margins top="5pt"/>
+            <!-- aplying a specific stating position and step -->
+            <styles:Fill x-pos="30pt" y-pos="-15pt" x-step="70pt" y-step="60pt" />
+            <styles:Size min-height="100pt"/>
+        </styles:Style>
+
+        
+    </Styles>
+    <Pages>
+
+        <pdf:Page styles:padding="40 10 20 10" >
+        <Content>
+
+            <pdf:Div styles:class="img-wrap" styles:min-height="100pt" >
+                <pdf:Span> Filled image x-size only</pdf:Span>
+            </pdf:Div>
+
+            <pdf:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatX" >
+                <pdf:Span> Filled image with X repeat only</pdf:Span>
+            </pdf:Div>
+
+            <pdf:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatY" >
+                <pdf:Span> Filled image with Y repeat only</pdf:Span>
+            </pdf:Div>
+
+            <pdf:Div styles:class="img-wrap fill-pos" styles:fill-repeat="Fill" >
+            <!-- Fill repeat doesn't work at the moment. We are loking at it.-->
+                <pdf:Span> Filled image with Fill, overriding other settings</pdf:Span>
+            </pdf:Div>
+
+            <!-- A shape with a fill and background image -->
+            <pdf:Rect styles:position-mode="Absolute" styles:class="img-wrap"
+                        styles:bg-image="../../Content/Images/group.png" styles:padding="20"
+                        styles:x="360" styles:y="300" styles:width="120" styles:height="120pt" ></pdf:Rect>
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+.. image:: images/documentimagesfills.png
+
+
+.. note:: The Fill repeat option on the shape or text fill does not currently work. Use the sizing options (for the moment) to replicate the Fill repeat pattern.
+
+
 
 Dynamic Images
 ==============
