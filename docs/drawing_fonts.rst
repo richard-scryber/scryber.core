@@ -192,7 +192,7 @@ individually or nested, but they cannot be mixed inconsistently (breaking the ru
 
 .. image:: images/drawingfontsStyles.png
 
-.. warn:: If the bold or italic variants are not available as a font, by default, an exception will be raised.
+.. warning:: If the bold or italic variants are not available as a font, by default, an exception will be raised.
     e.g. There is no bold variant of 'Segoe UI Light' as you might understand.
 
 
