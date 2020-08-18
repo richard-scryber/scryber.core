@@ -324,7 +324,7 @@ The layout engine will attempt to keep line heights consistent, baselines level,
     
     </pdf:Document>
 
-.. image:: images/drawingfontSizes.png
+.. image:: images/drawingfontsSizes.png
 
 
 
@@ -368,6 +368,7 @@ The leading value is a unit value rather than a relative percent.
         <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
             <pdf:Div styles:column-count="3" styles:font-size="10pt">
+
                 <pdf:Div styles:class="std-font" >
                     Segoe UI in 10pt font size with the default
                     leading used on each line of the paragraph. So the text looks well spaced and consistent.
@@ -383,6 +384,7 @@ The leading value is a unit value rather than a relative percent.
                     Segoe UI in 10pt font size with the leading reduced to 8pt
                     on each line of the paragraph. It is not an error for the letters to collide.
                 </pdf:Div>
+
             </pdf:Div>
 
             <pdf:Div styles:class="std-font"  styles:text-leading="17pt">
@@ -401,6 +403,84 @@ The leading value is a unit value rather than a relative percent.
 
 Character and Word Spacing
 ==========================
+
+With scryber the character and word spacing is supported at the style definition level (not on the component attributes). 
+They are less frequently used, but can help in adjusting fonts that are too narrow at a particular size, or for graphical effect.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+            <styles:Background color="#AAA"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+        <!-- Alter the default bold component -->
+        <styles:Style applied-type="pdf:B">
+            <styles:Font size="20pt" italic="true"/>
+            <!-- Adding character and word spacing too -->
+            <styles:Text char-spacing="5pt" word-spacing="10pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="narrow" >
+            <styles:Text char-spacing="-0.5pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="wide" >
+            <styles:Text char-spacing="1.5pt" leading="15pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="wide-word" >
+            <styles:Text char-spacing="0" word-spacing="8pt" />
+        </styles:Style>
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font on the page, rather than at each level. -->
+        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <Content>
+            <pdf:Div styles:column-count="3" styles:font-size="10pt">
+                <pdf:Div styles:class="std-font narrow" >
+                    Segoe UI in 10pt font size with the default
+                    leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
+                </pdf:Div>
+                <pdf:ColumnBreak/>
+                <pdf:Div styles:class="std-font wide">
+                    Segoe UI in 10pt font size with the leading increased to 15pt
+                    on each line of the paragraph. The character spacing is also
+                    set to an extra 1.5 points.
+                </pdf:Div>
+                <pdf:ColumnBreak/>
+                <pdf:Div styles:class="std-font wide-word" >
+                    Segoe UI in 10pt font size with the leading and character space normal, but the word
+                    spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
+                </pdf:Div>
+            </pdf:Div>
+
+            <pdf:Div styles:class="std-font wide" styles:text-leading="35pt" >
+                Even using various 
+                <pdf:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</pdf:Span>
+                will maintain the character and 
+                word spacing that <pdf:B>has been applied.</pdf:B>
+            </pdf:Div>
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/DrawingfontsSpacing.png
+
 
 Multi-byte Characters
 =====================
