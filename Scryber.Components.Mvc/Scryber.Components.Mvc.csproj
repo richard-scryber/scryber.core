@@ -42,7 +42,7 @@ Updated for of the Core library with atomatic inclusion of the http namespace re
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scryber.Core" Version="1.0.0.23" />
+    <PackageReference Include="Scryber.Core" Version="1.0.0.24" />
   </ItemGroup>
       
   <ItemGroup>

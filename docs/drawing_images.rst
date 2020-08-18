@@ -483,6 +483,8 @@ dynamic image to the scryber layout engine.
 For the app settings specify the Factory with a regular expression match on the path 
 (in this case '[anything].dynamic', and then specify the type and assembly where the class is defined.
 
+See :doc:`scryber_configuration` for more details on changing the configuration options.
+
 .. code-block:: json
 
     {

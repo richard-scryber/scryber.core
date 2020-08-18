@@ -15,7 +15,7 @@
     <PackageReleaseNotes>1.0.0.24
 -------------------
 Package for release to Nuget Public
-Updated for the allow missing images option
+Updated for the allow missing images option and fixed height and width for 0 resolution
 Added the xsd files to the root of the components project
 Added a readme.txt file
 Added column-widths to the components and styles, with support for varable widths.
