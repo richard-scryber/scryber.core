@@ -193,11 +193,81 @@ individually or nested, but they cannot be mixed inconsistently (breaking the ru
 .. image:: images/drawingfontsStyles.png
 
 .. warning:: If the bold or italic variants are not available as a font, by default, an exception will be raised.
-    e.g. There is no bold variant of 'Segoe UI Light' as you might understand
+    e.g. There is no bold variant of 'Segoe UI Light' as you might understand. Font fallback below can help with this.
 
 
-Font Decoration
+Text Decoration
 ===============
+
+Along with the bold and italic variants, scryber also supports the following text-decoration flags.
+
+* Underline
+* StrikeThrough
+* Overline
+
+And these can be combined within the attribute, and will flow across lines.
+
+Underline also has a convenience component <pdf:U></pdf:U> (which will also clear any strikethrough or overline).
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+            <styles:Font size="20pt" />
+            <styles:Background color="#AAA"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <!-- Setting the font on the page, rather than at each level. -->
+        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <Content>
+        
+        <pdf:Div styles:class="std-font" styles:text-decoration="Underline" >
+            <pdf:Span>Underlined Segoe UI.</pdf:Span>
+        </pdf:Div>
+        
+        <pdf:Div styles:class="std-font" 
+                    styles:font-bold="true" styles:text-decoration="Underline Overline" >
+            <pdf:Span>Segoe UI as a bold variant with underline and overline.</pdf:Span>
+        </pdf:Div>
+        
+        <pdf:Div styles:class="std-font"
+                    styles:font-italic="true" >
+            <pdf:Span>
+            <pdf:U>Underlined Segoe UI</pdf:U> in italic, 
+            <pdf:Span styles:text-decoration="StrikeThrough">Can be struck through</pdf:Span>.</pdf:Span>
+        </pdf:Div>
+        
+        <pdf:Div styles:class="std-font"
+                    styles:font-italic="true" >
+            <pdf:U>This is Segoe UI with underlining, that will flow across multiple lines, but an 
+            <pdf:Span styles:text-decoration="StrikeThrough">inner span with struck through will remove the parent underlining</pdf:Span> which will be
+            restored after the span.
+            </pdf:U>
+        </pdf:Div>
+        
+        
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/drawingfontsDecoration.png
+
 
 
 Font Sizes
