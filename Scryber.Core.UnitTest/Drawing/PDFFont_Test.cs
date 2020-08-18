@@ -539,6 +539,18 @@ namespace Scryber.Core.UnitTests.Drawing
             target = new PDFFont(target, FontStyle.Bold);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
+
+            target = new PDFFont("Times", 12);
+            actual = target.IsStandard;
+            Assert.IsTrue(actual);
+
+            target = new PDFFont("Zapf Dingbats", 12);
+            actual = target.IsStandard;
+            Assert.IsTrue(actual);
+
+            target = new PDFFont("Symbol", 12);
+            actual = target.IsStandard;
+            Assert.IsTrue(actual);
         }
 
         /// <summary>
