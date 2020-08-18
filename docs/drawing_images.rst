@@ -457,8 +457,8 @@ dynamic image to the scryber layout engine.
                     var param = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
                     var name = System.IO.Path.GetFileNameWithoutExtension(param);
 
-                    // Standard System.Drawing routines to draw a bitmap
-                    // could load an image from SQL, use parameters, whatever is needed
+                    // Standard System.Drawing routines to draw a bitmap with the name on.
+                    // Could load an image from remote source, use doc parameters, whatever is needed
 
                     Bitmap bmp = new Bitmap(300, 100);
                     using (Graphics graphics = Graphics.FromImage(bmp))
@@ -467,10 +467,7 @@ dynamic image to the scryber layout engine.
                         graphics.DrawString(name, new Font("Times", 12), new SolidBrush(Color.Blue), PointF.Empty);
                         graphics.Flush();
                     }
-                    var dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                    var png = System.IO.Path.Combine(dir, "Temp.png");
-                    bmp.Save(png);
-
+                    
                     PDFImageData data = PDFImageData.LoadImageFromBitmap(path, bmp, false);
                     return data;
                 }
@@ -484,7 +481,7 @@ dynamic image to the scryber layout engine.
 
 
 For the app settings specify the Factory with a regular expression match on the path 
-(in this case '[anything].dynamic', and then specify the type and assembly where 
+(in this case '[anything].dynamic', and then specify the type and assembly where the class is defined.
 
 .. code-block:: json
 
