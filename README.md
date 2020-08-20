@@ -12,15 +12,21 @@ Binding in xml allows you to quickly load data from many sources and output to P
 
 ## Getting Started
 
-The easiest way is to use the Nuget Packages here
+The easiest way is to begin is to use the Nuget Packages here
 
 [scryber.core package](https://www.nuget.org/packages/scryber.core/)
 (Base libraries for GUI or console applications)
 
-OR
+OR for asp.net mvc
 
 [scryber.core.mvc package](https://www.nuget.org/packages/scryber.core.mvc/)
 (Which includes the scryber.core package).
+
+The full documentation is available here
+
+[scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
+
+## Hello World
 
 Create your template pdfx (xml) file.
 
@@ -36,21 +42,28 @@ Create your template pdfx (xml) file.
     <styles:Style applied-type='pdf:Page'>
       <styles:Font family='Arial' size='14pt' />
     </styles:Style>
+
+    <styles:Style applied-class='heading' >
+      <styles:Fill color='#FF7777'/>
+      <styles:Text decoration='Underline'/>
+    </styles:Style>
+    
   </Styles>
   <Pages>
 
     <pdf:Page styles:margins='20pt'>
       <Content>
-        <pdf:H1 text='{@:Title}' />
+        <pdf:H1 styles:class='heading' text='{@:Title}' />
         <pdf:Div>We hope you like scryber.</pdf:Div>
-        
+
       </Content>
     </pdf:Page>
   </Pages>
 
 </pdf:Document>
 ```
-From your code.
+
+From your application code.
 
 ```cs
 //using Scryber.Components
@@ -60,7 +73,8 @@ static void Main(string[] args)
     using(var doc = PDFDocument.ParseDocument("[input template].pdfx"))
     {
         doc.Params["Title"] = "Hello World from Scryber";
-        doc.Pages[0].Contents.Add(new PDFLabel(){ Text = "My Content" });
+        var page = doc.Pages[0] as PDFPage;
+        page.Contents.Add(new PDFLabel(){ Text = "My Content" });
         doc.ProcessDocument("[output file].pdf");
     }
 }
@@ -72,17 +86,20 @@ Or from an MVC web application
 //using Scryber.Components
 //using Scryber.Components.Mvc
 
-public IActionResult HelloWorld(string title)
+public IActionResult HelloWorld(string title = "Hello World from Scryber")
 {
    using(var doc = PDFDocument.ParseDocument("[input template].pdfx"))
     {
         doc.Params["Title"] = title;
-        doc.Pages[0].Contents.Add(new PDFLabel(){ Text = "My Content" });
+        var page = doc.Pages[0] as PDFPage;
+        page.Contents.Add(new PDFLabel(){ Text = "My Content" });
+        
         return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
     }
 }
 ```
 
+![Hello World Output](docs/images/helloworld.png)
 
 Check out Read the Docs for more information on how to use the library.
 
