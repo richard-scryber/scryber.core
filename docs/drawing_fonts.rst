@@ -631,17 +631,9 @@ However if we apply our configuration options for the fonts we can maintain a fa
             "AllowMissingImages": "True"
             },
             "Fonts": {
-            "DefaultDirectory": "/System/Library/Fonts",
-            "UseSystemFonts": "True",
-            "FontSubstitution": "True",
-            "DefaultFont": "Helvetica",
-            "RegisteredFonts": [
-                {
-                "FamilyName": "Segoui Light",
-                "FontStyle": "Regular",
-                "FontFile": "/Users/richardhewitson/Library/Fonts/SeouiLight.ttf"
-                }
-            ]
+                "UseSystemFonts": "True",
+                "FontSubstitution": "True"
+                
             }
         }
     }
@@ -679,13 +671,86 @@ As we can see from the options above, it is also possible to set a different fon
 This can be any of the System fonts, Other fonts from the font folder, or explicitly registered fonts can be the default.
 And also changed direclty within the application.
 
-Custom Font layout
+Custom Font Output
 ==================
 
-Here we have no system fonts, 3 fonts in our explicit directory, that is deployed with our site, and one of these is set to the default.
-We then have another that is named directly for the client on their installation.
+Expanding the scryber configuration options
 
-This gives independence of OS and capabilities.
+.. code-block:: json
+
+    "Fonts": {
+      "UseSystemFonts": "True",
+      "FontSubstitution": "True",
+      "DefaultDirectory": "Content/Fonts/Std",
+      "DefaultFont": "Avenir Next Condensed",
+      "Register": [
+        {
+          "Family": "DIN",
+          "Style": "Bold",
+          "File": "Content\\Fonts\\Title\\DIN Alternate Bold.ttf"
+        },
+        {
+          "Family": "Avenir Next Condensed Ultra Light",
+          "Style": "Italic",
+          "File": "Content\\Fonts\\Std\\AvenirNextCondensed-UltraLightItalic-12.ttf"
+        }
+      ]
+    }
+
+Here there is an explicit directory, that can be deployed with the site containing the fonts, and one of these is set to the default font
+to be used on all documents when an explicit font is not set.
+
+We then have another that is in the named directory. 
+
+And finally an explict version for the Ultra light Italic, that was not being recognised.
+
+.. image:: images/drawingFontsCustomSoln.png
+
+If we generate a document now we can see the updated output
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+
+    <Styles>
+        
+        <!-- Add a style to images -->
+        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+            <styles:Font size="20pt" />
+            <styles:Background color="#AAA"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins bottom="10pt" />
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+        
+        <pdf:Page styles:padding="10" >
+        <Content>
+        
+            <pdf:Div styles:class="std-font" >
+                <pdf:Span>The new detault font is now updated and used when nothing is set, supporting the <pdf:B>bold version as well</pdf:B></pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font" styles:font-family="DIN" >
+                <pdf:Span>This is using the custom named font explicitly loaded.</pdf:Span>
+            </pdf:Div>
+            <pdf:Div styles:class="std-font" styles:font-family="Avenir Next Condensed Ultra Light" >
+                <pdf:Span>This is the ultra light version <pdf:I> and italic, that was a bit of an issue loading.</pdf:I></pdf:Span>
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/drawingFontsCustom.png
+
+
 
 
 

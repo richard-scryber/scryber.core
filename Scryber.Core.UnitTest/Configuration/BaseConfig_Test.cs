@@ -191,7 +191,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 caught = true;
             }
@@ -236,7 +236,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 caught = true;
             }

@@ -32,7 +32,7 @@ namespace Scryber.Core.UnitTests.Configuration
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             config.Reset();
 
-            ServiceProvider.Init(true);
+            ServiceProvider.Init(true); 
 
             var service = ServiceProvider.GetService<IConfiguration>();
 
@@ -130,15 +130,15 @@ namespace Scryber.Core.UnitTests.Configuration
             var font = service.FontOptions;
             Assert.IsNotNull(font, "The font options are null");
 
-            Assert.IsFalse(font.UseSystemFonts, "Use System Foints is not false");
+            Assert.IsTrue(font.UseSystemFonts, "Use System Foints is not false");
             Assert.IsTrue(font.FontSubstitution, "Use Font Substitution is not true");
             Assert.IsFalse(string.IsNullOrEmpty(font.DefaultDirectory), "The default font directory is not provided");
-            Assert.AreEqual("/Users/RichardHewitson/Library/Fonts", font.DefaultDirectory, "The default font directory is not '/Users/RichardHewitson/Library/Fonts'");
-            Assert.AreEqual("Segoe UI", font.DefaultFont, "The default font is not 'Arial'");
+            Assert.AreEqual("Mocks/Fonts/Avenir", font.DefaultDirectory, "The default font directory is not '/Users/RichardHewitson/Library/Fonts'");
+            Assert.AreEqual("Avenir Next Condensed", font.DefaultFont, "The default font is not 'Avenir Next Condensed'");
 
-            //Should be 5 registered fonts - 4 x Gill Sans and a Dingbats Regular
+            //Should be 3 registered fonts
             Assert.IsNotNull(font.Register, "The font register should not be null");
-            Assert.AreEqual(3, font.Register.Length, "There are not 5 registered fonts");
+            Assert.AreEqual(3, font.Register.Length, "There are not 3 registered fonts");
 
             var family = "Segoe UI";
             var style = System.Drawing.FontStyle.Regular;
@@ -146,13 +146,13 @@ namespace Scryber.Core.UnitTests.Configuration
             var fileExt = ".ttf";
             var fileName = "segoeui";
 
-            //Gill Sans Regular
+            //Segoe UI Regular
             var option = font.Register[0]; 
             Assert.AreEqual(family, option.Family);
             Assert.AreEqual(style, option.Style);
             Assert.AreEqual(fileStem + fileName + fileExt, option.File);
 
-            // Gill Sans Bold
+            // Segoe UI Bold
             option = font.Register[1]; 
             style = System.Drawing.FontStyle.Bold;
 
@@ -160,13 +160,14 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(style, option.Style);
             Assert.AreEqual(fileStem + fileName + "b" + fileExt, option.File);
 
-            // Gill Sans Bold
+            // Segoe UI Bold
             option = font.Register[2];
             style = System.Drawing.FontStyle.Italic;
 
             Assert.AreEqual(family, option.Family);
             Assert.AreEqual(style, option.Style);
             Assert.AreEqual(fileStem + fileName + "i" + fileExt, option.File);
+
 
         }
 
@@ -271,7 +272,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 caught = true;
             }
@@ -315,7 +316,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 caught = true;
             }
@@ -325,7 +326,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
 
         [TestMethod()]
-        public void DyanamicImage_Test()
+        public void DynamicImage_Test()
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
@@ -359,6 +360,9 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
             
         }
+
+
+
 
     }
 }

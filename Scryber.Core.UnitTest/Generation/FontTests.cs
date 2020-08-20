@@ -125,11 +125,7 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.IsNotNull(zapf, "Zapf is null");
             Assert.IsNotNull(sym, "Symbol is null");
 
-            //Assert.IsTrue(hel.Definition.IsStandard, "Helvetica not standard");
-            //Assert.IsTrue(times.Definition.IsStandard, "Times not standard");
-            //Assert.IsTrue(cour.Definition.IsStandard, "Courier not standard");
-            //Assert.IsTrue(zapf.Definition.IsStandard, "Zaph not standard");
-            //Assert.IsTrue(sym.Definition.IsStandard, "Symbol not standard");
+          
 
         }
 

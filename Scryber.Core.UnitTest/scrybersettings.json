@@ -34,10 +34,10 @@
       ]
     },
     "Fonts": {
-      "DefaultDirectory": "/Users/RichardHewitson/Library/Fonts",
-      "UseSystemFonts": "false",
+      "DefaultDirectory": "Mocks/Fonts/Avenir",
+      "UseSystemFonts": "True",
       "FontSubstitution": "true",
-      "DefaultFont": "Segoe UI",
+      "DefaultFont": "Avenir Next Condensed",
       "Register": [
         {
           "Family": "Segoe UI",
