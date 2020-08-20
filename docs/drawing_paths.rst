@@ -157,9 +157,26 @@ horizontally and vertically.
 Polygon vertices
 -----------------
 
+A polygon is rendered using the points calculated on the vertices distributed evenly around an elipse that would fit within the space available.
+
+There are 2 options that control the shape points that are rendered, 
+
+* the `vertex-count` that dictates the number of points on the shape
+* The `vertex-step` that dictates the offset to the next point moved to for drawing.
+
+The default for the step is 1, which will draw a regular polygon. Increasing the step will create more of a star like shape.
+
+Line options
+-------------
+
+The stroke style also supports the ending and join options for Butt, Round and Projecting, that will alter the way lines and vertices are rendered.
+The stroke style mitre limit (0 - 1) defines the angle at which the Projecting or Round will convert to a Butt ending. So the shape does not extend too far.
+
 
 Specifying a location
 =====================
+
+The location (x and y) of a shape will automatically change the position mode to relative.
 
 
 Drawing paths

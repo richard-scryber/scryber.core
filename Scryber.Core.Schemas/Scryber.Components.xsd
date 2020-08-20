@@ -598,6 +598,31 @@
   <xs:element name="Blockquote" type="BlockContentType" substitutionGroup="base:ScryberContentBase" />
   <xs:element name="Canvas" type="BlockContentType" substitutionGroup="base:ScryberContentBase" />
 
+
+  
+  <!-- 
+    Html Fragment
+  -->
+
+  <xs:complexType name="HtmlFragmentType" mixed="true" >
+    <xs:complexContent>
+      <xs:extension base="base:ScryberContentBaseType" >
+        <xs:sequence>
+          <xs:any namespace="##other" minOccurs="0" maxOccurs="1" processContents="skip" />
+        </xs:sequence>
+        <xs:attributeGroup ref="PageElementAttributes" />
+        <xs:attributeGroup ref="style:InlineElementStyleAttributes" />
+        <xs:attributeGroup ref="style:PanelStyleAttributes" />
+        <xs:attribute name="contents" type="BindableStringType" use="optional" form="unqualified" />
+        <xs:attribute name="source" type="BindableStringType" use="optional" form="unqualified" />
+        <xs:attribute name="unencode" type="BindableBooleanType" use="optional" form="unqualified" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="HtmlFragment" type="HtmlFragmentType" substitutionGroup="base:ScryberContentBase" />
+  
+
   <!-- 
       LayerGroups and Layers
   -->
