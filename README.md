@@ -26,9 +26,11 @@ The full documentation is available here
 
 [scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
 
-## Hello World
+## Hello World Plus
 
-Create your template pdfx (xml) file.
+Just a bit more than a hello world example.
+
+### Create your template pdfx (xml) file.
 
 ```xml
 <?xml version='1.0' encoding='utf-8' ?>
@@ -63,7 +65,7 @@ Create your template pdfx (xml) file.
 </pdf:Document>
 ```
 
-From your application code.
+### From your application code.
 
 ```cs
 //using Scryber.Components
@@ -80,7 +82,7 @@ static void Main(string[] args)
 }
 ```
 
-Or from an MVC web application
+### Or from an MVC web application
 
 ```cs
 //using Scryber.Components
@@ -98,6 +100,8 @@ public IActionResult HelloWorld(string title = "Hello World from Scryber")
     }
 }
 ```
+
+### And the output
 
 ![Hello World Output](docs/images/helloworld.png)
 
