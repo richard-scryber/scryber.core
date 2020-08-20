@@ -12,6 +12,17 @@ Binding in xml allows you to quickly load data from many sources and output to P
 
 ## Getting Started
 
+The easiest way is to use the Nuget Packages here
+
+[scryber.core package](https://www.nuget.org/packages/scryber.core/)
+(Base libraries for GUI or console applications)
+
+OR
+
+[scryber.core.mvc package](https://www.nuget.org/packages/scryber.core.mvc/)
+(Which includes the scryber.core package).
+
+Create your template pdfx (xml) file.
 
 ```xml
 <?xml version='1.0' encoding='utf-8' ?>
@@ -39,7 +50,7 @@ Binding in xml allows you to quickly load data from many sources and output to P
 
 </pdf:Document>
 ```
-
+From your code.
 
 ```cs
 //using Scryber.Components
@@ -51,6 +62,23 @@ static void Main(string[] args)
         doc.Params["Title"] = "Hello World from Scryber";
         doc.Pages[0].Contents.Add(new PDFLabel(){ Text = "My Content" });
         doc.ProcessDocument("[output file].pdf");
+    }
+}
+```
+
+Or from an MVC web application
+
+```cs
+//using Scryber.Components
+//using Scryber.Components.Mvc
+
+public IActionResult HelloWorld(string title)
+{
+   using(var doc = PDFDocument.ParseDocument("[input template].pdfx"))
+    {
+        doc.Params["Title"] = title;
+        doc.Pages[0].Contents.Add(new PDFLabel(){ Text = "My Content" });
+        return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
     }
 }
 ```
