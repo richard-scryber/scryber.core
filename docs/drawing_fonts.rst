@@ -555,7 +555,7 @@ Scryber doesn't currently support Right to left (or vertical) typography. At the
 anywhere due to limitiations in postscript and the pdf document. But we will keep trying.
 
 Font Configuration Options
-============
+===========================
 
 
 Missing Font Fallback
@@ -656,7 +656,7 @@ Setting the UseSystemFonts flag to false will stop this behaviour and only use e
 or the explicit fonts. 
 If you are not sure if your fonts will be there, set this up and make them explicit.
 
-By specifiying a default firectory for your fonts you can add them to your deployments and standardise the output.
+By specifiying a default directory for your fonts you can add them to your deployments and standardise the output.
 
 Explicit Fonts
 --------------
@@ -667,7 +667,7 @@ users will never have on their system, they do not need to be installed at the O
 Changing the default font
 -------------------------
 
-As we can see from the options above, it is also possible to set a different font as the default used by documents.
+As we can see from the options below, it is also possible to set a different font as the default used by documents.
 This can be any of the System fonts, Other fonts from the font folder, or explicitly registered fonts can be the default.
 And also changed direclty within the application.
 
@@ -706,7 +706,7 @@ And finally an explict version for the Ultra light Italic, that was not being re
 
 .. image:: images/drawingFontsCustomSoln.png
 
-If we generate a document now we can see the updated output
+If we generate the document below now we can see the output with the included fonts.
 
 .. code-block:: xml
 
@@ -749,6 +749,8 @@ If we generate a document now we can see the updated output
     </pdf:Document>
 
 .. image:: images/drawingFontsCustom.png
+
+It's now possible to have complete control of the fonts available to the application from the :doc:`scryber_configuration`
 
 
 

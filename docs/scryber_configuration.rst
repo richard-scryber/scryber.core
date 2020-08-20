@@ -1,5 +1,5 @@
-=========================
-Configuration Opions - td
-==========================
+============================
+Scryber Configuration Opions
+============================
 
 Content coming soon
