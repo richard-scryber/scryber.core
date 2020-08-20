@@ -12,7 +12,7 @@ Binding in xml allows you to quickly load data from many sources and output to P
 
 ## Getting Started
 
-The easiest way is to begin is to use the Nuget Packages here
+The easiest way to begin is to use the Nuget Packages here
 
 [scryber.core package](https://www.nuget.org/packages/scryber.core/)
 (Base libraries for GUI or console applications)
