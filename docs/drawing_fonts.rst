@@ -705,6 +705,7 @@ We then have another that is in the named directory.
 And finally an explict version for the Ultra light Italic, that was not being recognised.
 
 .. image:: images/drawingFontsCustomSoln.png
+    :width: 300
 
 If we generate the document below now we can see the output with the included fonts.
 
@@ -733,13 +734,15 @@ If we generate the document below now we can see the output with the included fo
         <Content>
         
             <pdf:Div styles:class="std-font" >
-                <pdf:Span>The new detault font is now updated and used when nothing is set, supporting the <pdf:B>bold version as well</pdf:B></pdf:Span>
+                <pdf:Span>The new detault font is now updated and used when nothing is set, supporting 
+                the <pdf:B>bold version as well</pdf:B></pdf:Span>
             </pdf:Div>
             <pdf:Div styles:class="std-font" styles:font-family="DIN" >
                 <pdf:Span>This is using the custom named font explicitly loaded.</pdf:Span>
             </pdf:Div>
             <pdf:Div styles:class="std-font" styles:font-family="Avenir Next Condensed Ultra Light" >
-                <pdf:Span>This is the ultra light version <pdf:I> and italic, that was a bit of an issue loading.</pdf:I></pdf:Span>
+                <pdf:Span>This is the ultra light version <pdf:I> and italic, 
+                that was a bit of an issue loading.</pdf:I></pdf:Span>
             </pdf:Div>
 
         </Content>
