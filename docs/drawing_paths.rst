@@ -176,8 +176,77 @@ The stroke style mitre limit (0 - 1) defines the angle at which the Projecting o
 Specifying a location
 =====================
 
-The location (x and y) of a shape will automatically change the position mode to relative.
+Shapes obey the same rules as other block level components when it comes to positioning (see :doc:`component_positioning`)
 
+The location (x and y) of a shape will automatically change the position mode to relative.
+Applying a position mode of absolute will take the shape completely out of the flow of the document.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+
+        <styles:Style applied-type="pdf:Div" >
+            <styles:Padding all="10pt"/>
+            <styles:Margins bottom="10pt" />
+            <styles:Background color="#AAA"/>
+        </styles:Style>
+
+        <!-- Values set on the styles class-->
+        <styles:Style applied-class="red" >
+            <styles:Padding top="5pt" bottom="5pt" />
+            <styles:Stroke color="red" width="3pt"/>
+        </styles:Style>
+
+        <styles:Style applied-class="small" >
+            <styles:Size width="40pt" height="40pt"/>
+            <styles:Fill color="lime"/>
+        </styles:Style>
+
+        <!-- A relative position-->
+        <styles:Style applied-class="relative" >
+            <styles:Position mode="Relative" x="200pt" y="80pt"/>
+        </styles:Style>
+
+        <!-- An absolute position -->
+        <styles:Style applied-class="absolute" >
+            <styles:Position mode="Absolute" x="400pt" y="160pt"/>
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+
+        <pdf:Page styles:margins="20pt" >
+        <Content>
+            <pdf:Div styles:bg-color="#AAA" >
+                This is some content<pdf:Br/>
+
+                <!-- relatively positioned shapes -->
+                <pdf:Rect styles:class="red small relative" />
+                <pdf:Ellipse styles:class="red small relative" 
+                            styles:x="220pt" styles:fill-opacity="0.5" ></pdf:Ellipse>
+                
+                <!-- absolutely positioned shapes -->
+                <pdf:Poly styles:class="small absolute" 
+                            styles:vertex-count="5" styles:vertex-step="2" />
+                <pdf:Poly styles:class="small absolute" styles:x="440pt"
+                            styles:vertex-count="10" styles:vertex-step="3" />
+
+                <pdf:Br/>After the line.
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
+
+
+.. image:: images/drawingPathsPositioned.png
 
 Drawing paths
 =============

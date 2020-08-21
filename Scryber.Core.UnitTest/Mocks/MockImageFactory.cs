@@ -1,32 +1,25 @@
 ﻿using System;
-using System.Security.Policy;
 using Scryber.Drawing;
 using System.Drawing;
-using System.Security.Cryptography;
 
 namespace Scryber.UnitTests.Mocks
 {
     public class MockImageFactory : IPDFImageDataFactory
     {
-        
-
-        public MockImageFactory()
-        {
-        }
             
         public bool ShouldCache { get { return false; } }
 
         public PDFImageData LoadImageData(IPDFDocument document, IPDFComponent owner, string path)
         {
             
-
             try
             {
                 var uri = new Uri(path);
                 var param = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
                 var name = System.IO.Path.GetFileNameWithoutExtension(param);
 
-                // Standard System.Drawing routines
+                // Standard System.Drawing routines to draw a bitmap
+                // could load an image from SQL, use parameters, whatever is needed
 
                 Bitmap bmp = new Bitmap(300, 100);
                 using (Graphics graphics = Graphics.FromImage(bmp))
