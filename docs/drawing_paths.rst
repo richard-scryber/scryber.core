@@ -251,10 +251,89 @@ Applying a position mode of absolute will take the shape completely out of the f
 Drawing paths
 =============
 
-Canvases and Groups
-===================
+Scryber supports the use of bezier paths for the creation of the complex curves and shapes.
+The format of the drawing data (d) is exacly the same as the **svg** drawing operations.
 
+* M = moveto
+* L = lineto
+* H = horizontal lineto
+* V = vertical lineto
+* C = curveto
+* S = smooth curveto
+* Q = quadratic Bézier curve
+* T = smooth quadratic Bézier curveto
+* A = elliptical Arc
+* Z = closepath
+
+See below for using the path data.
+
+Canvases
+========
+
+A canvas is a panel that has an overflow set to clip and will place all components automatically in relatively positioned mode.
+As such without an x or y location they will all appear at the top left.
+
+It makes it ideal as a drawing surface.
+
+The example below was mapped directly from the W3 Schools Svg paths 2 sample.
+`https://www.w3schools.com/graphics/tryit.asp?filename=trysvg_path2`_
+
+There are many other examples of the use of svg paths, that can be mapped directly to paths.
+
+.. note:: Yes we are! We support html import and are actively looking at brining in svg.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <Styles>
+
+        <styles:Style applied-type="pdf:Div" >
+            <styles:Padding all="10pt"/>
+            <styles:Margins bottom="10pt" />
+            <styles:Background color="#AAA"/>
+        </styles:Style>
+
+    </Styles>
+    <Pages>
+
+        <pdf:Page styles:margins="20pt" >
+        <Content>
+            <pdf:Div styles:bg-color="#AAA" >
+                This is some content<pdf:Br/>
+
+                <!-- relatively positioned shapes -->
+                <pdf:Canvas styles:width="450" styles:height="400" styles:border-color="black" styles:bg-color="white">
+
+                    <pdf:Path d="M 100 350 l 150 -300" styles:stroke-color="red" styles:stroke-width="3" ></pdf:Path>
+                    <pdf:Path d="M 250 50 l 150 300" styles:stroke-color="red" styles:stroke-width="3" ></pdf:Path>
+
+                    <pdf:Path d="M 175 200 l 150 0" styles:stroke-color="green" styles:stroke-width="3" ></pdf:Path>
+
+                    <pdf:Path d="M 100 350 q 150 -300 300 0" styles:stroke-color="black" styles:fill-style="None" styles:stroke-width="3" ></pdf:Path>
+
+                    <pdf:Ellipse styles:x="97" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black" />
+                    <pdf:Ellipse styles:x="247" styles:y="47" styles:width="6" styles:height="6" styles:fill-color="black"  />
+                    <pdf:Ellipse styles:x="397" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black"  />
+
+                    <pdf:Label text="A" styles:x="75" styles:y="350" styles:font-bold="true" styles:font-size="30" />
+                    <pdf:Label text="B" styles:x="240" styles:y="15" styles:font-bold="true" styles:font-size="30" />
+                    <pdf:Label text="C" styles:x="400" styles:y="350" styles:font-bold="true" styles:font-size="30" />
+                </pdf:Canvas>
+                After the canvas.
+            </pdf:Div>
+
+        </Content>
+        </pdf:Page>
+    </Pages>
+
+    </pdf:Document>
 
 Fills and Repeats
 =================
 
+All closed shapes support the use of Solid or Repeating image fills.
+See :doc:`drawing_images` for more.
