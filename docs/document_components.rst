@@ -62,7 +62,7 @@ Standard structural components
 
 See :doc:`component_positioning` for use of the span and div;
 :doc:`compontent_textblocks` for use of the headings, paragraphs, preformatted and blocks;
-:doc:`referecing_files` for use of the Component-Ref and :doc:`drawing_paths` on the Canvas.
+:doc:`referencing_files` for use of the Component-Ref and :doc:`drawing_paths` on the Canvas.
 
 
 Textual components
@@ -71,7 +71,7 @@ Textual components
 * Text
     * A text literal compenent where the text can be set to the @value attribute.
     * Supports full data binding.
-    
+
 * Number
     * A litteral component that supports numeric values (@value attribute as well as number formatting (@styles:number-format)
     * Can display numbers in any of the standard floating point, currency and integral types.

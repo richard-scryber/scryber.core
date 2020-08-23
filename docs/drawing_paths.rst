@@ -1,5 +1,5 @@
 ======================================
-Drawing paths and shapes - td
+Drawing paths and shapes
 ======================================
 
 Scryber includes a full drawing capability.
@@ -333,7 +333,7 @@ There are many other examples of the use of svg paths, that can be mapped direct
     </pdf:Document>
 
 
-,, image:: images/drawingPathsBezier.png
+.. image:: images/drawingPathsBezier.png
 
 Fills and Repeats
 =================
