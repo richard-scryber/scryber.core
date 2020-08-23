@@ -10,70 +10,59 @@ Document level visual components
 * Page
     * A single page, where content that will extend beyond the boundaries is truncated
     * Has an optional page header and page footer, as well as content.
-    * see :doc:`reference/pdf_page`
 * Section
     * A set of pages of the same size and orientation, where content that flow onto the next page.
     * Has an optional continuation page header and footer, along with the page header, page footer and content.
-    * see :doc:`reference/pdf_section`
 * Page-Group
     * A group of pages that can have shared size, header and footer content, and style.
     * Individual pages can override as needed.
-    * see :doc:`reference/pdf_pagegroup`
 * Page-Ref
     * A reference to one of the above components in a separate file.
     * Specified via a required source attribute.
-    * see :doc:`referencing_files` and :doc:`reference/pdf_page`
+* Column break
+    * Stops the flow of content within the current region, and moves any following content onto the next available column.
+    * Can be positioned at any depth within a multicolumn layout.
+* Page break
+    * Stops the flow of content within the current page, and moves any following content onto the next available page.
+    * Can be positioned at any depth within a layout.
 
+See :doc:`document_pages` for a full use of pages, section and page breaks.
+See :doc:`document_columns` for more on the use of columns and column breaks.
 
 Standard structural components
 ==============================
 
 * Div
     * a block level component that will fill the width of the available parent.
-    * see :doc:`reference/pdf_div`
 * Span 
     * an inline compnent that can have any content including text.
-    * see :doc:`reference/pdf_span`
 * Table
-    * A grid of rows and cells (that can be spanned across columns.
-    * see :doc:`reference/pdf_table`
+    * A grid of rows and cells (that can be spanned across columns).
 * Lists
     * Ordered lists with numbering styles.
     * Unodered lists with a bullet styles.
     * Definition lists with a label and content.
-    * see :doc:`reference/pdf_list`
 * Paragraph
     * A textual (and other content), that has a more defined style than a div.
-    * see :doc:`reference/pdf_para`
 * Heading (1 to 6)
     * A textual (and other content), that is given a pre-defined style based on it's level of 1 to 6
     * H1, H2, H3, H4, H5, H6
-    * see :doc:`reference/pdf_headings`
+* Block Quote
+    * A panel with specific margins, and a left border by default.
+* Preformatted
+    * A container for pre-formatted text, that will not flow over new lines, or remove line breaks (by detault).
+* Component-Ref
+    * A reference to an external file or stream that will be injected into the page at runtime.
 * Layer-Group
     * A wrapper for a set of Layers.
     * Each layer will be relatively positioned (default to 0,0) ontop ove each other.
     * Layers can be shown and hidden as needed.
-    * see :doc:`reference/pdf_layergroup`
 * Canvas
     * A drawing panel that will by default relatively position all child components
-    * see :doc:`reference/pdf_canvas`
-* Block Quote
-    * A panel with specific margins.
-    * see :doc:`reference/pdf_blockquote`
-* Preformatted
-    * A container for pre-formatted text, that will not flow over new lines, or remove line breaks (by detault).
-    * see :doc:`reference/pdf_pre`
-* Component-Ref
-    * A reference to an external file or stream that will be injected into the page at runtime.
-    * see :doc:`referencing_files` 
-* Column break
-    * Stops the flow of content within the current region, and moves any following content onto the next available column.
-    * Can be positioned at any depth within a multicolumn layout.
-    * see :doc:`document_layout` and :doc:`reference/pdf_columnbreak`
-* Page break
-    * Stops the flow of content within the current page, and moves any following content onto the next available page.
-    * Can be positioned at any depth within a layout.
-    * see :doc:`document_layout` and :doc:`reference/pdf_pagebreak`
+
+See :doc:`component_positioning` for use of the span and div;
+:doc:`compontent_textblocks` for use of the headings, paragraphs, preformatted and blocks;
+:doc:`referecing_files` for use of the Component-Ref and :doc:`drawing_paths` on the Canvas.
 
 
 Textual components
@@ -82,34 +71,33 @@ Textual components
 * Text
     * A text literal compenent where the text can be set to the @value attribute.
     * Supports full data binding.
-    * see :doc:`reference/pdf_text`
+    
 * Number
     * A litteral component that supports numeric values (@value attribute as well as number formatting (@styles:number-format)
     * Can display numbers in any of the standard floating point, currency and integral types.
-    * see :doc:`reference/pdf_number`
+
 * Date
     * A litteral component that supports date time values (@value attribute as well as date formatting (@styles:date-format)
     * Can display dates in any of the standard localized formats.
-    * see :doc:`reference/pdf_date`
+
 * Label
     * A text literal component where the text can be set to the @text attribute.
     * Supports full data binding.
     * The only difference is a more formal distinction of purpose than text.
-    * see :doc:`reference/pdf_label`
+
 * PageNumber
     * A textual component that displays the current output page number where the component is placed.
     * Supports the use of page section counting and total document page count.
-    * see :doc:`reference/pdf_pagenumber`
+
 * PageOf
     * A textual compenent that displays the page number of a referenced component.
     * Supports the use of page section counting and total document page count.
-    * see :doc:`reference/pdf_pageof`
+
 * Link
     * A hyper link to a location within the current document, or another document, or a web resource.
     * Content within can be styled appropriately.
     * Document references can be based on ID or name.
     * Page links can be First, Previous, Next, Last or numbered.
-    * see :doc:`document_linking` and :doc:`reference/pdf_link`
 
 
 Graphical components
@@ -120,15 +108,11 @@ Graphical components
     * Supports the use of full, relative or dynamic url references.
     * Supports png, jpeg and tiff file formats.
     * Supports alpha channels where available in the source.
-    * see :doc:`drawing_images` and :doc:`reference/pdf_image`
-* Horizontal Rule
-    * A single line within the flow of the document.
-    * Can be styled as a independant component.
-    * see :doc:`reference/pdf_hr`
+
 * Line, Rect, Polygon, Ellipse, Path
     * Standard drawing components that can be used either within the flow of the content or for drawing/designs.
-    * see :doc:`drawing_paths` 
-    * and for individual components :doc:`reference/pdf_line`, :doc:`reference/pdf_rect`, :doc:`reference/pdf_ellipse`, :doc:`reference/pdf_polygon`, :doc:`reference/pdf_path`
+
+See :doc:`drawing_images` for images and :doc:`drawing_paths` for the line, rect and path componenets.
 
 
 Data visual components

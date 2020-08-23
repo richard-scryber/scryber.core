@@ -151,7 +151,7 @@ horizontally and vertically.
     </pdf:Document>
 
 
-.. image:: images/drawingPathShapes.png
+.. image:: images/drawingPathsShapes.png
 
 
 Polygon vertices
@@ -331,6 +331,9 @@ There are many other examples of the use of svg paths, that can be mapped direct
     </Pages>
 
     </pdf:Document>
+
+
+,, image:: images/drawingPathsBezier.png
 
 Fills and Repeats
 =================
