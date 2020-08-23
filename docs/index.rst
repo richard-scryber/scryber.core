@@ -123,6 +123,11 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     drawing_images
     drawing_fonts
     drawing_paths
+    component_tables
+    component_lists
+    component_textblocks
+    component_textelements
+    component_linking
     component_positioning
     component_sizing
     component_alignment
