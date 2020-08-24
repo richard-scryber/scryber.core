@@ -1,5 +1,5 @@
 ==============================
-Html content in documents - td
+Html content and Markdown - td
 ==============================
 
 Content to come.
