@@ -44,6 +44,27 @@
   </xs:complexType>
   
   <xs:element name="ForEach" type="Binding-ForEachType" substitutionGroup="base:ScryberDataSourceBase"  />
+
+  <!--
+   With
+  -->
+
+  <xs:complexType name="Binding-WithType">
+    <xs:complexContent >
+      <xs:extension base="base:ScryberDataSourceBaseType" >
+        <xs:sequence>
+          <xs:group ref="comp:AnyPageContentGroup" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="select" type="comp:BindableXPathType" use="optional" />
+        <xs:attribute name="value" type="comp:BindableAttributeType" use="optional" />
+        <xs:attribute name="datasource-id" type="xs:string" use="optional" />
+        <xs:attribute name="template" type="comp:BindableTemplateAttributeType" use="optional" />
+        <xs:attributeGroup ref="DataElementAttributes" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="With" type="Binding-WithType" substitutionGroup="base:ScryberDataSourceBase"  />
   
   <!-- 
    If

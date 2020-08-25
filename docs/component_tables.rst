@@ -1,5 +1,5 @@
 ==========================
-Tables, Row and Cells - td
+Tables, Rows and Cells
 ==========================
 
 Scryber supports the use of tables with rows, cells and allows nesting, overflow, headings, footers and 
@@ -185,7 +185,7 @@ Rows support the block styles, except margins, padding and positioning.
 
 .. image:: images/documentTablesFlow.png
 
-.. note:: Consistency can easily be created with the use of styles on the applied types of pdf:Cell, pdf:HeaderCell and pdf:FooterCell across all documents.
+.. note:: Because of the layout mechanism, repeating cells cannot be accessed or modified between intterations. The next table header is from the layout of the original.
 
 Mixed content and nesting
 =========================
@@ -319,3 +319,116 @@ pages (even if it's got a nested table. It will probably just mess up the layout
 Binding to Data
 ===============
 
+As with all things in scryber. Tables, rows and cells are fully bindable.
+It is very common to want to layout data in tables so that it can easily be compared.
+
+Tables support the use of the data binding and also data choice flow  within their structure.
+Giving a flexible, but segmented content to the document.
+
+See :doc:`binding_databinding` for more information on the data binding capabilities of scryber.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    
+    <Styles>
+
+        <styles:Style applied-class="header">
+            <styles:Size width="100pt"/>
+            <styles:Position h-align="Center"/>
+            <styles:Background color="black"/>
+            <styles:Fill color="white"/>
+        </styles:Style>
+
+        <styles:Style applied-class="first">
+            <styles:Position h-align="Center"/>
+            <styles:Size width="300pt"/>
+        </styles:Style>
+        
+    </Styles>
+    <Data>
+        
+        <!-- Custom data source that will provide the data. -->
+        <data:XMLDataSource id="Content" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
+    </Data>
+    <Pages>
+
+            <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+            <Content>
+                
+                <!-- set the current context to the DataSources element of the xml source -->
+                <data:With datasource-id="Content"  select="DataSources">
+                
+                <pdf:Table styles:margins="0 0 10 0" styles:full-width="true">
+                    <!-- Header row, not repeating -->
+                    <pdf:Header-Row styles:repeat="None"  >
+                        <pdf:Header-Cell styles:column-span="2" styles:h-align="Center" >
+                            <pdf:Image styles:class="header" src="../../Content/Images/landscape.jpg" />
+                            <pdf:Div styles:class="header" >
+                            <pdf:Text value="{xpath:@title}" />
+                            </pdf:Div>
+                        </pdf:Header-Cell>
+                    </pdf:Header-Row>
+                    
+                    <!-- Header that will repeat -->
+                    <pdf:Header-Row>
+                        <pdf:Header-Cell styles:class="first" styles:width="300pt" styles:h-align="Center">ID</pdf:Header-Cell>
+                        <pdf:Header-Cell>Name</pdf:Header-Cell>
+                    </pdf:Header-Row>
+                    
+                    <!-- Loop through each of the Entries/Entry values from the current context -->
+                    <data:ForEach value="{xpath:Entries/Entry}" >
+                    <Template>
+                        
+                        <!-- Add a choice if we have the Id attribute equal to 'ThirdID' -->
+                        <data:Choose>
+                            <data:When test="{xpath:@Id = 'ThirdID'}" >
+                                <Template>
+
+                                <pdf:Row styles:bg-color="#CCC">
+                                    <pdf:Cell styles:column-span="2" >
+                                    <pdf:Text value="{xpath:concat('This is the ',@Name,' Row with the id ',@Id)}" />
+                                    </pdf:Cell>
+                                </pdf:Row>
+
+                                </Template>
+                            </data:When>
+                            
+                            <!-- Not 'ThirdID' then do this -->
+                            <data:Otherwise>
+                                <Template>
+                                <!-- General row of 2 cells with databound content-->
+                                <pdf:Row>
+                                    <pdf:Cell styles:class="first" >
+                                    <pdf:Text value="{xpath:@Id}" />
+                                    </pdf:Cell>
+                                    <pdf:Cell>
+                                    <pdf:Text value="{xpath:@Name}" />
+                                    </pdf:Cell>
+                                </pdf:Row>
+
+                                </Template>
+                            </data:Otherwise>
+                        </data:Choose>
+                        
+                    </Template>
+                    </data:ForEach>
+                </pdf:Table>
+                
+                </data:With>
+
+            </Content>
+            </pdf:Section>
+    
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentTablesDatabound.png
+
+.. note:: Scryber also include the datagrid component that can easily create tables from datasources MUCH faster. But the foreach allows full control where needed.
