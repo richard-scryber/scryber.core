@@ -428,6 +428,28 @@ See :doc:`binding_databinding` for more information on the data binding capabili
     
     </pdf:Document>
 
+And a datasource response that results as follows
+
+.. code-block:: csharp
+
+        public IActionResult Xml()
+        {
+            var xml = new XDocument(
+                new XElement("DataSources",
+                    new XAttribute("title", "Testing Xml Datasources"),
+                    new XElement("Entries",
+                        new XElement("Entry", new XAttribute("Name", "First Xml"), new XAttribute("Id", "FirstID")),
+                        new XElement("Entry", new XAttribute("Name", "Second Xml"), new XAttribute("Id", "SecondID")),
+                        new XElement("Entry", new XAttribute("Name", "Third Xml"), new XAttribute("Id", "ThirdID")),
+                        new XElement("Entry", new XAttribute("Name", "Fourth Xml"), new XAttribute("Id", "FourthID"))
+                        )
+                    )
+                );
+            return Content(xml.ToString(), "text/xml");
+        }
+
+
+Content can be generated dynamically as per the output.
 
 .. image:: images/documentTablesDatabound.png
 
