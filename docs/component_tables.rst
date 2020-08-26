@@ -185,7 +185,7 @@ Rows support the block styles, except margins, padding and positioning.
 
 .. image:: images/documentTablesFlow.png
 
-.. note:: Because of the layout mechanism, repeating cells cannot be accessed or modified between intterations. The next table header is from the layout of the original.
+.. note:: Because of the layout mechanism, repeating cells cannot be accessed or modified between itterations. The next table header is from the layout of the original.
 
 Mixed content and nesting
 =========================
@@ -453,4 +453,4 @@ Content can be generated dynamically as per the output.
 
 .. image:: images/documentTablesDatabound.png
 
-.. note:: Scryber also include the datagrid component that can easily create tables from datasources MUCH faster. But the foreach allows full control where needed.
+.. note:: Scryber also includes the pdf:DataGrid component that can easily create tables from datasources MUCH faster. But the pdf:ForEach and pdf:Choice allow full control where needed.
