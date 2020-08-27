@@ -291,3 +291,101 @@ This can be changed using the number inset, and number alignment.
 
 Binding List items
 ==================
+
+Just as with tables and any other content , lists fully support data binding (at any level),
+ and can take data from eitehr the parameters or and explicit datasource.
+
+See :doc:`binding_databinding` for more on how to set up sources and get data into a document.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    
+        <Styles>
+
+            <styles:Style applied-class="first">
+                <styles:Position h-align="Center"/>
+                <styles:Size width="300pt"/>
+            </styles:Style>
+            
+        </Styles>
+        <Data>
+            
+            <!-- Custom data source that will provide the data. -->
+            <data:XMLDataSource id="Content" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
+        </Data>
+        <Pages>
+
+            <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+            <Content>
+                
+                <data:With datasource-id="Content"  select="DataSources">
+                
+                <pdf:H3 styles:h-align="Center" styles:margins="0 0 20 0" text="{xpath:@title}" />
+                
+                <pdf:Div styles:column-count="2" styles:padding="4pt" styles:bg-color="#CCC" >
+                    
+                    <!-- simple list binding on the Name attribute of each of the Entry(s) -->
+                    <pdf:Ol styles:number-style="UppercaseLetters" >
+                        <data:ForEach value="{xpath:Entries/Entry}" >
+                            <Template>
+                            <pdf:Li >
+                                <pdf:Text value="{xpath:@Name}" />
+                            </pdf:Li>
+                            </Template>
+                        </data:ForEach>
+                    </pdf:Ol>
+
+                    <pdf:ColumnBreak />
+                    <!-- Using a definition list with the binding. -->
+                    <pdf:Dl>
+                    <data:ForEach value="{xpath:Entries/Entry}" >
+                        <Template>
+                        <data:Choose>
+
+                            <!-- Set up the test for then we have an Id of 'ThirdID'-->
+                            <data:When test="{xpath:@Id = 'ThirdID'}" >
+                                <Template>
+
+                                    <!-- Complex content for this item -->
+                                    <pdf:Di styles:item-label="{xpath:@Id}" >
+                                        <pdf:Span styles:font-bold="true" styles:fill-color="#AA0000" >
+                                            <pdf:Text value="{xpath:concat('This is the ',@Name,' item')}" />
+                                        </pdf:Span>
+                                    </pdf:Di>
+                                </Template>
+                            </data:When>
+
+                            <!-- Just a simple item otherwise -->
+                            <data:Otherwise>
+                                <Template>
+                                    <pdf:Di styles:item-label="{xpath:@Id}" >
+                                        <pdf:Text value="{xpath:@Name}" />
+                                    </pdf:Di>
+                                </Template>
+                            </data:Otherwise>
+
+                        </data:Choose>
+                        </Template>
+                    </data:ForEach>
+
+                    </pdf:Dl>
+                </pdf:Div>
+                
+                </data:With>
+
+            </Content>
+            </pdf:Section>
+
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/documentListBinding.png
+
+
+.. note:: Scryber also includes the pdf:DataList component that can easily create ordered and unordered lists from datasources MUCH faster. But the pdf:ForEach and pdf:Choice allow full control where needed.
