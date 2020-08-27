@@ -195,6 +195,7 @@ This can be changed however is felt appropriate.
             <styles:Border color="red" sides="Bottom"/>
         </styles:Style>
 
+        <!-- Title style for the code block -->
         <styles:Style applied-type="pdf:H6" applied-class="code">
             <styles:Background color="#CCFFFF"/>
             <styles:Padding all="4pt"/>
@@ -204,6 +205,7 @@ This can be changed however is felt appropriate.
             <styles:Font family="Consolas" size="12pt" />
         </styles:Style>
         
+        <!-- Code block style dark theme -->
         <styles:Style applied-type="pdf:Pre" applied-class="code" >
             <styles:Background color="#555"/>
             <styles:Border color="black" width="1pt" />
@@ -230,7 +232,7 @@ This can be changed however is felt appropriate.
             suscipit eu vitae libero. Aenean at turpis placerat, porttitor sem quis, malesuada libero. Sed ut consequat purus, sit amet luctus ante.
             </pdf:Pre>
 
-
+            <!-- Dark theme code block with title. -->
             <pdf:H6 styles:class="code">But can be styled as needed.</pdf:H6>
             <pdf:Pre styles:class="code">
 
@@ -265,3 +267,5 @@ This can be changed however is felt appropriate.
 
 .. image:: images/documentTextPre.png
 
+
+.. note:: Scryber does not support formatting parsers for XML, CSharp, Python etc. But it may be done in the future (feel free to help :-))
