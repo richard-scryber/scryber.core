@@ -165,3 +165,103 @@ Block quotes are the same, but with 10pt margins all around, and a default font 
 
 Again these can be adjusted with styles to match requirements or designs.
 
+
+Pre(formattted)
+===============
+
+The Pre component is another text container, but the content within is laid out with white space as significant (not ignored).
+The default style is to use Courier (mono-spaced) font, and not to wrap text but overflow the container clipped to the boundaries.
+
+This can be changed however is felt appropriate.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Styles>
+
+        <!-- Style that is applied to all headings -->
+        <styles:Style applied-type="pdf:Heading">
+            <styles:Border color="silver" width="2pt" sides="Bottom" />
+            <styles:Font family="Segoe UI"/>
+            <styles:Margins bottom="20pt"/>
+        </styles:Style>
+        
+        <!-- For the red components -->
+        <styles:Style applied-class="red" >
+            <styles:Border color="red" sides="Bottom"/>
+        </styles:Style>
+
+        <styles:Style applied-type="pdf:H6" applied-class="code">
+            <styles:Background color="#CCFFFF"/>
+            <styles:Padding all="4pt"/>
+            <styles:Size full-width="true"/>
+            <styles:Margins top="10pt" bottom="0pt"/>
+            <styles:Fill color="#555"/>
+            <styles:Font family="Consolas" size="12pt" />
+        </styles:Style>
+        
+        <styles:Style applied-type="pdf:Pre" applied-class="code" >
+            <styles:Background color="#555"/>
+            <styles:Border color="black" width="1pt" />
+            <styles:Padding all="4pt"/>
+            <styles:Size full-width="true"/>
+            <styles:Margins top="0pt" bottom="10pt"/>
+            <styles:Fill color="#CCFFFF"/>
+            <styles:Font family="Consolas" size="10pt" />
+        </styles:Style>
+        
+    </Styles>
+    <Pages>
+
+        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+        <Content>
+
+            <pdf:H6>A Standard pre-formatted block, will not wrap and white space is significant.</pdf:H6>
+            <pdf:Pre>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+            
+    Nulla efficitur, dui at interdum vulputate, lorem nibh convallis sapien,
+    quis maximus arcu nunc a justo. Nunc a purus eros. Integer convallis sed est nec pharetra. Curabitur nec odio ac massa posuere
+
+            suscipit eu vitae libero. Aenean at turpis placerat, porttitor sem quis, malesuada libero. Sed ut consequat purus, sit amet luctus ante.
+            </pdf:Pre>
+
+
+            <pdf:H6 styles:class="code">But can be styled as needed.</pdf:H6>
+            <pdf:Pre styles:class="code">
+
+    [HttpGet]
+    public IActionResult DocumentXmlParameters()
+    {
+        var path = _rootPath;
+        path = System.IO.Path.Combine(path, "Views", "PDF", "DocumentXmlParameters.pdfx");
+        var doc = PDFDocument.ParseDocument(path);
+
+        doc.Params["MyTitle"] = "Xml Document Title";
+        var ele = new XElement("Root",
+                    new XElement("Entry", new XAttribute("id", "Fourth"), new XText("Fourth Name")),
+                    new XElement("Entry", new XAttribute("id", "Fifth"), new XText("Fifth Name")),
+                    new XElement("Entry", new XAttribute("id", "Sixth"), new XText("Sixth Name"))
+        );
+        
+        doc.Params["MyData"] = ele;
+        return this.PDF(doc);
+    }
+
+            </pdf:Pre>
+            <pdf:Para>After the code block</pdf:Para>
+
+        </Content>
+
+        </pdf:Page>
+    
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/documentTextPre.png
+
