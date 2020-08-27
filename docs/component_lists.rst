@@ -385,7 +385,7 @@ See :doc:`binding_databinding` for more on how to set up sources and get data in
     
     </pdf:Document>
 
-.. image:: images/documentListBinding.png
+.. image:: images/documentListsBinding.png
 
 
 .. note:: Scryber also includes the pdf:DataList component that can easily create ordered and unordered lists from datasources MUCH faster. But the pdf:ForEach and pdf:Choice allow full control where needed.
