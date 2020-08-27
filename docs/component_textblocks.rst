@@ -86,9 +86,82 @@ See :doc:`binding_databinding` for more information on sources and parameters.
 .. image:: images/documentTextHeadings.png
 
 
-Paragraphs
-===========
+Paragraphs and Quotes
+=====================
 
+Paragraphs are simply full width containers, the same as Divs, but with a top margin by default.
+Whilst they are intended to contain text, they support the same mixed content as any other container.
 
+Block quotes are the same, but with 10pt margins all around, and a default font style of italic.
 
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Styles>
+
+        <!-- Style that is applied to all headings -->
+        <styles:Style applied-type="pdf:Heading">
+            <styles:Border color="silver" width="2pt" sides="Bottom" />
+            <styles:Font family="Segoe UI"/>
+            <styles:Margins bottom="20pt"/>
+        </styles:Style>
+
+        <!-- Just for the H4 components -->
+        <styles:Style applied-type="pdf:H4" >
+            <styles:Fill color="red" />
+        </styles:Style>
+        
+        <!-- For the red components -->
+        <styles:Style applied-class="red" >
+            <styles:Border color="red" sides="Bottom"/>
+        </styles:Style>
+        
+    </Styles>
+    <Pages>
+
+        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+        <Content>
+
+            <pdf:Para>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla efficitur, dui at interdum vulputate, lorem nibh convallis sapien,
+                quis maximus arcu nunc a justo. Nunc a purus eros. Integer convallis sed est nec pharetra. Curabitur nec odio ac massa posuere 
+                suscipit eu vitae libero. Aenean at turpis placerat, porttitor sem quis, malesuada libero. Sed ut consequat purus, sit amet luctus ante.
+                Etiam congue purus augue, id rutrum ipsum euismod quis. Maecenas tincidunt, libero quis dapibus pharetra, justo tellus scelerisque diam,
+                quis interdum turpis ipsum id erat. Aliquam mollis at odio a maximus.
+                Morbi ac scelerisque libero, sit amet varius leo. Sed ac convallis quam.
+            </pdf:Para>
+            <pdf:Para>
+                Praesent auctor urna nec nisl sodales sagittis. Morbi nec sapien eget risus rutrum tempor. Morbi feugiat massa sapien. Duis tellus mi, 
+                aliquet in sem eu, maximus pellentesque est. Fusce at mi nulla. Donec eget laoreet sem. Donec facilisis suscipit libero sit amet faucibus.
+                Donec non ex maximus, molestie nulla vel, volutpat arcu. Duis eleifend lacus pharetra consectetur rutrum. Orci varius natoque penatibus
+                et magnis dis parturient montes, nascetur ridiculus mus. Curabitur egestas interdum fermentum. Duis at volutpat felis. Morbi eu risus
+                eget ipsum gravida luctus ut non purus. Sed sed dolor tellus. Suspendisse a diam dui.
+            </pdf:Para>
+            <pdf:Blockquote>
+                Suspendisse potenti. Etiam porttitor, sem in cursus interdum, arcu tortor viverra elit, non placerat augue sem et leo. 
+                Phasellus venenatis arcu non ipsum finibus, ut iaculis massa ullamcorper. 
+                Praesent leo enim, tempus non leo vitae, iaculis viverra odio.
+            </pdf:Blockquote>
+            <pdf:Para>
+                Aliquam imperdiet ante nec tempor rutrum. Nulla finibus, felis ut venenatis tempus, magna orci elementum ante, eu faucibus lorem est nec neque. 
+                Suspendisse nibh purus, egestas et ante quis, dictum blandit diam. Duis mattis volutpat augue convallis facilisis. Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. 
+                Fusce commodo aliquet cursus. 
+            </pdf:Para>
+            
+        </Content>
+        
+        </pdf:Page>
+    
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/documentTextParas.png
+
+Again these can be adjusted with styles to match requirements or designs.
 
