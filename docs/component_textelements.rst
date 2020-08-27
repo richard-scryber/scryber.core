@@ -5,6 +5,54 @@ Labels, Dates,  Numbers and Text
 Along with text containers, Scryber also supports a range of inline 
 components for specific textual values.
 
+Label Component
+===============
+
+The pdf:Label is a texual component who's default value is an empty string. 
+It can be styled as any span and supports data binding.
+
+
+.. code-block:: xml
+
+    <pdf:Label text="{@:Label}" />
+
+
+Text Component
+===============
+
+The pdf:Text component is also available, and is **not** stylable. 
+It will simply add text to a run of characters.
+
+However, it too is fully bindable.
+
+.. code-block:: xml
+
+    <pdf:Text value="{@:Label}" />
+
+Number Component
+================
+
+The pdf:Number component is available and it can be styled 
+as any span. It supports data binding, but also the standard .Net number format
+options for converting to a string.
+
+.. code-block:: xml
+
+    <pdf:Number value="{@:Number}" styles:number-format="C" />
+
+
+Date Component
+================
+
+The pdf:Date component is available and it can be styled 
+as any span. It supports data binding, but also the standard .Net date format
+options for converting to a string.
+
+The default value is the current date and time, if not set.
+
+.. code-block:: xml
+
+    <pdf:Date value="{@:Number}" styles:date-format="D" />
 
 
 These also support all the inline style attributes associated with components (and block positioning
@@ -48,7 +96,7 @@ excetera if their position-mode is changed.
             <pdf:H5 text="Inline Text Components" styles:margins="20" />
             <pdf:Para>
                 The inline components support assignment of simple values (or even default values).<pdf:Br/>
-                For example this is a number <pdf:Number value="10" />, this is a <pdf:Label text="Label"  />, and this is the current date and time <pdf:Date />.
+                For example this is a number <pdf:Number value="10" />, this is a <pdf:Text value="Label"  />, and this is the current date and time <pdf:Date />.
             </pdf:Para>
             <pdf:Para>
                 However the real power of these components is, that they are bindable and can be explicitly styled.<pdf:Br/>
@@ -87,14 +135,5 @@ excetera if their position-mode is changed.
 .. image:: images/documentTextInline.png
 
 
-Text Component
-===============
-
-The pdf:Text component is also available, and is **not** stylable. 
-It will simply add text to a run of characters.
-
-However, it too is fully bindable.
-
-.. code-block:: xml
-
-    <pdf:Text value="{@:Label}" />
+Culture and Formats
+===================
