@@ -71,64 +71,6 @@ The entire list item will move.
 
 .. image:: images/documentLists1.png
 
-
-Definition Lists
-================
-
-Definition lists are slightly different as they use the pdf:Dl and pdf:Di components, with the item-label style value rather than a bullet or number.
-They also have a default inset of 100pt, rather than 30pt to fit the label content. 
-
-This can be changed using the number inset, and number alignment.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Pages>
-
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
-            <Content>
-                
-                <pdf:Dl styles:margins="0 0 20 0">
-                    <pdf:Di styles:item-label="First" >First Item</pdf:Di>
-                    <pdf:Di styles:item-label="Second" >Second Item</pdf:Di>
-                    <pdf:Di styles:item-label="Third" >Third Item</pdf:Di>
-                    <pdf:Di styles:item-label="Fourth" >Fourth Item</pdf:Di>
-                    <pdf:Di styles:item-label="Fifth" >Fifth Item</pdf:Di>
-                </pdf:Dl>
-
-
-                <pdf:Dl styles:number-inset="150pt" styles:number-alignment="Left">
-                    <pdf:Di styles:item-label="Long First" >First Item</pdf:Di>
-                    <pdf:Di styles:item-label="Long Second" >Second Item</pdf:Di>
-                    <pdf:Di styles:item-label="Long Third" >Third Item</pdf:Di>
-                    <pdf:Di styles:item-label="Long Fourth" >Fourth Item</pdf:Di>
-                    <pdf:Di styles:item-label="Very Long Fifth that will force a new line" >
-                        Fifth Item
-                        <pdf:Span styles:fill-color="red">
-                        With inner content,
-                        <pdf:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
-                        that flows across the page and onto a new line.
-                        </pdf:Span>
-                    </pdf:Di>
-                </pdf:Dl>
-                
-            </Content>
-        </pdf:Page>
-
-    
-    </Pages>
-    
-    </pdf:Document>
-
-
-.. image:: images/documentListDefinitions.png
-
-
-
 Overflowing list items
 ======================
 
@@ -200,13 +142,152 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
 List styles and grouping
 ========================
 
+The list number-style supports the following options.
 
-Horizontal lists
-================
+* Decimals (1, 2, 3, 4)
+* LowercaseRoman (i, ii, iii, iv)
+* UppercaseRoman (I, II, III, IV)
+* LowercaseLetters (a, b, c, d)
+* UppercaseLetters (A, B, C, D)
+* Bullets (•, •, •, •)
+* Labels (see `Definition Lists`_ below)
+* None
+
+Along with the style of the list entries, the pdf:List; pdf:Ol; pdf:Ul also support the following style options.
+
+* number-alignment - Left, Middle, Right (default), Justify. Specifies the horizontal alignment of the number based on the content.
+* number-concat - true or false. If the list is nested, a true value will concatenate the list number with the previous list.
+* number-group - A group name. Number groups follow consecutively in the whole document. By default this is blank (and not used), but can be set to any value.
+* number-inset - The space allowed to the left of the item for the bullet, number or label.
+* number-prefix - A string that appears before the number in the list item.
+* number-postfix - A string that appears after the number in the list item.
+
+For nested lists, the prefix and postfix will be honoured in any concatenation. (see below)
+
+The number-alignment and number-inset can also be applied to individual list items within any of the lists.
 
 
 Nesting Lists
 =============
+
+Lists can be nested to any level, but the overflow rule still applies. The top level item cannot be split.
+
+Using the number-concat and prefix / postfix the numbers can be built up within the lists.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Styles>
+        <styles:Style applied-type="pdf:Ol" >
+            <styles:List number-style="Decimals" number-postfix="."/>
+        </styles:Style>
+        
+        <styles:Style applied-class="inner" >
+            <styles:List number-style="LowercaseRoman" number-concat="true" number-group="lr"/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+
+        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+            <Content>
+
+                <pdf:Div styles:column-count="2" styles:height="170pt" styles:border-color="aqua">
+                
+                <pdf:Ol styles:number-alignment="Left" styles:number-inset="20pt">
+                    <pdf:Li >Decimal First Item</pdf:Li>
+                    <pdf:Li >
+                        Decimal Second Item with inner list that inherits the Ol style and adds the 'inner' list style.
+                        <pdf:Ol styles:class="inner" >
+                            <pdf:Li>First Lowercase item</pdf:Li>
+                            <pdf:Li>Second Lowercase item</pdf:Li>
+                            <pdf:Li>Third Lowercase item</pdf:Li>
+                        </pdf:Ol>
+                    </pdf:Li>
+                    <pdf:Li >Decimal Third Item</pdf:Li>
+                    <pdf:Li >Decimal Fourth Item 
+                </pdf:Li>
+                    <pdf:Li>
+                        Decimal fifth Item with continuation of the 'lr' group from the inner style
+                        <pdf:Ol styles:class="inner" >
+                            <pdf:Li styles:number-alignment="Left" styles:number-inset="100pt">Fourth Lowercase item</pdf:Li>
+                            <pdf:Li styles:number-alignment="Left" styles:number-inset="70pt">Fifth Lowercase item</pdf:Li>
+                            <pdf:Li styles:number-alignment="Left" styles:number-inset="30pt">Sixth Lowercase item</pdf:Li>
+                        </pdf:Ol>
+                    </pdf:Li>
+                </pdf:Ol>
+                </pdf:Div>
+                
+            </Content>
+         </pdf:Page>
+
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentListNested.png
+
+
+Definition Lists
+================
+
+Definition lists are slightly different as they use the pdf:Dl and pdf:Di components, with the item-label style value rather than a bullet or number.
+They also have a default inset of 100pt, rather than 30pt to fit the label content. 
+
+This can be changed using the number inset, and number alignment.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Pages>
+
+        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+            <Content>
+                
+                <pdf:Dl styles:margins="0 0 20 0">
+                    <pdf:Di styles:item-label="First" >First Item</pdf:Di>
+                    <pdf:Di styles:item-label="Second" >Second Item</pdf:Di>
+                    <pdf:Di styles:item-label="Third" >Third Item</pdf:Di>
+                    <pdf:Di styles:item-label="Fourth" >Fourth Item</pdf:Di>
+                    <pdf:Di styles:item-label="Fifth" >Fifth Item</pdf:Di>
+                </pdf:Dl>
+
+
+                <pdf:Dl styles:number-inset="150pt" styles:number-alignment="Left">
+                    <pdf:Di styles:item-label="Long First" >First Item</pdf:Di>
+                    <pdf:Di styles:item-label="Long Second" >Second Item</pdf:Di>
+                    <pdf:Di styles:item-label="Long Third" >Third Item</pdf:Di>
+                    <pdf:Di styles:item-label="Long Fourth" >Fourth Item</pdf:Di>
+                    <pdf:Di styles:item-label="Very Long Fifth that will force a new line" >
+                        Fifth Item
+                        <pdf:Span styles:fill-color="red">
+                        With inner content,
+                        <pdf:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
+                        that flows across the page and onto a new line.
+                        </pdf:Span>
+                    </pdf:Di>
+                </pdf:Dl>
+                
+            </Content>
+        </pdf:Page>
+
+    
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentListDefinitions.png
+
+
 
 Binding List items
 ==================
