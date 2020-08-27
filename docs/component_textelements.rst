@@ -137,3 +137,12 @@ excetera if their position-mode is changed.
 
 Culture and Formats
 ===================
+
+The use of numbers and dates in a template, can be affected by the culture of the OS.
+Whether that is numbers directly entered, or bound to the data.
+
+This can be critical for the creation of dates and numbers.
+
+Scryber supports the `parsing-culture` on the scryber processing instruction that alters the reading an loading of dates etc.
+See :doc:`document_structure` for more information.
+
