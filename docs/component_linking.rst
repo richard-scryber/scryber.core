@@ -10,13 +10,14 @@ The Link Component
 ==================
 
 A `pdf:Link` is an invisible component, although styles will be applied to content within it.
-There are 4 propoerties that determine what happens when the content within the link is clicked.
+There are 4 properties that determine what happens when the content within the link is clicked.
 
 * action - This defines the primary type of link action to perform, each section below describes each type of action.
 * file - If set, then the link is an action for a different document or Url. Effectively like the href of an anchor tag in html.
 * destination - If set then this is the location within the current or other file to show. Like the #name on a Url
 * destination-fit - If set, it defines the fit type for the link (full page, width, height, or bounds).
 
+The content within a link can be anything, including images; text; canvas(es) and more. There can also be more than one component within the link.
 
 Page Navigation Link
 =====================
@@ -105,7 +106,7 @@ Linking within documents
 ===========================
 
 When navigating around the documment, scryber supports the direct linking to a specific page or component using the `destination` attribute.
-When using ID's as the destination referencen, prefix with a #. Otherwise any desinations will be treated as a name.
+When using ID's as the destination reference, prefix with a #. Otherwise any desinations will be treated as a name.
 
 It is also possible to assign a destination-fit value, to indicate how the page or component should be presented on the reader window when navigated to.
 The supported values are
@@ -115,6 +116,7 @@ The supported values are
 * PageHeight - the whole height of the page will be shown, and the destination visible within that window.
 * BoundingBox - the bounding box of the component referenced will fill the window as fully as possible.
 
+The below example is quite complex, but shows how to build a basic table of contents. It could also be databound.
 
 .. code-block:: xml
 
@@ -135,6 +137,7 @@ The supported values are
         <styles:Style applied-class="tab-fill" >
             <styles:Stroke dash="Sparse-Dot"/>
             <styles:Position mode="Inline" />
+            <!-- hack to push the line down to the baseline -->
             <styles:Padding top="12pt"/>
         </styles:Style>
 
