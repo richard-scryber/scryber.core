@@ -348,8 +348,8 @@ namespace Scryber.Layout
         {
             PDFLayoutComponentRun comprun = new PDFLayoutComponentRun(this, comp, style);
             this.Runs.Add(comprun);
+
             total = total.Offset(this.Width, this.OffsetY);
-            
             comprun.InitSize(total, border, content, options);
             
             comprun.Close();

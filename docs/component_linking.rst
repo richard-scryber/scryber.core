@@ -101,6 +101,140 @@ It does not matter what page they are put on, they will perform the action if po
 .. note:: Some of the browser pdf readers do not support the naviagional links. Readers do.
 
 
-Linking to other Components
+Linking within documents
 ===========================
+
+When navigating around the documment, scryber supports the direct linking to a specific page or component using the `destination` attribute.
+When using ID's as the destination referencen, prefix with a #. Otherwise any desinations will be treated as a name.
+
+It is also possible to assign a destination-fit value, to indicate how the page or component should be presented on the reader window when navigated to.
+The supported values are
+
+* FullPage - the entire page will be visible.
+* PageWidth - the whole width of the page will be shown, and the destination visible within that window.
+* PageHeight - the whole height of the page will be shown, and the destination visible within that window.
+* BoundingBox - the bounding box of the component referenced will fill the window as fully as possible.
+
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+ 
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+
+
+    <Styles>
+
+        <styles:Style applied-type="pdf:Link" >
+            <styles:Font bold="true"/>
+            <styles:Fill color="navy"/>
+        </styles:Style>
+
+        <styles:Style applied-class="tab-fill" >
+            <styles:Stroke dash="Sparse-Dot"/>
+            <styles:Position mode="Inline" />
+            <styles:Padding top="12pt"/>
+        </styles:Style>
+
+        <styles:Style applied-type="pdf:Cell">
+            <styles:Border style="None"/>
+            <styles:Padding left="0" right="0"/>
+        </styles:Style>
+
+        <styles:Style applied-class="pg-num" >
+            <styles:Position h-align="Left" />
+            <styles:Padding left="0"/>
+        </styles:Style>
+    </Styles>
+    
+        <Pages>
+            <pdf:Page styles:padding="20pt" styles:font-size="12pt" >
+            <Content>
+                <pdf:H1 styles:margins="0 0 30pt 0">Title Page</pdf:H1>
+                
+                <pdf:Table styles:full-width="true">
+                    <!-- Just a header cell spanning both columns -->
+                    <pdf:Header-Row styles:class="toc-head" >
+                        <pdf:Header-Cell styles:column-span="2" >
+                        Table of Contents
+                        </pdf:Header-Cell>
+                    </pdf:Header-Row>
+                    
+                    <!-- First content page by ID -->
+                    <pdf:Row>
+                        <pdf:Cell>
+                            First Page
+                            <pdf:Line styles:class="tab-fill" ></pdf:Line>
+                        </pdf:Cell>
+                        <pdf:Cell styles:width="50pt">
+                            <pdf:Link destination="#Page1" >
+                                <pdf:PageOf component="#Page1" />
+                            </pdf:Link>
+                        </pdf:Cell>
+                    </pdf:Row>
+
+                    <!-- Second content page by name (full width) -->
+                    <pdf:Row>
+                        <pdf:Cell>
+                            Second Page
+                            <pdf:Line styles:class="tab-fill" ></pdf:Line>
+                        </pdf:Cell>
+                        <pdf:Cell>
+                            <pdf:Link destination="SecondPage" destination-fit="FullPage" >
+                                <pdf:PageOf component="SecondPage" />
+                            </pdf:Link>
+                        </pdf:Cell>
+                    </pdf:Row>
+
+                    <!-- Adding a link directly to a component within the page
+                        that will navigate to fill the screen -->
+                    <pdf:Row>
+                        <pdf:Cell>
+                            Specific Content
+                            <pdf:Line styles:class="tab-fill" ></pdf:Line>
+                        </pdf:Cell>
+                        <pdf:Cell>
+                            <pdf:Link destination="#Div3" destination-fit="BoundingBox" >
+                                <pdf:PageOf component="#Div3" />
+                            </pdf:Link>
+                        </pdf:Cell>
+                    </pdf:Row>
+                
+                </pdf:Table>
+                
+            </Content>
+            </pdf:Page>
+
+            <!-- Reset the page numbering index -->
+            <pdf:Section styles:page-number-start-index="1">
+            <Content>
+                <pdf:Span id="Page1"  >Content on page 1</pdf:Span>
+                <pdf:PageBreak/>
+                
+                <pdf:Span id="Page2" name="SecondPage" >Content on page 2</pdf:Span>
+                <pdf:PageBreak/>
+                
+                <!-- A small div relatively positioned on the page-->
+                Content 3
+                <pdf:Div id="Div3" styles:width="100" styles:height="100" styles:x="100" styles:y="100"
+                        styles:bg-color="black" styles:fill-color="white" styles:font-size="10pt"
+                        styles:padding="20pt">
+                    Small Content on the page
+                </pdf:Div>
+            </Content>
+            </pdf:Section>
+    
+    </Pages>
+    
+    </pdf:Document>
+
+.. image:: images/documentLinksDestination.png
+
+.. note:: Some of the browser pdf readers do not support the naviagional links. Reader applications generally do.
+
+
+External Links
+==============
 

@@ -258,7 +258,7 @@ namespace Scryber.Core.UnitTests.Configuration
       </Content>
     </pdf:Page>
   </Pages>
-
+    
 </pdf:Document>";
 
             bool caught = false;

@@ -8,8 +8,8 @@
     <owners>richard@scryber.co.uk</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Scryber.Core.Schemas</description>
-    <summary>The xml schema files for the Scryber Core Library</summary>
-    <releaseNotes></releaseNotes>
+    <summary>The xml schema files for the Scryber.Core Library</summary>
+    <releaseNotes>v1.0.0.24</releaseNotes>
     <copyright>Richard Hewitson 2020</copyright>
     <language></language>
     <tags>Scryber; PDF; Schemas</tags>
