@@ -79,6 +79,13 @@ Low code, zero code development
 Scryber is based around xml templates - just like XHTML. It can be transformed, it can be added to,
 and it can be dynamic built. By design we minimise errors, reduce effort and allow reuse.
 
+Html Content and Remote sources
+-------------------------------
+
+Scryber can use native html content and layout neatly and easily within pages.
+It also supports the use of inline and class styles.
+
+
 Binding to your data
 --------------------
 
@@ -87,9 +94,6 @@ and complex data to your document, or get the document to look up and bind the d
 
 Learn More
 ----------
-
-Take a look at the quick start guides on `Getting started with MVC <mvc_controller_full>`_ or
-`Getting started with GUI applications <gui_controller_full>`_ to learn more.
 
 
 .. toctree::
@@ -137,19 +141,6 @@ Take a look at the quick start guides on `Getting started with MVC <mvc_controll
     component_textelements
     component_linking
     component_html
-    
-    
-.. toctree::
-    :caption: Using Components
-    :maxdepth: 1
-
-    container_blocks
-    container_tables
-    container_lists
-    container_links
-    container_headings
-    container_code
-    container_html
 
     
 .. toctree::
