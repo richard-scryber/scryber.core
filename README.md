@@ -32,7 +32,7 @@ Just a bit more than a hello world example.
 
 ### Create your template pdfx (xml) file.
 
-```xml
+```
 <?xml version='1.0' encoding='utf-8' ?>
 <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
@@ -67,7 +67,7 @@ Just a bit more than a hello world example.
 
 ### From your application code.
 
-```cs
+```
 //using Scryber.Components
 
 static void Main(string[] args)
@@ -84,7 +84,7 @@ static void Main(string[] args)
 
 ### Or from an MVC web application
 
-```cs
+```
 //using Scryber.Components
 //using Scryber.Components.Mvc
 
