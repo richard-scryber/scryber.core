@@ -622,9 +622,17 @@ namespace Scryber.Html.Parsing
                 }
                 else if (entity[1] == HTMLEntityNumberMarker) //we have the character number
                 {
-                    int charNum;
+                    int charNum;    
 
-                    if (int.TryParse(entity.Substring(2, entity.Length - 3), out charNum))
+                    if(entity[2] == '#' && int.TryParse(entity.Substring(3, entity.Length - 4), System.Globalization.NumberStyles.HexNumber, null, out charNum))
+                    {
+                        //we are using the hex codes rather than decimal
+                        found = (char)charNum;
+                        src.MoveNext();
+                        //TODO: Tests for parsing html numbers
+                        return found;
+                    }
+                    else if (int.TryParse(entity.Substring(2, entity.Length - 3), out charNum))
                     {
                         found = (char)charNum;
                         src.MoveNext();

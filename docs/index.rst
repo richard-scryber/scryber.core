@@ -142,7 +142,15 @@ Learn More
     component_linking
     component_html
 
-    
+.. toctree::
+    :caption: Html Content
+    :maxdepth: 1
+
+    html_simple
+    html_dynamic
+    html_tags
+    html_markdown
+
 .. toctree::
     :caption: Binding to data
     :maxdepth: 1
