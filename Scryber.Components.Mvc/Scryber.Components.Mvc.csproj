@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>1.0.0.24</PackageVersion>
+    <PackageVersion>1.0.0.25</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
 
@@ -15,7 +15,14 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>v1.0.0.24
+    <PackageReleaseNotes>v1.0.0.25
+-----------------
+
+Updated support for html and markdown
+
+v1.0.0.24
+-----------------
+
 Release package for Nuget
 Updated support for missing images
 Added read me
@@ -34,6 +41,7 @@ Updated for of the Core library with atomatic inclusion of the http namespace re
     <Summary>The MVC extensions for the Scryber PDF creation library</Summary>
     <PackageTags>Scryber; PDF; dotnet core; MVC</PackageTags>
     <Title>Scryber MVC Extensions</Title>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +50,7 @@ Updated for of the Core library with atomatic inclusion of the http namespace re
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scryber.Core" Version="1.0.0.24" />
+    <PackageReference Include="Scryber.Core" Version="1.0.0.25" />
   </ItemGroup>
       
   <ItemGroup>

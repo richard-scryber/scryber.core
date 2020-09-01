@@ -616,6 +616,7 @@
         <xs:attribute name="contents" type="BindableStringType" use="optional" form="unqualified" />
         <xs:attribute name="source" type="BindableStringType" use="optional" form="unqualified" />
         <xs:attribute name="unencode" type="BindableBooleanType" use="optional" form="unqualified" />
+        <xs:attribute name="format" type="BindableHtmlFormatEnum" use="optional" form="unqualified" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

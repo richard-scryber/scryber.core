@@ -531,6 +531,17 @@
   <xs:simpleType name="BindablePageNumberingEnum" >
     <xs:union memberTypes="PageNumberingEnum BindableAttributeType" />
   </xs:simpleType>
+
+  <xs:simpleType name="HtmlFormatEnum" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Html" />
+      <xs:enumeration value="Markdown" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BindableHtmlFormatEnum" >
+    <xs:union memberTypes="HtmlFormatEnum BindableAttributeType" />
+  </xs:simpleType>
   
   <xs:simpleType name="ListNumberStyleEnum" >
     <xs:restriction base="xs:string" >
@@ -712,6 +723,7 @@
       <xs:enumeration value="None" />
     </xs:restriction>
   </xs:simpleType>
+  
   <!--
   -
   - Simple pattern restriction types

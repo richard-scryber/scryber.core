@@ -5,14 +5,18 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.24</PackageVersion>
+    <PackageVersion>1.0.0.25</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.24
+    <PackageReleaseNotes>1.0.0.25
+-----------------
+Updated and improved HTML and Markdown handling.
+
+1.0.0.24
 -------------------
 Package for release to Nuget Public
 Updated for the allow missing images option and fixed height and width for 0 resolution
@@ -53,9 +57,11 @@ Added the default namespaces to the ParsingOptions, and updated version to match
     <PackageTags>Scryber; PDF; dotnet core</PackageTags>
     <Title>Scryber</Title>
     <Description>The Scryber PDF Generation library for dotnet core 3.1
-Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and component separation in referenced files. 
-This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications. </Description>
+
+Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and referenced files easily from your Apps or MVC apps or Javascipt ajax calls.
+This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications.</Description>
     <PackOnBuild>true</PackOnBuild>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
