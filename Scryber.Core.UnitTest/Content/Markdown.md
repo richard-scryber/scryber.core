@@ -1,4 +1,4 @@
-# scryber.core
+﻿# scryber.core
 The dotnet core scryber pdf creation library
 
 ## Scryber PDF Library

@@ -1375,7 +1375,7 @@ namespace Scryber.Layout
                 PDFUnit baselineoffset = content.Height + options.Padding.Top + options.Padding.Bottom + options.Margins.Top + options.Margins.Bottom;
 
 
-                PDFUnit descenderHeight = txtOpts.Font.FontMetrics.EmHeight;
+                PDFUnit descenderHeight = txtOpts.Font.FontMetrics.Descent;
 
                 if (txtOpts.Leading.HasValue && txtOpts.Leading.Value - descenderHeight > baselineoffset)
                     baselineoffset = txtOpts.Leading.Value - descenderHeight;
