@@ -238,6 +238,64 @@ The below example is quite complex, but shows how to build a basic table of cont
 .. note:: Some of the browser pdf readers do not support the naviagional links. Reader applications generally do.
 
 
-External Links
-==============
+External Links to Urls
+======================
+
+Using the file attribute a remote link can be made to any url.
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="utf-8" ?>
+
+    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
+                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <Params>
+        <pdf:String-Param id="url2" value="https://www.google.com" />
+    </Params>
+
+    <Styles>
+        
+        <styles:Style applied-type="pdf:Link" >
+            <styles:Text decoration="Underline"/>
+            <styles:Fill color="navy"/>
+        </styles:Style>
+        
+        <styles:Style applied-type="pdf:Image" >
+            <styles:Border color="navy"/>
+            <styles:Padding all="4pt"/>
+            <styles:Margins all="10pt"/>
+            <styles:Size width="100pt"/>
+        </styles:Style>
+        
+    </Styles>
+    
+    <Pages>
+        
+        <pdf:Page styles:margins="20pt" styles:font-size="12pt">
+        <Content>
+            
+            <!-- Explicit url on the file attribute, with an action of Uri -->
+            <pdf:Link action="Uri" file="http://localhost:5000/Home" >
+                <pdf:Image src="../../Content/Images/Toroid32.png" />
+                Link to local host
+            </pdf:Link>
+            
+            <pdf:Br/>
+            <pdf:Br/>
+            
+            <!-- the action will attempt to be dermined if not defined -->
+            <pdf:Link file="{@:url2}" >
+                <pdf:Image src="../../Content/Images/Toroid32.png" />
+                Link bound to parameter
+            </pdf:Link>
+        </Content>
+        </pdf:Page>
+
+    </Pages>
+    
+    </pdf:Document>
+
+
+.. image:: images/documentLinksUrls.png
 
