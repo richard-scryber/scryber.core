@@ -101,7 +101,7 @@ Within the style attribute of each tag, the following css parts are supported.
 
 All sizes in pixels are converted to points at 72 ppi. i.e. A direct conversion of 1 pixel = 1 point.
 
-Applying style classes
+Applying styles and classes
 =======================
 
 Along with the style attribute, scryber supports the class attribute. 
@@ -125,7 +125,10 @@ Taking the content in the previous dynamic example (:doc:`html_dynamic`), classe
         }
     </table>
 
-These styles and classes can then be used in the document template to update the design
+Updated styles in a template
+==============================
+
+These styles and classes can then be used in the document template (or a referenced stylesheet) to update the design
 
 .. code-block:: xml
 
@@ -190,19 +193,31 @@ These styles and classes can then be used in the document template to update the
     
     </pdf:Document>
 
+Rendered styled content
+=======================
 With the resulting output matching the required layout
 
 .. image:: images/documentHtmlStyled.png
 
 
-HtmlComponents
-==============
+Html Components
+===============
 
 When html is parsed, the tags are converted to fully qualified scryber components in the `Scryber.Html.Components` namespace
 of the Scryber.Components library.
 
 As such it is possible to register the html prefix and associate with these components, the same as the `pdf:` prefix.
 Global styles for td, tr, field, label etc can then be made.
+
+e.g.
+
+.. code-block:: 
+    
+    <!-- xmlns:html="http://www.w3.org/1999/xhtml" -->
+
+    <styles:Style applied-type="html:td" applied-class="strong" >
+        ..
+    </styles:Style>
 
 See :doc:`namespaces_and_assemblies` for more information.
 
