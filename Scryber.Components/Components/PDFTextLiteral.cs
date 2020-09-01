@@ -87,6 +87,8 @@ namespace Scryber.Components
         {
             TextFormat format = this.ReaderFormat;
             bool preserveWhitespace = fullstyle.GetValue(PDFStyleKeys.TextWhitespaceKey, false);
+            if (preserveWhitespace)
+                context.TraceLog.Add("PreFormatted","Creating a reader with preserved white space");
 
             return PDFTextReader.Create(this.Text, format, preserveWhitespace, context.TraceLog);
         }

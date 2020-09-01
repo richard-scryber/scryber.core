@@ -245,6 +245,10 @@ namespace Scryber.Html.Parsing
             {
                 return ExtractHTMLTag();
             }
+            else if(this.IsInCode())
+            {
+                return ExtractRawContent();
+            }
             else //text characters - read to the next tag
             {
                 return ExtractTextualContent();
@@ -253,6 +257,42 @@ namespace Scryber.Html.Parsing
 
         #endregion
 
+        protected virtual bool IsInCode()
+        {
+            if (this.ParsedPath.Count > 0 && this.ParsedPath.Peek().Type == HtmlComponentType.Preformatted)
+                return true;
+            else
+                return false;
+        }
+
+        protected virtual bool ExtractRawContent()
+        {
+            var end = "</" + this.ParsedPath.Peek().Value + ">";
+            this.Buffer.Clear();
+            var start = this.Source.Offset;
+
+            while (this.Source.EOS == false && !this.Source.Matches(end))
+            {
+                this.Source.MoveNext();
+            }
+
+            var len = this.Source.Offset - start;
+
+            var content = this.Source.Substring(start, len);
+
+            IPDFComponent text = _owner.ComponentFactory.GetTextComponent(this.Parser, content);
+            ((IPDFTextLiteral)text).ReaderFormat = TextFormat.XML;
+
+            HTMLParserResult result = new HTMLParserResult(text, HtmlComponentType.Text, null, start, this.Source.Offset - 1, true);
+            this.TagsToClose.Push(result);
+            this.Current = result;
+
+            //Set the start back to the </code> or </pre>
+            this.Source.Offset -= 1;
+
+            return true;
+
+        }
         #region protected virtual bool ExtractHTMLTag()
 
         /// <summary>

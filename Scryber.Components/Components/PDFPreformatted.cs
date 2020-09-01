@@ -62,7 +62,8 @@ namespace Scryber.Components
             style.Text.WrapText = Scryber.Text.WordWrap.NoWrap;
             style.Text.PreserveWhitespace = true;
             style.Position.PositionMode = Drawing.PositionMode.Block;
-            style.Overflow.Split = Drawing.OverflowSplit.Never;
+            style.Font.FontSize = 10;
+            //style.Overflow.Split = Drawing.OverflowSplit.Never;
             return style;
         }
     }
