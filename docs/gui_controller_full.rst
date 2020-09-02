@@ -42,11 +42,11 @@ And paste the following content into the file
     </doc:Document>
 
 
-For for more information on the namespaces and mappings see this [About Namespaces](namespaces_and_assemblies) documentation
+For for more information on the namespaces and mappings see this :doc:`namespaces_and_assemblies` documentation
 
 
 Pdfx file properties
------------------
+---------------------
 
 In the file properties for the HelloWorld.pdfx file:
 Set the Build Action to None (if it is not already)
@@ -70,7 +70,7 @@ In your program.cs add the namespace to the top of your class.
 
 
 Replace your main program method.
-================================
+=================================
 
 Next change the 'Main' method to your class to load the template and generate the pdf file
 

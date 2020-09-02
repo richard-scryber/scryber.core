@@ -47,7 +47,7 @@ Your solution should look something like this.
 
 
 
-For for more information on the namespaces and mappings see this [About Namespaces](namespaces-and-assemblies) documentation
+For for more information on the namespaces and mappings see this :doc:`namespaces_and_assemblies` documentation
 
 Controller code
 ===============

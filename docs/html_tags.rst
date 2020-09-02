@@ -102,7 +102,7 @@ Within the style attribute of each tag, the following css parts are supported.
 All sizes in pixels are converted to points at 72 ppi. i.e. A direct conversion of 1 pixel = 1 point.
 
 Applying styles and classes
-=======================
+============================
 
 Along with the style attribute, scryber supports the class attribute. 
 This will be applied to the relevant component so it can use the scryber style classes.
@@ -211,7 +211,7 @@ Global styles for td, tr, field, label etc can then be made.
 
 e.g.
 
-.. code-block:: 
+.. code-block:: xml
     
     <!-- xmlns:html="http://www.w3.org/1999/xhtml" -->
 
@@ -219,5 +219,5 @@ e.g.
         ..
     </styles:Style>
 
-See :doc:`namespaces_and_assemblies` for more information.
+See :doc:`namespaces_and_assemblies` for more information and :doc:`html_markdown` for an example.
 

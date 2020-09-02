@@ -56,7 +56,7 @@ Along with appling styles directly to the components, Scryber supports the use o
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
         <Styles>
 
-            <styles:Style *applied-class="mystyle"* >
+            <styles:Style applied-class="mystyle" >
                 <styles:Margins all="20pt"/>
                 <styles:Padding all="20pt"/>
                 <styles:Font family="Arial" size="20pt"/>
