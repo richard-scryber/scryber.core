@@ -23,68 +23,68 @@ Rows and cells also support individual styles.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     
     <Styles>
 
-        <styles:Style applied-type="pdf:Cell" applied-class="strong" >
+        <styles:Style applied-type="doc:Cell" applied-class="strong" >
             <styles:Font bold="true"/>
         </styles:Style>
     </Styles>
     <Pages>
 
-        <pdf:Page styles:margins="20pt" styles:font-size="14pt">
+        <doc:Page styles:margins="20pt" styles:font-size="14pt">
             <Content>
 
                 <!-- Basic unstyled Table -->
 
-                <pdf:Table styles:margins="0 0 10 0">
-                    <pdf:Row>
-                        <pdf:Cell>Cell 1.1</pdf:Cell>
-                        <pdf:Cell>Wide Cell 1.2</pdf:Cell>
-                        <pdf:Cell>Cell 1.3</pdf:Cell>
-                    </pdf:Row>
-                    <pdf:Row>
-                        <pdf:Cell>Cell 2.1</pdf:Cell>
-                        <pdf:Cell styles:column-span="2">2 Column Cell 2.2</pdf:Cell>
-                    </pdf:Row>
-                    <pdf:Row>
-                        <pdf:Cell>Cell 3.1</pdf:Cell>
-                        <pdf:Cell>Cell 3.2</pdf:Cell>
-                        <pdf:Cell styles:width="200pt">Cell 3.3</pdf:Cell>
-                    </pdf:Row>
-                </pdf:Table>
+                <doc:Table styles:margins="0 0 10 0">
+                    <doc:Row>
+                        <doc:Cell>Cell 1.1</doc:Cell>
+                        <doc:Cell>Wide Cell 1.2</doc:Cell>
+                        <doc:Cell>Cell 1.3</doc:Cell>
+                    </doc:Row>
+                    <doc:Row>
+                        <doc:Cell>Cell 2.1</doc:Cell>
+                        <doc:Cell styles:column-span="2">2 Column Cell 2.2</doc:Cell>
+                    </doc:Row>
+                    <doc:Row>
+                        <doc:Cell>Cell 3.1</doc:Cell>
+                        <doc:Cell>Cell 3.2</doc:Cell>
+                        <doc:Cell styles:width="200pt">Cell 3.3</doc:Cell>
+                    </doc:Row>
+                </doc:Table>
 
                 <!-- Table with full width and styles -->
 
-                <pdf:Table styles:margins="0 0 10 0" styles:full-width="true">
-                <pdf:Row styles:bg-color="#CCC">
-                    <pdf:Cell styles:class="strong">Cell 1.1</pdf:Cell>
-                    <pdf:Cell>Wide Cell 1.2</pdf:Cell>
-                    <pdf:Cell styles:class="strong">Cell 1.3</pdf:Cell>
-                </pdf:Row>
-                <pdf:Row>
-                    <pdf:Cell>Cell 2.1</pdf:Cell>
-                    <pdf:Cell styles:column-span="2">2 Column Cell 2.2</pdf:Cell>
-                </pdf:Row>
-                <pdf:Row>
-                    <pdf:Cell>Cell 3.1</pdf:Cell>
-                    <pdf:Cell>Cell 3.2</pdf:Cell>
-                    <pdf:Cell styles:width="200pt">Cell 3.3</pdf:Cell>
-                </pdf:Row>
-                <pdf:Row>
-                    <pdf:Cell styles:class="strong" styles:bg-color="#CCC">Cell 4.1</pdf:Cell>
-                </pdf:Row>
-                </pdf:Table>
+                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
+                <doc:Row styles:bg-color="#CCC">
+                    <doc:Cell styles:class="strong">Cell 1.1</doc:Cell>
+                    <doc:Cell>Wide Cell 1.2</doc:Cell>
+                    <doc:Cell styles:class="strong">Cell 1.3</doc:Cell>
+                </doc:Row>
+                <doc:Row>
+                    <doc:Cell>Cell 2.1</doc:Cell>
+                    <doc:Cell styles:column-span="2">2 Column Cell 2.2</doc:Cell>
+                </doc:Row>
+                <doc:Row>
+                    <doc:Cell>Cell 3.1</doc:Cell>
+                    <doc:Cell>Cell 3.2</doc:Cell>
+                    <doc:Cell styles:width="200pt">Cell 3.3</doc:Cell>
+                </doc:Row>
+                <doc:Row>
+                    <doc:Cell styles:class="strong" styles:bg-color="#CCC">Cell 4.1</doc:Cell>
+                </doc:Row>
+                </doc:Table>
 
             </Content>
-        </pdf:Page>
+        </doc:Page>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentTables1.png
@@ -101,16 +101,16 @@ Rows support the block styles, except margins, padding and positioning.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     
     <Styles>
 
-        <styles:Style applied-type="pdf:Cell" >
+        <styles:Style applied-type="doc:Cell" >
         </styles:Style>
 
-        <styles:Style applied-type="pdf:Cell" applied-class="strong" >
+        <styles:Style applied-type="doc:Cell" applied-class="strong" >
         <styles:Font bold="true"/>
         </styles:Style>
 
@@ -120,67 +120,67 @@ Rows support the block styles, except margins, padding and positioning.
     </Styles>
     <Pages>
 
-            <pdf:Page styles:margins="20pt" styles:font-size="12pt">
+            <doc:Page styles:margins="20pt" styles:font-size="12pt">
             <Content>
 
-                <pdf:Div styles:column-count="2" styles:max-height="200pt" styles:border-color="aqua" styles:padding="2pt" >
+                <doc:Div styles:column-count="2" styles:max-height="200pt" styles:border-color="aqua" styles:padding="2pt" >
 
 
-                <pdf:Table styles:margins="0 0 10 0" styles:full-width="true">
+                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
                     
                     <!-- Header that will not repeat based on style-->
-                    <pdf:Header-Row styles:class="table-title" >
-                    <pdf:Header-Cell styles:column-span="3" >A flowing table</pdf:Header-Cell>
-                    </pdf:Header-Row>
+                    <doc:Header-Row styles:class="table-title" >
+                    <doc:Header-Cell styles:column-span="3" >A flowing table</doc:Header-Cell>
+                    </doc:Header-Row>
                     
                     <!-- Header that will repeat -->
-                    <pdf:Header-Row>
-                    <pdf:Header-Cell>Header 1</pdf:Header-Cell>
-                    <pdf:Header-Cell>Header 2</pdf:Header-Cell>
-                    <pdf:Header-Cell>Header 3</pdf:Header-Cell>
-                    </pdf:Header-Row>
+                    <doc:Header-Row>
+                    <doc:Header-Cell>Header 1</doc:Header-Cell>
+                    <doc:Header-Cell>Header 2</doc:Header-Cell>
+                    <doc:Header-Cell>Header 3</doc:Header-Cell>
+                    </doc:Header-Row>
                     
-                    <pdf:Row>
-                    <pdf:Cell>Cell 1.1</pdf:Cell>
-                    <pdf:Cell>Wide Cell 1.2</pdf:Cell>
-                    <pdf:Cell>Cell 1.3</pdf:Cell>
-                    </pdf:Row>
-                    <pdf:Row>
-                    <pdf:Cell>Cell 2.1</pdf:Cell>
-                    <pdf:Cell styles:column-span="2">2 Column Cell 2.2</pdf:Cell>
-                    </pdf:Row>
+                    <doc:Row>
+                    <doc:Cell>Cell 1.1</doc:Cell>
+                    <doc:Cell>Wide Cell 1.2</doc:Cell>
+                    <doc:Cell>Cell 1.3</doc:Cell>
+                    </doc:Row>
+                    <doc:Row>
+                    <doc:Cell>Cell 2.1</doc:Cell>
+                    <doc:Cell styles:column-span="2">2 Column Cell 2.2</doc:Cell>
+                    </doc:Row>
                     
                     <!-- Standard row, that will repeat after
                     it has been initially laid out -->
-                    <pdf:Row styles:repeat="RepeatAtTop" styles:bg-color="#EEE">
-                    <pdf:Cell>Repeat 3.1</pdf:Cell>
-                    <pdf:Cell>Repeat 3.2</pdf:Cell>
-                    <pdf:Cell styles:width="60pt">Cell 3.3</pdf:Cell>
-                    </pdf:Row>
+                    <doc:Row styles:repeat="RepeatAtTop" styles:bg-color="#EEE">
+                    <doc:Cell>Repeat 3.1</doc:Cell>
+                    <doc:Cell>Repeat 3.2</doc:Cell>
+                    <doc:Cell styles:width="60pt">Cell 3.3</doc:Cell>
+                    </doc:Row>
                     
-                    <pdf:Row><pdf:Cell>Cell 4.1</pdf:Cell><pdf:Cell>Wide Cell 4.2</pdf:Cell><pdf:Cell>Cell 4.3</pdf:Cell></pdf:Row>
-                    <pdf:Row><pdf:Cell>Cell 5.1</pdf:Cell><pdf:Cell>Wide Cell 5.2</pdf:Cell><pdf:Cell>Cell 5.3</pdf:Cell></pdf:Row>
-                    <pdf:Row><pdf:Cell>Cell 6.1</pdf:Cell><pdf:Cell>Wide Cell 6.2</pdf:Cell><pdf:Cell>Cell 6.3</pdf:Cell></pdf:Row>
-                    <pdf:Row><pdf:Cell>Cell 7.1</pdf:Cell><pdf:Cell>Cell 7.2</pdf:Cell><pdf:Cell>Cell 7.3</pdf:Cell></pdf:Row>
-                    <pdf:Row><pdf:Cell>Cell 8.1</pdf:Cell><pdf:Cell>Cell 8.2</pdf:Cell><pdf:Cell>Cell 8.3</pdf:Cell></pdf:Row>
-                    <pdf:Row><pdf:Cell>Cell 9.1</pdf:Cell><pdf:Cell>Cell 9.2</pdf:Cell><pdf:Cell>Cell 9.3</pdf:Cell></pdf:Row>
-                    <pdf:Row><pdf:Cell>Cell 10.1</pdf:Cell><pdf:Cell>Cell 10.2</pdf:Cell><pdf:Cell>Cell 10.3</pdf:Cell></pdf:Row>
+                    <doc:Row><doc:Cell>Cell 4.1</doc:Cell><doc:Cell>Wide Cell 4.2</doc:Cell><doc:Cell>Cell 4.3</doc:Cell></doc:Row>
+                    <doc:Row><doc:Cell>Cell 5.1</doc:Cell><doc:Cell>Wide Cell 5.2</doc:Cell><doc:Cell>Cell 5.3</doc:Cell></doc:Row>
+                    <doc:Row><doc:Cell>Cell 6.1</doc:Cell><doc:Cell>Wide Cell 6.2</doc:Cell><doc:Cell>Cell 6.3</doc:Cell></doc:Row>
+                    <doc:Row><doc:Cell>Cell 7.1</doc:Cell><doc:Cell>Cell 7.2</doc:Cell><doc:Cell>Cell 7.3</doc:Cell></doc:Row>
+                    <doc:Row><doc:Cell>Cell 8.1</doc:Cell><doc:Cell>Cell 8.2</doc:Cell><doc:Cell>Cell 8.3</doc:Cell></doc:Row>
+                    <doc:Row><doc:Cell>Cell 9.1</doc:Cell><doc:Cell>Cell 9.2</doc:Cell><doc:Cell>Cell 9.3</doc:Cell></doc:Row>
+                    <doc:Row><doc:Cell>Cell 10.1</doc:Cell><doc:Cell>Cell 10.2</doc:Cell><doc:Cell>Cell 10.3</doc:Cell></doc:Row>
                     
-                    <pdf:Footer-Row styles:bg-color="#CCC" >
-                    <pdf:Footer-Cell>Footer 1</pdf:Footer-Cell>
-                    <pdf:Footer-Cell>Footer 2</pdf:Footer-Cell>
-                    <pdf:Footer-Cell>Footer 3</pdf:Footer-Cell>
-                    </pdf:Footer-Row>
-                </pdf:Table>
+                    <doc:Footer-Row styles:bg-color="#CCC" >
+                    <doc:Footer-Cell>Footer 1</doc:Footer-Cell>
+                    <doc:Footer-Cell>Footer 2</doc:Footer-Cell>
+                    <doc:Footer-Cell>Footer 3</doc:Footer-Cell>
+                    </doc:Footer-Row>
+                </doc:Table>
                 
-                </pdf:Div>
+                </doc:Div>
 
             </Content>
-            </pdf:Page>
+            </doc:Page>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentTablesFlow.png
@@ -200,13 +200,13 @@ pages (even if it's got a nested table. It will probably just mess up the layout
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     
     <Styles>
 
-        <styles:Style applied-type="pdf:Header-Cell" >
+        <styles:Style applied-type="doc:Header-Cell" >
         <styles:Position h-align="Center" v-align="Middle"/>
         <styles:Size height="40pt"/>
         </styles:Style>
@@ -224,92 +224,92 @@ pages (even if it's got a nested table. It will probably just mess up the layout
     </Styles>
     <Pages>
 
-            <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+            <doc:Section styles:margins="20pt" styles:font-size="12pt">
             <Content>
 
-                <pdf:Table styles:margins="0 0 10 0" styles:full-width="true">
+                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
                     
                     <!-- Header that will not repeat based on style-->
-                    <pdf:Header-Row styles:class="table-title" >
-                    <pdf:Header-Cell styles:column-span="3" >A nested table</pdf:Header-Cell>
-                    </pdf:Header-Row>
+                    <doc:Header-Row styles:class="table-title" >
+                    <doc:Header-Cell styles:column-span="3" >A nested table</doc:Header-Cell>
+                    </doc:Header-Row>
                     
                     <!-- Header that will repeat -->
-                    <pdf:Header-Row>
-                    <pdf:Header-Cell>Left</pdf:Header-Cell>
-                    <pdf:Header-Cell>Right</pdf:Header-Cell>
-                    </pdf:Header-Row>
+                    <doc:Header-Row>
+                    <doc:Header-Cell>Left</doc:Header-Cell>
+                    <doc:Header-Cell>Right</doc:Header-Cell>
+                    </doc:Header-Row>
                     
-                    <pdf:Row>
+                    <doc:Row>
                     
-                    <pdf:Cell styles:v-align="Middle" styles:h-align="Center">
-                        <pdf:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
-                        <pdf:Div styles:class="img-footer" styles:width="100pt">Landscape Image</pdf:Div>
-                    </pdf:Cell>
+                    <doc:Cell styles:v-align="Middle" styles:h-align="Center">
+                        <doc:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
+                        <doc:Div styles:class="img-footer" styles:width="100pt">Landscape Image</doc:Div>
+                    </doc:Cell>
                     
-                    <pdf:Cell>
+                    <doc:Cell>
                         Inner Nested table
-                        <pdf:Table>
-                        <pdf:Row><pdf:Cell>Cell 4.1</pdf:Cell><pdf:Cell>Wide Cell 4.2</pdf:Cell><pdf:Cell>Cell 4.3</pdf:Cell></pdf:Row>
-                        <pdf:Row><pdf:Cell>Cell 5.1</pdf:Cell><pdf:Cell>Wide Cell 5.2</pdf:Cell><pdf:Cell>Cell 5.3</pdf:Cell></pdf:Row>
-                        <pdf:Row><pdf:Cell>Cell 6.1</pdf:Cell><pdf:Cell>Wide Cell 6.2</pdf:Cell><pdf:Cell>Cell 6.3</pdf:Cell></pdf:Row>
-                        <pdf:Row><pdf:Cell>Cell 7.1</pdf:Cell><pdf:Cell>Cell 7.2</pdf:Cell><pdf:Cell>Cell 7.3</pdf:Cell></pdf:Row>
-                        <pdf:Row><pdf:Cell>Cell 8.1</pdf:Cell><pdf:Cell>Cell 8.2</pdf:Cell><pdf:Cell>Cell 8.3</pdf:Cell></pdf:Row>
-                        <pdf:Row><pdf:Cell>Cell 9.1</pdf:Cell><pdf:Cell>Cell 9.2</pdf:Cell><pdf:Cell>Cell 9.3</pdf:Cell></pdf:Row>
-                        <pdf:Row><pdf:Cell>Cell 10.1</pdf:Cell><pdf:Cell>Cell 10.2</pdf:Cell><pdf:Cell>Cell 10.3</pdf:Cell></pdf:Row>
-                        <pdf:Footer-Row styles:bg-color="#CCC" ><pdf:Footer-Cell>Footer 1</pdf:Footer-Cell><pdf:Footer-Cell>Footer 2</pdf:Footer-Cell><pdf:Footer-Cell>Footer 3</pdf:Footer-Cell></pdf:Footer-Row>
-                        </pdf:Table>
+                        <doc:Table>
+                        <doc:Row><doc:Cell>Cell 4.1</doc:Cell><doc:Cell>Wide Cell 4.2</doc:Cell><doc:Cell>Cell 4.3</doc:Cell></doc:Row>
+                        <doc:Row><doc:Cell>Cell 5.1</doc:Cell><doc:Cell>Wide Cell 5.2</doc:Cell><doc:Cell>Cell 5.3</doc:Cell></doc:Row>
+                        <doc:Row><doc:Cell>Cell 6.1</doc:Cell><doc:Cell>Wide Cell 6.2</doc:Cell><doc:Cell>Cell 6.3</doc:Cell></doc:Row>
+                        <doc:Row><doc:Cell>Cell 7.1</doc:Cell><doc:Cell>Cell 7.2</doc:Cell><doc:Cell>Cell 7.3</doc:Cell></doc:Row>
+                        <doc:Row><doc:Cell>Cell 8.1</doc:Cell><doc:Cell>Cell 8.2</doc:Cell><doc:Cell>Cell 8.3</doc:Cell></doc:Row>
+                        <doc:Row><doc:Cell>Cell 9.1</doc:Cell><doc:Cell>Cell 9.2</doc:Cell><doc:Cell>Cell 9.3</doc:Cell></doc:Row>
+                        <doc:Row><doc:Cell>Cell 10.1</doc:Cell><doc:Cell>Cell 10.2</doc:Cell><doc:Cell>Cell 10.3</doc:Cell></doc:Row>
+                        <doc:Footer-Row styles:bg-color="#CCC" ><doc:Footer-Cell>Footer 1</doc:Footer-Cell><doc:Footer-Cell>Footer 2</doc:Footer-Cell><doc:Footer-Cell>Footer 3</doc:Footer-Cell></doc:Footer-Row>
+                        </doc:Table>
 
-                    </pdf:Cell>
-                    <pdf:Cell>
+                    </doc:Cell>
+                    <doc:Cell>
                         Cell 1.3
-                    </pdf:Cell>
-                    </pdf:Row>
+                    </doc:Cell>
+                    </doc:Row>
                     
-                    <pdf:Row>
-                        <pdf:Cell>
-                            <pdf:B>Rows will not split across pages.</pdf:B>
-                        </pdf:Cell>
-                        <pdf:Cell styles:column-span="2">
-                            <pdf:Table>
-                            <pdf:Row><pdf:Cell>Cell 4.1</pdf:Cell><pdf:Cell>Wide Cell 4.2</pdf:Cell><pdf:Cell>Cell 4.3</pdf:Cell></pdf:Row>
-                            <pdf:Row><pdf:Cell>Cell 5.1</pdf:Cell><pdf:Cell>Wide Cell 5.2</pdf:Cell><pdf:Cell>Cell 5.3</pdf:Cell></pdf:Row>
-                            <pdf:Row><pdf:Cell>Cell 6.1</pdf:Cell><pdf:Cell>Wide Cell 6.2</pdf:Cell><pdf:Cell>Cell 6.3</pdf:Cell></pdf:Row>
-                            <pdf:Row><pdf:Cell>Cell 7.1</pdf:Cell><pdf:Cell>Cell 7.2</pdf:Cell><pdf:Cell>Cell 7.3</pdf:Cell></pdf:Row>
-                            <pdf:Row><pdf:Cell>Cell 8.1</pdf:Cell><pdf:Cell>Cell 8.2</pdf:Cell><pdf:Cell>Cell 8.3</pdf:Cell></pdf:Row>
-                            <pdf:Row><pdf:Cell>Cell 9.1</pdf:Cell><pdf:Cell>Cell 9.2</pdf:Cell><pdf:Cell>Cell 9.3</pdf:Cell></pdf:Row>
-                            <pdf:Row><pdf:Cell>Cell 10.1</pdf:Cell><pdf:Cell>Cell 10.2</pdf:Cell><pdf:Cell>Cell 10.3</pdf:Cell></pdf:Row>
-                            <pdf:Footer-Row styles:bg-color="#CCC" ><pdf:Footer-Cell>Footer 1</pdf:Footer-Cell><pdf:Footer-Cell>Footer 2</pdf:Footer-Cell><pdf:Footer-Cell>Footer 3</pdf:Footer-Cell></pdf:Footer-Row>
-                            </pdf:Table>
-                            <pdf:Para>
+                    <doc:Row>
+                        <doc:Cell>
+                            <doc:B>Rows will not split across pages.</doc:B>
+                        </doc:Cell>
+                        <doc:Cell styles:column-span="2">
+                            <doc:Table>
+                            <doc:Row><doc:Cell>Cell 4.1</doc:Cell><doc:Cell>Wide Cell 4.2</doc:Cell><doc:Cell>Cell 4.3</doc:Cell></doc:Row>
+                            <doc:Row><doc:Cell>Cell 5.1</doc:Cell><doc:Cell>Wide Cell 5.2</doc:Cell><doc:Cell>Cell 5.3</doc:Cell></doc:Row>
+                            <doc:Row><doc:Cell>Cell 6.1</doc:Cell><doc:Cell>Wide Cell 6.2</doc:Cell><doc:Cell>Cell 6.3</doc:Cell></doc:Row>
+                            <doc:Row><doc:Cell>Cell 7.1</doc:Cell><doc:Cell>Cell 7.2</doc:Cell><doc:Cell>Cell 7.3</doc:Cell></doc:Row>
+                            <doc:Row><doc:Cell>Cell 8.1</doc:Cell><doc:Cell>Cell 8.2</doc:Cell><doc:Cell>Cell 8.3</doc:Cell></doc:Row>
+                            <doc:Row><doc:Cell>Cell 9.1</doc:Cell><doc:Cell>Cell 9.2</doc:Cell><doc:Cell>Cell 9.3</doc:Cell></doc:Row>
+                            <doc:Row><doc:Cell>Cell 10.1</doc:Cell><doc:Cell>Cell 10.2</doc:Cell><doc:Cell>Cell 10.3</doc:Cell></doc:Row>
+                            <doc:Footer-Row styles:bg-color="#CCC" ><doc:Footer-Cell>Footer 1</doc:Footer-Cell><doc:Footer-Cell>Footer 2</doc:Footer-Cell><doc:Footer-Cell>Footer 3</doc:Footer-Cell></doc:Footer-Row>
+                            </doc:Table>
+                            <doc:Para>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar, ipsum eu molestie elementum, nibh ante ultricies dui, et euismod nulla sapien ac purus. Morbi suscipit elit tellus, nec elementum lacus dignissim a. Aliquam molestie turpis consectetur rutrum pretium. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque varius vitae erat sagittis facilisis. Vivamus quis tellus quis augue fringilla posuere vitae ac ante. Aliquam ultricies sodales cursus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                            <pdf:Br/>
+                            <doc:Br/>
                             Vestibulum dolor libero, faucibus quis tristique at, euismod vitae nunc. Donec vel volutpat urna, eget tristique nunc. Quisque vitae iaculis dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce fermentum odio ac feugiat pharetra. Integer sit amet elit a urna maximus sollicitudin sit amet sed mauris. Proin finibus nec diam blandit porttitor.
-                            <pdf:Br/>
+                            <doc:Br/>
                             Nunc laoreet, enim in faucibus volutpat, nunc ligula sollicitudin magna, eget fermentum nulla neque scelerisque lectus. Nulla vel tincidunt enim. Nam vulputate eros a mi ultrices aliquet. Vestibulum et convallis tortor. Aenean pellentesque libero quis consectetur tincidunt. Proin maximus leo non felis tempor, ut iaculis ipsum iaculis. Nullam tristique justo diam, at ultricies diam ultrices ac. Aenean venenatis, lorem vel bibendum tristique, sem nisi congue ex, sed eleifend magna nisl luctus velit. Donec hendrerit malesuada neque eu imperdiet. Duis tempor venenatis leo, sed aliquet sem aliquet sed. Ut nec ligula non lacus fermentum bibendum sed sit amet est. Nam pharetra tempor tortor vel auctor. Fusce metus felis, lacinia quis mauris sed, porta iaculis metus.
-                            <pdf:Br/>
+                            <doc:Br/>
                             Aliquam et sodales orci, quis sollicitudin velit. Nam ornare molestie aliquam. Mauris vitae convallis metus. Maecenas dignissim dui quis enim pretium, id interdum leo condimentum. Maecenas rutrum faucibus sapien. Praesent rutrum efficitur lorem, nec hendrerit dui. Ut ac massa ut magna ultricies gravida ut in mi. Fusce sed leo elit. Donec finibus rhoncus pulvinar.
-                            </pdf:Para>
-                        </pdf:Cell>
-                    </pdf:Row>
+                            </doc:Para>
+                        </doc:Cell>
+                    </doc:Row>
                     
                     <!-- Standard row, that will repeat after
                     it has been initially laid out -->
-                    <pdf:Row styles:repeat="RepeatAtTop" styles:bg-color="#EEE">
-                        <pdf:Cell>Repeat 3.1</pdf:Cell>
-                        <pdf:Cell>Repeat 3.2</pdf:Cell>
-                    <pdf:Cell styles:width="60pt">Cell 3.3</pdf:Cell>
-                </pdf:Row>
+                    <doc:Row styles:repeat="RepeatAtTop" styles:bg-color="#EEE">
+                        <doc:Cell>Repeat 3.1</doc:Cell>
+                        <doc:Cell>Repeat 3.2</doc:Cell>
+                    <doc:Cell styles:width="60pt">Cell 3.3</doc:Cell>
+                </doc:Row>
                     
-            </pdf:Table>
+            </doc:Table>
                 
 
             </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentTablesNested.png
@@ -331,7 +331,7 @@ See :doc:`binding_databinding` for more information on the data binding capabili
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     
@@ -357,28 +357,28 @@ See :doc:`binding_databinding` for more information on the data binding capabili
     </Data>
     <Pages>
 
-            <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+            <doc:Section styles:margins="20pt" styles:font-size="12pt">
             <Content>
                 
                 <!-- set the current context to the DataSources element of the xml source -->
                 <data:With datasource-id="Content"  select="DataSources">
                 
-                <pdf:Table styles:margins="0 0 10 0" styles:full-width="true">
+                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
                     <!-- Header row, not repeating -->
-                    <pdf:Header-Row styles:repeat="None"  >
-                        <pdf:Header-Cell styles:column-span="2" styles:h-align="Center" >
-                            <pdf:Image styles:class="header" src="../../Content/Images/landscape.jpg" />
-                            <pdf:Div styles:class="header" >
-                            <pdf:Text value="{xpath:@title}" />
-                            </pdf:Div>
-                        </pdf:Header-Cell>
-                    </pdf:Header-Row>
+                    <doc:Header-Row styles:repeat="None"  >
+                        <doc:Header-Cell styles:column-span="2" styles:h-align="Center" >
+                            <doc:Image styles:class="header" src="../../Content/Images/landscape.jpg" />
+                            <doc:Div styles:class="header" >
+                            <doc:Text value="{xpath:@title}" />
+                            </doc:Div>
+                        </doc:Header-Cell>
+                    </doc:Header-Row>
                     
                     <!-- Header that will repeat -->
-                    <pdf:Header-Row>
-                        <pdf:Header-Cell styles:class="first" styles:width="300pt" styles:h-align="Center">ID</pdf:Header-Cell>
-                        <pdf:Header-Cell>Name</pdf:Header-Cell>
-                    </pdf:Header-Row>
+                    <doc:Header-Row>
+                        <doc:Header-Cell styles:class="first" styles:width="300pt" styles:h-align="Center">ID</doc:Header-Cell>
+                        <doc:Header-Cell>Name</doc:Header-Cell>
+                    </doc:Header-Row>
                     
                     <!-- Loop through each of the Entries/Entry values from the current context -->
                     <data:ForEach value="{xpath:Entries/Entry}" >
@@ -389,11 +389,11 @@ See :doc:`binding_databinding` for more information on the data binding capabili
                             <data:When test="{xpath:@Id = 'ThirdID'}" >
                                 <Template>
 
-                                <pdf:Row styles:bg-color="#CCC">
-                                    <pdf:Cell styles:column-span="2" >
-                                    <pdf:Text value="{xpath:concat('This is the ',@Name,' Row with the id ',@Id)}" />
-                                    </pdf:Cell>
-                                </pdf:Row>
+                                <doc:Row styles:bg-color="#CCC">
+                                    <doc:Cell styles:column-span="2" >
+                                    <doc:Text value="{xpath:concat('This is the ',@Name,' Row with the id ',@Id)}" />
+                                    </doc:Cell>
+                                </doc:Row>
 
                                 </Template>
                             </data:When>
@@ -402,14 +402,14 @@ See :doc:`binding_databinding` for more information on the data binding capabili
                             <data:Otherwise>
                                 <Template>
                                 <!-- General row of 2 cells with databound content-->
-                                <pdf:Row>
-                                    <pdf:Cell styles:class="first" >
-                                    <pdf:Text value="{xpath:@Id}" />
-                                    </pdf:Cell>
-                                    <pdf:Cell>
-                                    <pdf:Text value="{xpath:@Name}" />
-                                    </pdf:Cell>
-                                </pdf:Row>
+                                <doc:Row>
+                                    <doc:Cell styles:class="first" >
+                                    <doc:Text value="{xpath:@Id}" />
+                                    </doc:Cell>
+                                    <doc:Cell>
+                                    <doc:Text value="{xpath:@Name}" />
+                                    </doc:Cell>
+                                </doc:Row>
 
                                 </Template>
                             </data:Otherwise>
@@ -417,16 +417,16 @@ See :doc:`binding_databinding` for more information on the data binding capabili
                         
                     </Template>
                     </data:ForEach>
-                </pdf:Table>
+                </doc:Table>
                 
                 </data:With>
 
             </Content>
-            </pdf:Section>
+            </doc:Section>
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 And a datasource response that results as follows
 
@@ -453,4 +453,4 @@ Content can be generated dynamically as per the output.
 
 .. image:: images/documentTablesDatabound.png
 
-.. note:: Scryber also includes the pdf:DataGrid component that can easily create tables from datasources MUCH faster. But the pdf:ForEach and pdf:Choice allow full control where needed.
+.. note:: Scryber also includes the doc:DataGrid component that can easily create tables from datasources MUCH faster. But the doc:ForEach and doc:Choice allow full control where needed.

@@ -9,7 +9,7 @@ Scryber supports most standard image types, including the following.
 * PNG  - 8, 24 and 32 bit alpha, RGB.
 * JPEG - 24 bit RGB.
 
-Adding an image to the output is as simple as putting an `<pdf:Image src='[path]' />` in the template.
+Adding an image to the output is as simple as putting an `<doc:Image src='[path]' />` in the template.
 If the image has an alpha channel this will automatically be applied to the image.
 
 Image Source Paths.
@@ -52,19 +52,19 @@ Once the path or data are set, it's just a case of rendering the document in the
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Params>
         <!-- Parameters for the path and binary data -->
-        <pdf:String-Param value="../../Content/Images/Toroid24.jpg" id="toroidPath" />
-        <pdf:Object-Param id="toroidBin"/>
+        <doc:String-Param value="../../Content/Images/Toroid24.jpg" id="toroidPath" />
+        <doc:Object-Param id="toroidBin"/>
     </Params>
     <Styles>
         
         <!-- Add a style to images
              with a background and border -->
-        <styles:Style applied-type="pdf:Image" >
+        <styles:Style applied-type="doc:Image" >
         <styles:Border color="#666" style="Solid" width="2pt" />
         <styles:Background color="#AAA"/>
         <styles:Padding all="4pt"/>
@@ -80,47 +80,47 @@ Once the path or data are set, it's just a case of rendering the document in the
     </Styles>
     <Pages>
         
-        <pdf:Page styles:padding="40 10 20 10" >
+        <doc:Page styles:padding="40 10 20 10" >
         <Content>
         
-        <pdf:Div styles:class="img-wrap" >
+        <doc:Div styles:class="img-wrap" >
             
-            <pdf:Span> PNG 24bit Image with no transparency</pdf:Span>
-            <pdf:Image src="../../Content/Images/Toroid24.png" />
-            <pdf:ColumnBreak/>
+            <doc:Span> PNG 24bit Image with no transparency</doc:Span>
+            <doc:Image src="../../Content/Images/Toroid24.png" />
+            <doc:ColumnBreak/>
 
-            <pdf:Span> PNG 32bit Image with alpha channel</pdf:Span>
-            <pdf:Image src="../../Content/Images/Toroid32.png" />
+            <doc:Span> PNG 32bit Image with alpha channel</doc:Span>
+            <doc:Image src="../../Content/Images/Toroid32.png" />
 
-        </pdf:Div>
+        </doc:Div>
 
-        <pdf:Div styles:class="img-wrap">
+        <doc:Div styles:class="img-wrap">
 
-            <pdf:Span> TIFF 24bit Image no transparency from url</pdf:Span>
-            <pdf:Image src="http://localhost:5000/images/Toroid24.tiff" />
-            <pdf:ColumnBreak/>
+            <doc:Span> TIFF 24bit Image no transparency from url</doc:Span>
+            <doc:Image src="http://localhost:5000/images/Toroid24.tiff" />
+            <doc:ColumnBreak/>
             
-            <pdf:Span> TIFF 32bit Image with alpha from assigned path</pdf:Span>
-            <pdf:Image id="tiff32" />
+            <doc:Span> TIFF 32bit Image with alpha from assigned path</doc:Span>
+            <doc:Image id="tiff32" />
 
-        </pdf:Div>
+        </doc:Div>
 
-        <pdf:Div styles:class="img-wrap" >
+        <doc:Div styles:class="img-wrap" >
 
-            <pdf:Span> JPEG Image with the source set from a parameter</pdf:Span>
-            <pdf:Image src="{@:toroidPath}" />
-            <pdf:ColumnBreak/>
+            <doc:Span> JPEG Image with the source set from a parameter</doc:Span>
+            <doc:Image src="{@:toroidPath}" />
+            <doc:ColumnBreak/>
 
-            <pdf:Span> JPEG Image with data set from object parameter</pdf:Span>
-            <pdf:Image img-data="{@:toroidBin}" />
+            <doc:Span> JPEG Image with data set from object parameter</doc:Span>
+            <doc:Image img-data="{@:toroidBin}" />
             
-        </pdf:Div>
+        </doc:Div>
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. code-block:: csharp
@@ -174,13 +174,13 @@ If a path is set on an image but not resolved then by default scryber will raise
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Image" >
+        <styles:Style applied-type="doc:Image" >
             <styles:Border color="#666" style="Solid" width="2pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -196,26 +196,26 @@ If a path is set on an image but not resolved then by default scryber will raise
     </Styles>
     <Pages>
         
-        <pdf:Page styles:padding="40 10 20 10" >
+        <doc:Page styles:padding="40 10 20 10" >
         <Content>
         
-        <pdf:Div styles:class="img-wrap" >
+        <doc:Div styles:class="img-wrap" >
             <!-- This will raise an exception -->
-            <pdf:Span> Image that does not exist</pdf:Span>
-            <pdf:Image src="../../Content/Images/NotFound.png" />
+            <doc:Span> Image that does not exist</doc:Span>
+            <doc:Image src="../../Content/Images/NotFound.png" />
             
 
-            <pdf:Span> PNG 32bit Image with alpha channel</pdf:Span>
-            <pdf:Image src="../../Content/Images/Toroid32.png" />
+            <doc:Span> PNG 32bit Image with alpha channel</doc:Span>
+            <doc:Image src="../../Content/Images/Toroid32.png" />
 
-        </pdf:Div>
+        </doc:Div>
 
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentimagesnotfound.png
 
@@ -238,7 +238,7 @@ and of fills for shapes, text, etc.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -253,18 +253,18 @@ and of fills for shapes, text, etc.
     </Styles>
     <Pages>
         
-        <pdf:Page styles:padding="40 10 20 10" >
+        <doc:Page styles:padding="40 10 20 10" >
         <Content>
             <!-- Minimum height, so we can see the pattern -->
-            <pdf:Div styles:class="img-wrap" styles:min-height="260pt" >
-                <pdf:Span> Background image with default settings on the div</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="img-wrap" styles:min-height="260pt" >
+                <doc:Span> Background image with default settings on the div</doc:Span>
+            </doc:Div>
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingImagesBackgrounds.png
 
@@ -295,7 +295,7 @@ component itself, the other
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -315,36 +315,36 @@ component itself, the other
         <styles:Size min-height="100pt"/>
         </styles:Style>
 
-        <styles:Style applied-type="pdf:Span">
+        <styles:Style applied-type="doc:Span">
         <styles:Fill color="fuchsia"/>
         </styles:Style>
     </Styles>
     <Pages> 
         
-        <pdf:Page styles:padding="40 10 20 10" >
+        <doc:Page styles:padding="40 10 20 10" >
         <Content>
 
-        <pdf:Div styles:class="img-wrap" styles:min-height="160pt" >
-            <pdf:Span> Background image x-size only</pdf:Span>
-        </pdf:Div>
+        <doc:Div styles:class="img-wrap" styles:min-height="160pt" >
+            <doc:Span> Background image x-size only</doc:Span>
+        </doc:Div>
         
-        <pdf:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatX" >
-            <pdf:Span> Background image with X repeat only</pdf:Span>
-        </pdf:Div>
+        <doc:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatX" >
+            <doc:Span> Background image with X repeat only</doc:Span>
+        </doc:Div>
 
-        <pdf:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatY" >
-            <pdf:Span> Background image with Y repeat only</pdf:Span>
-        </pdf:Div>
+        <doc:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatY" >
+            <doc:Span> Background image with Y repeat only</doc:Span>
+        </doc:Div>
 
-        <pdf:Div styles:class="img-wrap bg-pos" styles:bg-repeat="Fill" >
-            <pdf:Span> Background image with Fill, overriding other settings</pdf:Span>
-        </pdf:Div>
+        <doc:Div styles:class="img-wrap bg-pos" styles:bg-repeat="Fill" >
+            <doc:Span> Background image with Fill, overriding other settings</doc:Span>
+        </doc:Div>
             
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentimagesbgsize.png
 
@@ -361,7 +361,7 @@ as in the rectangle in the example below.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -385,35 +385,35 @@ as in the rectangle in the example below.
     </Styles>
     <Pages>
 
-        <pdf:Page styles:padding="40 10 20 10" >
+        <doc:Page styles:padding="40 10 20 10" >
         <Content>
 
-            <pdf:Div styles:class="img-wrap" styles:min-height="100pt" >
-                <pdf:Span> Filled image x-size only</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="img-wrap" styles:min-height="100pt" >
+                <doc:Span> Filled image x-size only</doc:Span>
+            </doc:Div>
 
-            <pdf:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatX" >
-                <pdf:Span> Filled image with X repeat only</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatX" >
+                <doc:Span> Filled image with X repeat only</doc:Span>
+            </doc:Div>
 
-            <pdf:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatY" >
-                <pdf:Span> Filled image with Y repeat only</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatY" >
+                <doc:Span> Filled image with Y repeat only</doc:Span>
+            </doc:Div>
 
-            <pdf:Div styles:class="img-wrap fill-pos" styles:fill-repeat="Fill" >
+            <doc:Div styles:class="img-wrap fill-pos" styles:fill-repeat="Fill" >
             <!-- Fill repeat doesn't work at the moment. We are loking at it.-->
-                <pdf:Span> Filled image with Fill, overriding other settings</pdf:Span>
-            </pdf:Div>
+                <doc:Span> Filled image with Fill, overriding other settings</doc:Span>
+            </doc:Div>
 
             <!-- A shape with a fill and background image -->
-            <pdf:Rect styles:position-mode="Absolute" styles:class="img-wrap"
+            <doc:Rect styles:position-mode="Absolute" styles:class="img-wrap"
                         styles:bg-image="../../Content/Images/group.png" styles:padding="20"
-                        styles:x="360" styles:y="300" styles:width="120" styles:height="120pt" ></pdf:Rect>
+                        styles:x="360" styles:y="300" styles:width="120" styles:height="120pt" ></doc:Rect>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentimagesfills.png
 
@@ -508,25 +508,25 @@ And then in your template simply specify the image matching the pattern, to invo
 .. code-block:: xml
 
     <?xml version='1.0' encoding='utf-8' ?>
-    <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                 xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                 xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
     <Pages>
 
-        <pdf:Page styles:margins='20pt'>
+        <doc:Page styles:margins='20pt'>
         <Content>
-            <pdf:Span>This is before the image</pdf:Span>
+            <doc:Span>This is before the image</doc:Span>
 
             <!-- A dynamic image that will be generated on the fly -->
-            <pdf:Image id='LoadedImage' src='This+is+an+image.dynamic' />
+            <doc:Image id='LoadedImage' src='This+is+an+image.dynamic' />
 
-            <pdf:Span>This is after the image</pdf:Span>
+            <doc:Span>This is after the image</doc:Span>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentimagesdynamic.png

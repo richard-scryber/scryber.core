@@ -36,38 +36,38 @@ These should be declared at the top of the Document, in the Params element, for 
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Params>
         <!-- Declare a complex object parameter -->
-        <pdf:Object-Param id="Model" />
+        <doc:Object-Param id="Model" />
     </Params>
     
     <Pages>
         <!-- Use the models 'DocTitle' property for the outline. -->
-        <pdf:Page outline-title="{@:Model.DocTitle}" styles:margins="20pt">
+        <doc:Page outline-title="{@:Model.DocTitle}" styles:margins="20pt">
         <Content>
             <!-- And use it as the text on the heading -->
-            <pdf:H1 styles:class="title" text="{@:Model.DocTitle}" > </pdf:H1>
+            <doc:H1 styles:class="title" text="{@:Model.DocTitle}" > </doc:H1>
             
-            <pdf:Ul>
+            <doc:Ul>
             <!-- now we loop through the 'Entries' property -->
             <data:ForEach value="{@:Model.Entries}" >
                 <Template>
-                <pdf:Li>
+                <doc:Li>
                     <!-- and create a list item for each entry (. prefix) with the name property. -->
-                    <pdf:Text value="{@:.Name}" />
-                </pdf:Li>
+                    <doc:Text value="{@:.Name}" />
+                </doc:Li>
                 </Template>
             </data:ForEach>
-            </pdf:Ul>
+            </doc:Ul>
             
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 And the value can be set or changed at runtime
 
@@ -143,7 +143,7 @@ And with that we can bind the source into the document
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
         <Data>
@@ -152,32 +152,32 @@ And with that we can bind the source into the document
         </Data>
         <Pages>
             
-            <pdf:Page styles:margins="20pt">
+            <doc:Page styles:margins="20pt">
             <Content>
                 <!-- Use the `data:With` component to specify a source and path within the xml as a starting point. -->
                 <data:With datasource-id="XmlSource" select="//DataSources" >
 
                 <!-- And use it as the text on the heading -->
-                <pdf:H1 styles:class="title" text="{xpath:@title}" > </pdf:H1>
+                <doc:H1 styles:class="title" text="{xpath:@title}" > </doc:H1>
                 
-                <pdf:Ul>
+                <doc:Ul>
                     <!-- now we loop through the 'Entries' property -->
                     <data:ForEach value="{xpath:Entries/Entry}" >
                     <Template>
-                        <pdf:Li>
+                        <doc:Li>
                         <!-- and create a list item for each entry (. prefix) with the name property. -->
-                        <pdf:Text value="{xpath:@Name}" />
-                        </pdf:Li>
+                        <doc:Text value="{xpath:@Name}" />
+                        </doc:Li>
                     </Template>
                     </data:ForEach>
-                </pdf:Ul>
+                </doc:Ul>
                 </data:With>
                 
             </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 With the result of the output showing the content.
 
@@ -210,34 +210,34 @@ A full document file example is below.
 
     <?xml version="1.0" encoding="utf-8" ?>
     <?scryber controller='Scryber.Core.Samples.Web.Controllers.DocumentControllerInstance, Scryber.Core.Samples.Web' ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
                 on-loaded="LoadDocument" >
     <Pages>
 
-        <pdf:Page styles:margins="20pt">
+        <doc:Page styles:margins="20pt">
         <Content>
             
             <!-- This will automatically be set on the controller instance property -->
-            <pdf:H1 id="Title" > </pdf:H1>
+            <doc:H1 id="Title" > </doc:H1>
             
-            <pdf:Ul>
+            <doc:Ul>
                 <!-- now we call the BindForEach method to set the data value -->
                 <data:ForEach on-databinding="BindingForEach" >
                 <Template>
                     <!-- and finally we use the item data bound to set the
                         content of the list item for each entry -->
-                    <pdf:Li on-databound="BoundListItem"></pdf:Li>
+                    <doc:Li on-databound="BoundListItem"></doc:Li>
                 </Template>
                 </data:ForEach>
-            </pdf:Ul>
+            </doc:Ul>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 The document has declared:
 

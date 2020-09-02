@@ -18,20 +18,20 @@ The content within the tag will flow naturally, as a fully qualified component w
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Pages>
         
-        <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+        <doc:Section styles:margins="20pt" styles:font-size="12pt">
         <Content>
 
-            <pdf:HtmlFragment>
+            <doc:HtmlFragment>
                 <h1>Html Content</h1> 
-            </pdf:HtmlFragment>
+            </doc:HtmlFragment>
 
-            <pdf:Div styles:column-count="2" styles:height="200pt">
-                <pdf:HtmlFragment >
+            <doc:Div styles:column-count="2" styles:height="200pt">
+                <doc:HtmlFragment >
                     <div xmlns="http://www.w3.org/1999/xhtml" style="color:#FFF; background-color:#323232; padding: 10px">
                         <p>This is a paragraph of text</p>
                         <table style="width:400pt; padding: 10pt 0pt; color:#00a8a1">
@@ -67,17 +67,17 @@ The content within the tag will flow naturally, as a fully qualified component w
                         </tfoot>
                         </table>
                     </div>
-                </pdf:HtmlFragment>
-            </pdf:Div>
+                </doc:HtmlFragment>
+            </doc:Div>
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
-Here we have 2 fragments. The first is a simple heading that inherits all the style information form a pdf:H1 heading
+Here we have 2 fragments. The first is a simple heading that inherits all the style information form a doc:H1 heading
 The second we have added some more complex mixed content and styles within the body of an Html Fragment.
 Again the elements inherit the style of their base scryber components, but also have the explicit styles added.
 

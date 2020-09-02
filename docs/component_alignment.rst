@@ -24,52 +24,52 @@ The alignment of content within a page or container can either be set as the sta
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
-        <styles:Style applied-type="pdf:H1" >
+        <styles:Style applied-type="doc:H1" >
             <styles:Position h-align="Center"/>
             <styles:Border color="green" width="1pt"/>
             <styles:Padding all="5pt"/>
         </styles:Style>
 
-        <styles:Style applied-type="pdf:Div" >
+        <styles:Style applied-type="doc:Div" >
             <styles:Border color="red" width="1pt" />
             <styles:Padding all="5pt"/>
             <styles:Margins top="10pt"/>
         </styles:Style>
     </Styles>
     <Pages>
-        <pdf:Section >
+        <doc:Section >
             <Content>
-                <pdf:H1 >This is the Centered Heading</pdf:H1>
-                <pdf:Div>
-                    Default alignment.<pdf:Br/>
+                <doc:H1 >This is the Centered Heading</doc:H1>
+                <doc:Div>
+                    Default alignment.<doc:Br/>
                     With mixed content.
-                    <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-                </pdf:Div>
-                <pdf:Div styles:h-align="Right">
-                    Right alignment.<pdf:Br/>
+                    <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+                </doc:Div>
+                <doc:Div styles:h-align="Right">
+                    Right alignment.<doc:Br/>
                     With mixed content.
-                    <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-                </pdf:Div>
-                <pdf:Div styles:h-align="Center">
-                    Center alignment.<pdf:Br/>
+                    <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+                </doc:Div>
+                <doc:Div styles:h-align="Center">
+                    Center alignment.<doc:Br/>
                     With mixed content.
-                    <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-                </pdf:Div>
-                <pdf:Div styles:h-align="Justified">
+                    <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+                </doc:Div>
+                <doc:Div styles:h-align="Justified">
                     This is justified alignment across multiple lines in the container that 
                     will stretch to the width with word and character spacing, with mixed content.
-                    <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-                </pdf:Div>
-                <pdf:H1>After the content</pdf:H1>
+                    <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+                </doc:Div>
+                <doc:H1>After the content</doc:H1>
             </Content>
-        </pdf:Section>
+        </doc:Section>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documenthalign.png
@@ -83,17 +83,17 @@ Along with horizontal alignment vertical alignment can be applied to the page or
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
-        <styles:Style applied-type="pdf:H1" >
+        <styles:Style applied-type="doc:H1" >
             <styles:Position h-align="Center"/>
             <styles:Border color="green" width="1pt"/>
             <styles:Padding all="5pt"/>
         </styles:Style>
 
-        <styles:Style applied-type="pdf:Div" >
+        <styles:Style applied-type="doc:Div" >
             <styles:Border color="red" width="1pt" />
             <styles:Padding all="5pt"/>
             <styles:Margins top="10pt"/>
@@ -101,27 +101,27 @@ Along with horizontal alignment vertical alignment can be applied to the page or
     </Styles>
     <Pages>
 
-        <pdf:Section styles:v-align="Bottom" >
+        <doc:Section styles:v-align="Bottom" >
         <Content>
-            <pdf:H1 >Page has a bottom vertical alignment</pdf:H1>
-            <pdf:Div styles:height="200pt">
+            <doc:H1 >Page has a bottom vertical alignment</doc:H1>
+            <doc:Div styles:height="200pt">
                 Default top left alignment.
-                <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-            </pdf:Div>
-            <pdf:Div styles:h-align="Right" styles:v-align="Bottom" styles:height="200pt">
+                <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+            </doc:Div>
+            <doc:Div styles:h-align="Right" styles:v-align="Bottom" styles:height="200pt">
                 Right Bottom alignment with mixed content.
-                <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-            </pdf:Div>
-            <pdf:Div styles:h-align="Center" styles:v-align="Middle" styles:width="350pt" styles:height="200pt">
+                <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+            </doc:Div>
+            <doc:Div styles:h-align="Center" styles:v-align="Middle" styles:width="350pt" styles:height="200pt">
                 Center Middle alignment with fixed width and mixed content.
-                <pdf:Image src="../../content/images/group.png" styles:width="50pt" />
-            </pdf:Div>
+                <doc:Image src="../../content/images/group.png" styles:width="50pt" />
+            </doc:Div>
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentvalign.png
@@ -142,11 +142,11 @@ So complex layouts can be achieved with minimal .
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
-        <styles:Style applied-type="pdf:H1" >
+        <styles:Style applied-type="doc:H1" >
             <styles:Position h-align="Center"/>
             <styles:Background color="#6666FF"/>
             <styles:Fill color="white"/>
@@ -154,7 +154,7 @@ So complex layouts can be achieved with minimal .
             <styles:Padding all="5pt"/>
         </styles:Style>
 
-        <styles:Style applied-type="pdf:Section" >
+        <styles:Style applied-type="doc:Section" >
             <styles:Font family="Segoe UI Light"/>
         </styles:Style>
 
@@ -167,42 +167,42 @@ So complex layouts can be achieved with minimal .
 
     </Styles>
     <Pages>
-        <pdf:Section styles:v-align="Bottom" styles:bg-color="#DDDDFF" >
+        <doc:Section styles:v-align="Bottom" styles:bg-color="#DDDDFF" >
         <Header>
-            <pdf:H1 styles:column-count="3" >
+            <doc:H1 styles:column-count="3" >
             Nested
-            <pdf:ColumnBreak/>
+            <doc:ColumnBreak/>
             Content
-            <pdf:ColumnBreak/>
+            <doc:ColumnBreak/>
             Alignment
-            </pdf:H1>
+            </doc:H1>
         </Header>
         <Content>
-            <pdf:Div styles:height="400pt" styles:h-align="Right" styles:bg-color="#AAAADD">
-            <pdf:H1 styles:width="400pt" styles:h-align="Left">
+            <doc:Div styles:height="400pt" styles:h-align="Right" styles:bg-color="#AAAADD">
+            <doc:H1 styles:width="400pt" styles:h-align="Left">
                 The alignment of a page content.
-            </pdf:H1>
-            </pdf:Div>
+            </doc:H1>
+            </doc:Div>
 
-            <pdf:Div styles:class="floating">
-            <pdf:Div styles:bg-color="#6666FF" styles:font-size="16pt" styles:h-align="Center" styles:padding="5pt">
+            <doc:Div styles:class="floating">
+            <doc:Div styles:bg-color="#6666FF" styles:font-size="16pt" styles:h-align="Center" styles:padding="5pt">
                 Pushing to absolute.
-            </pdf:Div>
-            </pdf:Div>
+            </doc:Div>
+            </doc:Div>
         </Content>
         <Footer>
-            <pdf:H1 styles:column-count="3" styles:font-size="10pt" styles:height="40pt" styles:v-align="Middle" >
+            <doc:H1 styles:column-count="3" styles:font-size="10pt" styles:height="40pt" styles:v-align="Middle" >
                 Accounts
-                <pdf:ColumnBreak/>
+                <doc:ColumnBreak/>
                 For Columns
-                <pdf:ColumnBreak/>
+                <doc:ColumnBreak/>
                 And Footers
-            </pdf:H1>
+            </doc:H1>
         </Footer>
-        </pdf:Section>
+        </doc:Section>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentnestedalign.png

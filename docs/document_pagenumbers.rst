@@ -9,7 +9,7 @@ We can show the current page number by adding the :doc:`reference/pdf_pagenumber
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -22,38 +22,38 @@ We can show the current page number by adding the :doc:`reference/pdf_pagenumber
     </Styles>
     
     <Pages>
-        <pdf:Page styles:class="pg-num1">
+        <doc:Page styles:class="pg-num1">
         <Content>
             <!-- Page 1 -->
-            <pdf:PageNumber />
+            <doc:PageNumber />
         </Content>
-        </pdf:Page>
+        </doc:Page>
 
-        <pdf:Section styles:class="pg-num1">
+        <doc:Section styles:class="pg-num1">
         <Content>
             <!-- Page 2 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak/>
+            <doc:PageNumber />
+            <doc:PageBreak/>
             <!-- Page 3 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak />
+            <doc:PageNumber />
+            <doc:PageBreak />
             <!-- Page 4 -->
-            <pdf:PageNumber />
+            <doc:PageNumber />
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
-        <pdf:Section styles:class="pg-num1">
+        <doc:Section styles:class="pg-num1">
         <Content>
             <!-- Page 5 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak />
+            <doc:PageNumber />
+            <doc:PageBreak />
             <!-- Page 6 -->
-            <pdf:PageNumber />
+            <doc:PageNumber />
         </Content>
-        </pdf:Section>
+        </doc:Section>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentpagenumbers1.png
 
@@ -102,7 +102,7 @@ The number styles will be automatically used with any format string.
 
     <?xml version='1.0' encoding='utf-8' ?>
 
-    <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                 xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                 xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
     <Styles>
@@ -123,49 +123,49 @@ The number styles will be automatically used with any format string.
     
     <Pages>
 
-        <pdf:Section styles:class='pg-num intro'>
+        <doc:Section styles:class='pg-num intro'>
         <Content>
-            <pdf:Div>Introductions with lowercase roman</pdf:Div>
+            <doc:Div>Introductions with lowercase roman</doc:Div>
             <!-- Page 1 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak/>
+            <doc:PageNumber />
+            <doc:PageBreak/>
             <!-- Page 2 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak />
+            <doc:PageNumber />
+            <doc:PageBreak />
             <!-- Page 3 -->
-            <pdf:PageNumber />
+            <doc:PageNumber />
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
-        <pdf:Section styles:class='pg-num' styles:page-number-start-index='1' >
+        <doc:Section styles:class='pg-num' styles:page-number-start-index='1' >
         <Content>
-            <pdf:Div>These are the page numbers shown on each of the pages</pdf:Div>
+            <doc:Div>These are the page numbers shown on each of the pages</doc:Div>
             <!-- Page 1 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak/>
+            <doc:PageNumber />
+            <doc:PageBreak/>
             <!-- Page 2 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak />
+            <doc:PageNumber />
+            <doc:PageBreak />
             <!-- Page 3 -->
-            <pdf:Div>With a different format</pdf:Div>
-            <pdf:PageNumber id='ExplicitPageNum' styles:display-format='Page {0} of {1} (Total {2} of {3})' />
+            <doc:Div>With a different format</doc:Div>
+            <doc:PageNumber id='ExplicitPageNum' styles:display-format='Page {0} of {1} (Total {2} of {3})' />
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
-        <pdf:Section styles:class='pg-num appendix'>
+        <doc:Section styles:class='pg-num appendix'>
         <Content>
-            <pdf:Div>The appendix style has upper case letters with a formatted value to show the current appendix letter.</pdf:Div>
+            <doc:Div>The appendix style has upper case letters with a formatted value to show the current appendix letter.</doc:Div>
             <!-- Page 4 -->
-            <pdf:PageNumber />
-            <pdf:PageBreak />
+            <doc:PageNumber />
+            <doc:PageBreak />
             <!-- Page 5 -->
-            <pdf:PageNumber />
+            <doc:PageNumber />
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentpagenumbers2.png
@@ -202,7 +202,7 @@ But formats set for the page will not be used.
 .. code-block:: xml
 
     <?xml version='1.0' encoding='utf-8' ?>
-    <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                 xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                 xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
     <Styles>
@@ -223,33 +223,33 @@ But formats set for the page will not be used.
     
     <Pages>
 
-        <pdf:Section name='IntroSection' styles:class='pg-num intro'>
+        <doc:Section name='IntroSection' styles:class='pg-num intro'>
             <Content>
-                <pdf:Div>Introductions with lowercase roman.</pdf:Div>
+                <doc:Div>Introductions with lowercase roman.</doc:Div>
                 <!-- Page 1 -->
-                <pdf:PageNumber />
-                <pdf:Div >Reference to the content on page <pdf:PageOf component='#Page2' /></pdf:Div>
+                <doc:PageNumber />
+                <doc:Div >Reference to the content on page <doc:PageOf component='#Page2' /></doc:Div>
             </Content>
-        </pdf:Section>
+        </doc:Section>
 
-        <pdf:Section styles:class='pg-num' styles:page-number-start-index='1' >
+        <doc:Section styles:class='pg-num' styles:page-number-start-index='1' >
             <Content>
-                <pdf:Div>These are the page numbers shown on each of the pages</pdf:Div>
+                <doc:Div>These are the page numbers shown on each of the pages</doc:Div>
                 <!-- Page 1 -->
-                <pdf:PageNumber id='Page1' />
-                <pdf:PageBreak/>
+                <doc:PageNumber id='Page1' />
+                <doc:PageBreak/>
                 <!-- Page 2 -->
-                <pdf:PageNumber id='Page2' />
-                <pdf:Div >
+                <doc:PageNumber id='Page2' />
+                <doc:Div >
                     Reference back the intro content 
-                    <pdf:PageOf component='IntroSection' styles:display-format='on page {0} ({2})' ></pdf:PageOf>
-                </pdf:Div>
+                    <doc:PageOf component='IntroSection' styles:display-format='on page {0} ({2})' ></doc:PageOf>
+                </doc:Div>
             </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentpageof.png

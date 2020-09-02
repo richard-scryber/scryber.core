@@ -8,43 +8,43 @@ components for specific textual values.
 Label Component
 ===============
 
-The pdf:Label is a texual component who's default value is an empty string. 
+The doc:Label is a texual component who's default value is an empty string. 
 It can be styled as any span and supports data binding.
 
 
 .. code-block:: xml
 
-    <pdf:Label text="{@:Label}" />
+    <doc:Label text="{@:Label}" />
 
 
 Text Component
 ===============
 
-The pdf:Text component is also available, and is **not** stylable. 
+The doc:Text component is also available, and is **not** stylable. 
 It will simply add text to a run of characters.
 
 However, it too is fully bindable.
 
 .. code-block:: xml
 
-    <pdf:Text value="{@:Label}" />
+    <doc:Text value="{@:Label}" />
 
 Number Component
 ================
 
-The pdf:Number component is available and it can be styled 
+The doc:Number component is available and it can be styled 
 as any span. It supports data binding, but also the standard .Net number format
 options for converting to a string.
 
 .. code-block:: xml
 
-    <pdf:Number value="{@:Number}" styles:number-format="C" />
+    <doc:Number value="{@:Number}" styles:number-format="C" />
 
 
 Date Component
 ================
 
-The pdf:Date component is available and it can be styled 
+The doc:Date component is available and it can be styled 
 as any span. It supports data binding, but also the standard .Net date format
 options for converting to a string.
 
@@ -52,7 +52,7 @@ The default value is the current date and time, if not set.
 
 .. code-block:: xml
 
-    <pdf:Date value="{@:Number}" styles:date-format="D" />
+    <doc:Date value="{@:Number}" styles:date-format="D" />
 
 
 These also support all the inline style attributes associated with components (and block positioning
@@ -62,20 +62,20 @@ excetera if their position-mode is changed.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
-        <pdf:Double-Param id="Currency" value="1020.50" />
-        <pdf:Double-Param id="Long" value="10000000000"/>
-        <pdf:Date-Param id="Eons" value="1664-03-06" />
-        <pdf:String-Param id="label" value="text value" />
-        <pdf:String-Param id="DateFormat" value="ddd dd MMMM yyyy" />
+        <doc:Double-Param id="Currency" value="1020.50" />
+        <doc:Double-Param id="Long" value="10000000000"/>
+        <doc:Date-Param id="Eons" value="1664-03-06" />
+        <doc:String-Param id="label" value="text value" />
+        <doc:String-Param id="DateFormat" value="ddd dd MMMM yyyy" />
     </Params>
     
     <Styles>
 
-        <styles:Style applied-type="pdf:H5" >
+        <styles:Style applied-type="doc:H5" >
             <styles:Text decoration="Underline" />
         </styles:Style>
 
@@ -90,47 +90,47 @@ excetera if their position-mode is changed.
     </Styles>
     <Pages>
 
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt">
+        <doc:Page styles:margins="20pt" styles:font-size="12pt">
 
         <Content>
-            <pdf:H5 text="Inline Text Components" styles:margins="20" />
-            <pdf:Para>
-                The inline components support assignment of simple values (or even default values).<pdf:Br/>
-                For example this is a number <pdf:Number value="10" />, this is a <pdf:Text value="Label"  />, and this is the current date and time <pdf:Date />.
-            </pdf:Para>
-            <pdf:Para>
-                However the real power of these components is, that they are bindable and can be explicitly styled.<pdf:Br/>
-                For example this is a number from a parameter <pdf:Number value="{@:Currency}" styles:number-format="C" /> in currency format,
-                this is a number with a specific format <pdf:Number value="{@:Long}" styles:number-format="#,###,000.000" />,
-                this is a <pdf:Label text="{@:Label}" styles:class="field"  />, and this is a date and time '<pdf:Date value="{@:Eons}" styles:class="date" />' with
+            <doc:H5 text="Inline Text Components" styles:margins="20" />
+            <doc:Para>
+                The inline components support assignment of simple values (or even default values).<doc:Br/>
+                For example this is a number <doc:Number value="10" />, this is a <doc:Text value="Label"  />, and this is the current date and time <doc:Date />.
+            </doc:Para>
+            <doc:Para>
+                However the real power of these components is, that they are bindable and can be explicitly styled.<doc:Br/>
+                For example this is a number from a parameter <doc:Number value="{@:Currency}" styles:number-format="C" /> in currency format,
+                this is a number with a specific format <doc:Number value="{@:Long}" styles:number-format="#,###,000.000" />,
+                this is a <doc:Label text="{@:Label}" styles:class="field"  />, and this is a date and time '<doc:Date value="{@:Eons}" styles:class="date" />' with
                 the style applied.
-            </pdf:Para>
+            </doc:Para>
 
-            <pdf:H5 text="And they can be used for data sources in tables, loops etc." styles:margins="20" />
-            <pdf:Table>
-                <pdf:Header-Row>
-                    <pdf:Header-Cell>Label</pdf:Header-Cell>
-                    <pdf:Header-Cell>Number</pdf:Header-Cell>
-                    <pdf:Header-Cell>Date</pdf:Header-Cell>
-                </pdf:Header-Row>
-                <pdf:Row>
-                    <pdf:Cell>
-                        <pdf:Label text="{@:Label}" />
-                    </pdf:Cell>
-                    <pdf:Cell>
-                        <pdf:Number value="{@:Currency}" styles:number-format="C" />
-                    </pdf:Cell>
-                    <pdf:Cell>
-                        <pdf:Date value="{@:Eons}" styles:date-format="D" />
-                    </pdf:Cell>
-                </pdf:Row>
-            </pdf:Table>
+            <doc:H5 text="And they can be used for data sources in tables, loops etc." styles:margins="20" />
+            <doc:Table>
+                <doc:Header-Row>
+                    <doc:Header-Cell>Label</doc:Header-Cell>
+                    <doc:Header-Cell>Number</doc:Header-Cell>
+                    <doc:Header-Cell>Date</doc:Header-Cell>
+                </doc:Header-Row>
+                <doc:Row>
+                    <doc:Cell>
+                        <doc:Label text="{@:Label}" />
+                    </doc:Cell>
+                    <doc:Cell>
+                        <doc:Number value="{@:Currency}" styles:number-format="C" />
+                    </doc:Cell>
+                    <doc:Cell>
+                        <doc:Date value="{@:Eons}" styles:date-format="D" />
+                    </doc:Cell>
+                </doc:Row>
+            </doc:Table>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentTextInline.png
 

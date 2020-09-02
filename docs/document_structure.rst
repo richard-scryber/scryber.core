@@ -24,7 +24,7 @@ Example
     <?xml version="1.0" encoding="utf-8" ?>
     <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     
@@ -36,18 +36,18 @@ Example
         </Styles>
 
         <Params>
-            <pdf:String-Param id="MyTitle" value="Document Title" />
+            <doc:String-Param id="MyTitle" value="Document Title" />
         </Params>
         
         <Pages>
-            <pdf:Page outline-title="Third Page">
+            <doc:Page outline-title="Third Page">
             <Content>
-                <pdf:H1 styles:class="title" text="{@:MyTitle}" > </pdf:H1>
+                <doc:H1 styles:class="title" text="{@:MyTitle}" > </doc:H1>
             </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. note:: The order of the elements is not important, but it's a maximum of one each. It is not an error for a Document element to be completely empty, but it will be just that.
 
@@ -62,7 +62,7 @@ or content stream to define explicit options for the way the file is handled.
 
     <?xml version="1.0" encoding="utf-8" ?>
     <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
-    <pdf:Document ....
+    <doc:Document ....
 
 As a processing instruction, the schema xsds do not support validation of the content, but the following are the supported options.
 
@@ -101,7 +101,7 @@ Scryber requires the use of a prefix for all of the namespaces (as there are con
 
 * `pdf` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd
     * These are the main visual and structural components in a file or document.
-    * e.g. pdf:Document; pdf:Page; pdf:Label.
+    * e.g. doc:Document; doc:Page; doc:Label.
     * It refers to the assembly namespace `Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
     * see :doc:`document_components` for more on teh content elements of a document.
 * `data` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd
@@ -110,7 +110,7 @@ Scryber requires the use of a prefix for all of the namespaces (as there are con
     * It refers to the assembly namespace `Scryber.Data, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
     * see :doc:`document_databinding` for more on working with data.
 * `styles` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd
-    * These apply colour, size and other visual style to the components, both as Style elements and as attributes on pdf:Compontents
+    * These apply colour, size and other visual style to the components, both as Style elements and as attributes on doc:Compontents
     * e.g. styles:Style; styles:bg-color; styles:width.
     * It refers to the assembly namespace `Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
     * see :doc:`document_styles` for more on working with styles.
@@ -159,7 +159,7 @@ For example the following viewer options:
 
 .. code-block:: XML
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
               xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
               xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
               auto-bind="true" >
@@ -246,20 +246,20 @@ and named elements so can be changed at runtime.
         <Subject>{@:Subject}</Subject>
         <Keywords>{@:Keywords}</Keywords>
         <Author>{@:Author}</Author>
-        <pdf:Extra name="Tag" >Document tag</pdf:Extra>
+        <doc:Extra name="Tag" >Document tag</doc:Extra>
     </Info>
 
     <Params>
-        <pdf:String-Param id="Title" value="Document Title" />
-        <pdf:String-Param id="Author" value="My Name" />
-        <pdf:String-Param id="Subject" value="This is the subject" />
-        <pdf:String-Param id="Keywords" value="Scryber; Document Info; Properties" />
+        <doc:String-Param id="Title" value="Document Title" />
+        <doc:String-Param id="Author" value="My Name" />
+        <doc:String-Param id="Subject" value="This is the subject" />
+        <doc:String-Param id="Keywords" value="Scryber; Document Info; Properties" />
     </Params>
 
 The attributes on the document `Info` for creator, created-date, producer, modified-date are automatically completed by the scryber library
 but can be overriden.
 
-The pdf:Extra entries within the info, allow producers to add their own keywords and content.
+The doc:Extra entries within the info, allow producers to add their own keywords and content.
 This will appear in the custom tag of the document properties, but can also be processed by search engines and other tools quickly and easily.
 
 .. image:: images/documentproperties_extra.png

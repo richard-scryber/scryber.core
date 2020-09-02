@@ -134,13 +134,13 @@ These styles and classes can then be used in the document template (or a referen
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
-        <pdf:Xml-Param id="title" >
+        <doc:Xml-Param id="title" >
         <h1 class="title">Styled Html Title</h1>
-        </pdf:Xml-Param>
+        </doc:Xml-Param>
     </Params>
 
     <Styles>
@@ -174,24 +174,24 @@ These styles and classes can then be used in the document template (or a referen
 
     <Pages>
         
-        <pdf:Section styles:font-size="12pt">
+        <doc:Section styles:font-size="12pt">
         <Content>
             
             <!-- Fragment bound to the xml 'title' parameter -->
-            <pdf:HtmlFragment source="" contents="{@:title}" />
+            <doc:HtmlFragment source="" contents="{@:title}" />
             
             <!-- Fragment that comes from an MVC Controller method with a name parameter
                 split over 2 columns with the explicit height -->
-            <pdf:Div styles:column-count="2" styles:padding="20pt" styles:height="200pt">
-                <pdf:HtmlFragment source="http://localhost:5000/Home/html?name=my%20styled%20content" />
-            </pdf:Div>
+            <doc:Div styles:column-count="2" styles:padding="20pt" styles:height="200pt">
+                <doc:HtmlFragment source="http://localhost:5000/Home/html?name=my%20styled%20content" />
+            </doc:Div>
             
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 Rendered styled content
 =======================
@@ -206,7 +206,7 @@ Html Components
 When html is parsed, the tags are converted to fully qualified scryber components in the `Scryber.Html.Components` namespace
 of the Scryber.Components library.
 
-As such it is possible to register the html prefix and associate with these components, the same as the `pdf:` prefix.
+As such it is possible to register the html prefix and associate with these components, the same as the `doc:` prefix.
 Global styles for td, tr, field, label etc can then be made.
 
 e.g.

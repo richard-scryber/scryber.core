@@ -18,34 +18,34 @@ Template Definition
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
-        <pdf:Xml-Param id="title" >
+        <doc:Xml-Param id="title" >
         <h1>Dynamic Html Title</h1>
-        </pdf:Xml-Param>
+        </doc:Xml-Param>
     </Params>
 
     <Pages>
         
-        <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+        <doc:Section styles:margins="20pt" styles:font-size="12pt">
         <Content>
             
             <!-- Fragment bound to the xml 'title' parameter -->
-            <pdf:HtmlFragment source="" contents="{@:title}" />
+            <doc:HtmlFragment source="" contents="{@:title}" />
             
             <!-- Fragment that comes from an MVC Controller method with a name parameter -->
-            <pdf:Div styles:column-count="2" styles:height="200pt">
-            <pdf:HtmlFragment source="http://localhost:5000/Home/html?name=my%20dynamic%20content" />
-            </pdf:Div>
+            <doc:Div styles:column-count="2" styles:height="200pt">
+            <doc:HtmlFragment source="http://localhost:5000/Home/html?name=my%20dynamic%20content" />
+            </doc:Div>
             
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 MVC Controller method

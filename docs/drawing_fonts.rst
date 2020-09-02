@@ -20,14 +20,14 @@ It is safe to assume that these fonts exist and can be used.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to font divs -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Font size="20pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -37,28 +37,28 @@ It is safe to assume that these fonts exist and can be used.
     </Styles>
     <Pages>
         
-        <pdf:Page styles:padding="10" >
+        <doc:Page styles:padding="10" >
         <Content>
-            <pdf:Div styles:class="std-font" styles:font-family="Helvetica" >
-                <pdf:Span>Helvetica is the default font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Times" >
-                <pdf:Span>Times is a standard font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Courier" >
-                <pdf:Span>Courier is a standard font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Zapf Dingbats" >
-                <pdf:Span>Dingbats is a standard font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Symbol" >
-                <pdf:Span>Symbol is a standard font.</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Helvetica" >
+                <doc:Span>Helvetica is the default font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Times" >
+                <doc:Span>Times is a standard font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Courier" >
+                <doc:Span>Courier is a standard font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Zapf Dingbats" >
+                <doc:Span>Dingbats is a standard font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Symbol" >
+                <doc:Span>Symbol is a standard font.</doc:Span>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingfontsStandard.png
 
@@ -85,14 +85,14 @@ The following uses 4 different ttf fonts installed on the machine generating the
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to font divs -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Font size="20pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -102,29 +102,29 @@ The following uses 4 different ttf fonts installed on the machine generating the
     </Styles>
     <Pages>
         
-        <pdf:Page styles:padding="10" >
+        <doc:Page styles:padding="10" >
         <Content>
         
-            <pdf:Div styles:class="std-font" styles:font-family="Arial" >
-                <pdf:Span>Arial is a system installed font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Segoe UI" >
-                <pdf:Span>Segoe UI is a system installed font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Impact" >
-                <pdf:Span>Impact is a system installed font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Comic Sans MS" >
-                <pdf:Span>Comic Sans is a system installed font.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Wingdings" >
-                <pdf:Span>Wingdings is a system installed font.</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Arial" >
+                <doc:Span>Arial is a system installed font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Segoe UI" >
+                <doc:Span>Segoe UI is a system installed font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Impact" >
+                <doc:Span>Impact is a system installed font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Comic Sans MS" >
+                <doc:Span>Comic Sans is a system installed font.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Wingdings" >
+                <doc:Span>Wingdings is a system installed font.</doc:Span>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingfontsSystem.png
 
@@ -138,21 +138,21 @@ Font styles
 
 Along with the font family scryber supports the use of 'Bold', 'Italic' and 'Bold Italic' within the font to change the style.
 
-The use of the <pdf:B></pdf:B> and <pdf:I></pdf:I> components also applies the Bold and Italic flags based on the style. They can be applied 
+The use of the <doc:B></doc:B> and <doc:I></doc:I> components also applies the Bold and Italic flags based on the style. They can be applied 
 individually or nested, but they cannot be mixed inconsistently (breaking the rules of XML).
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
         <styles:Font size="20pt" />
         <styles:Background color="#AAA"/>
         <styles:Padding all="4pt"/>
@@ -163,31 +163,31 @@ individually or nested, but they cannot be mixed inconsistently (breaking the ru
     <Pages>
         
         <!-- Setting the font on the page, rather than at each level. -->
-        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
         
-            <pdf:Div styles:class="std-font" >
-                <pdf:Span>Regular Segoe UI.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" 
+            <doc:Div styles:class="std-font" >
+                <doc:Span>Regular Segoe UI.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" 
                         styles:font-bold="true" >
-                <pdf:Span>Segoe UI has a bold variant.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font"
+                <doc:Span>Segoe UI has a bold variant.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font"
                         styles:font-italic="true" >
-                <pdf:Span>Segoe UI is also available in italic.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-italic="true" >
-                <pdf:B>This is Segoe UI within a Bold span, with italic on the div.</pdf:B>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
-                <pdf:Span>This is the light variant of the font <pdf:I>with Italic inside</pdf:I> the span.</pdf:Span>
-            </pdf:Div>
+                <doc:Span>Segoe UI is also available in italic.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-italic="true" >
+                <doc:B>This is Segoe UI within a Bold span, with italic on the div.</doc:B>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
+                <doc:Span>This is the light variant of the font <doc:I>with Italic inside</doc:I> the span.</doc:Span>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingfontsStyles.png
@@ -207,20 +207,20 @@ Along with the bold and italic variants, scryber also supports the following tex
 
 And these can be combined within the attribute, and will flow across lines.
 
-Underline also has a convenience component <pdf:U></pdf:U> (which will also clear any strikethrough or overline).
+Underline also has a convenience component <doc:U></doc:U> (which will also clear any strikethrough or overline).
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Font size="20pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -231,39 +231,39 @@ Underline also has a convenience component <pdf:U></pdf:U> (which will also clea
     <Pages>
         
         <!-- Setting the font on the page, rather than at each level. -->
-        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
         
-        <pdf:Div styles:class="std-font" styles:text-decoration="Underline" >
-            <pdf:Span>Underlined Segoe UI.</pdf:Span>
-        </pdf:Div>
+        <doc:Div styles:class="std-font" styles:text-decoration="Underline" >
+            <doc:Span>Underlined Segoe UI.</doc:Span>
+        </doc:Div>
         
-        <pdf:Div styles:class="std-font" 
+        <doc:Div styles:class="std-font" 
                     styles:font-bold="true" styles:text-decoration="Underline Overline" >
-            <pdf:Span>Segoe UI as a bold variant with underline and overline.</pdf:Span>
-        </pdf:Div>
+            <doc:Span>Segoe UI as a bold variant with underline and overline.</doc:Span>
+        </doc:Div>
         
-        <pdf:Div styles:class="std-font"
+        <doc:Div styles:class="std-font"
                     styles:font-italic="true" >
-            <pdf:Span>
-            <pdf:U>Underlined Segoe UI</pdf:U> in italic, 
-            <pdf:Span styles:text-decoration="StrikeThrough">Can be struck through</pdf:Span>.</pdf:Span>
-        </pdf:Div>
+            <doc:Span>
+            <doc:U>Underlined Segoe UI</doc:U> in italic, 
+            <doc:Span styles:text-decoration="StrikeThrough">Can be struck through</doc:Span>.</doc:Span>
+        </doc:Div>
         
-        <pdf:Div styles:class="std-font"
+        <doc:Div styles:class="std-font"
                     styles:font-italic="true" >
-            <pdf:U>This is Segoe UI with underlining, that will flow across multiple lines, but an 
-            <pdf:Span styles:text-decoration="StrikeThrough">inner span with struck through will remove the parent underlining</pdf:Span> which will be
+            <doc:U>This is Segoe UI with underlining, that will flow across multiple lines, but an 
+            <doc:Span styles:text-decoration="StrikeThrough">inner span with struck through will remove the parent underlining</doc:Span> which will be
             restored after the span.
-            </pdf:U>
-        </pdf:Div>
+            </doc:U>
+        </doc:Div>
         
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingfontsDecoration.png
@@ -280,14 +280,14 @@ The layout engine will attempt to keep line heights consistent, baselines level,
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Font size="20pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -298,31 +298,31 @@ The layout engine will attempt to keep line heights consistent, baselines level,
     <Pages>
         
         <!-- Setting the font on the page, rather than at each level. -->
-        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
         
-            <pdf:Div styles:class="std-font" styles:text-decoration="Underline" >
-                <pdf:Span styles:font-size="10pt">Underlined Segoe UI in 10pt.</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="std-font" styles:text-decoration="Underline" >
+                <doc:Span styles:font-size="10pt">Underlined Segoe UI in 10pt.</doc:Span>
+            </doc:Div>
 
-            <pdf:Div styles:class="std-font" styles:text-decoration="Underline" >
-                <pdf:Span styles:font-size="30pt">Underlined Segoe UI in 30pt.</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="std-font" styles:text-decoration="Underline" >
+                <doc:Span styles:font-size="30pt">Underlined Segoe UI in 30pt.</doc:Span>
+            </doc:Div>
             
-            <pdf:Div styles:class="std-font" 
+            <doc:Div styles:class="std-font" 
                         styles:font-bold="true" >
-                <pdf:Span>Segoe UI as a<pdf:Span styles:font-size="30pt">
+                <doc:Span>Segoe UI as a<doc:Span styles:font-size="30pt">
                 bold variant with
-                <pdf:Span styles:font-size="50pt" styles:text-decoration="Underline">various</pdf:Span>
-                </pdf:Span>sizes.</pdf:Span>
-            </pdf:Div>
+                <doc:Span styles:font-size="50pt" styles:text-decoration="Underline">various</doc:Span>
+                </doc:Span>sizes.</doc:Span>
+            </doc:Div>
 
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingfontsSizes.png
 
@@ -343,21 +343,21 @@ The leading value is a unit value rather than a relative percent.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
         <styles:Background color="#AAA"/>
         <styles:Padding all="4pt"/>
         <styles:Margins bottom="10pt" />
         </styles:Style>
 
         <!-- Alter the default bold component -->
-        <styles:Style applied-type="pdf:B">
+        <styles:Style applied-type="doc:B">
         <styles:Font size="25pt" italic="true"/>
         </styles:Style>
 
@@ -365,39 +365,39 @@ The leading value is a unit value rather than a relative percent.
     <Pages>
         
         <!-- Setting the font on the page, rather than at each level. -->
-        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
-            <pdf:Div styles:column-count="3" styles:font-size="10pt">
+            <doc:Div styles:column-count="3" styles:font-size="10pt">
 
-                <pdf:Div styles:class="std-font" >
+                <doc:Div styles:class="std-font" >
                     Segoe UI in 10pt font size with the default
                     leading used on each line of the paragraph. So the text looks well spaced and consistent.
-                </pdf:Div>
-                <pdf:ColumnBreak/>
+                </doc:Div>
+                <doc:ColumnBreak/>
                 
-                <pdf:Div styles:class="std-font" styles:text-leading="20pt">
+                <doc:Div styles:class="std-font" styles:text-leading="20pt">
                     Segoe UI in 10pt font size with the leading increased to 20pt
                     on each line of the paragraph. So the text is more spaced out.
-                </pdf:Div>
-                <pdf:ColumnBreak/>
-                <pdf:Div styles:class="std-font"  styles:text-leading="7pt">
+                </doc:Div>
+                <doc:ColumnBreak/>
+                <doc:Div styles:class="std-font"  styles:text-leading="7pt">
                     Segoe UI in 10pt font size with the leading reduced to 8pt
                     on each line of the paragraph. It is not an error for the letters to collide.
-                </pdf:Div>
+                </doc:Div>
 
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="std-font"  styles:text-leading="17pt">
+            <doc:Div styles:class="std-font"  styles:text-leading="17pt">
                 Even using various 
-                <pdf:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</pdf:Span>
+                <doc:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</doc:Span>
                 will not affect the fixed size of the leading, 
-                but may impact the <pdf:B>baselines of the content</pdf:B>.
-            </pdf:Div>
+                but may impact the <doc:B>baselines of the content</doc:B>.
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingfontsLeading.png
 
@@ -411,21 +411,21 @@ They are less frequently used, but can help in adjusting fonts that are too narr
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
             <styles:Margins bottom="10pt" />
         </styles:Style>
 
         <!-- Alter the default bold component -->
-        <styles:Style applied-type="pdf:B">
+        <styles:Style applied-type="doc:B">
             <styles:Font size="20pt" italic="true"/>
             <!-- Adding character and word spacing too -->
             <styles:Text char-spacing="5pt" word-spacing="10pt"/>
@@ -446,37 +446,37 @@ They are less frequently used, but can help in adjusting fonts that are too narr
     <Pages>
         
         <!-- Setting the font on the page, rather than at each level. -->
-        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
-            <pdf:Div styles:column-count="3" styles:font-size="10pt">
-                <pdf:Div styles:class="std-font narrow" >
+            <doc:Div styles:column-count="3" styles:font-size="10pt">
+                <doc:Div styles:class="std-font narrow" >
                     Segoe UI in 10pt font size with the default
                     leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
-                </pdf:Div>
-                <pdf:ColumnBreak/>
-                <pdf:Div styles:class="std-font wide">
+                </doc:Div>
+                <doc:ColumnBreak/>
+                <doc:Div styles:class="std-font wide">
                     Segoe UI in 10pt font size with the leading increased to 15pt
                     on each line of the paragraph. The character spacing is also
                     set to an extra 1.5 points.
-                </pdf:Div>
-                <pdf:ColumnBreak/>
-                <pdf:Div styles:class="std-font wide-word" >
+                </doc:Div>
+                <doc:ColumnBreak/>
+                <doc:Div styles:class="std-font wide-word" >
                     Segoe UI in 10pt font size with the leading and character space normal, but the word
                     spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
-                </pdf:Div>
-            </pdf:Div>
+                </doc:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="std-font wide" styles:text-leading="35pt" >
+            <doc:Div styles:class="std-font wide" styles:text-leading="35pt" >
                 Even using various 
-                <pdf:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</pdf:Span>
+                <doc:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</doc:Span>
                 will maintain the character and 
-                word spacing that <pdf:B>has been applied.</pdf:B>
-            </pdf:Div>
+                word spacing that <doc:B>has been applied.</doc:B>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingfontsSpacing.png
@@ -493,14 +493,14 @@ Scryber supports multi-byte characters, anywhere in the document. Whether that i
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
             <styles:Margins bottom="10pt" />
@@ -513,33 +513,33 @@ Scryber supports multi-byte characters, anywhere in the document. Whether that i
     <Pages>
         
         <!-- Setting the font to a chinese traditional. -->
-        <pdf:Page styles:padding="10" styles:font-family="Microsoft JhengHei UI" >
+        <doc:Page styles:padding="10" styles:font-family="Microsoft JhengHei UI" >
         <Content>
-            <pdf:Div styles:column-count="3" styles:font-size="14pt" styles:height="150pt">
+            <doc:Div styles:column-count="3" styles:font-size="14pt" styles:height="150pt">
             記第功際被治年待中所正向持。害供雪指載載道表職渉彩明文界早琶。本要逆使健貿市執多格紙録指璧。
             高規要来広北的夜競語進文務配界重報史。松強約協交均刊後旅昼毎民御年必荒人稿線塁。
             代細募問毒会順債著用育探重早価時職。
             生出型掲事険市映女員雑誌賞盆山注医王放北。真催英落業投提協金策結状士社更観。
-            好角野成集顧演委事被対断陣前考武。<pdf:Br/>
-            <pdf:Br/>
-            <pdf:Span styles:font-bold="true">
+            好角野成集顧演委事被対断陣前考武。<doc:Br/>
+            <doc:Br/>
+            <doc:Span styles:font-bold="true">
             意能自至診発億間誕作業丹製橋内。大起阪企昌重週向入村着体首産優深男米。三外高本墨度投右未掲玲予伏望着。
             経鈴向表田週健会断縄駅夜長。受稿照主著運国果暮治待困。極面五遺間方天質聞査違武梨整許削武祉。
             合第面歳多料夜産選禁連聞旅可章勝策高十近。車氏意技済覇対思数祭町検開面玲術道給提座。
-            泉南追夜育挙性成卵要本物似界知減塾奈傷。</pdf:Span>
-            </pdf:Div>
+            泉南追夜育挙性成卵要本物似界知減塾奈傷。</doc:Span>
+            </doc:Div>
             <!-- mixed character sets, with leading and spacing -->
-            <pdf:Div styles:class="wide" styles:text-leading="35pt" >
+            <doc:Div styles:class="wide" styles:text-leading="35pt" >
             We can intermix the characters 記第功際被治年待中所正向持。害供雪指載載道表職渉彩明文界早琶。本要逆使健貿市執多格紙録指璧。
             高規要来広北的夜競語進文務配界重報史。松強約協交均刊後旅昼毎民御年必荒人稿線塁。
-            <pdf:Span styles:font-family="Segoe UI"  >代細募問毒会順債著用育探重早価時職。
-            But the font must contain the glyphs.</pdf:Span> 
-            </pdf:Div>
+            <doc:Span styles:font-family="Segoe UI"  >代細募問毒会順債著用育探重早価時職。
+            But the font must contain the glyphs.</doc:Span> 
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingfontsUnicode.png
@@ -569,14 +569,14 @@ This behaviour can be changed with the :doc:`scryber_configuration`.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Font size="20pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -587,37 +587,37 @@ This behaviour can be changed with the :doc:`scryber_configuration`.
     <Pages>
         
         <!-- Setting the font on the page, rather than at each level. -->
-        <pdf:Page styles:padding="10" styles:font-family="Segoe UI" >
+        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
         <Content>
         
-            <pdf:Div styles:class="std-font" >
-                <pdf:Span>Regular Segoe UI.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" 
+            <doc:Div styles:class="std-font" >
+                <doc:Span>Regular Segoe UI.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" 
                         styles:font-bold="true" >
-                <pdf:Span>Segoe UI has a bold variant.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font"
+                <doc:Span>Segoe UI has a bold variant.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font"
                         styles:font-italic="true" >
-                <pdf:Span>Segoe UI is also available in italic.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font"
+                <doc:Span>Segoe UI is also available in italic.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font"
                         styles:font-italic="true" >
-                <pdf:B>This is Segoe UI within a Bold span, with italic on the div.</pdf:B>
-            </pdf:Div>
+                <doc:B>This is Segoe UI within a Bold span, with italic on the div.</doc:B>
+            </doc:Div>
             <!-- This would fail as there is no bold version of Segoe UI Light -->
-            <pdf:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
-                <pdf:Span styles:font-bold="true">This is the light variant of the font <pdf:I>with Italic inside</pdf:I> the span.</pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
+                <doc:Span styles:font-bold="true">This is the light variant of the font <doc:I>with Italic inside</doc:I> the span.</doc:Span>
+            </doc:Div>
 
-            <pdf:Div styles:font-family="DoesNotExist" >
+            <doc:Div styles:font-family="DoesNotExist" >
                 This is with an unknown font name.
-            </pdf:Div>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 The document above would fail due to the request for bold of a light font variant, and also a font family that cannot be resolved.
 
@@ -713,14 +713,14 @@ If we generate the document below now we can see the output with the included fo
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Styles>
         
         <!-- Add a style to images -->
-        <styles:Style applied-type="pdf:Div" applied-class="std-font" >
+        <styles:Style applied-type="doc:Div" applied-class="std-font" >
             <styles:Font size="20pt" />
             <styles:Background color="#AAA"/>
             <styles:Padding all="4pt"/>
@@ -730,26 +730,26 @@ If we generate the document below now we can see the output with the included fo
     </Styles>
     <Pages>
         
-        <pdf:Page styles:padding="10" >
+        <doc:Page styles:padding="10" >
         <Content>
         
-            <pdf:Div styles:class="std-font" >
-                <pdf:Span>The new detault font is now updated and used when nothing is set, supporting 
-                the <pdf:B>bold version as well</pdf:B></pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="DIN" >
-                <pdf:Span>This is using the custom named font explicitly loaded.</pdf:Span>
-            </pdf:Div>
-            <pdf:Div styles:class="std-font" styles:font-family="Avenir Next Condensed Ultra Light" >
-                <pdf:Span>This is the ultra light version <pdf:I> and italic, 
-                that was a bit of an issue loading.</pdf:I></pdf:Span>
-            </pdf:Div>
+            <doc:Div styles:class="std-font" >
+                <doc:Span>The new detault font is now updated and used when nothing is set, supporting 
+                the <doc:B>bold version as well</doc:B></doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="DIN" >
+                <doc:Span>This is using the custom named font explicitly loaded.</doc:Span>
+            </doc:Div>
+            <doc:Div styles:class="std-font" styles:font-family="Avenir Next Condensed Ultra Light" >
+                <doc:Span>This is the ultra light version <doc:I> and italic, 
+                that was a bit of an issue loading.</doc:I></doc:Span>
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingFontsCustom.png
 

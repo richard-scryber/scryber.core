@@ -13,17 +13,17 @@ XML Template
 .. code-block:: html
 
     <?xml version="1.0" encoding="UTF-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
               xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
               xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
         <Pages>
-            <pdf:Page>
+            <doc:Page>
                 <Content>
-                    <pdf:Label>Hello World, from scryber.</pdf:Label>
+                    <doc:Label>Hello World, from scryber.</doc:Label>
                 </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
-    </pdf:Document>
+    </doc:Document>
 
 
 The same in code

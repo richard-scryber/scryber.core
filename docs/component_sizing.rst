@@ -17,7 +17,7 @@ All block components support an explicit width and / or height value. If it's wi
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Styles>
@@ -29,32 +29,32 @@ All block components support an explicit width and / or height value. If it's wi
     </Styles>
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="18pt">
+        <doc:Page styles:margins="20pt" styles:font-size="18pt">
             <Content>
-                <pdf:Div styles:class="bordered" >
+                <doc:Div styles:class="bordered" >
                 The content of this div is all as a block (by default)
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:Div styles:class="bordered" styles:width="300pt" >
-                The content of this div is set to 300pt <pdf:U>wide</pdf:U>, so the content will flow within this width,
+                <doc:Div styles:class="bordered" styles:width="300pt" >
+                The content of this div is set to 300pt <doc:U>wide</doc:U>, so the content will flow within this width,
                 and grow the height as needed.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:Div styles:class="bordered" styles:height="150pt" >
-                The content of this div is set to 150pt <pdf:U>high</pdf:U>, so the content will flow within this
+                <doc:Div styles:class="bordered" styles:height="150pt" >
+                The content of this div is set to 150pt <doc:U>high</doc:U>, so the content will flow within this
                 as full width, but the height will still be 150pt.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:Div styles:class="bordered" styles:width="300pt" styles:height="150pt" >
-                The content of this div is set to 300pt <pdf:U>wide</pdf:U> and 150pt <pdf:U>high</pdf:U>, so the content will flow within this
+                <doc:Div styles:class="bordered" styles:width="300pt" styles:height="150pt" >
+                The content of this div is set to 300pt <doc:U>wide</doc:U> and 150pt <doc:U>high</doc:U>, so the content will flow within this
                 as full width, but the height will still be 150pt.
-                </pdf:Div>    
+                </doc:Div>    
             
             </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentsizing.png
 
@@ -74,40 +74,40 @@ If both a width **and** height are assigned, then they will both be used to fit 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
     <Pages>
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
             <Content>
                 
-                <pdf:Span >An image will natually size to it's dimensions without space restriction.</pdf:Span>
-                <pdf:Image src="../../Content/Images/landscape.jpg" />
+                <doc:Span >An image will natually size to it's dimensions without space restriction.</doc:Span>
+                <doc:Image src="../../Content/Images/landscape.jpg" />
 
-                <pdf:Div styles:column-count="4" styles:margins="10 0 0 0" >
-                    <pdf:B>First Column</pdf:B><pdf:Br/>
+                <doc:Div styles:column-count="4" styles:margins="10 0 0 0" >
+                    <doc:B>First Column</doc:B><doc:Br/>
                     An image will fit to it's container if no explicit size is set.
-                    <pdf:Image src="../../Content/Images/landscape.jpg" />
-                    <pdf:ColumnBreak/>
-                    <pdf:B>Second Column</pdf:B><pdf:Br/>
+                    <doc:Image src="../../Content/Images/landscape.jpg" />
+                    <doc:ColumnBreak/>
+                    <doc:B>Second Column</doc:B><doc:Br/>
                     If a width is set, then the sizing will be proportional.
-                    <pdf:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
-                    <pdf:ColumnBreak/>
-                    <pdf:B>Third Column</pdf:B><pdf:Br/>
+                    <doc:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
+                    <doc:ColumnBreak/>
+                    <doc:B>Third Column</doc:B><doc:Br/>
                     If a height is set, then the sizing will be proportional.
-                    <pdf:Image src="../../Content/Images/landscape.jpg" styles:height="50pt" />
+                    <doc:Image src="../../Content/Images/landscape.jpg" styles:height="50pt" />
                     
-                    <pdf:ColumnBreak/>
-                    <pdf:B>Third Column</pdf:B><pdf:Br/>
+                    <doc:ColumnBreak/>
+                    <doc:B>Third Column</doc:B><doc:Br/>
                     If a width and height are set these will be used explicitly.
-                    <pdf:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" styles:height="50pt" />
-                </pdf:Div>
+                    <doc:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" styles:height="50pt" />
+                </doc:Div>
 
                 <!-- Photo by Bailey Zindel on Unsplash -->
             </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentsizingimages.png
 
@@ -147,12 +147,12 @@ If not set then the values will be zero.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Styles>
         
-        <styles:Style applied-type="pdf:Page" >
+        <styles:Style applied-type="doc:Page" >
             <styles:Font size="12pt"/>
             <styles:Margins all="20pt"/>
         </styles:Style>
@@ -174,31 +174,31 @@ If not set then the values will be zero.
     </Styles>
     <Pages>
     
-        <pdf:Page styles:class="bordered" > <!--Styles applied to the page type -->
+        <doc:Page styles:class="bordered" > <!--Styles applied to the page type -->
             <Content>
-                <pdf:B>First Example</pdf:B>
-                <pdf:Div styles:class="bordered red" >
+                <doc:B>First Example</doc:B>
+                <doc:Div styles:class="bordered red" >
                     The content of this div has a red border with no padding or margins.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:B>Second Example</pdf:B>
-                <pdf:Div styles:class="bordered red spaced" >
+                <doc:B>Second Example</doc:B>
+                <doc:Div styles:class="bordered red spaced" >
                     The content of this div has a red border with both margins and padding set from the style.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:B>Third Example</pdf:B>
-                <pdf:Div styles:class="bordered red spaced" styles:padding="20pt" >
+                <doc:B>Third Example</doc:B>
+                <doc:Div styles:class="bordered red spaced" styles:padding="20pt" >
                     The content of this div has a red border with margins set from the style and padding overridden explicitly on the component.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:B>Borders are supported on images and other blocks too, and will respect the width and or height properties.</pdf:B>
-                <pdf:Image src="../../Content/Images/landscape.jpg" styles:class="bordered spaced" styles:width="100pt" />
-                <pdf:H1 styles:class="bordered spaced">Heading with spacing.</pdf:H1>
+                <doc:B>Borders are supported on images and other blocks too, and will respect the width and or height properties.</doc:B>
+                <doc:Image src="../../Content/Images/landscape.jpg" styles:class="bordered spaced" styles:width="100pt" />
+                <doc:H1 styles:class="bordered spaced">Heading with spacing.</doc:H1>
             </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentsizingmargins.png
 
@@ -216,12 +216,12 @@ This will alter the 'size of the window' that content is seen through.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Styles>
         
-        <styles:Style applied-type="pdf:Page" >
+        <styles:Style applied-type="doc:Page" >
             <styles:Font size="12pt"/>
             <styles:Margins all="20pt"/>
         </styles:Style>
@@ -246,37 +246,37 @@ This will alter the 'size of the window' that content is seen through.
     </Styles>
     <Pages>
     
-        <pdf:Page styles:class="bordered" > <!--Styles applied to the page type -->
+        <doc:Page styles:class="bordered" > <!--Styles applied to the page type -->
             <Content>
-                <pdf:B>Content truncated by default</pdf:B>
-                <pdf:Div styles:class="bordered red" styles:height="35pt" >
+                <doc:B>Content truncated by default</doc:B>
+                <doc:Div styles:class="bordered red" styles:height="35pt" >
                     The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit, 
                     it will be truncated to the last word an no other content shown. So this content will not be visible, as it cannot be completely laid out.
-                </pdf:Div>
-                <pdf:Br/>
-                <pdf:B>Content clipped, not truncated</pdf:B>
-                <pdf:Div styles:class="bordered red" styles:height="35pt" styles:overflow-action="Clip" >
+                </doc:Div>
+                <doc:Br/>
+                <doc:B>Content clipped, not truncated</doc:B>
+                <doc:Div styles:class="bordered red" styles:height="35pt" styles:overflow-action="Clip" >
                     The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit,
                     it will still be rendered on the page, but clipped to the bounds. So this content will be there, in part.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:Br/>
-                <pdf:B>Content clipped, with inset of 10pt</pdf:B>
-                <pdf:Div styles:class="bordered red clipped" styles:height="35pt" >
+                <doc:Br/>
+                <doc:B>Content clipped, with inset of 10pt</doc:B>
+                <doc:Div styles:class="bordered red clipped" styles:height="35pt" >
                     The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit,
                     it will still be rendered on the page, but clipped to the bounds. So this content will be there, in part.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:Br/>
-                <pdf:B>Image clipped by container, with inset of 10pt</pdf:B>
-                <pdf:Div styles:class="bordered red clipped" styles:width="100pt" >
-                    <pdf:Image src="../../Content/Images/landscape.jpg" />
-                </pdf:Div>
+                <doc:Br/>
+                <doc:B>Image clipped by container, with inset of 10pt</doc:B>
+                <doc:Div styles:class="bordered red clipped" styles:width="100pt" >
+                    <doc:Image src="../../Content/Images/landscape.jpg" />
+                </doc:Div>
             </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. note:: The clipping only applies to the inner content. It's effectively drawn and then clipped to shape. This means that clipping directly on images is not supported.
@@ -295,12 +295,12 @@ ensure the content, never grows beyond that specified value.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Styles>
         
-        <styles:Style applied-type="pdf:Page" >
+        <styles:Style applied-type="doc:Page" >
             <styles:Font size="12pt"/>
             <styles:Margins all="20pt"/>
         </styles:Style>
@@ -321,43 +321,43 @@ ensure the content, never grows beyond that specified value.
     </Styles>
     <Pages>
     
-        <pdf:Page styles:class="bordered" > <!--Styles applied to the page type -->
+        <doc:Page styles:class="bordered" > <!--Styles applied to the page type -->
         <Content>
-            <pdf:B>Minimum Size, not reached</pdf:B>
-            <pdf:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
+            <doc:B>Minimum Size, not reached</doc:B>
+            <doc:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
                 This div has a red border with min size.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Br/>
-            <pdf:B>Minimum Size, width reached</pdf:B>
-            <pdf:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
+            <doc:Br/>
+            <doc:B>Minimum Size, width reached</doc:B>
+            <doc:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
                 This div has a red border with min size, but the content will push this out beyond the minimum width.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Br/>
-            <pdf:B>Minimum Size, width reached</pdf:B>
-            <pdf:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
+            <doc:Br/>
+            <doc:B>Minimum Size, width reached</doc:B>
+            <doc:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
                 This div has a red border with min size, but the content will push this out beyond the minimum width to the
                 space in the container, and then flow as normal.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Br/>
-            <pdf:B>Maximum Size, not reached</pdf:B>
-            <pdf:Div styles:class="bordered red sized" >
+            <doc:Br/>
+            <doc:B>Maximum Size, not reached</doc:B>
+            <doc:Div styles:class="bordered red sized" >
                 This div has a red border with max size.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Br/>
-            <pdf:B>Maximum Size, width reached</pdf:B>
-            <pdf:Div styles:class="bordered red sized" >
+            <doc:Br/>
+            <doc:B>Maximum Size, width reached</doc:B>
+            <doc:Div styles:class="bordered red sized" >
                 This div has a red border with max size, and the content will flow as the max-width is reached with the text.
-            </pdf:Div>
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentsizingminmax.png
@@ -371,7 +371,7 @@ spacing and offsets.
 
 .. code-block:: xml
 
-    <styles:Style applied-type="pdf:Page" >
+    <styles:Style applied-type="doc:Page" >
       <styles:Font size="12pt"/>
       <styles:Margins all="20pt"/>
       <styles:Overlay-Grid color="aqua" spacing="50pt" show="true"/>

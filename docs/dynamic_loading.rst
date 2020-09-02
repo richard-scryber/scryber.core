@@ -27,28 +27,28 @@ Ultimately the source of the template is up to the developer.
             //This content could be from anywhere, by any means.
 
             string content = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
                         <Params>
-                            <pdf:Object-Param id='Model' ></pdf:Object-Param>
+                            <doc:Object-Param id='Model' ></doc:Object-Param>
                         </Params>
                         <Pages>
-                            <pdf:Section>
+                            <doc:Section>
                                 <Content>
                                     <data:ForEach id='Foreach2' value='{@:Model.Entries}' >
                                         <Template>
-                                            <pdf:Label text='{@:.Name}' /><pdf:Br/>
+                                            <doc:Label text='{@:.Name}' /><doc:Br/>
                                         </Template>
                                     </data:ForEach>
                                 </Content>
                                 <Footer>
-                                    <pdf:Div styles:padding='5pt' styles:h-align='Center' >
-                                        <pdf:PlaceHolder contents='{@:Model.Footer}' />
-                                    </pdf:Div>
-                            </pdf:Section>
+                                    <doc:Div styles:padding='5pt' styles:h-align='Center' >
+                                        <doc:PlaceHolder contents='{@:Model.Footer}' />
+                                    </doc:Div>
+                            </doc:Section>
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             //With a string reader, but could be any stream, text reader, xml reader or other source.
             using (var reader = new System.IO.StringReader(content))
@@ -67,7 +67,7 @@ Ultimately the source of the template is up to the developer.
                         new { Name = "First", Id = "FirstID"},
                         new { Name = "Second", Id = "SecondID"}
                     },
-                Footer = "<pdf:PageNumber />"
+                Footer = "<doc:PageNumber />"
             };
             return data;
         }

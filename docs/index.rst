@@ -10,11 +10,11 @@ A document generation tool written entirely in C# for dotnet core.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
         <Params>
-            <pdf:String-Param id="Title" value="Document Title" />
+            <doc:String-Param id="Title" value="Document Title" />
         </Params>
         
         <Data>
@@ -22,7 +22,7 @@ A document generation tool written entirely in C# for dotnet core.
         </Data>
         
         <Styles>
-            <styles:Style applied-type="pdf:H1" applied-class="title" >
+            <styles:Style applied-type="doc:H1" applied-class="title" >
                 <styles:Background color="#336666"/>
                 <styles:Fill color="#FFFFFF"/>
                 <styles:Font family="Gill Sans" size="24pt" italic="true"/>
@@ -31,28 +31,28 @@ A document generation tool written entirely in C# for dotnet core.
         
         <Pages>
 
-            <pdf:Page styles:margins="20pt">
+            <doc:Page styles:margins="20pt">
                 <Content>
                     <data:With datasource-id="XmlSource"  >
 
-                        <pdf:H1 styles:class="title" text="{@:Title}" > </pdf:H1>
+                        <doc:H1 styles:class="title" text="{@:Title}" > </doc:H1>
                         
-                        <pdf:Ul>
+                        <doc:Ul>
                             <data:ForEach value="{xpath:Entries/Entry}" >
                             <Template>
-                                <pdf:Li>
-                                <pdf:Text value="{xpath:Name}" />
-                                </pdf:Li>
+                                <doc:Li>
+                                <doc:Text value="{xpath:Name}" />
+                                </doc:Li>
                             </Template>
                             </data:ForEach>
-                        </pdf:Ul>
+                        </doc:Ul>
                     </data:With>
                     
                 </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 Easy, and intuitive structure
 -----------------------------

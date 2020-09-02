@@ -54,7 +54,7 @@ For example the following will add an absolutely positioned Div on a page with s
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -74,23 +74,23 @@ For example the following will add an absolutely positioned Div on a page with s
         
     </Styles>
     <Pages>
-        <pdf:Page >
+        <doc:Page >
         <Content>
         
         <!-- Explict values on the component -->
-        <pdf:Div styles:position-mode="Absolute" styles:padding="20pt" styles:x="120mm" styles:y="40mm" styles:width="100pt" styles:bg-color="#FFAAAA" >
+        <doc:Div styles:position-mode="Absolute" styles:padding="20pt" styles:x="120mm" styles:y="40mm" styles:width="100pt" styles:bg-color="#FFAAAA" >
             20pt padding all around at 120mm, 40mm with a width of 100pt.
-        </pdf:Div>
+        </doc:Div>
         
         <!-- Or values in the style. -->
-        <pdf:Div styles:class="positioned" >
+        <doc:Div styles:class="positioned" >
             20pt padding all around at 10pt, 20pt with a width of 100mm.
-        </pdf:Div>
+        </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingunits1.png

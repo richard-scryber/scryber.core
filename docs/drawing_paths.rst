@@ -26,12 +26,12 @@ Apply both and it's diagonal, and can also be positioned inline as part of the f
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
 
-        <styles:Style applied-type="pdf:Div" >
+        <styles:Style applied-type="doc:Div" >
             <styles:Padding all="10pt"/>
             <styles:Margins bottom="10pt" />
             <styles:Background color="#AAA"/>
@@ -46,44 +46,44 @@ Apply both and it's diagonal, and can also be positioned inline as part of the f
     </Styles>
     <Pages>
         
-        <pdf:Page styles:margins="20pt" >
+        <doc:Page styles:margins="20pt" >
         <Content>
 
-            <pdf:Div >
+            <doc:Div >
                 This is some content
-                <pdf:Line />
+                <doc:Line />
                 After the line.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div >
+            <doc:Div >
                 This is some content
-                <pdf:Line styles:class="red" />
+                <doc:Line styles:class="red" />
                 After the line.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div >
+            <doc:Div >
                 This is some content
-                <pdf:Line styles:class="red" styles:width="40pt" />
+                <doc:Line styles:class="red" styles:width="40pt" />
                 After the line.
-            </pdf:Div>
+            </doc:Div>
             
-            <pdf:Div >
+            <doc:Div >
                 This is some content
-                <pdf:Line styles:class="red" styles:height="40pt" />
+                <doc:Line styles:class="red" styles:height="40pt" />
                 After the line.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div >
+            <doc:Div >
                 This is some content
-                <pdf:Line styles:class="red" styles:position-mode="Inline" styles:height="40pt" styles:width="40pt" />
+                <doc:Line styles:class="red" styles:position-mode="Inline" styles:height="40pt" styles:width="40pt" />
                 After the line.
-            </pdf:Div>
+            </doc:Div>
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/drawingPathsLines.png
 
@@ -100,12 +100,12 @@ horizontally and vertically.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
         <Styles>
 
-            <styles:Style applied-type="pdf:Div" >
+            <styles:Style applied-type="doc:Div" >
                 <styles:Padding all="10pt"/>
                 <styles:Margins bottom="10pt" />
                 <styles:Background color="#AAA"/>
@@ -130,25 +130,25 @@ horizontally and vertically.
         </Styles>
         <Pages>
             
-            <pdf:Page styles:margins="20pt" >
+            <doc:Page styles:margins="20pt" >
             <Content>
-                <pdf:Div >
-                    This is some content<pdf:Br/>
+                <doc:Div >
+                    This is some content<doc:Br/>
                     
-                    <pdf:Rect styles:class="red small inline" />
-                    <pdf:Ellipse styles:class="red small inline" ></pdf:Ellipse>
-                    <pdf:Poly styles:class="red small inline" styles:vertex-count="3" />
-                    <pdf:Poly styles:class="red small inline" styles:vertex-count="5" styles:vertex-step="2" />
-                    <pdf:Poly styles:class="red small inline" styles:vertex-count="10" styles:vertex-step="3" />
+                    <doc:Rect styles:class="red small inline" />
+                    <doc:Ellipse styles:class="red small inline" ></doc:Ellipse>
+                    <doc:Poly styles:class="red small inline" styles:vertex-count="3" />
+                    <doc:Poly styles:class="red small inline" styles:vertex-count="5" styles:vertex-step="2" />
+                    <doc:Poly styles:class="red small inline" styles:vertex-count="10" styles:vertex-step="3" />
 
-                    <pdf:Br/>After the line.
-                </pdf:Div>
+                    <doc:Br/>After the line.
+                </doc:Div>
 
             </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingPathsShapes.png
@@ -185,12 +185,12 @@ Applying a position mode of absolute will take the shape completely out of the f
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
 
-        <styles:Style applied-type="pdf:Div" >
+        <styles:Style applied-type="doc:Div" >
             <styles:Padding all="10pt"/>
             <styles:Margins bottom="10pt" />
             <styles:Background color="#AAA"/>
@@ -220,30 +220,30 @@ Applying a position mode of absolute will take the shape completely out of the f
     </Styles>
     <Pages>
 
-        <pdf:Page styles:margins="20pt" >
+        <doc:Page styles:margins="20pt" >
         <Content>
-            <pdf:Div styles:bg-color="#AAA" >
-                This is some content<pdf:Br/>
+            <doc:Div styles:bg-color="#AAA" >
+                This is some content<doc:Br/>
 
                 <!-- relatively positioned shapes -->
-                <pdf:Rect styles:class="red small relative" />
-                <pdf:Ellipse styles:class="red small relative" 
-                            styles:x="220pt" styles:fill-opacity="0.5" ></pdf:Ellipse>
+                <doc:Rect styles:class="red small relative" />
+                <doc:Ellipse styles:class="red small relative" 
+                            styles:x="220pt" styles:fill-opacity="0.5" ></doc:Ellipse>
                 
                 <!-- absolutely positioned shapes -->
-                <pdf:Poly styles:class="small absolute" 
+                <doc:Poly styles:class="small absolute" 
                             styles:vertex-count="5" styles:vertex-step="2" />
-                <pdf:Poly styles:class="small absolute" styles:x="440pt"
+                <doc:Poly styles:class="small absolute" styles:x="440pt"
                             styles:vertex-count="10" styles:vertex-step="3" />
 
-                <pdf:Br/>After the line.
-            </pdf:Div>
+                <doc:Br/>After the line.
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingPathsPositioned.png
@@ -286,12 +286,12 @@ There are many other examples of the use of svg paths, that can be mapped direct
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
 
-        <styles:Style applied-type="pdf:Div" >
+        <styles:Style applied-type="doc:Div" >
             <styles:Padding all="10pt"/>
             <styles:Margins bottom="10pt" />
             <styles:Background color="#AAA"/>
@@ -300,37 +300,37 @@ There are many other examples of the use of svg paths, that can be mapped direct
     </Styles>
     <Pages>
 
-        <pdf:Page styles:margins="20pt" >
+        <doc:Page styles:margins="20pt" >
         <Content>
-            <pdf:Div styles:bg-color="#AAA" >
-                This is some content<pdf:Br/>
+            <doc:Div styles:bg-color="#AAA" >
+                This is some content<doc:Br/>
 
                 <!-- relatively positioned shapes -->
-                <pdf:Canvas styles:width="450" styles:height="400" styles:border-color="black" styles:bg-color="white">
+                <doc:Canvas styles:width="450" styles:height="400" styles:border-color="black" styles:bg-color="white">
 
-                    <pdf:Path d="M 100 350 l 150 -300" styles:stroke-color="red" styles:stroke-width="3" ></pdf:Path>
-                    <pdf:Path d="M 250 50 l 150 300" styles:stroke-color="red" styles:stroke-width="3" ></pdf:Path>
+                    <doc:Path d="M 100 350 l 150 -300" styles:stroke-color="red" styles:stroke-width="3" ></doc:Path>
+                    <doc:Path d="M 250 50 l 150 300" styles:stroke-color="red" styles:stroke-width="3" ></doc:Path>
 
-                    <pdf:Path d="M 175 200 l 150 0" styles:stroke-color="green" styles:stroke-width="3" ></pdf:Path>
+                    <doc:Path d="M 175 200 l 150 0" styles:stroke-color="green" styles:stroke-width="3" ></doc:Path>
 
-                    <pdf:Path d="M 100 350 q 150 -300 300 0" styles:stroke-color="black" styles:fill-style="None" styles:stroke-width="3" ></pdf:Path>
+                    <doc:Path d="M 100 350 q 150 -300 300 0" styles:stroke-color="black" styles:fill-style="None" styles:stroke-width="3" ></doc:Path>
 
-                    <pdf:Ellipse styles:x="97" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black" />
-                    <pdf:Ellipse styles:x="247" styles:y="47" styles:width="6" styles:height="6" styles:fill-color="black"  />
-                    <pdf:Ellipse styles:x="397" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black"  />
+                    <doc:Ellipse styles:x="97" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black" />
+                    <doc:Ellipse styles:x="247" styles:y="47" styles:width="6" styles:height="6" styles:fill-color="black"  />
+                    <doc:Ellipse styles:x="397" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black"  />
 
-                    <pdf:Label text="A" styles:x="75" styles:y="350" styles:font-bold="true" styles:font-size="30" />
-                    <pdf:Label text="B" styles:x="240" styles:y="15" styles:font-bold="true" styles:font-size="30" />
-                    <pdf:Label text="C" styles:x="400" styles:y="350" styles:font-bold="true" styles:font-size="30" />
-                </pdf:Canvas>
+                    <doc:Label text="A" styles:x="75" styles:y="350" styles:font-bold="true" styles:font-size="30" />
+                    <doc:Label text="B" styles:x="240" styles:y="15" styles:font-bold="true" styles:font-size="30" />
+                    <doc:Label text="C" styles:x="400" styles:y="350" styles:font-bold="true" styles:font-size="30" />
+                </doc:Canvas>
                 After the canvas.
-            </pdf:Div>
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/drawingPathsBezier.png

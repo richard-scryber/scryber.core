@@ -20,25 +20,25 @@ Examples of inline components are spans, labels, text literals, page numbers,
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
             <Content>
                 This is the content of the page, 
-                <pdf:Span styles:fill-color="maroon" >and this will continue on the current line until it reaches the end
-                and then flow onto the next line.</pdf:Span> 
-                This with then flow after the line.<pdf:Br/>
-                A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
-                <pdf:Span styles:fill-color="maroon" styles:font-size="30pt" >It also supports the use of multiple font sizes</pdf:Span> in multiple lines, 
+                <doc:Span styles:fill-color="maroon" >and this will continue on the current line until it reaches the end
+                and then flow onto the next line.</doc:Span> 
+                This with then flow after the line.<doc:Br/>
+                A line break forces a new line in the content but flow in the page (#<doc:PageNumber />) will continue. 
+                <doc:Span styles:fill-color="maroon" styles:font-size="30pt" >It also supports the use of multiple font sizes</doc:Span> in multiple lines, 
                 adjusting the line height as needed.
             </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 Generating this document will create the following output 
 (see :doc:`mvc_controller_full` or :doc:`gui_controller_full` to understand how to do this).
@@ -59,32 +59,32 @@ Examples of blocks are Div's, Paragraphs, Tables, BlockQuotes, Headings, Images,
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
         <Pages>
         
-            <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+            <doc:Page styles:margins="20pt" styles:font-size="20pt">
                 <Content>
                     This is the content of the page, 
                     
-                    <pdf:Div styles:fill-color="maroon" >This will always be on a new on the line, and it's content will then continue inline until it reaches the end
-                    and then flow onto the next line.</pdf:Div> 
+                    <doc:Div styles:fill-color="maroon" >This will always be on a new on the line, and it's content will then continue inline until it reaches the end
+                    and then flow onto the next line.</doc:Div> 
                     
-                    After a block, this with then continue with the previous flow on the next line.<pdf:Br/>
-                    A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
+                    After a block, this with then continue with the previous flow on the next line.<doc:Br/>
+                    A line break forces a new line in the content but flow in the page (#<doc:PageNumber />) will continue. 
                     
-                    <pdf:Div styles:fill-color="#666600" >
+                    <doc:Div styles:fill-color="#666600" >
                     Blocks also supports the use of inline and block content within them
-                    <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, adjusting the line height as needed.</pdf:Span>
-                    <pdf:Div >As a separate block within the container</pdf:Div>
-                    </pdf:Div>
+                    <doc:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, adjusting the line height as needed.</doc:Span>
+                    <doc:Div >As a separate block within the container</doc:Div>
+                    </doc:Div>
                     
                 </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentpositioningblocks.png
 
@@ -94,42 +94,42 @@ They also support :doc:`document_columns`
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                   xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
         <Content>
             This is the content of the page, 
             
-            <pdf:Div styles:fill-color="maroon" styles:margins="20pt 10pt 10pt 10pt" >This will always 
+            <doc:Div styles:fill-color="maroon" styles:margins="20pt 10pt 10pt 10pt" >This will always 
                 be on a new on the line, and it's content will then continue inline 
                 until it reaches the end and then flow onto the next line.
-            </pdf:Div> 
+            </doc:Div> 
             
-            After a block, this with then continue with the previous flow on the next line.<pdf:Br/>
-            A line break forces a new line in the content but flow in the page (#<pdf:PageNumber />) will continue. 
+            After a block, this with then continue with the previous flow on the next line.<doc:Br/>
+            A line break forces a new line in the content but flow in the page (#<doc:PageNumber />) will continue. 
             
-            <pdf:Div styles:fill-color="#666600" styles:bg-color="#BBBB00" styles:padding="10pt"
+            <doc:Div styles:fill-color="#666600" styles:bg-color="#BBBB00" styles:padding="10pt"
                      styles:margins="10pt" styles:column-count="2">
                 Blocks also supports the use of inline and block content within them
 
-                <pdf:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
-                    adjusting the line height as needed.</pdf:Span>
+                <doc:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
+                    adjusting the line height as needed.</doc:Span>
 
                 <!-- breaking onto a new column-->
-                <pdf:ColumnBreak />
+                <doc:ColumnBreak />
 
-                <pdf:Div styles:fill-color="black" styles:bg-color="white" >As a separate block within the container</pdf:Div>
+                <doc:Div styles:fill-color="black" styles:bg-color="white" >As a separate block within the container</doc:Div>
                 And coming after the child block.
-            </pdf:Div>
+            </doc:Div>
             
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentpositioningblocks2.png
 
@@ -143,41 +143,41 @@ Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also sup
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                   xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
             <Content>
-                <pdf:Div styles:border-color="black" styles:border-width="1pt" >
+                <doc:Div styles:border-color="black" styles:border-width="1pt" >
                     The content of this div is all as a block (by default)
                     
-                    <pdf:Div styles:fill-color="maroon" >This div is positioned as a block.</pdf:Div>
+                    <doc:Div styles:fill-color="maroon" >This div is positioned as a block.</doc:Div>
 
                     <!-- Images are by detault displayed as blocks -->
-                    <pdf:Image styles:width="60pt" src="../../Content/Images/group.png" />
+                    <doc:Image styles:width="60pt" src="../../Content/Images/group.png" />
                     
                     After the content.
-                </pdf:Div>
+                </doc:Div>
 
-                <pdf:Div styles:border-color="black" styles:border-width="1pt" >
+                <doc:Div styles:border-color="black" styles:border-width="1pt" >
                     The content of this div is set explicity to inline.
                     
-                    <pdf:Div styles:position-mode="Inline" styles:fill-color="maroon">This div is positioned as a block.</pdf:Div>
+                    <doc:Div styles:position-mode="Inline" styles:fill-color="maroon">This div is positioned as a block.</doc:Div>
 
                     <!-- Image is also set to inline and will increase the line height automatically -->
-                    <pdf:Image styles:position-mode="Inline" styles:width="60pt"  src="../../Content/Images/group.png" />
+                    <doc:Image styles:position-mode="Inline" styles:width="60pt"  src="../../Content/Images/group.png" />
 
                     After the content.
-                </pdf:Div>
+                </doc:Div>
                 
             
             </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentpositioningblocks3.png
@@ -197,7 +197,7 @@ By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and L
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
 
     <Styles>
@@ -209,57 +209,57 @@ By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and L
     </Styles>
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
         <Content>
-            <pdf:Div styles:class="bordered" >
-                This div is full width<pdf:Br/>
-                And will extend beyond the content.<pdf:Br/>
+            <doc:Div styles:class="bordered" >
+                This div is full width<doc:Br/>
+                And will extend beyond the content.<doc:Br/>
                 To the width of its container.
-            </pdf:Div>
-            <pdf:Br/>
-            <pdf:Div styles:class="bordered" styles:full-width="false" >
-                This div is NOT full width<pdf:Br/>
-                And will only size to the content.<pdf:Br/>
-            </pdf:Div>
-            <pdf:Br/>
-            <pdf:Div styles:class="bordered" styles:full-width="false" >
+            </doc:Div>
+            <doc:Br/>
+            <doc:Div styles:class="bordered" styles:full-width="false" >
+                This div is NOT full width<doc:Br/>
+                And will only size to the content.<doc:Br/>
+            </doc:Div>
+            <doc:Br/>
+            <doc:Div styles:class="bordered" styles:full-width="false" >
                 This div is NOT full width,
                 but will  size to the content available in the container,
                 and then flow to the next line.
-            </pdf:Div>
-            <pdf:Br/>
+            </doc:Div>
+            <doc:Br/>
             <!-- Tables are not by default full width-->
-            <pdf:Table>
-                <pdf:Row>
-                    <pdf:Cell styles:class="bordered">First</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Second</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Third</pdf:Cell>
-                </pdf:Row>
-                <pdf:Row>
-                    <pdf:Cell styles:class="bordered">Fourth</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Fifth</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Sixth</pdf:Cell>
-                </pdf:Row>
-            </pdf:Table>
-            <pdf:Br/>
+            <doc:Table>
+                <doc:Row>
+                    <doc:Cell styles:class="bordered">First</doc:Cell>
+                    <doc:Cell styles:class="bordered">Second</doc:Cell>
+                    <doc:Cell styles:class="bordered">Third</doc:Cell>
+                </doc:Row>
+                <doc:Row>
+                    <doc:Cell styles:class="bordered">Fourth</doc:Cell>
+                    <doc:Cell styles:class="bordered">Fifth</doc:Cell>
+                    <doc:Cell styles:class="bordered">Sixth</doc:Cell>
+                </doc:Row>
+            </doc:Table>
+            <doc:Br/>
             <!-- But can be set to full width explicitly or in styles -->
-            <pdf:Table styles:full-width="true">
-                <pdf:Row>
-                    <pdf:Cell styles:class="bordered">First</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Second</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Third</pdf:Cell>
-                </pdf:Row>
-                <pdf:Row>
-                    <pdf:Cell styles:class="bordered">Fourth</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Fifth</pdf:Cell>
-                    <pdf:Cell styles:class="bordered">Sixth</pdf:Cell>
-                </pdf:Row>
-            </pdf:Table>
+            <doc:Table styles:full-width="true">
+                <doc:Row>
+                    <doc:Cell styles:class="bordered">First</doc:Cell>
+                    <doc:Cell styles:class="bordered">Second</doc:Cell>
+                    <doc:Cell styles:class="bordered">Third</doc:Cell>
+                </doc:Row>
+                <doc:Row>
+                    <doc:Cell styles:class="bordered">Fourth</doc:Cell>
+                    <doc:Cell styles:class="bordered">Fifth</doc:Cell>
+                    <doc:Cell styles:class="bordered">Sixth</doc:Cell>
+                </doc:Row>
+            </doc:Table>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentpositioningfullwidth.png
 
@@ -280,7 +280,7 @@ The component will no longer be in the flow of any inline content, nor alter the
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
     <Styles>
         <styles:Style applied-class="bordered">
@@ -292,26 +292,26 @@ The component will no longer be in the flow of any inline content, nor alter the
     </Styles>
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
         <Content>
             This is the content of the page, 
             
-            <pdf:Div styles:class="bordered" >This is the content above the block.</pdf:Div>
+            <doc:Div styles:class="bordered" >This is the content above the block.</doc:Div>
 
-            <pdf:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
-                <pdf:Span styles:position-mode="Relative" styles:bg-color="aqua" >This is relative</pdf:Span>
+            <doc:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
+                <doc:Span styles:position-mode="Relative" styles:bg-color="aqua" >This is relative</doc:Span>
                 with the content within it.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="bordered">
+            <doc:Div styles:class="bordered">
             After a block, this will then continue with the previous flow of content.
-            </pdf:Div>
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentpositioningrelative.png
 
@@ -322,7 +322,7 @@ And push any content after the block down.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
     <Styles>
         <styles:Style applied-class="bordered">
@@ -334,26 +334,26 @@ And push any content after the block down.
     </Styles>
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
         <Content>
             This is the content of the page, 
             
-            <pdf:Div styles:class="bordered" >This is the content above the block.</pdf:Div>
+            <doc:Div styles:class="bordered" >This is the content above the block.</doc:Div>
 
-            <pdf:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
-                <pdf:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is relative</pdf:Span>
+            <doc:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
+                <doc:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is relative</doc:Span>
                 with the content within it.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="bordered">
+            <doc:Div styles:class="bordered">
             After a block, this will then continue with the previous flow of content.
-            </pdf:Div>
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentpositioningrelative2.png
 
@@ -370,7 +370,7 @@ but if a size is specified, then this will be honoured over and above the page s
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
     <Styles>
         <styles:Style applied-class="bordered">
@@ -382,30 +382,30 @@ but if a size is specified, then this will be honoured over and above the page s
     </Styles>
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
         <Content>
             This is the content of the page
             
-            <pdf:Div styles:class="bordered" >This is the content above the block.</pdf:Div>
+            <doc:Div styles:class="bordered" >This is the content above the block.</doc:Div>
 
-            <pdf:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
+            <doc:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
                 <!-- Absolutely positioned content -->
-                <pdf:Span styles:position-mode="Absolute" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is absolute</pdf:Span>
+                <doc:Span styles:position-mode="Absolute" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is absolute</doc:Span>
                 with the content within it.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="bordered">
+            <doc:Div styles:class="bordered">
                 After a block, this will then continue with the previous flow of content.
-            </pdf:Div>
+            </doc:Div>
             
             <!-- Absolute postitioning can be applied to any component, and size can be specified. -->
-            <pdf:Image styles:position-mode="Absolute" src="../../Content/Images/group.png" styles:fill-opacity="0.7"
+            <doc:Image styles:position-mode="Absolute" src="../../Content/Images/group.png" styles:fill-opacity="0.7"
                     styles:x="500pt" styles:y="150pt" styles:width="150pt" styles:height="150pt" />
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentpositioningabsolute.png
@@ -436,7 +436,7 @@ If a block is relatively positioned, it will overlay any content that preceded i
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
     <Styles>
         <styles:Style applied-class="bordered">
@@ -448,30 +448,30 @@ If a block is relatively positioned, it will overlay any content that preceded i
     </Styles>
     <Pages>
     
-        <pdf:Page styles:margins="20pt" styles:font-size="20pt">
+        <doc:Page styles:margins="20pt" styles:font-size="20pt">
         <Content>
             This is the content of the page, 
             
-            <pdf:Div styles:class="bordered" >This is the flowing content within the block that 
+            <doc:Div styles:class="bordered" >This is the flowing content within the block that 
                 will span over multiple lines
-                <pdf:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="25pt" 
-                            styles:y="20pt" styles:padding="4pt" >This is relative positioned</pdf:Span>
+                <doc:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="25pt" 
+                            styles:y="20pt" styles:padding="4pt" >This is relative positioned</doc:Span>
                 with this content over the top.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="bordered" styles:padding="10 60 10 10">
-                <pdf:Image src="../../Content/Images/group.png" styles:position-mode="Relative" 
+            <doc:Div styles:class="bordered" styles:padding="10 60 10 10">
+                <doc:Image src="../../Content/Images/group.png" styles:position-mode="Relative" 
                             styles:x="-40pt" styles:y="-10pt" styles:width="100pt" styles:fill-opacity="0.5" />
                 This is the content that will flow over the top with the 60 point left padding and the 
                 image set at -40, -10 relative to the container with a width of 100pt
                 and a 50% opacity.
-            </pdf:Div>
+            </doc:Div>
 
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 By using this rule interesting effects can be designed.
 

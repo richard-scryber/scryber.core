@@ -16,7 +16,7 @@ Simple Outline
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <!-- Document outline -->
@@ -25,44 +25,44 @@ Simple Outline
     <Pages>
 
         <!-- inner outline item-->
-        <pdf:PageGroup outline-title="Page Group outline" >
+        <doc:PageGroup outline-title="Page Group outline" >
         <Pages>
 
-            <pdf:Page outline-title="First Page">
+            <doc:Page outline-title="First Page">
             <Content>
                 
-                <pdf:H3 >This is the first page</pdf:H3>
+                <doc:H3 >This is the first page</doc:H3>
             </Content>
-            </pdf:Page>
+            </doc:Page>
 
-            <pdf:Section outline-title="Second Section">
+            <doc:Section outline-title="Second Section">
                 <Content>
-                    <pdf:H3>This is the second page</pdf:H3>
-                    <pdf:PageBreak/>
+                    <doc:H3>This is the second page</doc:H3>
+                    <doc:PageBreak/>
                     <!-- outline title on a component -->
-                    <pdf:H3 outline-title="Inner Heading">This is the third page</pdf:H3>
-                    <pdf:Br/>
-                    <pdf:Br/>
-                    <pdf:Br/>
-                    <pdf:Br/>
-                    <pdf:H3 outline-title="Inner Heading 2">This is still the third page</pdf:H3>
+                    <doc:H3 outline-title="Inner Heading">This is the third page</doc:H3>
+                    <doc:Br/>
+                    <doc:Br/>
+                    <doc:Br/>
+                    <doc:Br/>
+                    <doc:H3 outline-title="Inner Heading 2">This is still the third page</doc:H3>
                 </Content>
-            </pdf:Section>
+            </doc:Section>
             
         </Pages>
         
-        </pdf:PageGroup>
+        </doc:PageGroup>
         
-        <pdf:Page outline-title="Out of the group">
+        <doc:Page outline-title="Out of the group">
             <Content>
-                <pdf:H3 >This is after the group</pdf:H3>
+                <doc:H3 >This is after the group</doc:H3>
             </Content>
-        </pdf:Page>
+        </doc:Page>
 
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 When output the reader application or browser can show the content of the outline.

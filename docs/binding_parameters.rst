@@ -20,27 +20,27 @@ and the value applied to the property it was set on.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
         <Params>
             <!-- Declare the parameters -->
-            <pdf:Bool-Param id="ShowTitle" value="true" />
-            <pdf:String-Param id="MyTitle" value="Document Title" />
-            <pdf:Color-Param id="TitleBg" value="#AAAAAA" />
+            <doc:Bool-Param id="ShowTitle" value="true" />
+            <doc:String-Param id="MyTitle" value="Document Title" />
+            <doc:Color-Param id="TitleBg" value="#AAAAAA" />
         </Params>
         
         <Pages>
             <!-- Use the 'MyTitle' parameter for the outline. -->
-            <pdf:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
+            <doc:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
             <Content>
                 <!-- And use it as the text on the heading -->
-                <pdf:H1 visible="{@:ShowTitle}" styles:bg-color="{@:TitleBg}"  text="{@:MyTitle}" > </pdf:H1>
-                <pdf:Para >This is the content of the document</pdf:Para>
+                <doc:H1 visible="{@:ShowTitle}" styles:bg-color="{@:TitleBg}"  text="{@:MyTitle}" > </doc:H1>
+                <doc:Para >This is the content of the document</doc:Para>
             </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 Generating this document the parameter values are applied to the final output and rendered.
@@ -112,7 +112,7 @@ And the used in your template
 
 .. code-block:: xml
 
-    <pdf:H1 visible="{@:ShowTitle}" styles:font-size="{@:Size}" styles:bg-color="{@:TitleBg}"  text="{@:MyTitle}" > </pdf:H1>
+    <doc:H1 visible="{@:ShowTitle}" styles:font-size="{@:Size}" styles:bg-color="{@:TitleBg}"  text="{@:MyTitle}" > </doc:H1>
 
 But it will not be co-erced into the correct type, nor will it have a clear initial value.
 
@@ -149,25 +149,25 @@ an the values retrieved from the properties on that object.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
         <Params>
             <!-- Declare the parameters -->
-            <pdf:Object-Param id="Heading" />
+            <doc:Object-Param id="Heading" />
         </Params>
         
         <Pages>
             <!-- Use the 'MyTitle' parameter for the outline. -->
-            <pdf:Page outline-title="{@:Heading.Title}" styles:margins="20pt" styles:font-size="12pt">
+            <doc:Page outline-title="{@:Heading.Title}" styles:margins="20pt" styles:font-size="12pt">
             <Content>
                 <!-- And use it as the text on the heading -->
-                <pdf:H1 visible="{@:Heading.Visible}" styles:bg-color="{@:Heading.Background}"  text="{@:Heading.Title}" > </pdf:H1>
-                <pdf:Para >This is the content of the document</pdf:Para>
+                <doc:H1 visible="{@:Heading.Visible}" styles:bg-color="{@:Heading.Background}"  text="{@:Heading.Title}" > </doc:H1>
+                <doc:Para >This is the content of the document</doc:Para>
             </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 The dot notation is evaluated at runtime to bind the appropriate value.
@@ -200,7 +200,7 @@ Inherited types will be acceptable as will interfaces.
 
     <Params>
         <!-- Declare the parameters -->
-        <pdf:Object-Param id="Heading" type="MyNamespace.MyType, MyAssembly" />
+        <doc:Object-Param id="Heading" type="MyNamespace.MyType, MyAssembly" />
     </Params>
 
 .. code-block:: csharp
@@ -237,25 +237,25 @@ And in your template, you can specify the model type you are expecting.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
         <Params>
             <!-- Declare the parameters -->
-            <pdf:Object-Param id="Model" type="MyNamespace.MyType, MyAssembly" />
+            <doc:Object-Param id="Model" type="MyNamespace.MyType, MyAssembly" />
         </Params>
         
         <Pages>
             <!-- Use the 'MyTitle' parameter for the outline. -->
-            <pdf:Page outline-title="{@:Model.Title}" styles:margins="20pt" styles:font-size="12pt">
+            <doc:Page outline-title="{@:Model.Title}" styles:margins="20pt" styles:font-size="12pt">
             <Content>
                 <!-- And use it as the text on the heading -->
-                <pdf:H1 visible="{@:Model.Visible}" styles:bg-color="{@:Model.Background}"  text="{@:Model.Title}" > </pdf:H1>
-                <pdf:Para >This is the content of the document</pdf:Para>
+                <doc:H1 visible="{@:Model.Visible}" styles:bg-color="{@:Model.Background}"  text="{@:Model.Title}" > </doc:H1>
+                <doc:Para >This is the content of the document</doc:Para>
             </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 Combining selector paths
@@ -285,32 +285,32 @@ To refer to the properties in the current context simply precede the property wi
 .. code-block:: xml
 
     <?xml version='1.0' encoding='utf-8' ?>
-        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                         >
         <Params>
-            <pdf:Object-Param id='Model' ></pdf:Object-Param>
+            <doc:Object-Param id='Model' ></doc:Object-Param>
         </Params>
 
         <Pages>
 
-        <pdf:Section>
+        <doc:Section>
             <Content>
 
                 <data:ForEach value='{@:Model.List}' >
                     <Template>
                         <!-- Here we can refer to the current object and set values from properties. -->
-                        <pdf:Label id='{@:.Id}' text='{@:.Name}' ></pdf:Label>
-                        <pdf:Br/>
+                        <doc:Label id='{@:.Id}' text='{@:.Name}' ></doc:Label>
+                        <doc:Br/>
                     </Template>
                 </data:ForEach>
 
             </Content>
-        </pdf:Section>
+        </doc:Section>
 
         </Pages>
-    </pdf:Document>
+    </doc:Document>
 
 
 And when we are providing the value we can add an array or list.
@@ -337,11 +337,11 @@ As styles are full qualified members of the document object, they also support d
 .. code-block:: xml
 
     <?xml version='1.0' encoding='utf-8' ?>
-    <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+    <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
     <Params>
-        <pdf:Object-Param id='Model' ></pdf:Object-Param>
+        <doc:Object-Param id='Model' ></doc:Object-Param>
     </Params>
 
     <Styles>
@@ -363,24 +363,24 @@ As styles are full qualified members of the document object, they also support d
 
     <Pages>
 
-        <pdf:Section>
+        <doc:Section>
         <Content>
             <!-- Specify the class names on the components to use the styles -->
-            <pdf:H1 styles:class='head' text='{@:Model.Title}' ></pdf:H1>
-            <pdf:Div styles:class='body' >
+            <doc:H1 styles:class='head' text='{@:Model.Title}' ></doc:H1>
+            <doc:Div styles:class='body' >
             <!-- and then loop through -->
             <data:ForEach value='{@:Model.List}' >
                 <Template>
-                <pdf:Label id='{@:.Id}' text='{@:.Name}' ></pdf:Label>
-                <pdf:Br/>
+                <doc:Label id='{@:.Id}' text='{@:.Name}' ></doc:Label>
+                <doc:Br/>
                 </Template>
             </data:ForEach>
-            </pdf:Div>
+            </doc:Div>
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
-    </pdf:Document>
+    </doc:Document>
 
 And we can generate this content by providing the Theme as well as the List.
 
@@ -433,49 +433,49 @@ For more details on the xpath syntax see the :doc:`document_datasources`
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
         <!-- Declare the parameters -->
-        <pdf:String-Param id="MyTitle" value="Document Title" />
+        <doc:String-Param id="MyTitle" value="Document Title" />
         
         <!-- This is the xml content that will be used by default -->
-        <pdf:Xml-Param id="MyData" >
+        <doc:Xml-Param id="MyData" >
         <Root>
             <Entry id="First">First Name</Entry>
             <Entry id="Second">Second Name</Entry>
             <Entry id="Third">Third Name</Entry>
         </Root>
-        </pdf:Xml-Param>
+        </doc:Xml-Param>
         
     </Params>
 
     <Pages>
         <!-- Use the 'MyTitle' parameter for the outline. -->
-        <pdf:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
+        <doc:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
         <Content>
             <!-- And use it as the text on the heading with a visble flag and background -->
-            <pdf:H1  text="{@:MyTitle}" > </pdf:H1>
-            <pdf:Para >This is the content of the xml document</pdf:Para>
+            <doc:H1  text="{@:MyTitle}" > </doc:H1>
+            <doc:Para >This is the content of the xml document</doc:Para>
             
-            <pdf:Ul>
+            <doc:Ul>
                 <!-- Now bind the content of the MyData parameter into a foreach, with the selector of //Root/Entry 
                     to loop through each one in turn -->
                 <data:ForEach value="{@:MyData}" select="//Root/Entry" >
                 <Template>
-                    <pdf:Li >
-                    <pdf:Text value="{xpath:text()}" />
-                    </pdf:Li>
+                    <doc:Li >
+                    <doc:Text value="{xpath:text()}" />
+                    </doc:Li>
                 </Template>
                 </data:ForEach>
-            </pdf:Ul>
+            </doc:Ul>
             
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 If we generate this content as is the xml will be bound to the unordered list and created.
 
@@ -535,48 +535,48 @@ So you can provide both dynamic data, and dynamic structure to your document at 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                     xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
         <!-- Declare the parameters -->
-        <pdf:String-Param id="MyTitle" value="Document Title" />
+        <doc:String-Param id="MyTitle" value="Document Title" />
         
         <!-- This is the xml content that will be used by default -->
-        <pdf:Xml-Param id="MyData" >
+        <doc:Xml-Param id="MyData" >
         <Root>
             <Entry id="First">First Name</Entry>
             <Entry id="Second">Second Name</Entry>
             <Entry id="Third">Third Name</Entry>
         </Root>
-        </pdf:Xml-Param>
+        </doc:Xml-Param>
 
         <!-- this is the template content. -->
-        <pdf:Template-Param id="MyContent" >
-            <pdf:Li><pdf:Text value="{xpath:text()}" /></pdf:Li>
-        </pdf:Template-Param>
+        <doc:Template-Param id="MyContent" >
+            <doc:Li><doc:Text value="{xpath:text()}" /></doc:Li>
+        </doc:Template-Param>
 
     </Params>
 
     <Pages>
         <!-- Use the 'MyTitle' parameter for the outline. -->
-        <pdf:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
+        <doc:Page outline-title="{@:MyTitle}" styles:margins="20pt" styles:font-size="12pt">
         <Content>
             <!-- And use it as the text on the heading with a visble flag and background -->
-            <pdf:H1  text="{@:MyTitle}" > </pdf:H1>
-            <pdf:Para >This is the content of the xml document</pdf:Para>
+            <doc:H1  text="{@:MyTitle}" > </doc:H1>
+            <doc:Para >This is the content of the xml document</doc:Para>
             
-            <pdf:Ul>
+            <doc:Ul>
                 <!-- Now we specify the template content from the parameter -->
                 <data:ForEach value="{@:MyData}" select="//Root/Entry" template="{@:MyContent}" ></data:ForEach>
-            </pdf:Ul>
+            </doc:Ul>
 
             
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
 
-    </pdf:Document>
+    </doc:Document>
 
 Creating this document at runtime pulls the template data from the parameter `MyContent`
 
@@ -600,7 +600,7 @@ We can then change the value in code to use a different template as well as the 
         doc.Params["MyData"] = ele;
 
         //Just a simple example to change the template.
-        doc.Params["MyTemplate"] = "<pdf:Li><pdf:H1 text='{xpath:text()}' /></pdf:Li>";
+        doc.Params["MyTemplate"] = "<doc:Li><doc:H1 text='{xpath:text()}' /></doc:Li>";
 
         return this.PDF(doc);
     }

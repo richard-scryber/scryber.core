@@ -31,7 +31,7 @@ There is a standard enumeration of the 16 named colours.
 
 These can be defined on any attribute, 
 
-e.g `pdf:Div styles:bg-color='red'></pdf:Div>`
+e.g `doc:Div styles:bg-color='red'></doc:Div>`
 
 or in code via the `Scryber.Drawing.PDFColors` static class.
 
@@ -73,7 +73,7 @@ The background is simply a solid colour from the Grayscale or RGB ranges. The ba
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -93,23 +93,23 @@ The background is simply a solid colour from the Grayscale or RGB ranges. The ba
     <Pages>
         
         <!-- Page background with 40pt top padding -->
-        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <doc:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
             <Content>
                 <!--  values from the hex values. -->
-                <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" >
+                <doc:Div styles:bg-color="#FAA" styles:padding="20pt" >
                     Light pink full opacity background.
-                </pdf:Div>
+                </doc:Div>
 
                 <!-- values from the enumeration with transparency -->
-                <pdf:Div styles:class="floating" >
+                <doc:Div styles:class="floating" >
                     This is the content in a semi-opaque fuschia background ontop of the page.
-                </pdf:Div>
+                </doc:Div>
             </Content>
-        </pdf:Page>
+        </doc:Page>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentbgcolor.png
@@ -127,7 +127,7 @@ Margins are outside of the border, and padding is inside. But borders do not aff
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -148,25 +148,25 @@ Margins are outside of the border, and padding is inside. But borders do not aff
     <Pages>
         
         <!-- Page background with 40pt top padding -->
-        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <doc:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
         <Content>
         
         
             <!--  Borders set on a full width div. -->
-            <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
+            <doc:Div styles:bg-color="#FAA" styles:padding="20pt" 
                         styles:border-color="#C77" styles:border-width="3pt" >
                 Light pink with a border.
-            </pdf:Div>
+            </doc:Div>
 
             <!-- Thick border will overlay the inner content -->
-            <pdf:Div styles:class="floating" >
+            <doc:Div styles:class="floating" >
                 Semi-opaque fuschia background with a thick border.
-            </pdf:Div>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentbordercolor.png
@@ -192,7 +192,7 @@ If the sides and corner radii are combined, only the sides that create a corner 
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -214,25 +214,25 @@ If the sides and corner radii are combined, only the sides that create a corner 
     <Pages>
         
         <!-- Page background with 40pt top padding -->
-        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <doc:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
         <Content>
         
         
         <!--  Borders set on a full width div. -->
-            <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
+            <doc:Div styles:bg-color="#FAA" styles:padding="20pt" 
                         styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt">
                 Light pink with a border around.
-            </pdf:Div>
+            </doc:Div>
 
             <!-- Thick border will overlay the inner content -->
-            <pdf:Div styles:class="floating" >
+            <doc:Div styles:class="floating" >
                 Semi-opaque fuschia background with a thick sided border.
-            </pdf:Div>
+            </doc:Div>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentbordersides.png
 
@@ -247,7 +247,7 @@ It is independent of background, however the same attributes apply to fills as t
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -269,34 +269,34 @@ It is independent of background, however the same attributes apply to fills as t
     <Pages>
         
         <!-- Page background with 40pt top padding -->
-        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <doc:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
         <Content>
         
         
             <!--  Borders set on a full width div. -->
-            <pdf:Div styles:bg-color="#FAA" styles:padding="20pt" 
+            <doc:Div styles:bg-color="#FAA" styles:padding="20pt" 
                         styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt"
                         styles:fill-color="aqua" styles:font-bold="true" styles:font-size="40pt">
                 Light pink bg with aqua Text.
-            </pdf:Div>
+            </doc:Div>
 
             <!-- Thick border will overlay the inner content -->
-            <pdf:Div styles:class="floating" >
-                <pdf:Span styles:fill-color="white" styles:fill-opacity="0.7">
+            <doc:Div styles:class="floating" >
+                <doc:Span styles:fill-color="white" styles:fill-opacity="0.7">
                 Semi-opaque fuschia with white semi-transparent text.
-                </pdf:Span>
-            </pdf:Div>
+                </doc:Span>
+            </doc:Div>
 
             <!-- Rectangle with a fill colour, no background or border -->
-            <pdf:Rect styles:fill-color="lime" styles:fill-opacity="0.9"
+            <doc:Rect styles:fill-color="lime" styles:fill-opacity="0.9"
                         styles:position-mode="Absolute" 
-                        styles:x="120" styles:y="120" styles:width="120" styles:height="120" ></pdf:Rect>
+                        styles:x="120" styles:y="120" styles:width="120" styles:height="120" ></doc:Rect>
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentbordertextfillrect.png
@@ -314,7 +314,7 @@ The stroke is around the shape or text. It supports the same properties as the b
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Styles>
@@ -339,31 +339,31 @@ The stroke is around the shape or text. It supports the same properties as the b
     </Styles>
     <Pages>
         
-        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <doc:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
         <Content>
         
             <!--  Set the ctroked class for the text -->
-            <pdf:Div styles:class="stroked" styles:bg-color="#FAA" styles:padding="20pt" 
+            <doc:Div styles:class="stroked" styles:bg-color="#FAA" styles:padding="20pt" 
                         styles:border-color="#C77" styles:border-width="3pt" styles:border-corner-radius="10pt"
                         styles:fill-color="aqua" styles:font-bold="true" styles:font-size="40pt">
                 Light pink bg with aqua Text.
-            </pdf:Div>
+            </doc:Div>
 
-            <pdf:Div styles:class="floating" >
-                <pdf:Span styles:fill-color="white" styles:fill-opacity="0.7">
+            <doc:Div styles:class="floating" >
+                <doc:Span styles:fill-color="white" styles:fill-opacity="0.7">
                 Semi-opaque fuschia with white semi-transparent text.
-                </pdf:Span>
-            </pdf:Div>
+                </doc:Span>
+            </doc:Div>
 
             <!-- Added the stroke to the rectangle shape too -->
-            <pdf:Rect styles:class="stroked" styles:fill-color="lime" styles:fill-opacity="0.9"
+            <doc:Rect styles:class="stroked" styles:fill-color="lime" styles:fill-opacity="0.9"
                         styles:position-mode="Absolute" 
-                        styles:x="120" styles:y="120" styles:width="120" styles:height="120" ></pdf:Rect>
+                        styles:x="120" styles:y="120" styles:width="120" styles:height="120" ></doc:Rect>
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentbordertextstroke.png
@@ -402,59 +402,59 @@ Or an explicit pattern array and phase offset. e.g. `[10, 3, 1, 3], 0`
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
 
     <Pages>
         
         <!-- Page background with 40pt top padding -->
-        <pdf:Page styles:padding="40 0 0 0" >
+        <doc:Page styles:padding="40 0 0 0" >
         <Content>
         
         
             <!--  Dash styles. -->
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 Dot '[1,1] 0' 
-                <pdf:Line styles:stroke-dash="Dot" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="Dot" styles:stroke-width="2pt"  />
+            </doc:Div>
             
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 Sparse Dot '[1, 4] 0' 
-                <pdf:Line styles:stroke-dash="Sparse-Dot" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="Sparse-Dot" styles:stroke-width="2pt"  />
+            </doc:Div>
             
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 Dash '[4, 3] 0' 
-                <pdf:Line styles:stroke-dash="Dash" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="Dash" styles:stroke-width="2pt"  />
+            </doc:Div>
             
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 Long Dash '[9, 3] 0' 
-                <pdf:Line styles:stroke-dash="Long-Dash" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="Long-Dash" styles:stroke-width="2pt"  />
+            </doc:Div>
 
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 Long Dash Dot '[9, 3, 1, 3] 0' 
-                <pdf:Line styles:stroke-dash="Long-Dash-Dot" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="Long-Dash-Dot" styles:stroke-width="2pt"  />
+            </doc:Div>
 
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 Long Dash Dot Dot '[9, 3, 1, 3, 1, 3] 0' 
-                <pdf:Line styles:stroke-dash="Long-Dash-Dot-Dot" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="Long-Dash-Dot-Dot" styles:stroke-width="2pt"  />
+            </doc:Div>
             
-            <pdf:Div styles:padding="10pt">
+            <doc:Div styles:padding="10pt">
                 '[24, 3, 1, 9, 1, 3] 18' 
-                <pdf:Line styles:stroke-dash="[24, 3, 1, 9, 1, 3] 18" styles:stroke-width="2pt"  />
-            </pdf:Div>
+                <doc:Line styles:stroke-dash="[24, 3, 1, 9, 1, 3] 18" styles:stroke-width="2pt"  />
+            </doc:Div>
 
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentborderdashstyles.png
@@ -484,14 +484,14 @@ and then used in places throughout the styles and components.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Params>
         <!-- Declare the parameters for the colours and units -->
-        <pdf:Color-Param value="#FAA" id="bg-color" />
-        <pdf:Color-Param value="#C77" id="border-color" />
-        <pdf:Unit-Param value="2pt" id="border-width" />
+        <doc:Color-Param value="#FAA" id="bg-color" />
+        <doc:Color-Param value="#C77" id="border-color" />
+        <doc:Unit-Param value="2pt" id="border-width" />
     </Params>
     <Styles>
         
@@ -512,27 +512,27 @@ and then used in places throughout the styles and components.
     <Pages>
         
         <!-- Page background with 40pt top padding -->
-        <pdf:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
+        <doc:Page styles:bg-color="aqua" styles:padding="40 0 0 0" >
         <Content>
         
         
             <!--  Bind explicitly to the parameters. -->
-            <pdf:Div styles:bg-color="{@:bg-color}" styles:padding="20pt" 
+            <doc:Div styles:bg-color="{@:bg-color}" styles:padding="20pt" 
                         styles:border-color="{@:border-color}" styles:border-width="{@:border-width}">
                 Bound background and border
-            </pdf:Div>
+            </doc:Div>
 
             <!-- Or use the style that has been bound -->
-            <pdf:Div styles:class="floating" >
+            <doc:Div styles:class="floating" >
                 Bound background and border on a style.
-            </pdf:Div>
+            </doc:Div>
 
         
         </Content>
-        </pdf:Page>
+        </doc:Page>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentborderbound.png

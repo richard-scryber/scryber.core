@@ -9,7 +9,7 @@ another document, or remote web link.
 The Link Component
 ==================
 
-A `pdf:Link` is an invisible component, although styles will be applied to content within it.
+A `doc:Link` is an invisible component, although styles will be applied to content within it.
 There are 4 properties that determine what happens when the content within the link is clicked.
 
 * action - This defines the primary type of link action to perform, each section below describes each type of action.
@@ -37,11 +37,11 @@ It does not matter what page they are put on, they will perform the action if po
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
-        <pdf:String-Param id="search" value="https://www.google.com" />
+        <doc:String-Param id="search" value="https://www.google.com" />
     </Params>
 
     <Styles>
@@ -59,43 +59,43 @@ It does not matter what page they are put on, they will perform the action if po
     </Styles>
     <Pages>
 
-        <pdf:PageGroup>
+        <doc:PageGroup>
         <Header>
             <!-- Shared header across all pages with 5 columns -->
-            <pdf:Div styles:class="nav" >
-                <pdf:Link action="FirstPage" >&lt;&lt; First Page</pdf:Link>
-                <pdf:ColumnBreak/>
-                <pdf:Link action="PrevPage">&lt; Previous Page</pdf:Link>
-                <pdf:ColumnBreak/>
-                <pdf:PageNumber />
-                <pdf:ColumnBreak/>
-                <pdf:Link action="NextPage" > Next Page &gt;</pdf:Link>
-                <pdf:ColumnBreak/>
-                <pdf:Link action="LastPage">Last Page &gt;&gt;</pdf:Link>
-            </pdf:Div>
+            <doc:Div styles:class="nav" >
+                <doc:Link action="FirstPage" >&lt;&lt; First Page</doc:Link>
+                <doc:ColumnBreak/>
+                <doc:Link action="PrevPage">&lt; Previous Page</doc:Link>
+                <doc:ColumnBreak/>
+                <doc:PageNumber />
+                <doc:ColumnBreak/>
+                <doc:Link action="NextPage" > Next Page &gt;</doc:Link>
+                <doc:ColumnBreak/>
+                <doc:Link action="LastPage">Last Page &gt;&gt;</doc:Link>
+            </doc:Div>
         </Header>
         <Pages>
             <!-- Title page and 3 following pages -->
-            <pdf:Page >
+            <doc:Page >
             <Content>Title Page</Content>
-            </pdf:Page>
+            </doc:Page>
 
-            <pdf:Section>
+            <doc:Section>
             <Content>
                 Content 1
-                <pdf:PageBreak/>
+                <doc:PageBreak/>
                 Content 2
-                <pdf:PageBreak/>
+                <doc:PageBreak/>
                 Content 3
             </Content>
-            </pdf:Section>
+            </doc:Section>
         </Pages>
-        </pdf:PageGroup>
+        </doc:PageGroup>
 
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentLinksNavigation.png
 
@@ -122,14 +122,14 @@ The below example is quite complex, but shows how to build a basic table of cont
 
     <?xml version="1.0" encoding="utf-8" ?>
  
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
 
 
     <Styles>
 
-        <styles:Style applied-type="pdf:Link" >
+        <styles:Style applied-type="doc:Link" >
             <styles:Font bold="true"/>
             <styles:Fill color="navy"/>
         </styles:Style>
@@ -141,7 +141,7 @@ The below example is quite complex, but shows how to build a basic table of cont
             <styles:Padding top="12pt"/>
         </styles:Style>
 
-        <styles:Style applied-type="pdf:Cell">
+        <styles:Style applied-type="doc:Cell">
             <styles:Border style="None"/>
             <styles:Padding left="0" right="0"/>
         </styles:Style>
@@ -153,85 +153,85 @@ The below example is quite complex, but shows how to build a basic table of cont
     </Styles>
     
         <Pages>
-            <pdf:Page styles:padding="20pt" styles:font-size="12pt" >
+            <doc:Page styles:padding="20pt" styles:font-size="12pt" >
             <Content>
-                <pdf:H1 styles:margins="0 0 30pt 0">Title Page</pdf:H1>
+                <doc:H1 styles:margins="0 0 30pt 0">Title Page</doc:H1>
                 
-                <pdf:Table styles:full-width="true">
+                <doc:Table styles:full-width="true">
                     <!-- Just a header cell spanning both columns -->
-                    <pdf:Header-Row styles:class="toc-head" >
-                        <pdf:Header-Cell styles:column-span="2" >
+                    <doc:Header-Row styles:class="toc-head" >
+                        <doc:Header-Cell styles:column-span="2" >
                         Table of Contents
-                        </pdf:Header-Cell>
-                    </pdf:Header-Row>
+                        </doc:Header-Cell>
+                    </doc:Header-Row>
                     
                     <!-- First content page by ID -->
-                    <pdf:Row>
-                        <pdf:Cell>
+                    <doc:Row>
+                        <doc:Cell>
                             First Page
-                            <pdf:Line styles:class="tab-fill" ></pdf:Line>
-                        </pdf:Cell>
-                        <pdf:Cell styles:width="50pt">
-                            <pdf:Link destination="#Page1" >
-                                <pdf:PageOf component="#Page1" />
-                            </pdf:Link>
-                        </pdf:Cell>
-                    </pdf:Row>
+                            <doc:Line styles:class="tab-fill" ></doc:Line>
+                        </doc:Cell>
+                        <doc:Cell styles:width="50pt">
+                            <doc:Link destination="#Page1" >
+                                <doc:PageOf component="#Page1" />
+                            </doc:Link>
+                        </doc:Cell>
+                    </doc:Row>
 
                     <!-- Second content page by name (full width) -->
-                    <pdf:Row>
-                        <pdf:Cell>
+                    <doc:Row>
+                        <doc:Cell>
                             Second Page
-                            <pdf:Line styles:class="tab-fill" ></pdf:Line>
-                        </pdf:Cell>
-                        <pdf:Cell>
-                            <pdf:Link destination="SecondPage" destination-fit="FullPage" >
-                                <pdf:PageOf component="SecondPage" />
-                            </pdf:Link>
-                        </pdf:Cell>
-                    </pdf:Row>
+                            <doc:Line styles:class="tab-fill" ></doc:Line>
+                        </doc:Cell>
+                        <doc:Cell>
+                            <doc:Link destination="SecondPage" destination-fit="FullPage" >
+                                <doc:PageOf component="SecondPage" />
+                            </doc:Link>
+                        </doc:Cell>
+                    </doc:Row>
 
                     <!-- Adding a link directly to a component within the page
                         that will navigate to fill the screen -->
-                    <pdf:Row>
-                        <pdf:Cell>
+                    <doc:Row>
+                        <doc:Cell>
                             Specific Content
-                            <pdf:Line styles:class="tab-fill" ></pdf:Line>
-                        </pdf:Cell>
-                        <pdf:Cell>
-                            <pdf:Link destination="#Div3" destination-fit="BoundingBox" >
-                                <pdf:PageOf component="#Div3" />
-                            </pdf:Link>
-                        </pdf:Cell>
-                    </pdf:Row>
+                            <doc:Line styles:class="tab-fill" ></doc:Line>
+                        </doc:Cell>
+                        <doc:Cell>
+                            <doc:Link destination="#Div3" destination-fit="BoundingBox" >
+                                <doc:PageOf component="#Div3" />
+                            </doc:Link>
+                        </doc:Cell>
+                    </doc:Row>
                 
-                </pdf:Table>
+                </doc:Table>
                 
             </Content>
-            </pdf:Page>
+            </doc:Page>
 
             <!-- Reset the page numbering index -->
-            <pdf:Section styles:page-number-start-index="1">
+            <doc:Section styles:page-number-start-index="1">
             <Content>
-                <pdf:Span id="Page1"  >Content on page 1</pdf:Span>
-                <pdf:PageBreak/>
+                <doc:Span id="Page1"  >Content on page 1</doc:Span>
+                <doc:PageBreak/>
                 
-                <pdf:Span id="Page2" name="SecondPage" >Content on page 2</pdf:Span>
-                <pdf:PageBreak/>
+                <doc:Span id="Page2" name="SecondPage" >Content on page 2</doc:Span>
+                <doc:PageBreak/>
                 
                 <!-- A small div relatively positioned on the page-->
                 Content 3
-                <pdf:Div id="Div3" styles:width="100" styles:height="100" styles:x="100" styles:y="100"
+                <doc:Div id="Div3" styles:width="100" styles:height="100" styles:x="100" styles:y="100"
                         styles:bg-color="black" styles:fill-color="white" styles:font-size="10pt"
                         styles:padding="20pt">
                     Small Content on the page
-                </pdf:Div>
+                </doc:Div>
             </Content>
-            </pdf:Section>
+            </doc:Section>
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentLinksDestination.png
 
@@ -247,21 +247,21 @@ Using the file attribute a remote link can be made to any url.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
-        <pdf:String-Param id="url2" value="https://www.google.com" />
+        <doc:String-Param id="url2" value="https://www.google.com" />
     </Params>
 
     <Styles>
         
-        <styles:Style applied-type="pdf:Link" >
+        <styles:Style applied-type="doc:Link" >
             <styles:Text decoration="Underline"/>
             <styles:Fill color="navy"/>
         </styles:Style>
         
-        <styles:Style applied-type="pdf:Image" >
+        <styles:Style applied-type="doc:Image" >
             <styles:Border color="navy"/>
             <styles:Padding all="4pt"/>
             <styles:Margins all="10pt"/>
@@ -272,29 +272,29 @@ Using the file attribute a remote link can be made to any url.
     
     <Pages>
         
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt">
+        <doc:Page styles:margins="20pt" styles:font-size="12pt">
         <Content>
             
             <!-- Explicit url on the file attribute, with an action of Uri -->
-            <pdf:Link action="Uri" file="http://localhost:5000/Home" >
-                <pdf:Image src="../../Content/Images/Toroid32.png" />
+            <doc:Link action="Uri" file="http://localhost:5000/Home" >
+                <doc:Image src="../../Content/Images/Toroid32.png" />
                 Link to local host
-            </pdf:Link>
+            </doc:Link>
             
-            <pdf:Br/>
-            <pdf:Br/>
+            <doc:Br/>
+            <doc:Br/>
             
             <!-- the action will attempt to be dermined if not defined -->
-            <pdf:Link file="{@:url2}" >
-                <pdf:Image src="../../Content/Images/Toroid32.png" />
+            <doc:Link file="{@:url2}" >
+                <doc:Image src="../../Content/Images/Toroid32.png" />
                 Link bound to parameter
-            </pdf:Link>
+            </doc:Link>
         </Content>
-        </pdf:Page>
+        </doc:Page>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentLinksUrls.png

@@ -15,28 +15,28 @@ readme.md documentation from the scrtber.core repository (https://raw.githubuser
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Params>
-        <pdf:String-Param id="md-url" value="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/README.md" />
+        <doc:String-Param id="md-url" value="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/README.md" />
     </Params>
 
     <Pages>
         
-        <pdf:Section styles:font-size="12pt">
+        <doc:Section styles:font-size="12pt">
         <Content>
             
-            <pdf:Div >
-                <pdf:HtmlFragment source="{@:md-url}" format="Markdown" />
-            </pdf:Div>
+            <doc:Div >
+                <doc:HtmlFragment source="{@:md-url}" format="Markdown" />
+            </doc:Div>
             
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 This will pull the markdown content from the github file and transform to html for injection into the document.
 
@@ -53,12 +53,12 @@ THis can be added to the document and styles applied to the standard html tags.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
                 xmlns:html="http://www.w3.org/1999/xhtml">
     <Params>
-        <pdf:String-Param id="md-url" value="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/README.md" />
+        <doc:String-Param id="md-url" value="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/README.md" />
     </Params>
 
     <Styles>
@@ -81,7 +81,7 @@ THis can be added to the document and styles applied to the standard html tags.
             <styles:Text decoration="Underline"/>
         </styles:Style>
         
-        <styles:Style applied-type="pdf:Heading" >
+        <styles:Style applied-type="doc:Heading" >
             <styles:Fill color="#323232"/>
             <styles:Margins all="10pt"/>
             <styles:Padding bottom="5pt"/>
@@ -102,19 +102,19 @@ THis can be added to the document and styles applied to the standard html tags.
 
     <Pages>
         
-        <pdf:Section styles:font-size="12pt">
+        <doc:Section styles:font-size="12pt">
         <Content>
             
-            <pdf:Div >
-            <pdf:HtmlFragment source="{@:md-url}" format="Markdown" />
-            </pdf:Div>
+            <doc:Div>
+                <doc:HtmlFragment source="{@:md-url}" format="Markdown" />
+            </doc:Div>
             
         </Content>
-        </pdf:Section>
+        </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentHtmlMarkdownStyled.png
 

@@ -32,7 +32,7 @@ At the top level is the Document - `DocumentRefs.pdfx`
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
                 auto-bind="true" >
@@ -42,18 +42,18 @@ At the top level is the Document - `DocumentRefs.pdfx`
         </Styles>
         
         <Pages>
-            <pdf:Page-Ref source="Pages/HeaderPage.ppfx"></pdf:Page-Ref>
+            <doc:Page-Ref source="Pages/HeaderPage.ppfx"></doc:Page-Ref>
 
-            <pdf:Page>
+            <doc:Page>
                 <Header>
-                    <pdf:Component-Ref source="Components/StdHeader.pcfx"></pdf:Component-Ref>
+                    <doc:Component-Ref source="Components/StdHeader.pcfx"></doc:Component-Ref>
                 </Header>
                 <Content>
-                    <pdf:H1 styles:class="title" >This is the second Page </pdf:H1>
+                    <doc:H1 styles:class="title" >This is the second Page </doc:H1>
                 </Content>
-            </pdf:Page>
+            </doc:Page>
         </Pages>
-    </pdf:Document>
+    </doc:Document>
 
 This contains a reference to `StyleSheet.psfx` in the `Styles` folder.
 A reference to a `HeaderPage.ppfx` in the `Pages` folder, and a reference to a `StdHeader.pcfx` in the `Components` folder.
@@ -68,7 +68,7 @@ This is the content of the `stylesheet.psfx`
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <styles:Styles xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <styles:Styles xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
             xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd">
     
         <styles:Style applied-class="title" >
@@ -100,15 +100,15 @@ to the `StdHeader.pcfx` file **relative** to the page, along with a heading.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Page xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Page xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
             xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd">
         <Header>
-            <pdf:Component-Ref source="../Components/StdHeader.pcfx"/>
+            <doc:Component-Ref source="../Components/StdHeader.pcfx"/>
         </Header>
         <Content>
-            <pdf:H1 styles:class="title" text="Heading Page" ></pdf:H1>
+            <doc:H1 styles:class="title" text="Heading Page" ></doc:H1>
         </Content>
-    </pdf:Page>
+    </doc:Page>
 
 
 StdHeader.pcfx
@@ -120,14 +120,14 @@ This file is just used as the content for the header of the pages.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Div xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Div xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
             xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
             styles:class="page-head" styles:column-count="2" >
     
-        <pdf:Label styles:class="head-text" text="Referenced Files Example" />
-        <pdf:ColumnBreak/>
-        <pdf:Date styles:class="head-text" styles:date-format="dd MMM yyyy" />
-    </pdf:Div>
+        <doc:Label styles:class="head-text" text="Referenced Files Example" />
+        <doc:ColumnBreak/>
+        <doc:Date styles:class="head-text" styles:date-format="dd MMM yyyy" />
+    </doc:Div>
 
 The content could be anything, but for this time we are using it as a standard header.
 It has 2 columns with a title on one side and then a date label on the other.
@@ -169,7 +169,7 @@ If you wanted to pull out just a heading from a file with id `title` you could u
 
 .. code-block:: xml
 
-    <pdf:Component-Ref source='Components/StdHeader.pcfx' select='//pdf:Div/pdf:H1[@id="title"]' />
+    <doc:Component-Ref source='Components/StdHeader.pcfx' select='//doc:Div/doc:H1[@id="title"]' />
 
 
 This would then only load that component, and not any other components in that file.

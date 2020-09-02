@@ -8,66 +8,66 @@ It also supports the use of binding and repeating.
 Unordered and ordered lists
 ===========================
 
-Scryber uses the pdf:List as the generic component with a default bullet style, but same 
-tags as Html for the Ordered Lists (pdf:Ol) and Unordered Lists (pdf:Ul) as short hand for these variants.
+Scryber uses the doc:List as the generic component with a default bullet style, but same 
+tags as Html for the Ordered Lists (doc:Ol) and Unordered Lists (doc:Ul) as short hand for these variants.
 
-The contents of a list item (pdf:Li) can be any form of content (inline or otherwise).
+The contents of a list item (doc:Li) can be any form of content (inline or otherwise).
 The entire list item will move.
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Pages>
 
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt" styles:column-count="3">
+        <doc:Page styles:margins="20pt" styles:font-size="12pt" styles:column-count="3">
             <Content>
                 
-                <pdf:Ul>
-                    <pdf:Li >First Item</pdf:Li>
-                    <pdf:Li >Second Item</pdf:Li>
-                    <pdf:Li >Third Item</pdf:Li>
-                    <pdf:Li >Fourth Item</pdf:Li>
-                    <pdf:Li >Fifth Item</pdf:Li>
-                </pdf:Ul>
+                <doc:Ul>
+                    <doc:Li >First Item</doc:Li>
+                    <doc:Li >Second Item</doc:Li>
+                    <doc:Li >Third Item</doc:Li>
+                    <doc:Li >Fourth Item</doc:Li>
+                    <doc:Li >Fifth Item</doc:Li>
+                </doc:Ul>
 
-                <pdf:ColumnBreak/>
+                <doc:ColumnBreak/>
 
-                <pdf:Ol>
-                    <pdf:Li >First Item</pdf:Li>
-                    <pdf:Li >Second Item</pdf:Li>
-                    <pdf:Li >Third Item</pdf:Li>
-                    <pdf:Li >Fourth Item</pdf:Li>
-                    <pdf:Li >
+                <doc:Ol>
+                    <doc:Li >First Item</doc:Li>
+                    <doc:Li >Second Item</doc:Li>
+                    <doc:Li >Third Item</doc:Li>
+                    <doc:Li >Fourth Item</doc:Li>
+                    <doc:Li >
                         Complex Item
-                        <pdf:Span styles:fill-color="red">
+                        <doc:Span styles:fill-color="red">
                         With inner content,
-                        <pdf:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
+                        <doc:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
                         that flows across the column.
-                        </pdf:Span>
-                    </pdf:Li>
-                </pdf:Ol>
+                        </doc:Span>
+                    </doc:Li>
+                </doc:Ol>
 
-                <pdf:ColumnBreak/>
+                <doc:ColumnBreak/>
 
-                <pdf:List styles:number-style="LowercaseRoman">
-                    <pdf:Li>First item roman.</pdf:Li>
-                    <pdf:Li>Second item roman.</pdf:Li>
-                    <pdf:Li>Third item roman.</pdf:Li>
-                    <pdf:Li>Fourth item roman.</pdf:Li>
-                    <pdf:Li>Fifth item roman.</pdf:Li>
-                </pdf:List>
+                <doc:List styles:number-style="LowercaseRoman">
+                    <doc:Li>First item roman.</doc:Li>
+                    <doc:Li>Second item roman.</doc:Li>
+                    <doc:Li>Third item roman.</doc:Li>
+                    <doc:Li>Fourth item roman.</doc:Li>
+                    <doc:Li>Fifth item roman.</doc:Li>
+                </doc:List>
                 
             </Content>
-        </pdf:Page>
+        </doc:Page>
 
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentLists1.png
 
@@ -81,59 +81,59 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Pages>
 
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
             <Content>
 
-                <pdf:Div styles:column-count="3" styles:height="150" styles:border-color="blue">
-                <pdf:Ul>
-                    <pdf:Li >1st Item</pdf:Li>
-                    <pdf:Li >2nd Item</pdf:Li>
-                    <pdf:Li >3rd Item</pdf:Li>
-                    <pdf:Li >4th Item</pdf:Li>
-                    <pdf:Li >5th Item</pdf:Li>
-                    <pdf:Li >6th Item</pdf:Li>
-                    <pdf:Li >7th Item</pdf:Li>
-                    <pdf:Li >8th Item</pdf:Li>
-                    <pdf:Li >9th Item</pdf:Li>
-                    <pdf:Li >10th Item</pdf:Li>
-                    <pdf:Li >11th Item</pdf:Li>
-                    <pdf:Li >12th Item</pdf:Li>
-                    <pdf:Li >13th Item</pdf:Li>
-                    <pdf:Li >14th Item</pdf:Li>
-                </pdf:Ul>
+                <doc:Div styles:column-count="3" styles:height="150" styles:border-color="blue">
+                <doc:Ul>
+                    <doc:Li >1st Item</doc:Li>
+                    <doc:Li >2nd Item</doc:Li>
+                    <doc:Li >3rd Item</doc:Li>
+                    <doc:Li >4th Item</doc:Li>
+                    <doc:Li >5th Item</doc:Li>
+                    <doc:Li >6th Item</doc:Li>
+                    <doc:Li >7th Item</doc:Li>
+                    <doc:Li >8th Item</doc:Li>
+                    <doc:Li >9th Item</doc:Li>
+                    <doc:Li >10th Item</doc:Li>
+                    <doc:Li >11th Item</doc:Li>
+                    <doc:Li >12th Item</doc:Li>
+                    <doc:Li >13th Item</doc:Li>
+                    <doc:Li >14th Item</doc:Li>
+                </doc:Ul>
                 
-                <pdf:Br/>
+                <doc:Br/>
                 
-                <pdf:Ol>
-                    <pdf:Li >First Item</pdf:Li>
-                    <pdf:Li >Second Item</pdf:Li>
-                    <pdf:Li >Third Item</pdf:Li>
-                    <pdf:Li >Fourth Item</pdf:Li>
-                    <pdf:Li >
+                <doc:Ol>
+                    <doc:Li >First Item</doc:Li>
+                    <doc:Li >Second Item</doc:Li>
+                    <doc:Li >Third Item</doc:Li>
+                    <doc:Li >Fourth Item</doc:Li>
+                    <doc:Li >
                     Complex Item
-                    <pdf:Span styles:fill-color="red">
+                    <doc:Span styles:fill-color="red">
                         With inner content,
-                        <pdf:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
+                        <doc:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
                         that flows across the column.
-                    </pdf:Span>
-                    </pdf:Li>
-                </pdf:Ol>
+                    </doc:Span>
+                    </doc:Li>
+                </doc:Ol>
                 
-                </pdf:Div>
+                </doc:Div>
 
                 
             </Content>
-        </pdf:Page>
+        </doc:Page>
 
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentListOverflow.png
@@ -153,7 +153,7 @@ The list number-style supports the following options.
 * Labels (see `Definition Lists`_ below)
 * None
 
-Along with the style of the list entries, the pdf:List; pdf:Ol; pdf:Ul also support the following style options.
+Along with the style of the list entries, the doc:List; doc:Ol; doc:Ul also support the following style options.
 
 * number-alignment - Left, Middle, Right (default), Justify. Specifies the horizontal alignment of the number based on the content.
 * number-concat - true or false. If the list is nested, a true value will concatenate the list number with the previous list.
@@ -178,11 +178,11 @@ Using the number-concat and prefix / postfix the numbers can be built up within 
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Styles>
-        <styles:Style applied-type="pdf:Ol" >
+        <styles:Style applied-type="doc:Ol" >
             <styles:List number-style="Decimals" number-postfix="."/>
         </styles:Style>
         
@@ -192,41 +192,41 @@ Using the number-concat and prefix / postfix the numbers can be built up within 
     </Styles>
     <Pages>
 
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
             <Content>
 
-                <pdf:Div styles:column-count="2" styles:height="170pt" styles:border-color="aqua">
+                <doc:Div styles:column-count="2" styles:height="170pt" styles:border-color="aqua">
                 
-                <pdf:Ol styles:number-alignment="Left" styles:number-inset="20pt">
-                    <pdf:Li >Decimal First Item</pdf:Li>
-                    <pdf:Li >
+                <doc:Ol styles:number-alignment="Left" styles:number-inset="20pt">
+                    <doc:Li >Decimal First Item</doc:Li>
+                    <doc:Li >
                         Decimal Second Item with inner list that inherits the Ol style and adds the 'inner' list style.
-                        <pdf:Ol styles:class="inner" >
-                            <pdf:Li>First Lowercase item</pdf:Li>
-                            <pdf:Li>Second Lowercase item</pdf:Li>
-                            <pdf:Li>Third Lowercase item</pdf:Li>
-                        </pdf:Ol>
-                    </pdf:Li>
-                    <pdf:Li >Decimal Third Item</pdf:Li>
-                    <pdf:Li >Decimal Fourth Item 
-                </pdf:Li>
-                    <pdf:Li>
+                        <doc:Ol styles:class="inner" >
+                            <doc:Li>First Lowercase item</doc:Li>
+                            <doc:Li>Second Lowercase item</doc:Li>
+                            <doc:Li>Third Lowercase item</doc:Li>
+                        </doc:Ol>
+                    </doc:Li>
+                    <doc:Li >Decimal Third Item</doc:Li>
+                    <doc:Li >Decimal Fourth Item 
+                </doc:Li>
+                    <doc:Li>
                         Decimal fifth Item with continuation of the 'lr' group from the inner style
-                        <pdf:Ol styles:class="inner" >
-                            <pdf:Li styles:number-alignment="Left" styles:number-inset="100pt">Fourth Lowercase item</pdf:Li>
-                            <pdf:Li styles:number-alignment="Left" styles:number-inset="70pt">Fifth Lowercase item</pdf:Li>
-                            <pdf:Li styles:number-alignment="Left" styles:number-inset="30pt">Sixth Lowercase item</pdf:Li>
-                        </pdf:Ol>
-                    </pdf:Li>
-                </pdf:Ol>
-                </pdf:Div>
+                        <doc:Ol styles:class="inner" >
+                            <doc:Li styles:number-alignment="Left" styles:number-inset="100pt">Fourth Lowercase item</doc:Li>
+                            <doc:Li styles:number-alignment="Left" styles:number-inset="70pt">Fifth Lowercase item</doc:Li>
+                            <doc:Li styles:number-alignment="Left" styles:number-inset="30pt">Sixth Lowercase item</doc:Li>
+                        </doc:Ol>
+                    </doc:Li>
+                </doc:Ol>
+                </doc:Div>
                 
             </Content>
-         </pdf:Page>
+         </doc:Page>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentListNested.png
@@ -235,7 +235,7 @@ Using the number-concat and prefix / postfix the numbers can be built up within 
 Definition Lists
 ================
 
-Definition lists are slightly different as they use the pdf:Dl and pdf:Di components, with the item-label style value rather than a bullet or number.
+Definition lists are slightly different as they use the doc:Dl and doc:Di components, with the item-label style value rather than a bullet or number.
 They also have a default inset of 100pt, rather than 30pt to fit the label content. 
 
 This can be changed using the number inset, and number alignment.
@@ -244,45 +244,45 @@ This can be changed using the number inset, and number alignment.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     <Pages>
 
-        <pdf:Page styles:margins="20pt" styles:font-size="12pt" >
+        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
             <Content>
                 
-                <pdf:Dl styles:margins="0 0 20 0">
-                    <pdf:Di styles:item-label="First" >First Item</pdf:Di>
-                    <pdf:Di styles:item-label="Second" >Second Item</pdf:Di>
-                    <pdf:Di styles:item-label="Third" >Third Item</pdf:Di>
-                    <pdf:Di styles:item-label="Fourth" >Fourth Item</pdf:Di>
-                    <pdf:Di styles:item-label="Fifth" >Fifth Item</pdf:Di>
-                </pdf:Dl>
+                <doc:Dl styles:margins="0 0 20 0">
+                    <doc:Di styles:item-label="First" >First Item</doc:Di>
+                    <doc:Di styles:item-label="Second" >Second Item</doc:Di>
+                    <doc:Di styles:item-label="Third" >Third Item</doc:Di>
+                    <doc:Di styles:item-label="Fourth" >Fourth Item</doc:Di>
+                    <doc:Di styles:item-label="Fifth" >Fifth Item</doc:Di>
+                </doc:Dl>
 
 
-                <pdf:Dl styles:number-inset="150pt" styles:number-alignment="Left">
-                    <pdf:Di styles:item-label="Long First" >First Item</pdf:Di>
-                    <pdf:Di styles:item-label="Long Second" >Second Item</pdf:Di>
-                    <pdf:Di styles:item-label="Long Third" >Third Item</pdf:Di>
-                    <pdf:Di styles:item-label="Long Fourth" >Fourth Item</pdf:Di>
-                    <pdf:Di styles:item-label="Very Long Fifth that will force a new line" >
+                <doc:Dl styles:number-inset="150pt" styles:number-alignment="Left">
+                    <doc:Di styles:item-label="Long First" >First Item</doc:Di>
+                    <doc:Di styles:item-label="Long Second" >Second Item</doc:Di>
+                    <doc:Di styles:item-label="Long Third" >Third Item</doc:Di>
+                    <doc:Di styles:item-label="Long Fourth" >Fourth Item</doc:Di>
+                    <doc:Di styles:item-label="Very Long Fifth that will force a new line" >
                         Fifth Item
-                        <pdf:Span styles:fill-color="red">
+                        <doc:Span styles:fill-color="red">
                         With inner content,
-                        <pdf:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
+                        <doc:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
                         that flows across the page and onto a new line.
-                        </pdf:Span>
-                    </pdf:Di>
-                </pdf:Dl>
+                        </doc:Span>
+                    </doc:Di>
+                </doc:Dl>
                 
             </Content>
-        </pdf:Page>
+        </doc:Page>
 
     
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 
 .. image:: images/documentListDefinitions.png
@@ -301,7 +301,7 @@ See :doc:`binding_databinding` for more on how to set up sources and get data in
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
     
@@ -320,29 +320,29 @@ See :doc:`binding_databinding` for more on how to set up sources and get data in
         </Data>
         <Pages>
 
-            <pdf:Section styles:margins="20pt" styles:font-size="12pt">
+            <doc:Section styles:margins="20pt" styles:font-size="12pt">
             <Content>
                 
                 <data:With datasource-id="Content"  select="DataSources">
                 
-                <pdf:H3 styles:h-align="Center" styles:margins="0 0 20 0" text="{xpath:@title}" />
+                <doc:H3 styles:h-align="Center" styles:margins="0 0 20 0" text="{xpath:@title}" />
                 
-                <pdf:Div styles:column-count="2" styles:padding="4pt" styles:bg-color="#CCC" >
+                <doc:Div styles:column-count="2" styles:padding="4pt" styles:bg-color="#CCC" >
                     
                     <!-- simple list binding on the Name attribute of each of the Entry(s) -->
-                    <pdf:Ol styles:number-style="UppercaseLetters" >
+                    <doc:Ol styles:number-style="UppercaseLetters" >
                         <data:ForEach value="{xpath:Entries/Entry}" >
                             <Template>
-                            <pdf:Li >
-                                <pdf:Text value="{xpath:@Name}" />
-                            </pdf:Li>
+                            <doc:Li >
+                                <doc:Text value="{xpath:@Name}" />
+                            </doc:Li>
                             </Template>
                         </data:ForEach>
-                    </pdf:Ol>
+                    </doc:Ol>
 
-                    <pdf:ColumnBreak />
+                    <doc:ColumnBreak />
                     <!-- Using a definition list with the binding. -->
-                    <pdf:Dl>
+                    <doc:Dl>
                     <data:ForEach value="{xpath:Entries/Entry}" >
                         <Template>
                         <data:Choose>
@@ -352,20 +352,20 @@ See :doc:`binding_databinding` for more on how to set up sources and get data in
                                 <Template>
 
                                     <!-- Complex content for this item -->
-                                    <pdf:Di styles:item-label="{xpath:@Id}" >
-                                        <pdf:Span styles:font-bold="true" styles:fill-color="#AA0000" >
-                                            <pdf:Text value="{xpath:concat('This is the ',@Name,' item')}" />
-                                        </pdf:Span>
-                                    </pdf:Di>
+                                    <doc:Di styles:item-label="{xpath:@Id}" >
+                                        <doc:Span styles:font-bold="true" styles:fill-color="#AA0000" >
+                                            <doc:Text value="{xpath:concat('This is the ',@Name,' item')}" />
+                                        </doc:Span>
+                                    </doc:Di>
                                 </Template>
                             </data:When>
 
                             <!-- Just a simple item otherwise -->
                             <data:Otherwise>
                                 <Template>
-                                    <pdf:Di styles:item-label="{xpath:@Id}" >
-                                        <pdf:Text value="{xpath:@Name}" />
-                                    </pdf:Di>
+                                    <doc:Di styles:item-label="{xpath:@Id}" >
+                                        <doc:Text value="{xpath:@Name}" />
+                                    </doc:Di>
                                 </Template>
                             </data:Otherwise>
 
@@ -373,17 +373,17 @@ See :doc:`binding_databinding` for more on how to set up sources and get data in
                         </Template>
                     </data:ForEach>
 
-                    </pdf:Dl>
-                </pdf:Div>
+                    </doc:Dl>
+                </doc:Div>
                 
                 </data:With>
 
             </Content>
-            </pdf:Section>
+            </doc:Section>
 
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 And a datasource response that results as follows
 
@@ -409,4 +409,4 @@ And a datasource response that results as follows
 .. image:: images/documentListsBinding.png
 
 
-.. note:: Scryber also includes the pdf:DataList component that can easily create ordered and unordered lists from datasources MUCH faster. But the pdf:ForEach and pdf:Choice allow full control where needed.
+.. note:: Scryber also includes the doc:DataList component that can easily create ordered and unordered lists from datasources MUCH faster. But the doc:ForEach and doc:Choice allow full control where needed.

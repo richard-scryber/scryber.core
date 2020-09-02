@@ -25,23 +25,23 @@ column and then ulimately the next page.
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
               xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
               xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
     <Pages>
-        <pdf:Section styles:column-count="3" >
+        <doc:Section styles:column-count="3" >
         <Header>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
         </Header>
         <Content>
-            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
-            <pdf:Div styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
+            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
+            <doc:Div styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
             tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
             mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
             pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
-            <pdf:Br/>
+            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
+            <doc:Br/>
             <!-- Truncated for brevity
             .
             . -->
@@ -52,17 +52,17 @@ column and then ulimately the next page.
             dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
             ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
             maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<pdf:Br/>
-        </pdf:Div>
-        <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
+        </doc:Div>
+        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
         </Content>
         <Footer>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
         </Footer>
-        </pdf:Section>
+        </doc:Section>
     </Pages>
     
-    </pdf:Document>
+    </doc:Document>
 
 .. image:: images/documentcolumns1.png
 
@@ -80,26 +80,26 @@ Columns on containers
 As we can see above, the headings were also part of the column layout on the page. 
 
 Scryber supports the use of columns on containers too. So our layout can be improved if we remove the columns from the page,
-and set them on the `pdf:Div` itself.
+and set them on the `doc:Div` itself.
 
 This will allow the headers to be full width, with the content flowing within the columns of the container.
 
 
 .. code-block:: xml
 
-    <pdf:Section>
+    <doc:Section>
         <Header>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
         </Header>
         <Content>
-            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
-            <pdf:Div styles:column-count="3" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
+            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
+            <doc:Div styles:column-count="3" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
             tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
             mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
             pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
-            <pdf:Br/>
+            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
+            <doc:Br/>
             <!-- Truncated for brevity
             .
             . -->
@@ -110,14 +110,14 @@ This will allow the headers to be full width, with the content flowing within th
             dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
             ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
             maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<pdf:Br/>
-        </pdf:Div>
-        <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
+        </doc:Div>
+        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
         </Content>
         <Footer>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
         </Footer>
-    </pdf:Section>
+    </doc:Section>
 
 
 .. image:: images/documentcolumns2.png
@@ -155,20 +155,20 @@ If for example we have 4 columns on a container that is 430pt wide with a 10pt a
 
 .. code-block:: xml
 
-    <pdf:Section styles:paper-orientation="Landscape" >
+    <doc:Section styles:paper-orientation="Landscape" >
         <Header>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
         </Header>
         <Content>
-            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
-            <pdf:Div styles:column-count="4" styles:column-widths="0.2 * 0.2" styles:alley-width="20pt" 
+            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
+            <doc:Div styles:column-count="4" styles:column-widths="0.2 * 0.2" styles:alley-width="20pt" 
                      styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
             tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
             mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
             pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
-            <pdf:Br/>
+            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
+            <doc:Br/>
             <!-- Truncated for brevity
             .
             . -->
@@ -179,14 +179,14 @@ If for example we have 4 columns on a container that is 430pt wide with a 10pt a
             dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
             ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
             maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<pdf:Br/>
-        </pdf:Div>
-        <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
+        </doc:Div>
+        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
         </Content>
         <Footer>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
         </Footer>
-    </pdf:Section>
+    </doc:Section>
 
 Here we can see that we have changed the paper orientation to landscape, set the column number to 4 with widths of 0.2 * 0.2,
 and set the alley width to 20pt to give more spacing.
@@ -214,36 +214,36 @@ This also applies to columns. If an image is too wide for the column it will be 
 
 .. code-block:: xml
 
-    <pdf:Section styles:paper-orientation="Landscape" >
+    <doc:Section styles:paper-orientation="Landscape" >
         <Header>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
         </Header>
         <Content>
-            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
-            <pdf:Div styles:column-count="4" styles:column-widths="0.2 0.0 0.2" 
+            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
+            <doc:Div styles:column-count="4" styles:column-widths="0.2 0.0 0.2" 
                  styles:alley-width="20pt" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
           tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-          <pdf:Image src="../../content/images/group.png" />
+          <doc:Image src="../../content/images/group.png" />
           mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
           pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-          convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
-          <pdf:Br/>
+          convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
+          <doc:Br/>
           <!-- Truncated for brevity
             .
             . -->
-         <pdf:Image src="../../content/images/group.png" />
+         <doc:Image src="../../content/images/group.png" />
           Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
           ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
           maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-          nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<pdf:Br/>
-      </pdf:Div>
-        <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+          nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
+      </doc:Div>
+        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
         </Content>
         <Footer>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
         </Footer>
-    </pdf:Section>
+    </doc:Section>
 
 With this layout the images are taking the full width available within the variable columns.
 
@@ -253,7 +253,7 @@ Breaking columns
 =================
 
 Withing the content flow of the document, it's possible just as with page breaks to stop any layout in the current column, and move to the next
-using the `pdf:ColumnBreak` ( :doc:`reference/pdf_ColumnBreak`). 
+using the `doc:ColumnBreak` ( :doc:`reference/pdf_ColumnBreak`). 
 
 When a column break appears, the heirarchy will be traversed upwards to find
 
@@ -269,35 +269,35 @@ Again mixed content can be used within the columns, and the content will flow as
 
 .. code-block:: xml
 
-    <pdf:Section styles:paper-orientation="Landscape" >
+    <doc:Section styles:paper-orientation="Landscape" >
         <Header>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
         </Header>
         <Content>
-            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</pdf:H1>
+            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
             <!--
                 2 columns on the outer div
              -->
-            <pdf:Div styles:column-count="2"
+            <doc:Div styles:column-count="2"
                     styles:alley-width="20pt" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
             tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
             
             mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
             pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<pdf:Br/>
+            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
             <!-- 
                 Inner div with 2 columns for an image and a bit of text 
             -->
-            <pdf:Div styles:column-count="2" styles:column-widths="0.4 0.6"
+            <doc:Div styles:column-count="2" styles:column-widths="0.4 0.6"
                     styles:margins="5pt" styles:font-size="12pt" styles:font-italic="true" 
                     styles:border-width="1pt" styles:border-color="red">
-                <pdf:Image src="../../content/images/group.png" />
+                <doc:Image src="../../content/images/group.png" />
                 <!-- 
                     Explicit column break after 
                     the image to go on a new line
                 -->
-                <pdf:ColumnBreak />
+                <doc:ColumnBreak />
                 Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
                 non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
                 dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
@@ -306,7 +306,7 @@ Again mixed content can be used within the columns, and the content will flow as
                 ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
                 maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
                 nunc, blandit ut sem vitae, bibendum hendrerit ipsum.
-            </pdf:Div>
+            </doc:Div>
             After the inner columns. Nunc suscipit ex ligula, eget ultricies lectus euismod in. Ut vestibulum condimentum faucibus. Nulla
             tincidunt dui eu feugiat euismod. Quisque sodales odio id augue luctus, ac viverra risus tincidunt.
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pellentesque velit quis erat
@@ -316,13 +316,13 @@ Again mixed content can be used within the columns, and the content will flow as
             .
             . -->
 
-        </pdf:Div>
-            <pdf:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</pdf:H1>
+        </doc:Div>
+            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
         </Content>
         <Footer>
-            <pdf:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</pdf:H4>
+            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
         </Footer>
-    </pdf:Section>
+    </doc:Section>
 
 
 .. image:: images/documentcolumns5.png

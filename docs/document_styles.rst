@@ -13,10 +13,10 @@ xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xs
 
 .. code-block:: xml
 
-    <pdf:Div styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
+    <doc:Div styles:margins="20pt" styles:padding="4pt" styles:bg-color="#FF0000" 
                 styles:fill-color="#FFFFFF" styles:font-family="Arial" styles:font-size="20pt" >
-        <pdf:Label>Hello World, from scryber.</pdf:Label>
-    </pdf:Div>
+        <doc:Label>Hello World, from scryber.</doc:Label>
+    </doc:Div>
 
 Or in the code
 
@@ -51,7 +51,7 @@ Along with appling styles directly to the components, Scryber supports the use o
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <pdf:Document xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
+    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
         <Styles>
@@ -66,18 +66,18 @@ Along with appling styles directly to the components, Scryber supports the use o
             
         </Styles>
         <Pages>
-            <pdf:Page>
+            <doc:Page>
                 <Content>
 
-                    <pdf:Div styles:class="mystyle">
-                        <pdf:Label>Hello World, from scryber.</pdf:Label>
-                    </pdf:Div>
+                    <doc:Div styles:class="mystyle">
+                        <doc:Label>Hello World, from scryber.</doc:Label>
+                    </doc:Div>
                     
                 </Content>
-            </pdf:Page>
+            </doc:Page>
             
         </Pages>
-    </pdf:Document>
+    </doc:Document>
 
 By using styles, it's the same as html and css. It cleans the code and makes it easier to standardise and change later on.
 This can either be within the document itself, or in a separate files (see: :doc:`referencing_files`)
@@ -118,7 +118,7 @@ e.g.
              the base level font, size and color for text. Because These
              cascade down, then it will be inherited by components in the document. -->
 
-        <styles:Style applied-type="pdf:Document" >
+        <styles:Style applied-type="doc:Document" >
             <style:Font family="Gill Sans" size="14pt" />
             <style:Fill color="#333" />
         </styles:Style>
@@ -126,7 +126,7 @@ e.g.
         <!-- This style will be applied to all top level headings 
              specifying the font size and some spacing -->
 
-        <styles:Style applied-type="pdf:H1" >
+        <styles:Style applied-type="doc:H1" >
             <styles:Font bold="true" size="30pt" />
             <styles:Margins top="20pt" />
             <styles:Padding all="5pt" />
@@ -151,7 +151,7 @@ e.g.
         <!-- This style will be applied to all H1 Headings with a class of 'border'
              and give a border colour of red with white text -->
 
-        <styles:Style applied-type="pdf:H1" applied-class="border">
+        <styles:Style applied-type="doc:H1" applied-class="border">
             <styles:Border color="#550000" />
             <styles:Fill color="#550000" />
         </styles:Style>
@@ -185,7 +185,7 @@ Every component supports the style:class attribute. And the value of this can be
 
 .. code-block:: xml
 
-    <pdf:H1 id="FirstHead" styles:class="warning border" styles:font-italic="true" >This is the Warning heading</pdf:H1>
+    <doc:H1 id="FirstHead" styles:class="warning border" styles:font-italic="true" >This is the Warning heading</doc:H1>
 
 
 
@@ -225,9 +225,9 @@ e.g.
 .. code-block:: xml
 
     <Params>
-        <pdf:Color-Param id='theme-bg' value='#FFFFFF'/>
-        <pdf:Color-Param id='theme-bg2 value='#AAAAAA'/>
-        <pdf:Color-Param id='theme-title-font' value='Helvetica'>
+        <doc:Color-Param id='theme-bg' value='#FFFFFF'/>
+        <doc:Color-Param id='theme-bg2 value='#AAAAAA'/>
+        <doc:Color-Param id='theme-title-font' value='Helvetica'>
     </Params>
     <Styles>
 
