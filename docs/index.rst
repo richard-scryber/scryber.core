@@ -23,8 +23,9 @@ A document generation tool written entirely in C# for dotnet core.
         
         <Styles>
             <styles:Style applied-type="doc:H1" applied-class="title" >
-                <styles:Background color="#336666"/>
-                <styles:Fill color="#FFFFFF"/>
+                <styles:Background color="#323232" 
+                                img-source="images/logo.png" repeat="None" x-pos="10pt" y-pos="10pt" x-size="35pt" />
+                <styles:Fill color="#00a8a1"/>
                 <styles:Font family="Gill Sans" size="24pt" italic="true"/>
             </styles:Style>
         </Styles>
@@ -53,6 +54,18 @@ A document generation tool written entirely in C# for dotnet core.
         </Pages>
 
     </doc:Document>
+
+
+.. code-block:: csharp
+
+
+    public IActionResult HelloWorld()
+    {
+        var path = _env.ContentRootPath;
+        path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.pdfx");
+
+        return this.PDF(path, );
+    }
 
 Easy, and intuitive structure
 -----------------------------
@@ -90,7 +103,8 @@ Binding to your data
 --------------------
 
 With a simple binding notation it's easy to add references to your data structures and pass information
-and complex data to your document, or get the document to look up and bind the data for you.
+and complex data to your document from SQL, JSON, Entity Model and more.
+Or get the document to look up and bind the data for you.
 
 Learn More
 ----------
@@ -172,9 +186,10 @@ Learn More
     :caption: Extending Scryber
     :maxdepth: 1
 
-    dynamic_loading
-    namespaces_and_assemblies
-    scryber_configuration
+    extending_configuration
+    extending_dynamic_loading
+    extending_classes
+    extending_namespaces_and_assemblies
     extending_scryber
 
 .. toctree::
