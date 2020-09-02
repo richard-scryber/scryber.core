@@ -1,5 +1,5 @@
 ======================================
-Parameters and object binding
+Binding to paramters and the model
 ======================================
 
 The document parameters are values that can be set within the template or in code.

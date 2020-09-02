@@ -1,5 +1,5 @@
 ================================
-Binding to grids and lists - td
+Binding with loops - td
 ================================
 
 Content to complete

@@ -141,6 +141,7 @@ Learn More
     component_textelements
     component_linking
     component_html
+    component_placeholder
 
 .. toctree::
     :caption: Html Content
@@ -158,10 +159,13 @@ Learn More
     binding_model
     binding_parameters
     binding_parameterrefs
-    binding_databinding
+    binding_dataxmlsources
+    binding_dataobjectsources
+    binding_grids
+    binding_lists
+    binding_loops
     binding_choices
     binding_gridsandlists
-    binding_xmlsources
     binding_controllers
 
 .. toctree::

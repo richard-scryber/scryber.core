@@ -1,5 +1,5 @@
 ================================
-Data Binding in Scryber - td
+Binding to lists - td
 ================================
 
 Content to complete

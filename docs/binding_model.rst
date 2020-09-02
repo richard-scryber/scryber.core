@@ -6,7 +6,7 @@ A document template is just that, a template.
 In your code you can add any source of information to be included.
 
 * As an value or model for the parameters
-* Bound to an XML datasource (xml, sql or object)
+* Bound to a datasource - xml, sql, entity, object, json, anything else
 * As a Controller with an event method
 * Just in code
 
