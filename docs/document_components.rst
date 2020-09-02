@@ -46,6 +46,7 @@ Standard structural components
     * A textual (and other content), that has a more defined style than a div.
 * Heading (1 to 6)
     * A textual (and other content), that is given a pre-defined style based on it's level of 1 to 6
+    * All headings have a base of doc:Heading (which can be styled).
     * H1, H2, H3, H4, H5, H6
 * Block Quote
     * A panel with specific margins, and a left border by default.
@@ -99,12 +100,14 @@ Textual components
     * Document references can be based on ID or name.
     * Page links can be First, Previous, Next, Last or numbered.
 
+See :doc:`component_textelements` for more information on the standard text elememnts, and 
+:doc:`component_linking` for use of links within and out of documents.
 
 Graphical components
 ====================
 
 * Images
-    * A static or dynamic image loaded from a source, and inserting into the output document.
+    * A static or dynamic image loaded from a source, and inserted into the output document.
     * Supports the use of full, relative or dynamic url references.
     * Supports png, jpeg and tiff file formats.
     * Supports alpha channels where available in the source.
@@ -124,55 +127,49 @@ And for an overview of the data sources available see :doc:`document_datasources
 * ForEach
     * Loops through each value in a data source, with an optional step, offset and count.
     * Outputs the content within the tempate, that can be any inner content.
-    * see :doc:`reference/data_foreach`
 * DataGrid
     * Loops through each value in a data source.
     * Outputs the content as a table of results, with various column types.
     * Allows for auto population from a schema in a data source.
     * Also supports alternating styles, fotters and headers.
-    * see :doc:`reference/data_datagrid`
 * DataList
     * Loops through each value in a data source, with an optional step, offset and count.
     * Outputs the content as panels, lists, or spans.
     * Allows for auto population from a schema in a data source.
     * Also supports output order, flow direction, and alternating styles.
-    * see :doc:`reference/data_datalist`
 * With
     * Takes a data value or source and applies it to the current context so it can be used in binding statements.
     * Can have any content, and they are full components, rather than templates.
     * Supports both xml and object values.
-    * see :doc:`reference/data_with`
 * WithFieldSet
     * Takes a data value or source and applies it to the current context so it can be used in binding statements.
     * Supports the use of fields within the block to automatically create the content.
     * Allows for auto population from a schema in a data source.
     * Supports both xml and object values.
-    * see :doc:`reference/data_withfieldset`
 * Choose
     * Optionally displays a set of content based on a decision (test).
-    * Allows multiple :doc:`reference/data_ChooseWhen` to be defined within the component.
+    * Allows multiple `data:When` to be defined within the component.
     * The first true decision will be output, and all others not rendered in the document.
-    * Allows the use of one :doc:`reference/data_ChooseOtherwise` component as a catch all.
-    * see :doc:`reference/data_choose`
+    * Allows the use of one `data:Otherwise` component as a catch all.
 * If
     * Optionally displays a set of content based on a decision (test).
     * If the decision is false, then no inner content will be rendered.
-    * see :doc:`reference/data_if`
+
+See :doc:`binding_model` for more information on binding to data sources in scryber.
 
 Html components
 ===============
 
-* Html Page
+* Html Section
     * A full section that supports the inclusion for html (or markdown) content output within a document as it's own page(s).
     * Supports the use of inline style conversion (with limitations) to scryber styles.
     * Content can either be loaded dynamically by the component, assigned from a data source, or explicitly set from code.
-    * see :doc:`using_html` for more information on Html in scryber.
-    * see :doc:`reference/pdf_html`
+
 * Html Fragment.
     * A block of html that can sit within a document.
     * Supports the use of inline style conversion (with limitations) to scryber styles.
     * Content can either be loaded dynamically by the component, assigned from a data source, or explicitly set from code.
-    * see :doc:`using_html` for more information on Html in scryber.
-    * see :doc:`reference/pdf_htmlfragment`
+
+See :doc:`html_simple` for how to parse and use static and dynamic html content in scryber.
 
 

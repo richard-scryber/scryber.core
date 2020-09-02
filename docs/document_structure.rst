@@ -99,11 +99,11 @@ By using explicit namespaces the xml can be read and which class an element rere
 Scryber requires the use of a prefix for all of the namespaces (as there are content elements defined without a prefix).
 
 
-* `pdf` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd
+* `doc` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd
     * These are the main visual and structural components in a file or document.
     * e.g. doc:Document; doc:Page; doc:Label.
     * It refers to the assembly namespace `Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
-    * see :doc:`document_components` for more on teh content elements of a document.
+    * see :doc:`document_components` for more on the content elements of a document.
 * `data` - http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd
     * These are either non visual components that load data from other sources, change content based on rules in data sources, or create inner content based on available data.
     * e.g. data:DataGrid; data:XmlDataSource; data:If.

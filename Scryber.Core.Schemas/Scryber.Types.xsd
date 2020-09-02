@@ -674,27 +674,45 @@
     <xs:union>
       <xs:simpleType>
         <xs:restriction base="xs:string" >
-          <xs:enumeration value="pdf:Label" />
-          <xs:enumeration value="pdf:Table" />
-          <xs:enumeration value="pdf:Row" />
-          <xs:enumeration value="pdf:Cell" />
-          <xs:enumeration value="pdf:Panel" />
-          <xs:enumeration value="pdf:Image" />
-          <xs:enumeration value="pdf:Page" />
-          <xs:enumeration value="pdf:Layer" />
-          <xs:enumeration value="pdf:Line" />
-          <xs:enumeration value="pdf:Div" />
-          <xs:enumeration value="pdf:Para" />
-          <xs:enumeration value="pdf:Pre" />
-          <xs:enumeration value="pdf:Span" />
-          <xs:enumeration value="pdf:B" />
-          <xs:enumeration value="pdf:List" />
-          <xs:enumeration value="pdf:Li" />
-          <xs:enumeration value="pdf:Ul" />
-          <xs:enumeration value="pdf:Ol" />
-          <xs:enumeration value="pdf:Dl" />
-          <xs:enumeration value="pdf:Di" />
-          <xs:enumeration value="pdf:I" />
+          <xs:enumeration value="doc:Label" />
+          <xs:enumeration value="doc:Table" />
+          <xs:enumeration value="doc:Row" />
+          <xs:enumeration value="doc:Cell" />
+          <xs:enumeration value="doc:Panel" />
+          <xs:enumeration value="doc:Image" />
+          <xs:enumeration value="doc:Page" />
+          <xs:enumeration value="doc:Layer" />
+          <xs:enumeration value="doc:Line" />
+          <xs:enumeration value="doc:Elipse" />
+          <xs:enumeration value="doc:Div" />
+          <xs:enumeration value="doc:Para" />
+          <xs:enumeration value="doc:Pre" />
+          <xs:enumeration value="doc:Span" />
+          <xs:enumeration value="doc:B" />
+          <xs:enumeration value="doc:List" />
+          <xs:enumeration value="doc:Li" />
+          <xs:enumeration value="doc:Ul" />
+          <xs:enumeration value="doc:Ol" />
+          <xs:enumeration value="doc:Dl" />
+          <xs:enumeration value="doc:Di" />
+          <xs:enumeration value="doc:I" />
+          <xs:enumeration value="doc:U" />
+
+          <xs:enumeration value="doc:Heading" />
+          <xs:enumeration value="doc:H1" />
+          <xs:enumeration value="doc:H2" />
+          <xs:enumeration value="doc:H3" />
+          <xs:enumeration value="doc:H4" />
+          <xs:enumeration value="doc:H5" />
+          <xs:enumeration value="doc:H6" />
+
+          <xs:enumeration value="doc:Section" />
+          <xs:enumeration value="doc:LayerGroup" />
+          <xs:enumeration value="doc:Poly" />
+          <xs:enumeration value="doc:Path" />
+          <xs:enumeration value="doc:Triangle" />
+          <xs:enumeration value="doc:Component-Ref" />
+
         </xs:restriction>
       </xs:simpleType>
       <xs:simpleType>
