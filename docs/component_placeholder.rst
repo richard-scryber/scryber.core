@@ -98,3 +98,93 @@ And the content will become a fully qualified member of the page.
 .. image:: images/documentPlaceholdersFilled.png
 
 .. note:: This could just have easily be done within a console application or app.
+
+Passing content as a parameter
+==============================
+
+If the placeholder is in a template, or used in multiple places, 
+it is often easier to simply specifiy a template parameter and use that as a template for the content in a placeholder.
+
+The parameter can then be updated in the code, and complete independence is made.
+
+.. code-block:: xml
+
+    <?xml version='1.0' encoding='utf-8' ?>
+    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                    xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd' >
+
+    <Params>
+        <!-- template parameter with default content -->
+        <doc:Template-Param id='datatable' >
+            <doc:Div styles:class='bordered'>No data is available for the table</doc:Div>
+        </doc:Template-Param>
+    </Params>
+    
+    <Styles>
+        <styles:Style applied-class='bordered' >
+        <styles:Border color='#777' width='1pt' style='Solid'/>
+        <styles:Background color='#EEE'/>
+        <styles:Padding all='4pt'/>
+        </styles:Style>
+    </Styles>
+    <Pages>
+    
+        <doc:Page styles:margins='20pt' styles:font-size='18pt'>
+        <Content>
+            <doc:Div styles:class='bordered' >
+            The content of this div is all as a block (by default)
+            </doc:Div>
+            
+            <!-- bind to a template parameter with a default value -->
+            <doc:PlaceHolder id='DynamicContent' template='{@:datatable}' />
+            
+            <doc:Div styles:class='bordered' styles:width='300pt' >
+                This is after the placeholder.
+            </doc:Div>
+        
+        </Content>
+        </doc:Page>
+    </Pages>
+
+    </doc:Document>
+
+
+In our code set the template parameter to a string of components 
+(or load from another source, file or view).
+
+.. code-block:: csharp
+
+        [HttpGet]
+        public IActionResult PlaceholderTemplateDocument()
+        {
+            var path = _rootPath;
+            path = System.IO.Path.Combine(path, "Views", "PDF", "DocumentPlaceholderDynamic.pdfx");
+            var doc = PDFDocument.ParseDocument(path);
+
+            //In this example, just create a random table
+            var data = GetTemplateData();
+            doc.Params["datatable"] = data;
+
+            return this.PDF(doc);
+        }
+
+        private string GetTemplateData()
+        {
+            //This content could be from any source, and could use XElements, XMLNodes or any other source.
+            //And really we should be using a string builder anyway.
+
+            var str = "<doc:Table styles:full-width='true' >";
+            for(var i = 0; i < 5; i++)
+            {
+                str += "<doc:Row><doc:Cell >" + i + "</doc:Cell><doc:Cell >" + (i + 5) + "</doc:Cell></doc:Row>";
+            }
+            str += "</doc:Table>";
+
+            return str;
+            
+        }
+
+
+And output the document as normal.
+
+.. image:: images/documentPlaceholderTemplate.png

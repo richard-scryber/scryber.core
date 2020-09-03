@@ -934,6 +934,7 @@
           </xs:element>
         </xs:sequence>
         <xs:attribute name="contents" type="BindableStringType" form="unqualified" use="optional" />
+        <xs:attribute name="template" type="BindableStringType" form="unqualified" use="optional" />
         <xs:attributeGroup ref="PageElementAttributes" />
       </xs:extension>
     </xs:complexContent>
