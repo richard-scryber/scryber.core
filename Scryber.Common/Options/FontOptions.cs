@@ -31,6 +31,7 @@ namespace Scryber.Options
     }
 
 
+
     public class FontRegistrationOption
     {
         public string Family { get; set; }
