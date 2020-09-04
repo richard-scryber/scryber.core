@@ -188,3 +188,7 @@ In our code set the template parameter to a string of components
 And output the document as normal.
 
 .. image:: images/documentPlaceholderTemplate.png
+
+
+..note:: We could have also used a string parameter (`doc:String-Param`), and then bound the `content` attribute 
+to that string.
