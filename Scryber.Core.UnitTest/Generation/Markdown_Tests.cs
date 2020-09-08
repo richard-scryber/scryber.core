@@ -43,8 +43,11 @@ namespace Scryber.Core.UnitTests.Generation
             frag.ContentsAsString = content;
             frag.Format = Html.HtmlFormatType.Markdown;
 
+            var output = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            output = System.IO.Path.Combine(output, "MarkdownTest.pdf");
+
             doc.LayoutComplete += Doc_LayoutComplete;
-            using (var ms = new System.IO.FileStream("/Users/Richard/Test.pdf", System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite))
+            using (var ms = new System.IO.FileStream(output, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite))
                 doc.ProcessDocument(ms);
 
 

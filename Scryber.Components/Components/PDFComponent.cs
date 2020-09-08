@@ -673,6 +673,19 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public string ElementName
+
+        /// <summary>
+        /// Gets or sets the name of the element that this component was parsed from.
+        /// </summary>
+        public string ElementName
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
         #region string StyleClass {get;set;}
 
         private string _class;

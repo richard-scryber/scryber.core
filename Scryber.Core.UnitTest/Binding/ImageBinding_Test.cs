@@ -62,8 +62,14 @@ namespace Scryber.Core.UnitTests.Binding
 
                 var path = this.TestContext.TestDir;
 
+#if MAC_OS
                 // back up from obj/Debug/TestDirectoryName
                 path = System.IO.Path.Combine(path, "../../../Content/Toroid24.jpg");
+#else
+                path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/Toroid24.jpg"); ;
+#endif
+
+                path = System.IO.Path.GetFullPath(path);
 
                 var data = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(doc, doc, path);
                 doc.Params["MyImage"] = data;

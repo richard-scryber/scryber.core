@@ -66,6 +66,11 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
                 this.Loaded(this, new PDFLoadEventArgs(context));
         }
 
+        string IPDFComponent.ElementName
+        {
+            get;
+            set;
+        }
 
         string IPDFComponent.ID
         {
@@ -194,6 +199,12 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
         {
             if(null != this.Loaded)
                 this.Loaded(this, new PDFLoadEventArgs(context));
+        }
+
+        string IPDFComponent.ElementName
+        {
+            get;
+            set;
         }
 
         string IPDFComponent.ID

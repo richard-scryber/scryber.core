@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.ComponentModel;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.Styles
 {
@@ -32,6 +33,10 @@ namespace Scryber.Styles
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFStyleDefn : PDFStyle, IPDFNamingContainer
     {
+        /// <summary>
+        /// If true then the match has been built from the applied-xxx attributes.
+        /// </summary>
+        private bool _fromApplied = false;
 
         #region public Type AppliedType {get; set;}
 
@@ -44,7 +49,13 @@ namespace Scryber.Styles
         public Type AppliedType
         {
             get { return _type; }
-            set { _type = value; }
+            set 
+            {
+                _type = value;
+                //reset the match if from applied values
+                if (_fromApplied)
+                    _match = null;
+            }
         }
 
         #endregion
@@ -60,7 +71,12 @@ namespace Scryber.Styles
         public string AppliedClass
         {
             get { return _class; }
-            set { _class = value; }
+            set { 
+                _class = value; 
+                //reset the match if from applied values
+                if (_fromApplied)
+                    _match = null;
+            }
         }
 
         #endregion
@@ -76,7 +92,13 @@ namespace Scryber.Styles
         public string AppliedID
         {
             get { return _id; }
-            set { _id = value; }
+            set { 
+                _id = value;
+
+                //reset the match if from applied values
+                if (_fromApplied)
+                    _match = null;
+            }
         }
 
         #endregion
@@ -92,7 +114,31 @@ namespace Scryber.Styles
         public ComponentState AppliedState
         {
             get { return _state; }
-            set { _state = value; }
+            set { 
+                _state = value;
+                //reset the match if from applied values
+                if (_fromApplied)
+                    _match = null;
+            }
+        }
+
+        #endregion
+
+        #region public PDFStyleMatcher Match {get; set;}
+
+        private PDFStyleMatcher _match;
+
+        /// <summary>
+        /// Gets or sets the selector to match this style on. Supports parsing or implicit conversion from a css style selector
+        /// </summary>
+        [PDFAttribute("match")]
+        public PDFStyleMatcher Match
+        {
+            get { return _match; }
+            set {
+                _match = value;
+                _fromApplied = false;
+            }
         }
 
         #endregion
@@ -143,10 +189,9 @@ namespace Scryber.Styles
         /// <returns></returns>
         public bool IsCatchAllStyle()
         {
-            //We are catch all if we have no specific applied options
-            return null == this.AppliedType
-                        && string.IsNullOrEmpty(this.AppliedClass)
-                        && string.IsNullOrEmpty(this.AppliedID);
+            var match = this.AssertMatcher();
+            return (match is PDFStyleCatchAllMatcher);
+            
         }
 
         #endregion
@@ -161,7 +206,7 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="classname"></param>
         /// <returns></returns>
-        public bool IsClassNameMatch(string classname)
+        private bool IsClassNameMatch(string classname)
         {
             if (string.IsNullOrEmpty(classname))
                 return false;// string.IsNullOrEmpty(this.AppliedClass);
@@ -217,36 +262,10 @@ namespace Scryber.Styles
             if (null == component)
                 return false;
 
-            if (this.IsCatchAllStyle())
-            {
-                //Special case - empty defintion is always applied to the document but no further
-                if (component is IPDFDocument)
-                    return true;
-                else
-                    return false;
-            }
+            var match = this.AssertMatcher();
 
-            if (string.IsNullOrEmpty(this.AppliedID) == false)
-            {
-                if (this.AppliedID.Equals(component.ID) == false)
-                    return false;
-            }
+            return match.IsMatchedTo(component, ComponentState.Normal);
 
-            if (null != this.AppliedType)
-            {
-                if (this.AppliedType.IsAssignableFrom(component.GetType()) == false)
-                    return false;
-            }
-
-            if (string.IsNullOrEmpty(this.AppliedClass) == false)
-            {
-                if ((component is IPDFStyledComponent) == false ||
-                    (this.IsClassNameMatch((component as IPDFStyledComponent).StyleClass)) == false)
-                    return false;
-            }
-
-            //We know it is not empty and that everything defined does match
-            return true;
         }
 
         #endregion
@@ -268,40 +287,49 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region protected virtual PDFStyleMatcher AssertMatcher()
+
+        protected virtual PDFStyleMatcher AssertMatcher()
+        {
+            if(null == this._match)
+            {
+                this._fromApplied = true;
+                if (string.IsNullOrEmpty(this.AppliedID) && string.IsNullOrEmpty(this.AppliedClass)
+                    && (null == this.AppliedType))
+                    return new PDFStyleCatchAllMatcher();
+
+                var stack = new PDFStyleSelector() { AppliedClass = string.IsNullOrEmpty(this.AppliedClass) ? null : new PDFStyleClassSelector(this.AppliedClass), 
+                                                  AppliedID = this.AppliedID, 
+                                                  AppliedType = this.AppliedType, 
+                                                  AppliedState = this.AppliedState, 
+                                                  Placement = StylePlacement.Any };
+
+                this._match = new PDFStyleMatcher(stack);
+            }
+            return this._match;
+        }
+
+        #endregion
+
         //
         // object overrides
         //
 
         #region public override string ToString()
 
+        /// <summary>
+        /// String representation of the style definition 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
+
             sb.Append(this.Type.ToString());
-            sb.Append(":{");
-            bool hasitems = false;
-            if (!string.IsNullOrEmpty(this.AppliedClass))
-            {
-                sb.Append("class=");
-                sb.Append(this.AppliedClass);
-                hasitems = true;
-            }
-            if (null != this.AppliedType)
-            {
-                if (hasitems)
-                    sb.Append(";");
-                sb.Append("type=");
-                sb.Append(this.AppliedType.ToString());
-                hasitems = true;
-            }
-            if (!string.IsNullOrEmpty(this.AppliedID))
-            {
-                if (hasitems)
-                    sb.Append("; ");
-                sb.Append("id=");
-                sb.Append(this.AppliedID);
-            }
-            sb.Append("}");
+            sb.Append(":{ ");
+            var match = this.AssertMatcher();
+            match.ToString(sb);
+            sb.Append(" }");
 
             return sb.ToString();
         }

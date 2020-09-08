@@ -35,7 +35,7 @@ namespace Scryber.Components
     [PDFParsableComponent("Document")]
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
-    public class PDFDocument : PDFContainerComponent, IPDFDocument, IPDFViewPortComponent, IPDFRemoteComponent,
+    public class PDFDocument : PDFContainerComponent, IPDFDocument, IPDFViewPortComponent, IPDFRemoteComponent, IPDFStyledComponent,
                                                       IPDFTemplateParser, IPDFXMLParsedDocument, IPDFControlledComponent
     {
         //
@@ -599,6 +599,11 @@ namespace Scryber.Components
 
         #endregion
 
+        // IPDFStyledComponent explicit interface
+
+        PDFStyle IPDFStyledComponent.Style { get; }
+
+        bool IPDFStyledComponent.HasStyle { get { return null != (this as IPDFStyledComponent).Style; } }
 
         //
         // document level services and values
@@ -878,11 +883,11 @@ namespace Scryber.Components
 
 
             //Get the applied style and then merge it into the base style
-            PDFStyle applied = this.GetAppliedStyle();
-            if (null != applied)
-                applied.MergeInto(style);
-            style.Flatten();
-            return style;
+            PDFStyle applied = this.GetAppliedStyle(this, style);
+            //if (null != applied)
+            //    applied.MergeInto(style);
+            applied.Flatten();
+            return applied;
         }
 
         #endregion
@@ -1765,7 +1770,7 @@ namespace Scryber.Components
         {
 
 
-            PDFStyle style = this.CreateDefaultStyle();
+            PDFStyle style = this.GetAppliedStyle();
 
 
             //Layout components before rendering

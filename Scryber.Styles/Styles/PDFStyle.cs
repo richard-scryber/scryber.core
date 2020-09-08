@@ -868,7 +868,45 @@ namespace Scryber.Styles
             }
         }
 
-        #endregion 
+        #endregion
+
+        #region public PDFStyleCollection InnerStyles {get;}
+
+        private PDFStyleCollection _inner;
+
+        [PDFElement("Inner-Styles")]
+        [PDFArray()]
+        public PDFStyleCollection InnerStyles
+        {
+            get
+            {
+                if (this._inner == null)
+                    this._inner = CreateInnerStyleCollection();
+                return _inner;
+            }
+            set
+            {
+                this._inner = value;
+            }
+        }
+
+        public bool HasInnerStyles
+        {
+            get
+            {
+                if (null == _inner || _inner.Count == 0)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
+        protected virtual PDFStyleCollection CreateInnerStyleCollection()
+        {
+            return new PDFStyleCollection();
+        }
+
+        #endregion
 
         //
         // .ctors

@@ -301,6 +301,11 @@ namespace Scryber
         string ID { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the element that this component was parsed from
+        /// </summary>
+        string ElementName { get; set; }
+
+        /// <summary>
         /// Gets the document that contains this PDFComponent, and forms the root of the PDF Component hierarchy
         /// </summary>
         IPDFDocument Document { get; }

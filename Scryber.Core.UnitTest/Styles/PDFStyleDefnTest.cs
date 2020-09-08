@@ -140,38 +140,7 @@ namespace Scryber.Core.UnitTests.Styles
 
         }
 
-        /// <summary>
-        ///A test for IsClassNameMatch
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Styles")]
-        public void IsClassNameMatchTest()
-        {
-            PDFStyleDefn target = new PDFStyleDefn();
-            string classname = "myclass";
-            target.AppliedClass = classname;
-
-            bool expected = true;
-            bool actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-
-            classname = "other";
-            expected = false;
-            actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-
-            classname = "MyClass"; // case sensitive
-            expected = false;
-            actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-
-            //TODO: this is very expensive for parsing - change the input to a PDFStyleClass instance
-
-            classname = "myclass other"; //uses multi-style differentiation
-            expected = true;
-            actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-        }
+        
 
         /// <summary>
         ///A test for IsMatchedTo
@@ -197,8 +166,9 @@ namespace Scryber.Core.UnitTests.Styles
             lbl.ID = "myId";
 
             
-            //Catch all without document
-            expected = false;
+            //Catch all should always match
+
+            expected = true;
             actual = target.IsMatchedTo(lbl);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(1,expected));
 
@@ -312,6 +282,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.AppliedType = typeof(Scryber.Components.PDFTableCell);
             style = new PDFStyle();
             style.Background.Color = Scryber.Drawing.PDFColors.Blue;
+
             target.MergeInto(style, lbl, ComponentState.Normal);
             Assert.AreEqual(Scryber.Drawing.PDFColors.Blue, style.Background.Color);
 

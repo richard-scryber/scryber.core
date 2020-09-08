@@ -85,12 +85,12 @@ namespace Scryber.Core.UnitTests.Configuration
             //Namespace Mappings
             Assert.IsNotNull(parsing.Namespaces, "Namespace mappings is null");
 
-            int expectedLength = 4;
+            int expectedLength = 5;
             string expectedNs = "Scryber.Core.UnitTests.Generation.Fakes";
             string expectedAssm = "Scryber.UnitTests";
             string expectedSrc = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Fakes.xsd";
 
-            Assert.AreEqual(expectedLength, parsing.Namespaces.Count, "Namespace mappings length is not 4");
+            Assert.AreEqual(expectedLength, parsing.Namespaces.Count, "Namespace mappings length is not 5");
 
             var xmlNs = parsing.GetXmlNamespaceForAssemblyNamespace(expectedNs, expectedAssm);
             Assert.AreEqual(expectedSrc, xmlNs, "The expected xml source was not matched");
@@ -349,16 +349,18 @@ namespace Scryber.Core.UnitTests.Configuration
 
 
             PDFDocument doc;
+
             using (var reader = new System.IO.StringReader(pdfx))
                 doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
-            
+
             using (var stream = new System.IO.MemoryStream())
+            {
                 doc.ProcessDocument(stream);
 
-            //Check that the image was loaded and used.
-            var img = doc.FindAComponentById("LoadedImage") as PDFImage;
-            Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
-            
+                //Check that the image was loaded and used.
+                var img = doc.FindAComponentById("LoadedImage") as PDFImage;
+                Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
+            }
         }
 
 
