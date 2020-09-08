@@ -38,13 +38,17 @@ namespace Scryber.Components
         /// Gets the applied style for this page Component
         /// </summary>
         [PDFElement("Style")]
-        public PDFStyle Style
+        public virtual PDFStyle Style
         {
             get 
             {
                 if (_style == null)
                     _style = new PDFStyle();
                 return _style; 
+            }
+            set
+            {
+                this._style = value;
             }
         }
 

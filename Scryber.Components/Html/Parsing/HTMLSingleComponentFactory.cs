@@ -437,14 +437,14 @@ namespace Scryber.Html.Parsing
         public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Link;
-            return new HTMLLink();
+            return new HTMLAnchor();
         }
 
         public override void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
         {
             if (attrName == "href")
             {
-                HTMLLink link = (HTMLLink)parsed;
+                HTMLAnchor link = (HTMLAnchor)parsed;
                 if (string.IsNullOrEmpty(attrValue))
                 { }
                 else if (attrValue.StartsWith("#"))

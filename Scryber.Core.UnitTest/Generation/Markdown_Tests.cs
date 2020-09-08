@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Html.Components;
+using Scryber.Html;
 
 namespace Scryber.Core.UnitTests.Generation
 {
@@ -41,7 +43,7 @@ namespace Scryber.Core.UnitTests.Generation
             doc.Pages.Add(pg);
             pg.Contents.Add(frag);
             frag.ContentsAsString = content;
-            frag.Format = Html.HtmlFormatType.Markdown;
+            frag.Format = HtmlFormatType.Markdown;
 
             var output = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
             output = System.IO.Path.Combine(output, "MarkdownTest.pdf");

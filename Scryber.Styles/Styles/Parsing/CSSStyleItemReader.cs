@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scryber.Html.Parsing
+namespace Scryber.Styles.Parsing
 {
     /// <summary>
     /// Reads css style items

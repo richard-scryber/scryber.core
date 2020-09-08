@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scryber
 {
-    internal class ReadOnlyList<T> : IList<T>
+    public class ReadOnlyList<T> : IList<T>
     {
         private IList<T> _inner;
 

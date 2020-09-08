@@ -11,7 +11,7 @@ namespace Scryber
     /// </summary>
     /// <typeparam name="TKey">The key type</typeparam>
     /// <typeparam name="TValue">The value type</typeparam>
-    internal class ReadOnlyDictionary<TKey,TValue> : IDictionary<TKey,TValue>
+    public class ReadOnlyDictionary<TKey,TValue> : IDictionary<TKey,TValue>
     {
         private IDictionary<TKey, TValue> _inner;
 

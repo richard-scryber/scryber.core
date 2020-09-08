@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.Html;
 
-namespace Scryber.Html.Parsing
+namespace Scryber.Styles.Parsing
 {
 
     #region public abstract class CSSStyleItemParser : IParserStyleFactory
@@ -24,6 +25,11 @@ namespace Scryber.Html.Parsing
         public const double Centimeter2Point = (72.0 / 2.54);
         public const double Millimetre2Point = (72.0 / 25.4);
         public const double EmToPoint = 12.0;  //1 em = 16px = 12pt
+
+        internal const char HTMLEntityStartMarker = '&';
+        internal const char HTMLEntityEndMarker = ';';
+        internal const char HTMLEntityNumberMarker = '#';
+
 
         #region public string CssName
 
@@ -277,7 +283,7 @@ namespace Scryber.Html.Parsing
 
         public static string UnEscapeHtmlString(string value)
         {
-            int ampersandPos = value.IndexOf(HTMLParserEnumerator.HTMLEntityStartMarker);
+            int ampersandPos = value.IndexOf(HTMLEntityStartMarker);
 
             if(ampersandPos < 0)
                 return value;
@@ -295,7 +301,7 @@ namespace Scryber.Html.Parsing
                 src.Offset = ampersandPos;
                 bool terminated = true;
 
-                while (src.Current != HTMLParserEnumerator.HTMLEntityEndMarker)
+                while (src.Current != HTMLEntityEndMarker)
                 {
                     if (!src.MoveNext())
                     {
@@ -316,7 +322,7 @@ namespace Scryber.Html.Parsing
                     if (len > 3)
                     {
                         string entity = src.Substring(ampersandPos, len);
-                        if(entity[1] == HTMLParserEnumerator.HTMLEntityNumberMarker)
+                        if(entity[1] == HTMLEntityNumberMarker)
                         {
                             int charNum;
                             if (int.TryParse(entity.Substring(2, entity.Length - 3), out charNum))
@@ -326,15 +332,15 @@ namespace Scryber.Html.Parsing
                                 buffer.Append(found);
                             }
                         }
-                        else if (HTMLParserSettings.DefaultEscapedHTMLEntities.TryGetValue(entity, out found))
-                        {
-                            buffer.Append(found);
-                            src.MoveNext();
-                        }
+                        //else if (HTMLParserSettings.DefaultEscapedHTMLEntities.TryGetValue(entity, out found))
+                        //{
+                        //    buffer.Append(found);
+                        //    src.MoveNext();
+                        //}
                     }
                 }
 
-                ampersandPos = value.IndexOf(HTMLParserEnumerator.HTMLEntityStartMarker, src.Offset);
+                ampersandPos = value.IndexOf(HTMLEntityStartMarker, src.Offset);
             }
 
             if (src.Offset < src.Length)

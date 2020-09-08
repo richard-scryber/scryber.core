@@ -45,6 +45,11 @@
         <xs:attribute name="applied-class" type="comp:BindableClassNameType" />
         <xs:attribute name="applied-type" type="comp:BindableObjectTypeEnum" />
         <xs:attribute name="applied-id" type="comp:BindableIDType" />
+        <xs:attribute name="match" type="comp:BindableStringType" form="unqualified" >
+          <xs:annotation>
+            <xs:documentation xml:lang="en-gb">A css selector style match on the style for deep path matching and support for direct parent and multiple classes.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

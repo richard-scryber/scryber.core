@@ -33,6 +33,7 @@ namespace Scryber.Styles
     /// Concrete implementation of a Style containing properties for accessing 
     /// each of the Style Items where values can be read or set.
     /// </summary>
+    [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFStyle : PDFStyleBase, IPDFBindableComponent
     {
@@ -1129,6 +1130,16 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+
+        //
+        // Parsing
+        //
+
+        public static PDFStyle Parse(string value)
+        {
+            return null;
+        }
     }
 
 

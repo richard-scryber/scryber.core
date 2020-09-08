@@ -514,7 +514,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFElement("Pages")]
         [PDFArray(typeof(PDFPageBase))]
-        public PDFPageList Pages
+        public virtual PDFPageList Pages
         {
             get
             {

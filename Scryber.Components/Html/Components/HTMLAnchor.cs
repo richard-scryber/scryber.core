@@ -8,9 +8,9 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("a")]
-    public class HTMLLink : Scryber.Components.PDFLink
+    public class HTMLAnchor : Scryber.Components.PDFLink
     {
-        public HTMLLink()
+        public HTMLAnchor()
             : base()
         {
         }

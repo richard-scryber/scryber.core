@@ -696,7 +696,7 @@ namespace Scryber.Components
         [PDFAttribute("class",Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.styleClass_attr")]
         [PDFDesignable("Class Name(s)", Category = "Style Classes", Priority = 1, Type = "ClassName")]
-        public string StyleClass
+        public virtual string StyleClass
         {
             get { return _class; }
             set 

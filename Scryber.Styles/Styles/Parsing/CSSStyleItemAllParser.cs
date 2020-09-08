@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Styles;
+using Scryber.Html;
 
-namespace Scryber.Html.Parsing
+namespace Scryber.Styles.Parsing
 {
     /// <summary>
     /// Implements the Style Item Parser, delegating to one of it's known inner item parsers.
