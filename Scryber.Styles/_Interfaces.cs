@@ -87,6 +87,8 @@ namespace Scryber
 
     public interface IParserStyleFactory
     {
+        bool SetStyleValue(Styles.PDFStyle onStyle, CSSStyleItemReader styleReader);
+
         bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent component, CSSStyleItemReader stylereader);
     }
 }

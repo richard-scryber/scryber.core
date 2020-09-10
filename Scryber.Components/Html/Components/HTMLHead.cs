@@ -2,17 +2,29 @@
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Components;
+using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("head")]
-    public class HTMLHead : PDFContainerComponent
+    public class HTMLHead : PDFContainerComponent, IPDFInvisibleContainer
     {
-        
-        [PDFElement("title")]
-        public string Title { get; set; }
+        private string _title;
 
-        [PDFArray()]
+        [PDFElement("title")]
+        public string Title
+        {
+            get { return this._title; }
+            set {
+
+                this._title = value;
+
+                if (null != this.Document)
+                    this.Document.Info.Title = value;
+            }
+        }
+
+        [PDFArray(typeof(PDFComponent))]
         [PDFElement("")]
         public PDFComponentList Contents
         {
@@ -20,7 +32,56 @@ namespace Scryber.Html.Components
             set { base.InnerContent = value; }
         }
 
-        public HTMLHead() : this((PDFObjectType)"htmH")
+        protected internal override void RegisterParent(PDFComponent parent)
+        {
+            base.RegisterParent(parent);
+            UpdateDocumentInfo(parent);
+        }
+
+        private void UpdateDocumentInfo(PDFComponent parent)
+        {
+            if (parent is PDFDocument)
+            {
+                var doc = parent as PDFDocument;
+
+                if (!string.IsNullOrEmpty(this.Title))
+                    doc.Info.Title = this.Title;
+
+                foreach (var item in this.Contents)
+                {
+                    if(item is HTMLMeta)
+                    {
+                        var meta = (HTMLMeta)item;
+                        switch (meta.Name)
+                        {
+                            case ("author"):
+                                doc.Info.Author = meta.Content;
+                                break;
+                            case ("description"):
+                                doc.Info.Subject = meta.Content;
+                                break;
+                            case ("keywords"):
+                                doc.Info.Keywords = meta.Content;
+                                break;
+                            case ("generator"):
+                                doc.Info.Producer = meta.Content;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        protected override void OnPreLayout(PDFLayoutContext context)
+        {
+            base.OnPreLayout(context);
+            this.UpdateDocumentInfo(this.Document);
+
+        }
+
+        public HTMLHead() : this(PDFObjectTypes.NoOp)
         {
 
         }
@@ -28,6 +89,19 @@ namespace Scryber.Html.Components
         public HTMLHead(PDFObjectType type): base(type)
         {
 
+        }
+
+        public override PDFStyle GetAppliedStyle(PDFComponent forComponent, PDFStyle baseStyle)
+        {
+            var applied = baseStyle;
+            foreach (var item in this.Contents)
+            {
+                if(item is PDFHtmlStyleDefnGroup)
+                {
+                    applied = item.GetAppliedStyle(forComponent, applied);
+                }
+            }
+            return applied;
         }
     }
 }

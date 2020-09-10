@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
@@ -10,6 +11,12 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("tr")]
     public class HTMLTableRow : Scryber.Components.PDFTableRow
     {
+        [PDFAttribute("class")]
+        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
+
+        [PDFAttribute("style")]
+        public override PDFStyle Style { get => base.Style; set => base.Style = value; }
+
         public HTMLTableRow()
             : base()
         {

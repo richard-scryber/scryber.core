@@ -70,6 +70,10 @@ namespace Scryber.Styles
                     this._innerItems = CreateInnerStyles();
                 return this._innerItems;
             }
+            set
+            {
+                this._innerItems = value;
+            }
         }
 
         #endregion
@@ -81,7 +85,7 @@ namespace Scryber.Styles
         /// </summary>
         [PDFElement()]
         [PDFArray(typeof(PDFStyleBase))]
-        public PDFStyleCollection Styles
+        public virtual PDFStyleCollection Styles
         {
             get { return this.InnerItems; }
         }

@@ -43,6 +43,19 @@ namespace Scryber.Styles.Parsing
             return false;
         }
 
+        public bool SetStyleValue( PDFStyle style, CSSStyleItemReader reader)
+        {
+            IParserStyleFactory found;
+
+            if (string.IsNullOrEmpty(reader.CurrentAttribute) && reader.ReadNextAttributeName() == false)
+                return false;
+
+            if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
+                return found.SetStyleValue(style, reader);
+            else
+                return false;
+        }
+
 
         private static ReadOnlyDictionary<string, IParserStyleFactory> _allknown;
 

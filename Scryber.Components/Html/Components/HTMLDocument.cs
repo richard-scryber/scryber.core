@@ -2,14 +2,39 @@
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Components;
+using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("html")]
     public class HTMLDocument : PDFDocument
     {
+
+        private HTMLHead _head;
+
         [PDFElement("head")]
-        public HTMLHead Head { get; set; }
+        public HTMLHead Head
+        {
+            get { return this._head; }
+            set
+            {
+                if (null != _head)
+                    this.InnerContent.Remove(_head);
+
+                this._head = value;
+
+                if (null != this._head)
+                    this.InnerContent.Add(_head);
+            }
+        }
+
+
+        [PDFAttribute("lang")]
+        public string Language
+        {
+            get;
+            set;
+        }
 
         private HTMLBody _body;
 
@@ -31,5 +56,15 @@ namespace Scryber.Html.Components
 
         [PDFParserIgnore()]
         public override PDFPageList Pages { get { return base.Pages; } }
+
+
+        public override PDFStyle GetAppliedStyle(PDFComponent forComponent, PDFStyle baseStyle)
+        {
+            var applied = base.GetAppliedStyle(forComponent, baseStyle);
+            if (null != this.Head)
+                applied = this.Head.GetAppliedStyle(forComponent, applied);
+
+            return applied;
+        }
     }
 }

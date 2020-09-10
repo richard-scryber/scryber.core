@@ -1297,7 +1297,6 @@ namespace Scryber.Components
         /// Uses the Autobind property to stipulate if data binding should also take place
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="bind"></param>
         public void ProcessDocument(System.IO.Stream stream)
         {
             this.ProcessDocument(stream, this.AutoBind);
@@ -2501,7 +2500,7 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string fullpath, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = ParserConformanceMode.Strict;
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
 
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             return Parse(fullpath, resolver, settings);
@@ -2520,7 +2519,7 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = ParserConformanceMode.Strict;
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             return Parse(source, stream, type, resolver, settings);
         }
@@ -2535,7 +2534,7 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = ParserConformanceMode.Strict;
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             return Parse(source, textreader, type, resolver, settings);
         }
@@ -2550,7 +2549,7 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
-            ParserConformanceMode mode = ParserConformanceMode.Strict;
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
             PDFGeneratorSettings settings = PDFDocument.CreateGeneratorSettings(resolver, mode, null);
             
             return Parse(source, xmlreader, type, resolver, settings);

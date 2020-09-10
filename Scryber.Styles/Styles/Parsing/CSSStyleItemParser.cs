@@ -62,10 +62,10 @@ namespace Scryber.Styles.Parsing
 
         bool IParserStyleFactory.SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
         {
-            return this.SetStyleValue(parser, onComponent, reader);
+            return this.SetStyleValue(onComponent.Style, reader);
         }
 
-        public abstract bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader);
+        public abstract bool SetStyleValue(PDFStyle style, CSSStyleItemReader reader);
 
 
         #region protected bool IsColor(string part)
@@ -418,9 +418,9 @@ namespace Scryber.Styles.Parsing
         }
 
 
-        protected void SetValue(IPDFStyledComponent onComponent, T value)
+        protected void SetValue(PDFStyle onStyle, T value)
         {
-            onComponent.Style.SetValue(_styleAttr, value);
+            onStyle.SetValue(_styleAttr, value);
         }
 
     }
@@ -449,19 +449,19 @@ namespace Scryber.Styles.Parsing
             _enumType = typeof(T);
         }
 
-        protected void SetValue(IPDFStyledComponent onComponent, T value)
+        protected void SetValue(PDFStyle onStyle, T value)
         {
-            onComponent.Style.SetValue(_pdfStyleAttr, value);
+            onStyle.SetValue(_pdfStyleAttr, value);
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool success = false;
             T result;
 
             if (reader.ReadNextValue() && Enum.TryParse<T>(reader.CurrentTextValue, true, out result))
             {
-                this.SetValue(onComponent, result);
+                this.SetValue(onStyle, result);
                 success = true;
             }
             return success;
@@ -486,7 +486,7 @@ namespace Scryber.Styles.Parsing
             
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             if(reader.ReadNextValue())
@@ -496,12 +496,10 @@ namespace Scryber.Styles.Parsing
                 PDFUnit parsed;
                 if (ParseCSSUnit(value, out parsed))
                 {
-                    onComponent.Style.SetValue(this.StyleAttribute, parsed);
+                    onStyle.SetValue(this.StyleAttribute, parsed);
                     result = true;
                 }
-                else if (null != parser && parser.IsLogging)
-                    parser.Log("Could not convert the value '" + reader.CurrentTextValue + "' to a unit value for the style item '" + reader.CurrentAttribute + "' ");
-            }
+             }
             return result;
         }
     }
@@ -522,19 +520,17 @@ namespace Scryber.Styles.Parsing
            
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             PDFColor color;
             
             if(reader.ReadNextValue() && ParseCSSColor(reader.CurrentTextValue, out color))
             {
-                onComponent.Style.SetValue(this.StyleAttribute, color);
+                onStyle.SetValue(this.StyleAttribute, color);
                 result = true;
             }
-            else if (null != parser && parser.IsLogging)
-                parser.Log("Could not convert the value '" + reader.CurrentTextValue + "' to a color for the style item '" + this.CssValueName + "'");
-
+            
             return result;
         }
     }
@@ -554,7 +550,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             string attrvalue;
@@ -563,11 +559,9 @@ namespace Scryber.Styles.Parsing
             {
                 if (ParseCSSUrl(reader.CurrentTextValue, out attrvalue))
                 {
-                    onComponent.Style.SetValue(this.StyleAttribute, attrvalue);
+                    onStyle.SetValue(this.StyleAttribute, attrvalue);
                     result = true;
                 }
-                else if (null != parser && parser.IsLogging)
-                    parser.Log("Could not convert the value '" + attrvalue + "' to a url value for the style item '" + this.CssValueName + "' ");
             }
             return result;
         }
@@ -591,7 +585,7 @@ namespace Scryber.Styles.Parsing
 
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = reader.ReadNextValue();
             PDFUnit unit;
@@ -600,22 +594,22 @@ namespace Scryber.Styles.Parsing
             {
                 if (string.Equals("thin", reader.CurrentTextValue, StringComparison.OrdinalIgnoreCase))
                 {
-                    onComponent.Style.SetValue(StyleAttribute, ThinSize);
+                    onStyle.SetValue(StyleAttribute, ThinSize);
                     result = true;
                 }
                 else if (string.Equals("medium", reader.CurrentTextValue, StringComparison.OrdinalIgnoreCase))
                 {
-                    onComponent.Style.SetValue(StyleAttribute, MediumSize);
+                    onStyle.SetValue(StyleAttribute, MediumSize);
                     result = true;
                 }
                 else if (string.Equals("thick", reader.CurrentTextValue, StringComparison.OrdinalIgnoreCase))
                 {
-                    onComponent.Style.SetValue(StyleAttribute, ThickSize);
+                    onStyle.SetValue(StyleAttribute, ThickSize);
                     result = true;
                 }
                 else if (ParseCSSUnit(reader.CurrentTextValue, out unit))
                 {
-                    onComponent.Style.SetValue(StyleAttribute, unit);
+                    onStyle.SetValue(StyleAttribute, unit);
                 }
                 else
                     result = false;
@@ -641,7 +635,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             LineStyle converted;
@@ -649,9 +643,9 @@ namespace Scryber.Styles.Parsing
 
             if (reader.ReadNextValue() && TryGetLineStyleFromReader(reader, out converted, out dash))
             {
-                onComponent.Style.Border.LineStyle = converted;
+                onStyle.Border.LineStyle = converted;
                 if (null != dash)
-                    onComponent.Style.Border.Dash = dash;
+                    onStyle.Border.Dash = dash;
 
                 result = true;
             }
@@ -733,7 +727,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
 
             int count = 0;
@@ -747,7 +741,7 @@ namespace Scryber.Styles.Parsing
                 {
                     PDFUnit unit;
                     if (ParseCSSUnit(reader.CurrentTextValue, out unit))
-                        onComponent.Style.Border.Width = unit;
+                        onStyle.Border.Width = unit;
                     else
                         failed++;
 
@@ -756,7 +750,7 @@ namespace Scryber.Styles.Parsing
                 {
                     PDFColor color;
                     if (ParseCSSColor(reader.CurrentTextValue, out color))
-                        onComponent.Style.Border.Color = color;
+                        onStyle.Border.Color = color;
                     else
                         failed++;
                 }
@@ -766,9 +760,9 @@ namespace Scryber.Styles.Parsing
                     PDFDash dash;
                     if (CSSBorderStyleParser.TryGetLineStyleFromReader(reader, out style, out dash))
                     {
-                        onComponent.Style.Border.LineStyle = style;
+                        onStyle.Border.LineStyle = style;
                         if (null != dash)
-                            onComponent.Style.Border.Dash = dash;
+                            onStyle.Border.Dash = dash;
                     }
                     else
                         failed++;
@@ -795,7 +789,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
 
 
@@ -811,8 +805,8 @@ namespace Scryber.Styles.Parsing
                     PDFColor color;
                     if (ParseCSSColor(reader.CurrentTextValue, out color))
                     {
-                        onComponent.Style.Background.Color = color;
-                        onComponent.Style.Background.FillStyle = FillStyle.Solid;
+                        onStyle.Background.Color = color;
+                        onStyle.Background.FillStyle = FillStyle.Solid;
                     }
                     else
                         failed++;
@@ -822,8 +816,8 @@ namespace Scryber.Styles.Parsing
                     string url;
                     if (ParseCSSUrl(reader.CurrentTextValue, out url))
                     {
-                        onComponent.Style.Background.ImageSource = url;
-                        onComponent.Style.Background.FillStyle = FillStyle.Image;
+                        onStyle.Background.ImageSource = url;
+                        onStyle.Background.FillStyle = FillStyle.Image;
                     }
                     else
                         failed++;
@@ -832,7 +826,7 @@ namespace Scryber.Styles.Parsing
                 {
                     PatternRepeat repeat;
                     if (CSSBackgroundRepeatParser.TryGetRepeatEnum(reader.CurrentTextValue, out repeat))
-                        onComponent.Style.Background.PatternRepeat = repeat;
+                        onStyle.Background.PatternRepeat = repeat;
                     else
                         failed++;
                 }
@@ -856,13 +850,13 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
-            bool result = base.SetStyleValue(parser, onComponent, reader);
+            bool result = base.SetStyleValue(onStyle, reader);
 
             //We need to set the fill style to solid if we have a color.
             if (result)
-                onComponent.Style.SetValue(PDFStyleKeys.BgStyleKey, FillStyle.Solid);
+                onStyle.SetValue(PDFStyleKeys.BgStyleKey, FillStyle.Solid);
 
             return result;
         }
@@ -882,13 +876,13 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
-            bool result = base.SetStyleValue(parser, onComponent, reader);
+            bool result = base.SetStyleValue(onStyle, reader);
 
             //We need to set the fill style to image if we have a value.
             if (result)
-                onComponent.Style.SetValue(PDFStyleKeys.BgStyleKey, FillStyle.Image);
+                onStyle.SetValue(PDFStyleKeys.BgStyleKey, FillStyle.Image);
 
             return result;
         }
@@ -908,12 +902,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             PatternRepeat repeat;
             if (reader.ReadNextValue() && TryGetRepeatEnum(reader.CurrentTextValue, out repeat))
-                this.SetValue(onComponent, repeat);
+                this.SetValue(onStyle, repeat);
             else
                 result = false;
 
@@ -971,12 +965,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool italic = true;
             bool result = true;
             if (reader.ReadNextValue() && TryGetFontStyle(reader.CurrentTextValue, out italic))
-                onComponent.Style.SetValue(PDFStyleKeys.FontItalicKey, italic);
+                onStyle.SetValue(PDFStyleKeys.FontItalicKey, italic);
             else
                 result = false;
 
@@ -1025,12 +1019,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool bold = true;
             bool result = true;
             if (reader.ReadNextValue() && TryGetFontWeight(reader.CurrentTextValue, out bold))
-                onComponent.Style.SetValue(PDFStyleKeys.FontBoldKey, bold);
+                onStyle.SetValue(PDFStyleKeys.FontBoldKey, bold);
             else
                 result = false;
 
@@ -1102,12 +1096,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             PDFUnit size = PDFUnit.Zero;
             bool result = true;
             if (reader.ReadNextValue() && TryGetFontSize(reader.CurrentTextValue, out size))
-                onComponent.Style.SetValue(PDFStyleKeys.FontSizeKey, size);
+                onStyle.SetValue(PDFStyleKeys.FontSizeKey, size);
             else
                 result = false;
 
@@ -1180,7 +1174,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             double proportional;
             PDFUnit absolute;
@@ -1192,9 +1186,9 @@ namespace Scryber.Styles.Parsing
                 if (double.TryParse(reader.CurrentTextValue, out proportional))
                 {
                     PDFStyleValue<PDFUnit> fsize;
-                    if (onComponent.Style.TryGetValue(PDFStyleKeys.FontSizeKey, out fsize))
+                    if (onStyle.TryGetValue(PDFStyleKeys.FontSizeKey, out fsize))
                     {
-                        onComponent.Style.Text.Leading = fsize.Value * proportional;
+                        onStyle.Text.Leading = fsize.Value * proportional;
                         return true;
                     }
                 }
@@ -1202,7 +1196,7 @@ namespace Scryber.Styles.Parsing
                 //otherwise treat as an absolute unit.
                 else if (ParseCSSUnit(reader.CurrentTextValue, out absolute))
                 {
-                    onComponent.Style.Text.Leading = absolute;
+                    onStyle.Text.Leading = absolute;
                     return true;
                 }
             }
@@ -1222,7 +1216,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
 
             bool result = false;
@@ -1233,7 +1227,7 @@ namespace Scryber.Styles.Parsing
 
                 if (TryGetActualFontFamily(fontfamily, out fontfamily))
                 {
-                    this.SetValue(onComponent, fontfamily);
+                    this.SetValue(onStyle, fontfamily);
                     result = true;
                     break;
                 }
@@ -1308,7 +1302,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             if (!reader.ReadNextValue())
@@ -1320,27 +1314,27 @@ namespace Scryber.Styles.Parsing
             switch (reader.CurrentTextValue.ToLower())
             {
                 case ("caption"):
-                    ApplyFont(onComponent, CaptionFont);
+                    ApplyFont(onStyle, CaptionFont);
                     return true;
 
                 case ("icon"):
-                    ApplyFont(onComponent, IconFont);
+                    ApplyFont(onStyle, IconFont);
                     return true;
 
                 case ("menu"):
-                    ApplyFont(onComponent, MenuFont);
+                    ApplyFont(onStyle, MenuFont);
                     return true;
 
                 case ("message-box"):
-                    ApplyFont(onComponent, MessageBoxFont);
+                    ApplyFont(onStyle, MessageBoxFont);
                     return true;
 
                 case ("small-caption"):
-                    ApplyFont(onComponent, SmallCaptionFont);
+                    ApplyFont(onStyle, SmallCaptionFont);
                     return true;
 
                 case ("status-bar"):
-                    ApplyFont(onComponent, StatusBarFont);
+                    ApplyFont(onStyle, StatusBarFont);
                     return true;
 
                 default:
@@ -1359,7 +1353,7 @@ namespace Scryber.Styles.Parsing
 
             if (CSSFontStyleParser.TryGetFontStyle(reader.CurrentTextValue, out italic))
             {
-                onComponent.Style.Font.FontItalic = italic;
+                onStyle.Font.FontItalic = italic;
                 if (!reader.MoveToNextValue())
                     return result;
             }
@@ -1372,7 +1366,7 @@ namespace Scryber.Styles.Parsing
             }
             if (CSSFontWeightParser.TryGetFontWeight(reader.CurrentTextValue, out bold))
             {
-                onComponent.Style.Font.FontBold = bold;
+                onStyle.Font.FontBold = bold;
                 if (!reader.MoveToNextValue())
                     return result;
             }
@@ -1384,7 +1378,7 @@ namespace Scryber.Styles.Parsing
                 // we have both
                 string part = reader.CurrentTextValue.Substring(0, reader.CurrentTextValue.IndexOf('/'));
                 if (ParseCSSUnit(part, out fsize))
-                    onComponent.Style.Font.FontSize = fsize;
+                    onStyle.Font.FontSize = fsize;
                 else
                     result = false;
 
@@ -1392,9 +1386,9 @@ namespace Scryber.Styles.Parsing
 
                 //if we have a simple double value then it is relative leading based on font size.
                 if (double.TryParse(part, out relativeLeading))
-                    onComponent.Style.Text.Leading = onComponent.Style.Font.FontSize * relativeLeading;
+                    onStyle.Text.Leading = onStyle.Font.FontSize * relativeLeading;
                 else if (ParseCSSUnit(part, out lineheight))
-                    onComponent.Style.Text.Leading = lineheight;
+                    onStyle.Text.Leading = lineheight;
                 else
                     result = false;
 
@@ -1403,7 +1397,7 @@ namespace Scryber.Styles.Parsing
             }
             else if (ParseCSSUnit(reader.CurrentTextValue, out fsize))
             {
-                onComponent.Style.Font.FontSize = fsize;
+                onStyle.Font.FontSize = fsize;
                 if (!reader.MoveToNextValue())
                     return result;
             }
@@ -1414,7 +1408,7 @@ namespace Scryber.Styles.Parsing
             {
                 if (CSSFontFamilyParser.TryGetActualFontFamily(reader.CurrentTextValue, out family))
                 {
-                    onComponent.Style.Font.FontFamily = family;
+                    onStyle.Font.FontFamily = family;
                     foundFamily = true;
                 }
 
@@ -1431,12 +1425,12 @@ namespace Scryber.Styles.Parsing
             return result;
         }
 
-        private void ApplyFont(IPDFStyledComponent onComponent, PDFFont font)
+        private void ApplyFont(PDFStyle onStyle, PDFFont font)
         {
-            onComponent.Style.SetValue(PDFStyleKeys.FontFamilyKey, font.FamilyName);
-            onComponent.Style.SetValue(PDFStyleKeys.FontSizeKey, font.Size);
-            onComponent.Style.SetValue(PDFStyleKeys.FontBoldKey, (font.FontStyle & FontStyle.Bold) > 0);
-            onComponent.Style.SetValue(PDFStyleKeys.FontItalicKey, (font.FontStyle & FontStyle.Italic) > 0);
+            onStyle.SetValue(PDFStyleKeys.FontFamilyKey, font.FamilyName);
+            onStyle.SetValue(PDFStyleKeys.FontSizeKey, font.Size);
+            onStyle.SetValue(PDFStyleKeys.FontBoldKey, (font.FontStyle & FontStyle.Bold) > 0);
+            onStyle.SetValue(PDFStyleKeys.FontItalicKey, (font.FontStyle & FontStyle.Italic) > 0);
         }
 
 
@@ -1476,7 +1470,7 @@ namespace Scryber.Styles.Parsing
             AutoValue = PDFUnit.Zero;
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             if(reader.ReadNextValue())
             {
@@ -1484,7 +1478,7 @@ namespace Scryber.Styles.Parsing
 
                 if (ParseThicknessValue(reader, this.AutoValue, out found))
                 {
-                    this.SetValue(onComponent, found);
+                    this.SetValue(onStyle, found);
                     return true;
                 }
                     
@@ -1532,7 +1526,7 @@ namespace Scryber.Styles.Parsing
         }
 
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             int count = 0;
             PDFUnit[] all = new PDFUnit[4];
@@ -1554,42 +1548,42 @@ namespace Scryber.Styles.Parsing
 
             if (count == 1)
             {
-                onComponent.Style.SetValue(_all, all[0]);
+                onStyle.SetValue(_all, all[0]);
                 result = true;
             }
             else if(count == 2)
             {
                 // first top and bottom then left and right
-                onComponent.Style.SetValue(_top, all[0]);
-                onComponent.Style.SetValue(_bottom, all[0]);
+                onStyle.SetValue(_top, all[0]);
+                onStyle.SetValue(_bottom, all[0]);
 
-                onComponent.Style.SetValue(_left, all[1]);
-                onComponent.Style.SetValue(_right, all[1]);
+                onStyle.SetValue(_left, all[1]);
+                onStyle.SetValue(_right, all[1]);
 
                 result = true;
             }
             else if(count == 3)
             {
                 // top then left and right and finally bottom
-                onComponent.Style.SetValue(_top, all[0]);
+                onStyle.SetValue(_top, all[0]);
                 
-                onComponent.Style.SetValue(_left, all[1]);
-                onComponent.Style.SetValue(_right, all[1]);
+                onStyle.SetValue(_left, all[1]);
+                onStyle.SetValue(_right, all[1]);
 
-                onComponent.Style.SetValue(_bottom, all[2]);
+                onStyle.SetValue(_bottom, all[2]);
 
                 result = true;
             }
             else if (count == 4)
             {
                 // all 4 individually top then right and then bottom and finally left
-                onComponent.Style.SetValue(_top, all[0]);
+                onStyle.SetValue(_top, all[0]);
 
-                onComponent.Style.SetValue(_right, all[1]);
+                onStyle.SetValue(_right, all[1]);
 
-                onComponent.Style.SetValue(_bottom, all[2]);
+                onStyle.SetValue(_bottom, all[2]);
 
-                onComponent.Style.SetValue(_left, all[3]);
+                onStyle.SetValue(_left, all[3]);
                 
                 result = true;
             }
@@ -1737,13 +1731,13 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             double number;
 
             if(reader.ReadNextValue() && ParseDouble(reader.CurrentTextValue, out number) && number >= 0.0 && number <= 1.0)
             {
-                this.SetValue(onComponent, number);
+                this.SetValue(onStyle, number);
                 return true;
             }
             return false;
@@ -1777,13 +1771,13 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             int number;
 
             if (reader.ReadNextValue() && ParseInteger(reader.CurrentTextValue, out number) && number >= 1 && number < 100)
             {
-                this.SetValue(onComponent, number);
+                this.SetValue(onStyle, number);
                 return true;
             }
             return false;
@@ -1815,13 +1809,13 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             int number;
 
             if (reader.ReadNextValue() && ParseInteger(reader.CurrentTextValue, out number) && number >= 1 && number < 100)
             {
-                this.SetValue(onComponent, number);
+                this.SetValue(onStyle, number);
                 return true;
             }
             return false;
@@ -1868,6 +1862,28 @@ namespace Scryber.Styles.Parsing
         public CSSWidthParser()
             : base(CSSStyleItems.Width, PDFStyleKeys.SizeWidthKey)
         {
+        }
+
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
+        {
+            bool result = false;
+            if (reader.ReadNextValue())
+            {
+                string value = reader.CurrentTextValue;
+
+                PDFUnit parsed;
+                if(value == "100%")
+                {
+                    onStyle.SetValue(PDFStyleKeys.SizeFullWidthKey, true);
+                    result = true;
+                }
+                else if (ParseCSSUnit(value, out parsed))
+                {
+                    onStyle.SetValue(this.StyleAttribute, parsed);
+                    result = true;
+                }
+            }
+            return result;
         }
 
     }
@@ -1954,7 +1970,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool success = true;
             HorizontalAlignment align;
@@ -1986,7 +2002,7 @@ namespace Scryber.Styles.Parsing
                 }
             }
             if (success)
-                onComponent.Style.SetValue(PDFStyleKeys.PositionHAlignKey, align);
+                onStyle.SetValue(PDFStyleKeys.PositionHAlignKey, align);
 
             return success;
         }
@@ -2003,7 +2019,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool success = true;
             VerticalAlignment align;
@@ -2033,7 +2049,7 @@ namespace Scryber.Styles.Parsing
                 }
             }
             if (success)
-                onComponent.Style.SetValue(PDFStyleKeys.PositionVAlignKey, align);
+                onStyle.SetValue(PDFStyleKeys.PositionVAlignKey, align);
 
             return success;
         }
@@ -2055,12 +2071,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             Text.TextDecoration decor;
             if (reader.ReadNextValue() && TryGetDecorationEnum(reader.CurrentTextValue, out decor))
-                this.SetValue(onComponent, decor);
+                this.SetValue(onStyle, decor);
             else
                 result = false;
 
@@ -2120,12 +2136,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             PDFUnit size = PDFUnit.Zero;
             bool result = true;
             if (reader.ReadNextValue() && TryGetLetterSpacing(reader.CurrentTextValue, out size))
-                onComponent.Style.SetValue(PDFStyleKeys.TextCharSpacingKey, size);
+                onStyle.SetValue(PDFStyleKeys.TextCharSpacingKey, size);
             else
                 result = false;
 
@@ -2171,12 +2187,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             PDFUnit size = PDFUnit.Zero;
             bool result = true;
             if (reader.ReadNextValue() && TryGetWordSpacing(reader.CurrentTextValue, out size))
-                onComponent.Style.SetValue(PDFStyleKeys.TextWordSpacingKey, size);
+                onStyle.SetValue(PDFStyleKeys.TextWordSpacingKey, size);
             else
                 result = false;
 
@@ -2220,12 +2236,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             PositionMode display;
             if (reader.ReadNextValue() && TryGetDecorationEnum(reader.CurrentTextValue, out display))
-                this.SetValue(onComponent, display);
+                this.SetValue(onStyle, display);
             else
                 result = false;
 
@@ -2275,12 +2291,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             OverflowAction over;
             if (reader.ReadNextValue() && TryGetOverflowEnum(reader.CurrentTextValue, out over))
-                this.SetValue(onComponent, over);
+                this.SetValue(onStyle, over);
             else
                 result = false;
 
@@ -2328,7 +2344,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool success = true;
             Text.WordWrap wrap;
@@ -2378,8 +2394,8 @@ namespace Scryber.Styles.Parsing
             }
             if (success)
             {
-                onComponent.Style.SetValue(PDFStyleKeys.TextWordWrapKey, wrap);
-                onComponent.Style.SetValue(PDFStyleKeys.TextWhitespaceKey, preserve);
+                onStyle.SetValue(PDFStyleKeys.TextWordWrapKey, wrap);
+                onStyle.SetValue(PDFStyleKeys.TextWhitespaceKey, preserve);
             }
             return success;
         }
@@ -2402,12 +2418,12 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             ListNumberingGroupStyle type;
             if (reader.ReadNextValue() && TryGetListTypeEnum(reader.CurrentTextValue, out type))
-                this.SetValue(onComponent, type);
+                this.SetValue(onStyle, type);
             else
                 result = false;
 
@@ -2475,7 +2491,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result;
             ListNumberingGroupStyle type;
@@ -2485,7 +2501,7 @@ namespace Scryber.Styles.Parsing
 
             else
             {
-                onComponent.Style.SetValue(PDFStyleKeys.ListNumberStyleKey, type);
+                onStyle.SetValue(PDFStyleKeys.ListNumberStyleKey, type);
                 result = true;
             }
 
@@ -2512,7 +2528,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
         {
             bool result;
 
@@ -2521,12 +2537,12 @@ namespace Scryber.Styles.Parsing
 
             else if (reader.CurrentTextValue == "auto")
             {
-                onComponent.Style.SetValue(PDFStyleKeys.OverflowSplitKey, OverflowSplit.Any);
+                onStyle.SetValue(PDFStyleKeys.OverflowSplitKey, OverflowSplit.Any);
                 result = true;
             }
             else if (reader.CurrentTextValue == "avoid")
             {
-                onComponent.Style.SetValue(PDFStyleKeys.OverflowSplitKey, OverflowSplit.Never);
+                onStyle.SetValue(PDFStyleKeys.OverflowSplitKey, OverflowSplit.Never);
                 result = true;
             }
             else

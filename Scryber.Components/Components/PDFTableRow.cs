@@ -692,7 +692,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the style data for this TableRow
         /// </summary>
-        public PDFStyle Style
+        public virtual PDFStyle Style
         {
             get
             {

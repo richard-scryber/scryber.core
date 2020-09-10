@@ -70,6 +70,11 @@ namespace Scryber.Styles.Selectors
             if (string.IsNullOrEmpty(selector))
                 return null;
 
+            selector = selector.Trim();
+
+            if (string.IsNullOrEmpty(selector))
+                return null;
+
             if (string.Equals("*", selector))
                 return new PDFStyleCatchAllMatcher();
 

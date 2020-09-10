@@ -372,6 +372,7 @@ namespace Scryber.Generation
         {
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = false;
+            settings.DtdProcessing = DtdProcessing.Ignore;
             return settings;
         }
 

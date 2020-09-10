@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using Scryber;
 using Scryber.Drawing;
 using System.ComponentModel;
+using Scryber.Styles.Parsing;
 
 namespace Scryber.Styles
 {
@@ -1138,7 +1139,15 @@ namespace Scryber.Styles
 
         public static PDFStyle Parse(string value)
         {
-            return null;
+            CSSStyleItemReader reader = new CSSStyleItemReader(value);
+            PDFStyle style = new PDFStyle();
+
+            while (reader.ReadNextAttributeName())
+            {
+                var parser = new CSSStyleItemAllParser();
+                parser.SetStyleValue(style, reader);
+            }
+            return style;
         }
     }
 
