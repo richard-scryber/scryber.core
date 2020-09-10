@@ -9,7 +9,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("Page")]
-    public class PDFHtmlPage : Scryber.Components.PDFPage
+    public class PDFHtmlPage : Scryber.Components.Page
     {
         [PDFAttribute("source")]
         public string Source
@@ -26,13 +26,13 @@ namespace Scryber.Html.Components
         }
 
         [PDFParserIgnore()]
-        public override PDFComponentList Contents => base.Contents;
+        public override ComponentList Contents => base.Contents;
 
-        private PDFHtmlFragment _fragment;
+        private HtmlFragment _fragment;
 
         public PDFHtmlPage(): base((PDFObjectType)"hmlP")
         {
-            _fragment = new PDFHtmlFragment();
+            _fragment = new HtmlFragment();
             this.InnerContent.Add(_fragment);
         }
 

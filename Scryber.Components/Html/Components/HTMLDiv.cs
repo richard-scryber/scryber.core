@@ -11,7 +11,7 @@ namespace Scryber.Html.Components
     /// Explicit sub class of the PDFDiv under the HTML Namespace that can be styled independantly
     /// </summary>
     [PDFParsableComponent("div")]
-    public class HTMLDiv : Scryber.Components.PDFDiv
+    public class HTMLDiv : Scryber.Components.Div
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

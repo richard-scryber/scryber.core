@@ -131,9 +131,9 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the Page definition that owns this page layout
         /// </summary>
-        public PDFPageBase PageOwner
+        public PageBase PageOwner
         {
-            get { return this.Owner as PDFPageBase; }
+            get { return this.Owner as PageBase; }
         }
 
         #endregion
@@ -216,7 +216,7 @@ namespace Scryber.Layout
         /// <param name="full">The full style for the page</param>
         /// <remarks>The PDFLayout page has one block. The TopBlock. 
         /// This contains all the regions and content for the page.</remarks>
-        public PDFLayoutPage(PDFLayoutDocument doc, PDFPageBase page, IPDFLayoutEngine engine, PDFStyle full, OverflowAction overflow)
+        public PDFLayoutPage(PDFLayoutDocument doc, PageBase page, IPDFLayoutEngine engine, PDFStyle full, OverflowAction overflow)
             : base(doc, page, engine, full)
         {
             this.OverflowAction = overflow;
@@ -522,7 +522,7 @@ namespace Scryber.Layout
 
             //get any existing badge resource registered in the document
 
-            PDFDocument doc = context.DocumentLayout.DocumentComponent;
+            Document doc = context.DocumentLayout.DocumentComponent;
 
             string rsrcName = BadgeResourceStem;
             if (style.DisplayOption == BadgeType.BlackOnWhite)
@@ -538,7 +538,7 @@ namespace Scryber.Layout
             if(null == _badgexobj)
             {
                 //Document does not have a previous badge registed, so need to register it now.
-                System.Resources.ResourceManager mgr = new System.Resources.ResourceManager("Scryber.Components.Properties.Resources", typeof(PDFPage).Assembly);
+                System.Resources.ResourceManager mgr = new System.Resources.ResourceManager("Scryber.Components.Properties.Resources", typeof(Page).Assembly);
                 
                 System.Drawing.Bitmap bmp;
                 if (style.DisplayOption == BadgeType.BlackOnWhite)

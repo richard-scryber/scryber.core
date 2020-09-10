@@ -6,7 +6,7 @@ using Scryber.Components;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("meta")]
-    public class HTMLMeta : PDFComponent
+    public class HTMLMeta : Component
     {
 
         [PDFElement()]

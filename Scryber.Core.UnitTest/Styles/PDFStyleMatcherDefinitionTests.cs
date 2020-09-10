@@ -41,7 +41,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = PDFStyleMatcher.Parse(".red");
 
 
-            var div = new PDFDiv();
+            var div = new Div();
             div.StyleClass = "red";
 
             var result = defn.IsMatchedTo(div);
@@ -56,7 +56,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = PDFStyleMatcher.Parse("doc:Div.red");
 
 
-            var div = new PDFDiv();
+            var div = new Div();
             div.ID = "MyDiv";
             div.StyleClass = "red";
             div.ElementName = "doc:Div";
@@ -75,7 +75,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div.red";
 
 
-            var div = new PDFDiv();
+            var div = new Div();
 
             div.StyleClass = "red blue";
             div.ElementName = "doc:Div";
@@ -99,7 +99,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div.red";
 
 
-            var div = new PDFDiv();
+            var div = new Div();
             div.ElementName = "doc:Div";
 
             div.StyleClass = "blue-red green";
@@ -131,10 +131,10 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new PDFStyleDefn();
             defn.Match = ".red .blue";
 
-            var div1 = new PDFDiv();
+            var div1 = new Div();
             div1.StyleClass = "red";
 
-            var div2 = new PDFDiv();
+            var div2 = new Div();
             div2.StyleClass = "blue";
             div1.Contents.Add(div2);
 
@@ -155,17 +155,17 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div#MyDiv doc:Para.blue";
 
-            var div1 = new PDFDiv();
+            var div1 = new Div();
             div1.ElementName = "doc:Div";
             div1.ID = "MyDiv";
             div1.StyleClass = "red";
 
-            var div2 = new PDFDiv();
+            var div2 = new Div();
             div2.ElementName = "doc:Div";
             div2.StyleClass = "blue";
             div1.Contents.Add(div2);
 
-            var para = new PDFParagraph();
+            var para = new Paragraph();
             para.ElementName = "doc:Para";
             para.StyleClass = "blue";
             div2.Contents.Add(para);
@@ -186,16 +186,16 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.green > doc:Para.blue";
 
-            var div1 = new PDFDiv();
+            var div1 = new Div();
             div1.ElementName = "doc:Div";
             div1.StyleClass = "red";
 
-            var div2 = new PDFDiv();
+            var div2 = new Div();
             div2.ElementName = "doc:Div";
             div2.StyleClass = "green";
             div1.Contents.Add(div2);
 
-            var para = new PDFParagraph();
+            var para = new Paragraph();
             para.ElementName = "doc:Para";
             para.StyleClass = "blue";
             div2.Contents.Add(para);
@@ -221,16 +221,16 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.green > .blue.green";
 
-            var div1 = new PDFDiv();
+            var div1 = new Div();
             div1.ElementName = "doc:Div";
             div1.StyleClass = "red";
 
-            var div2 = new PDFDiv();
+            var div2 = new Div();
             div2.ElementName = "doc:Div";
             div2.StyleClass = "green";
             div1.Contents.Add(div2);
 
-            var para = new PDFParagraph();
+            var para = new Paragraph();
             para.ElementName = "doc:Para";
             para.StyleClass = "blue green";
             div2.Contents.Add(para);
@@ -263,16 +263,16 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.green > doc:Para.green.red, doc:Div.red > doc:Para.blue.green";
 
-            var div1 = new PDFDiv();
+            var div1 = new Div();
             div1.ElementName = "doc:Div";
             div1.StyleClass = "red";
 
-            var div2 = new PDFDiv();
+            var div2 = new Div();
             div2.ElementName = "doc:Div";
             div2.StyleClass = "green";
             div1.Contents.Add(div2);
 
-            var para = new PDFParagraph();
+            var para = new Paragraph();
             para.ElementName = "doc:Para";
             para.StyleClass = "green red";
             div2.Contents.Add(para);

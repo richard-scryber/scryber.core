@@ -99,8 +99,8 @@ namespace Scryber.Html.Parsing
                 proxy = GetUnknownComponent(parser, name);
             }
 
-            if (proxy is PDFComponent)
-                ((PDFComponent)proxy).Tag = name;
+            if (proxy is Component)
+                ((Component)proxy).Tag = name;
             return proxy;
         }
 
@@ -167,7 +167,7 @@ namespace Scryber.Html.Parsing
         {
             _last = null;
             _lastName = null;
-            return new PDFTextLiteral(text);
+            return new TextLiteral(text);
         }
 
         #endregion

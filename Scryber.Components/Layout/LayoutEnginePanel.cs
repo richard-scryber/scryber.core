@@ -45,7 +45,7 @@ namespace Scryber.Layout
         /// <param name="container"></param>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        public LayoutEnginePanel(PDFContainerComponent container, IPDFLayoutEngine parent)
+        public LayoutEnginePanel(ContainerComponent container, IPDFLayoutEngine parent)
             : base(container, parent)
         {
             PanelLayoutEngineInstances++;

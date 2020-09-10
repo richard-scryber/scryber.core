@@ -56,7 +56,7 @@ namespace Scryber
         /// <summary>
         /// Gets a list of IPDFComponents that are children of this Component
         /// </summary>
-        PDFComponentList Content { get; }
+        ComponentList Content { get; }
     }
 
     #endregion
@@ -216,7 +216,7 @@ namespace Scryber
         /// <summary>
         /// Gets the page that contains this Component
         /// </summary>
-        PDFPage Page { get; }
+        Page Page { get; }
 
         
 
@@ -275,7 +275,7 @@ namespace Scryber
 
         object GetNullValue(System.Data.DbType type);
 
-        void FillData(System.Data.DataSet dataset, Scryber.Data.PDFXPathDataSourceBase source, IPDFDataSetProviderCommand parent, PDFDataContext context);
+        void FillData(System.Data.DataSet dataset, Scryber.Data.XPathDataSourceBase source, IPDFDataSetProviderCommand parent, PDFDataContext context);
     }
 
     #endregion

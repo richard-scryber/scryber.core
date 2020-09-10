@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             PDFStyleCollection target = new PDFStyleCollection();
             PDFStyleDefn defn = new PDFStyleDefn();
-            defn.AppliedType = typeof(PDFLabel);
+            defn.AppliedType = typeof(Label);
             defn.AppliedClass = "sea";
 
             defn.Border.Color = PDFColors.Red;
@@ -109,7 +109,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn3.Stroke.Color = PDFColors.Aqua;
             target.Add(defn3);
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             ComponentState state = ComponentState.Normal;
 
             PDFStyle style = new PDFStyle();
@@ -175,7 +175,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void OwnerTest()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
             doc.ID = "First Document";
 
             //doc.Styles should be initialized with the document as it's owner
@@ -194,7 +194,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(doc, styleDoc.Parent);
 
             //Changing the owner should pass through
-            PDFDocument other = new PDFDocument();
+            Document other = new Document();
             other.ID = "Other Document";
             col.Owner = other;
             Assert.AreEqual(other, styleDoc.Parent);

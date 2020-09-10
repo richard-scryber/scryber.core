@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("ul")]
-    public class HTMLListUnordered : Scryber.Components.PDFListUnordered
+    public class HTMLListUnordered : Scryber.Components.ListUnordered
     {
 
         [PDFAttribute("class")]

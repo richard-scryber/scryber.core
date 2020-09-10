@@ -7,7 +7,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("html")]
-    public class HTMLDocument : PDFDocument
+    public class HTMLDocument : Document
     {
 
         private HTMLHead _head;
@@ -55,10 +55,10 @@ namespace Scryber.Html.Components
         }
 
         [PDFParserIgnore()]
-        public override PDFPageList Pages { get { return base.Pages; } }
+        public override PageList Pages { get { return base.Pages; } }
 
 
-        public override PDFStyle GetAppliedStyle(PDFComponent forComponent, PDFStyle baseStyle)
+        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
         {
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
             if (null != this.Head)

@@ -9,7 +9,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("body")]
-    public class HTMLBody : Scryber.Components.PDFSection
+    public class HTMLBody : Scryber.Components.Section
     {
 
         
@@ -25,7 +25,7 @@ namespace Scryber.Html.Components
         public override PDFStyle Style { get => base.Style; set => base.Style = value; }
 
         [PDFElement("")]
-        [PDFArray(typeof(PDFComponent))]
-        public override PDFComponentList Contents => base.Contents;
+        [PDFArray(typeof(Component))]
+        public override ComponentList Contents => base.Contents;
     }
 }

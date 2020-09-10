@@ -63,8 +63,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public static void SetUpResource(TestContext testContext)
         {
             
-            var assembly = typeof(Scryber.Components.PDFBlock).Assembly;
-            var mgr = new System.Resources.ResourceManager("Scryber.Components.Properties.Resources", assembly);
+            var assembly = typeof(Scryber.Components.Block).Assembly;
+            var mgr = new System.Resources.ResourceManager("Scryber.Properties.Resources", assembly);
             var bmp = mgr.GetObject("scryber_generatedby_bow") as System.Drawing.Bitmap;
 
             _cached = bmp;

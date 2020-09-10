@@ -47,7 +47,7 @@ namespace Scryber
             get { return _existPageRefs; }
         }
 
-        public PDFTraceLogLayoutDocument(PDFDocument doc, IPDFLayoutEngine engine, PDFFile originalfile)
+        public PDFTraceLogLayoutDocument(Document doc, IPDFLayoutEngine engine, PDFFile originalfile)
             : base(doc, engine)
         {
             this._originalFile = originalfile;

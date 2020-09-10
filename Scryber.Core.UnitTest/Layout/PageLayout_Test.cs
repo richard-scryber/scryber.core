@@ -42,8 +42,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void SinglePage()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -103,9 +103,9 @@ namespace Scryber.Core.UnitTests.Layout
             int MarginTop = 20;
             int MarginBottom = 25;
 
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
-            PDFPage pg = new PDFPage();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
             pg.Style.Margins.Left = MarginLeft;
@@ -181,9 +181,9 @@ namespace Scryber.Core.UnitTests.Layout
 
 
 
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
-            PDFPage pg = new PDFPage();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -264,9 +264,9 @@ namespace Scryber.Core.UnitTests.Layout
 
 
 
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
-            PDFSection pg = new PDFSection();
+            Section pg = new Section();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -283,7 +283,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             doc.Pages.Add(pg);
 
-            PDFPageBreak pgBreak = new PDFPageBreak();
+            PageBreak pgBreak = new PageBreak();
             pg.Contents.Add(pgBreak);
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
@@ -353,9 +353,9 @@ namespace Scryber.Core.UnitTests.Layout
             int Alley = 20;
             int ColumnCount = 2;
 
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
-            PDFPage pg = new PDFPage();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -452,9 +452,9 @@ namespace Scryber.Core.UnitTests.Layout
             int Alley = 20;
             int ColumnCount = 2;
 
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
-            PDFSection pg = new PDFSection();
+            Section pg = new Section();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -473,7 +473,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             doc.Pages.Add(pg);
 
-            pg.Contents.Add(new PDFPageBreak());
+            pg.Contents.Add(new PageBreak());
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {

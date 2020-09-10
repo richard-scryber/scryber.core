@@ -29,8 +29,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PageWithExplicitSizedPanel()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -39,7 +39,7 @@ namespace Scryber.Core.UnitTests.Layout
             int expectedWidth = 100;
             int expectedHeight = 50;
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
             panel.Width = expectedWidth;
             panel.Height = expectedHeight;
             pg.Contents.Add(panel);
@@ -119,8 +119,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PageWithFullWidthPanel()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -130,7 +130,7 @@ namespace Scryber.Core.UnitTests.Layout
             int expectedHeight = 50;
 
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
             
             panel.FullWidth = true;
             panel.Height = expectedHeight;
@@ -212,8 +212,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PageWithMarginsPaddingAndFullWidthPanel()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -231,7 +231,7 @@ namespace Scryber.Core.UnitTests.Layout
             int expectedX = 0;
             int expectedY = 0;
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
 
             panel.FullWidth = true;
             panel.Height = expectedHeight;
@@ -315,8 +315,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PageWithMarginsPaddingAndFullWidthPanelWithMarginsAndPadding()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -332,7 +332,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
 
             panel.FullWidth = true;
             panel.Height = explicitHeight;
@@ -435,8 +435,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PanelWithMinWidthAndHeight()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
 
@@ -445,13 +445,13 @@ namespace Scryber.Core.UnitTests.Layout
             int expectedMinWidth = 200;
             int expectedMinHeight = 50;
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
             pg.Contents.Add(panel);
 
 
-            PDFLabel lbl = new PDFLabel() { Text = "Not wide enough" };
+            Label lbl = new Label() { Text = "Not wide enough" };
             panel.Contents.Add(lbl); //Will not push the panel beyond its minimumn width
 
             
@@ -498,8 +498,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PanelBeyondMinWidth()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
             pg.Style.Font.FontSize = 12;
@@ -509,12 +509,12 @@ namespace Scryber.Core.UnitTests.Layout
             int expectedMinWidth = 200;
             int expectedMinHeight = 100;
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
             pg.Contents.Add(panel);
 
-            PDFLabel lbl = new PDFLabel() { Text = "This label is wide enough to go beyond the 200pt minimum width of the panel " + 
+            Label lbl = new Label() { Text = "This label is wide enough to go beyond the 200pt minimum width of the panel " + 
                 "and also the width of the page, so should flow onto the next line. (but not beyond the minimum height)" };
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
@@ -553,8 +553,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void PanelBeyondMinWidthAndHeight()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Style.PageStyle.Width = PageWidth;
             pg.Style.PageStyle.Height = PageHeight;
             pg.Style.Font.FontSize = 18;
@@ -564,12 +564,12 @@ namespace Scryber.Core.UnitTests.Layout
             int expectedMinWidth = 200;
             int expectedMinHeight = 100;
 
-            PDFPanel panel = new PDFPanel();
+            Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
             pg.Contents.Add(panel);
 
-            PDFLabel lbl = new PDFLabel()
+            Label lbl = new Label()
             {
                 Text = "This label is wide enough to go beyond the 200pt minimum width of the panel " +
                     "and also the width of the page, so should flow onto the next line and keep going beyond the minimum height of the " +

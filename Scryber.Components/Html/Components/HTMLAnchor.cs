@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("a")]
-    public class HTMLAnchor : Scryber.Components.PDFLink
+    public class HTMLAnchor : Scryber.Components.Link
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

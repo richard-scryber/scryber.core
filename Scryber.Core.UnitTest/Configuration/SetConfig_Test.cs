@@ -43,11 +43,11 @@ namespace Scryber.Core.UnitTests.Configuration
         public void ConfigClassInitialize()
         {
             var path = this.TestContext.TestRunDirectory;
-            path = Path.GetFullPath(Path.Combine(path, "../../../scrybersettings.json"));
+            path = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../scrybersettings.json"));
             if (!File.Exists(path))
             {
-                path = Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
-                path = Path.GetFullPath(path);
+                path = System.IO.Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
+                path = System.IO.Path.GetFullPath(path);
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("Cannot find the location of the scrybersettings.json file to run the tests from");
@@ -265,9 +265,9 @@ namespace Scryber.Core.UnitTests.Configuration
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
@@ -309,9 +309,9 @@ namespace Scryber.Core.UnitTests.Configuration
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
@@ -348,17 +348,17 @@ namespace Scryber.Core.UnitTests.Configuration
 
 
 
-            PDFDocument doc;
+            Document doc;
 
             using (var reader = new System.IO.StringReader(pdfx))
-                doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
             using (var stream = new System.IO.MemoryStream())
             {
                 doc.ProcessDocument(stream);
 
                 //Check that the image was loaded and used.
-                var img = doc.FindAComponentById("LoadedImage") as PDFImage;
+                var img = doc.FindAComponentById("LoadedImage") as Image;
                 Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
             }
         }

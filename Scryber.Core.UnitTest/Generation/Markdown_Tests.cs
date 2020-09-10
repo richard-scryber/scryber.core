@@ -35,10 +35,10 @@ namespace Scryber.Core.UnitTests.Generation
             path = System.IO.Path.GetFullPath(path);
             var content = System.IO.File.ReadAllText(path);
 
-            var doc = new PDFDocument();
-            var pg = new PDFSection();
+            var doc = new Document();
+            var pg = new Section();
             pg.FontSize = 12;
-            var frag = new PDFHtmlFragment();
+            var frag = new HtmlFragment();
 
             doc.Pages.Add(pg);
             pg.Contents.Add(frag);

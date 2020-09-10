@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleDefnConstructorTest1()
         {
-            Type appliedtype = typeof(Scryber.Components.PDFLabel);
+            Type appliedtype = typeof(Scryber.Components.Label);
             string appliedid = "myid";
             string appliedclassname = "myclass";
             PDFStyleDefn target = new PDFStyleDefn(appliedtype, appliedid, appliedclassname);
@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, actual);
 
             target = new PDFStyleDefn();
-            target.AppliedType = typeof(Scryber.Components.PDFLabel);
+            target.AppliedType = typeof(Scryber.Components.Label);
             expected = false;
             actual = target.IsCatchAllStyle();
             Assert.AreEqual(expected, actual);
@@ -153,7 +153,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Catch All with document
 
-            Scryber.Components.PDFDocument doc = new Components.PDFDocument();
+            Scryber.Components.Document doc = new Components.Document();
             bool expected = true;
             bool actual;
             actual = target.IsMatchedTo(doc);
@@ -161,7 +161,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //set up component
 
-            Scryber.Components.PDFLabel lbl = new Scryber.Components.PDFLabel();
+            Scryber.Components.Label lbl = new Scryber.Components.Label();
             lbl.StyleClass = "myclass";
             lbl.ID = "myId";
 
@@ -173,7 +173,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(1,expected));
 
             //match applied type
-            target.AppliedType = typeof(Scryber.Components.PDFLabel);
+            target.AppliedType = typeof(Scryber.Components.Label);
             expected = true;
             actual = target.IsMatchedTo(lbl);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(2, expected));
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(6, expected));
 
             //match base type and id
-            target.AppliedType = typeof(Scryber.Components.PDFSpanBase);
+            target.AppliedType = typeof(Scryber.Components.SpanBase);
             expected = true;
             actual = target.IsMatchedTo(lbl);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(7, expected));
@@ -223,7 +223,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(9, expected));
 
             //non-matched type, matched class and id
-            target.AppliedType = typeof(Scryber.Components.PDFTableCell);
+            target.AppliedType = typeof(Scryber.Components.TableCell);
             target.AppliedClass = "myclass";
             expected = false;
             actual = target.IsMatchedTo(lbl);
@@ -258,7 +258,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            Scryber.Components.PDFLabel lbl = new Scryber.Components.PDFLabel();
+            Scryber.Components.Label lbl = new Scryber.Components.Label();
             lbl.StyleClass = "myclass";
             lbl.ID = "myId";
 
@@ -272,14 +272,14 @@ namespace Scryber.Core.UnitTests.Styles
 
 
             //match applied type
-            target.AppliedType = typeof(Scryber.Components.PDFLabel);
+            target.AppliedType = typeof(Scryber.Components.Label);
             target.MergeInto(style, lbl, ComponentState.Normal);
 
             style.Flatten();
             Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color);
 
             //non-matching applied type
-            target.AppliedType = typeof(Scryber.Components.PDFTableCell);
+            target.AppliedType = typeof(Scryber.Components.TableCell);
             style = new PDFStyle();
             style.Background.Color = Scryber.Drawing.PDFColors.Blue;
 
@@ -344,7 +344,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void AppliedTypeTest()
         {
             PDFStyleDefn target = new PDFStyleDefn();
-            Type expected = typeof(Scryber.Components.PDFTableCell);
+            Type expected = typeof(Scryber.Components.TableCell);
             Type actual;
             target.AppliedType = expected;
             actual = target.AppliedType;

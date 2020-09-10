@@ -52,10 +52,10 @@ namespace Scryber.Core.UnitTests.Generation
                                   </Pages>
                                 </pdf:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
             parsed.LayoutComplete += DefaultFont_LayoutComplete;
@@ -97,10 +97,10 @@ namespace Scryber.Core.UnitTests.Generation
                                   </Pages>
                                 </pdf:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
             parsed.LayoutComplete += StandardFont_LayoutComplete;

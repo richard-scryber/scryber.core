@@ -18,36 +18,36 @@ namespace Scryber.Core.UnitTests.Generation
     public class TestParsedController : TestParsedControllerBase
     {
         [PDFOutlet]
-        public PDFLabel LabelField;
+        public Label LabelField;
 
         [PDFOutlet]
-        public PDFPlaceHolder PlaceholderProperty { get; set; }
+        public PlaceHolder PlaceholderProperty { get; set; }
 
         [PDFOutlet]
-        public static PDFImage InvalidStaticField;
+        public static Image InvalidStaticField;
 
         [PDFOutlet]
-        public static PDFImage InvalidStaticProperty { get; set; }
+        public static Image InvalidStaticProperty { get; set; }
 
         [PDFOutlet]
-        protected PDFImage InvalidProtectedField;
+        protected Image InvalidProtectedField;
 
         [PDFOutlet]
-        protected PDFImage InvalidProtectedProperty { get; set; }
+        protected Image InvalidProtectedProperty { get; set; }
 
         [PDFOutlet("mylabel")]
-        public PDFLabel LabelFieldOtherName { get; set; }
+        public Label LabelFieldOtherName { get; set; }
 
         [PDFOutlet("otherlabel", Required = true)]
-        public PDFLabel RequiredLabelOtherName { get; set; }
+        public Label RequiredLabelOtherName { get; set; }
 
         [PDFOutlet(IsOutlet=false)]
-        public PDFLabel ExplicitExcludedLabel { get; set; }
+        public Label ExplicitExcludedLabel { get; set; }
 
         /// <summary>
         /// No Declaration - rely on base implementation
         /// </summary>
-        public override PDFLabel OverridenBaseClassLabel
+        public override Label OverridenBaseClassLabel
         {
             get
             {
@@ -60,7 +60,7 @@ namespace Scryber.Core.UnitTests.Generation
         }
 
         [PDFOutlet("renamedbaselabel")]
-        public override PDFLabel RenamedBaseClassLabel
+        public override Label RenamedBaseClassLabel
         {
             get
             {
@@ -73,7 +73,7 @@ namespace Scryber.Core.UnitTests.Generation
         }
 
         [PDFOutlet(IsOutlet=false)]
-        public override PDFLabel ExcludedInSubClass
+        public override Label ExcludedInSubClass
         {
             get
             {
@@ -139,16 +139,16 @@ namespace Scryber.Core.UnitTests.Generation
     public class TestParsedControllerBase
     {
         [PDFOutlet]
-        public PDFLabel BaseClassLabel { get; set; }
+        public Label BaseClassLabel { get; set; }
 
         [PDFOutlet]
-        public virtual PDFLabel OverridenBaseClassLabel { get; set; }
+        public virtual Label OverridenBaseClassLabel { get; set; }
 
         [PDFOutlet]
-        public virtual PDFLabel RenamedBaseClassLabel { get; set; }
+        public virtual Label RenamedBaseClassLabel { get; set; }
 
         [PDFOutlet]
-        public virtual PDFLabel ExcludedInSubClass { get; set; }
+        public virtual Label ExcludedInSubClass { get; set; }
 
         [PDFAction()]
         public void SimpleBaseAction()

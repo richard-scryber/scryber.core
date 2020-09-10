@@ -236,7 +236,7 @@ namespace Scryber.Core.UnitTests.Styles
         private void InitStylesDocument(PDFStylesDocument target)
         {
             PDFStyleDefn defn = new PDFStyleDefn();
-            defn.AppliedType = typeof(PDFLabel);
+            defn.AppliedType = typeof(Label);
             defn.AppliedClass = "sea";
 
             defn.Border.Color = PDFColors.Red;
@@ -271,7 +271,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // same class, same type = applied
             PDFStyleDefn defn = new PDFStyleDefn();
-            defn.AppliedType = typeof(PDFLabel);
+            defn.AppliedType = typeof(Label);
             defn.AppliedClass = classname;
 
             defn.Border.Color = PDFColors.Red;
@@ -297,7 +297,7 @@ namespace Scryber.Core.UnitTests.Styles
             //same class but different type = not applied
             PDFStyleDefn defn4 = new PDFStyleDefn();
             defn4.AppliedClass = classname;
-            defn4.AppliedType = typeof(PDFImage);
+            defn4.AppliedType = typeof(Image);
             defn4.Font.FontFamily = "Symbol";
             target.Styles.Add(defn4);
 
@@ -305,7 +305,7 @@ namespace Scryber.Core.UnitTests.Styles
             
 
             PDFStyle actual = new PDFStyle();
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             lbl.StyleClass = classname;
             target.MergeInto(actual, lbl, ComponentState.Normal);
             actual.Flatten();
@@ -324,7 +324,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void DocumentTest()
         {
             PDFStylesDocument target = new PDFStylesDocument();
-            PDFDocument root = new PDFDocument();
+            Document root = new Document();
             root.Styles.Add(target);
 
             IPDFDocument actual;
@@ -371,7 +371,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void ParentTest()
         {
             PDFStylesDocument target = new PDFStylesDocument();
-            PDFDocument expected = new PDFDocument();
+            Document expected = new Document();
             expected.Styles.Add(target);
             target.Parent = expected;
 

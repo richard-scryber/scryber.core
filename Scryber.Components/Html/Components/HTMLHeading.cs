@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("h1")]
-    public class HTMLHead1 : Scryber.Components.PDFHead1
+    public class HTMLHead1 : Scryber.Components.Head1
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -24,7 +24,7 @@ namespace Scryber.Html.Components
     }
 
     [PDFParsableComponent("h2")]
-    public class HTMLHead2 : Scryber.Components.PDFHead2
+    public class HTMLHead2 : Scryber.Components.Head2
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -40,7 +40,7 @@ namespace Scryber.Html.Components
 
 
     [PDFParsableComponent("h3")]
-    public class HTMLHead3 : Scryber.Components.PDFHead3
+    public class HTMLHead3 : Scryber.Components.Head3
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -55,7 +55,7 @@ namespace Scryber.Html.Components
     }
 
     [PDFParsableComponent("h4")]
-    public class HTMLHead4 : Scryber.Components.PDFHead4
+    public class HTMLHead4 : Scryber.Components.Head4
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -70,7 +70,7 @@ namespace Scryber.Html.Components
     }
 
     [PDFParsableComponent("h5")]
-    public class HTMLHead5 : Scryber.Components.PDFHead5
+    public class HTMLHead5 : Scryber.Components.Head5
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -85,7 +85,7 @@ namespace Scryber.Html.Components
     }
 
     [PDFParsableComponent("h6")]
-    public class HTMLHead6 : Scryber.Components.PDFHead6
+    public class HTMLHead6 : Scryber.Components.Head6
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

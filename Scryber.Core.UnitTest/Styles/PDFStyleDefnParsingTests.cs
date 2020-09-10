@@ -89,7 +89,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             using (var sr = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
                 parsed = true;
 
 

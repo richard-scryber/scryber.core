@@ -9,7 +9,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("style")]
-    public class PDFHtmlStyleDefnGroup : Scryber.Components.PDFComponent
+    public class PDFHtmlStyleDefnGroup : Scryber.Components.Component
     {
         private string _contents;
         private bool _parsed = false;
@@ -78,7 +78,7 @@ namespace Scryber.Html.Components
             
         }
 
-        public override PDFStyle GetAppliedStyle(PDFComponent forComponent, PDFStyle baseStyle)
+        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
         {
             this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
             return baseStyle;

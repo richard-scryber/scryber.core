@@ -20,12 +20,12 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void Numbering_SimpleDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             for (int i = 0; i < 20; i++)
             {
-                PDFPage pg = new PDFPage();
+                Page pg = new Page();
                 doc.Pages.Add(pg);
             }
 
@@ -74,12 +74,12 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageNumbering_SimpleDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             for (int i = 0; i < 20; i++)
             {
-                PDFPage pg = new PDFPage();
+                Page pg = new Page();
                 doc.Pages.Add(pg);
             }
 
@@ -116,7 +116,7 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageNumbering_MultiSectionDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             // numbering                           | Default                 | Lower roman                | Upper letter with prefix        | Back to default
@@ -125,7 +125,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             for (int i = 0; i < 4; i++)
             {
-                PDFSection group = new PDFSection();
+                Section group = new Section();
                 if (i == 1)
                 {
                     group.Style.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Layout
 
                 for (int j = 0; j < 4; j++)
                 {
-                    PDFPageBreak br = new PDFPageBreak();
+                    PageBreak br = new PageBreak();
                     group.Contents.Add(br);
                 }
             }
@@ -266,12 +266,12 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageNumbering_FullStyledMultiSectionDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             for (int i = 0; i < 4; i++)
             {
-                PDFSection group = new PDFSection();
+                Section group = new Section();
                 if (i == 0)
                 {
                     group.Style.PageStyle.NumberStyle = PageNumberStyle.LowercaseLetters;
@@ -291,7 +291,7 @@ namespace Scryber.Core.UnitTests.Layout
 
                 for (int j = 0; j < 4; j++)
                 {
-                    PDFPageBreak br = new PDFPageBreak();
+                    PageBreak br = new PageBreak();
                     group.Contents.Add(br);
                 }
             }

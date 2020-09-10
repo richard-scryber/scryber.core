@@ -258,7 +258,7 @@ namespace Scryber.Layout
             this._posopts = fullstyle.CreatePostionOptions();
             this._textopts = fullstyle.CreateTextOptions();
 
-            this._frsrc = ((PDFDocument)this.TextComponent.Document).GetFontResource(this.TextRenderOptions.Font, true);
+            this._frsrc = ((Document)this.TextComponent.Document).GetFontResource(this.TextRenderOptions.Font, true);
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Layout);
 

@@ -17,13 +17,13 @@ namespace Scryber.Core.UnitTests.Layout
         [TestMethod()]
         public void LineAlignmentTest()
         {
-            var doc = new PDFDocument();
-            var page = new PDFPage();
+            var doc = new Document();
+            var page = new Page();
             doc.Pages.Add(page);
 
-            page.Contents.Add(new PDFTextLiteral("Before"));
+            page.Contents.Add(new TextLiteral("Before"));
 
-            var path = new PDFLine() { PositionMode = Scryber.Drawing.PositionMode.Inline };
+            var path = new Line() { PositionMode = Scryber.Drawing.PositionMode.Inline };
             page.Contents.Add(path);
 
             

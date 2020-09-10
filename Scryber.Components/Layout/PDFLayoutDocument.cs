@@ -43,7 +43,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets or sets the document that started the layout
         /// </summary>
-        public PDFDocument DocumentComponent { get; private set; }
+        public Document DocumentComponent { get; private set; }
 
         #endregion
 
@@ -134,7 +134,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Creates a new PDFLayoutDocument
         /// </summary>
-        public PDFLayoutDocument(PDFDocument doc, IPDFLayoutEngine engine)
+        public PDFLayoutDocument(Document doc, IPDFLayoutEngine engine)
             : base(null, doc, engine, new PDFStyle())
         {
             AllPages = new PDFLayoutPageCollection();
@@ -171,7 +171,7 @@ namespace Scryber.Layout
 
             PDFSize size = pg.Size;
             PDFStyle style = pg.FullStyle;
-            PDFPage owner = pg.Owner as PDFPage;
+            Page owner = pg.Owner as Page;
             OverflowAction overflow = pg.OverflowAction;
 
             PDFLayoutPage newpg = this.BeginNewPage(owner, this.Engine, style, overflow);
@@ -188,7 +188,7 @@ namespace Scryber.Layout
         /// <param name="size">The actual size of the page</param>
         /// <param name="full">The full style of the page</param>
         /// <returns></returns>
-        public PDFLayoutPage BeginNewPage(PDFPageBase owner, IPDFLayoutEngine engine, PDFStyle full, OverflowAction action)
+        public PDFLayoutPage BeginNewPage(PageBase owner, IPDFLayoutEngine engine, PDFStyle full, OverflowAction action)
         {
             int pgIndex = this.AllPages.Count;
             PDFLayoutPage pg = CreateNewPageInstance(owner, engine, full, action, pgIndex);
@@ -199,7 +199,7 @@ namespace Scryber.Layout
             return pg;
         }
 
-        protected virtual PDFLayoutPage CreateNewPageInstance(PDFPageBase owner, IPDFLayoutEngine engine, PDFStyle full, OverflowAction action, int pageIndex)
+        protected virtual PDFLayoutPage CreateNewPageInstance(PageBase owner, IPDFLayoutEngine engine, PDFStyle full, OverflowAction action, int pageIndex)
         {
             PDFLayoutPage pg = new PDFLayoutPage(this, owner, engine, full, action);
             pg.PageIndex = pageIndex;
@@ -479,7 +479,7 @@ namespace Scryber.Layout
         /// <param name="writer"></param>
         protected virtual void WriteViewerPreferences(PDFRenderContext context, PDFWriter writer)
         {
-            PDFDocumentViewPreferences docview = this.DocumentComponent.ViewPreferences;
+            DocumentViewPreferences docview = this.DocumentComponent.ViewPreferences;
 
             if (null != docview)
             {
@@ -547,7 +547,7 @@ namespace Scryber.Layout
         protected virtual void WriteInfo(PDFRenderContext context, PDFWriter writer)
         {
 
-            PDFDocumentInfo info = this.DocumentComponent.Info;
+            DocumentInfo info = this.DocumentComponent.Info;
 
             if (null != info)
                 info.OutputToPDF(context, writer);            

@@ -58,7 +58,7 @@ namespace Scryber.Html.Parsing
         /// <returns></returns>
         public virtual IPDFComponent GetTextComponent(IHtmlContentParser parser, string text)
         {
-            return new PDFTextLiteral(text);
+            return new TextLiteral(text);
         }
 
         
@@ -131,7 +131,7 @@ namespace Scryber.Html.Parsing
 
         public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
-            PDFSpanBase span;
+            SpanBase span;
             type = HtmlComponentType.Span;
             switch (name.ToLower())
             {
@@ -204,7 +204,7 @@ namespace Scryber.Html.Parsing
             {
                 int colspan;
                 if(int.TryParse(attrValue, out colspan))
-                    ((PDFTableCell)parsed).Style.Table.CellColumnSpan = colspan;
+                    ((TableCell)parsed).Style.Table.CellColumnSpan = colspan;
             }
             else
                 base.SetAttribute(parser, parsed, componentName, attrName, attrValue);
@@ -290,7 +290,7 @@ namespace Scryber.Html.Parsing
         public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Heading;
-            PDFHeadingBase head;
+            HeadingBase head;
             switch (name.ToLower())
             {
                 case "h1":
@@ -402,7 +402,7 @@ namespace Scryber.Html.Parsing
         public override void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
         {
             if (attrName == "src")
-               ((PDFImage) parsed).Source = attrValue;
+               ((Image) parsed).Source = attrValue;
             else
                 base.SetAttribute(parser, parsed, componentName, attrName, attrValue);
         }

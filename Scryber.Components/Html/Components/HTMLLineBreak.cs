@@ -8,7 +8,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("br")]
-    public class HTMLLineBreak : Scryber.Components.PDFLineBreak
+    public class HTMLLineBreak : Scryber.Components.LineBreak
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

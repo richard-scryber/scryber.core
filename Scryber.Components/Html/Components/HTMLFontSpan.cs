@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("font")]
-    public class HTMLFontSpan : Scryber.Components.PDFSpan
+    public class HTMLFontSpan : Scryber.Components.Span
     {
 
         [PDFAttribute("class")]

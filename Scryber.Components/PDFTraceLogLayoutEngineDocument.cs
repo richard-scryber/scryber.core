@@ -18,7 +18,7 @@ namespace Scryber
             get { return _orig; }
         }
 
-        public PDFTraceLogLayoutEngineDocument(PDFDocument doc, PDFFile originalFile, IPDFLayoutEngine parent, PDFLayoutContext context)
+        public PDFTraceLogLayoutEngineDocument(Document doc, PDFFile originalFile, IPDFLayoutEngine parent, PDFLayoutContext context)
             : base(doc, parent, context)
         {
             this._orig = originalFile;

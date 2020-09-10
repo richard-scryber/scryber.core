@@ -73,19 +73,19 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
-                var head = doc.FindAComponentById("Heading") as PDFHead1;
+                var head = doc.FindAComponentById("Heading") as Head1;
                 Assert.AreEqual("Testing Document Datasources", head.Text, "The heading text values do not match");
 
-                var text = doc.FindAComponentById("FirstID") as PDFTextLiteral;
+                var text = doc.FindAComponentById("FirstID") as TextLiteral;
                 Assert.IsNotNull(text, "Could not find the text literal that should have been bound");
                 Assert.AreEqual("First", text.Text, "The bound value for the text literal does not match");
 
-                text = doc.FindAComponentById("SecondID") as PDFTextLiteral;
+                text = doc.FindAComponentById("SecondID") as TextLiteral;
                 Assert.IsNotNull(text, "Could not find the text literal that should have been bound");
                 Assert.AreEqual("Second", text.Text, "The bound value for the text literal does not match");
             }

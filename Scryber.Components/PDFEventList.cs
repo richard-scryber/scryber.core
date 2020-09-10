@@ -83,7 +83,7 @@ namespace Scryber
         /// Creates a new instance of the Event List for the specified component
         /// </summary>
         /// <param name="owner"></param>
-        public PDFEventList(Scryber.Components.PDFComponent owner)
+        public PDFEventList(Scryber.Components.Component owner)
         {
             _owner = owner;
         }

@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("ol")]
-    public class HTMLListOrdered : Scryber.Components.PDFListOrdered
+    public class HTMLListOrdered : Scryber.Components.ListOrdered
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

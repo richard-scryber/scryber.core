@@ -341,7 +341,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Font.FontFamily = "Bauhaus 92";
             
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             bool replace = false;
 
             PDFStyle merged = new PDFStyle();
@@ -425,7 +425,7 @@ namespace Scryber.Core.UnitTests.Styles
             merged.Margins.All = 10;
             
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             ComponentState state = ComponentState.Normal;
 
             //in the base implementation these are ignored - so no difference

@@ -16,7 +16,7 @@ namespace Scryber.Core.UnitTests.Generation
         //[TestCategory("Hello World")]
         public void ProcessHelloWorld()
         {
-            using (PDFDocument doc = PDFDocument.ParseDocument("./HelloWorld.pdfx"))
+            using (Document doc = Document.ParseDocument("./HelloWorld.pdfx"))
             {
                 doc.ProcessDocument("./HelloWorld.pdf", System.IO.FileMode.Create);
             }
@@ -24,21 +24,21 @@ namespace Scryber.Core.UnitTests.Generation
 
         public void ProcessHellowWorldCode()
         {
-            using (PDFDocument doc = this.GenerateHelloWorld())
+            using (Document doc = this.GenerateHelloWorld())
             {
 
             }
         }
 
-        public PDFDocument GenerateHelloWorld()
+        public Document GenerateHelloWorld()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
-            PDFPage pg = new PDFPage();
+            Page pg = new Page();
             doc.Pages.Add(pg);
             pg.Style.Margins.All = 10;
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             lbl.Text = "Hello World";
             pg.Contents.Add(lbl);
 

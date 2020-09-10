@@ -8,7 +8,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("dt")]
-    public class HTMLListDefinitionItem : Scryber.Components.PDFListItem
+    public class HTMLListDefinitionItem : Scryber.Components.ListItem
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

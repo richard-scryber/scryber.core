@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("pre")]
-    public class HTMLPreformatted : Scryber.Components.PDFPreformatted
+    public class HTMLPreformatted : Scryber.Components.Preformatted
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

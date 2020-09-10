@@ -7,7 +7,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("head")]
-    public class HTMLHead : PDFContainerComponent, IPDFInvisibleContainer
+    public class HTMLHead : ContainerComponent, IPDFInvisibleContainer
     {
         private string _title;
 
@@ -24,25 +24,25 @@ namespace Scryber.Html.Components
             }
         }
 
-        [PDFArray(typeof(PDFComponent))]
+        [PDFArray(typeof(Component))]
         [PDFElement("")]
-        public PDFComponentList Contents
+        public ComponentList Contents
         {
             get { return base.InnerContent; }
             set { base.InnerContent = value; }
         }
 
-        protected internal override void RegisterParent(PDFComponent parent)
+        protected internal override void RegisterParent(Component parent)
         {
             base.RegisterParent(parent);
             UpdateDocumentInfo(parent);
         }
 
-        private void UpdateDocumentInfo(PDFComponent parent)
+        private void UpdateDocumentInfo(Component parent)
         {
-            if (parent is PDFDocument)
+            if (parent is Document)
             {
-                var doc = parent as PDFDocument;
+                var doc = parent as Document;
 
                 if (!string.IsNullOrEmpty(this.Title))
                     doc.Info.Title = this.Title;
@@ -91,7 +91,7 @@ namespace Scryber.Html.Components
 
         }
 
-        public override PDFStyle GetAppliedStyle(PDFComponent forComponent, PDFStyle baseStyle)
+        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
         {
             var applied = baseStyle;
             foreach (var item in this.Contents)

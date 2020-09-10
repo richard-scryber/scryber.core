@@ -70,7 +70,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var controller = doc.Controller as Mocks.MockControllerClass;
                 Assert.IsNotNull(controller);
 
@@ -155,7 +155,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 
 
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var controller = doc.Controller as Mocks.MockControllerClass;
                 Assert.IsNotNull(controller);
 
@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 using (var reader = new System.IO.StringReader(src))
                 {
-                    var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 }
             }
             catch(PDFParserException)

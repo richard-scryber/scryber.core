@@ -8,7 +8,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("img")]
-    public class HTMLImage : Scryber.Components.PDFImage
+    public class HTMLImage : Scryber.Components.Image
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

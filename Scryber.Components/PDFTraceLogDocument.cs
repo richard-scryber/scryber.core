@@ -29,7 +29,7 @@ namespace Scryber
     /// <summary>
     /// The document that wraps an original document and appends the PDFCollectorTraceLog and other info
     /// </summary>
-    internal class PDFTraceLogDocument : Scryber.Components.PDFDocument
+    internal class PDFTraceLogDocument : Scryber.Components.Document
     {
         private PDFFile _file;
         /// <summary>
@@ -77,7 +77,7 @@ namespace Scryber
 
         private void InitContent(PDFInitContext context)
         {
-            PDFSection logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData };
+            Section logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData };
             this.Pages.Add(logsect);
 
             return;

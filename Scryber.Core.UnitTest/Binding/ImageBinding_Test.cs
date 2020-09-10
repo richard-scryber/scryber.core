@@ -58,7 +58,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(pdfx))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 var path = this.TestContext.TestDir;
 
@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Binding
                 var data = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(doc, doc, path);
                 doc.Params["MyImage"] = data;
 
-                var img = doc.FindAComponentById("LoadedImage") as PDFImage;
+                var img = doc.FindAComponentById("LoadedImage") as Image;
                 Assert.IsNull(img.Data);
 
                 doc.InitializeAndLoad();

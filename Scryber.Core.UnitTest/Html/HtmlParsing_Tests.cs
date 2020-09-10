@@ -60,7 +60,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var sr = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
 
                 using (var ms = new System.IO.MemoryStream())
@@ -87,7 +87,7 @@ namespace Scryber.Core.UnitTests.Html
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/sample.html");
 
-            using (var doc = PDFDocument.ParseDocument(path))
+            using (var doc = Document.ParseDocument(path))
             {
                 doc.ProcessDocument("C:\\Temp\\Html.pdf", System.IO.FileMode.Create);
             }

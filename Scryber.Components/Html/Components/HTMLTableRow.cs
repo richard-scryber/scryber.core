@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("tr")]
-    public class HTMLTableRow : Scryber.Components.PDFTableRow
+    public class HTMLTableRow : Scryber.Components.TableRow
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

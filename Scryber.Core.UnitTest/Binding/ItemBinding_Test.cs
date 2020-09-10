@@ -54,9 +54,9 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
-                var sect = doc.Pages[0] as PDFSection;
-                var label = sect.Contents[0] as PDFLabel;
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var sect = doc.Pages[0] as Section;
+                var label = sect.Contents[0] as Label;
 
 
                 doc.InitializeAndLoad();
@@ -120,14 +120,14 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 
 
-                var sect = doc.Pages[0] as PDFSection;
-                var label = sect.Contents[0] as PDFLabel;
-                var date = sect.Contents[1] as PDFDate;
-                var num1 = sect.Contents[2] as PDFNumber;
-                var num2 = sect.Contents[3] as PDFNumber;
+                var sect = doc.Pages[0] as Section;
+                var label = sect.Contents[0] as Label;
+                var date = sect.Contents[1] as Date;
+                var num1 = sect.Contents[2] as Number;
+                var num2 = sect.Contents[3] as Number;
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
@@ -195,11 +195,11 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 
 
-                var sect = doc.Pages[0] as PDFSection;
-                var label = sect.Contents[0] as PDFLabel;
+                var sect = doc.Pages[0] as Section;
+                var label = sect.Contents[0] as Label;
                 var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
 
                 doc.InitializeAndLoad();
@@ -264,7 +264,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 doc.Params["dynamic"] = new
                 {
                     Color = Scryber.Drawing.PDFColors.Aqua,
@@ -279,11 +279,11 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("FirstID") as PDFLabel;
+                var first = doc.FindAComponentById("FirstID") as Label;
                 Assert.IsNotNull(first, "Could not find the first label");
                 Assert.AreEqual("First", first.Text, "The first label does not have the correct Name value");
 
-                var second = doc.FindAComponentById("SecondID") as PDFLabel;
+                var second = doc.FindAComponentById("SecondID") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
 
@@ -333,16 +333,16 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("xmlInnerDiv1") as PDFDiv;
+                var first = doc.FindAComponentById("xmlInnerDiv1") as Div;
                 Assert.IsNotNull(first, "Could not find inner div");
                 
-                var second = doc.FindAComponentById("xmlLabel2") as PDFLabel;
+                var second = doc.FindAComponentById("xmlLabel2") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
 
@@ -393,16 +393,16 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("xmlInnerDiv1") as PDFDiv;
+                var first = doc.FindAComponentById("xmlInnerDiv1") as Div;
                 Assert.IsNotNull(first, "Could not find inner div");
 
-                var second = doc.FindAComponentById("xmlLabel2") as PDFLabel;
+                var second = doc.FindAComponentById("xmlLabel2") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
 
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
@@ -413,7 +413,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.Params["template"] = @"<pdf:H1 id='{xpath:concat(""xmlH"",@value)}' >
                                         <pdf:Text id='{xpath:concat(""xmlText"",@value)}' value='{xpath:@value}' />
@@ -422,10 +422,10 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("xmlH1") as PDFHead1;
+                var first = doc.FindAComponentById("xmlH1") as Head1;
                 Assert.IsNotNull(first, "Could not find inner heading");
 
-                var second = doc.FindAComponentById("xmlText2") as PDFTextLiteral;
+                var second = doc.FindAComponentById("xmlText2") as TextLiteral;
                 Assert.IsNotNull(second, "Could not find the second label");
 
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
@@ -467,7 +467,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var color = new Scryber.Drawing.PDFColor(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
@@ -482,7 +482,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 //Find the label as the value should be converted to a string.
-                var first = doc.FindAComponentById(i.ToString()) as PDFLabel;
+                var first = doc.FindAComponentById(i.ToString()) as Label;
                 Assert.IsNotNull(first, "Could not find the label");
 
                 //Check that the text matches
@@ -496,7 +496,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var color = new Scryber.Drawing.PDFColor(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
@@ -556,7 +556,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var color = new Scryber.Drawing.PDFColor(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
@@ -571,7 +571,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 //Find the label as the value should be converted to a string.
-                var first = doc.FindAComponentById(i.ToString()) as PDFLabel;
+                var first = doc.FindAComponentById(i.ToString()) as Label;
                 Assert.IsNotNull(first, "Could not find the label");
 
                 //Check that the text matches
@@ -615,7 +615,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var param = new Mocks.MockSubParameter();
 
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.Params["obj"] = param;
 
@@ -624,7 +624,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 //Find the label as the value should be converted to a string.
-                var first = doc.FindAComponentById("MyTitle") as PDFLabel;
+                var first = doc.FindAComponentById("MyTitle") as Label;
                 Assert.IsNotNull(first, "Could not find the label");
 
                 //Check that the text matches
@@ -643,7 +643,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var param = new Mocks.MockOtherParameter();
 
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var caught = false;
                 try
                 {
@@ -712,7 +712,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 var binding = new
                 {
@@ -736,11 +736,11 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("FirstID") as PDFLabel;
+                var first = doc.FindAComponentById("FirstID") as Label;
                 Assert.IsNotNull(first, "Could not find the first label");
                 Assert.AreEqual("First", first.Text, "The first label does not have the correct Name value");
 
-                var second = doc.FindAComponentById("SecondID") as PDFLabel;
+                var second = doc.FindAComponentById("SecondID") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
 

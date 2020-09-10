@@ -14,15 +14,15 @@ namespace Scryber.Layout
     public class LayoutEngineHeading : LayoutEnginePanel
     {
 
-        public LayoutEngineHeading(PDFHeadingBase heading, IPDFLayoutEngine parent)
+        public LayoutEngineHeading(HeadingBase heading, IPDFLayoutEngine parent)
             : base(heading, parent)
         {
 
         }
 
-        protected PDFHeadingBase Heading
+        protected HeadingBase Heading
         {
-            get { return this.Component as PDFHeadingBase; }
+            get { return this.Component as HeadingBase; }
         }
 
         protected override void DoLayoutComponent()

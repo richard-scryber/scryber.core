@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("p")]
-    public class HTMLParagraph : Scryber.Components.PDFParagraph
+    public class HTMLParagraph : Scryber.Components.Paragraph
     {
 
         [PDFAttribute("class")]

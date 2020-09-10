@@ -13,16 +13,16 @@ namespace Scryber.Core.UnitTests.Generation
     public class SimpleDocument_Controller
     {
         [PDFOutlet("outerdoc")]
-        public PDFDocument Document;
+        public Document Document;
 
         [PDFOutlet("titlepage")]
-        public PDFPage TitlePage { get; set; }
+        public Page TitlePage { get; set; }
 
         [PDFOutlet("mylabel")]
-        public PDFLabel MyLabel;
+        public Label MyLabel;
 
         [PDFOutlet("notfound")]
-        public PDFLabel NotFound;
+        public Label NotFound;
 
         //
         // event handlers
@@ -134,10 +134,10 @@ namespace Scryber.Core.UnitTests.Generation
                                   </Pages>
                                 </pdf:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
             Assert.IsNotNull(parsed);
@@ -196,10 +196,10 @@ namespace Scryber.Core.UnitTests.Generation
                                   </Pages>
                                 </pdf:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.Other);
+                parsed = Document.ParseDocument(sr, ParseSourceType.Other);
             }
 
             Assert.IsNotNull(parsed);

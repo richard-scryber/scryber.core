@@ -8,7 +8,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("block-quote")]
-    public class HTMLBlockQuote : Scryber.Components.PDFBlockQuote
+    public class HTMLBlockQuote : Scryber.Components.BlockQuote
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

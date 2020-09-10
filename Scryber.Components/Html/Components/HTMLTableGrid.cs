@@ -9,7 +9,7 @@ using Scryber.Components;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("table")]
-    public class HTMLTableGrid : Scryber.Components.PDFTableGrid
+    public class HTMLTableGrid : Scryber.Components.TableGrid
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -23,7 +23,7 @@ namespace Scryber.Html.Components
         }
     }
 
-    public class HTMLTableSection : Scryber.Components.PDFVisualComponent, IPDFInvisibleContainer
+    public class HTMLTableSection : Scryber.Components.VisualComponent, IPDFInvisibleContainer
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -31,16 +31,16 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override PDFStyle Style { get => base.Style; set => base.Style = value; }
 
-        private PDFTableRowList _rows;
+        private TableRowList _rows;
 
-        [PDFArray(typeof(PDFTableRow))]
+        [PDFArray(typeof(TableRow))]
         [PDFElement()]
-        public PDFTableRowList Rows
+        public TableRowList Rows
         {
             get
             {
                 if (null == this._rows)
-                    this._rows = new PDFTableRowList(this.InnerContent);
+                    this._rows = new TableRowList(this.InnerContent);
 
                 return this._rows;
             }
@@ -52,9 +52,9 @@ namespace Scryber.Html.Components
         }
 
         PDFStyle _applied = null;
-        public override PDFStyle GetAppliedStyle(PDFComponent forComponent, PDFStyle baseStyle)
+        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
         {
-            if (forComponent is PDFTableRow && this.Rows.Contains((PDFTableRow)forComponent))
+            if (forComponent is TableRow && this.Rows.Contains((TableRow)forComponent))
             {
                 if (null == _applied)
                     _applied = this.GetAppliedStyle();

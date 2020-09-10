@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void PDFGeneratorSettingsConstructorTest()
         {
-            Type literaltype = typeof(Scryber.Components.PDFTextLiteral);
-            Type templategenerator = typeof(Scryber.Data.PDFParsableTemplateGenerator);
-            Type templateinstance = typeof(Scryber.Data.PDFTemplateInstance);
+            Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
+            Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -109,9 +109,9 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void ConformanceModeTest()
         {
-            Type literaltype = typeof(Scryber.Components.PDFTextLiteral);
-            Type templategenerator = typeof(Scryber.Data.PDFParsableTemplateGenerator);
-            Type templateinstance = typeof(Scryber.Data.PDFTemplateInstance);
+            Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
+            Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -154,7 +154,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(true, doc.AppendTraceLog, "The append log is not set to true");
                 Assert.AreEqual(doc.TraceLog.RecordLevel, TraceRecordLevel.Messages, "The trace log is not set to Messages");

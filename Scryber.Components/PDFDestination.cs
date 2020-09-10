@@ -45,7 +45,7 @@ namespace Scryber
         /// <summary>
         /// Gets the component this destination is for.
         /// </summary>
-        public PDFComponent Component { get; private set; }
+        public Component Component { get; private set; }
 
         #endregion
 
@@ -116,7 +116,7 @@ namespace Scryber
         /// </summary>
         /// <param name="component"></param>
         /// <param name="fit"></param>
-        public PDFDestination(PDFComponent component, OutlineFit fit)
+        public PDFDestination(Component component, OutlineFit fit)
             : this(component, fit, string.Empty)
         {
         }
@@ -131,7 +131,7 @@ namespace Scryber
         /// <param name="component"></param>
         /// <param name="fit"></param>
         /// <param name="extension">Any required label extension to guaruntee uniqueness of the destination within the documents name dictionary</param>
-        public PDFDestination(PDFComponent component, OutlineFit fit, string extension)
+        public PDFDestination(Component component, OutlineFit fit, string extension)
         {
             if (null == component)
                 throw RecordAndRaise.ArgumentNull("component");
@@ -270,7 +270,7 @@ namespace Scryber
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        private PDFComponentArrangement GetFirstArrangementInTree(PDFComponent component)
+        private PDFComponentArrangement GetFirstArrangementInTree(Component component)
         {
             while(null != component)
             {

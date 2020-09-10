@@ -51,8 +51,8 @@ namespace Scryber.Core.UnitTests.Configuration
 
             Assert.AreEqual(4, parsing.Namespaces.Count, "There are not 4 namespaces");
 
-            var compType = typeof(Scryber.Components.PDFDocument);
-            var dataType = typeof(Scryber.Data.PDFXMLDataSource);
+            var compType = typeof(Scryber.Components.Document);
+            var dataType = typeof(Scryber.Data.XMLDataSource);
             var styleType = typeof(Scryber.Styles.PDFStyle);
 
             var full = compType.Namespace + ", " + compType.Assembly.FullName;
@@ -182,9 +182,9 @@ namespace Scryber.Core.UnitTests.Configuration
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);
@@ -227,9 +227,9 @@ namespace Scryber.Core.UnitTests.Configuration
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
                     doc.ProcessDocument(stream);

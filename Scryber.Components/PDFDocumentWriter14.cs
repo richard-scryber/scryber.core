@@ -28,7 +28,7 @@ namespace Scryber.Components
     {
         private bool _disposed = false;
 
-        public PDFWriter GetInstance(PDFDocument forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log)
+        public PDFWriter GetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
@@ -44,7 +44,7 @@ namespace Scryber.Components
             }
         }
 
-        protected abstract PDFWriter DoGetInstance(PDFDocument forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log);
+        protected abstract PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log);
 
         public void Dispose()
         {
@@ -99,7 +99,7 @@ namespace Scryber.Components
             this.PDFVersion = version;
         }
 
-        protected override PDFWriter DoGetInstance(PDFDocument forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log)
+        protected override PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log)
         {
             Version vers = (string.IsNullOrEmpty(this.PDFVersion)) ? new Version(1, 4) : System.Version.Parse(this.PDFVersion);
 
