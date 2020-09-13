@@ -33,14 +33,17 @@ namespace Scryber.Styles.Selectors
 
         #endregion
 
-        public override bool IsMatchedTo(IPDFComponent component, ComponentState state)
+        public override bool IsMatchedTo(IPDFComponent component, ComponentState state, out int priority)
         {
-            if (base.IsMatchedTo(component, state))
+            if (base.IsMatchedTo(component, state, out priority))
                 return true;
             else if (null != this.Next)
-                return this.Next.IsMatchedTo(component, state);
+                return this.Next.IsMatchedTo(component, state, out priority);
             else
+            {
+                priority = 0;
                 return false;
+            }
         }
 
         protected internal override void ToString(StringBuilder sb)

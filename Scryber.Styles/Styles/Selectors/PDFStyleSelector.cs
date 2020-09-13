@@ -133,11 +133,89 @@ namespace Scryber.Styles.Selectors
 
         #endregion
 
+        #region public int Priority {get;}
+
+        private int _priority = -1;
+
+        public int Priority
+        {
+            get
+            {
+                if (_priority < 0)
+                {
+                    int depth = 0;
+                    _priority = this.CalcPriority(ref depth);
+                }
+                return _priority;
+            }
+        }
+
+        #endregion
+
+        #region protected virtual int CalcPriority(ref int depth)
+
+        private const int ElementPriority = 1;
+        private const int ClassPriority = 2;
+        private const int DoubleClassPriority = 3;
+        private const int TripleClassPriority = 4;
+        private const int IDPriority = 5;
+
+        private static readonly int[] AncestorFactors = new int[] { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 };
+        private static readonly int[] DirectAncestorFactor = new int[] { 2, 20, 200, 2000, 20000, 200000, 2000000, 20000000 };
+
+
+        protected virtual int CalcPriority(ref int depth)
+        {
+            var val = 0;
+            var mine = 0;
+
+            if (null != this.Ancestor)
+            {
+                val = this.Ancestor.CalcPriority(ref depth);
+                depth += 1;
+            }
+
+            if (string.IsNullOrEmpty(this.AppliedElement) == false || null != this.AppliedType)
+                mine += ElementPriority;
+
+            if (null != this.AppliedClass)
+            {
+                if (this.AppliedClass.AndClass != null)
+                {
+                    if (this.AppliedClass.AndClass.AndClass != null)
+                        mine += TripleClassPriority;
+                    else
+                        mine += DoubleClassPriority;
+                }
+                else
+                    mine += ClassPriority;
+            }
+            if (string.IsNullOrEmpty(this.AppliedID) == false)
+                mine += IDPriority;
+
+            if (depth >= AncestorFactors.Length)
+                depth = AncestorFactors.Length - 1;
+
+            //Fun the factoring for the depth 1, 10, 100, 1000 etc.
+            if (depth == 0)
+                val = mine;
+
+            else if (null != this.Ancestor && this.Ancestor.Placement == StylePlacement.DirectParent)
+                //Direct has higher precedence still
+                val += (mine * DirectAncestorFactor[depth]);
+            else
+                val += (mine * AncestorFactors[depth]);
+
+            return val;
+        }
+
+        #endregion
+
         #region public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state)
 
-        public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state)
+        public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state, out int priority)
         {
-
+            priority = 0;
             // check everything
             // return false if it's not a match
             //otherwise return true at the end.
@@ -176,6 +254,7 @@ namespace Scryber.Styles.Selectors
 
             if (this.HasAncestor)
             {
+                var parentPriority = 0;
                 var parent = component.Parent;
                 if (this.Ancestor.Placement == StylePlacement.DirectParent)
                 {
@@ -185,8 +264,11 @@ namespace Scryber.Styles.Selectors
                     if (null == parent)
                         return false;
 
-                    if (this.Ancestor.IsMatchedTo(parent as IPDFStyledComponent, state))
+                    if (this.Ancestor.IsMatchedTo(parent as IPDFStyledComponent, state, out parentPriority))
+                    {
+                        priority = this.Priority;
                         return true;
+                    }
                 }
                 else
                 {
@@ -194,8 +276,11 @@ namespace Scryber.Styles.Selectors
                     {
                         if (parent is IPDFStyledComponent)
                         {
-                            if (this.Ancestor.IsMatchedTo(parent as IPDFStyledComponent, state))
+                            if (this.Ancestor.IsMatchedTo(parent as IPDFStyledComponent, state, out parentPriority))
+                            {
+                                priority = this.Priority;
                                 return true;
+                            }
                         }
                         parent = parent.Parent;
                     }
@@ -203,7 +288,10 @@ namespace Scryber.Styles.Selectors
                 return false;
             }
             else
+            {
+                priority = this.Priority;
                 return true;
+            }
         }
 
         #endregion

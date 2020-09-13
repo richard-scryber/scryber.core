@@ -259,12 +259,14 @@ namespace Scryber.Styles
         /// it is applied to the top level document only</remarks>
         public virtual bool IsMatchedTo(IPDFComponent component)
         {
+            int priority;
             if (null == component)
+            {
+                priority = 0;
                 return false;
-
+            }
             var match = this.AssertMatcher();
-
-            return match.IsMatchedTo(component, ComponentState.Normal);
+            return match.IsMatchedTo(component, ComponentState.Normal, out priority);
 
         }
 

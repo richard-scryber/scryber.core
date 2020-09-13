@@ -41,12 +41,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        [PDFAttribute("title")]
-        public override string OutlineTitle
-        {
-            get => base.OutlineTitle;
-            set => base.OutlineTitle = value;
-        }
+        
 
         public HTMLMeta() : base((PDFObjectType)"htmM")
         { }

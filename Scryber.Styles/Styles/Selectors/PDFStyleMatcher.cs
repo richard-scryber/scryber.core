@@ -26,6 +26,7 @@ namespace Scryber.Styles.Selectors
         }
 
         #endregion
+       
 
         //
         // .ctor
@@ -46,20 +47,26 @@ namespace Scryber.Styles.Selectors
 
         #region public virtual bool IsMatchedTo(IPDFComponent component, ComponentState state)
 
-        public virtual bool IsMatchedTo(IPDFComponent component, ComponentState state)
+        public virtual bool IsMatchedTo(IPDFComponent component, ComponentState state, out int priority)
         {
             if (component is IPDFStyledComponent)
             {
+
                 var curr = this.Selector;
-                var matched = curr.IsMatchedTo(component as IPDFStyledComponent, state);
+                var matched = curr.IsMatchedTo(component as IPDFStyledComponent, state, out priority);
 
                 return matched;
             }
             else
+            {
+                priority = 0;
                 return false;
+            }
         }
 
         #endregion
+
+        
 
         // parsing
 

@@ -10,8 +10,9 @@ namespace Scryber.Styles.Selectors
         public PDFStyleCatchAllMatcher() : base(null)
         { }
 
-        public override bool IsMatchedTo(IPDFComponent component, ComponentState state)
+        public override bool IsMatchedTo(IPDFComponent component, ComponentState state, out int priority)
         {
+            priority = 0; //lowest priority for the catch all
             return true;
         }
 

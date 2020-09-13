@@ -722,7 +722,7 @@ namespace Scryber.Components
         /// Gets or sets the title of the outline for this component.
         /// </summary>
         [PDFAttribute("outline-title")]
-        public string OutlineTitle
+        public virtual string OutlineTitle
         {
             get
             {
