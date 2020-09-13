@@ -9,10 +9,10 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("style")]
-    public class PDFHtmlStyleDefnGroup : Scryber.Components.Component
+    public class HTMLStyle : Scryber.Components.Component
     {
         private string _contents;
-        private bool _parsed = false;
+        private PDFStyleGroup _parsedGroup = null;
 
         [PDFElement()]
         public string Contents
@@ -73,31 +73,72 @@ namespace Scryber.Html.Components
             set;
         }
 
-        public PDFHtmlStyleDefnGroup() : base((PDFObjectType)"htmS")
+        /// <summary>
+        /// Global Html hidden attribute used with xhtml as hidden='hidden'
+        /// </summary>
+        [PDFAttribute("hidden")]
+        public string Hidden
+        {
+            get
+            {
+                if (this.Visible)
+                    return string.Empty;
+                else
+                    return "hidden";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value != "hidden")
+                    this.Visible = true;
+                else
+                    this.Visible = false;
+            }
+        }
+
+        public HTMLStyle() : base((PDFObjectType)"htmS")
         {
             
         }
 
-        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
+        protected override void OnPreLayout(PDFLayoutContext context)
         {
-            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
-            return baseStyle;
+             
+            this.AddStylesToDocument();
+            base.OnPreLayout(context);
         }
+
+        
 
         protected void ClearInnerStyles()
         {
             this.InnerItems = null;
-            this._parsed = false;
+            if (this._parsedGroup != null)
+                this.Document.Styles.Remove(this._parsedGroup);
+            this._parsedGroup = null;
         }
 
         protected PDFStyleCollection CreateInnerStyles()
         {
             var collection = new PDFStyleCollection();
             this.AddCssStyles(collection);
-            this._parsed = true;
+            
             return collection;
         }
 
+        protected virtual void AddStylesToDocument()
+        {
+            if (this.Visible)
+            {
+                PDFStyleGroup grp = new PDFStyleGroup();
+                foreach (var style in this.Styles)
+                {
+                    grp.Styles.Add(style);
+                }
+
+                this.Document.Styles.Add(grp);
+                this._parsedGroup = grp;
+            }
+        }
 
         protected virtual void AddCssStyles(PDFStyleCollection collection)
         {

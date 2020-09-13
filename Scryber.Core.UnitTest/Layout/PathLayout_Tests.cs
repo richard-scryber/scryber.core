@@ -30,7 +30,7 @@ namespace Scryber.Core.UnitTests.Layout
             doc.LayoutComplete += Doc_LayoutComplete;
 
             using (var ms = new System.IO.MemoryStream())
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
 
             Assert.Inconclusive("Not implemented as padding allows lines to move down to the baseline");
         }

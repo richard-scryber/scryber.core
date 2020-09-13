@@ -91,17 +91,6 @@ namespace Scryber.Html.Components
 
         }
 
-        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
-        {
-            var applied = baseStyle;
-            foreach (var item in this.Contents)
-            {
-                if(item is PDFHtmlStyleDefnGroup)
-                {
-                    applied = item.GetAppliedStyle(forComponent, applied);
-                }
-            }
-            return applied;
-        }
+        
     }
 }

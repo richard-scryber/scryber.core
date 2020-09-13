@@ -18,7 +18,7 @@ namespace Scryber.Core.UnitTests.Generation
         {
             using (Document doc = Document.ParseDocument("./HelloWorld.pdfx"))
             {
-                doc.ProcessDocument("./HelloWorld.pdf", System.IO.FileMode.Create);
+                doc.SaveAsPDF("./HelloWorld.pdf", System.IO.FileMode.Create);
             }
         }
 

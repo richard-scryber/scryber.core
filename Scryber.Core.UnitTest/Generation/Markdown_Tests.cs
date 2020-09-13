@@ -50,7 +50,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             doc.LayoutComplete += Doc_LayoutComplete;
             using (var ms = new System.IO.FileStream(output, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite))
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
 
 
         }

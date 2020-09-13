@@ -12,12 +12,6 @@ namespace Scryber.Html.Components
     public class HTMLBody : Scryber.Components.Section
     {
 
-        
-        public HTMLBody()
-            : base()
-        {
-        }
-
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
@@ -27,5 +21,39 @@ namespace Scryber.Html.Components
         [PDFElement("")]
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
+
+        /// <summary>
+        /// Global Html hidden attribute used with xhtml as hidden='hidden'
+        /// </summary>
+        [PDFAttribute("hidden")]
+        public string Hidden
+        {
+            get
+            {
+                if (this.Visible)
+                    return string.Empty;
+                else
+                    return "hidden";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value != "hidden")
+                    this.Visible = true;
+                else
+                    this.Visible = false;
+            }
+        }
+
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+
+        public HTMLBody()
+            : base()
+        {
+        }
     }
 }

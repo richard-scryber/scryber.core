@@ -49,7 +49,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             Assert.AreEqual(2,layout.AllPages.Count);

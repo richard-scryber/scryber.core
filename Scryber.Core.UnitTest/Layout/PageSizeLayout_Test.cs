@@ -29,7 +29,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -52,7 +52,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -97,7 +97,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -119,7 +119,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];

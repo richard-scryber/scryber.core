@@ -243,23 +243,23 @@ namespace Scryber.Core.UnitTests.Configuration
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Params>
-    <pdf:Object-Param id='MyImage' />
+    <doc:Object-Param id='MyImage' />
   </Params>
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' src='DoesNotExist.png' />
+        <doc:Image id='LoadedImage' src='DoesNotExist.png' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
     
-</pdf:Document>";
+</doc:Document>";
 
             bool caught = false;
 
@@ -270,7 +270,7 @@ namespace Scryber.Core.UnitTests.Configuration
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
             }
             catch (Exception)
             {
@@ -290,20 +290,20 @@ namespace Scryber.Core.UnitTests.Configuration
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='false' />
+        <doc:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='false' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             bool caught = false;
 
@@ -314,7 +314,7 @@ namespace Scryber.Core.UnitTests.Configuration
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
             }
             catch (Exception)
             {
@@ -330,36 +330,48 @@ namespace Scryber.Core.UnitTests.Configuration
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Span>This is before the image</pdf:Span>
-        <pdf:Image id='LoadedImage' src='This+is+an+image.dynamic' />
-        <pdf:Span>This is after the image</pdf:Span>
+        <doc:Span>This is before the image</doc:Span>
+        <doc:Image id='LoadedImage' src='This+is+an+image.dynamic' />
+        <doc:Span>This is after the image</doc:Span>
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            Assert.IsNotNull(service, "The scryber config service is null");
 
+            var imgsvc = service.ImagingOptions;
 
+            Assert.IsNotNull(imgsvc, "The imaging options are null");
+
+            Assert.AreEqual(1, imgsvc.Factories.Length);
+
+            var factory = imgsvc.Factories[0];
+
+            Assert.AreEqual(".*\\.dynamic", factory.Match, "Config not loaded for this test");
             Document doc;
 
             using (var reader = new System.IO.StringReader(pdfx))
+            {
                 doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-            using (var stream = new System.IO.MemoryStream())
-            {
-                doc.ProcessDocument(stream);
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    doc.SaveAsPDF(stream);
 
-                //Check that the image was loaded and used.
-                var img = doc.FindAComponentById("LoadedImage") as Image;
-                Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
+                    //Check that the image was loaded and used.
+                    var img = doc.FindAComponentById("LoadedImage") as Image;
+                    Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
+                }
             }
         }
 

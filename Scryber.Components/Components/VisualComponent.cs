@@ -1451,7 +1451,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("outline-title")]
         [PDFDesignable("Outline Title", Ignore = true, Category = "General", Priority = 4, Type = "String")]
-        public string OutlineTitle
+        public virtual string OutlineTitle
         {
             get
             {

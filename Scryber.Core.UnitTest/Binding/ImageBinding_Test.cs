@@ -38,23 +38,23 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Params>
-    <pdf:Object-Param id='MyImage' />
+    <doc:Object-Param id='MyImage' />
   </Params>
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' img-data='{@:MyImage}' />
+        <doc:Image id='LoadedImage' img-data='{@:MyImage}' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             using (var reader = new System.IO.StringReader(pdfx))
             {

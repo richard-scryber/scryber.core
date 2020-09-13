@@ -136,21 +136,21 @@ namespace Scryber.Core.UnitTests.Generation
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
                         <?scryber append-log='true' log-level='Messages' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
                                 <data:ForEach id='Foreach2' value='{@:xml}' select='//node/inner' template='{@:template}' ></data:ForEach>
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {

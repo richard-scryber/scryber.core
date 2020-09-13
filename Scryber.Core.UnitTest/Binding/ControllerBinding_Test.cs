@@ -35,7 +35,7 @@ namespace Scryber.Core.UnitTests.Binding
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
 <?scryber controller='" + controllerType + @"' ?>
 
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
               id='MyDocument'
@@ -45,28 +45,28 @@ namespace Scryber.Core.UnitTests.Binding
               on-prerender='DocumentPreRender' on-postrender='DocumentPostRender' >
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
         
           <!-- This will automatically be set on the controller instance property -->
-          <pdf:H1 id='Title' on-databinding='HeaderBinding' > </pdf:H1>
+          <doc:H1 id='Title' on-databinding='HeaderBinding' > </doc:H1>
           
-          <pdf:Ul>
+          <doc:Ul>
             <!-- now we call the BindForEach method to set the data value -->
             <data:ForEach on-databinding='ForEachBinding' on-item-databound='ForEachItemBinding' >
               <Template>
                 <!-- and finally we use the item data bound to set the
                      content of the list item for each entry -->
-                <pdf:Li on-databound='ForEachListItemBound'></pdf:Li>
+                <doc:Li on-databound='ForEachListItemBound'></doc:Li>
               </Template>
             </data:ForEach>
-          </pdf:Ul>
+          </doc:Ul>
 
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
@@ -80,7 +80,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 using (var stream = new System.IO.MemoryStream())
                 {
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
                 }
 
                 Assert.IsTrue(mockresults.Count > 0, "No results were recorded");
@@ -144,12 +144,12 @@ namespace Scryber.Core.UnitTests.Binding
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
                         <?scryber controller='" + controllerType + @"' ?>
 
-                        <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                       id='MyDocument' >
                           <Pages>
                           </Pages>
 
-                        </pdf:Document>";
+                        </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
@@ -164,7 +164,7 @@ namespace Scryber.Core.UnitTests.Binding
                 
                 using (var stream = new System.IO.MemoryStream())
                 {
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
                 }
             }
         }
@@ -181,12 +181,12 @@ namespace Scryber.Core.UnitTests.Binding
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
                         <?scryber controller='" + controllerType + @"' ?>
 
-                        <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                       id='MyOtherDocument' >
                           <Pages>
                           </Pages>
 
-                        </pdf:Document>";
+                        </doc:Document>";
 
             bool caught = false;
             try

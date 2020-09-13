@@ -54,6 +54,35 @@ namespace Scryber.Html.Components
             }
         }
 
+        /// <summary>
+        /// Global Html hidden attribute used with xhtml as hidden='hidden'
+        /// </summary>
+        [PDFAttribute("hidden")]
+        public string Hidden
+        {
+            get
+            {
+                if (this.Visible)
+                    return string.Empty;
+                else
+                    return "hidden";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value != "hidden")
+                    this.Visible = true;
+                else
+                    this.Visible = false;
+            }
+        }
+
+        [PDFAttribute("title")]
+        public string OutlineTitle
+        {
+            get { return this.Outline.Title; }
+            set { this.Outline.Title = value; }
+        }
+
         [PDFParserIgnore()]
         public override PageList Pages { get { return base.Pages; } }
 
@@ -61,9 +90,7 @@ namespace Scryber.Html.Components
         public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
         {
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
-            if (null != this.Head)
-                applied = this.Head.GetAppliedStyle(forComponent, applied);
-
+            
             return applied;
         }
     }

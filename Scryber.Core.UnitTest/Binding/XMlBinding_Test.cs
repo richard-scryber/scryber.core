@@ -34,7 +34,7 @@ namespace Scryber.Core.UnitTests.Binding
     </DataSources>";
 
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Data>
@@ -45,31 +45,31 @@ namespace Scryber.Core.UnitTests.Binding
   <Pages>
 
     <!-- Use the models 'DocTitle' property for the outline. -->
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
         <data:With datasource-id='XmlSource' select='//DataSources' >
 
           <!-- And use it as the text on the heading -->
-          <pdf:H1 id='Heading' styles:class='title' text='{xpath:@title}' > </pdf:H1>
+          <doc:H1 id='Heading' styles:class='title' text='{xpath:@title}' > </doc:H1>
           
-          <pdf:Ul>
+          <doc:Ul>
             <!-- now we loop through the 'Entries' property -->
             <data:ForEach value='{xpath:Entries/Entry}' >
               <Template>
-                <pdf:Li>
+                <doc:Li>
                   <!-- and create a list item for each entry (. prefix) with the name property. -->
-                  <pdf:Text id='{xpath:@Id}' value='{xpath:@Name}' />
-                </pdf:Li>
+                  <doc:Text id='{xpath:@Id}' value='{xpath:@Name}' />
+                </doc:Li>
               </Template>
             </data:ForEach>
-          </pdf:Ul>
+          </doc:Ul>
         </data:With>
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {

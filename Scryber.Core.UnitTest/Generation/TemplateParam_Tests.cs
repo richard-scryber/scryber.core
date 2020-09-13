@@ -72,7 +72,7 @@ namespace Scryber.Core.UnitTests.Generation
 
                 using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
                 {
-                    doc.ProcessDocument(ms);
+                    doc.SaveAsPDF(ms);
                     var placeholder = doc.FindAComponentById("DynamicContent") as PlaceHolder;
 
                     //placeholder should contain a template instance, that contains the table.

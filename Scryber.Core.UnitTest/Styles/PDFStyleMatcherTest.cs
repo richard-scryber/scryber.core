@@ -66,12 +66,12 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(test, parsed.ToString(), "ToString did not match");
 
-            test = "pdf:Component";
+            test = "doc:Component";
 
             parsed = PDFStyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
-            Assert.AreEqual("pdf:Component", parsed.Selector.AppliedElement, "Type Test failed");
+            Assert.AreEqual("doc:Component", parsed.Selector.AppliedElement, "Type Test failed");
             Assert.IsNull(parsed.Selector.AppliedClass, "Type Test failed");
             Assert.IsNull(parsed.Selector.AppliedID, "Type Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Type Test failed");
@@ -84,28 +84,28 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void StyleMatcherDualParsing_Test()
         {
-            string test = "pdf:Table.red";
+            string test = "doc:Table.red";
 
             var parsed = PDFStyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Type.Class Test failed");
             Assert.IsNull(parsed.Selector.AppliedID, "Type.Class Test failed");
-            Assert.AreEqual("pdf:Table", parsed.Selector.AppliedElement, "Type.Class Test failed");
+            Assert.AreEqual("doc:Table", parsed.Selector.AppliedElement, "Type.Class Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Type.Class Test failed");
             Assert.IsFalse(parsed.Selector.HasAncestor, "Type.Class Test failed");
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Type.Class Test failed");
 
             Assert.AreEqual(test, parsed.ToString(), "ToString did not match");
 
-            test = "pdf:Div#NewComponentID";
+            test = "doc:Div#NewComponentID";
 
             parsed = PDFStyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual("NewComponentID", parsed.Selector.AppliedID, "Type.ID Test failed");
             Assert.IsNull(parsed.Selector.AppliedClass, "Type.ID Test failed");
-            Assert.AreEqual("pdf:Div",parsed.Selector.AppliedElement, "Type.ID Test failed");
+            Assert.AreEqual("doc:Div",parsed.Selector.AppliedElement, "Type.ID Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Type.ID Test failed");
             Assert.IsFalse(parsed.Selector.HasAncestor, "Type.ID Test failed");
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Type.ID Test failed");
@@ -333,7 +333,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void StyleMatcherMultipleParsing_Test()
         {
-            string test = "pdf:Table.red, pdf:Cell.red";
+            string test = "doc:Table.red, doc:Cell.red";
 
             var parsed = PDFStyleMatcher.Parse(test);
 
@@ -348,7 +348,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Type.Class Test failed");
             Assert.IsNull(parsed.Selector.AppliedID, "Type.Class Test failed");
-            Assert.AreEqual("pdf:Cell", parsed.Selector.AppliedElement, "Type.Class Test failed");
+            Assert.AreEqual("doc:Cell", parsed.Selector.AppliedElement, "Type.Class Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Type.Class Test failed");
             Assert.IsFalse(parsed.Selector.HasAncestor, "Type.Class Test failed");
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Type.Class Test failed");
@@ -357,14 +357,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Type.Class Test failed");
             Assert.IsNull(parsed.Selector.AppliedID, "Type.Class Test failed");
-            Assert.AreEqual("pdf:Table", parsed.Selector.AppliedElement, "Type.Class Test failed");
+            Assert.AreEqual("doc:Table", parsed.Selector.AppliedElement, "Type.Class Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Type.Class Test failed");
             Assert.IsFalse(parsed.Selector.HasAncestor, "Type.Class Test failed");
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Type.Class Test failed");
 
             //3 with last complex
 
-            test = "pdf:Table.blue, pdf:Cell.red, doc:Page.red.green > doc:Div#MyDiv";
+            test = "doc:Table.blue, doc:Cell.red, doc:Page.red.green > doc:Div#MyDiv";
 
             parsed = PDFStyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
@@ -396,7 +396,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Second Tripple style Test failed");
             Assert.IsNull(parsed.Selector.AppliedID, "Second Tripple style Test failed");
-            Assert.AreEqual("pdf:Cell", parsed.Selector.AppliedElement, "Second Tripple style Test failed");
+            Assert.AreEqual("doc:Cell", parsed.Selector.AppliedElement, "Second Tripple style Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Second Tripple style Test failed");
             Assert.IsFalse(parsed.Selector.HasAncestor, "Second Tripple style Test failed");
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Second Tripple style Test failed");
@@ -408,7 +408,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(".blue", parsed.Selector.AppliedClass.ToString(), "Third Tripple style Test failed");
             Assert.IsNull(parsed.Selector.AppliedID, "Third Tripple style Test failed");
-            Assert.AreEqual("pdf:Table", parsed.Selector.AppliedElement, "Third Tripple style Test failed");
+            Assert.AreEqual("doc:Table", parsed.Selector.AppliedElement, "Third Tripple style Test failed");
             Assert.IsNull(parsed.Selector.Ancestor, "Third Tripple style Test failed");
             Assert.IsFalse(parsed.Selector.HasAncestor, "Third Tripple style Test failed");
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Third Tripple style Test failed");

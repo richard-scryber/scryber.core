@@ -48,7 +48,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms =new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             Assert.AreEqual(1, layout.AllPages.Count, "There should be only 1 page");
@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
                 
             }
 
@@ -242,7 +242,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
                 
             }
 
@@ -345,7 +345,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
                 
             }
 
@@ -458,7 +458,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutpg = layout.AllPages[0];
@@ -522,7 +522,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutpg = layout.AllPages[0];
@@ -581,7 +581,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
                 
             }
 

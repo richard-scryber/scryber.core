@@ -52,7 +52,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
         }
 

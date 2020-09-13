@@ -663,59 +663,6 @@ namespace Scryber.Components
 
         #endregion
 
-        //
-        // Post render properties
-        //
-
-        #region public PDFLayoutDocument LastLayout { get; set; }
-
-#if DEBUG
-        private PDFLayoutDocument _layout;
-#endif
-
-
-        /// <summary>
-        /// Gets the last layout that this document generated - for unit testing purposes.
-        /// THIS IS ONLY SET WHEN THE LIBRARIES ARE COMPILED IN DEBUG MODE. 
-        /// IN RELEASE MODE IT THROWS AN EXCPTION
-        /// </summary>
-#if DEBUG
-
-#else
-        [Obsolete("Not available in release mode",false)]
-#endif
-        public PDFLayoutDocument LastLayout
-        {
-            get
-            {
-#if DEBUG
-                return _layout;
-#else
-                throw new InvalidProgramException("This assembly is compiled in release mode, so LastLayout is not accessible or used.");
-#endif
-            }
-            set
-            {
-#if DEBUG
-                _layout = value;
-#else
-                throw new InvalidProgramException("This assembly is compiled in release mode, so LastLayout is not accessible or used.");
-#endif
-            }
-        }
-
-        #endregion
-
-
-        #region public long DocumentOutputSize { get; private set; }
-
-        /// <summary>
-        /// Gets the final size of the generated document in bytes. Only set after rendering is complete
-        /// </summary>
-        public long DocumentOutputSize { get; private set; }
-
-        #endregion
-
 
 
         //
@@ -1250,7 +1197,7 @@ namespace Scryber.Components
         //
 
         
-        #region public void ProcessDocument(System.IO.Stream stream, bool bind) + 1 overload
+        #region public void SaveAsPDF(System.IO.Stream stream, bool bind) + 1 overload
 
 
         /// <summary>
@@ -1259,9 +1206,9 @@ namespace Scryber.Components
         /// Uses the Autobind property to stipulate if data binding should also take place
         /// </summary>
         /// <param name="path">The path to the file to write to</param>
-        public void ProcessDocument(string path)
+        public void SaveAsPDF(string path)
         {
-            this.ProcessDocument(path, System.IO.FileMode.CreateNew);
+            this.SaveAsPDF(path, System.IO.FileMode.CreateNew);
         }
 
         /// <summary>
@@ -1270,9 +1217,9 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="path"></param>
         /// <param name="mode"></param>
-        public void ProcessDocument(string path, System.IO.FileMode mode)
+        public void SaveAsPDF(string path, System.IO.FileMode mode)
         {
-            this.ProcessDocument(path, mode, this.AutoBind);
+            this.SaveAsPDF(path, mode, this.AutoBind);
         }
 
 
@@ -1281,11 +1228,11 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="path"></param>
         /// <param name="mode"></param>
-        public void ProcessDocument(string path, System.IO.FileMode mode, bool bind)
+        public void SaveAsPDF(string path, System.IO.FileMode mode, bool bind)
         {
             using (System.IO.Stream stream = this.DoOpenFileStream(path, mode))
             {
-                this.ProcessDocument(stream, bind);
+                this.SaveAs(stream, bind, OutputFormat.PDF);
             }
         }
 
@@ -1297,9 +1244,14 @@ namespace Scryber.Components
         /// Uses the Autobind property to stipulate if data binding should also take place
         /// </summary>
         /// <param name="stream"></param>
-        public void ProcessDocument(System.IO.Stream stream)
+        public void SaveAsPDF(System.IO.Stream stream)
         {
-            this.ProcessDocument(stream, this.AutoBind);
+            this.SaveAs(stream, this.AutoBind, OutputFormat.PDF);
+        }
+
+        public void SaveAsPDF(System.IO.Stream stream, bool bind)
+        {
+            this.SaveAs(stream, bind, OutputFormat.PDF);
         }
 
         /// <summary>
@@ -1307,7 +1259,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="bind"></param>
-        public virtual void ProcessDocument(System.IO.Stream stream, bool bind)
+        public virtual void SaveAs(System.IO.Stream stream, bool bind, OutputFormat format)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
@@ -1317,7 +1269,7 @@ namespace Scryber.Components
             if (bind)
                 this.DataBind();
 
-            this.RenderToPDF(stream);
+            this.RenderTo(stream, format);
         }
 
 
@@ -1724,7 +1676,7 @@ namespace Scryber.Components
         // rendering
         //
 
-        #region RenderToPDF(string path, System.IO.FileMode mode) + 2 Overloads
+        #region RenderTo(string path, System.IO.FileMode mode) + 2 Overloads
 
         /// <summary>
         /// Renders the complete document to a file at the specified path, using the specified file mode. It is up to callers to
@@ -1732,11 +1684,11 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="path">The complete path at which to create the file.</param>
         /// <param name="mode">The FileMode option for CreateNew, Append etc.</param>
-        public void RenderToPDF(string path, System.IO.FileMode mode)
+        public void RenderTo(string path, System.IO.FileMode mode, OutputFormat format)
         {
             using (System.IO.Stream stream = this.DoOpenFileStream(path, mode))
             {
-                this.RenderToPDF(stream);
+                this.RenderTo(stream, format);
             }
         }
 
@@ -1744,7 +1696,21 @@ namespace Scryber.Components
         /// Renders the complete document to an IO Stream
         /// </summary>
         /// <param name="tostream">The stream to write the document to</param>
-        public void RenderToPDF(System.IO.Stream tostream)
+        public void RenderTo(System.IO.Stream tostream, OutputFormat format)
+        {
+            switch (format)
+            {
+                case OutputFormat.PDF:
+                    this.RenderToPDF(tostream);
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+
+
+        public virtual void RenderToPDF(System.IO.Stream tostream)
         {
             PDFRenderContext context = this.DoCreateRenderContext();
 
@@ -1776,11 +1742,19 @@ namespace Scryber.Components
             PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.OutputFormat, context.Items, context.TraceLog, context.PerformanceMonitor);
             this.RegisterPreLayout(layoutcontext);
 
-            PDFLayoutDocument doc = ComposeLayout(layoutcontext, style);
-#if DEBUG
-            this.LastLayout = doc;
+            context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document layout");
+            IPDFLayoutEngine engine = null;
 
-#endif
+            context.PerformanceMonitor.Begin(PerformanceMonitorType.Document_Layout_Stage);
+            using (engine = this.GetEngine(null, layoutcontext))
+            {
+                engine.Layout(layoutcontext, style);
+            }
+            context.PerformanceMonitor.End(PerformanceMonitorType.Document_Layout_Stage);
+
+            this.GenerationStage = DocumentGenerationStage.Laidout;
+            context.TraceLog.End(TraceLevel.Message, "Document", "Completed Document layout");
+            PDFLayoutDocument doc = layoutcontext.DocumentLayout;
 
             this.RegisterLayoutComplete(layoutcontext);
 
@@ -1794,42 +1768,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public virtual PDFLayoutDocument ComposeLayout(PDFRenderContext context, PDFStyle style)
-
-        /// <summary>
-        /// Composes a complete document layout for this PDFDocument
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="style"></param>
-        /// <returns></returns>
-        public virtual PDFLayoutDocument ComposeLayout(PDFLayoutContext context, PDFStyle style)
-        {
-            if (this.GenerationStage < DocumentGenerationStage.Loaded)
-                throw new PDFException(Errors.DocumentHasNotBeenLoaded);
-
-            //It is possible to render the same document again and again - so just check for disposed.
-            else if (this.GenerationStage >= DocumentGenerationStage.Disposed)
-                throw new PDFException(Errors.DocumentHasBeenDisposed);
-
-            context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document layout");
-            IPDFLayoutEngine engine = null;
-
-            context.PerformanceMonitor.Begin(PerformanceMonitorType.Document_Layout_Stage);
-            using (engine = this.GetEngine(null, context))
-            {
-                engine.Layout(context, style);
-            }
-            context.PerformanceMonitor.End(PerformanceMonitorType.Document_Layout_Stage);
-
-
-
-            this.GenerationStage = DocumentGenerationStage.Laidout;
-            context.TraceLog.End(TraceLevel.Message, "Document", "Completed Document layout");
-
-            return context.DocumentLayout;
-        }
-
-        #endregion
+        
 
         #region protected virtual void DoOutputAndAppendToPDF(PDFLayoutDocument doc, PDFRenderContext context, PDFWriter writer)
 
@@ -1874,7 +1813,7 @@ namespace Scryber.Components
                 {
                     origFile = PDFFile.Load(interim, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off));
                     appended = CreateTraceLogAppendDocument(genData, origFile, appended);
-                    appended.ProcessDocument(writer.InnerStream, true);
+                    appended.SaveAsPDF(writer.InnerStream, true);
                 }
                 finally
                 {
@@ -1939,12 +1878,7 @@ namespace Scryber.Components
         /// <returns></returns>
         protected virtual PDFObjectRef DoOutputToPDF(PDFLayoutDocument layout, PDFRenderContext context, PDFWriter writer)
         {
-            if (this.GenerationStage < DocumentGenerationStage.Laidout)
-                throw new PDFException(Errors.DocumentHasNotBeenLaidout);
-
-            else if (this.GenerationStage >= DocumentGenerationStage.Disposed)
-                throw new PDFException(Errors.DocumentHasBeenDisposed);
-
+            
             if (layout.DocumentComponent != this)
                 throw new PDFException(Errors.TryingToOutputADifferentDocumentLayout);
 
@@ -1965,7 +1899,7 @@ namespace Scryber.Components
 
             root = layout.OutputToPDF(context, writer);
 
-            this.DocumentOutputSize = writer.Length;
+            
 
             this.RegisterPostRender(context);
 

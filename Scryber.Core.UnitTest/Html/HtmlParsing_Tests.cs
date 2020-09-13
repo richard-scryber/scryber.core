@@ -66,7 +66,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var ms = new System.IO.MemoryStream())
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
-                    doc.ProcessDocument("C:\\Temp\\Html.pdf", System.IO.FileMode.Create);
+                    doc.SaveAsPDF("C:\\Temp\\Html.pdf", System.IO.FileMode.Create);
                 }
 
                 
@@ -89,7 +89,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.ProcessDocument("C:\\Temp\\Html.pdf", System.IO.FileMode.Create);
+                doc.SaveAsPDF("C:\\Temp\\Html.pdf", System.IO.FileMode.Create);
             }
 
         }
