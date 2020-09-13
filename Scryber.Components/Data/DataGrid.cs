@@ -326,7 +326,7 @@ namespace Scryber.Data
             container.Content.Add(grid);
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(grid.Style);
+                this.Style.MergeInto(grid.Style, PDFStyle.DirectStylePriority);
             
             if (!string.IsNullOrEmpty(this.StyleClass))
                 grid.StyleClass = this.StyleClass;

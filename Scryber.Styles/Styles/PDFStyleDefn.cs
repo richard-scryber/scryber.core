@@ -257,9 +257,9 @@ namespace Scryber.Styles
         /// <returns></returns>
         /// <remarks>There is one exception to the rule. If this is a catch all style (no applied-xxx) then 
         /// it is applied to the top level document only</remarks>
-        public virtual bool IsMatchedTo(IPDFComponent component)
+        public virtual bool IsMatchedTo(IPDFComponent component, out int priority)
         {
-            int priority;
+            
             if (null == component)
             {
                 priority = 0;
@@ -283,8 +283,10 @@ namespace Scryber.Styles
         /// <param name="state"></param>
         public override void MergeInto(PDFStyle style, IPDFComponent forComponent, ComponentState state)
         {
-            if (this.IsMatchedTo(forComponent))
-                base.MergeInto(style, forComponent, state);
+            int priority;
+
+            if (this.IsMatchedTo(forComponent, out priority))
+                this.MergeInto(style, priority);
         }
 
         #endregion

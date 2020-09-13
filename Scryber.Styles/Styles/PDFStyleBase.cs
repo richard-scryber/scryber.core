@@ -164,14 +164,15 @@ namespace Scryber.Styles
         // public methods
         //
 
-        #region public virtual void MergeInto(PDFStyleBase style)
+        #region public virtual void MergeInto(PDFStyleBase style) + 1 overload
 
+        
         /// <summary>
         /// Merges all the style values in this style into the provided style.
         /// This will overwrite existing values in the provided style.
         /// </summary>
         /// <param name="style"></param>
-        public virtual void MergeInto(PDFStyleBase style)
+        public virtual void MergeInto(PDFStyleBase style, int priority)
         {
             if (null == style)
                 throw new ArgumentNullException("style");
@@ -182,7 +183,7 @@ namespace Scryber.Styles
             {
                 foreach (KeyValuePair<PDFStyleKey, PDFStyleValueBase> kvp in this._direct)
                 {
-                    style.DirectValues[kvp.Key] = kvp.Value;
+                    style.DirectValues.SetPriorityValue(kvp.Key, kvp.Value, priority);
                 }
             }
 
@@ -190,9 +191,11 @@ namespace Scryber.Styles
             {
                 foreach (KeyValuePair<PDFStyleKey, PDFStyleValueBase> kvp in this._inherited)
                 {
-                    style.InheritedValues[kvp.Key] = kvp.Value;
+                    style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, priority);
                 }
             }
+
+            
         }
 
         #endregion
@@ -208,7 +211,7 @@ namespace Scryber.Styles
         /// <param name="state"></param>
         public virtual void MergeInto(PDFStyle style, Scryber.IPDFComponent Component, Scryber.ComponentState state)
         {
-            this.MergeInto(style);
+            this.MergeInto(style, 0);
         }
 
         #endregion

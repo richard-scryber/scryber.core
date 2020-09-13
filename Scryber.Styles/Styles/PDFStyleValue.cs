@@ -31,12 +31,22 @@ namespace Scryber.Styles
     {
         public PDFStyleKey Key { get; set; }
 
+        public int Priority { get; set; }
+
         protected PDFStyleValueBase(PDFStyleKey key)
         {
             this.Key = key;
         }
 
         public abstract object GetValue();
+
+
+        public PDFStyleValueBase CloneWithPriority(int priority)
+        {
+            var instance = this.MemberwiseClone() as PDFStyleValueBase;
+            instance.Priority = priority;
+            return instance;
+        }
 
     }
 

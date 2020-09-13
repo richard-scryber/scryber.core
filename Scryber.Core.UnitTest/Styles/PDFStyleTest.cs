@@ -385,8 +385,10 @@ namespace Scryber.Core.UnitTests.Styles
 
             PDFStyle merged = new PDFStyle();
             merged.Margins.All = 10;
-     
-            target.MergeInto(merged);
+
+            int priority = PDFStyle.DirectStylePriority;
+
+            target.MergeInto(merged, priority);
 
             //Font is inherited
             bool expected = true;

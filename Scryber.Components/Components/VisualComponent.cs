@@ -30,6 +30,7 @@ namespace Scryber.Components
     public abstract class VisualComponent : ContainerComponent, IPDFVisualComponent, IPDFStyledComponent, IPDFDataStyledComponent
     {
 
+
         #region public PDFStyle Style {get;set;} + public bool HasStyle{get;}
 
         private PDFStyle _style;
@@ -43,7 +44,10 @@ namespace Scryber.Components
             get 
             {
                 if (_style == null)
+                {
                     _style = new PDFStyle();
+                    _style.Priority = PDFStyle.DirectStylePriority;
+                }
                 return _style; 
             }
             set

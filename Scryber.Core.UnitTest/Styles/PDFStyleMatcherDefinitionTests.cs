@@ -37,6 +37,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void SimpleIsMatch_Test()
         {
+            int priority;
             var defn = new PDFStyleDefn();
             defn.Match = PDFStyleMatcher.Parse(".red");
 
@@ -44,7 +45,7 @@ namespace Scryber.Core.UnitTests.Styles
             var div = new Div();
             div.StyleClass = "red";
 
-            var result = defn.IsMatchedTo(div);
+            var result = defn.IsMatchedTo(div, out priority);
 
             Assert.IsTrue(result, "The definition did not match the component");
         }
@@ -52,6 +53,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void DualIsMatch_Test()
         {
+            int priority;
             var defn = new PDFStyleDefn();
             defn.Match = PDFStyleMatcher.Parse("doc:Div.red");
 
@@ -61,7 +63,7 @@ namespace Scryber.Core.UnitTests.Styles
             div.StyleClass = "red";
             div.ElementName = "doc:Div";
 
-            var result = defn.IsMatchedTo(div);
+            var result = defn.IsMatchedTo(div, out priority);
 
             Assert.IsTrue(result, "The definition did not match the component");
         }
@@ -71,6 +73,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void MultiClassIsMatch_Test()
         {
+            int priority;
+
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.red";
 
@@ -79,15 +83,15 @@ namespace Scryber.Core.UnitTests.Styles
 
             div.StyleClass = "red blue";
             div.ElementName = "doc:Div";
-            var result = defn.IsMatchedTo(div);
+            var result = defn.IsMatchedTo(div, out priority);
             Assert.IsTrue(result, "The definition did not match the component");
 
             div.StyleClass = "blue red";
-            result = defn.IsMatchedTo(div);
+            result = defn.IsMatchedTo(div, out priority);
             Assert.IsTrue(result, "The definition did not match the component");
 
             div.StyleClass = "blue red green";
-            result = defn.IsMatchedTo(div);
+            result = defn.IsMatchedTo(div, out priority);
             Assert.IsTrue(result, "The definition did not match the component");
 
         }
@@ -95,6 +99,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void MultiClassIsNotMatch_Test()
         {
+            int priority;
+
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.red";
 
@@ -103,23 +109,23 @@ namespace Scryber.Core.UnitTests.Styles
             div.ElementName = "doc:Div";
 
             div.StyleClass = "blue-red green";
-            var result = defn.IsMatchedTo(div);
+            var result = defn.IsMatchedTo(div, out priority);
             Assert.IsFalse(result, "The definition matched the component");
 
             div.StyleClass = "blue red-green";
-            result = defn.IsMatchedTo(div);
+            result = defn.IsMatchedTo(div, out priority);
             Assert.IsFalse(result, "The definition matched the component");
 
             div.StyleClass = "blue-red";
-            result = defn.IsMatchedTo(div);
+            result = defn.IsMatchedTo(div, out priority);
             Assert.IsFalse(result, "The definition matched the component");
 
             div.StyleClass = "red-green";
-            result = defn.IsMatchedTo(div);
+            result = defn.IsMatchedTo(div, out priority);
             Assert.IsFalse(result, "The definition matched the component");
 
             div.StyleClass = "blue-red-green";
-            result = defn.IsMatchedTo(div);
+            result = defn.IsMatchedTo(div, out priority);
             Assert.IsFalse(result, "The definition matched the component");
 
 
@@ -128,6 +134,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void NestedClassMatch_Test()
         {
+            int priority;
+
             var defn = new PDFStyleDefn();
             defn.Match = ".red .blue";
 
@@ -138,20 +146,22 @@ namespace Scryber.Core.UnitTests.Styles
             div2.StyleClass = "blue";
             div1.Contents.Add(div2);
 
-            var result = defn.IsMatchedTo(div2);
+            var result = defn.IsMatchedTo(div2, out priority);
             Assert.IsTrue(result, "The inner div was not matched as expected");
 
 
             //Switch the parent to .green and it should not match
 
             div1.StyleClass = "green";
-            result = defn.IsMatchedTo(div2);
+            result = defn.IsMatchedTo(div2, out priority);
             Assert.IsFalse(result, "The inner div was matched - not as expected");
         }
 
         [TestMethod]
         public void DeepNestedClassMatch_Test()
         {
+            int priority;
+
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div#MyDiv doc:Para.blue";
 
@@ -170,19 +180,20 @@ namespace Scryber.Core.UnitTests.Styles
             para.StyleClass = "blue";
             div2.Contents.Add(para);
 
-            var result = defn.IsMatchedTo(para);
+            var result = defn.IsMatchedTo(para, out priority);
             Assert.IsTrue(result, "The inner para was not matched as expected");
 
             //Switch the parent to .green and it should not match
 
             div1.StyleClass = "green";
-            result = defn.IsMatchedTo(div2);
+            result = defn.IsMatchedTo(div2, out priority);
             Assert.IsFalse(result, "The inner para was matched - not as expected");
         }
 
         [TestMethod]
         public void DirectNestedClassMatch_Test()
         {
+            int priority;
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.green > doc:Para.blue";
 
@@ -200,7 +211,7 @@ namespace Scryber.Core.UnitTests.Styles
             para.StyleClass = "blue";
             div2.Contents.Add(para);
 
-            var result = defn.IsMatchedTo(para);
+            var result = defn.IsMatchedTo(para, out priority);
             Assert.IsTrue(result, "The inner para was not matched as expected");
 
 
@@ -210,7 +221,7 @@ namespace Scryber.Core.UnitTests.Styles
             div1.StyleClass = "green";
             div2.StyleClass = "red";
 
-            result = defn.IsMatchedTo(div2);
+            result = defn.IsMatchedTo(div2, out priority);
             Assert.IsFalse(result, "The inner para was matched - not as expected");
         }
 
@@ -218,6 +229,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void NestedDualClassMatch_Test()
         {
+            int priority;
+
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.green > .blue.green";
 
@@ -235,7 +248,7 @@ namespace Scryber.Core.UnitTests.Styles
             para.StyleClass = "blue green";
             div2.Contents.Add(para);
 
-            var result = defn.IsMatchedTo(para);
+            var result = defn.IsMatchedTo(para, out priority);
             Assert.IsTrue(result, "The inner para was not matched as expected");
 
 
@@ -245,7 +258,7 @@ namespace Scryber.Core.UnitTests.Styles
             div1.StyleClass = "green";
             div2.StyleClass = "red";
 
-            result = defn.IsMatchedTo(div2);
+            result = defn.IsMatchedTo(div2, out priority);
             Assert.IsFalse(result, "The inner para was matched - not as expected");
 
             //Green back as direct parent, but only one class on the para
@@ -253,13 +266,15 @@ namespace Scryber.Core.UnitTests.Styles
             div2.StyleClass = "green";
             para.StyleClass = "blue";
 
-            result = defn.IsMatchedTo(div2);
+            result = defn.IsMatchedTo(div2, out priority);
             Assert.IsFalse(result, "The inner para was matched - not as expected");
         }
 
         [TestMethod]
         public void NestedMultipleClassMatch_Test()
         {
+            int priority = 0;
+
             var defn = new PDFStyleDefn();
             defn.Match = "doc:Div.green > doc:Para.green.red, doc:Div.red > doc:Para.blue.green";
 
@@ -278,7 +293,7 @@ namespace Scryber.Core.UnitTests.Styles
             div2.Contents.Add(para);
 
             //red > bulue and green
-            var result = defn.IsMatchedTo(para);
+            var result = defn.IsMatchedTo(para, out priority);
             Assert.IsTrue(result, "The inner para was not matched as expected");
 
 
@@ -288,7 +303,7 @@ namespace Scryber.Core.UnitTests.Styles
             div2.StyleClass = "red";
             para.StyleClass = "green blue";
 
-            result = defn.IsMatchedTo(para);
+            result = defn.IsMatchedTo(para, out priority);
             Assert.IsTrue(result, "The inner para was not matched as expected");
 
             //red back as direct parent, but only one class on the para
@@ -296,7 +311,7 @@ namespace Scryber.Core.UnitTests.Styles
             div2.StyleClass = "red";
             para.StyleClass = "green";
 
-            result = defn.IsMatchedTo(para);
+            result = defn.IsMatchedTo(para, out priority);
             Assert.IsFalse(result, "The inner para was matched - not as expected");
         }
 

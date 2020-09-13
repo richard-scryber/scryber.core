@@ -279,7 +279,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Font.FontFamily = "Helvetica";
             target.Styles.Add(defn);
 
-            // same class no type = applied
+            // same class no type = applied (lower priority)
             PDFStyleDefn defn2 = new PDFStyleDefn();
             defn2.AppliedClass = classname;
 
@@ -310,9 +310,9 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(actual, lbl, ComponentState.Normal);
             actual.Flatten();
 
-            Assert.AreEqual(PDFColors.Gray, actual.Border.Color);
-            Assert.AreEqual((PDFUnit)10, actual.Border.Width);
-            Assert.AreEqual(3, actual.Columns.ColumnCount);
+            Assert.AreEqual(PDFColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
+            Assert.AreEqual((PDFUnit)10, actual.Border.Width); // from defn
+            Assert.AreEqual(3, actual.Columns.ColumnCount); //from defn2 
             Assert.AreEqual("Helvetica", actual.Font.FontFamily);
         }
 

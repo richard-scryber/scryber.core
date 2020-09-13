@@ -47,6 +47,8 @@ namespace Scryber.Styles
 
         #endregion
 
+        public const int DirectStylePriority = int.MaxValue - 1;
+
         // events
 
         #region public event PDFDataBindEventHandler DataBinding + OnDataBinding(args)
@@ -98,6 +100,22 @@ namespace Scryber.Styles
             {
                 _id = value;
             }
+        }
+
+        #endregion
+
+
+        #region public int Priority {get;set;}
+
+        private int _priority;
+
+        /// <summary>
+        /// Gets or sets the priority of this style
+        /// </summary>
+        public int Priority
+        {
+            get { return _priority; }
+            set { _priority = value; }
         }
 
         #endregion
@@ -872,44 +890,6 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public PDFStyleCollection InnerStyles {get;}
-
-        private PDFStyleCollection _inner;
-
-        [PDFElement("Inner-Styles")]
-        [PDFArray()]
-        public PDFStyleCollection InnerStyles
-        {
-            get
-            {
-                if (this._inner == null)
-                    this._inner = CreateInnerStyleCollection();
-                return _inner;
-            }
-            set
-            {
-                this._inner = value;
-            }
-        }
-
-        public bool HasInnerStyles
-        {
-            get
-            {
-                if (null == _inner || _inner.Count == 0)
-                    return false;
-                else
-                    return true;
-            }
-        }
-
-        protected virtual PDFStyleCollection CreateInnerStyleCollection()
-        {
-            return new PDFStyleCollection();
-        }
-
-        #endregion
-
         //
         // .ctors
         //
@@ -933,6 +913,12 @@ namespace Scryber.Styles
             this.OnDataBinding(context);
             this.DoDataBind(context, true);
             this.OnDataBound(context);
+        }
+
+        
+        public override void MergeInto(PDFStyleBase style, int priority)
+        {
+            base.MergeInto(style, priority);
         }
 
         //

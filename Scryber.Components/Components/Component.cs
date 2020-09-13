@@ -1103,7 +1103,7 @@ namespace Scryber.Components
             {
                 IPDFStyledComponent styledComponent = this as IPDFStyledComponent;
                 if (styledComponent.HasStyle)
-                    styledComponent.Style.MergeInto(applied);
+                    styledComponent.Style.MergeInto(applied, PDFStyle.DirectStylePriority);
             }
         }
 

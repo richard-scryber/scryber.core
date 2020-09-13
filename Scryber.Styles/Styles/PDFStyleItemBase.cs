@@ -74,7 +74,7 @@ namespace Scryber.Styles
                 if (value != null && orig is PDFOrphanedStyle)
                 {
                     if (orig.ValueCount > 0)
-                        orig.MergeInto(value);
+                        orig.MergeInto(value, PDFStyle.DirectStylePriority);
 
                     (orig as PDFOrphanedStyle).ReleaseBackToPool();
                 }

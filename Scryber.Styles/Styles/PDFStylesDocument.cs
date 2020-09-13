@@ -304,7 +304,6 @@ namespace Scryber.Styles
         public override void MergeInto(Scryber.Styles.PDFStyle style, IPDFComponent Component, ComponentState state)
         {
             this.Styles.MergeInto(style, Component, state);
-
         }
 
         ///// <summary>

@@ -152,11 +152,12 @@ namespace Scryber.Core.UnitTests.Styles
             PDFStyleDefn target = new PDFStyleDefn();
 
             //Catch All with document
+            int priority;
 
             Scryber.Components.Document doc = new Components.Document();
             bool expected = true;
             bool actual;
-            actual = target.IsMatchedTo(doc);
+            actual = target.IsMatchedTo(doc, out priority);
             Assert.AreEqual(expected, actual, "Didn't match document on catch all");
 
             //set up component
@@ -169,71 +170,71 @@ namespace Scryber.Core.UnitTests.Styles
             //Catch all should always match
 
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(1,expected));
 
             //match applied type
             target.AppliedType = typeof(Scryber.Components.Label);
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(2, expected));
 
             //match applied type and class
             target.AppliedClass = "myclass";
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(3, expected));
 
             //match applied type, class and id
             target.AppliedID = "myId";
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(4, expected));
 
             //match class and id
             target.AppliedType = null;
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(5, expected));
 
             //match id
             target.AppliedClass = string.Empty;
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(6, expected));
 
             //match base type and id
             target.AppliedType = typeof(Scryber.Components.SpanBase);
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(7, expected));
 
             //multiple defined style classes
             lbl.StyleClass = "other myclass";
             target.AppliedClass = "myclass";
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(8, expected));
 
             //non-matched class, matched type and id
             lbl.StyleClass = "myclass";
             target.AppliedClass = "other";
             expected = false;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(9, expected));
 
             //non-matched type, matched class and id
             target.AppliedType = typeof(Scryber.Components.TableCell);
             target.AppliedClass = "myclass";
             expected = false;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(10, expected));
 
             //non-matched id, matched class
             target.AppliedType = null;
             lbl.ID = "otherID";
             expected = false;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(11, expected));
 
             

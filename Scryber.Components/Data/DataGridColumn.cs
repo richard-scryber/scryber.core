@@ -233,10 +233,10 @@ namespace Scryber.Data
                 cell.StyleClass = this.CellClass;
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(cell.Style);
+                this.Style.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
 
             if (null != this._headstyle && _headstyle.HasValues)
-                this._headstyle.MergeInto(cell.Style);
+                this._headstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
         }
 
         void headerlbl_DataBinding(object sender, PDFDataBindEventArgs args)
@@ -296,13 +296,13 @@ namespace Scryber.Data
             
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(cell.Style);
+                this.Style.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
 
 
             if (rowindex % 2 == 1 && (null != this._altitemstyle && _altitemstyle.HasValues))
-                _altitemstyle.MergeInto(cell.Style);
+                _altitemstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
             else if (null != this._itemstyle && _itemstyle.HasValues)
-                _itemstyle.MergeInto(cell.Style);
+                _itemstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
         }
 
 
@@ -337,10 +337,10 @@ namespace Scryber.Data
             cell.StyleClass = this.HeaderCellClass;
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(cell.Style);
+                this.Style.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
 
             if (null != this._footstyle && _footstyle.HasValues)
-                this._footstyle.MergeInto(cell.Style);
+                this._footstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
         }
 
         void footerlbl_DataBound(object sender, PDFDataBindEventArgs args)
