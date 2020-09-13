@@ -381,6 +381,11 @@ namespace Scryber.Drawing
             return new PDFColor(ColorSpace.RGB, rgbcolor);
         }
 
+        public static implicit operator PDFColor(string color)
+        {
+            return PDFColor.Parse(color);
+        }
+
 
         public static PDFColor Transparent
         {
