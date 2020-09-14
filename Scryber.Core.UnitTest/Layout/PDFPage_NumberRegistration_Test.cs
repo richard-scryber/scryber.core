@@ -13,6 +13,13 @@ namespace Scryber.Core.UnitTests.Layout
     [TestClass()]
     public class PDFPage_NumberRegistration_Test
     {
+        private Scryber.Layout.PDFLayoutDocument _layout;
+
+        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            this._layout = args.Context.DocumentLayout;
+        }
+
         /// <summary>
         /// Tests the PDFPageNumbering returned from the layout document GetPageNumber(int index) method for a simple document without any explicit styling.
         /// </summary>
@@ -20,22 +27,24 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void Numbering_SimpleDocument()
         {
-            PDFDocument doc = new PDFDocument();
 
+
+            Document doc = new Document();
+
+            
 
             for (int i = 0; i < 20; i++)
             {
-                PDFPage pg = new PDFPage();
+                Page pg = new Page();
                 doc.Pages.Add(pg);
             }
 
-            doc.InitializeAndLoad();
-            Scryber.Styles.PDFStyle style = doc.GetAppliedStyle();
-            style = style.Flatten();
+            
+            doc.LayoutComplete += Doc_LayoutComplete;
 
-            PDFLayoutContext context = new PDFLayoutContext(style, PDFOutputFormatting.Any, 
-                new PDFItemCollection(doc), new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
-            Scryber.Layout.PDFLayoutDocument ldoc = doc.ComposeLayout(context, style);
+            using (var ms = new System.IO.MemoryStream())
+                doc.SaveAsPDF(ms);
+            var ldoc = this._layout;
 
             for (int i = 0; i < 20; i++)
             {
@@ -67,6 +76,8 @@ namespace Scryber.Core.UnitTests.Layout
 
         }
 
+        
+
         /// <summary>
         /// Tests the PDFPageNumbering returned from the layout page GetPageNumber() method for a simple document without any explicit styling.
         /// </summary>
@@ -74,23 +85,21 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageNumbering_SimpleDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             for (int i = 0; i < 20; i++)
             {
-                PDFPage pg = new PDFPage();
+                Page pg = new Page();
                 doc.Pages.Add(pg);
             }
 
-            doc.InitializeAndLoad();
-            Scryber.Styles.PDFStyle style = doc.GetAppliedStyle();
-            style = style.Flatten();
+            
+            doc.LayoutComplete += Doc_LayoutComplete;
 
-            PDFLayoutContext context = new PDFLayoutContext(style, PDFOutputFormatting.Any, new PDFItemCollection(doc)
-                , new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
-            Scryber.Layout.PDFLayoutDocument ldoc = doc.ComposeLayout(context, style);
-
+            using (var ms = new System.IO.MemoryStream())
+                doc.SaveAsPDF(ms);
+            var ldoc = this._layout;
             int last = -1;
 
             foreach (Scryber.Layout.PDFLayoutPage pg in ldoc.AllPages)
@@ -116,7 +125,7 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageNumbering_MultiSectionDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             // numbering                           | Default                 | Lower roman                | Upper letter with prefix        | Back to default
@@ -125,7 +134,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             for (int i = 0; i < 4; i++)
             {
-                PDFSection group = new PDFSection();
+                Section group = new Section();
                 if (i == 1)
                 {
                     group.Style.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
@@ -140,19 +149,17 @@ namespace Scryber.Core.UnitTests.Layout
 
                 for (int j = 0; j < 4; j++)
                 {
-                    PDFPageBreak br = new PDFPageBreak();
+                    PageBreak br = new PageBreak();
                     group.Contents.Add(br);
                 }
             }
 
-            doc.InitializeAndLoad();
-            Scryber.Styles.PDFStyle style = doc.GetAppliedStyle();
-            style = style.Flatten();
+            
+            doc.LayoutComplete += Doc_LayoutComplete;
 
-            PDFLayoutContext context = new PDFLayoutContext(style, PDFOutputFormatting.Any, new PDFItemCollection(doc),
-                new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
-            Scryber.Layout.PDFLayoutDocument ldoc = doc.ComposeLayout(context, style);
-
+            using (var ms = new System.IO.MemoryStream())
+                doc.SaveAsPDF(ms);
+            var ldoc = this._layout;
             int index = -1;
 
             List<string> actuallabels = new List<string>();
@@ -266,12 +273,12 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbering")]
         public void PageNumbering_FullStyledMultiSectionDocument()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
 
             for (int i = 0; i < 4; i++)
             {
-                PDFSection group = new PDFSection();
+                Section group = new Section();
                 if (i == 0)
                 {
                     group.Style.PageStyle.NumberStyle = PageNumberStyle.LowercaseLetters;
@@ -291,18 +298,17 @@ namespace Scryber.Core.UnitTests.Layout
 
                 for (int j = 0; j < 4; j++)
                 {
-                    PDFPageBreak br = new PDFPageBreak();
+                    PageBreak br = new PageBreak();
                     group.Contents.Add(br);
                 }
             }
 
-            doc.InitializeAndLoad();
-            Scryber.Styles.PDFStyle style = doc.GetAppliedStyle();
-            style = style.Flatten();
+            
+            doc.LayoutComplete += Doc_LayoutComplete;
 
-            PDFLayoutContext context = new PDFLayoutContext(style, PDFOutputFormatting.Any, new PDFItemCollection(doc),
-                new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
-            Scryber.Layout.PDFLayoutDocument ldoc = doc.ComposeLayout(context, style);
+            using (var ms = new System.IO.MemoryStream())
+                doc.SaveAsPDF(ms);
+            var ldoc = this._layout;
 
             // page indices                          0,    1,   2,   3,   4,   5,   6,    7,    8,    9,   10,  11 , 12,  13,  14,  15,  16,  17,  18,   19
             string[] expectedlabels = new string[] { "a", "b", "c", "d", "e", "i", "ii", "iii", "iv", "v", "B", "C", "D", "E", "F", "1", "2", "3", "4", "5" };

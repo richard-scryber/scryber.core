@@ -54,9 +54,9 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the page definition associated with this engine
         /// </summary>
-        protected PDFPageBase Page
+        protected PageBase Page
         {
-            get { return this.Component as PDFPageBase; }
+            get { return this.Component as PageBase; }
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace Scryber.Layout
         /// <param name="pg">The page definition that contains all the components to layout</param>
         /// <param name="context">The layout context</param>
         /// <param name="style">The full style associated with the page </param>
-        public LayoutEnginePage(PDFPageBase pg, IPDFLayoutEngine parent)
+        public LayoutEnginePage(PageBase pg, IPDFLayoutEngine parent)
             : base(pg, parent)
         {
         }
@@ -401,7 +401,7 @@ namespace Scryber.Layout
         /// Creates a concrete instance of the correct template into the PDFLayoutTemplate component
         /// </summary>
         /// <param name="container">A non null instance of the layout template component to contain the generated template components</param>
-        protected virtual void InstantiateTemplateForPage(PDFLayoutTemplateComponent container, IPDFTemplate template)
+        protected virtual void InstantiateTemplateForPage(LayoutTemplateComponent container, IPDFTemplate template)
         {
             if (null == template)
                 throw new ArgumentNullException("template");

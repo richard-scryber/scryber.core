@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Generation
 
         private PDFGeneratorSettings GetSettings()
         {
-            Type literaltype = typeof(Scryber.Components.PDFTextLiteral);
-            Type templategenerator = typeof(Scryber.Data.PDFParsableTemplateGenerator);
-            Type templateinstance = typeof(Scryber.Data.PDFTemplateInstance);
+            Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
+            Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;

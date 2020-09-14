@@ -45,9 +45,9 @@ namespace Scryber
 
         public System.Collections.Specialized.NameValueCollection ExtraInfo { get; set; }
 
-        public Scryber.Components.PDFDocumentInfo DocumentInfo { get; set; }
+        public Scryber.Components.DocumentInfo DocumentInfo { get; set; }
 
-        public Scryber.Components.PDFDocumentViewPreferences DocumentViewerPrefs { get; set; }
+        public Scryber.Components.DocumentViewPreferences DocumentViewerPrefs { get; set; }
 
         public Scryber.PDFPerformanceMonitor PerformanceMetrics { get; set; }
 

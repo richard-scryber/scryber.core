@@ -45,6 +45,11 @@
         <xs:attribute name="applied-class" type="comp:BindableClassNameType" />
         <xs:attribute name="applied-type" type="comp:BindableObjectTypeEnum" />
         <xs:attribute name="applied-id" type="comp:BindableIDType" />
+        <xs:attribute name="match" type="comp:BindableStringType" form="unqualified" >
+          <xs:annotation>
+            <xs:documentation xml:lang="en-gb">A css selector style match on the style for deep path matching and support for direct parent and multiple classes.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -310,6 +315,8 @@
         <xs:attribute name="display-format" type="comp:BindableStringType" use="optional"  />
         <xs:attribute name="group-count-hint" type="comp:BindableIntgerType" use="optional" />
         <xs:attribute name="total-count-hint" type="comp:BindableIntgerType" use="optional" />
+        <xs:attribute name="break-before" type="comp:BindableBooleanType" use="optional" />
+        <xs:attribute name="break-after" type="comp:BindableBooleanType" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -381,6 +388,8 @@
     <xs:attribute name="column-count" type="comp:BindableIntgerType" use="optional" form="qualified" />
     <xs:attribute name="column-widths" type="comp:BindableStringType" use="optional" form="qualified" />
     <xs:attribute name="alley-width" type="comp:BindableUnitType" use="optional" form="qualified" />
+    <xs:attribute name="break-before" type="comp:BindableBooleanType" use="optional" />
+    <xs:attribute name="break-after" type="comp:BindableBooleanType" use="optional" />
   </xs:attributeGroup>
 
 
@@ -454,6 +463,10 @@
     <xs:attribute name="font-size" form="qualified" use="optional" type="comp:BindableUnitType" />
     <xs:attribute name="font-bold" form="qualified" use="optional" type="comp:BindableBooleanType" />
     <xs:attribute name="font-italic" form="qualified" use="optional" type="comp:BindableBooleanType" />
+    <xs:attribute name="page-break-before" form="qualified" type="comp:BindableBooleanType" use="optional" />
+    <xs:attribute name="page-break-after" form="qualified" type="comp:BindableBooleanType" use="optional" />
+    <xs:attribute name="column-break-before" form="qualified" type="comp:BindableBooleanType" use="optional" />
+    <xs:attribute name="column-break-after" form="qualified" type="comp:BindableBooleanType" use="optional" />
     <xs:attributeGroup ref="data:Data-ComponentAttributes" />
   </xs:attributeGroup>
 

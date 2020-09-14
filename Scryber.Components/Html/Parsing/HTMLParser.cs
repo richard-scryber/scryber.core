@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Styles.Parsing;
 
 namespace Scryber.Html.Parsing
 {
-    public class HTMLParser : IHtmlContentParser
+    public class HTMLParser : IHtmlContentParser, IEnumerable<HTMLParserResult>
     {
         private const string LogCategory = "HTML Parser";
 

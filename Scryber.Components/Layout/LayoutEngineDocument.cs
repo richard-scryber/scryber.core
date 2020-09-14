@@ -37,9 +37,9 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the document associated with this layout engine
         /// </summary>
-        public PDFDocument Document
+        public Document Document
         {
-            get { return base.Component as PDFDocument; }
+            get { return base.Component as Document; }
         }
 
         #endregion
@@ -56,7 +56,7 @@ namespace Scryber.Layout
         /// <param name="doc"></param>
         /// <param name="parent"></param>
         /// <param name="context"></param>
-        protected internal LayoutEngineDocument(PDFDocument doc, IPDFLayoutEngine parent, PDFLayoutContext context)
+        protected internal LayoutEngineDocument(Document doc, IPDFLayoutEngine parent, PDFLayoutContext context)
             : base(doc, parent)
         {
         }
@@ -113,9 +113,9 @@ namespace Scryber.Layout
             {
                 foreach (IPDFComponent comp in this.Document.Additions)
                 {
-                    if (comp is PDFComponent)
+                    if (comp is Component)
                     {
-                        PDFComponent full = comp as PDFComponent;
+                        Component full = comp as Component;
                         PDFArtefactRegistrationSet artefacts = full.RegisterLayoutArtefacts(this.Context, docStyle);
                         if(full is IPDFViewPortComponent)
                         {
@@ -135,7 +135,7 @@ namespace Scryber.Layout
         protected virtual void LayoutAllPages()
         {
 
-            foreach (PDFPageBase page in this.Document.Pages)
+            foreach (PageBase page in this.Document.Pages)
             {
                 if (page.Visible)
                     this.LayoutPage(page);
@@ -171,7 +171,7 @@ namespace Scryber.Layout
         /// Lays out the individual page specified within the document - by calling the pages IPDFViewPortComponent interface
         /// </summary>
         /// <param name="pg">The page to perform the layout on</param>
-        protected virtual void LayoutPage(PDFPageBase pg)
+        protected virtual void LayoutPage(PageBase pg)
         {
             PDFStyle style = pg.GetAppliedStyle();
             
@@ -190,7 +190,7 @@ namespace Scryber.Layout
                 this.Context.StyleStack.Pop();
         }
 
-        protected void LayoutPageWithStyle(PDFPageBase pg, PDFStyle full)
+        protected void LayoutPageWithStyle(PageBase pg, PDFStyle full)
         {
             PDFArtefactRegistrationSet artefacts = pg.RegisterLayoutArtefacts(this.Context, full);
 

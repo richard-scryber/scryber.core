@@ -165,7 +165,7 @@ namespace Scryber
             return sb.ToString();
         }
 
-        public PDFWriter CreateWriter(PDFDocument forDoc, System.IO.Stream outputStream, int generation, PDFTraceLog log)
+        public PDFWriter CreateWriter(Document forDoc, System.IO.Stream outputStream, int generation, PDFTraceLog log)
         {
             if (null == this.WriterFactory)
                 this.WriterFactory = new Scryber.Components.PDFDocumentWriter();

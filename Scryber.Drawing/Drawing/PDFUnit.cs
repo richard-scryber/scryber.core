@@ -483,16 +483,74 @@ namespace Scryber.Drawing
         {
             if (string.IsNullOrEmpty(value))
                 return PDFUnit.Empty;
-
+            
             PageUnits unit;
+            double val;
             int offset = 0;
-            double val = GetNumber(ref offset, value);
+            //if (IsRelativeValue(value, out val, out unit))
+            //    return new PDFUnit(val, unit);
+
+            val = GetNumber(ref offset, value);
             if (offset < value.Length)
                 unit = GetUnit(ref offset, value);
             else
                 unit = PageUnits.Points;
 
             return new PDFUnit(val, unit);
+        }
+
+        private static bool IsRelativeValue(string value, out double val, out PageUnits unit)
+        {
+            bool parsed;
+            switch (value)
+            {
+                case ("xx-small"):
+                    val = 6;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("x-small"):
+                    val = 7.5;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("small"):
+                    val = 10;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("medium"):
+                    val = 12;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("large"):
+                    val = 14;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("x-large"):
+                    val = 18;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("xx-large"):
+                    val = 24;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                case ("xxx-large"):
+                    val = 32;
+                    unit = PageUnits.Points;
+                    parsed = true;
+                    break;
+                default:
+                    val = 0;
+                    unit = PageUnits.Points;
+                    parsed = false;
+                    break;
+            }
+            return parsed;
         }
 
         private static PageUnits GetUnit(ref int offset, string value)

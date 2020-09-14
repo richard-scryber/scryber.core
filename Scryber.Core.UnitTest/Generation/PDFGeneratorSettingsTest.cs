@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void PDFGeneratorSettingsConstructorTest()
         {
-            Type literaltype = typeof(Scryber.Components.PDFTextLiteral);
-            Type templategenerator = typeof(Scryber.Data.PDFParsableTemplateGenerator);
-            Type templateinstance = typeof(Scryber.Data.PDFTemplateInstance);
+            Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
+            Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -109,9 +109,9 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void ConformanceModeTest()
         {
-            Type literaltype = typeof(Scryber.Components.PDFTextLiteral);
-            Type templategenerator = typeof(Scryber.Data.PDFParsableTemplateGenerator);
-            Type templateinstance = typeof(Scryber.Data.PDFTemplateInstance);
+            Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
+            Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -136,25 +136,25 @@ namespace Scryber.Core.UnitTests.Generation
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
                         <?scryber append-log='true' log-level='Messages' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
                                 <data:ForEach id='Foreach2' value='{@:xml}' select='//node/inner' template='{@:template}' ></data:ForEach>
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(true, doc.AppendTraceLog, "The append log is not set to true");
                 Assert.AreEqual(doc.TraceLog.RecordLevel, TraceRecordLevel.Messages, "The trace log is not set to Messages");

@@ -130,6 +130,60 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public bool BreakBefore {get;set;} + RemoveBreakBefore()
+
+        [PDFAttribute("break-before")]
+        public bool BreakBefore
+        {
+            get
+            {
+                bool value;
+                if (this.TryGetValue(PDFStyleKeys.ColumnBreakBeforeKey, out value))
+                    return value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.ColumnBreakBeforeKey, value);
+            }
+        }
+
+        public void RemoveBreakBefore()
+        {
+            this.RemoveValue(PDFStyleKeys.ColumnBreakBeforeKey);
+        }
+
+        #endregion
+
+
+        #region public bool BreakAfter {get;set;} + RemoveBreakAfter()
+
+        [PDFAttribute("break-after")]
+        public bool BreakAfter
+        {
+            get
+            {
+                bool value;
+                if (this.TryGetValue(PDFStyleKeys.ColumnBreakAfterKey, out value))
+                    return value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.ColumnBreakAfterKey, value);
+            }
+        }
+
+        public void RemoveBreakAfter()
+        {
+            this.RemoveValue(PDFStyleKeys.ColumnBreakAfterKey);
+        }
+
+        #endregion
+
+
         /// <summary>
         /// Gets or sets the variable width of the columns on a block
         /// </summary>

@@ -27,16 +27,16 @@ namespace Scryber.Layout
 {
     internal class LayoutEngineSection : LayoutEnginePage
     {
-        PDFSection _section;
+        Section _section;
         private int _startpageindex;
         
 
-        protected PDFSection Section
+        protected Section Section
         {
             get { return _section; }
         }
 
-        internal LayoutEngineSection(PDFSection section, IPDFLayoutEngine parent)
+        internal LayoutEngineSection(Section section, IPDFLayoutEngine parent)
             : base(section, parent)
         {
             _section = section;

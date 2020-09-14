@@ -88,18 +88,18 @@ namespace Scryber.Core.UnitTests.Styles
         {
             PDFStyleCollection target = new PDFStyleCollection();
             PDFStyleDefn defn = new PDFStyleDefn();
-            defn.AppliedType = typeof(PDFLabel);
-            defn.AppliedClass = "sea";
+            defn.Match = "doc:Label.sea";
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
             defn.Font.FontFamily = "Helvetica";
+
             target.Add(defn);
 
             PDFStyleDefn defn2 = new PDFStyleDefn();
-            defn2.AppliedClass = "sea";
+            defn2.Match = ".sea"; // lower priority
 
-            defn2.Border.Color = PDFColors.Gray;
+            defn2.Border.Color = PDFColors.Gray; 
             defn2.Columns.ColumnCount = 3;
             target.Add(defn2);
 
@@ -109,7 +109,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn3.Stroke.Color = PDFColors.Aqua;
             target.Add(defn3);
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
+            lbl.ElementName = "doc:Label";
             ComponentState state = ComponentState.Normal;
 
             PDFStyle style = new PDFStyle();
@@ -122,10 +123,10 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, lbl, state);
             style.Flatten();
 
-            Assert.AreEqual(PDFColors.Gray, style.Border.Color); //from defn2
+            Assert.AreEqual(PDFColors.Red, style.Border.Color); //from defn as higher priority
             Assert.AreEqual((PDFUnit)10, style.Border.Width); // from defn (defn2 has no width)
             Assert.AreEqual("Helvetica", style.Font.FontFamily); //from defn
-            Assert.AreEqual(3, style.Columns.ColumnCount); //from defn2
+            Assert.AreEqual(3, style.Columns.ColumnCount); //from defn2 (lower priority but not set on defn)
             Assert.IsFalse(style.IsValueDefined(PDFStyleKeys.StrokeColorKey)); //defn3 does have a stroke, but shoulld not be included
 
 
@@ -175,7 +176,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void OwnerTest()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
             doc.ID = "First Document";
 
             //doc.Styles should be initialized with the document as it's owner
@@ -194,7 +195,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(doc, styleDoc.Parent);
 
             //Changing the owner should pass through
-            PDFDocument other = new PDFDocument();
+            Document other = new Document();
             other.ID = "Other Document";
             col.Owner = other;
             Assert.AreEqual(other, styleDoc.Parent);

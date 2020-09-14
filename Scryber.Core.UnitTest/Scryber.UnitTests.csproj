@@ -35,7 +35,6 @@
     <Folder Include="Binding\" />
     <Folder Include="Mocks\" />
     <Folder Include="Mocks\Fonts\" />
-    <Folder Include="Content\" />
     <Folder Include="Mocks\Fonts\Avenir\" />
   </ItemGroup>
   <ItemGroup>

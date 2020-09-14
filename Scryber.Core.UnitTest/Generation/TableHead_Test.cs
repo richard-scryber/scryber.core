@@ -22,26 +22,26 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Components")]
         public void GenerateTable()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             doc.Pages.Add(pg);
-            PDFTableGrid tb = new PDFTableGrid();
+            TableGrid tb = new TableGrid();
             pg.Contents.Add(tb);
 
-            PDFLabel txt;
-            PDFTableRow tbhead;
-            PDFTableCell tbCellhead;
+            Label txt;
+            TableRow tbhead;
+            TableCell tbCellhead;
 
             
-            tbhead = new PDFTableRow();
+            tbhead = new TableRow();
             tbhead.ID = "row";
             for (int iii = 0; iii < 9; iii++)
             {
-                tbCellhead = new PDFTableCell();
+                tbCellhead = new TableCell();
                 tbCellhead.ID = "cell_" + iii.ToString();
                 tbhead.Cells.Add(tbCellhead);
 
-                txt = new PDFLabel();
+                txt = new Label();
                 txt.ID = "lbl_" + iii.ToString();
                 txt.Text = "jijiji";
                 tbCellhead.Contents.Add(txt);
@@ -52,7 +52,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
         }
 

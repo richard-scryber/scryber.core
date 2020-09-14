@@ -66,23 +66,23 @@ namespace Scryber.Core.UnitTests.Generation
 
             using (System.IO.StringReader sr = new System.IO.StringReader(src))
             {
-                PDFDocument doc = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Document doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
                 doc.Params["datatable"] = template;
 
 
                 using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
                 {
-                    doc.ProcessDocument(ms);
-                    var placeholder = doc.FindAComponentById("DynamicContent") as PDFPlaceHolder;
+                    doc.SaveAsPDF(ms);
+                    var placeholder = doc.FindAComponentById("DynamicContent") as PlaceHolder;
 
                     //placeholder should contain a template instance, that contains the table.
 
                     Assert.IsTrue(placeholder.Contents.Count > 0);
-                    Assert.IsInstanceOfType(placeholder.Contents[0], typeof(PDFTemplateInstance));
+                    Assert.IsInstanceOfType(placeholder.Contents[0], typeof(TemplateInstance));
 
-                    var instance = placeholder.Contents[0] as PDFTemplateInstance;
+                    var instance = placeholder.Contents[0] as TemplateInstance;
                     Assert.IsTrue(instance.HasContent);
-                    Assert.IsInstanceOfType(instance.Content[0], typeof(PDFTableGrid));
+                    Assert.IsInstanceOfType(instance.Content[0], typeof(TableGrid));
                 }
             }
         }

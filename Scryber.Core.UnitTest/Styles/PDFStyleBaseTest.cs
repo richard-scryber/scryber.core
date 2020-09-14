@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Styles
             PDFStyleDefn style = new PDFStyleDefn();
             style.AppliedClass = "sea";
             style.AppliedID = "mylabel";
-            style.AppliedType = typeof(Components.PDFLabel);
+            style.AppliedType = typeof(Components.Label);
 
             style.Background.Color = Scryber.Drawing.PDFColors.Aqua;
 
@@ -171,7 +171,7 @@ namespace Scryber.Core.UnitTests.Styles
             // label with matching class name - should be merged
             //
 
-            Scryber.Components.PDFLabel lbl = new Components.PDFLabel();
+            Scryber.Components.Label lbl = new Components.Label();
             lbl.StyleClass = "sea";
             lbl.ID = "mylabel";
             ComponentState state = ComponentState.Down;
@@ -191,7 +191,7 @@ namespace Scryber.Core.UnitTests.Styles
             target = CreatePDFStyleBase();
             style = CreateAlternateStyle();
 
-            lbl = new Components.PDFLabel();
+            lbl = new Components.Label();
             lbl.ID = "mylabel";
             target.MergeInto(style, lbl, state);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); 
@@ -204,7 +204,7 @@ namespace Scryber.Core.UnitTests.Styles
             target = CreatePDFStyleBase();
             style = CreateAlternateStyle();
 
-            lbl = new Components.PDFLabel();
+            lbl = new Components.Label();
             lbl.StyleClass = "sea";
             lbl.ID = "anotherlabel";
             target.MergeInto(style, lbl, state);
@@ -215,7 +215,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // different type
 
-            Components.PDFImage img = new Components.PDFImage();
+            Components.Image img = new Components.Image();
             img.StyleClass = "sea";
             img.ID = "mylabel";
             target.MergeInto(style, img, state);

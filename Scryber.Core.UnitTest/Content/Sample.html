@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<Params>
+
+</Params>
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    <title>This is a sample xhtml file</title>
+    <style>
+        body {
+            background-color: aliceblue;
+        }
+
+        .highlight {
+            background-color: black;
+            color: white;
+            padding: 10pt;
+            margin: 0;
+        }
+
+        table {
+            font-size: small;
+            width: 100%;
+        }
+
+        thead {
+            font-weight: bold;
+            color: red;
+        }
+
+        tbody {
+            color: silver;
+        }
+
+        tfoot {
+            color: blue;
+        }
+    </style>
+    <link rel="stylesheet" href="..\Content\Include.css" media="print" />
+
+</head>
+<body title="Outer">
+    <p class='highlight' style="margin-top:0px" >This is the body</p>
+    <div style="margin:30px" title="Inner">
+        <img src='Toroid24.jpg' alt='Just a toroid' style='width:200px;' hidden="hidden" />
+
+        <style type="text/css" media="print">
+            table.bordered td {
+                border: solid 1px blue;
+            }
+        </style>
+
+        <table class="bordered">
+            <thead>
+                <tr>
+                    <td>Head 1</td>
+                    <td>Head 2</td>
+                    <td style="width:100px">Head 3</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Cell 1.1</td>
+                    <td>Cell 1.2</td>
+                    <td>Cell 1.3</td>
+                </tr>
+                <tr>
+                    <td>Cell 2.1</td>
+                    <td>Cell 2.2</td>
+                    <td>Cell 2.3</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>Foot 1</td>
+                    <td>Foot 2</td>
+                    <td>Foot 3</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>

@@ -101,7 +101,7 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="registered"></param>
-    public delegate void PDFComponentRegisteredHandler(object sender, IPDFComponent registered);
+    public delegate void ComponentRegisteredHandler(object sender, IPDFComponent registered);
 
     
 }

@@ -13,16 +13,16 @@ namespace Scryber.Core.UnitTests.Generation
     public class SimpleDocument_Controller
     {
         [PDFOutlet("outerdoc")]
-        public PDFDocument Document;
+        public Document Document;
 
         [PDFOutlet("titlepage")]
-        public PDFPage TitlePage { get; set; }
+        public Page TitlePage { get; set; }
 
         [PDFOutlet("mylabel")]
-        public PDFLabel MyLabel;
+        public Label MyLabel;
 
         [PDFOutlet("notfound")]
-        public PDFLabel NotFound;
+        public Label NotFound;
 
         //
         // event handlers
@@ -121,23 +121,23 @@ namespace Scryber.Core.UnitTests.Generation
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' 
                                           controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.UnitTests' ?>
-                                <pdf:Document xmlns:pdf='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+                                <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' compression='Compress' auto-bind='true'>
                                   <Pages>
 
-                                    <pdf:Page id='titlepage' >
+                                    <doc:Page id='titlepage' >
                                       <Content>
-                                        <pdf:Label id='mylabel' />
+                                        <doc:Label id='mylabel' />
                                       </Content>
-                                    </pdf:Page>
+                                    </doc:Page>
 
                                   </Pages>
-                                </pdf:Document>";
+                                </doc:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
             Assert.IsNotNull(parsed);
@@ -180,26 +180,26 @@ namespace Scryber.Core.UnitTests.Generation
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' 
                                           controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.UnitTests' ?>
-                                <pdf:Document xmlns:pdf='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+                                <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' compression='Compress' auto-bind='true'>
                                   <Pages>
 
-                                    <pdf:Page id='titlepage' on-init='handlepageinit' on-loaded='handlepageload'
+                                    <doc:Page id='titlepage' on-init='handlepageinit' on-loaded='handlepageload'
                                                              on-databinding='handlepagebinding' on-databound='handlepagebound'
                                                              on-prelayout='handleprelayout' on-postlayout='handlepostlayout'
                                                              on-prerender='handleprerender' on-postrender='handlepostrender' >
                                       <Content>
-                                        <pdf:Label id='mylabel' />
+                                        <doc:Label id='mylabel' />
                                       </Content>
-                                    </pdf:Page>
+                                    </doc:Page>
 
                                   </Pages>
-                                </pdf:Document>";
+                                </doc:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.Other);
+                parsed = Document.ParseDocument(sr, ParseSourceType.Other);
             }
 
             Assert.IsNotNull(parsed);
@@ -209,7 +209,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
-                parsed.ProcessDocument(ms);
+                parsed.SaveAsPDF(ms);
             }
             TestContext.WriteLine("Document has been processed");
 

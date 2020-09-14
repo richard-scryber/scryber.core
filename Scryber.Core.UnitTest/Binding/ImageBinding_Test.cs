@@ -38,37 +38,43 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Params>
-    <pdf:Object-Param id='MyImage' />
+    <doc:Object-Param id='MyImage' />
   </Params>
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' img-data='{@:MyImage}' />
+        <doc:Image id='LoadedImage' img-data='{@:MyImage}' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             using (var reader = new System.IO.StringReader(pdfx))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 var path = this.TestContext.TestDir;
 
+#if MAC_OS
                 // back up from obj/Debug/TestDirectoryName
                 path = System.IO.Path.Combine(path, "../../../Content/Toroid24.jpg");
+#else
+                path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/Toroid24.jpg"); ;
+#endif
+
+                path = System.IO.Path.GetFullPath(path);
 
                 var data = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(doc, doc, path);
                 doc.Params["MyImage"] = data;
 
-                var img = doc.FindAComponentById("LoadedImage") as PDFImage;
+                var img = doc.FindAComponentById("LoadedImage") as Image;
                 Assert.IsNull(img.Data);
 
                 doc.InitializeAndLoad();

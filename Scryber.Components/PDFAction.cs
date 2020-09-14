@@ -36,7 +36,7 @@ namespace Scryber
         /// <summary>
         /// The component this action is for
         /// </summary>
-        public PDFComponent Component { get; private set; }
+        public Component Component { get; private set; }
 
         /// <summary>
         /// The type of action this references
@@ -51,7 +51,7 @@ namespace Scryber
         /// </summary>
         /// <param name="component"></param>
         /// <param name="action"></param>
-        protected PDFAction(PDFComponent component, LinkAction action)
+        protected PDFAction(Component component, LinkAction action)
         {
             this.Component = component;
             this.ActionType = action;
@@ -83,7 +83,7 @@ namespace Scryber
         /// </summary>
         /// <param name="component">The component that owns this action (in this case can be null)</param>
         /// <param name="action">The action to perform</param>
-        public PDFNamedAction(PDFComponent component, LinkAction action)
+        public PDFNamedAction(Component component, LinkAction action)
             : base(component, action)
         {
             AssertLinkAction(action);
@@ -176,7 +176,7 @@ namespace Scryber
         /// <param name="owner">The owner of this action</param>
         /// <param name="action">The action type to perform - must be LinkAction.Destination</param>
         /// <param name="destination">The destination to navigate to.</param>
-        public PDFDestinationAction(PDFComponent owner, LinkAction action, PDFDestination destination)
+        public PDFDestinationAction(Component owner, LinkAction action, PDFDestination destination)
             : base(owner, action)
         {
             this.Destination = destination;
@@ -252,7 +252,7 @@ namespace Scryber
         /// <param name="action">Must be RemoteDestination</param>
         /// <param name="file">The path to the file where this is a link action to</param>
         /// <param name="name">The name of the item in the remote file to link to</param>
-        public PDFRemoteDestinationAction(PDFComponent owner, LinkAction action, string file, string name)
+        public PDFRemoteDestinationAction(Component owner, LinkAction action, string file, string name)
             : base(owner, action)
         {
             if (string.IsNullOrEmpty(file))
@@ -317,7 +317,7 @@ namespace Scryber
         /// <param name="owner"></param>
         /// <param name="action">Must be an ExternalDestination</param>
         /// <param name="url"></param>
-        public PDFUriDestinationAction(PDFComponent owner, LinkAction action, string url)
+        public PDFUriDestinationAction(Component owner, LinkAction action, string url)
             : base(owner, action)
         {
             this.Url = url;

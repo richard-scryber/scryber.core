@@ -49,10 +49,10 @@ namespace Scryber.Core.UnitTests.Configuration
             //We should have 3 namespaces by default for Scryber.Components, Scryber.Data and Scryber.Styles
             Assert.IsNotNull(parsing.Namespaces, "Namespace Mappings are null");
 
-            Assert.AreEqual(3, parsing.Namespaces.Count, "There are not 3 namespaces");
+            Assert.AreEqual(4, parsing.Namespaces.Count, "There are not 4 namespaces");
 
-            var compType = typeof(Scryber.Components.PDFDocument);
-            var dataType = typeof(Scryber.Data.PDFXMLDataSource);
+            var compType = typeof(Scryber.Components.Document);
+            var dataType = typeof(Scryber.Data.XMLDataSource);
             var styleType = typeof(Scryber.Styles.PDFStyle);
 
             var full = compType.Namespace + ", " + compType.Assembly.FullName;
@@ -77,8 +77,6 @@ namespace Scryber.Core.UnitTests.Configuration
 
 
             // Bindings check
-
-            Assert.AreEqual(3, parsing.Namespaces.Count, "There are not 3 namespaces");
 
             var itemType = typeof(Scryber.Binding.BindingItemExpressionFactory);
             var atType = typeof(Scryber.Binding.BindingItemExpressionFactory);
@@ -162,34 +160,34 @@ namespace Scryber.Core.UnitTests.Configuration
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Params>
-    <pdf:Object-Param id='MyImage' />
+    <doc:Object-Param id='MyImage' />
   </Params>
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' src='DoesNotExist.png' />
+        <doc:Image id='LoadedImage' src='DoesNotExist.png' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             bool caught = false;
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
             }
             catch (Exception)
             {
@@ -210,31 +208,31 @@ namespace Scryber.Core.UnitTests.Configuration
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='true' />
+        <doc:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='true' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             bool caught = false;
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
             }
             catch (Exception)
             {

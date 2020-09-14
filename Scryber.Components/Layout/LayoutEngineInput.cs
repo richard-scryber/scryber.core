@@ -14,7 +14,7 @@ namespace Scryber.Layout
     public class LayoutEngineInput : LayoutEnginePanel
     {
 
-        protected PDFFormInputField Field { get; private set; }
+        protected FormInputField Field { get; private set; }
 
         protected PDFLayoutPage LayoutPage { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Scryber.Layout
 
         private bool _addedProxyText = false;
 
-        public LayoutEngineInput(PDFFormInputField container, IPDFLayoutEngine parent) :base(container, parent)
+        public LayoutEngineInput(FormInputField container, IPDFLayoutEngine parent) :base(container, parent)
         {
             this.Field = container;
         }

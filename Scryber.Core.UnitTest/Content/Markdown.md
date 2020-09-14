@@ -35,14 +35,14 @@ Just a bit more than a hello world example.
 ```xml
 
       <?xml version='1.0' encoding='utf-8' ?>
-      <pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+      <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                     xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                     xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
         <Params>
-          <pdf:String-Param id='Title' value='Hello World'  />
+          <doc:String-Param id='Title' value='Hello World'  />
         </Params>
         <Styles>
-          <styles:Style applied-type='pdf:Page'>
+          <styles:Style applied-type='doc:Page'>
             <styles:Font family='Arial' size='14pt' />
           </styles:Style>
 
@@ -54,16 +54,16 @@ Just a bit more than a hello world example.
         </Styles>
         <Pages>
 
-          <pdf:Page styles:margins='20pt'>
+          <doc:Page styles:margins='20pt'>
             <Content>
-              <pdf:H1 styles:class='heading' text='{@:Title}' />
-              <pdf:Div>We hope you like scryber.</pdf:Div>
+              <doc:H1 styles:class='heading' text='{@:Title}' />
+              <doc:Div>We hope you like scryber.</doc:Div>
 
             </Content>
-          </pdf:Page>
+          </doc:Page>
         </Pages>
 
-      </pdf:Document>
+      </doc:Document>
 ```
 
 ### From your application code.

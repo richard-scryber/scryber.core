@@ -62,6 +62,7 @@ Scryber is an advanced PDF generation tool that allows complete definition of a 
 This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications.</Description>
     <PackOnBuild>true</PackOnBuild>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png</PackageIconUrl>
+    <RootNamespace>Scryber</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

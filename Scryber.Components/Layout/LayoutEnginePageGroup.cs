@@ -28,7 +28,7 @@ namespace Scryber.Layout
 {
     public class LayoutEnginePageGroup : IPDFLayoutEngine
     {
-        private PDFPageGroup _group;
+        private PageGroup _group;
         private IPDFLayoutEngine _parent;
         private PDFLayoutContext _context;
         private PDFStyle _full;
@@ -39,7 +39,7 @@ namespace Scryber.Layout
             set;
         }
 
-        public LayoutEnginePageGroup(PDFPageGroup group, IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle full)
+        public LayoutEnginePageGroup(PageGroup group, IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle full)
         {
             if (null == group)
                 throw new ArgumentNullException("group");
@@ -70,7 +70,7 @@ namespace Scryber.Layout
             }
 
 
-            foreach (PDFPageBase pg in this._group.Pages)
+            foreach (PageBase pg in this._group.Pages)
             {
 
                 if (pg.Visible)
@@ -87,7 +87,7 @@ namespace Scryber.Layout
                 context.DocumentLayout.Numbers.PopNumberStyle(grp);
         }
 
-        public void LayoutAPage(PDFPageBase pg, bool first)
+        public void LayoutAPage(PageBase pg, bool first)
         {
             this.PushGroupHeader(pg, first);
             this.PushGroupFooter(pg, first);
@@ -121,7 +121,7 @@ namespace Scryber.Layout
                 this.Context.StyleStack.Pop();
         }
 
-        protected virtual void PushGroupHeader(PDFPageBase topage, bool first)
+        protected virtual void PushGroupHeader(PageBase topage, bool first)
         {
             if (null == topage.Header)
             {
@@ -133,23 +133,23 @@ namespace Scryber.Layout
             //Set the continuation header of inner sections and page-groups if we have one and they don't
             if (null != this._group.ContinuationHeader)
             {
-                if (topage is PDFSection)
+                if (topage is Section)
                 {
-                    PDFSection section = (PDFSection)topage;
+                    Section section = (Section)topage;
                     if (null == section.ContinuationHeader)
                         section.ContinuationHeader = this._group.ContinuationHeader;
                 }
 
-                else if (topage is PDFPageGroup)
+                else if (topage is PageGroup)
                 {
-                    PDFPageGroup innergrp = (PDFPageGroup)topage;
+                    PageGroup innergrp = (PageGroup)topage;
                     if (null == innergrp.ContinuationHeader)
                         innergrp.ContinuationHeader = this._group.ContinuationHeader;
                 }
             }
         }
 
-        protected virtual void PushGroupFooter(PDFPageBase topage, bool first)
+        protected virtual void PushGroupFooter(PageBase topage, bool first)
         {
             if (null == topage.Footer)
             {
@@ -162,16 +162,16 @@ namespace Scryber.Layout
             //Set the continuation header of inner sections and page-groups if we have one and they don't
             if (null != this._group.ContinuationFooter)
             {
-                if (topage is PDFSection)
+                if (topage is Section)
                 {
-                    PDFSection section = (PDFSection)topage;
+                    Section section = (Section)topage;
                     if (null == section.ContinuationFooter)
                         section.ContinuationFooter = this._group.ContinuationFooter;
                 }
 
-                else if (topage is PDFPageGroup)
+                else if (topage is PageGroup)
                 {
-                    PDFPageGroup innergrp = (PDFPageGroup)topage;
+                    PageGroup innergrp = (PageGroup)topage;
                     if (null == innergrp.ContinuationFooter)
                         innergrp.ContinuationFooter = this._group.ContinuationFooter;
                 }

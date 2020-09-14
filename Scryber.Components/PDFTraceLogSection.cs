@@ -9,7 +9,7 @@ namespace Scryber
     /// <summary>
     /// A document section that is included by the trace log document so that it can add all the logging content to the end of it.
     /// </summary>
-    internal class PDFTraceLogSection : PDFSection
+    internal class PDFTraceLogSection : Section
     {
         public PDFDocumentGenerationData GenerationData { get; set; }
 
@@ -22,7 +22,7 @@ namespace Scryber
 
         private void InitAllContent()
         {
-            PDFHead1 title = new PDFHead1() { Text = "Trace Output"};
+            Head1 title = new Head1() { Text = "Trace Output"};
             this.Contents.Add(title);
 
             AddDocumentOverview();
@@ -35,10 +35,10 @@ namespace Scryber
 
         private void AddDocumentOverview()
         {
-            PDFHead3 head = new PDFHead3() { Text = "Document Overview" };
+            Head3 head = new Head3() { Text = "Document Overview" };
             this.Contents.Add(head);
 
-            PDFTableGrid tbl = new PDFTableGrid();
+            TableGrid tbl = new TableGrid();
             this.Contents.Add(tbl);
 
             if (null != this.GenerationData.DocumentInfo &&
@@ -57,18 +57,18 @@ namespace Scryber
             this.AddOverviewRow(tbl, "Trace Level", this.GenerationData.TraceLevel.ToString());
         }
 
-        private void AddOverviewRow(PDFTableGrid tbl, string name, string value)
+        private void AddOverviewRow(TableGrid tbl, string name, string value)
         {
-            PDFTableRow row = new PDFTableRow();
+            TableRow row = new TableRow();
             tbl.Rows.Add(row);
 
-            PDFTableCell cell = new PDFTableHeaderCell() { Width = 100 };
-            cell.Contents.Add(new PDFTextLiteral(name));
+            TableCell cell = new TableHeaderCell() { Width = 100 };
+            cell.Contents.Add(new TextLiteral(name));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell();
+            cell = new TableCell();
             if (string.IsNullOrEmpty(value) == false)
-                cell.Contents.Add(new PDFTextLiteral(value));
+                cell.Contents.Add(new TextLiteral(value));
             row.Cells.Add(cell);
 
 
@@ -76,27 +76,27 @@ namespace Scryber
 
         private void AddPerformance(PDFPerformanceMonitor perfdata)
         {
-            PDFHead3 head = new PDFHead3() { Text = "Performance Metrics"};
+            Head3 head = new Head3() { Text = "Performance Metrics"};
             this.Contents.Add(head);
 
-            PDFTableGrid tbl = new PDFTableGrid();
+            TableGrid tbl = new TableGrid();
             this.Contents.Add(tbl);
 
-            PDFTableHeaderRow top = new PDFTableHeaderRow();
+            TableHeaderRow top = new TableHeaderRow();
             tbl.Rows.Add(top);
 
-            PDFTableCell cell = new PDFTableHeaderCell();
-            cell.Contents.Add(new PDFTextLiteral("Entry"));
+            TableCell cell = new TableHeaderCell();
+            cell.Contents.Add(new TextLiteral("Entry"));
             top.Cells.Add(cell);
 
 
-            cell = new PDFTableHeaderCell() { StyleClass = "number", Width = 100 };
+            cell = new TableHeaderCell() { StyleClass = "number", Width = 100 };
             
-            cell.Contents.Add(new PDFTextLiteral("Duration (ms)"));
+            cell.Contents.Add(new TextLiteral("Duration (ms)"));
             top.Cells.Add(cell);
 
-            cell = new PDFTableHeaderCell() { StyleClass = "number", Width = 60 };
-            cell.Contents.Add(new PDFTextLiteral("Count"));
+            cell = new TableHeaderCell() { StyleClass = "number", Width = 60 };
+            cell.Contents.Add(new TextLiteral("Count"));
             top.Cells.Add(cell);
 
             foreach (PDFPerformanceMonitorEntry entry in perfdata)
@@ -106,21 +106,21 @@ namespace Scryber
             }
         }
 
-        private void AddPerformanceEntry(PDFTableGrid grid, PDFPerformanceMonitorEntry entry)
+        private void AddPerformanceEntry(TableGrid grid, PDFPerformanceMonitorEntry entry)
         {
-            PDFTableRow row = new PDFTableRow();
+            TableRow row = new TableRow();
             grid.Rows.Add(row);
 
-            PDFTableCell cell = new PDFTableCell() { DataStyleIdentifier = "PerfCategoryKey" };
-            cell.Contents.Add(new PDFTextLiteral(entry.MonitorKey));
+            TableCell cell = new TableCell() { DataStyleIdentifier = "PerfCategoryKey" };
+            cell.Contents.Add(new TextLiteral(entry.MonitorKey));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell() { StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
-            cell.Contents.Add(new PDFTextLiteral(entry.MonitorElapsed.TotalMilliseconds.ToString("#,##0.00")));
+            cell = new TableCell() { StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
+            cell.Contents.Add(new TextLiteral(entry.MonitorElapsed.TotalMilliseconds.ToString("#,##0.00")));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell() { StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
-            cell.Contents.Add(new PDFTextLiteral(entry.MonitorCount.ToString()));
+            cell = new TableCell() { StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
+            cell.Contents.Add(new TextLiteral(entry.MonitorCount.ToString()));
             row.Cells.Add(cell);
 
             if (entry.HasMeasurements)
@@ -132,49 +132,49 @@ namespace Scryber
             }
         }
 
-        private void AddPerformanceMeasurement(PDFTableGrid grid, PDFPerformanceMonitorMeasurement measure)
+        private void AddPerformanceMeasurement(TableGrid grid, PDFPerformanceMonitorMeasurement measure)
         {
-            PDFTableRow row = new PDFTableRow() { StyleClass = "Debug" };
+            TableRow row = new TableRow() { StyleClass = "Debug" };
             grid.Rows.Add(row);
 
 
-            PDFTableCell cell = new PDFTableCell() { DataStyleIdentifier = "PerfCategoryMeasure"};
-            cell.Contents.Add(new PDFTextLiteral(measure.Key));
+            TableCell cell = new TableCell() { DataStyleIdentifier = "PerfCategoryMeasure"};
+            cell.Contents.Add(new TextLiteral(measure.Key));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell(){ DataStyleIdentifier = "PerfCategoryEntryRight"};
-            cell.Contents.Add(new PDFTextLiteral(measure.Elapsed.TotalMilliseconds.ToString("#,##0.00")));
+            cell = new TableCell(){ DataStyleIdentifier = "PerfCategoryEntryRight"};
+            cell.Contents.Add(new TextLiteral(measure.Elapsed.TotalMilliseconds.ToString("#,##0.00")));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell() { DataStyleIdentifier = "PerfCategoryEntryRight" };
+            cell = new TableCell() { DataStyleIdentifier = "PerfCategoryEntryRight" };
             row.Cells.Add(cell);
         }
 
         private void AddTraceLog(Logging.PDFCollectorTraceLog log)
         {
-            PDFHead3 head = new PDFHead3() { Text = "Document Log" };
+            Head3 head = new Head3() { Text = "Document Log" };
             this.Contents.Add(head);
 
-            PDFTableGrid tbl = new PDFTableGrid() { StyleClass = "log-grid" };
+            TableGrid tbl = new TableGrid() { StyleClass = "log-grid" };
             this.Contents.Add(tbl);
 
-            PDFTableHeaderRow top = new PDFTableHeaderRow();
+            TableHeaderRow top = new TableHeaderRow();
             tbl.Rows.Add(top);
 
-            PDFTableCell cell = new PDFTableHeaderCell() { Width = 60 };
-            cell.Contents.Add(new PDFTextLiteral("Time (ms)"));
+            TableCell cell = new TableHeaderCell() { Width = 60 };
+            cell.Contents.Add(new TextLiteral("Time (ms)"));
             top.Cells.Add(cell);
 
-            cell = new PDFTableHeaderCell() { Width = 60 };
-            cell.Contents.Add(new PDFTextLiteral("Level"));
+            cell = new TableHeaderCell() { Width = 60 };
+            cell.Contents.Add(new TextLiteral("Level"));
             top.Cells.Add(cell);
 
-            cell = new PDFTableHeaderCell() { Width = 100};
-            cell.Contents.Add(new PDFTextLiteral("Category"));
+            cell = new TableHeaderCell() { Width = 100};
+            cell.Contents.Add(new TextLiteral("Category"));
             top.Cells.Add(cell);
 
-            cell = new PDFTableHeaderCell();
-            cell.Contents.Add(new PDFTextLiteral("Message"));
+            cell = new TableHeaderCell();
+            cell.Contents.Add(new TextLiteral("Message"));
             top.Cells.Add(cell);
 
             foreach (Logging.PDFCollectorTraceLogEntry entry in log)
@@ -183,40 +183,40 @@ namespace Scryber
             }
         }
 
-        private void AddLogEntry(PDFTableGrid tbl, Logging.PDFCollectorTraceLogEntry entry)
+        private void AddLogEntry(TableGrid tbl, Logging.PDFCollectorTraceLogEntry entry)
         {
             
             string rowidentifier = entry.Level.ToString();
             string cellidentifier = "cell_" + rowidentifier;
             string cellnumidentifier = cellidentifier + "_number";
-            PDFTableRow row = new PDFTableRow() { DataStyleIdentifier = rowidentifier, StyleClass = rowidentifier };
+            TableRow row = new TableRow() { DataStyleIdentifier = rowidentifier, StyleClass = rowidentifier };
             tbl.Rows.Add(row);
 
-            PDFTableCell cell = new PDFTableCell() { StyleClass = "number" };
+            TableCell cell = new TableCell() { StyleClass = "number" };
             cell.DataStyleIdentifier = cellnumidentifier;
-            cell.Contents.Add(new PDFTextLiteral(entry.TimeStamp.TotalMilliseconds.ToString("#000.0000")));
+            cell.Contents.Add(new TextLiteral(entry.TimeStamp.TotalMilliseconds.ToString("#000.0000")));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell();
+            cell = new TableCell();
             cell.DataStyleIdentifier = cellidentifier;
-            cell.Contents.Add(new PDFTextLiteral(entry.Level.ToString()));
+            cell.Contents.Add(new TextLiteral(entry.Level.ToString()));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell();
+            cell = new TableCell();
             cell.DataStyleIdentifier = cellidentifier;
             if (!string.IsNullOrEmpty(entry.Category))
-                cell.Contents.Add(new PDFTextLiteral(entry.Category));
+                cell.Contents.Add(new TextLiteral(entry.Category));
             row.Cells.Add(cell);
 
-            cell = new PDFTableCell();
+            cell = new TableCell();
             cell.DataStyleIdentifier = cellidentifier;
             if (!string.IsNullOrEmpty(entry.Message))
-                cell.Contents.Add(new PDFTextLiteral(entry.Message));
+                cell.Contents.Add(new TextLiteral(entry.Message));
 
             if (entry.HasException)
             {
-                cell.Contents.Add(new PDFLineBreak());
-                cell.Contents.Add(new PDFTextLiteral(entry.Exception.ToString()));
+                cell.Contents.Add(new LineBreak());
+                cell.Contents.Add(new TextLiteral(entry.Exception.ToString()));
             }
             row.Cells.Add(cell);
 

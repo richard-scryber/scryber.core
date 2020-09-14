@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Styles
             two.Font.FontItalic = true;
             target.Push(two);
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             PDFStyle actual = target.GetFullStyle(lbl);
 
             Assert.AreEqual("Symbol", actual.Font.FontFamily); //inherited from root
