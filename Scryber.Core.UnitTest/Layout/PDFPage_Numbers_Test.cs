@@ -91,6 +91,8 @@ namespace Scryber.Core.UnitTests.Layout
 
             //Add a catch all number style definition for upper letter with Prefix
             PDFStyleDefn pgNumStyle = new PDFStyleDefn();
+            pgNumStyle.AppliedType = typeof(PDFDocument);
+
             pgNumStyle.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
             doc.Styles.Add(pgNumStyle);
 
