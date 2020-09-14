@@ -27,7 +27,7 @@ namespace Scryber.Core.UnitTests.Binding
             var expected = "My Document Title";
 
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
@@ -39,24 +39,24 @@ namespace Scryber.Core.UnitTests.Binding
     
                         </Styles>
                         <Params>
-                            <pdf:String-Param id='title' value='" + expected + @"' />
+                            <doc:String-Param id='title' value='" + expected + @"' />
                         </Params>
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
-                            <pdf:Label text='{@:title}'></pdf:Label>
+                            <doc:Label text='{@:title}'></doc:Label>
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
-                var sect = doc.Pages[0] as PDFSection;
-                var label = sect.Contents[0] as PDFLabel;
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var sect = doc.Pages[0] as Section;
+                var label = sect.Contents[0] as Label;
 
 
                 doc.InitializeAndLoad();
@@ -86,48 +86,48 @@ namespace Scryber.Core.UnitTests.Binding
             var expectedEnum = "Dash";
             
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:String-Param id='title' value='" + expectedString + @"' />
-                            <pdf:Int-Param id='int' value='" + expectedInt + @"' />
-                            <pdf:Guid-Param id='guid' value='" + expectedGuid + @"' />
-                            <pdf:Double-Param id='double' value='" + expectedDouble + @"' />
-                            <pdf:Bool-Param id='bool' value='" + expectedBool + @"' />
-                            <pdf:Date-Param id='date' value='" + expectedDate + @"' />
-                            <pdf:Unit-Param id='unit' value='" + expectedUnit+ @"' />
-                            <pdf:Color-Param id='color' value='" + expectedColor + @"' />
-                            <pdf:Thickness-Param id='thick' value='" + expectedThickness + @"' />
-                            <pdf:Enum-Param id='enum' type='Scryber.Drawing.LineStyle, Scryber.Drawing' value='" + expectedEnum + @"' />
+                            <doc:String-Param id='title' value='" + expectedString + @"' />
+                            <doc:Int-Param id='int' value='" + expectedInt + @"' />
+                            <doc:Guid-Param id='guid' value='" + expectedGuid + @"' />
+                            <doc:Double-Param id='double' value='" + expectedDouble + @"' />
+                            <doc:Bool-Param id='bool' value='" + expectedBool + @"' />
+                            <doc:Date-Param id='date' value='" + expectedDate + @"' />
+                            <doc:Unit-Param id='unit' value='" + expectedUnit+ @"' />
+                            <doc:Color-Param id='color' value='" + expectedColor + @"' />
+                            <doc:Thickness-Param id='thick' value='" + expectedThickness + @"' />
+                            <doc:Enum-Param id='enum' type='Scryber.Drawing.LineStyle, Scryber.Drawing' value='" + expectedEnum + @"' />
                         </Params>
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
-                                <pdf:Label styles:fill-color='{@:color}' styles:x='{@:unit}' styles:padding='{@:thick}'
-                                           styles:border-style='{@:enum}' text='{@:title}'></pdf:Label>
-                                <pdf:Date value='{@:date}' />
-                                <pdf:Number value='{@:int}' styles:font-bold='{@:bool}' />
-                                <pdf:Number value='{@:double}' />
+                                <doc:Label styles:fill-color='{@:color}' styles:x='{@:unit}' styles:padding='{@:thick}'
+                                           styles:border-style='{@:enum}' text='{@:title}'></doc:Label>
+                                <doc:Date value='{@:date}' />
+                                <doc:Number value='{@:int}' styles:font-bold='{@:bool}' />
+                                <doc:Number value='{@:double}' />
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 
 
-                var sect = doc.Pages[0] as PDFSection;
-                var label = sect.Contents[0] as PDFLabel;
-                var date = sect.Contents[1] as PDFDate;
-                var num1 = sect.Contents[2] as PDFNumber;
-                var num2 = sect.Contents[3] as PDFNumber;
+                var sect = doc.Pages[0] as Section;
+                var label = sect.Contents[0] as Label;
+                var date = sect.Contents[1] as Date;
+                var num1 = sect.Contents[2] as Number;
+                var num2 = sect.Contents[3] as Number;
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
@@ -161,7 +161,7 @@ namespace Scryber.Core.UnitTests.Binding
             var expectedColor = "#FF3300";
             
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
@@ -175,31 +175,31 @@ namespace Scryber.Core.UnitTests.Binding
     
                         </Styles>
                         <Params>
-                            <pdf:String-Param id='title' value='" + expectedString + @"' />
-                            <pdf:Bool-Param id='bool' value='" + expectedBool + @"' />
-                            <pdf:Unit-Param id='unit' value='" + expectedUnit + @"' />
-                            <pdf:Color-Param id='color' value='" + expectedColor + @"' />
+                            <doc:String-Param id='title' value='" + expectedString + @"' />
+                            <doc:Bool-Param id='bool' value='" + expectedBool + @"' />
+                            <doc:Unit-Param id='unit' value='" + expectedUnit + @"' />
+                            <doc:Color-Param id='color' value='" + expectedColor + @"' />
                         </Params>
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
-                                <pdf:Label styles:class='blue' text='{@:title}'></pdf:Label>
+                                <doc:Label styles:class='blue' text='{@:title}'></doc:Label>
                                 
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 
 
-                var sect = doc.Pages[0] as PDFSection;
-                var label = sect.Contents[0] as PDFLabel;
+                var sect = doc.Pages[0] as Section;
+                var label = sect.Contents[0] as Label;
                 var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
 
                 doc.InitializeAndLoad();
@@ -228,12 +228,12 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:Object-Param id='dynamic' ></pdf:Object-Param>
+                            <doc:Object-Param id='dynamic' ></doc:Object-Param>
                         </Params>
 
                         <Styles>
@@ -246,25 +246,25 @@ namespace Scryber.Core.UnitTests.Binding
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
 
                                 <data:ForEach value='{@:dynamic.List}' >
                                     <Template>
-                                        <pdf:Label id='{@:.Id}' text='{@:.Name}' ></pdf:Label>
-                                        <pdf:Br/>
+                                        <doc:Label id='{@:.Id}' text='{@:.Name}' ></doc:Label>
+                                        <doc:Br/>
                                     </Template>
                                 </data:ForEach>
 
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 doc.Params["dynamic"] = new
                 {
                     Color = Scryber.Drawing.PDFColors.Aqua,
@@ -279,11 +279,11 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("FirstID") as PDFLabel;
+                var first = doc.FindAComponentById("FirstID") as Label;
                 Assert.IsNotNull(first, "Could not find the first label");
                 Assert.AreEqual("First", first.Text, "The first label does not have the correct Name value");
 
-                var second = doc.FindAComponentById("SecondID") as PDFLabel;
+                var second = doc.FindAComponentById("SecondID") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
 
@@ -305,44 +305,44 @@ namespace Scryber.Core.UnitTests.Binding
                                     <inner value='2' />
                                 </node>";
 
-            var expectedTemplate = @"<pdf:Div id='{xpath:concat(""xmlInnerDiv"",@value)}' >
-                                        <pdf:Label id='{xpath:concat(""xmlLabel"",@value)}' text='{xpath:@value}' />
-                                     </pdf:Div>";
+            var expectedTemplate = @"<doc:Div id='{xpath:concat(""xmlInnerDiv"",@value)}' >
+                                        <doc:Label id='{xpath:concat(""xmlLabel"",@value)}' text='{xpath:@value}' />
+                                     </doc:Div>";
 
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
 
                         <Params>
-                            <pdf:Xml-Param id='xml' >" + expectedXml + @"</pdf:Xml-Param>
-                            <pdf:Template-Param id='template' >" + expectedTemplate + @"</pdf:Template-Param>
+                            <doc:Xml-Param id='xml' >" + expectedXml + @"</doc:Xml-Param>
+                            <doc:Template-Param id='template' >" + expectedTemplate + @"</doc:Template-Param>
                         </Params>
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
                                 <data:ForEach id='Foreach2' value='{@:xml}' select='//node/inner' template='{@:template}' ></data:ForEach>
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("xmlInnerDiv1") as PDFDiv;
+                var first = doc.FindAComponentById("xmlInnerDiv1") as Div;
                 Assert.IsNotNull(first, "Could not find inner div");
                 
-                var second = doc.FindAComponentById("xmlLabel2") as PDFLabel;
+                var second = doc.FindAComponentById("xmlLabel2") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
 
@@ -359,50 +359,50 @@ namespace Scryber.Core.UnitTests.Binding
                                     <inner value='2' />
                                 </node>";
 
-            var expectedTemplate = @"<pdf:Div id='{xpath:concat(""xmlInnerDiv"",@value)}' >
-                                        <pdf:Label id='{xpath:concat(""xmlLabel"",@value)}' text='{xpath:@value}' />
-                                     </pdf:Div>";
+            var expectedTemplate = @"<doc:Div id='{xpath:concat(""xmlInnerDiv"",@value)}' >
+                                        <doc:Label id='{xpath:concat(""xmlLabel"",@value)}' text='{xpath:@value}' />
+                                     </doc:Div>";
 
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
 
                         <Params>
-                            <pdf:Xml-Param id='xml' >" + expectedXml + @"</pdf:Xml-Param>
-                            <pdf:Template-Param id='template' >" + expectedTemplate + @"</pdf:Template-Param>
+                            <doc:Xml-Param id='xml' >" + expectedXml + @"</doc:Xml-Param>
+                            <doc:Template-Param id='template' >" + expectedTemplate + @"</doc:Template-Param>
                         </Params>
 
                         <Pages>
     
-                            <pdf:Section>
+                            <doc:Section>
                                 <Content>
                                 
                                     <data:ForEach id='Foreach2' value='{@:xml}' select='//node/inner' >
                                         <Template>
-                                            <pdf:PlaceHolder template='{@:template}' />
+                                            <doc:PlaceHolder template='{@:template}' />
                                         </Template>
                                     </data:ForEach>
 
                                 </Content>
-                            </pdf:Section>
+                            </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("xmlInnerDiv1") as PDFDiv;
+                var first = doc.FindAComponentById("xmlInnerDiv1") as Div;
                 Assert.IsNotNull(first, "Could not find inner div");
 
-                var second = doc.FindAComponentById("xmlLabel2") as PDFLabel;
+                var second = doc.FindAComponentById("xmlLabel2") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
 
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
@@ -413,19 +413,19 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                doc.Params["template"] = @"<pdf:H1 id='{xpath:concat(""xmlH"",@value)}' >
-                                        <pdf:Text id='{xpath:concat(""xmlText"",@value)}' value='{xpath:@value}' />
-                                     </pdf:H1>";
+                doc.Params["template"] = @"<doc:H1 id='{xpath:concat(""xmlH"",@value)}' >
+                                        <doc:Text id='{xpath:concat(""xmlText"",@value)}' value='{xpath:@value}' />
+                                     </doc:H1>";
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("xmlH1") as PDFHead1;
+                var first = doc.FindAComponentById("xmlH1") as Head1;
                 Assert.IsNotNull(first, "Could not find inner heading");
 
-                var second = doc.FindAComponentById("xmlText2") as PDFTextLiteral;
+                var second = doc.FindAComponentById("xmlText2") as TextLiteral;
                 Assert.IsNotNull(second, "Could not find the second label");
 
                 Assert.AreEqual("2", second.Text, "The second label does not have the correct text value");
@@ -445,29 +445,29 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindingTypeSafety()
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:String-Param id='string' ></pdf:String-Param>
-                            <pdf:Int-Param id='int' ></pdf:Int-Param>
-                            <pdf:Color-Param id='color' ></pdf:Color-Param>
+                            <doc:String-Param id='string' ></doc:String-Param>
+                            <doc:Int-Param id='int' ></doc:Int-Param>
+                            <doc:Color-Param id='color' ></doc:Color-Param>
                         </Params>
 
 
                         <Pages>
-                            <pdf:Section>
+                            <doc:Section>
                                 <Content>
-                                    <pdf:Label id='{@:int}' text='{@:string}' styles:bg-color='{@:color}' ></pdf:Label>
+                                    <doc:Label id='{@:int}' text='{@:string}' styles:bg-color='{@:color}' ></doc:Label>
                                 </Content>
-                            </pdf:Section>
+                            </doc:Section>
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var color = new Scryber.Drawing.PDFColor(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
@@ -482,7 +482,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 //Find the label as the value should be converted to a string.
-                var first = doc.FindAComponentById(i.ToString()) as PDFLabel;
+                var first = doc.FindAComponentById(i.ToString()) as Label;
                 Assert.IsNotNull(first, "Could not find the label");
 
                 //Check that the text matches
@@ -496,7 +496,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var color = new Scryber.Drawing.PDFColor(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
@@ -534,29 +534,29 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindingParamToString()
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:String-Param id='string' ></pdf:String-Param>
-                            <pdf:Int-Param id='int' ></pdf:Int-Param>
-                            <pdf:Color-Param id='color' ></pdf:Color-Param>
+                            <doc:String-Param id='string' ></doc:String-Param>
+                            <doc:Int-Param id='int' ></doc:Int-Param>
+                            <doc:Color-Param id='color' ></doc:Color-Param>
                         </Params>
 
 
                         <Pages>
-                            <pdf:Section>
+                            <doc:Section>
                                 <Content>
-                                    <pdf:Label id='{@:int}' text='{@:string}' styles:bg-color='{@:color}' ></pdf:Label>
+                                    <doc:Label id='{@:int}' text='{@:string}' styles:bg-color='{@:color}' ></doc:Label>
                                 </Content>
-                            </pdf:Section>
+                            </doc:Section>
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var color = new Scryber.Drawing.PDFColor(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
@@ -571,7 +571,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 //Find the label as the value should be converted to a string.
-                var first = doc.FindAComponentById(i.ToString()) as PDFLabel;
+                var first = doc.FindAComponentById(i.ToString()) as Label;
                 Assert.IsNotNull(first, "Could not find the label");
 
                 //Check that the text matches
@@ -594,28 +594,28 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindingParamToStrongObject()
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:Object-Param id='obj' type='Scryber.Core.UnitTests.Mocks.MockParameter, Scryber.UnitTests' ></pdf:Object-Param>
+                            <doc:Object-Param id='obj' type='Scryber.Core.UnitTests.Mocks.MockParameter, Scryber.UnitTests' ></doc:Object-Param>
                         </Params>
 
                         <Pages>
-                            <pdf:Section>
+                            <doc:Section>
                                 <Content>
-                                    <pdf:Label id='MyTitle' styles:font-bold='{@:obj.BoldTitle}' text='{@:obj.Title}' styles:font-size='{@:obj.Size}' styles:bg-color='{@:obj.Background}' ></pdf:Label>
+                                    <doc:Label id='MyTitle' styles:font-bold='{@:obj.BoldTitle}' text='{@:obj.Title}' styles:font-size='{@:obj.Size}' styles:bg-color='{@:obj.Background}' ></doc:Label>
                                 </Content>
-                            </pdf:Section>
+                            </doc:Section>
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
                 var param = new Mocks.MockSubParameter();
 
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 doc.Params["obj"] = param;
 
@@ -624,7 +624,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 //Find the label as the value should be converted to a string.
-                var first = doc.FindAComponentById("MyTitle") as PDFLabel;
+                var first = doc.FindAComponentById("MyTitle") as Label;
                 Assert.IsNotNull(first, "Could not find the label");
 
                 //Check that the text matches
@@ -643,7 +643,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var param = new Mocks.MockOtherParameter();
 
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var caught = false;
                 try
                 {
@@ -670,12 +670,12 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
-                        <pdf:Document xmlns:pdf = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
                                     xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
                                     xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
                                      >
                         <Params>
-                            <pdf:Object-Param id='dynamic' ></pdf:Object-Param>
+                            <doc:Object-Param id='dynamic' ></doc:Object-Param>
                         </Params>
 
                         <Styles>
@@ -694,25 +694,25 @@ namespace Scryber.Core.UnitTests.Binding
 
                         <Pages>
     
-                        <pdf:Section>
+                        <doc:Section>
                             <Content>
-                                <pdf:H1 styles:class='head' text='{@:Title}' ></pdf:H1>
+                                <doc:H1 styles:class='head' text='{@:Title}' ></doc:H1>
                                 <data:ForEach value='{@:dynamic.List}' >
                                     <Template>
-                                        <pdf:Label styles:class='body' id='{@:.Id}' text='{@:.Name}' ></pdf:Label>
-                                        <pdf:Br/>
+                                        <doc:Label styles:class='body' id='{@:.Id}' text='{@:.Name}' ></doc:Label>
+                                        <doc:Br/>
                                     </Template>
                                 </data:ForEach>
 
                             </Content>
-                        </pdf:Section>
+                        </doc:Section>
 
                         </Pages>
-                    </pdf:Document>";
+                    </doc:Document>";
 
             using (var reader = new System.IO.StringReader(src))
             {
-                var doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 var binding = new
                 {
@@ -736,11 +736,11 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.DataBind();
 
                 //For the ForEach template with an object source.
-                var first = doc.FindAComponentById("FirstID") as PDFLabel;
+                var first = doc.FindAComponentById("FirstID") as Label;
                 Assert.IsNotNull(first, "Could not find the first label");
                 Assert.AreEqual("First", first.Text, "The first label does not have the correct Name value");
 
-                var second = doc.FindAComponentById("SecondID") as PDFLabel;
+                var second = doc.FindAComponentById("SecondID") as Label;
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
 

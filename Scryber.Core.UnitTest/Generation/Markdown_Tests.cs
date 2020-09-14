@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Html.Components;
+using Scryber.Html;
 
 namespace Scryber.Core.UnitTests.Generation
 {
@@ -33,19 +35,22 @@ namespace Scryber.Core.UnitTests.Generation
             path = System.IO.Path.GetFullPath(path);
             var content = System.IO.File.ReadAllText(path);
 
-            var doc = new PDFDocument();
-            var pg = new PDFSection();
+            var doc = new Document();
+            var pg = new Section();
             pg.FontSize = 12;
-            var frag = new PDFHtmlFragment();
+            var frag = new HtmlFragment();
 
             doc.Pages.Add(pg);
             pg.Contents.Add(frag);
             frag.ContentsAsString = content;
-            frag.Format = Html.HtmlFormatType.Markdown;
+            frag.Format = HtmlFormatType.Markdown;
+
+            var output = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            output = System.IO.Path.Combine(output, "MarkdownTest.pdf");
 
             doc.LayoutComplete += Doc_LayoutComplete;
-            using (var ms = new System.IO.FileStream("/Users/Richard/Test.pdf", System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite))
-                doc.ProcessDocument(ms);
+            using (var ms = new System.IO.FileStream(output, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite))
+                doc.SaveAsPDF(ms);
 
 
         }

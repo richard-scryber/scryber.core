@@ -431,6 +431,23 @@ namespace Scryber.Styles
             : base(capacity, PDFStyleKey.GetComparer())
         {
         }
+
+        public void SetPriorityValue(PDFStyleKey key, PDFStyleValueBase value, int priority)
+        {
+            PDFStyleValueBase exist;
+            if (this.TryGetValue(key, out exist))
+            {
+                if (exist.Priority <= priority)
+                {
+                    this[key] = value.CloneWithPriority(priority);
+                }
+            }
+            else
+            {
+                this[key] = value.CloneWithPriority(priority);
+            }
+        }
+
     }
 
     

@@ -14,11 +14,11 @@ namespace Scryber
     {
         public PDFAction Action { get; set; }
 
-        public PDFComponent Component { get; private set; }
+        public Component Component { get; private set; }
 
         public Styles.PDFStyle AnnotationStyle { get; private set; }
 
-        public PDFAnnotationLinkEntry(PDFComponent component, Styles.PDFStyle style)
+        public PDFAnnotationLinkEntry(Component component, Styles.PDFStyle style)
         {
             this.Component = component;
             if (null == component)
@@ -154,7 +154,7 @@ namespace Scryber
             }
         }
 
-        protected virtual PDFRect GetComponentBounds(PDFComponent comp, PDFComponentArrangement arrange)
+        protected virtual PDFRect GetComponentBounds(Component comp, PDFComponentArrangement arrange)
         {
             if (null != arrange)
                 return arrange.RenderBounds;

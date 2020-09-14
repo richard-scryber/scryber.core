@@ -30,7 +30,7 @@ namespace Scryber.Layout
     {
         private const string TableEngineLogCategory = "Table Layout Engine 3";
 
-        private PDFTableGrid _tbl;
+        private TableGrid _tbl;
         private CellDimension[] _widths;
         private CellDimension[] _heights;
         private PDFStyle[] _rowfullstyles, _rowappliedstyles;
@@ -41,7 +41,7 @@ namespace Scryber.Layout
 
         PDFUnit _rowOffset = PDFUnit.Zero;
 
-        protected PDFTableGrid Table
+        protected TableGrid Table
         {
             get { return _tbl; }
         }
@@ -52,7 +52,7 @@ namespace Scryber.Layout
             get { return _tblRef; }
         }
 
-        public LayoutEngineTable(PDFTableGrid table, IPDFLayoutEngine parent)
+        public LayoutEngineTable(TableGrid table, IPDFLayoutEngine parent)
             : base(table, parent)
         {
             this._tbl = table;
@@ -146,7 +146,7 @@ namespace Scryber.Layout
         private void DoLayoutTableRows()
         {
             int index = 0;
-            foreach (PDFTableRow row in this.Table.Rows)
+            foreach (TableRow row in this.Table.Rows)
             {
                 if (row.Visible == false)
                     continue;
@@ -172,7 +172,7 @@ namespace Scryber.Layout
         /// <param name="row">The row to lay out</param>
         /// <param name="index">The index of the row in the table</param>
         /// <returns></returns>
-        private PDFUnit DoLayoutTableRow(PDFTableRow row, int index, bool repeating)
+        private PDFUnit DoLayoutTableRow(TableRow row, int index, bool repeating)
         {
             if (this.Context.ShouldLogDebug)
                 this.Context.TraceLog.Begin(TraceLevel.Debug, TableEngineLogCategory, "Laying out the table row with index " + index);
@@ -345,7 +345,7 @@ namespace Scryber.Layout
         /// <param name="row">The cells to layout</param>
         /// <param name="rowindex">The index of the row we are laying out</param>
         /// <returns>The maximum height of the row</returns>
-        private PDFUnit DoLayoutRowCells(PDFTableRow row, int rowindex, bool repeating)
+        private PDFUnit DoLayoutRowCells(TableRow row, int rowindex, bool repeating)
         {
             PDFUnit offsetX = PDFUnit.Zero;
             int cellcount = _tblRef.AllCells.GetLength(1);
@@ -412,7 +412,7 @@ namespace Scryber.Layout
         /// <param name="cell">The cell to layout the content for</param>
         /// <param name="colindex">The column index of the cell in the row</param>
         /// <param name="rowindex">the index of the row the cell is on.</param>
-        private void DoLayoutARowCell(CellReference cref, PDFTableCell cell, int colindex, int rowindex, bool repeating)
+        private void DoLayoutARowCell(CellReference cref, TableCell cell, int colindex, int rowindex, bool repeating)
         {
             
 
@@ -451,7 +451,7 @@ namespace Scryber.Layout
         /// <param name="full">The full style of the cell</param>
         /// <param name="colindex">The index of the column the cell is in</param>
         /// <param name="rowindex">The index of the row the cell is in</param>
-        private void DoLayoutACell(CellReference cref, PDFTableCell cell, Styles.PDFStyle full, int colindex, int rowindex, bool repeating)
+        private void DoLayoutACell(CellReference cref, TableCell cell, Styles.PDFStyle full, int colindex, int rowindex, bool repeating)
         {
             try
             {
@@ -526,7 +526,7 @@ namespace Scryber.Layout
             List<List<PDFStyle>> cellapplieds = new List<List<PDFStyle>>();
             int maxcolcount = 0;
 
-            foreach (PDFTableRow row in this.Table.Rows)
+            foreach (TableRow row in this.Table.Rows)
             {
                 if (row.Visible == false)
                     continue;
@@ -564,7 +564,7 @@ namespace Scryber.Layout
                 List<PDFStyle> rowcellapplieds = new List<PDFStyle>();
                 cellapplieds.Add(rowcellapplieds);
 
-                foreach (PDFTableCell cell in row.Cells)
+                foreach (TableCell cell in row.Cells)
                 {
                     if (cell.Visible == false)
                         continue;
@@ -916,7 +916,7 @@ namespace Scryber.Layout
             grid.TableBlock = tableblock;
             int rowIndex = 0;
 
-            foreach(PDFTableRow row in this.Table.Rows)
+            foreach(TableRow row in this.Table.Rows)
             {
 
                 if (row.Visible == false) //skip hidden rows
@@ -952,7 +952,7 @@ namespace Scryber.Layout
                     if (cellindex >= rref.Row.Cells.Count)
                         throw new ArgumentNullException("No cell exists at column " + column.ToString() + " in row " + rowIndex);
 
-                    PDFTableCell cell = GetNextVisibleCell(rref.Row, ref cellindex);
+                    TableCell cell = GetNextVisibleCell(rref.Row, ref cellindex);
                     if (null == cell)
                         return;
 
@@ -984,11 +984,11 @@ namespace Scryber.Layout
             }
         }
 
-        private PDFTableCell GetNextVisibleCell(PDFTableRow row, ref int cellindex)
+        private TableCell GetNextVisibleCell(TableRow row, ref int cellindex)
         {
             while (cellindex < row.Cells.Count)
             {
-                PDFTableCell cell = row.Cells[cellindex];
+                TableCell cell = row.Cells[cellindex];
                 if (cell.Visible)
                     return cell;
 
@@ -1464,7 +1464,7 @@ namespace Scryber.Layout
         {
             #region ivars
 
-            private PDFTableCell _cell;
+            private TableCell _cell;
             private PDFStyle _fullStyle;
             private PDFStyle _appliedStyle;
             private int _rowindex;
@@ -1483,7 +1483,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the table cell associated with this reference
             /// </summary>
-            public PDFTableCell Cell
+            public TableCell Cell
             {
                 get { return _cell; }
             }
@@ -1645,7 +1645,7 @@ namespace Scryber.Layout
             /// <param name="fullstyle"></param>
             /// <param name="rowindex"></param>
             /// <param name="colindex"></param>
-            public CellReference(PDFTableCell cell, RowReference row, PDFStyle applied, PDFStyle fullstyle, int rowindex, int colindex)
+            public CellReference(TableCell cell, RowReference row, PDFStyle applied, PDFStyle fullstyle, int rowindex, int colindex)
             {
                 this._cell = cell;
                 this._appliedStyle = applied;
@@ -1703,7 +1703,7 @@ namespace Scryber.Layout
         {
             #region ivars
 
-            private PDFTableRow _row;
+            private TableRow _row;
             private PDFStyle _fullStyle;
             private PDFStyle _appliedStyle;
             private int _rowindex;
@@ -1721,7 +1721,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the table row associated with this reference
             /// </summary>
-            public PDFTableRow Row
+            public TableRow Row
             {
                 get { return _row; }
             }
@@ -1858,7 +1858,7 @@ namespace Scryber.Layout
             /// <param name="fullstyle"></param>
             /// <param name="posOpts"></param>
             /// <param name="rowindex"></param>
-            public RowReference(PDFTableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowindex)
+            public RowReference(TableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowindex)
             {
                 this._row = row;
                 this._rowindex = rowindex;
@@ -2297,7 +2297,7 @@ namespace Scryber.Layout
             /// <param name="applied">The applied style of the row</param>
             /// <param name="fullstyle">The full style of the row</param>
             /// <param name="rowIndex">The index of the row to insert. There cannot be an existing row reference at this index</param>
-            public RowReference AddRowReference(PDFTableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowIndex)
+            public RowReference AddRowReference(TableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowIndex)
             {
                 RowReference rref = new RowReference(row, grid, applied, fullstyle, rowIndex);
                 this.AddRowReference(rref);
@@ -2335,7 +2335,7 @@ namespace Scryber.Layout
             /// <param name="applied">The applied style of the cell</param>
             /// <param name="fullstyle">The full style of the cell</param>
             /// <param name="column">The column index of the cell. NOTE: There cannot be an existing cell reference in the rows column</param>
-            public CellReference AddCellReference(PDFTableCell cell, RowReference rowRef, PDFStyle applied, PDFStyle fullstyle, int column)
+            public CellReference AddCellReference(TableCell cell, RowReference rowRef, PDFStyle applied, PDFStyle fullstyle, int column)
             {
                 CellReference cref = new CellReference(cell, rowRef, applied, fullstyle, rowRef.RowIndex, column);
                 this.AddCellReference(cref);

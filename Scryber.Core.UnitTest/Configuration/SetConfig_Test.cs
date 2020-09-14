@@ -26,7 +26,6 @@ namespace Scryber.Core.UnitTests.Configuration
             }
         }
 
-        [TestCleanup()]
         public void ConfigClassCleanup()
         {
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
@@ -39,15 +38,15 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.IsNull(service, "The config service was not removed");
         }
 
-        [TestInitialize()]
+
         public void ConfigClassInitialize()
         {
             var path = this.TestContext.TestRunDirectory;
-            path = Path.GetFullPath(Path.Combine(path, "../../../scrybersettings.json"));
+            path = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../scrybersettings.json"));
             if (!File.Exists(path))
             {
-                path = Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
-                path = Path.GetFullPath(path);
+                path = System.IO.Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
+                path = System.IO.Path.GetFullPath(path);
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("Cannot find the location of the scrybersettings.json file to run the tests from");
@@ -74,6 +73,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void ParsingOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -85,12 +86,12 @@ namespace Scryber.Core.UnitTests.Configuration
             //Namespace Mappings
             Assert.IsNotNull(parsing.Namespaces, "Namespace mappings is null");
 
-            int expectedLength = 4;
+            int expectedLength = 5;
             string expectedNs = "Scryber.Core.UnitTests.Generation.Fakes";
             string expectedAssm = "Scryber.UnitTests";
             string expectedSrc = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Fakes.xsd";
 
-            Assert.AreEqual(expectedLength, parsing.Namespaces.Count, "Namespace mappings length is not 4");
+            Assert.AreEqual(expectedLength, parsing.Namespaces.Count, "Namespace mappings length is not 5");
 
             var xmlNs = parsing.GetXmlNamespaceForAssemblyNamespace(expectedNs, expectedAssm);
             Assert.AreEqual(expectedSrc, xmlNs, "The expected xml source was not matched");
@@ -117,6 +118,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(expectedAssm, parsing.Bindings[expectedLength - 1].FactoryAssembly);
             Assert.AreEqual(expectedType, parsing.Bindings[expectedLength - 1].FactoryType);
 
+            ConfigClassCleanup();
         }
 
 
@@ -124,6 +126,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void FontOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -168,7 +172,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(style, option.Style);
             Assert.AreEqual(fileStem + fileName + "i" + fileExt, option.File);
 
-
+            ConfigClassCleanup();
         }
 
 
@@ -176,6 +180,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void OutputOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -188,7 +194,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(ComponentNameOutput.All, output.NameOutput,  "Expected 'All' string type");
             Assert.AreEqual("1.4", output.PDFVersion, "Expected a PDF Version of 1.4");
 
-
+            ConfigClassCleanup();
         }
 
 
@@ -196,6 +202,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void ImagingOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -211,12 +219,16 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(".*\\.dynamic", img.Factories[0].Match, "The img factory match path is incorrect");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockImageFactory", img.Factories[0].FactoryType, "The image factory type is not correct");
             Assert.AreEqual("Scryber.UnitTests", img.Factories[0].FactoryAssembly, "The image factory assembly is not correct");
+
+            ConfigClassCleanup();
         }
 
         [TestMethod()]
         [TestCategory("Config")]
         public void TracingOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -236,41 +248,44 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockTraceLog2", trace.Loggers[1].FactoryType, "The second logger type does not match");
             Assert.AreEqual("Scryber.UnitTests", trace.Loggers[1].FactoryAssembly, "The second loggers assembly does not match");
             Assert.IsTrue(trace.Loggers[1].Enabled, "The default for a logger should be enabled");
+
+            ConfigClassCleanup();
         }
 
         [TestMethod()]
         public void MissingImageException_Test()
         {
+            ConfigClassInitialize();
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Params>
-    <pdf:Object-Param id='MyImage' />
+    <doc:Object-Param id='MyImage' />
   </Params>
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' src='DoesNotExist.png' />
+        <doc:Image id='LoadedImage' src='DoesNotExist.png' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
     
-</pdf:Document>";
+</doc:Document>";
 
             bool caught = false;
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
             }
             catch (Exception)
             {
@@ -278,6 +293,8 @@ namespace Scryber.Core.UnitTests.Configuration
             }
 
             Assert.IsFalse(caught, "An Exception was raised for a missing image");
+
+            ConfigClassCleanup();
         }
 
 
@@ -288,33 +305,34 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestMethod()]
         public void MissingImageExplicitException_Test()
         {
+            ConfigClassInitialize();
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='false' />
+        <doc:Image id='LoadedImage' src='DoesNotExist.png' allow-missing-images='false' />
         
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
             bool caught = false;
 
             try
             {
-                PDFDocument doc;
+                Document doc;
                 using (var reader = new System.IO.StringReader(pdfx))
-                    doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
+                    doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
                 using (var stream = new System.IO.MemoryStream())
-                    doc.ProcessDocument(stream);
+                    doc.SaveAsPDF(stream);
             }
             catch (Exception)
             {
@@ -322,43 +340,62 @@ namespace Scryber.Core.UnitTests.Configuration
             }
 
             Assert.IsTrue(caught, "Exception was not raised for a missing image, that should not be allowed");
+
+            ConfigClassCleanup();
         }
 
 
         [TestMethod()]
         public void DynamicImage_Test()
         {
+            ConfigClassInitialize();
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Pages>
 
-    <pdf:Page styles:margins='20pt'>
+    <doc:Page styles:margins='20pt'>
       <Content>
-        <pdf:Span>This is before the image</pdf:Span>
-        <pdf:Image id='LoadedImage' src='This+is+an+image.dynamic' />
-        <pdf:Span>This is after the image</pdf:Span>
+        <doc:Span>This is before the image</doc:Span>
+        <doc:Image id='LoadedImage' src='This+is+an+image.dynamic' />
+        <doc:Span>This is after the image</doc:Span>
       </Content>
-    </pdf:Page>
+    </doc:Page>
   </Pages>
 
-</pdf:Document>";
+</doc:Document>";
 
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            Assert.IsNotNull(service, "The scryber config service is null");
 
+            var imgsvc = service.ImagingOptions;
 
-            PDFDocument doc;
+            Assert.IsNotNull(imgsvc, "The imaging options are null");
+
+            Assert.AreEqual(1, imgsvc.Factories.Length);
+
+            var factory = imgsvc.Factories[0];
+
+            Assert.AreEqual(".*\\.dynamic", factory.Match, "Config not loaded for this test");
+            Document doc;
+
             using (var reader = new System.IO.StringReader(pdfx))
-                doc = PDFDocument.ParseDocument(reader, ParseSourceType.DynamicContent);
-            
-            using (var stream = new System.IO.MemoryStream())
-                doc.ProcessDocument(stream);
+            {
+                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-            //Check that the image was loaded and used.
-            var img = doc.FindAComponentById("LoadedImage") as PDFImage;
-            Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
-            
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    doc.SaveAsPDF("C:\\Temp\\DynamicImage.pdf", FileMode.Create);
+
+                    //Check that the image was loaded and used.
+                    var img = doc.FindAComponentById("LoadedImage") as Image;
+                    Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
+                }
+            }
+
+            ConfigClassCleanup();
         }
 
 

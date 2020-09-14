@@ -39,28 +39,28 @@ namespace Scryber.Core.UnitTests.Generation
         {
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' ?>
-                                <pdf:Document xmlns:pdf='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+                                <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' >
                                   <Pages>
 
-                                    <pdf:Page id='titlepage' >
+                                    <doc:Page id='titlepage' >
                                       <Content>
-                                        <pdf:Span id='mylabel' >This is text in the default font</pdf:Span>
+                                        <doc:Span id='mylabel' >This is text in the default font</doc:Span>
                                       </Content>
-                                    </pdf:Page>
+                                    </doc:Page>
 
                                   </Pages>
-                                </pdf:Document>";
+                                </doc:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
             parsed.LayoutComplete += DefaultFont_LayoutComplete;
             using (var ms = new System.IO.MemoryStream())
-                parsed.ProcessDocument(ms);
+                parsed.SaveAsPDF(ms);
 
         }
 
@@ -79,33 +79,33 @@ namespace Scryber.Core.UnitTests.Generation
         {
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' ?>
-                                <pdf:Document xmlns:pdf='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+                                <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               xmlns:styles='Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' >
                                   <Pages>
 
-                                    <pdf:Page id='titlepage' >
+                                    <doc:Page id='titlepage' >
                                       <Content>
-                                        <pdf:Span id='mylabel' styles:font-family='Helvetica' >This is text in the Helvetica font</pdf:Span>
-                                        <pdf:Span id='mylabel' styles:font-family='Times' >This is text in the Times font</pdf:Span>
-                                        <pdf:Span id='mylabel' styles:font-family='Courier' >This is text in the Courier font</pdf:Span>
-                                        <pdf:Span id='mylabel' styles:font-family='Zapf Dingbats' >This is text in the Dingbats font</pdf:Span>
-                                        <pdf:Span id='mylabel' styles:font-family='Symbol' >This is text in the Symbol font</pdf:Span>
+                                        <doc:Span id='mylabel' styles:font-family='Helvetica' >This is text in the Helvetica font</doc:Span>
+                                        <doc:Span id='mylabel' styles:font-family='Times' >This is text in the Times font</doc:Span>
+                                        <doc:Span id='mylabel' styles:font-family='Courier' >This is text in the Courier font</doc:Span>
+                                        <doc:Span id='mylabel' styles:font-family='Zapf Dingbats' >This is text in the Dingbats font</doc:Span>
+                                        <doc:Span id='mylabel' styles:font-family='Symbol' >This is text in the Symbol font</doc:Span>
                                       </Content>
-                                    </pdf:Page>
+                                    </doc:Page>
 
                                   </Pages>
-                                </pdf:Document>";
+                                </doc:Document>";
 
-            PDFDocument parsed;
+            Document parsed;
             using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
             {
-                parsed = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
             parsed.LayoutComplete += StandardFont_LayoutComplete;
             using (var ms = new System.IO.MemoryStream())
-                parsed.ProcessDocument(ms);
+                parsed.SaveAsPDF(ms);
 
         }
 

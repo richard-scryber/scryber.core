@@ -89,9 +89,15 @@ namespace Scryber.Styles
             {
                 for (int i = 0; i < last; i++)
                 {
-                    this._styles[i].MergeInherited(style, Component, true);
+                    //As these are styles from parents, then any inherited values should be replaced by
+                    //explicit values on the last style
+                    // so set the style priority to 0
+
+                    this._styles[i].MergeInherited(style, replace:true, priority:0);
                 }
-                this._styles[last].MergeInto(style, Component, ComponentState.Normal);
+
+                //This will use to the priority of the value itself to be used
+                this._styles[last].MergeInto(style);
             }
 
             style = style.Flatten();

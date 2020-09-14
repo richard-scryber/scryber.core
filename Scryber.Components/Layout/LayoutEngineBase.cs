@@ -45,7 +45,7 @@ namespace Scryber.Layout
         /// <summary>
         /// An instance reference to the Component this engine is laying out
         /// </summary>
-        private PDFContainerComponent _component;
+        private ContainerComponent _component;
 
         /// <summary>
         /// An instance reference to the current context
@@ -65,7 +65,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the component this engine is laying out
         /// </summary>
-        public PDFContainerComponent Component
+        public ContainerComponent Component
         {
             get { return _component; }
             protected set { _component = value; }
@@ -177,7 +177,7 @@ namespace Scryber.Layout
         /// protected constructor that accepts the component this engine should layout
         /// </summary>
         /// <param name="component"></param>
-        protected LayoutEngineBase(PDFContainerComponent component, IPDFLayoutEngine parent)
+        protected LayoutEngineBase(ContainerComponent component, IPDFLayoutEngine parent)
         {
             this._component = component;
             this.ParentEngine = parent;
@@ -233,7 +233,7 @@ namespace Scryber.Layout
         {
             //Set this at the top
             this.ContinueLayout = true;
-            PDFComponentList children;
+            ComponentList children;
             if (TryGetComponentChildren(this.Component, out children))
             {
                 DoLayoutChildren(children);
@@ -245,7 +245,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="children"></param>
         /// <returns></returns>
-        private static bool TryGetComponentChildren(IPDFComponent parent, out PDFComponentList children)
+        private static bool TryGetComponentChildren(IPDFComponent parent, out ComponentList children)
         {
             children = GetComponentChildren(parent);
             return null != children && children.Count > 0;
@@ -256,7 +256,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
-        private static PDFComponentList GetComponentChildren(IPDFComponent parent)
+        private static ComponentList GetComponentChildren(IPDFComponent parent)
         {
             if (parent is IPDFContainerComponent)
             {
@@ -276,10 +276,10 @@ namespace Scryber.Layout
         /// and performs the layout of each individually
         /// </summary>
         /// <param name="children"></param>
-        protected virtual void DoLayoutChildren(PDFComponentList children)
+        protected virtual void DoLayoutChildren(ComponentList children)
         {
             
-            foreach (PDFComponent comp in children)
+            foreach (Component comp in children)
             {
                 if (comp.Visible)
                     this.DoLayoutAChild(comp);
@@ -305,7 +305,7 @@ namespace Scryber.Layout
         /// <remarks>Gets the applied style, and pushes this onto the stack.
         /// Extracts the full style for this component based on the style stack
         /// Calls the explict overload DoLayoutAChild(comp,full). </remarks>
-        protected void DoLayoutAChild(PDFComponent comp)
+        protected void DoLayoutAChild(Component comp)
         {
 
 
@@ -353,15 +353,38 @@ namespace Scryber.Layout
             else
                 full = this.FullStyle;
 
+            if (IsStyled(comp) && !IsText(comp))
+            {
+                PDFStyleValue<bool> br;
+                if (full.TryGetValue(PDFStyleKeys.PageBreakBeforeKey, out br) && br.Value)
+                {
+                    this.DoLayoutPageBreak(comp, full);
+                }
+                else if (full.TryGetValue(PDFStyleKeys.ColumnBreakBeforeKey, out br) && br.Value)
+                {
+                    this.DoLayoutColumnBreak(comp, full);
+                }
+            }
+
             PDFArtefactRegistrationSet artefacts = comp.RegisterLayoutArtefacts(this.Context, full);
+
 
             //perform the actual layout of the component with the full style
             this.DoLayoutAChild(comp, full);
 
+            if (IsStyled(comp) && !IsText(comp))
+            {
+                PDFStyleValue<bool> br;
+                if (full.TryGetValue(PDFStyleKeys.PageBreakAfterKey, out br) && br.Value)
+                {
+                    this.DoLayoutPageBreak(comp, full);
+                }
+                else if (full.TryGetValue(PDFStyleKeys.ColumnBreakAfterKey, out br) && br.Value)
+                {
+                    this.DoLayoutColumnBreak(comp, full);
+                }
+            }
 
-            //and roll back to the state at the start of the method
-
-            
             //pop any child component style off the stack
             if (null != applied)
                 this.StyleStack.Pop();
@@ -379,6 +402,11 @@ namespace Scryber.Layout
         private static bool IsStyled(IPDFComponent comp)
         {
             return comp is IPDFStyledComponent && !(comp is IPDFLayoutBreak);
+        }
+
+        private static bool IsText(IPDFComponent comp)
+        {
+            return comp is IPDFTextComponent;
         }
 
         #endregion
@@ -409,6 +437,8 @@ namespace Scryber.Layout
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
             }
 
+
+
             if (comp is IPDFViewPortComponent)
                 this.DoLayoutViewPortComponent(comp as IPDFViewPortComponent, full);
 
@@ -418,10 +448,10 @@ namespace Scryber.Layout
                 switch (lb.BreakType)
                 {
                     case LayoutBreakType.Page:
-                        this.DoLayoutPageBreak(lb,full);
+                        this.DoLayoutPageBreak(comp as Component, full);
                         break;
                     case LayoutBreakType.Column:
-                        this.DoLayoutColumnBreak(lb,full);
+                        this.DoLayoutColumnBreak(comp as Component, full);
                         break;
                     case LayoutBreakType.Line:
                         this.DoLayoutLineBreak(lb,full);
@@ -590,9 +620,9 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="pgbreak">The declared page break</param>
         /// <param name="style">The full style of the page break</param>
-        protected virtual void DoLayoutPageBreak(IPDFLayoutBreak pgbreak, PDFStyle style)
+        protected virtual void DoLayoutPageBreak(Component pgbreak, PDFStyle style)
         {
-            if (pgbreak is PDFComponent && !((PDFComponent)pgbreak).Visible)
+            if (pgbreak.Visible == false)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -619,7 +649,7 @@ namespace Scryber.Layout
                 while (depth.Count > 0)
                 {
                     PDFLayoutBlock child = depth.Pop();
-                    if (child.Owner is PDFPage)
+                    if (child.Owner is Page)
                         continue;
                     else
                         current = child.Engine.CloseCurrentBlockAndStartNewInRegion(child, current.CurrentRegion);
@@ -650,16 +680,16 @@ namespace Scryber.Layout
 
         #endregion
 
-        #region protected virtual void DoLayoutColumnBreak(IPDFLayoutBreak colbreak, PDFStyle style)
+        #region protected virtual void DoLayoutColumnBreak(Component colbreak, PDFStyle style)
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="colbreak"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutColumnBreak(IPDFLayoutBreak colbreak, PDFStyle style)
+        protected virtual void DoLayoutColumnBreak(Component colbreak, PDFStyle style)
         {
-            if (colbreak is PDFComponent && !((PDFComponent)colbreak).Visible)
+            if (colbreak.Visible == false)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -703,7 +733,7 @@ namespace Scryber.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutLineBreak(IPDFLayoutBreak linebreak, PDFStyle style)
         {
-            if (linebreak is PDFComponent && !((PDFComponent)linebreak).Visible)
+            if (linebreak is Component && !((Component)linebreak).Visible)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -738,7 +768,7 @@ namespace Scryber.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, PDFStyle style)
         {
-            PDFComponentList children;
+            ComponentList children;
 
             //As an invisible component we need to put our style as the full style
             //so that inner unstyled components (test literals etc) use it.
@@ -984,7 +1014,7 @@ namespace Scryber.Layout
                         return true;
                     }
                     else if ((current.Position.Height.HasValue || current.Position.MaximumHeight.HasValue) //we are past the available height and are locked from overflowing further
-                        && !(current.Owner is PDFPage)) //unless we are a page - where the height can be set, but we can also overflow.
+                        && !(current.Owner is Page)) //unless we are a page - where the height can be set, but we can also overflow.
                     {
                         if (current.CurrentRegion.IsClosed == false)
                             current.CurrentRegion.Close();
@@ -1637,7 +1667,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="container"></param>
         /// <param name="parent"></param>
-        protected virtual void DoReset(PDFContainerComponent container, IPDFLayoutEngine parent)
+        protected virtual void DoReset(ContainerComponent container, IPDFLayoutEngine parent)
         {
             this._component = container;
             this._currentBlock = null;

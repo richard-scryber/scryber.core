@@ -32,7 +32,7 @@ namespace Scryber.Styles
         private static bool NOT_INHERITED = false;
 
         //
-        // thread safe and garunteed to be called only once
+        // thread safe and guarunteed to be called only once
         // so we can use the internal (Non thread safe initialization)
         //
 
@@ -93,6 +93,9 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<PDFUnit> ColumnAlleyKey = PDFStyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ally", ColumnItemKey);
         public static readonly PDFStyleKey<bool> ColumnFlowKey = PDFStyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"flow", ColumnItemKey);
         public static readonly PDFStyleKey<PDFColumnWidths> ColumnWidthKey = PDFStyleKey.InternalCreateStyleValueKey<PDFColumnWidths>((PDFObjectType)"cwid",ColumnItemKey);
+        public static readonly PDFStyleKey<bool> ColumnBreakBeforeKey = PDFStyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"brcb", ColumnItemKey);
+        public static readonly PDFStyleKey<bool> ColumnBreakAfterKey = PDFStyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"brca", ColumnItemKey);
+
         //Fill
         public static readonly PDFStyleKey FillItemKey = PDFStyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleFill, INHERITED);
         public static readonly PDFStyleKey<PDFColor> FillColorKey = PDFStyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", FillItemKey);
@@ -204,6 +207,8 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<string> PageNumberFormatKey = PDFStyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"fomt", PageItemKey);
         public static readonly PDFStyleKey<int> PageNumberGroupHintKey = PDFStyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"ghnt", PageItemKey);
         public static readonly PDFStyleKey<int> PageNumberTotalHintKey = PDFStyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"thnt", PageItemKey);
+        public static readonly PDFStyleKey<bool> PageBreakBeforeKey = PDFStyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bkpb", PageItemKey);
+        public static readonly PDFStyleKey<bool> PageBreakAfterKey = PDFStyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bkpa", PageItemKey);
 
         //Shape
         public static readonly PDFStyleKey ShapeItemKey = PDFStyleKey.InternalCreateStyleItemKey(PDFObjectTypes.ShapeStyle, NOT_INHERITED);

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>Scryber</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

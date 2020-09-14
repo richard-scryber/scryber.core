@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using Scryber;
 using Scryber.Drawing;
 using System.ComponentModel;
+using Scryber.Styles.Parsing;
 
 namespace Scryber.Styles
 {
@@ -33,6 +34,7 @@ namespace Scryber.Styles
     /// Concrete implementation of a Style containing properties for accessing 
     /// each of the Style Items where values can be read or set.
     /// </summary>
+    [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFStyle : PDFStyleBase, IPDFBindableComponent
     {
@@ -44,6 +46,8 @@ namespace Scryber.Styles
         public const string PDFStylesNamespace = "Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
 
         #endregion
+
+        public const int DirectStylePriority = int.MaxValue - 1;
 
         // events
 
@@ -96,6 +100,22 @@ namespace Scryber.Styles
             {
                 _id = value;
             }
+        }
+
+        #endregion
+
+
+        #region public int Priority {get;set;}
+
+        private int _priority;
+
+        /// <summary>
+        /// Gets or sets the priority of this style
+        /// </summary>
+        public int Priority
+        {
+            get { return _priority; }
+            set { _priority = value; }
         }
 
         #endregion
@@ -868,7 +888,7 @@ namespace Scryber.Styles
             }
         }
 
-        #endregion 
+        #endregion
 
         //
         // .ctors
@@ -893,6 +913,12 @@ namespace Scryber.Styles
             this.OnDataBinding(context);
             this.DoDataBind(context, true);
             this.OnDataBound(context);
+        }
+
+        
+        public override void MergeInto(PDFStyleBase style, int priority)
+        {
+            base.MergeInto(style, priority);
         }
 
         //
@@ -1091,6 +1117,24 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+
+        //
+        // Parsing
+        //
+
+        public static PDFStyle Parse(string value)
+        {
+            CSSStyleItemReader reader = new CSSStyleItemReader(value);
+            PDFStyle style = new PDFStyle();
+
+            while (reader.ReadNextAttributeName())
+            {
+                var parser = new CSSStyleItemAllParser();
+                parser.SetStyleValue(style, reader);
+            }
+            return style;
+        }
     }
 
 

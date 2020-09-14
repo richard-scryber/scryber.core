@@ -33,23 +33,23 @@ namespace Scryber.Core.UnitTests.Layout
             const int PageWidth = 200;
             const int PageHeight = 300;
 
-            PDFDocument doc = new PDFDocument();
-            PDFSection section = new PDFSection();
+            Document doc = new Document();
+            Section section = new Section();
             section.Style.PageStyle.Width = PageWidth;
             section.Style.PageStyle.Height = PageHeight;
             doc.Pages.Add(section);
 
-            PDFDiv top = new PDFDiv() { Height = PageHeight - 100 };
+            Div top = new Div() { Height = PageHeight - 100 };
             section.Contents.Add(top);
 
             //div is too big for the remaining space on the page
-            PDFDiv tooverflow = new PDFDiv() { Height = 150 };
+            Div tooverflow = new Div() { Height = 150 };
             section.Contents.Add(tooverflow);
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             Assert.AreEqual(2,layout.AllPages.Count);

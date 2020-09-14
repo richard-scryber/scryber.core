@@ -258,7 +258,7 @@ namespace Scryber.Layout
                 //Then make the component render itself
                 oref = (this.Owner as IPDFRenderComponent).OutputToPDF(context, writer);
 
-                PDFComponent owner = this.Owner as PDFComponent;
+                Component owner = this.Owner as Component;
                 if (null != owner)
                 {
                     owner.SetArrangement(context, context.FullStyle, borderRect);

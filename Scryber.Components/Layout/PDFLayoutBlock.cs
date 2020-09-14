@@ -374,7 +374,7 @@ namespace Scryber.Layout
            
             //If the owner is a page then we don't want to resize
             //as it's fixed.
-            if (!(Owner is PDFPage)) 
+            if (!(Owner is Page)) 
             {
                 
                 this.ShrinkToFit();
@@ -872,7 +872,7 @@ namespace Scryber.Layout
         /// <param name="fullstyle"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewContainerBlock(PDFContainerComponent owner, IPDFLayoutEngine engine, PDFStyle fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, PDFStyle fullstyle, PositionMode mode)
         {
             PDFLayoutBlock block = this.BeginNewBlock(owner, engine, fullstyle, mode);
             block.IsContainer = true;
@@ -970,7 +970,7 @@ namespace Scryber.Layout
         {
             bool logdebug = context.ShouldLogDebug;
             
-            PDFComponent component = this.Owner as PDFComponent;
+            Component component = this.Owner as Component;
             
             if (logdebug)
             {

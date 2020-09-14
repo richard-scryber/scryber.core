@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleDefnConstructorTest1()
         {
-            Type appliedtype = typeof(Scryber.Components.PDFLabel);
+            Type appliedtype = typeof(Scryber.Components.Label);
             string appliedid = "myid";
             string appliedclassname = "myclass";
             PDFStyleDefn target = new PDFStyleDefn(appliedtype, appliedid, appliedclassname);
@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, actual);
 
             target = new PDFStyleDefn();
-            target.AppliedType = typeof(Scryber.Components.PDFLabel);
+            target.AppliedType = typeof(Scryber.Components.Label);
             expected = false;
             actual = target.IsCatchAllStyle();
             Assert.AreEqual(expected, actual);
@@ -140,38 +140,7 @@ namespace Scryber.Core.UnitTests.Styles
 
         }
 
-        /// <summary>
-        ///A test for IsClassNameMatch
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Styles")]
-        public void IsClassNameMatchTest()
-        {
-            PDFStyleDefn target = new PDFStyleDefn();
-            string classname = "myclass";
-            target.AppliedClass = classname;
-
-            bool expected = true;
-            bool actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-
-            classname = "other";
-            expected = false;
-            actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-
-            classname = "MyClass"; // case sensitive
-            expected = false;
-            actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-
-            //TODO: this is very expensive for parsing - change the input to a PDFStyleClass instance
-
-            classname = "myclass other"; //uses multi-style differentiation
-            expected = true;
-            actual = target.IsClassNameMatch(classname);
-            Assert.AreEqual(expected, actual);
-        }
+        
 
         /// <summary>
         ///A test for IsMatchedTo
@@ -183,87 +152,89 @@ namespace Scryber.Core.UnitTests.Styles
             PDFStyleDefn target = new PDFStyleDefn();
 
             //Catch All with document
+            int priority;
 
-            Scryber.Components.PDFDocument doc = new Components.PDFDocument();
+            Scryber.Components.Document doc = new Components.Document();
             bool expected = true;
             bool actual;
-            actual = target.IsMatchedTo(doc);
+            actual = target.IsMatchedTo(doc, out priority);
             Assert.AreEqual(expected, actual, "Didn't match document on catch all");
 
             //set up component
 
-            Scryber.Components.PDFLabel lbl = new Scryber.Components.PDFLabel();
+            Scryber.Components.Label lbl = new Scryber.Components.Label();
             lbl.StyleClass = "myclass";
             lbl.ID = "myId";
 
             
-            //Catch all without document
-            expected = false;
-            actual = target.IsMatchedTo(lbl);
+            //Catch all should always match
+
+            expected = true;
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(1,expected));
 
             //match applied type
-            target.AppliedType = typeof(Scryber.Components.PDFLabel);
+            target.AppliedType = typeof(Scryber.Components.Label);
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(2, expected));
 
             //match applied type and class
             target.AppliedClass = "myclass";
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(3, expected));
 
             //match applied type, class and id
             target.AppliedID = "myId";
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(4, expected));
 
             //match class and id
             target.AppliedType = null;
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(5, expected));
 
             //match id
             target.AppliedClass = string.Empty;
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(6, expected));
 
             //match base type and id
-            target.AppliedType = typeof(Scryber.Components.PDFSpanBase);
+            target.AppliedType = typeof(Scryber.Components.SpanBase);
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(7, expected));
 
             //multiple defined style classes
             lbl.StyleClass = "other myclass";
             target.AppliedClass = "myclass";
             expected = true;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(8, expected));
 
             //non-matched class, matched type and id
             lbl.StyleClass = "myclass";
             target.AppliedClass = "other";
             expected = false;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(9, expected));
 
             //non-matched type, matched class and id
-            target.AppliedType = typeof(Scryber.Components.PDFTableCell);
+            target.AppliedType = typeof(Scryber.Components.TableCell);
             target.AppliedClass = "myclass";
             expected = false;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(10, expected));
 
             //non-matched id, matched class
             target.AppliedType = null;
             lbl.ID = "otherID";
             expected = false;
-            actual = target.IsMatchedTo(lbl);
+            actual = target.IsMatchedTo(lbl, out priority);
             Assert.AreEqual(expected, actual, GetIsMatchedToMessage(11, expected));
 
             
@@ -288,7 +259,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            Scryber.Components.PDFLabel lbl = new Scryber.Components.PDFLabel();
+            Scryber.Components.Label lbl = new Scryber.Components.Label();
             lbl.StyleClass = "myclass";
             lbl.ID = "myId";
 
@@ -302,16 +273,17 @@ namespace Scryber.Core.UnitTests.Styles
 
 
             //match applied type
-            target.AppliedType = typeof(Scryber.Components.PDFLabel);
+            target.AppliedType = typeof(Scryber.Components.Label);
             target.MergeInto(style, lbl, ComponentState.Normal);
 
             style.Flatten();
             Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color);
 
             //non-matching applied type
-            target.AppliedType = typeof(Scryber.Components.PDFTableCell);
+            target.AppliedType = typeof(Scryber.Components.TableCell);
             style = new PDFStyle();
             style.Background.Color = Scryber.Drawing.PDFColors.Blue;
+
             target.MergeInto(style, lbl, ComponentState.Normal);
             Assert.AreEqual(Scryber.Drawing.PDFColors.Blue, style.Background.Color);
 
@@ -373,7 +345,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void AppliedTypeTest()
         {
             PDFStyleDefn target = new PDFStyleDefn();
-            Type expected = typeof(Scryber.Components.PDFTableCell);
+            Type expected = typeof(Scryber.Components.TableCell);
             Type actual;
             target.AppliedType = expected;
             actual = target.AppliedType;

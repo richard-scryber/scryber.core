@@ -21,15 +21,15 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Document Layout")]
         public void PageSizeA4()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.PaperSize = PaperSize.A4;
             doc.Pages.Add(pg);
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -43,8 +43,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Document Layout")]
         public void PageSizeA4Landscape()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.PaperSize = PaperSize.A4;
             pg.PaperOrientation = PaperOrientation.Landscape;
             doc.Pages.Add(pg);
@@ -52,7 +52,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -66,15 +66,15 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Document Layout")]
         public void PageSizeA3()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.PaperSize = PaperSize.A3;
             doc.Pages.Add(pg);
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -88,8 +88,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Document Layout")]
         public void PageSizeA3Landscape()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.PaperSize = PaperSize.A3;
             pg.PaperOrientation = PaperOrientation.Landscape;
             doc.Pages.Add(pg);
@@ -97,7 +97,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -111,15 +111,15 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Document Layout")]
         public void PageSizeLetter()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.PaperSize = PaperSize.Letter;
             doc.Pages.Add(pg);
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];
@@ -133,8 +133,8 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Document Layout")]
         public void PageSizeExplicit()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             pg.Width = 400;
             pg.Height = 800;
 
@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             PDFLayoutPage layoutPg = layoutDoc.AllPages[0];

@@ -32,7 +32,7 @@ namespace Scryber.Layout
     public class CanvasLayoutEngine : LayoutEnginePanel
     {
 
-        public CanvasLayoutEngine(PDFContainerComponent component, IPDFLayoutEngine parent)
+        public CanvasLayoutEngine(ContainerComponent component, IPDFLayoutEngine parent)
             : base(component, parent)
         {
         }

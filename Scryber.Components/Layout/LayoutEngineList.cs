@@ -43,7 +43,7 @@ namespace Scryber.Layout
         private PDFLayoutBlock _listBlock;
         private PDFUnit _itemoffset = PDFUnit.Zero;
         private PDFUnit _itemNumberWidth = PDFUnit.Zero;
-        private PDFList _list;
+        private List _list;
         private List<ListNumberEntry> _entries;
 
         #endregion
@@ -54,7 +54,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the list this engin is laying out
         /// </summary>
-        protected PDFList List
+        protected List List
         {
             get { return _list; }
         }
@@ -67,7 +67,7 @@ namespace Scryber.Layout
 
         #region public LayoutEngineList(PDFList list, IPDFLayoutEngine parent)
 
-        public LayoutEngineList(PDFList list, IPDFLayoutEngine parent)
+        public LayoutEngineList(List list, IPDFLayoutEngine parent)
             : base(list, parent)
         {
             _list = list;
@@ -198,7 +198,7 @@ namespace Scryber.Layout
 
             this._entries = new List<ListNumberEntry>();
 
-            foreach (PDFListItem item in this.List.Items)
+            foreach (ListItem item in this.List.Items)
             {
                 if (item.Visible)
                 {
@@ -226,7 +226,7 @@ namespace Scryber.Layout
                     ListNumberingGroupStyle numberStyle;
                     HorizontalAlignment itemHAlign = halign;
                     string text;
-                    PDFComponent itemNumber = BuildAListNumberComponent(item, full, ref itemHAlign, out numberStyle, out itemWidth, out text);
+                    Component itemNumber = BuildAListNumberComponent(item, full, ref itemHAlign, out numberStyle, out itemWidth, out text);
 
                     if (itemWidth < PDFUnit.Zero)
                         itemWidth = defaultWidth;
@@ -269,7 +269,7 @@ namespace Scryber.Layout
         /// <param name="itemWidth">If an explicit width has been set then this is returned (otherwise -1)</param>
         /// <param name="text">If this item has explict text (e.g Definiton list) then this is returned, otherwise empty</param>
         /// <returns>The correct PDFListItemLabel for the item</returns>
-        private PDFComponent BuildAListNumberComponent(PDFListItem item, PDFStyle itemstyle, ref HorizontalAlignment halign, 
+        private Component BuildAListNumberComponent(ListItem item, PDFStyle itemstyle, ref HorizontalAlignment halign, 
             out ListNumberingGroupStyle type, out PDFUnit itemWidth, out string text)
         {
             PDFListNumbering numbers = this.Component.Document.ListNumbering;
@@ -278,7 +278,7 @@ namespace Scryber.Layout
             text = itemstyle.GetValue(PDFStyleKeys.ListLabelKey, string.Empty);
             halign = itemstyle.GetValue(PDFStyleKeys.ListAlignmentKey, halign);
 
-            PDFListItemLabel label;
+            ListItemLabel label;
 
             if (type == ListNumberingGroupStyle.Labels)
             {
@@ -292,7 +292,7 @@ namespace Scryber.Layout
             else
             {
 
-                label = new PDFListItemLabel();
+                label = new ListItemLabel();
             }
 
             label.StyleClass = item.StyleClass;
@@ -498,12 +498,12 @@ namespace Scryber.Layout
         /// <returns></returns>
         private PDFUnit LayoutItemNumber(ListNumberEntry entry, PDFStyle fullstyle)
         {
-            PDFListItem item = entry.ListItem;
+            ListItem item = entry.ListItem;
             
             
             PDFUnit avail = _itemblock.CurrentRegion.AvailableHeight;
 
-            PDFListItemLabel literal = (PDFListItemLabel)entry.NumberComponent;
+            ListItemLabel literal = (ListItemLabel)entry.NumberComponent;
             PDFStyle applied = literal.GetAppliedStyle();
             if (null != applied)
             {
@@ -548,7 +548,7 @@ namespace Scryber.Layout
         /// <returns></returns>
         private PDFUnit LayoutItemContent(ListNumberEntry entry)
         {
-            PDFComponentList contents = null;
+            ComponentList contents = null;
             IPDFContainerComponent container = entry.ListItem as IPDFContainerComponent;
 
             PDFUnit avail = _itemblock.CurrentRegion.AvailableHeight;
@@ -705,7 +705,7 @@ namespace Scryber.Layout
             /// <summary>
             /// The component to use for the numbering region
             /// </summary>
-            public PDFComponent NumberComponent;
+            public Component NumberComponent;
 
             /// <summary>
             /// The layout width of the number region
@@ -715,7 +715,7 @@ namespace Scryber.Layout
             /// <summary>
             /// The list item this entry holds the details for
             /// </summary>
-            public PDFListItem ListItem;
+            public ListItem ListItem;
 
             /// <summary>
             /// The list item full style

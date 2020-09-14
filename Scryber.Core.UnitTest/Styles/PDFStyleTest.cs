@@ -341,13 +341,13 @@ namespace Scryber.Core.UnitTests.Styles
             target.Font.FontFamily = "Bauhaus 92";
             
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             bool replace = false;
 
             PDFStyle merged = new PDFStyle();
             merged.Margins.All = 10;
             
-            target.MergeInherited(merged, lbl, replace);
+            target.MergeInherited(merged, replace, 0);
 
             //Font is inherited
             bool expected = true;
@@ -385,8 +385,10 @@ namespace Scryber.Core.UnitTests.Styles
 
             PDFStyle merged = new PDFStyle();
             merged.Margins.All = 10;
-     
-            target.MergeInto(merged);
+
+            int priority = PDFStyle.DirectStylePriority;
+
+            target.MergeInto(merged, priority);
 
             //Font is inherited
             bool expected = true;
@@ -425,7 +427,7 @@ namespace Scryber.Core.UnitTests.Styles
             merged.Margins.All = 10;
             
 
-            PDFLabel lbl = new PDFLabel();
+            Label lbl = new Label();
             ComponentState state = ComponentState.Normal;
 
             //in the base implementation these are ignored - so no difference

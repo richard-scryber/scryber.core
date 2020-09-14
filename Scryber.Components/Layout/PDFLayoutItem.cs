@@ -316,7 +316,7 @@ namespace Scryber.Layout
 
         protected virtual void SetOwnerPageIndex(int pageIndex)
         {
-            PDFComponent comp = this.Owner as PDFComponent;
+            Component comp = this.Owner as Component;
             if (null != comp)
                 comp.SetPageLayoutIndex(pageIndex);
         }

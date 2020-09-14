@@ -49,22 +49,22 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbers")]
         public void Default_Numbered_Test()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
             int totalcount = 10;
 
             //Add ten pages with default numbering
             for (int i = 0; i < totalcount; i++)
             {
-                PDFPage pg = new PDFPage();
+                Page pg = new Page();
                 doc.Pages.Add(pg);
-                PDFPageNumberLabel lbl = new PDFPageNumberLabel();
+                PageNumberLabel lbl = new PageNumberLabel();
                 pg.Contents.Add(lbl);
             }
 
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutCompleted;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             for (int i = 0; i < totalcount; i++)
@@ -87,10 +87,12 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbers")]
         public void DocumentPrefixUpperAlpha_Numbered_Test()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
             //Add a catch all number style definition for upper letter with Prefix
             PDFStyleDefn pgNumStyle = new PDFStyleDefn();
+            pgNumStyle.AppliedType = typeof(Document);
+
             pgNumStyle.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
             doc.Styles.Add(pgNumStyle);
 
@@ -100,9 +102,9 @@ namespace Scryber.Core.UnitTests.Layout
             //Add ten pages with default numbering
             for (int i = 0; i < totalcount; i++)
             {
-                PDFPage pg = new PDFPage();
+                Page pg = new Page();
                 doc.Pages.Add(pg);
-                PDFPageNumberLabel lbl = new PDFPageNumberLabel();
+                PageNumberLabel lbl = new PageNumberLabel();
                 pg.Contents.Add(lbl);
             }
 
@@ -110,7 +112,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutCompleted;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             //Check the numbers
@@ -137,7 +139,7 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbers")]
         public void DefaultWithSection_Numbered_Test()
         {
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
             int totalcount = 10;
 
             //Add ten pages with default numbering
@@ -145,22 +147,22 @@ namespace Scryber.Core.UnitTests.Layout
             {
                 if (i == 5)
                 {
-                    PDFSection section = new PDFSection();
+                    Section section = new Section();
                     section.PageNumberStyle = PageNumberStyle.UppercaseLetters;
                     
                     doc.Pages.Add(section);
 
                     for (int j = 0; j < 4; j++) //4 page breaks = 5 pages
                     {
-                        PDFPageBreak br = new PDFPageBreak();
+                        PageBreak br = new PageBreak();
                         section.Contents.Add(br);
                     }
                 }
                 else
                 {
-                    PDFPage pg = new PDFPage();
+                    Page pg = new Page();
                     doc.Pages.Add(pg);
-                    PDFPageNumberLabel lbl = new PDFPageNumberLabel();
+                    PageNumberLabel lbl = new PageNumberLabel();
                     pg.Contents.Add(lbl);
                 }
             }
@@ -169,7 +171,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutCompleted;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
             string[] allpages = new string[] { "1", "2", "3", "4", "5", "A", "B", "C", "D", "E", "6", "7", "8", "9" };
             string[] grptotal = new string[] { "5", "5", "5", "5", "5", "E", "E", "E", "E", "E", "9", "9", "9", "9" };
@@ -193,32 +195,32 @@ namespace Scryber.Core.UnitTests.Layout
         [TestCategory("Page Numbers")]
         public void SinglePage_Numbered_Test()
         {
-            PDFDocument doc = new PDFDocument();
-            PDFPage pg = new PDFPage();
+            Document doc = new Document();
+            Page pg = new Page();
             doc.Pages.Add(pg);
             //First page with 
             pg.Style.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
 
-            PDFPageNumberLabel lbl = new PDFPageNumberLabel();
+            PageNumberLabel lbl = new PageNumberLabel();
             pg.Contents.Add(lbl);
 
             // second page - no style so back to default.
-            pg = new PDFPage();
+            pg = new Page();
             doc.Pages.Add(pg);
-            lbl = new PDFPageNumberLabel();
+            lbl = new PageNumberLabel();
             pg.Contents.Add(lbl);
 
             // second page - continues default.
-            pg = new PDFPage();
+            pg = new Page();
             doc.Pages.Add(pg);
-            lbl = new PDFPageNumberLabel();
+            lbl = new PageNumberLabel();
             pg.Contents.Add(lbl);
 
             
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutCompleted;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             //check page 1
@@ -250,22 +252,23 @@ namespace Scryber.Core.UnitTests.Layout
 
             //set up the styles
 
-            PDFDocument doc = new PDFDocument();
+            Document doc = new Document();
 
             //catch all style will be applied to the document
             PDFStyleDefn catchall = new PDFStyleDefn();
             catchall.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
+            catchall.AppliedType = typeof(Document);
             doc.Styles.Add(catchall);
 
             //style for the page group
             PDFStyleDefn pgGrpStyle = new PDFStyleDefn();
-            pgGrpStyle.AppliedType = typeof(PDFPageGroup);
+            pgGrpStyle.AppliedType = typeof(PageGroup);
             pgGrpStyle.PageStyle.NumberStyle = PageNumberStyle.Decimals;
             doc.Styles.Add(pgGrpStyle);
 
             //style for the section
             PDFStyleDefn sectStyle = new PDFStyleDefn();
-            sectStyle.AppliedType = typeof(PDFSection);
+            sectStyle.AppliedType = typeof(Section);
             sectStyle.PageStyle.NumberStyle = PageNumberStyle.LowercaseLetters;
             sectStyle.PageStyle.NumberStartIndex = 5;
             doc.Styles.Add(sectStyle);
@@ -274,41 +277,41 @@ namespace Scryber.Core.UnitTests.Layout
 
             //empty title page
 
-            PDFPage title = new PDFPage();
+            Page title = new Page();
             title.Style.PageStyle.NumberStyle = PageNumberStyle.None;
             doc.Pages.Add(title);
 
             // 2 lower roman from the document style
 
-            PDFPage pi = new PDFPage();
+            Page pi = new Page();
             doc.Pages.Add(pi);
 
-            PDFPage pii = new PDFPage();
+            Page pii = new Page();
             doc.Pages.Add(pii);
 
             //page group with 3 pages of decimals
 
-            PDFPageGroup grp = new PDFPageGroup();
+            PageGroup grp = new PageGroup();
             doc.Pages.Add(grp);
 
-            PDFPage pg1 = new PDFPage();
+            Page pg1 = new Page();
             grp.Pages.Add(pg1);
 
-            PDFPage pg2 = new PDFPage();
+            Page pg2 = new Page();
             grp.Pages.Add(pg2);
 
-            PDFPage pg3 = new PDFPage();
+            Page pg3 = new Page();
             grp.Pages.Add(pg3);
 
             // section of lower alpha with 3 pages of content
 
-            PDFSection sect = new PDFSection();
+            Section sect = new Section();
             grp.Pages.Add(sect);
-            sect.Contents.Add(new PDFPageBreak());
-            sect.Contents.Add(new PDFPageBreak());
+            sect.Contents.Add(new PageBreak());
+            sect.Contents.Add(new PageBreak());
 
             // final page in the group
-            PDFPage pg4 = new PDFPage();
+            Page pg4 = new Page();
             grp.Pages.Add(pg4);
 
 
@@ -317,7 +320,7 @@ namespace Scryber.Core.UnitTests.Layout
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
                 doc.LayoutComplete += Doc_LayoutCompleted;
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
             }
 
             Assert.AreEqual(layout.AllPages.Count, pgNums.Length);
@@ -339,7 +342,7 @@ namespace Scryber.Core.UnitTests.Layout
         {
             var src = @"<?xml version='1.0' encoding='utf-8' ?>
 
-<pdf:Document xmlns:pdf='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
               xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
               xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
   <Render-Options compression-type='None' string-output='Text' />
@@ -361,71 +364,71 @@ namespace Scryber.Core.UnitTests.Layout
   
   <Pages>
 
-    <pdf:Section styles:class='pg-num intro'>
+    <doc:Section styles:class='pg-num intro'>
       <Content>
-        <pdf:Div>Introductions with lowercase roman</pdf:Div>
+        <doc:Div>Introductions with lowercase roman</doc:Div>
         <!-- Page 1 -->
-        <pdf:PageNumber id='IntroNumber1'/>
-        <pdf:PageBreak/>
+        <doc:PageNumber id='IntroNumber1'/>
+        <doc:PageBreak/>
         <!-- Page 2 -->
-        <pdf:PageNumber />
-        <pdf:PageBreak />
+        <doc:PageNumber />
+        <doc:PageBreak />
         <!-- Page 3 -->
-        <pdf:PageNumber id='IntroNumber3'/>
+        <doc:PageNumber id='IntroNumber3'/>
       </Content>
-    </pdf:Section>
+    </doc:Section>
 
-    <pdf:Section styles:class='pg-num' styles:page-number-start-index='1' >
+    <doc:Section styles:class='pg-num' styles:page-number-start-index='1' >
       <Content>
-        <pdf:Div>These are the page numbers shown on each of the pages</pdf:Div>
+        <doc:Div>These are the page numbers shown on each of the pages</doc:Div>
         <!-- Page 1 -->
-        <pdf:PageNumber id='StandardNumber' />
-        <pdf:PageBreak/>
+        <doc:PageNumber id='StandardNumber' />
+        <doc:PageBreak/>
         <!-- Page 2 -->
-        <pdf:PageNumber />
-        <pdf:PageBreak />
+        <doc:PageNumber />
+        <doc:PageBreak />
         <!-- Page 3 -->
-        <pdf:Div>With a different format</pdf:Div>
-        <pdf:PageNumber id='ExplicitPageNum' styles:display-format='Page {0} of {1} (Total {2} of {3})' />
+        <doc:Div>With a different format</doc:Div>
+        <doc:PageNumber id='ExplicitPageNum' styles:display-format='Page {0} of {1} (Total {2} of {3})' />
       </Content>
-    </pdf:Section>
+    </doc:Section>
 
-    <pdf:Section styles:class='pg-num appendix'>
+    <doc:Section styles:class='pg-num appendix'>
       <Content>
-        <pdf:Div>The appendix style has upper case letters with a formatted value to show the current appendix letter.</pdf:Div>
+        <doc:Div>The appendix style has upper case letters with a formatted value to show the current appendix letter.</doc:Div>
         <!-- Page 4 -->
-        <pdf:PageNumber id='AppendixNumber1' />
-        <pdf:PageBreak />
+        <doc:PageNumber id='AppendixNumber1' />
+        <doc:PageBreak />
         <!-- Page 5 -->
-        <pdf:PageNumber id='AppendixNumber2' />
+        <doc:PageNumber id='AppendixNumber2' />
       </Content>
-    </pdf:Section>
+    </doc:Section>
 
   </Pages>
   
-</pdf:Document>";
+</doc:Document>";
 
             var sr = new System.IO.StringReader(src);
-            var doc = PDFDocument.ParseDocument(sr, ParseSourceType.DynamicContent);
+            var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
 
             using (var ms = new MemoryStream())
             {
-                doc.ProcessDocument(ms);
+                doc.SaveAsPDF(ms);
 
                 //First intro
-                var lbl = doc.FindAComponentById("IntroNumber1") as PDFPageNumberLabel;
+                var lbl = doc.FindAComponentById("IntroNumber1") as PageNumberLabel;
                 Assert.AreEqual("Page i of iii", lbl.Proxy.Text, "Intro1 failed");
 
                 //3rd intro
-                lbl = doc.FindAComponentById("IntroNumber3") as PDFPageNumberLabel;
+                lbl = doc.FindAComponentById("IntroNumber3") as PageNumberLabel;
                 Assert.AreEqual("Page iii of iii", lbl.Proxy.Text, "Intro 3 failed");
 
                 //Normal pages
-                lbl = doc.FindAComponentById("StandardNumber") as PDFPageNumberLabel;
+                lbl = doc.FindAComponentById("StandardNumber") as PageNumberLabel;
                 Assert.AreEqual("Page 1 of 3", lbl.Proxy.Text, "Normal Number failed");
 
                 //Explicit page number format
-                lbl = doc.FindAComponentById("ExplicitPageNum") as PDFPageNumberLabel;
+                lbl = doc.FindAComponentById("ExplicitPageNum") as PageNumberLabel;
                 Assert.AreEqual("Page 3 of 3 (Total 6 of 8)", lbl.Proxy.Text, "Explicit number failed");
             }
         }

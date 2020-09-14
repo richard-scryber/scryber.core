@@ -372,6 +372,7 @@ namespace Scryber.Generation
         {
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = false;
+            settings.DtdProcessing = DtdProcessing.Ignore;
             return settings;
         }
 
@@ -465,10 +466,15 @@ namespace Scryber.Generation
             string ns = reader.NamespaceURI;
             string prefix = reader.Prefix;
 
+
             bool isempty = reader.IsEmptyElement;
+
 
             if (!string.IsNullOrEmpty(prefix))
                 this.EnsureNamespaceRegistered(prefix, ns);
+
+            if (component is Scryber.IPDFComponent)
+                (component as IPDFComponent).ElementName = reader.Name;
 
             if (reader.HasAttributes)
                 ParseAttributes(component, false, reader, cdef);
@@ -485,6 +491,7 @@ namespace Scryber.Generation
                 else
                     ParseContents(component, reader, name, ns, cdef);
             }
+            
         }
 
         #endregion

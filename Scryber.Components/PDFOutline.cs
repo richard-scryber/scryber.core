@@ -54,7 +54,7 @@ namespace Scryber
 
         #region ivars
 
-        private PDFComponent _belongs;
+        private Component _belongs;
         private string _title = string.Empty;
         private PDFColor _col = null;
         private bool? _boldstyle = null;
@@ -72,7 +72,7 @@ namespace Scryber
         /// <summary>
         /// Gets the component this PDFOutline belongs to
         /// </summary>
-        internal PDFComponent BelongsTo 
+        internal Component BelongsTo 
         { 
             get { return _belongs; } 
             set { _belongs = value; }

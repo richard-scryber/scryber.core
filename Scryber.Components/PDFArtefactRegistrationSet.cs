@@ -47,7 +47,7 @@ namespace Scryber
         private const int COMPARE_EQUAL = 0;
 
         private PDFLayoutDocument _doc;
-        private PDFComponent _comp;
+        private Component _comp;
         private LinkedNameValue _artefacts;
         private IComparer<string> _comparer;
 
@@ -72,7 +72,7 @@ namespace Scryber
         /// <summary>
         /// Gets the component the artefacts are registered on
         /// </summary>
-        public PDFComponent Component
+        public Component Component
         {
             get { return _comp; }
         }
@@ -90,7 +90,7 @@ namespace Scryber
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="comp"></param>
-        public PDFArtefactRegistrationSet(PDFLayoutDocument doc, PDFComponent comp)
+        public PDFArtefactRegistrationSet(PDFLayoutDocument doc, Component comp)
             : this(doc, comp, StringComparer.OrdinalIgnoreCase)
         {
         }
@@ -105,7 +105,7 @@ namespace Scryber
         /// <param name="doc"></param>
         /// <param name="comp"></param>
         /// <param name="comparer"></param>
-        protected PDFArtefactRegistrationSet(PDFLayoutDocument doc, PDFComponent comp, IComparer<string> comparer)
+        protected PDFArtefactRegistrationSet(PDFLayoutDocument doc, Component comp, IComparer<string> comparer)
         {
             if (null == doc)
                 throw new ArgumentNullException("doc");

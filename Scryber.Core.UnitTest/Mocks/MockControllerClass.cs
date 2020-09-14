@@ -12,10 +12,10 @@ namespace Scryber.Core.UnitTests.Mocks
         public List<String> Results = new List<string>();
 
         [PDFOutlet]
-        public PDFHead1 Title { get; set; }
+        public Head1 Title { get; set; }
 
         [PDFOutlet("MyDocument", Required = true)]
-        public PDFDocument Document { get; set; }
+        public Document Document { get; set; }
         
         public MockControllerClass()
         { 
@@ -98,7 +98,7 @@ namespace Scryber.Core.UnitTests.Mocks
         [PDFAction()]
         public void ForEachBinding(object sender, PDFDataBindEventArgs args)
         {
-            var forEach = sender as PDFForEach;
+            var forEach = sender as ForEach;
             forEach.Value = Entries;
 
             Results.Add("Controller ForEach Binding");
@@ -107,7 +107,7 @@ namespace Scryber.Core.UnitTests.Mocks
         [PDFAction()]
         public void ForEachItemBinding(object sender, PDFTemplateItemDataBoundArgs args)
         {
-            var forEach = sender as PDFForEach;
+            var forEach = sender as ForEach;
             var index = args.Context.CurrentIndex;
 
             Results.Add("Controller ForEach Item Bound " + index);
@@ -116,23 +116,23 @@ namespace Scryber.Core.UnitTests.Mocks
         [PDFAction()]
         public void ForEachListItemBound(object sender, PDFDataBindEventArgs args)
         {
-            var li = sender as PDFListItem;
+            var li = sender as ListItem;
 
             var str = (string)args.Context.DataStack.Current;
             str += " - Index " + args.Context.CurrentIndex;
 
-            li.Contents.Add(new PDFTextLiteral(str));
+            li.Contents.Add(new TextLiteral(str));
 
             Results.Add("Controller ForEach Label " + args.Context.CurrentIndex + " Databound");
         }
 
-        public IPDFComponent PartialView(PDFDocument doc, PDFInitContext context)
+        public IPDFComponent PartialView(Document doc, PDFInitContext context)
         {
             var str = "";
 
             using (var reader = new System.IO.StringReader(str))
             {
-                var content = PDFDocument.Parse(reader, ParseSourceType.DynamicContent);
+                var content = Document.Parse(reader, ParseSourceType.DynamicContent);
                 return content;
             }
         }

@@ -338,7 +338,7 @@ namespace Scryber.Layout
             bounds.Y += context.Offset.Y;
 
             //Set the arrangement for this text run
-            PDFComponent owner = this.Owner as PDFComponent;
+            Component owner = this.Owner as Component;
             if (owner != null && null != this._caclulatedBounds)
             {
                 for (int i = 0; i < this._caclulatedBounds.Length; i++)

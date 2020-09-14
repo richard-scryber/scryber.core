@@ -23,26 +23,26 @@ namespace Scryber
 
         private void InitTraceLogStyles()
         {
-            PDFStyleDefn traceSect = new PDFStyleDefn() { AppliedType = typeof(PDFSection) };
+            PDFStyleDefn traceSect = new PDFStyleDefn() { AppliedType = typeof(Section) };
             traceSect.Margins.All = 10;
             traceSect.PageStyle.PaperSize = PaperSize.A4;
             traceSect.Font.FontFamily = "Helvetica";
             this.Styles.Add(traceSect);
 
-            PDFStyleDefn h1 = new PDFStyleDefn() { AppliedType = typeof(PDFHead1) };
+            PDFStyleDefn h1 = new PDFStyleDefn() { AppliedType = typeof(Head1) };
             h1.Background.Color = new PDFColor(0.6);
             h1.Size.FullWidth = true;
             h1.Fill.Color = PDFColors.White;
             h1.Padding.All = 5;
             this.Styles.Add(h1);
 
-            PDFStyleDefn h3 = new PDFStyleDefn() { AppliedType = typeof(PDFHead3) };
+            PDFStyleDefn h3 = new PDFStyleDefn() { AppliedType = typeof(Head3) };
             h3.Background.Color = new PDFColor(0.9);
             h3.Size.FullWidth = true;
             h3.Padding.All = 5;
             this.Styles.Add(h3);
 
-            PDFStyleDefn tbl = new PDFStyleDefn() { AppliedType = typeof(PDFTableGrid)};
+            PDFStyleDefn tbl = new PDFStyleDefn() { AppliedType = typeof(TableGrid)};
             tbl.Size.FullWidth = true;
             tbl.Margins.All = 10;
             tbl.Font.FontSize = 10;
@@ -54,7 +54,7 @@ namespace Scryber
 
             PDFStyleDefn tcell = new PDFStyleDefn()
             {
-                AppliedType = typeof(PDFTableCell)
+                AppliedType = typeof(TableCell)
             };
             tcell.Border.Width = 1;
             tcell.Border.Color = PDFColors.Gray;
@@ -63,14 +63,14 @@ namespace Scryber
 
             PDFStyleDefn tcellhead = new PDFStyleDefn()
             {
-                AppliedType = typeof(PDFTableHeaderCell)
+                AppliedType = typeof(TableHeaderCell)
             };
             tcellhead.Font.FontBold = true;
             this.Styles.Add(tcellhead);
 
             PDFStyleDefn tcellnum = new PDFStyleDefn()
             {
-                AppliedType = typeof(PDFTableCell),
+                AppliedType = typeof(TableCell),
                 AppliedClass = "number"
             };
             tcellnum.Position.HAlign = HorizontalAlignment.Right;
