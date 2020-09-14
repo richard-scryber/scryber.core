@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Styles;
+
 
 namespace Scryber.Components
 {
@@ -34,6 +36,14 @@ namespace Scryber.Components
         public PageBreak()
             : base(PDFObjectTypes.PageBreak)
         {
+        }
+
+
+        protected override PDFStyle GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            
+            return style;
         }
     }
 }

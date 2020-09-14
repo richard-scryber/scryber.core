@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:style='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'>
+  <Pages>
+    <doc:Section style:padding='20pt' >
+      <Content>
+        <doc:Div >
+          This is some content
+        </doc:Div>
+        <doc:PageBreak/>
+        <doc:Div >
+          This should come on the next page
+        </doc:Div>
+      </Content>
+    </doc:Section>
+  </Pages>
+</doc:Document>

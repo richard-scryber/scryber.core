@@ -200,6 +200,42 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public virtual void MergeInto(PDFStyleBase style) + 1 overload
+
+
+        /// <summary>
+        /// Merges all the style values in this style into the provided style.
+        /// This will overwrite existing values in the provided style as long as they are higher priority
+        /// </summary>
+        /// <param name="style"></param>
+        public virtual void MergeInto(PDFStyleBase style)
+        {
+            if (null == style)
+                throw new ArgumentNullException("style");
+
+            style.BeginStyleChange();
+
+            if (null != this._direct && this._direct.Count > 0)
+            {
+                foreach (KeyValuePair<PDFStyleKey, PDFStyleValueBase> kvp in this._direct)
+                {
+                    style.DirectValues.SetPriorityValue(kvp.Key, kvp.Value, kvp.Value.Priority);
+                }
+            }
+
+            if (null != this._inherited && this._inherited.Count > 0)
+            {
+                foreach (KeyValuePair<PDFStyleKey, PDFStyleValueBase> kvp in this._inherited)
+                {
+                    style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, kvp.Value.Priority);
+                }
+            }
+
+
+        }
+
+        #endregion
+
         #region public virtual void MergeInto(PDFStyle style, Scryber.IPDFComponent Component, Scryber.ComponentState state)
 
         /// <summary>
@@ -224,7 +260,7 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="Component"></param>
         /// <param name="replace"></param>
-        public void MergeInherited(PDFStyle style, Scryber.IPDFComponent Component, bool replace)
+        public void MergeInherited(PDFStyle style, bool replace, int priority)
         {
             if (null == style)
                 throw new ArgumentNullException("style");
@@ -237,7 +273,7 @@ namespace Scryber.Styles
                 {
                     foreach (KeyValuePair<PDFStyleKey, PDFStyleValueBase> kvp in this._inherited)
                     {
-                        style.InheritedValues[kvp.Key] = kvp.Value;
+                        style.InheritedValues[kvp.Key] = kvp.Value.CloneWithPriority(priority);   
                     }
                 }
                 else
@@ -245,7 +281,7 @@ namespace Scryber.Styles
                     foreach (KeyValuePair<PDFStyleKey, PDFStyleValueBase> kvp in this._inherited)
                     {
                         if (!style.InheritedValues.ContainsKey(kvp.Key))
-                            style.InheritedValues[kvp.Key] = kvp.Value;
+                            style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, priority);
                     }
                 }
             }

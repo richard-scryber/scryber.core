@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Styles;
 
 namespace Scryber.Components
 {
@@ -42,6 +43,14 @@ namespace Scryber.Components
         public ColumnBreak()
             : base(PDFObjectTypes.ColumnBreak)
         {
+        }
+
+
+        protected override PDFStyle GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            
+            return style;
         }
     }
 }

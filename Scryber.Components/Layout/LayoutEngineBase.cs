@@ -353,15 +353,38 @@ namespace Scryber.Layout
             else
                 full = this.FullStyle;
 
+            if (IsStyled(comp) && !IsText(comp))
+            {
+                PDFStyleValue<bool> br;
+                if (full.TryGetValue(PDFStyleKeys.PageBreakBeforeKey, out br) && br.Value)
+                {
+                    this.DoLayoutPageBreak(comp, full);
+                }
+                else if (full.TryGetValue(PDFStyleKeys.ColumnBreakBeforeKey, out br) && br.Value)
+                {
+                    this.DoLayoutColumnBreak(comp, full);
+                }
+            }
+
             PDFArtefactRegistrationSet artefacts = comp.RegisterLayoutArtefacts(this.Context, full);
+
 
             //perform the actual layout of the component with the full style
             this.DoLayoutAChild(comp, full);
 
+            if (IsStyled(comp) && !IsText(comp))
+            {
+                PDFStyleValue<bool> br;
+                if (full.TryGetValue(PDFStyleKeys.PageBreakAfterKey, out br) && br.Value)
+                {
+                    this.DoLayoutPageBreak(comp, full);
+                }
+                else if (full.TryGetValue(PDFStyleKeys.ColumnBreakAfterKey, out br) && br.Value)
+                {
+                    this.DoLayoutColumnBreak(comp, full);
+                }
+            }
 
-            //and roll back to the state at the start of the method
-
-            
             //pop any child component style off the stack
             if (null != applied)
                 this.StyleStack.Pop();
@@ -379,6 +402,11 @@ namespace Scryber.Layout
         private static bool IsStyled(IPDFComponent comp)
         {
             return comp is IPDFStyledComponent && !(comp is IPDFLayoutBreak);
+        }
+
+        private static bool IsText(IPDFComponent comp)
+        {
+            return comp is IPDFTextComponent;
         }
 
         #endregion
@@ -409,6 +437,8 @@ namespace Scryber.Layout
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
             }
 
+
+
             if (comp is IPDFViewPortComponent)
                 this.DoLayoutViewPortComponent(comp as IPDFViewPortComponent, full);
 
@@ -418,10 +448,10 @@ namespace Scryber.Layout
                 switch (lb.BreakType)
                 {
                     case LayoutBreakType.Page:
-                        this.DoLayoutPageBreak(lb,full);
+                        this.DoLayoutPageBreak(comp as Component, full);
                         break;
                     case LayoutBreakType.Column:
-                        this.DoLayoutColumnBreak(lb,full);
+                        this.DoLayoutColumnBreak(comp as Component, full);
                         break;
                     case LayoutBreakType.Line:
                         this.DoLayoutLineBreak(lb,full);
@@ -590,9 +620,9 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="pgbreak">The declared page break</param>
         /// <param name="style">The full style of the page break</param>
-        protected virtual void DoLayoutPageBreak(IPDFLayoutBreak pgbreak, PDFStyle style)
+        protected virtual void DoLayoutPageBreak(Component pgbreak, PDFStyle style)
         {
-            if (pgbreak is Component && !((Component)pgbreak).Visible)
+            if (pgbreak.Visible == false)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -650,16 +680,16 @@ namespace Scryber.Layout
 
         #endregion
 
-        #region protected virtual void DoLayoutColumnBreak(IPDFLayoutBreak colbreak, PDFStyle style)
+        #region protected virtual void DoLayoutColumnBreak(Component colbreak, PDFStyle style)
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="colbreak"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutColumnBreak(IPDFLayoutBreak colbreak, PDFStyle style)
+        protected virtual void DoLayoutColumnBreak(Component colbreak, PDFStyle style)
         {
-            if (colbreak is Component && !((Component)colbreak).Visible)
+            if (colbreak.Visible == false)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();

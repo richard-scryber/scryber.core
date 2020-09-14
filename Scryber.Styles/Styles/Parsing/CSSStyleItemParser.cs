@@ -2534,7 +2534,7 @@ namespace Scryber.Styles.Parsing
 
             if (!reader.ReadNextValue())
                 result = false;
-
+            
             else if (reader.CurrentTextValue == "auto")
             {
                 onStyle.SetValue(PDFStyleKeys.OverflowSplitKey, OverflowSplit.Any);
@@ -2551,6 +2551,88 @@ namespace Scryber.Styles.Parsing
             }
 
            
+            return result;
+
+        }
+    }
+
+    #endregion
+
+    // page-break-inside
+
+    #region public class CSSPageBreakInsideParser : CSSStyleValueParser
+
+    public class CSSPageBreakBeforeParser : CSSStyleValueParser
+    {
+
+        public CSSPageBreakBeforeParser()
+            : base(CSSStyleItems.PageBreakInside)
+        {
+        }
+
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
+        {
+            bool result;
+
+            if (!reader.ReadNextValue())
+                result = false;
+            else
+            {
+                switch (reader.CurrentTextValue)
+                {
+                    case ("always"):
+                    case ("left"):
+                    case ("right"):
+                        onStyle.SetValue(PDFStyleKeys.PageBreakBeforeKey, true);
+                        result = true;
+                        break;
+                    default:
+                        result = false;
+                        break;
+                }
+            }
+
+
+            return result;
+
+        }
+    }
+
+    #endregion
+
+    #region public class CSSPageBreakInsideParser : CSSStyleValueParser
+
+    public class CSSPageBreakAfterParser : CSSStyleValueParser
+    {
+
+        public CSSPageBreakAfterParser()
+            : base(CSSStyleItems.PageBreakInside)
+        {
+        }
+
+        public override bool SetStyleValue(PDFStyle onStyle, CSSStyleItemReader reader)
+        {
+            bool result;
+
+            if (!reader.ReadNextValue())
+                result = false;
+            else
+            {
+                switch (reader.CurrentTextValue)
+                {
+                    case ("always"):
+                    case ("left"):
+                    case ("right"):
+                        onStyle.SetValue(PDFStyleKeys.PageBreakAfterKey, true);
+                        result = true;
+                        break;
+                    default:
+                        result = false;
+                        break;
+                }
+            }
+
+
             return result;
 
         }

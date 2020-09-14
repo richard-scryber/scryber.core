@@ -26,7 +26,6 @@ namespace Scryber.Core.UnitTests.Configuration
             }
         }
 
-        [TestCleanup()]
         public void ConfigClassCleanup()
         {
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
@@ -39,7 +38,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.IsNull(service, "The config service was not removed");
         }
 
-        [TestInitialize()]
+
         public void ConfigClassInitialize()
         {
             var path = this.TestContext.TestRunDirectory;
@@ -74,6 +73,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void ParsingOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -117,6 +118,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(expectedAssm, parsing.Bindings[expectedLength - 1].FactoryAssembly);
             Assert.AreEqual(expectedType, parsing.Bindings[expectedLength - 1].FactoryType);
 
+            ConfigClassCleanup();
         }
 
 
@@ -124,6 +126,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void FontOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -168,7 +172,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(style, option.Style);
             Assert.AreEqual(fileStem + fileName + "i" + fileExt, option.File);
 
-
+            ConfigClassCleanup();
         }
 
 
@@ -176,6 +180,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void OutputOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -188,7 +194,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(ComponentNameOutput.All, output.NameOutput,  "Expected 'All' string type");
             Assert.AreEqual("1.4", output.PDFVersion, "Expected a PDF Version of 1.4");
 
-
+            ConfigClassCleanup();
         }
 
 
@@ -196,6 +202,8 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestCategory("Config")]
         public void ImagingOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -211,12 +219,16 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(".*\\.dynamic", img.Factories[0].Match, "The img factory match path is incorrect");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockImageFactory", img.Factories[0].FactoryType, "The image factory type is not correct");
             Assert.AreEqual("Scryber.UnitTests", img.Factories[0].FactoryAssembly, "The image factory assembly is not correct");
+
+            ConfigClassCleanup();
         }
 
         [TestMethod()]
         [TestCategory("Config")]
         public void TracingOptions_Test()
         {
+            ConfigClassInitialize();
+
             var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(service, "The scryber config service is null");
 
@@ -236,11 +248,14 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockTraceLog2", trace.Loggers[1].FactoryType, "The second logger type does not match");
             Assert.AreEqual("Scryber.UnitTests", trace.Loggers[1].FactoryAssembly, "The second loggers assembly does not match");
             Assert.IsTrue(trace.Loggers[1].Enabled, "The default for a logger should be enabled");
+
+            ConfigClassCleanup();
         }
 
         [TestMethod()]
         public void MissingImageException_Test()
         {
+            ConfigClassInitialize();
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
 <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
@@ -278,6 +293,8 @@ namespace Scryber.Core.UnitTests.Configuration
             }
 
             Assert.IsFalse(caught, "An Exception was raised for a missing image");
+
+            ConfigClassCleanup();
         }
 
 
@@ -288,6 +305,7 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestMethod()]
         public void MissingImageExplicitException_Test()
         {
+            ConfigClassInitialize();
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
 <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
@@ -322,12 +340,15 @@ namespace Scryber.Core.UnitTests.Configuration
             }
 
             Assert.IsTrue(caught, "Exception was not raised for a missing image, that should not be allowed");
+
+            ConfigClassCleanup();
         }
 
 
         [TestMethod()]
         public void DynamicImage_Test()
         {
+            ConfigClassInitialize();
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
 <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
@@ -366,13 +387,15 @@ namespace Scryber.Core.UnitTests.Configuration
 
                 using (var stream = new System.IO.MemoryStream())
                 {
-                    doc.SaveAsPDF(stream);
+                    doc.SaveAsPDF("C:\\Temp\\DynamicImage.pdf", FileMode.Create);
 
                     //Check that the image was loaded and used.
                     var img = doc.FindAComponentById("LoadedImage") as Image;
                     Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
                 }
             }
+
+            ConfigClassCleanup();
         }
 
 

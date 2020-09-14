@@ -206,5 +206,125 @@ namespace Scryber.Core.UnitTests.Styles
         }
 
 
+        [TestMethod]
+        public void StylePriorityNested_Test()
+        {
+            //Checks that the nested values are used in a style stack
+            //for inherited styles
+
+            var src = @"<?xml version='1.0' encoding='UTF-8' ?>
+            <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                          xmlns:style='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'>
+              <Pages>
+                <doc:Section id='pg' style:padding='20pt' style:fill-color='#880000' style:bg-color='#FF0000' >
+                  <Content>
+                    <doc:Div id='first' style:fill-color='#008800' style:bg-color='#00FF00' >
+                      This should be green
+                    </doc:Div>
+                    <doc:Div id='second' style:fill-color='#000088' style:bg-color='#0000FF'  >
+                      This should be blue
+                    </doc:Div>
+                    This should be red
+                  </Content>
+                </doc:Section>
+              </Pages>
+            </doc:Document>";
+
+            using (var ms = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(ms, ParseSourceType.DynamicContent);
+
+                doc.SaveAsPDF("C:\\Temp\\PagedDoc.pdf", System.IO.FileMode.Create);
+
+                var pg = doc.FindAComponentById("pg");
+                var first = doc.FindAComponentById("first");
+                var second = doc.FindAComponentById("second");
+
+                var style = pg.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#880000", style.Fill.Color, "Page fill color incorrect");
+                Assert.AreEqual((PDFColor)"#FF0000", style.Background.Color, "Page bg color incorrect");
+
+                style = first.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#008800", style.Fill.Color, "First Div fill color incorrect");
+                Assert.AreEqual((PDFColor)"#00FF00", style.Background.Color, "First div bg color incorrect");
+
+                style = second.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#000088", style.Fill.Color, "Second Div fill color incorrect");
+                Assert.AreEqual((PDFColor)"#0000FF", style.Background.Color, "Second Div bg color incorrect");
+
+            }
+        }
+
+
+        [TestMethod]
+        public void StylePriorityNestedClasses_Test()
+        {
+            //Checks that the nested values are used in a style stack
+            //for inherited styles
+
+            var src = @"<?xml version='1.0' encoding='UTF-8' ?>
+            <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                          xmlns:style='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'>
+              <Styles>
+                <style:Style match='doc:Section.red' >
+                    <style:Background color='#FF0000' />
+                    <style:Fill color='#880000' />
+                </style:Style>
+                <style:Style match='.green' >
+                    <style:Background color='#00FF00' />
+                    <style:Fill color='#008800' />
+                </style:Style>
+                <style:Style match='.blue' >
+                    <style:Background color='#0000FF' />
+                    <style:Fill color='#000088' />
+                </style:Style>
+              </Styles>
+              <Pages>
+                <doc:Section id='pg' style:class='red' >
+                  <Content>
+                    <doc:Div id='first' style:class='green' >
+                      This should be green
+                      <doc:Div id='second' style:class='blue'  >
+                        This should be blue
+                      </doc:Div>
+                      <doc:Div id='third' >
+                        This should also be green
+                      </doc:Div>
+                    </doc:Div>
+                    This should be red
+                  </Content>
+                </doc:Section>
+              </Pages>
+            </doc:Document>";
+
+            using (var ms = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(ms, ParseSourceType.DynamicContent);
+
+                doc.SaveAsPDF("C:\\Temp\\PagedDoc.pdf", System.IO.FileMode.Create);
+
+                var pg = doc.FindAComponentById("pg");
+                var first = doc.FindAComponentById("first");
+                var second = doc.FindAComponentById("second");
+                var third = doc.FindAComponentById("third");
+
+                var style = pg.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#880000", style.Fill.Color, "Page fill color incorrect");
+                Assert.AreEqual((PDFColor)"#FF0000", style.Background.Color, "Page bg color incorrect");
+
+                style = first.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#008800", style.Fill.Color, "First Div fill color incorrect");
+                Assert.AreEqual((PDFColor)"#00FF00", style.Background.Color, "First div bg color incorrect");
+
+                style = second.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#000088", style.Fill.Color, "Second Div fill color incorrect");
+                Assert.AreEqual((PDFColor)"#0000FF", style.Background.Color, "Second Div bg color incorrect");
+
+                style = third.GetFirstArrangement().FullStyle;
+                Assert.AreEqual((PDFColor)"#008800", style.Fill.Color, "Third Div fill color incorrect");
+                Assert.IsFalse(style.IsValueDefined(PDFStyleKeys.BgColorKey), "Third div bg color should not be present");
+
+            }
+        }
     }
 }

@@ -121,6 +121,8 @@ namespace Scryber.Html
         public const string ListStyle = "list-style";
 
         public const string PageBreakInside = "page-break-inside";
+        public const string PageBreakAfter = "page-break-after";
+        public const string PageBreakBefore = "page-break-before";
 
     }
 

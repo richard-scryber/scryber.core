@@ -1404,6 +1404,8 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public TextDirection TextDirection {get;set;}
+
         [PDFAttribute("text-direction", Const.PDFStylesNamespace)]
         [PDFDesignable("Text Direction", Ignore = true)]
         public TextDirection TextDirection
@@ -1421,7 +1423,8 @@ namespace Scryber.Components
                 this.Style.SetValue(PDFStyleKeys.TextDirectionKey, value);
             }
         }
-        
+
+        #endregion
 
         #region public OverflowSplit OverflowSplit {get; set;}
 
@@ -1476,6 +1479,108 @@ namespace Scryber.Components
         }
 
         #endregion
+
+
+        #region public bool PageBreakBefore {get; set;}
+
+        /// <summary>
+        /// Gets or sets the split option for this visual component
+        /// </summary>
+        [PDFAttribute("page-break-before", Const.PDFStylesNamespace)]
+        [PDFDesignable("Page Break Before", Category = "Layout", Priority = 4, Type = "Boolean")]
+        public bool PageBreakBefore
+        {
+            get
+            {
+                PDFStyleValue<bool> val;
+                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.PageBreakBeforeKey, out val))
+                    return val.Value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.Style.SetValue(PDFStyleKeys.PageBreakBeforeKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public bool PageBreakAfter {get; set;}
+
+        /// <summary>
+        /// Gets or sets the split option for this visual component
+        /// </summary>
+        [PDFAttribute("page-break-after", Const.PDFStylesNamespace)]
+        [PDFDesignable("Page Break Before", Category = "Layout", Priority = 4, Type = "Boolean")]
+        public bool PageBreakAfter
+        {
+            get
+            {
+                PDFStyleValue<bool> val;
+                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.PageBreakAfterKey, out val))
+                    return val.Value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.Style.SetValue(PDFStyleKeys.PageBreakAfterKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public bool ColumnBreakBefore {get; set;}
+
+        /// <summary>
+        /// Gets or sets the split option for this visual component
+        /// </summary>
+        [PDFAttribute("column-break-before", Const.PDFStylesNamespace)]
+        [PDFDesignable("Column Break Before", Category = "Layout", Priority = 4, Type = "Boolean")]
+        public bool ColumnBreakBefore
+        {
+            get
+            {
+                PDFStyleValue<bool> val;
+                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.ColumnBreakBeforeKey, out val))
+                    return val.Value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.Style.SetValue(PDFStyleKeys.ColumnBreakBeforeKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public bool ColumnBreakAfter {get; set;}
+
+        /// <summary>
+        /// Gets or sets the split option for this visual component
+        /// </summary>
+        [PDFAttribute("column-break-after", Const.PDFStylesNamespace)]
+        [PDFDesignable("Column Break After", Category = "Layout", Priority = 4, Type = "Boolean")]
+        public bool ColumnBreakAfter
+        {
+            get
+            {
+                PDFStyleValue<bool> val;
+                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.ColumnBreakAfterKey, out val))
+                    return val.Value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.Style.SetValue(PDFStyleKeys.ColumnBreakAfterKey, value);
+            }
+        }
+
+        #endregion
+
 
         //
         // data attributes

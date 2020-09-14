@@ -170,7 +170,58 @@ namespace Scryber.Styles
 
         #endregion
 
-        
+        #region public bool BreakBefore {get;set;} + RemoveBreakBefore()
+
+        [PDFAttribute("break-before")]
+        public bool BreakBefore
+        {
+            get
+            {
+                bool value;
+                if (this.TryGetValue(PDFStyleKeys.PageBreakBeforeKey, out value))
+                    return value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PageBreakBeforeKey, value);
+            }
+        }
+
+        public void RemoveBreakBefore()
+        {
+            this.RemoveValue(PDFStyleKeys.PageBreakBeforeKey);
+        }
+
+        #endregion
+
+        #region public bool BreakAfter {get;set;} + RemoveBreakAfter()
+
+        [PDFAttribute("break-after")]
+        public bool BreakAfter
+        {
+            get
+            {
+                bool value;
+                if (this.TryGetValue(PDFStyleKeys.PageBreakAfterKey, out value))
+                    return value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(PDFStyleKeys.PageBreakAfterKey, value);
+            }
+        }
+
+        public void RemoveBreakAfter()
+        {
+            this.RemoveValue(PDFStyleKeys.PageBreakAfterKey);
+        }
+
+        #endregion
+
         #region public int NumberStartIndex {get;set;}
 
         /// <summary>
