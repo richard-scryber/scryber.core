@@ -31,7 +31,7 @@ namespace Scryber
         private Drawing.PDFPoint _location;
         private Drawing.PDFSize _size;
         private Layout.PDFLayoutPage _page;
-        private Styles.PDFStyle _style;
+        private Styles.Style _style;
 
         public PDFAcrobatFormFieldWidget(string name, string value, string defaultValue, FormInputFieldType type, FormFieldOptions options)
         {
@@ -43,7 +43,7 @@ namespace Scryber
             this.DefaultValue = defaultValue;
         }
 
-        public void SetAppearance(FormFieldAppearanceState state, Layout.PDFLayoutXObject xObject, Layout.PDFLayoutPage page, Styles.PDFStyle style)
+        public void SetAppearance(FormFieldAppearanceState state, Layout.PDFLayoutXObject xObject, Layout.PDFLayoutPage page, Styles.Style style)
         {
             this._states[state] = xObject;
             if (state == FormFieldAppearanceState.Normal)
@@ -90,11 +90,11 @@ namespace Scryber
             writer.BeginDictionaryEntry("MK");
             writer.BeginDictionary();
 
-            if (this._style.IsValueDefined(Styles.PDFStyleKeys.BorderColorKey))
+            if (this._style.IsValueDefined(Styles.StyleKeys.BorderColorKey))
             {
                 WriteInputColor(context, writer, "BC", this._style.Border.Color);
             }
-            if (this._style.IsValueDefined(Styles.PDFStyleKeys.BgColorKey))
+            if (this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
             {
                 WriteInputColor(context, writer, "BG", this._style.Background.Color);
             }

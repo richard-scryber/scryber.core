@@ -111,9 +111,9 @@ namespace Scryber.Data
                 return null;
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle baseStyle= base.GetBaseStyle();
+            Style baseStyle= base.GetBaseStyle();
             baseStyle.Overflow.Split = Drawing.OverflowSplit.Any;
             baseStyle.Size.FullWidth = true;
             baseStyle.Padding.All = 5;

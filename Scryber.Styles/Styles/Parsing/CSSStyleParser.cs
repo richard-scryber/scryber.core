@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Scryber.Styles.Parsing
 {
-    public class CSSStyleParser : IEnumerable<PDFStyle>
+    public class CSSStyleParser : IEnumerable<Style>
     {
         private List<CSSParsingError> _err;
-
+        private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("/\\*.*\\*/");
         public IEnumerable<CSSParsingError> Errors
         {
             get { return _err; }
@@ -27,9 +27,13 @@ namespace Scryber.Styles.Parsing
             this._err = new List<CSSParsingError>();
         }
 
-        public IEnumerator<PDFStyle> GetEnumerator()
+        public IEnumerator<Style> GetEnumerator()
         {
-            var strEnum = new StringEnumerator(this.Content);
+            var content = this.Content;
+            if (CommentMatcher.Match(content).Success)
+                content = CommentMatcher.Replace(content, "");
+
+            var strEnum = new StringEnumerator(content);
             return new CSSStyleEnumerator(strEnum, this);
         }
 

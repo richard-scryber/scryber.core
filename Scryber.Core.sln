@@ -10,31 +10,38 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Styles", "Scryber.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Generation", "Scryber.Generation\Scryber.Generation.csproj", "{82DC9DDF-DED3-472F-9822-CA3EB0017DF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components", "Scryber.Components\Scryber.Components.csproj", "{5FE37698-9469-427D-BB7B-BA4D7ECC5599}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Components", "Scryber.Components\Scryber.Components.csproj", "{5FE37698-9469-427D-BB7B-BA4D7ECC5599}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.UnitTests", "Scryber.Core.UnitTest\Scryber.UnitTests.csproj", "{D30F3AD9-2541-46A1-BA4E-E6D68D457764}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components.Mvc", "Scryber.Components.Mvc\Scryber.Components.Mvc.csproj", "{B335EFBC-5BE1-4CAD-AD75-7075FA643EE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Components.Mvc", "Scryber.Components.Mvc\Scryber.Components.Mvc.csproj", "{B335EFBC-5BE1-4CAD-AD75-7075FA643EE2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scryber.Core.Schemas", "Scryber.Core.Schemas", "{75B6EFDC-0508-4DA7-A090-D393E4416049}"
 	ProjectSection(SolutionItems) = preProject
-		Scryber.Core.Schemas\Scryber.Data.xsd = Scryber.Core.Schemas\Scryber.Data.xsd
-		Scryber.Core.Schemas\Scryber.Styles.xsd = Scryber.Core.Schemas\Scryber.Styles.xsd
-		Scryber.Core.Schemas\Scryber.Types.xsd = Scryber.Core.Schemas\Scryber.Types.xsd
 		Scryber.Core.Schemas\Scryber.Base.xsd = Scryber.Core.Schemas\Scryber.Base.xsd
 		Scryber.Core.Schemas\Scryber.Components.xsd = Scryber.Core.Schemas\Scryber.Components.xsd
 		Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec = Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec
+		Scryber.Core.Schemas\Scryber.Data.xsd = Scryber.Core.Schemas\Scryber.Data.xsd
+		Scryber.Core.Schemas\Scryber.Styles.xsd = Scryber.Core.Schemas\Scryber.Styles.xsd
+		Scryber.Core.Schemas\Scryber.Types.xsd = Scryber.Core.Schemas\Scryber.Types.xsd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B291362D-A874-45F3-9A31-0127AEC19190}"
 	ProjectSection(SolutionItems) = preProject
-		docs\index.rst = docs\index.rst
-		docs\conf.py = docs\conf.py
 		docs\_config.yml = docs\_config.yml
+		docs\conf.py = docs\conf.py
+		docs\index.rst = docs\index.rst
 		docs\libgdiplus.md = docs\libgdiplus.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{A8F3B995-F089-4333-A4D0-789359C00E25}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7E9620B1-26E8-4F2A-BDB4-64488827BBEF}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+		ScyberLogo2_alpha_small.png = ScyberLogo2_alpha_small.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,10 +96,10 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {43103F0A-F9CB-4C80-9DD9-6F58FF0A2918}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A8F3B995-F089-4333-A4D0-789359C00E25} = {B291362D-A874-45F3-9A31-0127AEC19190}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43103F0A-F9CB-4C80-9DD9-6F58FF0A2918}
 	EndGlobalSection
 EndGlobal

@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Columns_ConstructorTest()
         {
-            PDFColumnsStyle target = new PDFColumnsStyle();
+            ColumnsStyle target = new ColumnsStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.ColumnItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.ColumnItemKey, target.ItemKey);
         }
 
         /// <summary>
@@ -85,10 +85,10 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Columns_AlleyWidthTest()
         {
-            PDFColumnsStyle target = new PDFColumnsStyle();
-            Assert.AreEqual(PDFColumnsStyle.DefaultAlleyWidth, target.AlleyWidth);
+            ColumnsStyle target = new ColumnsStyle();
+            Assert.AreEqual(ColumnsStyle.DefaultAlleyWidth, target.AlleyWidth);
 
-            PDFUnit expected = PDFColumnsStyle.DefaultAlleyWidth + 20;
+            PDFUnit expected = ColumnsStyle.DefaultAlleyWidth + 20;
             target.AlleyWidth = expected;
             Assert.AreEqual(expected, target.AlleyWidth);
 
@@ -97,9 +97,9 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.AlleyWidth);
 
             target.RemoveAlleyWidth();
-            Assert.AreEqual(PDFColumnsStyle.DefaultAlleyWidth, target.AlleyWidth);
+            Assert.AreEqual(ColumnsStyle.DefaultAlleyWidth, target.AlleyWidth);
 
-            expected = PDFColumnsStyle.DefaultAlleyWidth;
+            expected = ColumnsStyle.DefaultAlleyWidth;
             target.AlleyWidth = expected;
             Assert.AreEqual(expected, target.AlleyWidth);
         }
@@ -111,7 +111,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Columns_ColumnCountTest()
         {
-            PDFColumnsStyle target = new PDFColumnsStyle();
+            ColumnsStyle target = new ColumnsStyle();
             Assert.AreEqual(1, target.ColumnCount);
 
             int expected = 2;
@@ -139,7 +139,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Columns_AutoFlowTest()
         {
-            PDFColumnsStyle target = new PDFColumnsStyle();
+            ColumnsStyle target = new ColumnsStyle();
             Assert.AreEqual(true, target.AutoFlow);
 
             bool expected = true;

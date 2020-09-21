@@ -38,7 +38,7 @@ namespace Scryber.Layout
         /// <summary>
         /// The full applied style for the component
         /// </summary>
-        public PDFStyle FullStyle { get; private set; }
+        public Style FullStyle { get; private set; }
 
         #endregion
 
@@ -90,7 +90,7 @@ namespace Scryber.Layout
         /// <param name="line"></param>
         /// <param name="component"></param>
         /// <param name="style"></param>
-        public PDFLayoutComponentRun(PDFLayoutLine line, IPDFComponent component, PDFStyle style)
+        public PDFLayoutComponentRun(PDFLayoutLine line, IPDFComponent component, Style style)
             : base(line, component)
         {
             System.Diagnostics.Debug.Assert(null != component);
@@ -199,7 +199,7 @@ namespace Scryber.Layout
         {
             PDFSize prevSize = context.Space;
             PDFPoint prevLoc = context.Offset;
-            PDFStyle laststyle = context.FullStyle;
+            Style laststyle = context.FullStyle;
 
             PDFObjectRef oref;
             if (this.Owner is IPDFRenderComponent)
@@ -223,8 +223,8 @@ namespace Scryber.Layout
                 Sides sides;
                 if (null != border)
                 {
-                    corner = this.FullStyle.GetValue(PDFStyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
-                    sides = this.FullStyle.GetValue(PDFStyleKeys.BorderSidesKey, Sides.Top | Sides.Bottom | Sides.Left | Sides.Right);
+                    corner = this.FullStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
+                    sides = this.FullStyle.GetValue(StyleKeys.BorderSidesKey, Sides.Top | Sides.Bottom | Sides.Left | Sides.Right);
                 }
                 else
                 {

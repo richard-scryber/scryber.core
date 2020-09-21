@@ -91,7 +91,7 @@ namespace Scryber.Components
         /// Implementation method for the IPDFImageComponent to return the image data in a PDFImageXObject instance.
         /// </summary>
         /// <returns></returns>
-        public virtual PDFImageXObject GetImageObject(PDFContextBase context, PDFStyle fullstyle)
+        public virtual PDFImageXObject GetImageObject(PDFContextBase context, Style fullstyle)
         {
             if (null == this.XObject)
             {
@@ -158,15 +158,15 @@ namespace Scryber.Components
         /// Inheritors must implement this method to actually load the required image data.
         /// </summary>
         /// <returns></returns>
-        protected abstract Resources.PDFImageXObject InitImageXObject(PDFContextBase context, PDFStyle fullstyle);
+        protected abstract Resources.PDFImageXObject InitImageXObject(PDFContextBase context, Style fullstyle);
 
         /// <summary>
         /// Overrides the base implementation to specify that images are by default blocks.
         /// </summary>
         /// <returns></returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle s = base.GetBaseStyle();
+            Style s = base.GetBaseStyle();
             s.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
             
             return s;
@@ -178,7 +178,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="set"></param>
         /// <param name="fullstyle"></param>
-        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
             IPDFResourceContainer resources = this.GetResourceContainer();
             if (null == resources)
@@ -195,7 +195,7 @@ namespace Scryber.Components
         public virtual PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             PDFGraphics graphics = context.Graphics;
-            PDFStyle full = null;
+            Style full = null;
 
             PDFComponentArrangement arrange = this.GetFirstArrangement();
             if (null != arrange)
@@ -218,8 +218,8 @@ namespace Scryber.Components
 
                 graphics.SaveGraphicsState();
 
-                PDFStyleValue<double> op;
-                if(full.TryGetValue(PDFStyleKeys.FillOpacityKey, out op))
+                StyleValue<double> op;
+                if(full.TryGetValue(StyleKeys.FillOpacityKey, out op))
                 {
                     if (op.Value < 1.0)
                     {
@@ -236,7 +236,7 @@ namespace Scryber.Components
                 return null;
         }
 
-        public PDFSize GetRequiredSizeForLayout(PDFSize available, PDFLayoutContext context, PDFStyle appliedstyle)
+        public PDFSize GetRequiredSizeForLayout(PDFSize available, PDFLayoutContext context, Style appliedstyle)
         {
             PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();
@@ -302,7 +302,7 @@ namespace Scryber.Components
             return new PDFSize(w, h);
         }
 
-        public void SetRenderSizes(PDFRect content, PDFRect border, PDFRect total, PDFStyle style)
+        public void SetRenderSizes(PDFRect content, PDFRect border, PDFRect total, Style style)
         {
             //Do Nothing
         }

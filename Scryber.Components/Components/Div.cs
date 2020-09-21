@@ -49,9 +49,9 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Size.FullWidth = true;
             style.Position.PositionMode = Drawing.PositionMode.Block;
             return style;

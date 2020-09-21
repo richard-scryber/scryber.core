@@ -48,9 +48,9 @@ namespace Scryber.Data
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Size.FullWidth = true;
             style.Position.PositionMode = Drawing.PositionMode.Block;
             return style;
@@ -85,11 +85,11 @@ namespace Scryber.Data
         [PDFDesignable("Label Text", Category = "General", Priority = 5, Type = "String")]
         public string FieldLabel { get; set; }
 
-        [PDFAttribute("label-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("label-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Label Class", Category = "Style Classes", Priority = 3, Type = "ClassName")]
         public string LabelClass { get; set; }
 
-        [PDFAttribute("value-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("value-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Value Class", Category = "Style Classes", Priority = 4, Type = "ClassName")]
         public string ValueClass { get; set; }
 

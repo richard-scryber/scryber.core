@@ -187,7 +187,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the overflow action of this page
         /// </summary>
-        [PDFAttribute("overflow-action",PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("overflow-action",Style.PDFStylesNamespace)]
         public OverflowAction OverflowAction
         {
             get { return this.Style.Overflow.Action; }
@@ -196,7 +196,7 @@ namespace Scryber.Components
 
         #endregion
 
-        [PDFAttribute("page-angle", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("page-angle", Style.PDFStylesNamespace)]
         [PDFDesignable("Page Rotation", Ignore = true, Category = "Paper", Priority = 1, Type = "Select")]
         public PageRotationAngles PageAngle
         {
@@ -502,9 +502,9 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="appliedstyle">The current Applied style</param>
         /// <returns>A new PDFPageSize instance</returns>
-        public virtual PDFPageSize GetPageSize(PDFStyle style)
+        public virtual PageSize GetPageSize(Style style)
         {
-            PDFPageSize pagesize = style.CreatePageSize();
+            PageSize pagesize = style.CreatePageSize();
 
             return pagesize;
         }
@@ -527,10 +527,10 @@ namespace Scryber.Components
 
         #region public override PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles)
 
-        public override PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles, PDFContextBase context)
+        public override PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
         {
-            PDFStyle full = styles.GetFullStyle(this);
-            PDFPageSize size = this.GetPageSize(full);
+            Style full = styles.GetFullStyle(this);
+            PageSize size = this.GetPageSize(full);
             return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, size.Size, context);
         }
 
@@ -643,9 +643,9 @@ namespace Scryber.Components
         /// Overrides the GetBaseStyle() to include an overflow action of none - default for a page
         /// </summary>
         /// <returns></returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            Scryber.Styles.PDFStyle flat = base.GetBaseStyle();
+            Scryber.Styles.Style flat = base.GetBaseStyle();
             flat.Overflow.Action = OverflowAction.None;
 
             return flat;
@@ -694,7 +694,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public abstract IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style);
+        public abstract IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style);
         
 
         #region IPDFRemoteComponent Members
@@ -777,7 +777,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="set"></param>
         /// <param name="fullstyle"></param>
-        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
             this.OriginalItems = context.Items;
 
@@ -801,7 +801,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="artefacts"></param>
         /// <param name="fullstyle"></param>
-        protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, PDFStyle fullstyle)
+        protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
         {
             base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
 

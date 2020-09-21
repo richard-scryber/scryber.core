@@ -348,7 +348,7 @@ namespace Scryber.Layout
         /// <param name="parent"></param>
         /// <param name="owner"></param>
         /// <param name="fullstyle"></param>
-        public PDFLayoutBlock(PDFLayoutItem parent, IPDFComponent owner, IPDFLayoutEngine engine, Scryber.Styles.PDFStyle fullstyle, OverflowSplit split)
+        public PDFLayoutBlock(PDFLayoutItem parent, IPDFComponent owner, IPDFLayoutEngine engine, Scryber.Styles.Style fullstyle, OverflowSplit split)
             : base(parent, owner, engine, fullstyle)
         {
             this.OverflowSplit = split;
@@ -839,7 +839,7 @@ namespace Scryber.Layout
         /// <param name="owner"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewBlock(IPDFComponent owner, IPDFLayoutEngine engine, PDFStyle fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewBlock(IPDFComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
         {
             if (mode == PositionMode.Inline)
                 throw RecordAndRaise.ArgumentOutOfRange("mode", Errors.CannotBeginABlockThatIsInline);
@@ -852,7 +852,7 @@ namespace Scryber.Layout
             if (null == container)
                 container = this;
 
-            OverflowSplit split = fullstyle.GetValue(PDFStyleKeys.OverflowSplitKey, OverflowSplit.Any);
+            OverflowSplit split = fullstyle.GetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Any);
             PDFLayoutRegion region = container.CurrentRegion;
 
             PDFLayoutBlock block = new PDFLayoutBlock(container, owner, engine, fullstyle, split);
@@ -872,7 +872,7 @@ namespace Scryber.Layout
         /// <param name="fullstyle"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, PDFStyle fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
         {
             PDFLayoutBlock block = this.BeginNewBlock(owner, engine, fullstyle, mode);
             block.IsContainer = true;
@@ -891,7 +891,7 @@ namespace Scryber.Layout
         /// <param name="comp"></param>
         /// <param name="full"></param>
         /// <returns></returns>
-        public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IPDFComponent comp, PDFStyle full, bool addAssociatedRun = true)
+        public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IPDFComponent comp, Style full, bool addAssociatedRun = true)
         {
             PDFLayoutRegion before = this.CurrentRegion;
             PDFLayoutLine beforeline = before.CurrentItem as PDFLayoutLine;
@@ -983,7 +983,7 @@ namespace Scryber.Layout
             }
             
             
-            PDFStyle fullstyle = this.FullStyle;
+            Style fullstyle = this.FullStyle;
             if (null == fullstyle)
                 throw new NullReferenceException(Errors.ThisBlockDoesNotHaveAnyStyle);
             PDFPositionOptions position = this.Position;
@@ -999,7 +999,7 @@ namespace Scryber.Layout
                 return null;
             }
 
-            PDFStyle prevStyle = context.FullStyle;
+            Style prevStyle = context.FullStyle;
             PDFSize prevSize = context.Space;
             PDFPoint prevLoc = context.Offset;
             try
@@ -1094,8 +1094,8 @@ namespace Scryber.Layout
                 Sides sides;
                 if (null != border)
                 {
-                    corner = this.FullStyle.GetValue(PDFStyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
-                    sides = this.FullStyle.GetValue(PDFStyleKeys.BorderSidesKey, Sides.Top | Sides.Bottom | Sides.Left | Sides.Right);
+                    corner = this.FullStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
+                    sides = this.FullStyle.GetValue(StyleKeys.BorderSidesKey, Sides.Top | Sides.Bottom | Sides.Left | Sides.Right);
                 }
                 else
                 {
@@ -1153,7 +1153,7 @@ namespace Scryber.Layout
                 PDFPen grid = this.FullStyle.CreateOverlayGridPen();
                 if (null != grid)
                 {
-                    PDFOverlayGridStyle over = this.FullStyle.OverlayGrid;
+                    OverlayGridStyle over = this.FullStyle.OverlayGrid;
                     this.OutputOverlayGrid(grid, over, context, total);
                     if (over.HighlightColumns)
                         this.OutputRegionOverlay(over, context, contentRect);
@@ -1256,7 +1256,7 @@ namespace Scryber.Layout
         /// <param name="grid">The grid style to use for rendering</param>
         /// <param name="context">The current render context</param>
         /// <param name="contentRect">The content rectagle that encloses all the columns</param>
-        private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
+        private void OutputRegionOverlay(OverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
         {
             if (null == grid)
                 throw new ArgumentNullException("grid");
@@ -1283,7 +1283,7 @@ namespace Scryber.Layout
         /// <param name="grid">The grid to render</param>
         /// <param name="context"></param>
         /// <param name="rect">The rectangle to use to render the grid within</param>
-        private void OutputOverlayGrid(PDFPen pen, PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect rect)
+        private void OutputOverlayGrid(PDFPen pen, OverlayGridStyle grid, PDFRenderContext context, PDFRect rect)
         {
             if (null == pen)
                 return;

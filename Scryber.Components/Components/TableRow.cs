@@ -48,15 +48,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFColor> bg;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BgColorKey,out bg))
+                StyleValue<PDFColor> bg;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BgColorKey,out bg))
                     return bg.Value;
                 else
                     return PDFColors.Transparent;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BgColorKey, value);
+                this.Style.SetValue(StyleKeys.BgColorKey, value);
             }
         }
 
@@ -72,8 +72,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<string> src;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BgImgSrcKey, out src))
+                StyleValue<string> src;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BgImgSrcKey, out src))
                     return src.Value;
                 else
                     return string.Empty;
@@ -81,9 +81,9 @@ namespace Scryber.Components
             set
             {
                 if (!string.IsNullOrEmpty(value))
-                    this.Style.SetValue(PDFStyleKeys.BgImgSrcKey, value);
+                    this.Style.SetValue(StyleKeys.BgImgSrcKey, value);
                 else
-                    this.Style.RemoveValue(PDFStyleKeys.BgImgSrcKey);
+                    this.Style.RemoveValue(StyleKeys.BgImgSrcKey);
             }
         }
 
@@ -99,15 +99,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PatternRepeat> bg;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BgRepeatKey, out bg))
+                StyleValue<PatternRepeat> bg;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BgRepeatKey, out bg))
                     return bg.Value;
                 else
                     return PatternRepeat.RepeatBoth;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BgRepeatKey, value);
+                this.Style.SetValue(StyleKeys.BgRepeatKey, value);
             }
         }
 
@@ -123,15 +123,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<double> bg;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BgOpacityKey, out bg))
+                StyleValue<double> bg;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BgOpacityKey, out bg))
                     return bg.Value;
                 else
                     return PDFReal.Zero;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BgOpacityKey, value.Value);
+                this.Style.SetValue(StyleKeys.BgOpacityKey, value.Value);
             }
         }
 
@@ -147,15 +147,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFUnit> bg;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BorderWidthKey, out bg))
+                StyleValue<PDFUnit> bg;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BorderWidthKey, out bg))
                     return bg.Value;
                 else
                     return PDFUnit.Empty;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BorderWidthKey, value);
+                this.Style.SetValue(StyleKeys.BorderWidthKey, value);
             }
         }
 
@@ -171,8 +171,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFColor> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BorderColorKey, out val))
+                StyleValue<PDFColor> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BorderColorKey, out val))
                     return val.Value;
                 else
                     return PDFColors.Transparent;
@@ -180,9 +180,9 @@ namespace Scryber.Components
             set
             {
                 if (null == value)
-                    this.Style.RemoveValue(PDFStyleKeys.BorderColorKey);
+                    this.Style.RemoveValue(StyleKeys.BorderColorKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.BorderColorKey, value);
+                    this.Style.SetValue(StyleKeys.BorderColorKey, value);
             }
         }
 
@@ -198,8 +198,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFDash> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BorderDashKey, out val))
+                StyleValue<PDFDash> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BorderDashKey, out val))
                     return val.Value;
                 else
                     return PDFDash.None;
@@ -207,9 +207,9 @@ namespace Scryber.Components
             set
             {
                 if (null == value)
-                    this.Style.RemoveValue(PDFStyleKeys.BorderDashKey);
+                    this.Style.RemoveValue(StyleKeys.BorderDashKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.BorderDashKey, value);
+                    this.Style.SetValue(StyleKeys.BorderDashKey, value);
             }
         }
 
@@ -225,15 +225,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<double> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BorderOpacityKey, out val))
+                StyleValue<double> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BorderOpacityKey, out val))
                     return val.Value;
                 else
                     return 1;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BorderOpacityKey, value);
+                this.Style.SetValue(StyleKeys.BorderOpacityKey, value);
             }
         }
 
@@ -249,15 +249,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<Sides> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BorderSidesKey, out val))
+                StyleValue<Sides> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BorderSidesKey, out val))
                     return val.Value;
                 else
                     return (Sides)0;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BorderSidesKey, value);
+                this.Style.SetValue(StyleKeys.BorderSidesKey, value);
             }
         }
 
@@ -273,15 +273,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFUnit> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.BorderCornerRadiusKey, out val))
+                StyleValue<PDFUnit> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.BorderCornerRadiusKey, out val))
                     return val.Value;
                 else
                     return PDFUnit.Zero;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.BorderCornerRadiusKey, value);
+                this.Style.SetValue(StyleKeys.BorderCornerRadiusKey, value);
             }
         }
 
@@ -297,8 +297,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFColor> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FillColorKey, out val))
+                StyleValue<PDFColor> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FillColorKey, out val))
                     return val.Value;
                 else
                     return PDFColors.Transparent;
@@ -306,9 +306,9 @@ namespace Scryber.Components
             set
             {
                 if (null == value)
-                    this.Style.RemoveValue(PDFStyleKeys.FillColorKey);
+                    this.Style.RemoveValue(StyleKeys.FillColorKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.FillColorKey, value);
+                    this.Style.SetValue(StyleKeys.FillColorKey, value);
             }
         }
 
@@ -324,8 +324,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<string> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FillImgSrcKey, out val))
+                StyleValue<string> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FillImgSrcKey, out val))
                     return val.Value;
                 else
                     return string.Empty;
@@ -333,9 +333,9 @@ namespace Scryber.Components
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    this.Style.RemoveValue(PDFStyleKeys.FillImgSrcKey);
+                    this.Style.RemoveValue(StyleKeys.FillImgSrcKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.FillImgSrcKey, value);
+                    this.Style.SetValue(StyleKeys.FillImgSrcKey, value);
             }
         }
 
@@ -351,15 +351,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PatternRepeat> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FillRepeatKey, out val))
+                StyleValue<PatternRepeat> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FillRepeatKey, out val))
                     return val.Value;
                 else
                     return PatternRepeat.RepeatBoth;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.FillRepeatKey, value);
+                this.Style.SetValue(StyleKeys.FillRepeatKey, value);
             }
         }
 
@@ -375,15 +375,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<double> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FillOpacityKey, out val))
+                StyleValue<double> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FillOpacityKey, out val))
                     return val.Value;
                 else
                     return PDFReal.Zero;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.FillOpacityKey, value.Value);
+                this.Style.SetValue(StyleKeys.FillOpacityKey, value.Value);
             }
         }
 
@@ -399,15 +399,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFUnit> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.StrokeWidthKey, out val))
+                StyleValue<PDFUnit> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.StrokeWidthKey, out val))
                     return val.Value;
                 else
                     return PDFUnit.Empty;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.StrokeWidthKey, value);
+                this.Style.SetValue(StyleKeys.StrokeWidthKey, value);
             }
         }
 
@@ -423,8 +423,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFColor> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.StrokeColorKey, out val))
+                StyleValue<PDFColor> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.StrokeColorKey, out val))
                     return val.Value;
                 else
                     return PDFColors.Transparent;
@@ -432,9 +432,9 @@ namespace Scryber.Components
             set
             {
                 if (null == value)
-                    this.Style.RemoveValue(PDFStyleKeys.StrokeColorKey);
+                    this.Style.RemoveValue(StyleKeys.StrokeColorKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.StrokeColorKey, value);
+                    this.Style.SetValue(StyleKeys.StrokeColorKey, value);
             }
         }
 
@@ -450,8 +450,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFDash> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.StrokeDashKey, out val))
+                StyleValue<PDFDash> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.StrokeDashKey, out val))
                     return val.Value;
                 else
                     return PDFDash.None;
@@ -459,9 +459,9 @@ namespace Scryber.Components
             set
             {
                 if (null == value)
-                    this.Style.RemoveValue(PDFStyleKeys.StrokeDashKey);
+                    this.Style.RemoveValue(StyleKeys.StrokeDashKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.StrokeDashKey, value);
+                    this.Style.SetValue(StyleKeys.StrokeDashKey, value);
 
             }
         }
@@ -478,15 +478,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<double> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.StrokeOpacityKey, out val))
+                StyleValue<double> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.StrokeOpacityKey, out val))
                     return val.Value;
                 else
                     return 1;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.StrokeOpacityKey, value);
+                this.Style.SetValue(StyleKeys.StrokeOpacityKey, value);
             }
         }
 
@@ -502,8 +502,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<string> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FontFamilyKey, out val))
+                StyleValue<string> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontFamilyKey, out val))
                     return val.Value;
                 else
                     return string.Empty;
@@ -511,9 +511,9 @@ namespace Scryber.Components
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    this.Style.RemoveValue(PDFStyleKeys.FontFamilyKey);
+                    this.Style.RemoveValue(StyleKeys.FontFamilyKey);
                 else
-                    this.Style.SetValue(PDFStyleKeys.FontFamilyKey, value);
+                    this.Style.SetValue(StyleKeys.FontFamilyKey, value);
             }
         }
 
@@ -529,15 +529,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<PDFUnit> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FontSizeKey, out val))
+                StyleValue<PDFUnit> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontSizeKey, out val))
                     return val.Value;
                 else
                     return PDFUnit.Zero;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.FontSizeKey, value);
+                this.Style.SetValue(StyleKeys.FontSizeKey, value);
             }
         }
 
@@ -553,15 +553,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<bool> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FontBoldKey, out val))
+                StyleValue<bool> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontBoldKey, out val))
                     return val.Value;
                 else
                     return false;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.FontBoldKey, value);
+                this.Style.SetValue(StyleKeys.FontBoldKey, value);
             }
         }
 
@@ -577,15 +577,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<bool> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.FontItalicKey, out val))
+                StyleValue<bool> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontItalicKey, out val))
                     return val.Value;
                 else
                     return false;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.FontItalicKey, value);
+                this.Style.SetValue(StyleKeys.FontItalicKey, value);
             }
         }
 
@@ -601,15 +601,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<TableRowRepeat> val;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.TableRowRepeatKey, out val))
+                StyleValue<TableRowRepeat> val;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TableRowRepeatKey, out val))
                     return val.Value;
                 else
                     return TableRowRepeat.RepeatAtTop;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.TableRowRepeatKey, value);
+                this.Style.SetValue(StyleKeys.TableRowRepeatKey, value);
             }
         }
 
@@ -687,17 +687,17 @@ namespace Scryber.Components
 
         #region public PDFStyle Style {get;set;} + bool HasStyle {get;}
 
-        private PDFStyle _style;
+        private Style _style;
 
         /// <summary>
         /// Gets or sets the style data for this TableRow
         /// </summary>
-        public virtual PDFStyle Style
+        public virtual Style Style
         {
             get
             {
                 if (null == _style)
-                    _style = new PDFStyle();
+                    _style = new Style();
                 return _style;
             }
             set
@@ -779,9 +779,9 @@ namespace Scryber.Components
         /// so they will not break apart.
         /// </summary>
         /// <returns></returns>
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Overflow.Split = Drawing.OverflowSplit.Never;
             return style;
         }
@@ -797,7 +797,7 @@ namespace Scryber.Components
         /// <param name="forComponent"></param>
         /// <param name="baseStyle"></param>
         /// <returns></returns>
-        protected override void MergeDeclaredStyles(PDFStyle applied)
+        protected override void MergeDeclaredStyles(Style applied)
         {
             base.MergeDeclaredStyles(applied);
             this.RemoveInapplicableStyles(applied);
@@ -807,18 +807,18 @@ namespace Scryber.Components
         /// Removes all the styles that cannot be applied to a row explicitly
         /// </summary>
         /// <param name="applied"></param>
-        private void RemoveInapplicableStyles(PDFStyle applied)
+        private void RemoveInapplicableStyles(Style applied)
         {
             
 
             int count = applied.ValueCount;
 
-            applied.RemoveItemStyleValues(PDFStyleKeys.MarginsItemKey);
-            applied.RemoveItemStyleValues(PDFStyleKeys.PaddingItemKey);
-            applied.RemoveValue(PDFStyleKeys.PositionModeKey);
-            applied.RemoveValue(PDFStyleKeys.SizeHeightKey);
-            applied.RemoveValue(PDFStyleKeys.PositionXKey);
-            applied.RemoveValue(PDFStyleKeys.PositionYKey);
+            applied.RemoveItemStyleValues(StyleKeys.MarginsItemKey);
+            applied.RemoveItemStyleValues(StyleKeys.PaddingItemKey);
+            applied.RemoveValue(StyleKeys.PositionModeKey);
+            applied.RemoveValue(StyleKeys.SizeHeightKey);
+            applied.RemoveValue(StyleKeys.PositionXKey);
+            applied.RemoveValue(StyleKeys.PositionYKey);
 
             bool modified = count != applied.ValueCount;
 
@@ -874,9 +874,9 @@ namespace Scryber.Components
         /// Overrides the base style to apply a bold font to any text in the header
         /// </summary>
         /// <returns></returns>
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle style = base.GetBaseStyle();
+            Styles.Style style = base.GetBaseStyle();
             style.Table.RowRepeat = TableRowRepeat.RepeatAtTop;
             style.Font.FontBold = true;
             return style;

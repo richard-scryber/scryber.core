@@ -44,13 +44,13 @@ namespace Scryber.Components
 
 
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, PDFStyle fullstyle)
+        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             PDFRect bounds = GetPrescribedBounds(available, fullstyle);
-            PDFStyleValue<bool> isclosed;
-            PDFStyleValue<double> rotation;
-            fullstyle.TryGetValue(PDFStyleKeys.ShapeClosedKey, out isclosed);
-            fullstyle.TryGetValue(PDFStyleKeys.ShapeRotationKey, out rotation);
+            StyleValue<bool> isclosed;
+            StyleValue<double> rotation;
+            fullstyle.TryGetValue(StyleKeys.ShapeClosedKey, out isclosed);
+            fullstyle.TryGetValue(StyleKeys.ShapeRotationKey, out rotation);
             PDFGraphicsPath path = new PDFGraphicsPath();
             this.BuildElipse(path, bounds, 
                                 (isclosed == null)? true : isclosed.Value, 
@@ -171,7 +171,7 @@ namespace Scryber.Components
         // not needed or implemented
         //
 
-        protected override PDFPoint[] GetPoints(PDFRect bounds, PDFStyle style)
+        protected override PDFPoint[] GetPoints(PDFRect bounds, Style style)
         {
             throw new NotImplementedException();
         }

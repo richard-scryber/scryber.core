@@ -40,7 +40,7 @@ namespace Scryber.Layout
         /// <summary>
         /// The full style of this item
         /// </summary>
-        public PDFStyle FullStyle { get; set; }
+        public Style FullStyle { get; set; }
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace Scryber.Layout
         /// <param name="parent">The parent container of this item</param>
         /// <param name="owner">The component owner of this item</param>
         /// <param name="full">The style applied to this item based on it's container owner</param>
-        protected PDFLayoutContainerItem(PDFLayoutItem parent, IPDFComponent owner, IPDFLayoutEngine engine, PDFStyle full)
+        protected PDFLayoutContainerItem(PDFLayoutItem parent, IPDFComponent owner, IPDFLayoutEngine engine, Style full)
             : base(parent, owner)
         {
             this.FullStyle = full;

@@ -24,7 +24,7 @@ namespace Scryber.Components.Mvc
         /// <returns>A file action result with the appropriate headers and content type</returns>
         public static IActionResult PDF(this ControllerBase controller,  string fullpath, bool inline = true, string outputFileName = "")
         {
-            var doc = PDFDocument.ParseDocument(fullpath);
+            var doc = Document.ParseDocument(fullpath);
             if(inline == false)
             {
                 if (string.IsNullOrEmpty(outputFileName))
@@ -44,7 +44,7 @@ namespace Scryber.Components.Mvc
         /// <returns>A file action result with the appropriate headers and content type</returns>
         public static IActionResult PDF(this ControllerBase controller, System.IO.Stream content, bool inline = true, string outputFileName = "")
         {
-            var doc = PDFDocument.ParseDocument(content, ParseSourceType.DynamicContent);
+            var doc = Document.ParseDocument(content, ParseSourceType.DynamicContent);
 
             return PDF(controller, doc, inline, outputFileName);
         }
@@ -57,10 +57,10 @@ namespace Scryber.Components.Mvc
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
         /// <returns>A file action result with the appropriate headers and content type</returns>
-        public static IActionResult PDF(this ControllerBase controller, PDFDocument document, bool inline = true, string outputFileName = "")
+        public static IActionResult PDF(this ControllerBase controller, Document document, bool inline = true, string outputFileName = "")
         {
             var ms = new System.IO.MemoryStream();
-            document.ProcessDocument(ms);
+            document.SaveAsPDF(ms);
             ms.Flush();
 
             ms.Position = 0;
@@ -91,7 +91,7 @@ namespace Scryber.Components.Mvc
         /// <returns>A file action result with the appropriate headers and content type</returns>
         public static IActionResult PDF<T>(this ControllerBase controller, string fullpath, T model, bool inline = true, string outputFileName = "")
         {
-            var doc = PDFDocument.ParseDocument(fullpath);
+            var doc = Document.ParseDocument(fullpath);
             if (inline == false)
             {
                 if (string.IsNullOrEmpty(outputFileName))
@@ -113,7 +113,7 @@ namespace Scryber.Components.Mvc
         /// <returns>A file action result with the appropriate headers and content type</returns>
         public static IActionResult PDF<T>(this ControllerBase controller, System.IO.Stream content, T model, bool inline = true, string outputFileName = "")
         {
-            var doc = PDFDocument.ParseDocument(content, ParseSourceType.DynamicContent);
+            var doc = Document.ParseDocument(content, ParseSourceType.DynamicContent);
 
             return PDF(controller, doc, model, inline, outputFileName);
         }
@@ -128,13 +128,13 @@ namespace Scryber.Components.Mvc
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
         /// <returns>A file action result with the appropriate headers and content type</returns>
-        public static IActionResult PDF<T>(this ControllerBase controller, PDFDocument document, T model, bool inline = true, string outputFileName = "")
+        public static IActionResult PDF<T>(this ControllerBase controller, Document document, T model, bool inline = true, string outputFileName = "")
         {
             var ms = new System.IO.MemoryStream();
             document.Params["Model"] = model;
             document.Params["Controller"] = controller;
 
-            document.ProcessDocument(ms);
+            document.SaveAsPDF(ms);
             ms.Flush();
 
             ms.Position = 0;
@@ -151,7 +151,7 @@ namespace Scryber.Components.Mvc
         #endregion
 
 
-        private static string GetDocumentName(PDFDocument doc, ControllerBase controller)
+        private static string GetDocumentName(Document doc, ControllerBase controller)
         {
             string name = null;
             if(!string.IsNullOrEmpty(doc.FileName))

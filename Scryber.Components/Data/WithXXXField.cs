@@ -79,7 +79,7 @@ namespace Scryber.Data
             set { this._value = value; }
         }
 
-        [PDFAttribute("date-format", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("date-format", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Date Format", Category = "General", Priority = 5, Type = "DateFormat")]
         public string DateFormat
         {
@@ -156,7 +156,7 @@ namespace Scryber.Data
             set { this._value = value; }
         }
 
-        [PDFAttribute("number-format", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-format", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Number Format", Category = "General", Priority = 5, Type = "NumberFormat")]
         public string NumberFormat
         {

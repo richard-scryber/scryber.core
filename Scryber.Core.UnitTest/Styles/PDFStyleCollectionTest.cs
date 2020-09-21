@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleCollectionConstructorTest()
         {
-            PDFStyleCollection target = new PDFStyleCollection();
+            StyleCollection target = new StyleCollection();
             Assert.IsNotNull(target);
             Assert.AreEqual(0, target.Count);
         }
@@ -86,8 +86,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            PDFStyleCollection target = new PDFStyleCollection();
-            PDFStyleDefn defn = new PDFStyleDefn();
+            StyleCollection target = new StyleCollection();
+            StyleDefn defn = new StyleDefn();
             defn.Match = "doc:Label.sea";
 
             defn.Border.Color = PDFColors.Red;
@@ -96,14 +96,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             target.Add(defn);
 
-            PDFStyleDefn defn2 = new PDFStyleDefn();
+            StyleDefn defn2 = new StyleDefn();
             defn2.Match = ".sea"; // lower priority
 
             defn2.Border.Color = PDFColors.Gray; 
             defn2.Columns.ColumnCount = 3;
             target.Add(defn2);
 
-            PDFStyleDefn defn3 = new PDFStyleDefn();
+            StyleDefn defn3 = new StyleDefn();
             defn3.AppliedClass = "other";
             defn3.Border.Width = 20;
             defn3.Stroke.Color = PDFColors.Aqua;
@@ -113,13 +113,13 @@ namespace Scryber.Core.UnitTests.Styles
             lbl.ElementName = "doc:Label";
             ComponentState state = ComponentState.Normal;
 
-            PDFStyle style = new PDFStyle();
+            Style style = new Style();
             target.MergeInto(style, lbl, state);
             style.Flatten();
             Assert.IsFalse(style.HasValues);//no style class on the label
 
             lbl.StyleClass = "sea";
-            style = new PDFStyle();
+            style = new Style();
             target.MergeInto(style, lbl, state);
             style.Flatten();
 
@@ -127,7 +127,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((PDFUnit)10, style.Border.Width); // from defn (defn2 has no width)
             Assert.AreEqual("Helvetica", style.Font.FontFamily); //from defn
             Assert.AreEqual(3, style.Columns.ColumnCount); //from defn2 (lower priority but not set on defn)
-            Assert.IsFalse(style.IsValueDefined(PDFStyleKeys.StrokeColorKey)); //defn3 does have a stroke, but shoulld not be included
+            Assert.IsFalse(style.IsValueDefined(StyleKeys.StrokeColorKey)); //defn3 does have a stroke, but shoulld not be included
 
 
 
@@ -140,20 +140,20 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void ItemTest()
         {
-            PDFStyleCollection target = new PDFStyleCollection();
-            PDFStyleDefn defn = new PDFStyleDefn();
+            StyleCollection target = new StyleCollection();
+            StyleDefn defn = new StyleDefn();
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
             target.Add(defn);
 
-            PDFStyleDefn defn2 = new PDFStyleDefn();
+            StyleDefn defn2 = new StyleDefn();
             defn2.Border.Color = PDFColors.Gray;
             defn2.Border.Width = 2;
             target.Add(defn2);
 
             int index = 0;
-            PDFStyleBase expected = defn;
-            PDFStyleBase actual = target[index];
+            StyleBase expected = defn;
+            StyleBase actual = target[index];
 
             Assert.AreEqual(expected, actual);
 
@@ -180,15 +180,15 @@ namespace Scryber.Core.UnitTests.Styles
             doc.ID = "First Document";
 
             //doc.Styles should be initialized with the document as it's owner
-            PDFStyleCollection col = doc.Styles;
+            StyleCollection col = doc.Styles;
             Assert.AreEqual(doc, col.Owner);
 
             //A non IPDFComponent entry - make sure there are not cast exceptions
-            PDFStyle unowned = new PDFStyle();
+            Style unowned = new Style();
             col.Add(unowned);
 
             //An IPDFComponent entry - so should have it's parent value set
-            PDFStylesDocument styleDoc = new PDFStylesDocument();
+            StylesDocument styleDoc = new StylesDocument();
             col.Add(styleDoc);
 
             //parent should automatically be set on the styleDoc from the parent.
@@ -205,7 +205,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNull(styleDoc.Parent);
 
             //multiple hierarchy
-            PDFStylesDocument inner = new PDFStylesDocument();
+            StylesDocument inner = new StylesDocument();
             styleDoc.Styles.Add(inner);
             doc.Styles.Add(styleDoc);
             Assert.AreEqual(inner.Parent, styleDoc);

@@ -29,7 +29,7 @@ namespace Scryber.Layout
     public class LayoutEnginePage : LayoutEngineBase
     {
 
-        private PDFStyleStack _origStyleStack;
+        private StyleStack _origStyleStack;
 
         //
         // properties
@@ -41,7 +41,7 @@ namespace Scryber.Layout
         /// Gets or sets the style stack for the page
         /// (so continuation headers and footers can use this when content is overflowed, rather than the full stack).
         /// </summary>
-        protected PDFStyleStack PageStyleStack
+        protected StyleStack PageStyleStack
         {
             get { return _origStyleStack; }
             set { _origStyleStack = value; }
@@ -98,7 +98,7 @@ namespace Scryber.Layout
 
 
             //Get the page size and position options
-            PDFPageSize pgsize = this.FullStyle.CreatePageSize();
+            PageSize pgsize = this.FullStyle.CreatePageSize();
             PDFPositionOptions options = this.FullStyle.CreatePostionOptions();
 
 
@@ -178,8 +178,8 @@ namespace Scryber.Layout
         public override bool MoveToNextPage(Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
             
-            PDFStyleValue<OverflowAction> action;
-            if (this.FullStyle.TryGetValue(PDFStyleKeys.OverflowActionKey, out action) && action.Value == OverflowAction.NewPage)
+            StyleValue<OverflowAction> action;
+            if (this.FullStyle.TryGetValue(StyleKeys.OverflowActionKey, out action) && action.Value == OverflowAction.NewPage)
             {
                 PDFLayoutPage lastpage = this.DocumentLayout.CurrentPage;
                 PDFLayoutBlock open = lastpage.ContentBlock;
@@ -241,7 +241,7 @@ namespace Scryber.Layout
         protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom)
         {
             //Take a reference of the current stack and replace with the page stack from first page
-            PDFStyleStack orig = this.Context.StyleStack;
+            StyleStack orig = this.Context.StyleStack;
             this.Context.StyleStack = this.PageStyleStack;
 
             PDFLayoutPage page = this.BuildNewPage(copyfrom.Size, copyfrom.PositionOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
@@ -321,11 +321,11 @@ namespace Scryber.Layout
                 //Create the content inside the header component
                 InstantiateTemplateForPage(header, headtemplate);
 
-                PDFStyle head = header.GetAppliedStyle();
+                Style head = header.GetAppliedStyle();
                 if (null != head)
                     this.Context.StyleStack.Push(head);
 
-                PDFStyle full = this.Context.StyleStack.GetFullStyle(header);
+                Style full = this.Context.StyleStack.GetFullStyle(header);
 
                 this.DocumentLayout.CurrentPage.BeginHeader(header, full, this.Context);
 
@@ -347,11 +347,11 @@ namespace Scryber.Layout
 
                 InstantiateTemplateForPage(footer, foottemplate);
 
-                PDFStyle foot = footer.GetAppliedStyle();
+                Style foot = footer.GetAppliedStyle();
                 if (null != foot)
                     this.Context.StyleStack.Push(foot);
 
-                PDFStyle full = this.Context.StyleStack.GetFullStyle(footer);
+                Style full = this.Context.StyleStack.GetFullStyle(footer);
 
                 
                 this.DocumentLayout.CurrentPage.BeginFooter(footer, full, this.Context);
@@ -423,7 +423,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="style"></param>
         /// <returns></returns>
-        protected PDFPageNumberOptions GetPageNumbering(PDFStyle style)
+        protected PDFPageNumberOptions GetPageNumbering(Style style)
         {
             return style.CreatePageNumberOptions();
         }
@@ -438,7 +438,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="style"></param>
         /// <returns></returns>
-        protected PDFPageSize GetPageSize(PDFStyle style)
+        protected PageSize GetPageSize(Style style)
         {
             return style.CreatePageSize();
         }

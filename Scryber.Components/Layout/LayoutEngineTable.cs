@@ -33,8 +33,8 @@ namespace Scryber.Layout
         private TableGrid _tbl;
         private CellDimension[] _widths;
         private CellDimension[] _heights;
-        private PDFStyle[] _rowfullstyles, _rowappliedstyles;
-        private PDFStyle[,] _cellfullstyles, _cellappliedstyles;
+        private Style[] _rowfullstyles, _rowappliedstyles;
+        private Style[,] _cellfullstyles, _cellappliedstyles;
         private TableReference _tblRef;
         private PDFLayoutBlock _rowblock;
         private int _rowIndex = -1;
@@ -195,7 +195,7 @@ namespace Scryber.Layout
             }
                            
 
-            PDFStyle rowStyle = rowRef.FullStyle;
+            Style rowStyle = rowRef.FullStyle;
             this.Context.StyleStack.Push(rowRef.AppliedStyle);
 
 
@@ -270,7 +270,7 @@ namespace Scryber.Layout
                 else if (this.StartNewTableInAnotherRegion(origRow, index))
                 {
                     origregion.AddToSize(origtable);
-                    PDFStyle origRowStlye = this.StyleStack.Pop();
+                    Style origRowStlye = this.StyleStack.Pop();
                     _rowOffset = 0;
                     PDFUnit repeath = this.DoLayoutRepeatingRows(index);
                     _rowOffset += origRow.Height;
@@ -416,11 +416,11 @@ namespace Scryber.Layout
         {
             
 
-            Scryber.Styles.PDFStyle applied = cref.AppliedStyle;
+            Scryber.Styles.Style applied = cref.AppliedStyle;
             if (null != applied)
                 this.StyleStack.Push(applied);
 
-            Scryber.Styles.PDFStyle full = cref.FullStyle;
+            Scryber.Styles.Style full = cref.FullStyle;
 
             PDFArtefactRegistrationSet artefacts = cell.RegisterLayoutArtefacts(this.Context, full);
 
@@ -451,7 +451,7 @@ namespace Scryber.Layout
         /// <param name="full">The full style of the cell</param>
         /// <param name="colindex">The index of the column the cell is in</param>
         /// <param name="rowindex">The index of the row the cell is in</param>
-        private void DoLayoutACell(CellReference cref, TableCell cell, Styles.PDFStyle full, int colindex, int rowindex, bool repeating)
+        private void DoLayoutACell(CellReference cref, TableCell cell, Styles.Style full, int colindex, int rowindex, bool repeating)
         {
             try
             {
@@ -519,11 +519,11 @@ namespace Scryber.Layout
         /// <param name="columncount"></param>
         private void BuildStyles(out int rowcount, out int columncount)
         {
-            List<PDFStyle> rowfulls = new List<PDFStyle>();
-            List<List<PDFStyle>> cellfulls = new List<List<PDFStyle>>();
+            List<Style> rowfulls = new List<Style>();
+            List<List<Style>> cellfulls = new List<List<Style>>();
 
-            List<PDFStyle> rowapplieds = new List<PDFStyle>();
-            List<List<PDFStyle>> cellapplieds = new List<List<PDFStyle>>();
+            List<Style> rowapplieds = new List<Style>();
+            List<List<Style>> cellapplieds = new List<List<Style>>();
             int maxcolcount = 0;
 
             foreach (TableRow row in this.Table.Rows)
@@ -531,8 +531,8 @@ namespace Scryber.Layout
                 if (row.Visible == false)
                     continue;
 
-                PDFStyle rowapplied = null;
-                PDFStyle rowfull = null;
+                Style rowapplied = null;
+                Style rowfull = null;
 
                 if (!string.IsNullOrEmpty(row.DataStyleIdentifier) && this.Context.DocumentLayout.TryGetStyleWithIdentifier(row.DataStyleIdentifier, out rowapplied, out rowfull))
                 {
@@ -558,10 +558,10 @@ namespace Scryber.Layout
                 rowfulls.Add(rowfull);
 
                 //For each of the cells in the row
-                List<PDFStyle> rowcellstyles = new List<PDFStyle>();
+                List<Style> rowcellstyles = new List<Style>();
                 cellfulls.Add(rowcellstyles);
 
-                List<PDFStyle> rowcellapplieds = new List<PDFStyle>();
+                List<Style> rowcellapplieds = new List<Style>();
                 cellapplieds.Add(rowcellapplieds);
 
                 foreach (TableCell cell in row.Cells)
@@ -569,8 +569,8 @@ namespace Scryber.Layout
                     if (cell.Visible == false)
                         continue;
 
-                    PDFStyle cellfull = null;
-                    PDFStyle cellapplied = null;
+                    Style cellfull = null;
+                    Style cellapplied = null;
 
                     if (!string.IsNullOrEmpty(cell.DataStyleIdentifier) && Context.DocumentLayout.TryGetStyleWithIdentifier(cell.DataStyleIdentifier, out cellapplied, out cellfull))
                     {
@@ -595,9 +595,9 @@ namespace Scryber.Layout
 
                     //If this cell spans more than 1 column then add null to the row cell styles for each spanned column
 
-                    PDFStyleValue<int> spanVal;
+                    StyleValue<int> spanVal;
                     int span;
-                    if (cellfull.TryGetValue(PDFStyleKeys.TableCellColumnSpanKey, out spanVal))
+                    if (cellfull.TryGetValue(StyleKeys.TableCellColumnSpanKey, out spanVal))
                         span = spanVal.Value;
                     else
                         //Deleted the allow changes to set the cellColumnSpan value on the style
@@ -631,13 +631,13 @@ namespace Scryber.Layout
             this._rowfullstyles = rowfulls.ToArray();
             this._rowappliedstyles = rowapplieds.ToArray();
 
-            this._cellfullstyles = new PDFStyle[rowfulls.Count, maxcolcount];
-            this._cellappliedstyles = new PDFStyle[rowfulls.Count, maxcolcount];
+            this._cellfullstyles = new Style[rowfulls.Count, maxcolcount];
+            this._cellappliedstyles = new Style[rowfulls.Count, maxcolcount];
 
             for (int r = 0; r < rowcount; r++)
             {
-                List<PDFStyle> rsf = cellfulls[r];
-                List<PDFStyle> rsa = cellapplieds[r];
+                List<Style> rsf = cellfulls[r];
+                List<Style> rsa = cellapplieds[r];
 
                 for (int c = 0; c < maxcolcount; c++)
                 {
@@ -922,8 +922,8 @@ namespace Scryber.Layout
                 if (row.Visible == false) //skip hidden rows
                     continue;
 
-                PDFStyle applied = _rowappliedstyles[rowIndex];
-                PDFStyle full = _rowfullstyles[rowIndex];
+                Style applied = _rowappliedstyles[rowIndex];
+                Style full = _rowfullstyles[rowIndex];
 
                 RowReference rref = tbl.AddRowReference(row, grid, applied, full, rowIndex);
 
@@ -943,8 +943,8 @@ namespace Scryber.Layout
 
             for (int column = 0; column < columncount; column++)
             {
-                PDFStyle applied = _cellappliedstyles[rowIndex, column];
-                PDFStyle full = _cellfullstyles[rowIndex, column];
+                Style applied = _cellappliedstyles[rowIndex, column];
+                Style full = _cellfullstyles[rowIndex, column];
 
                 //Check that we are not an empty or spanned cell
                 if (null != full)
@@ -1465,8 +1465,8 @@ namespace Scryber.Layout
             #region ivars
 
             private TableCell _cell;
-            private PDFStyle _fullStyle;
-            private PDFStyle _appliedStyle;
+            private Style _fullStyle;
+            private Style _appliedStyle;
             private int _rowindex;
             private int _colindex;
             private PDFLayoutBlock _block;
@@ -1495,7 +1495,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the full style of the cell
             /// </summary>
-            public PDFStyle FullStyle
+            public Style FullStyle
             {
                 get { return _fullStyle; }
             }
@@ -1507,7 +1507,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the style that is Applied to the table cell
             /// </summary>
-            public PDFStyle AppliedStyle
+            public Style AppliedStyle
             {
                 get { return _appliedStyle; }
             }
@@ -1645,7 +1645,7 @@ namespace Scryber.Layout
             /// <param name="fullstyle"></param>
             /// <param name="rowindex"></param>
             /// <param name="colindex"></param>
-            public CellReference(TableCell cell, RowReference row, PDFStyle applied, PDFStyle fullstyle, int rowindex, int colindex)
+            public CellReference(TableCell cell, RowReference row, Style applied, Style fullstyle, int rowindex, int colindex)
             {
                 this._cell = cell;
                 this._appliedStyle = applied;
@@ -1668,7 +1668,7 @@ namespace Scryber.Layout
             /// ivars of this instance with the values from the full style
             /// </summary>
             /// <param name="fullstyle"></param>
-            private void PopulateStyleValues(PDFStyle fullstyle)
+            private void PopulateStyleValues(Style fullstyle)
             {
                 PDFPositionOptions opts = fullstyle.CreatePostionOptions(); //Full Styles cache this so should be quick anyway
                 _margins = opts.Margins;
@@ -1682,8 +1682,8 @@ namespace Scryber.Layout
                 else
                     _totalHeight = PDFUnit.Zero;
 
-                PDFStyleValue<int> cellspan;
-                if (fullstyle.TryGetValue(PDFStyleKeys.TableCellColumnSpanKey, out cellspan))
+                StyleValue<int> cellspan;
+                if (fullstyle.TryGetValue(StyleKeys.TableCellColumnSpanKey, out cellspan))
                     _colspan = cellspan.Value;
                 else
                     _colspan = 1;
@@ -1704,8 +1704,8 @@ namespace Scryber.Layout
             #region ivars
 
             private TableRow _row;
-            private PDFStyle _fullStyle;
-            private PDFStyle _appliedStyle;
+            private Style _fullStyle;
+            private Style _appliedStyle;
             private int _rowindex;
             private PDFLayoutBlock _block;
             private PDFUnit _explicitHeight;
@@ -1733,7 +1733,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the full style associated with the row
             /// </summary>
-            public PDFStyle FullStyle
+            public Style FullStyle
             {
                 get { return _fullStyle; }
             }
@@ -1766,7 +1766,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the applied style for the row (rather than the full style)
             /// </summary>
-            public PDFStyle AppliedStyle
+            public Style AppliedStyle
             {
                 get { return _appliedStyle; }
             }
@@ -1858,7 +1858,7 @@ namespace Scryber.Layout
             /// <param name="fullstyle"></param>
             /// <param name="posOpts"></param>
             /// <param name="rowindex"></param>
-            public RowReference(TableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowindex)
+            public RowReference(TableRow row, GridReference grid, Style applied, Style fullstyle, int rowindex)
             {
                 this._row = row;
                 this._rowindex = rowindex;
@@ -1878,7 +1878,7 @@ namespace Scryber.Layout
             /// Fills the values of this row reference based on the required style values
             /// </summary>
             /// <param name="fullstyle"></param>
-            private void PopulateStyleValues(PDFStyle fullstyle)
+            private void PopulateStyleValues(Style fullstyle)
             {
                 PDFPositionOptions opts = fullstyle.CreatePostionOptions();
                 _margins = opts.Margins;
@@ -1886,8 +1886,8 @@ namespace Scryber.Layout
                 if (opts.Height.HasValue)
                     _explicitHeight = opts.Height.Value + _margins.Top + _margins.Bottom;
 
-                PDFStyleValue<TableRowRepeat> repeat;
-                if (fullstyle.TryGetValue(PDFStyleKeys.TableRowRepeatKey,out repeat))
+                StyleValue<TableRowRepeat> repeat;
+                if (fullstyle.TryGetValue(StyleKeys.TableRowRepeatKey,out repeat))
                     this.Repeat = repeat.Value;
                 else
                     this.Repeat = TableRowRepeat.None;
@@ -1924,7 +1924,7 @@ namespace Scryber.Layout
             private int _startRowIndex;
             private int _endRowIndex;
             private PDFLayoutBlock _tableBlock;
-            private PDFStyle _tableStyle;
+            private Style _tableStyle;
             private PDFPositionOptions _posOpts;
             private TableReference _ownerTable;
             private PDFRect _availspace;
@@ -1977,7 +1977,7 @@ namespace Scryber.Layout
             /// <summary>
             /// Gets the style associated with the table
             /// </summary>
-            public PDFStyle TableStyle
+            public Style TableStyle
             {
                 get { return _tableStyle; }
             }
@@ -2078,7 +2078,7 @@ namespace Scryber.Layout
             /// <param name="opts"></param>
             /// <param name="startRow"></param>
             /// <param name="endRow"></param>
-            public GridReference(TableReference owner, PDFStyle style, PDFPositionOptions opts, int startRow, int endRow)
+            public GridReference(TableReference owner, Style style, PDFPositionOptions opts, int startRow, int endRow)
             {
                 this._ownerTable = owner;
                 this._tableStyle = style;
@@ -2245,7 +2245,7 @@ namespace Scryber.Layout
             /// <param name="columncount"></param>
             /// <param name="tableStyle"></param>
             /// <param name="posOpts"></param>
-            public TableReference(int rowcount, int columncount, PDFStyle tableStyle, PDFPositionOptions posOpts)
+            public TableReference(int rowcount, int columncount, Style tableStyle, PDFPositionOptions posOpts)
             {
                 _rows = new RowReference[rowcount];
                 _cells = new CellReference[rowcount, columncount];
@@ -2270,7 +2270,7 @@ namespace Scryber.Layout
             /// <param name="posOpts"></param>
             /// <param name="startRow"></param>
             /// <returns></returns>
-            public GridReference BeginNewGrid(PDFStyle fulltableStyle, PDFPositionOptions posOpts, int startRow)
+            public GridReference BeginNewGrid(Style fulltableStyle, PDFPositionOptions posOpts, int startRow)
             {
                 if (null != this.CurrentGrid)
                 {
@@ -2297,7 +2297,7 @@ namespace Scryber.Layout
             /// <param name="applied">The applied style of the row</param>
             /// <param name="fullstyle">The full style of the row</param>
             /// <param name="rowIndex">The index of the row to insert. There cannot be an existing row reference at this index</param>
-            public RowReference AddRowReference(TableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowIndex)
+            public RowReference AddRowReference(TableRow row, GridReference grid, Style applied, Style fullstyle, int rowIndex)
             {
                 RowReference rref = new RowReference(row, grid, applied, fullstyle, rowIndex);
                 this.AddRowReference(rref);
@@ -2335,7 +2335,7 @@ namespace Scryber.Layout
             /// <param name="applied">The applied style of the cell</param>
             /// <param name="fullstyle">The full style of the cell</param>
             /// <param name="column">The column index of the cell. NOTE: There cannot be an existing cell reference in the rows column</param>
-            public CellReference AddCellReference(TableCell cell, RowReference rowRef, PDFStyle applied, PDFStyle fullstyle, int column)
+            public CellReference AddCellReference(TableCell cell, RowReference rowRef, Style applied, Style fullstyle, int column)
             {
                 CellReference cref = new CellReference(cell, rowRef, applied, fullstyle, rowRef.RowIndex, column);
                 this.AddCellReference(cref);

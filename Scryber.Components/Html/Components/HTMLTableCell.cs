@@ -15,7 +15,7 @@ namespace Scryber.Html.Components
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
         [PDFAttribute("style")]
-        public override PDFStyle Style { get => base.Style; set => base.Style = value; }
+        public override Style Style { get => base.Style; set => base.Style = value; }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -60,7 +60,7 @@ namespace Scryber.Html.Components
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
         [PDFAttribute("style")]
-        public override PDFStyle Style { get => base.Style; set => base.Style = value; }
+        public override Style Style { get => base.Style; set => base.Style = value; }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'

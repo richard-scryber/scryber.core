@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Outline_ConstructorTest()
         {
-            PDFOutlineStyle target = new PDFOutlineStyle();
+            OutlineStyle target = new OutlineStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.OutlineItemKey,target.ItemKey);
+            Assert.AreEqual(StyleKeys.OutlineItemKey,target.ItemKey);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Outline_ColorTest()
         {
-            PDFOutlineStyle target = new PDFOutlineStyle();
+            OutlineStyle target = new OutlineStyle();
             PDFColor expected = PDFColors.Transparent;
             Assert.AreEqual(expected, target.Color);
 
@@ -109,7 +109,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Outline_FontBoldTest()
         {
-            PDFOutlineStyle target = new PDFOutlineStyle();
+            OutlineStyle target = new OutlineStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.FontBold);
 
@@ -133,7 +133,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Outline_FontItalicTest()
         {
-            PDFOutlineStyle target = new PDFOutlineStyle();
+            OutlineStyle target = new OutlineStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.FontItalic);
 
@@ -157,7 +157,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Outline_OpenTest()
         {
-            PDFOutlineStyle target = new PDFOutlineStyle();
+            OutlineStyle target = new OutlineStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.Open);
 
@@ -181,7 +181,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Outline_IsOutlinedTest()
         {
-            PDFOutlineStyle target = new PDFOutlineStyle();
+            OutlineStyle target = new OutlineStyle();
             bool expected = true;
             Assert.AreEqual(expected, target.IsOutlined);
 

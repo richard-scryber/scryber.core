@@ -46,9 +46,9 @@ namespace Scryber.Components
         /// Overrides the base implementation to apply the Decimals numbering group type
         /// </summary>
         /// <returns></returns>
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle style = base.GetBaseStyle();
+            Styles.Style style = base.GetBaseStyle();
             style.List.NumberingStyle = ListNumberingGroupStyle.Decimals;
             return style;
         }

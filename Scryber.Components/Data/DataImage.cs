@@ -42,7 +42,7 @@ namespace Scryber.Data
         private PDFImageXObject _xobj;
 
        
-        protected override Resources.PDFImageXObject InitImageXObject(PDFContextBase context, PDFStyle style)
+        protected override Resources.PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
         {
             Document doc = this.Document;
             if (null == doc)

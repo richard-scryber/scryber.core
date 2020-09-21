@@ -29,12 +29,12 @@ namespace Scryber
     public abstract class PDFContextStyleBase : PDFContextBase
     {
         
-        private Styles.PDFStyleStack _stylestack;
+        private Styles.StyleStack _stylestack;
 
         /// <summary>
         /// Get current style stack
         /// </summary>
-        public Styles.PDFStyleStack StyleStack
+        public Styles.StyleStack StyleStack
         {
             get { return _stylestack; }
             set { _stylestack = value; }
@@ -42,7 +42,7 @@ namespace Scryber
 
 
 
-        internal PDFContextStyleBase(Styles.PDFStyleStack stylesstack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
+        internal PDFContextStyleBase(Styles.StyleStack stylesstack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
             : base(items, log, perfmon)
         {
             this._stylestack = stylesstack;

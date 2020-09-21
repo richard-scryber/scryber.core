@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_ConstructorTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.PageItemKey,target.ItemKey);
+            Assert.AreEqual(StyleKeys.PageItemKey,target.ItemKey);
         }
 
         /// <summary>
@@ -90,17 +90,17 @@ namespace Scryber.Core.UnitTests.Styles
             PaperSize size = PDFStyleConst.DefaultPaperSize;
             PaperOrientation orientation = PDFStyleConst.DefaultPaperOrientation;
 
-            PDFPageStyle target = new PDFPageStyle(); //Empty
-            PDFPageSize expected = new PDFPageSize(size, orientation);
+            PageStyle target = new PageStyle(); //Empty
+            PageSize expected = new PageSize(size, orientation);
             
-            PDFPageSize actual = target.CreatePageSize();
+            PageSize actual = target.CreatePageSize();
             AssertPageSizeAreEqual(expected, actual);
 
             //papers
 
             size = PaperSize.Tabloid;
             orientation = PaperOrientation.Landscape;
-            expected = new PDFPageSize(size, orientation);
+            expected = new PageSize(size, orientation);
             target.PaperSize = size;
             target.PaperOrientation = orientation;
             
@@ -111,7 +111,7 @@ namespace Scryber.Core.UnitTests.Styles
             orientation = PaperOrientation.Portrait;
             target.PaperSize = size;
             target.PaperOrientation = orientation;
-            expected = new PDFPageSize(size, orientation);
+            expected = new PageSize(size, orientation);
             actual = target.CreatePageSize();
 
             AssertPageSizeAreEqual(expected, actual);
@@ -119,20 +119,20 @@ namespace Scryber.Core.UnitTests.Styles
 
             // explicit sizes
 
-            target = new PDFPageStyle();
+            target = new PageStyle();
             PDFUnit w = 200;
             PDFUnit h = 500;
             target.Width = w;
             target.Height = h;
 
-            expected = new PDFPageSize(new PDFSize(w, h));
+            expected = new PageSize(new PDFSize(w, h));
             actual = target.CreatePageSize();
             AssertPageSizeAreEqual(expected, actual);
 
 
             // size overides paper
 
-            target = new PDFPageStyle();
+            target = new PageStyle();
             w = 300;
             h = 600;
             size = PaperSize.A8;
@@ -144,14 +144,14 @@ namespace Scryber.Core.UnitTests.Styles
             target.PaperOrientation = orientation;
 
 
-            expected = new PDFPageSize(new PDFSize(w, h));
+            expected = new PageSize(new PDFSize(w, h));
             actual = target.CreatePageSize();
 
             AssertPageSizeAreEqual(expected, actual);
 
         }
 
-        private static void AssertPageSizeAreEqual(PDFPageSize expected, PDFPageSize actual)
+        private static void AssertPageSizeAreEqual(PageSize expected, PageSize actual)
         {
             Assert.AreEqual(expected.Width, actual.Width);
             Assert.AreEqual(expected.Height, actual.Height);
@@ -169,7 +169,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_HeightTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             PDFUnit expected = PDFUnit.Zero;
 
             Assert.AreEqual(expected, target.Height);
@@ -199,7 +199,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_NumberFormatTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             string expected = String.Empty;
 
             Assert.AreEqual(expected, target.PageNumberFormat);
@@ -228,7 +228,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_NumberStartIndexTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             int expected = 1;
 
             Assert.AreEqual(expected, target.NumberStartIndex);
@@ -256,7 +256,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_NumberStyleTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             PageNumberStyle expected = PageNumberStyle.Decimals;
 
             Assert.AreEqual(expected, target.NumberStyle);
@@ -284,7 +284,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_PaperOrientationTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             PaperOrientation expected = PaperOrientation.Portrait;
 
             Assert.AreEqual(expected, target.PaperOrientation);
@@ -311,7 +311,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_PaperSizeTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             PaperSize expected = PaperSize.A4;
 
             Assert.AreEqual(expected, target.PaperSize);
@@ -336,7 +336,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Page_WidthTest()
         {
-            PDFPageStyle target = new PDFPageStyle();
+            PageStyle target = new PageStyle();
             PDFUnit expected = PDFUnit.Zero;
 
             Assert.AreEqual(expected, target.Width);

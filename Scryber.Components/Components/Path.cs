@@ -44,11 +44,11 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the fill style associated with this polygon
         /// </summary>
-        [PDFAttribute("fill-style", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
-        public FillStyle FillStyle
+        [PDFAttribute("fill-style", Scryber.Styles.Style.PDFStylesNamespace)]
+        public FillType FillStyle
         {
-            get { return this.Style.Fill.FillStyle; }
-            set { this.Style.Fill.FillStyle = value; }
+            get { return this.Style.Fill.Style; }
+            set { this.Style.Fill.Style = value; }
         }
 
         public Path()
@@ -61,7 +61,7 @@ namespace Scryber.Components
         }
 
         
-        protected override Drawing.PDFGraphicsPath CreatePath(Drawing.PDFSize available, PDFStyle fullstyle)
+        protected override Drawing.PDFGraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
         {
             return this.PathData;
         }

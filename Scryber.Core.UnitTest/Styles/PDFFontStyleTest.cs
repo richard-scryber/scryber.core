@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Font_ConstructorTest()
         {
-            PDFFontStyle target = new PDFFontStyle();
+            Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.FontItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.FontItemKey, target.ItemKey);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Font_CreateFontTest()
         {
-            PDFFontStyle target = new PDFFontStyle();
+            Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             PDFFont expected = new PDFFont(PDFStyleConst.DefaultFontFamily, PDFStyleConst.DefaultFontSize);
             PDFFont actual;
             actual = target.CreateFont();
@@ -106,7 +106,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.FontItalic = true;
             target.FontSize = new PDFUnit(10, PageUnits.Millimeters);
 
-            expected = new PDFFont("Bauhaus 92", new PDFUnit(10, PageUnits.Millimeters), FontStyle.Bold | FontStyle.Italic);
+            expected = new PDFFont("Bauhaus 92", new PDFUnit(10, PageUnits.Millimeters), Scryber.Drawing.FontStyle.Bold | Scryber.Drawing.FontStyle.Italic);
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Bauhaus not the same");
 
@@ -119,7 +119,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Font_FontBoldTest()
         {
-            PDFFontStyle target = new PDFFontStyle();
+            Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.FontBold);
 
@@ -144,7 +144,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Font_FontFamilyTest()
         {
-            PDFFontStyle target = new PDFFontStyle();
+            Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             string expected = String.Empty;
             Assert.AreEqual(expected, target.FontFamily);
 
@@ -169,7 +169,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Font_FontItalicTest()
         {
-            PDFFontStyle target = new PDFFontStyle();
+            Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.FontItalic);
 
@@ -194,7 +194,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void FontSizeTest()
         {
-            PDFFontStyle target = new PDFFontStyle();
+            Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             PDFUnit expected = PDFUnit.Empty;
             Assert.AreEqual(expected, target.FontSize);
 

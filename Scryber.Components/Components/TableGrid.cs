@@ -58,8 +58,8 @@ namespace Scryber.Components
         // internal build properties
         //
 
-        internal PDFStyle appliedStyle { get; set; }
-        internal PDFStyle fullStyle { get; set; }
+        internal Style appliedStyle { get; set; }
+        internal Style fullStyle { get; set; }
         internal PDFPositionOptions positionOptions { get; set; }
         internal int tblColumnCount { get; set; }
         internal int tblRowCount { get; set; }
@@ -103,7 +103,7 @@ namespace Scryber.Components
         /// <param name="context">The current layout context</param>
         /// <param name="fullstyle">The full style of the table</param>
         /// <returns>The required engine</returns>
-        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle fullstyle)
+        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
             return new Layout.LayoutEngineTable(this, parent);
         }

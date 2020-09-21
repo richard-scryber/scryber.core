@@ -18,6 +18,24 @@ Thanks for using.
 We are still checking and working everything out.
 But it's looking good.
 
+---------------------------------
+Upgrading from previous versions
+---------------------------------
+
+If you are upgrading from pre-version 1.1.0 please note.
+We have taken the opportunity in these early days to remove 
+the PDF prefix from the Scryber.Components classes
+
+PDFDocument is now Document
+PDFPage is now Page
+etc.
+
+It's been needed for a while, but now is a good time.
+
+ProcessDocument has changed to SaveToPDF - again much needed.
+
+Many other changes have been made, see
+
 
 ---------------
 Getting Started

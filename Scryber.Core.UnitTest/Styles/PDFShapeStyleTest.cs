@@ -71,9 +71,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Shape_ConstructorTest()
         {
-            PDFShapeStyle target = new PDFShapeStyle();
+            ShapeStyle target = new ShapeStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.ShapeItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.ShapeItemKey, target.ItemKey);
         }
 
         
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Shape_VertextCountTest()
         {
-            PDFShapeStyle target = new PDFShapeStyle(); 
+            ShapeStyle target = new ShapeStyle(); 
             Assert.AreEqual(4, target.VertexCount);
 
             target.VertexCount = 14;
@@ -101,7 +101,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Shape_VertextStepTest()
         {
-            PDFShapeStyle target = new PDFShapeStyle();
+            ShapeStyle target = new ShapeStyle();
             Assert.AreEqual(1, target.VertexStep);
 
             target.VertexStep = 2;
@@ -118,7 +118,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Shape_ClosedTest()
         {
-            PDFShapeStyle target = new PDFShapeStyle();
+            ShapeStyle target = new ShapeStyle();
             Assert.AreEqual(true, target.Closed, "Default");
 
             target.Closed = false;
@@ -135,7 +135,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Shape_RotationTest()
         {
-            PDFShapeStyle target = new PDFShapeStyle();
+            ShapeStyle target = new ShapeStyle();
             Assert.AreEqual(0.0, target.Rotation);
 
             target.Rotation = 90.0;

@@ -46,7 +46,7 @@ namespace Scryber.Components
         }
 
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
             

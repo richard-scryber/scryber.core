@@ -36,9 +36,9 @@ namespace Scryber.Components
         {
         }
 
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle style = base.GetBaseStyle();
+            Styles.Style style = base.GetBaseStyle();
             return style;
         }
     }
@@ -79,9 +79,9 @@ namespace Scryber.Components
         {
         }
 
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle style = base.GetBaseStyle();
+            Styles.Style style = base.GetBaseStyle();
             style.Font.FontBold = true;
 
             return style;

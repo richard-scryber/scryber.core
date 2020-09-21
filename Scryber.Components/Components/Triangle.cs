@@ -54,11 +54,11 @@ namespace Scryber.Components
         protected Triangle(PDFObjectType type)
             : base(type)
         {
-            this.Style.SetValue(PDFStyleKeys.ShapeVertexCountKey, 3);
+            this.Style.SetValue(StyleKeys.ShapeVertexCountKey, 3);
         }
 
 
-        protected override PDFPoint[] GetPoints(PDFRect bounds, Styles.PDFStyle style)
+        protected override PDFPoint[] GetPoints(PDFRect bounds, Styles.Style style)
         {
             if (null != Points)
             {

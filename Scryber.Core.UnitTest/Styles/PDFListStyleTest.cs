@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_ConstructorTest()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.ListItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.ListItemKey, target.ItemKey);
         }
 
 
@@ -82,7 +82,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_NumberingStyle()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             ListNumberingGroupStyle expected = ListNumberingGroupStyle.None;
             ListNumberingGroupStyle actual = target.NumberingStyle;
             Assert.AreEqual(expected, actual);
@@ -108,7 +108,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_NumberingGroup()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             string expected = "";
             string actual = target.NumberingGroup;
             Assert.AreEqual(expected, actual);
@@ -134,7 +134,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_NumberInset()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             PDFUnit expected = PDFStyleConst.DefaultListNumberInset;
             PDFUnit actual = target.NumberInset;
             Assert.AreEqual(expected, actual);
@@ -160,7 +160,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_NumberPrefix()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             string expected = "";
             string actual = target.NumberPrefix;
             Assert.AreEqual(expected, actual);
@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_NumberPostfix()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             string expected = "";
             string actual = target.NumberPostfix;
             Assert.AreEqual(expected, actual);
@@ -212,7 +212,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_HorizontalAlignmentStyle()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             HorizontalAlignment expected = HorizontalAlignment.Right;
             HorizontalAlignment actual = target.NumberAlignment;
             Assert.AreEqual(expected, actual);
@@ -238,7 +238,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_Concatenate()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             bool expected = false;
             bool actual = target.ConcatenateWithParent;
             Assert.AreEqual(expected, actual);
@@ -264,7 +264,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_ItemLabel()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             string expected = "";
             string actual = target.ItemLabel;
             Assert.AreEqual(expected, actual);
@@ -290,7 +290,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void List_AllProperties()
         {
-            PDFListStyle target = new PDFListStyle();
+            ListStyle target = new ListStyle();
             target.NumberingStyle = ListNumberingGroupStyle.LowercaseRoman;
             target.NumberingGroup = "all-group";
             target.NumberInset = 40;

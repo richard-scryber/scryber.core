@@ -27,7 +27,7 @@ namespace Scryber.Drawing
 {
     public abstract class PDFBrush : PDFGraphicsAdapter
     {
-        public abstract FillStyle FillStyle {get;}
+        public abstract FillType FillStyle {get;}
 
         public PDFBrush UnderBrush { get; set; }
     }
@@ -35,9 +35,9 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFSolidBrush : PDFBrush
     {
-        public override FillStyle FillStyle
+        public override FillType FillStyle
         {
-            get { return FillStyle.Solid; }
+            get { return FillType.Solid; }
         }
 
         private PDFColor _col;
@@ -99,9 +99,9 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFNoBrush : PDFBrush
     {
-        public override FillStyle FillStyle
+        public override FillType FillStyle
         {
-            get { return FillStyle.None; }
+            get { return FillType.None; }
         }
 
         public override void SetUpGraphics(PDFGraphics g, PDFRect bounds)

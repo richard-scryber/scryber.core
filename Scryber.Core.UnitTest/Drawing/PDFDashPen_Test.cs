@@ -109,9 +109,9 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LineStyle_Test()
         {
             PDFDashPen target = new PDFDashPen(dash);
-            LineStyle actual;
+            LineType actual;
             actual = target.LineStyle;
-            Assert.AreEqual(actual, LineStyle.Dash);
+            Assert.AreEqual(actual, LineType.Dash);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace Scryber.Data
 
         #region public string HeaderCellClass { get; set; }
 
-        [PDFAttribute("header-cell-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("header-cell-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.styleClass_attr")]
         [PDFDesignable("Header Cell Class", Category = "Style Classes", Priority = 6, Type = "ClassName")]
         public string HeaderCellClass { get; set; }
@@ -76,7 +76,7 @@ namespace Scryber.Data
 
         #region  public string CellClass { get; set; }
 
-        [PDFAttribute("cell-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("cell-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.styleClass_attr")]
         [PDFDesignable("Cell Class", Category = "Style Classes", Priority = 3, Type = "ClassName")]
         public string CellClass { get; set; }
@@ -85,7 +85,7 @@ namespace Scryber.Data
 
         #region  public string AlternateCellClass { get; set; }
 
-        [PDFAttribute("alternate-cell-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("alternate-cell-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.styleClass_attr")]
         [PDFDesignable("Alternate Cell Class", Category = "Style Classes", Priority = 4, Type = "ClassName")]
         public string AlternateCellClass { get; set; }
@@ -94,7 +94,7 @@ namespace Scryber.Data
 
         #region public string FooterCellClass { get; set; }
 
-        [PDFAttribute("footer-cell-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("footer-cell-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.styleClass_attr")]
         [PDFDesignable("Footer Cell Class", Category = "Style Classes", Priority = 5, Type = "ClassName")]
         public string FooterCellClass { get; set; }
@@ -315,7 +315,7 @@ namespace Scryber.Data
             if (context.DataStack.HasData)
                 parentData = context.DataStack.Current;
 
-            PDFStyle applied = this.GetAppliedStyle();
+            Style applied = this.GetAppliedStyle();
             applied = applied.Flatten();
             
             IEnumerator enumerator = this.GetDataEnumerator(origData);
@@ -326,7 +326,7 @@ namespace Scryber.Data
             container.Content.Add(grid);
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(grid.Style, PDFStyle.DirectStylePriority);
+                this.Style.MergeInto(grid.Style, Style.DirectStylePriority);
             
             if (!string.IsNullOrEmpty(this.StyleClass))
                 grid.StyleClass = this.StyleClass;

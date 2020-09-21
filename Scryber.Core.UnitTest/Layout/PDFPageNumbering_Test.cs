@@ -181,7 +181,7 @@ namespace Scryber.Core.UnitTests.Layout
             PDFPageNumbers col = new PDFPageNumbers();
             col.StartNumbering(null);
 
-            PDFStyle full = new PDFStyle();
+            Style full = new Style();
             full.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             PDFPageNumberOptions opts = full.CreatePageNumberOptions();
             col.PushPageNumber(opts);
@@ -213,7 +213,7 @@ namespace Scryber.Core.UnitTests.Layout
             PDFPageNumbers col = new PDFPageNumbers();
             col.StartNumbering(null);
 
-            PDFStyle full = new PDFStyle();
+            Style full = new Style();
             full.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
             PDFPageNumberOptions opts = full.CreatePageNumberOptions();
             col.PushPageNumber(opts);
@@ -245,7 +245,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             PDFPageNumbers col = new PDFPageNumbers();
 
-            PDFStyle full = new PDFStyle();
+            Style full = new Style();
 
             full.PageStyle.NumberStyle = PageNumberStyle.LowercaseLetters;
             col.StartNumbering(full.CreatePageNumberOptions());
@@ -275,7 +275,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             PDFPageNumbers col = new PDFPageNumbers();
 
-            PDFStyle full = new PDFStyle();
+            Style full = new Style();
             full.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
             col.StartNumbering(full.CreatePageNumberOptions());
 
@@ -303,7 +303,7 @@ namespace Scryber.Core.UnitTests.Layout
             int repeatcount = 20;
 
             PDFPageNumbers col = new PDFPageNumbers();
-            PDFStyle style = new PDFStyle();
+            Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.None;
             col.StartNumbering(style.CreatePageNumberOptions());
 
@@ -334,7 +334,7 @@ namespace Scryber.Core.UnitTests.Layout
             
             PDFPageNumbers col = new PDFPageNumbers();
             
-            PDFStyle style = new PDFStyle();
+            Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             col.StartNumbering(style.CreatePageNumberOptions());
 
@@ -364,7 +364,7 @@ namespace Scryber.Core.UnitTests.Layout
             string[] expected = { "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII" };
 
             PDFPageNumbers col = new PDFPageNumbers();
-            PDFStyle style = new PDFStyle();
+            Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             style.PageStyle.NumberStartIndex = startindex;
             col.StartNumbering(style.CreatePageNumberOptions());
@@ -395,7 +395,7 @@ namespace Scryber.Core.UnitTests.Layout
             string[] expected = { "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII" };
             
             PDFPageNumbers col = new PDFPageNumbers();
-            PDFStyle style = new PDFStyle();
+            Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             style.PageStyle.NumberStartIndex = startindex;
             col.StartNumbering(style.CreatePageNumberOptions());
@@ -430,18 +430,18 @@ namespace Scryber.Core.UnitTests.Layout
             string[] expectedlabels = new string[] { "1", "2", "3", "4", "5", "i", "ii", "iii", "iv", "v", "B", "C", "D", "E", "F", "6", "7", "8", "9", "10" };
 
             PDFPageNumbers col = new PDFPageNumbers();
-            PDFStyle def = new PDFStyle();
+            Style def = new Style();
             
             def.PageStyle.NumberStyle = PageNumberStyle.Decimals;
             def.PageStyle.NumberStartIndex = 1;
             col.StartNumbering(def.CreatePageNumberOptions());
 
-            PDFStyle lowRoman = new PDFStyle();
+            Style lowRoman = new Style();
             lowRoman.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
             lowRoman.PageStyle.NumberStartIndex = 1;
             
 
-            PDFStyle alpha = new PDFStyle();
+            Style alpha = new Style();
             alpha.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
             alpha.PageStyle.NumberStartIndex = 2;
 
@@ -498,7 +498,7 @@ namespace Scryber.Core.UnitTests.Layout
             PDFPageNumbers col = new PDFPageNumbers();
             col.StartNumbering(null);
 
-            PDFStyle none = new PDFStyle();
+            Style none = new Style();
             none.PageStyle.NumberStyle = PageNumberStyle.None;
 
             PDFPageNumberGroup noneGrp = col.PushPageNumber(none.CreatePageNumberOptions());
@@ -506,7 +506,7 @@ namespace Scryber.Core.UnitTests.Layout
             col.Register(noneReg);
             //keep none at the top - no unregister
 
-            PDFStyle intro = new PDFStyle();
+            Style intro = new Style();
             intro.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
             PDFPageNumberGroup introGrp = col.PushPageNumber(intro.CreatePageNumberOptions());
 
@@ -516,7 +516,7 @@ namespace Scryber.Core.UnitTests.Layout
             //col.PopNumberStyle(grp);
 
             //no style, just start index
-            PDFStyle resetStartIndex = new PDFStyle();
+            Style resetStartIndex = new Style();
             resetStartIndex.PageStyle.NumberStartIndex = 1;
             PDFPageNumberGroup resetNumGrp = col.PushPageNumber(resetStartIndex.CreatePageNumberOptions());
 

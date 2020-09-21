@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Html.Components;
+using Scryber.Styles;
+using Scryber.Drawing;
+using Scryber.Styles.Parsing;
 
 using Scryber.Layout;
 
@@ -93,6 +96,71 @@ namespace Scryber.Core.UnitTests.Html
             }
 
         }
-        
+
+        [TestMethod]
+        public void CSSParserWithComments()
+        {
+            var css = @"
+            /* This is the grey body */
+            body.grey
+            {
+                background-color:#808080; /* body background */
+                color: #222;
+            }
+
+            body.grey div /* Inner divs */{
+                padding: 10px;
+                /*color: #AAA;*/
+                margin:15px;
+            }
+
+
+            body.grey div.reverse{
+    
+                /* Reverse the colors */
+                background-color: #222;
+                color:#808080;
+            }";
+
+            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css);
+
+            StyleCollection col = new StyleCollection();
+
+            foreach (var style in cssparser)
+            {
+                col.Add(style);
+            }
+
+            Assert.AreEqual(3, col.Count);
+
+            //First one
+            var one = col[0] as StyleDefn;
+
+            Assert.AreEqual("body.grey", one.Match.ToString());
+            Assert.AreEqual(3, one.ValueCount);
+            Assert.AreEqual((PDFColor)"#808080", one.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
+            Assert.AreEqual(FillType.Solid, one.GetValue(StyleKeys.BgStyleKey, FillType.None));
+            Assert.AreEqual((PDFColor)"#222", one.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
+
+            var two = col[1] as StyleDefn;
+
+            Assert.AreEqual("body.grey div", two.Match.ToString());
+            Assert.AreEqual(2, two.ValueCount);
+            // 96 pixels per inch, 72 points per inch
+            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, PDFUnit.Zero).PointsValue); 
+            Assert.AreEqual(11.25, two.GetValue(StyleKeys.MarginsAllKey, PDFUnit.Zero).PointsValue);
+
+            var three = col[2] as StyleDefn;
+
+            Assert.AreEqual("body.grey div.reverse", three.Match.ToString());
+            Assert.AreEqual(3, one.ValueCount);
+            Assert.AreEqual((PDFColor)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
+            Assert.AreEqual(FillType.Solid, three.GetValue(StyleKeys.BgStyleKey, FillType.None));
+            Assert.AreEqual((PDFColor)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
+
+
+
+        }
+
     }
 }

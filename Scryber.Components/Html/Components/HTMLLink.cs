@@ -13,7 +13,7 @@ namespace Scryber.Html.Components
     {
         private string _href;
         private string _relationship;
-        private PDFStyleGroup _parsedGroup = null;
+        private StyleGroup _parsedGroup = null;
 
         [PDFAttribute("href")]
         public string Href
@@ -29,9 +29,9 @@ namespace Scryber.Html.Components
 
         #region protected PDFStyleCollection InnerItems
 
-        private PDFStyleCollection _innerItems;
+        private StyleCollection _innerItems;
 
-        protected PDFStyleCollection InnerItems
+        protected StyleCollection InnerItems
         {
             get
             {
@@ -53,7 +53,7 @@ namespace Scryber.Html.Components
         /// Gets all the styles in this group
         /// </summary>
         
-        public PDFStyleCollection Styles
+        public StyleCollection Styles
         {
             get { return this.InnerItems; }
         }
@@ -153,9 +153,9 @@ namespace Scryber.Html.Components
 
         }
 
-        protected PDFStyleCollection CreateInnerStyles(string content)
+        protected StyleCollection CreateInnerStyles(string content)
         {
-            var collection = new PDFStyleCollection();
+            var collection = new StyleCollection();
             this.AddCssStyles(collection, content);
             
             return collection;
@@ -165,7 +165,7 @@ namespace Scryber.Html.Components
         {
             if (this.Visible && this.Styles.Count > 0)
             {
-                PDFStyleGroup grp = new PDFStyleGroup();
+                StyleGroup grp = new StyleGroup();
                 foreach (var style in this.Styles)
                 {
                     grp.Styles.Add(style);
@@ -176,7 +176,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected virtual void AddCssStyles(PDFStyleCollection collection, string content)
+        protected virtual void AddCssStyles(StyleCollection collection, string content)
         {
             if(!string.IsNullOrEmpty(this.Relationship))
             {

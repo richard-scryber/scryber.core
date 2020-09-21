@@ -69,19 +69,19 @@ namespace Scryber.Core.UnitTests.Styles
 
         private int StdCollectionCount = 3;
 
-        private PDFStyleItemCollection GetStdCollection()
+        private StyleItemCollection GetStdCollection()
         {
-            PDFStyle style = new PDFStyle();
-            PDFStyleItemCollection col = new PDFStyleItemCollection(style);
-            PDFBackgroundStyle bg = new PDFBackgroundStyle();
+            Style style = new Style();
+            StyleItemCollection col = new StyleItemCollection(style);
+            BackgroundStyle bg = new BackgroundStyle();
             bg.Color = PDFColors.Red;
             col.Add(bg);
 
-            PDFBorderStyle bor = new PDFBorderStyle();
+            BorderStyle bor = new BorderStyle();
             bor.Color = PDFColors.Green;
             col.Add(bor);
 
-            PDFFontStyle fnt = new PDFFontStyle();
+            Scryber.Styles.FontStyle fnt = new Scryber.Styles.FontStyle();
             fnt.FontFamily = "Symbol";
             col.Add(fnt);
 
@@ -94,8 +94,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleItemCollectionConstructorTest()
         {
-            PDFStyle style = new PDFStyle();
-            PDFStyleItemCollection target = new PDFStyleItemCollection(style);
+            Style style = new Style();
+            StyleItemCollection target = new StyleItemCollection(style);
             Assert.IsNotNull(target);
             Assert.AreEqual(0, target.Count);
         }
@@ -107,15 +107,15 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void AddTest()
         {
-            PDFStyle style = new PDFStyle();
-            PDFStyleItemCollection target = new PDFStyleItemCollection(style);
+            Style style = new Style();
+            StyleItemCollection target = new StyleItemCollection(style);
 
-            PDFStyleItemBase item = new PDFBorderStyle();
+            StyleItemBase item = new BorderStyle();
             target.Add(item);
 
             Assert.AreEqual(1, target.Count);
 
-            item = new PDFFillStyle();
+            item = new Scryber.Styles.FillStyle();
             target.Add(item);
             Assert.AreEqual(2, target.Count);
             
@@ -128,9 +128,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void AddRangeTest()
         {
-            PDFStyle style = new PDFStyle();
-            PDFStyleItemCollection target = new PDFStyleItemCollection(style);
-            IEnumerable<PDFStyleItemBase> all = GetStdCollection();
+            Style style = new Style();
+            StyleItemCollection target = new StyleItemCollection(style);
+            IEnumerable<StyleItemBase> all = GetStdCollection();
             target.AddRange(all);
             Assert.AreEqual(StdCollectionCount, target.Count);
         }
@@ -142,7 +142,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void CountTest()
         {
-            PDFStyleItemCollection target = GetStdCollection();
+            StyleItemCollection target = GetStdCollection();
             int actual;
             actual = target.Count;
             int expected = StdCollectionCount;
@@ -158,7 +158,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void IsReadOnlyTest()
         {
-            PDFStyleItemCollection target = GetStdCollection();
+            StyleItemCollection target = GetStdCollection();
             bool actual;
             actual = target.IsReadOnly;
             Assert.IsFalse(actual);
@@ -171,9 +171,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void ClearTest()
         {
-            PDFStyle style = new PDFStyle();
-            PDFStyleItemCollection target = new PDFStyleItemCollection(style);
-            IEnumerable<PDFStyleItemBase> all = GetStdCollection();
+            Style style = new Style();
+            StyleItemCollection target = new StyleItemCollection(style);
+            IEnumerable<StyleItemBase> all = GetStdCollection();
             target.AddRange(all);
             Assert.AreEqual(StdCollectionCount, target.Count);
 
@@ -188,14 +188,14 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void ContainsTest()
         {
-            PDFStyle style = new PDFStyle();
-            PDFStyleItemCollection target = new PDFStyleItemCollection(style);
-            IEnumerable<PDFStyleItemBase> all = GetStdCollection();
+            Style style = new Style();
+            StyleItemCollection target = new StyleItemCollection(style);
+            IEnumerable<StyleItemBase> all = GetStdCollection();
             target.AddRange(all);
             Assert.AreEqual(StdCollectionCount, target.Count);
 
 
-            PDFStyleItemBase item = new PDFFillStyle();
+            StyleItemBase item = new Scryber.Styles.FillStyle();
             bool expected = false;
             bool actual = target.Contains(item);
             Assert.AreEqual(expected, actual);
@@ -210,8 +210,8 @@ namespace Scryber.Core.UnitTests.Styles
         public void CopyToTest()
         {
             int offset = 2;
-            PDFStyleItemCollection target = GetStdCollection();
-            PDFStyleItemBase[] array = new PDFStyleItemBase[StdCollectionCount + offset];
+            StyleItemCollection target = GetStdCollection();
+            StyleItemBase[] array = new StyleItemBase[StdCollectionCount + offset];
 
             int arrayIndex = offset;
             target.CopyTo(array, arrayIndex);
@@ -238,8 +238,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void RemoveTest()
         {
-            PDFStyleItemCollection target = GetStdCollection();
-            PDFStyleItemBase item = target[PDFStyleKeys.BgItemKey]; //Assume there is more than one item
+            StyleItemCollection target = GetStdCollection();
+            StyleItemBase item = target[StyleKeys.BgItemKey]; //Assume there is more than one item
             bool expected = true; 
             bool actual = target.Remove(item);
             Assert.AreEqual(expected, actual);

@@ -42,7 +42,7 @@ namespace Scryber
         /// <summary>
         /// Gets the explicit style of the component
         /// </summary>
-        Styles.PDFStyle Style { get; }
+        Styles.Style Style { get; }
 
         /// <summary>
         /// Return true if this StyledComponent has a defined style
@@ -53,7 +53,7 @@ namespace Scryber
         /// Gets the style applied to this component
         /// </summary>
         /// <returns></returns>
-        Styles.PDFStyle GetAppliedStyle();
+        Styles.Style GetAppliedStyle();
     }
 
     #endregion
@@ -87,7 +87,7 @@ namespace Scryber
 
     public interface IParserStyleFactory
     {
-        bool SetStyleValue(Styles.PDFStyle onStyle, CSSStyleItemReader styleReader);
+        bool SetStyleValue(Styles.Style onStyle, CSSStyleItemReader styleReader);
 
         bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent component, CSSStyleItemReader stylereader);
     }

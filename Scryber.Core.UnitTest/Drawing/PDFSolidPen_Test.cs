@@ -122,8 +122,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LineStyle_Test()
         {
             PDFSolidPen target = new PDFSolidPen(); // TODO: Initialize to an appropriate value
-            LineStyle expected = LineStyle.Solid;
-            LineStyle actual;
+            LineType expected = LineType.Solid;
+            LineType actual;
             actual = target.LineStyle;
 
             Assert.AreEqual(expected, actual);

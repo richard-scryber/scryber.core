@@ -33,7 +33,7 @@ namespace Scryber.Data
         /// <summary>
         /// Gets the standard class for the field as a whole
         /// </summary>
-        [PDFAttribute("field-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("field-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Field Class", Category = "Style Classes", Priority = 2, Type = "ClassName")]
         public string FieldClass { get; set; }
 
@@ -44,7 +44,7 @@ namespace Scryber.Data
         /// <summary>
         /// Gets the standard class for all labels
         /// </summary>
-        [PDFAttribute("label-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("label-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Label Class", Category = "Style Classes", Priority = 3, Type = "ClassName")]
         public string LabelClass { get; set; }
 
@@ -55,7 +55,7 @@ namespace Scryber.Data
         /// <summary>
         /// Gets or sets the class name for the value section of the field
         /// </summary>
-        [PDFAttribute("value-class", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("value-class", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Value Class", Category = "Style Classes", Priority = 3, Type = "ClassName")]
         public string ValueClass { get; set; }
 

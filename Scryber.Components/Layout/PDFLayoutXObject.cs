@@ -177,7 +177,7 @@ namespace Scryber.Layout
             }
         }
 
-        protected virtual PDFGraphics CreateGraphics(PDFWriter writer, Styles.PDFStyleStack styles, PDFRenderContext context)
+        protected virtual PDFGraphics CreateGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
         {
             return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, new PDFSize(this.Width, this.Height), context);
         }

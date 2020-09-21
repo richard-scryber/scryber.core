@@ -12,7 +12,7 @@ namespace Scryber.Html.Components
     public class HTMLStyle : Scryber.Components.Component
     {
         private string _contents;
-        private PDFStyleGroup _parsedGroup = null;
+        private StyleGroup _parsedGroup = null;
 
         [PDFElement()]
         public string Contents
@@ -27,9 +27,9 @@ namespace Scryber.Html.Components
 
         #region protected PDFStyleCollection InnerItems
 
-        private PDFStyleCollection _innerItems;
+        private StyleCollection _innerItems;
 
-        protected PDFStyleCollection InnerItems
+        protected StyleCollection InnerItems
         {
             get
             {
@@ -51,7 +51,7 @@ namespace Scryber.Html.Components
         /// Gets all the styles in this group
         /// </summary>
         
-        public PDFStyleCollection Styles
+        public StyleCollection Styles
         {
             get { return this.InnerItems; }
         }
@@ -117,9 +117,9 @@ namespace Scryber.Html.Components
             this._parsedGroup = null;
         }
 
-        protected PDFStyleCollection CreateInnerStyles()
+        protected StyleCollection CreateInnerStyles()
         {
-            var collection = new PDFStyleCollection();
+            var collection = new StyleCollection();
             this.AddCssStyles(collection);
             
             return collection;
@@ -129,7 +129,7 @@ namespace Scryber.Html.Components
         {
             if (this.Visible)
             {
-                PDFStyleGroup grp = new PDFStyleGroup();
+                StyleGroup grp = new StyleGroup();
                 foreach (var style in this.Styles)
                 {
                     grp.Styles.Add(style);
@@ -140,7 +140,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected virtual void AddCssStyles(PDFStyleCollection collection)
+        protected virtual void AddCssStyles(StyleCollection collection)
         {
             if(!string.IsNullOrEmpty(this.StyleType))
             {

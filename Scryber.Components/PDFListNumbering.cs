@@ -66,17 +66,17 @@ namespace Scryber
         /// </summary>
         /// <param name="name">The name of the group to retireve or create</param>
         /// <param name="liststyle"></param>
-        public void PushGroup(string name, Styles.PDFStyle liststyle)
+        public void PushGroup(string name, Styles.Style liststyle)
         {
             PDFListNumberGroup grp;
 
             if (string.IsNullOrEmpty(name) || this.TryGetNamedGroup(name, out grp) == false)
             {
                 int startindex = 1;
-                ListNumberingGroupStyle style = liststyle.GetValue(PDFStyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.Decimals);
-                string prefix = liststyle.GetValue(PDFStyleKeys.ListPrefixKey, String.Empty);
-                string postfix = liststyle.GetValue(PDFStyleKeys.ListPostfixKey, String.Empty);
-                bool concat = liststyle.GetValue(PDFStyleKeys.ListConcatKey, false);
+                ListNumberingGroupStyle style = liststyle.GetValue(StyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.Decimals);
+                string prefix = liststyle.GetValue(StyleKeys.ListPrefixKey, String.Empty);
+                string postfix = liststyle.GetValue(StyleKeys.ListPostfixKey, String.Empty);
+                bool concat = liststyle.GetValue(StyleKeys.ListConcatKey, false);
 
                 grp = new PDFListNumberGroup(name, startindex, style, prefix, postfix, concat);
 

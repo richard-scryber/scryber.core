@@ -55,7 +55,7 @@ namespace Scryber.Layout
         /// <summary>
         /// An instance reference to the FullStyle
         /// </summary>
-        private PDFStyle _style;
+        private Style _style;
 
 
         #endregion
@@ -90,7 +90,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets or sets the full style for the current component
         /// </summary>
-        protected PDFStyle FullStyle
+        protected Style FullStyle
         {
             get { return _style; }
             set { _style = value; }
@@ -121,7 +121,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the StyleStack associated with this layout
         /// </summary>
-        protected PDFStyleStack StyleStack
+        protected StyleStack StyleStack
         {
             get { return this.Context.StyleStack; }
         }
@@ -196,7 +196,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        public virtual void Layout(PDFLayoutContext context, PDFStyle fullstyle)
+        public virtual void Layout(PDFLayoutContext context, Style fullstyle)
         {
             this._context = context;
 
@@ -311,8 +311,8 @@ namespace Scryber.Layout
 
             string styleidentifier = null;
             bool found = false;
-            PDFStyle full = null;
-            PDFStyle applied = null;
+            Style full = null;
+            Style applied = null;
             
 
             if (IsStyled(comp))
@@ -355,12 +355,12 @@ namespace Scryber.Layout
 
             if (IsStyled(comp) && !IsText(comp))
             {
-                PDFStyleValue<bool> br;
-                if (full.TryGetValue(PDFStyleKeys.PageBreakBeforeKey, out br) && br.Value)
+                StyleValue<bool> br;
+                if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value)
                 {
                     this.DoLayoutPageBreak(comp, full);
                 }
-                else if (full.TryGetValue(PDFStyleKeys.ColumnBreakBeforeKey, out br) && br.Value)
+                else if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out br) && br.Value)
                 {
                     this.DoLayoutColumnBreak(comp, full);
                 }
@@ -374,12 +374,12 @@ namespace Scryber.Layout
 
             if (IsStyled(comp) && !IsText(comp))
             {
-                PDFStyleValue<bool> br;
-                if (full.TryGetValue(PDFStyleKeys.PageBreakAfterKey, out br) && br.Value)
+                StyleValue<bool> br;
+                if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value)
                 {
                     this.DoLayoutPageBreak(comp, full);
                 }
-                else if (full.TryGetValue(PDFStyleKeys.ColumnBreakAfterKey, out br) && br.Value)
+                else if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value)
                 {
                     this.DoLayoutColumnBreak(comp, full);
                 }
@@ -419,7 +419,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="comp"></param>
         /// <param name="full"></param>
-        protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
+        protected virtual void DoLayoutAChild(IPDFComponent comp, Style full)
         {
             PDFLayoutRegion positioned = null;
             PDFPositionOptions options = null;
@@ -591,7 +591,7 @@ namespace Scryber.Layout
 
         }
 
-        protected virtual PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IPDFComponent comp, PDFStyle full)
+        protected virtual PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IPDFComponent comp, Style full)
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
@@ -599,7 +599,7 @@ namespace Scryber.Layout
             return rel;
         }
 
-        protected virtual PDFLayoutRegion BeginNewAbsoluteRegionForChild(PDFPositionOptions pos, IPDFComponent comp, PDFStyle full)
+        protected virtual PDFLayoutRegion BeginNewAbsoluteRegionForChild(PDFPositionOptions pos, IPDFComponent comp, Style full)
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
@@ -620,7 +620,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="pgbreak">The declared page break</param>
         /// <param name="style">The full style of the page break</param>
-        protected virtual void DoLayoutPageBreak(Component pgbreak, PDFStyle style)
+        protected virtual void DoLayoutPageBreak(Component pgbreak, Style style)
         {
             if (pgbreak.Visible == false)
                 return;
@@ -687,7 +687,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="colbreak"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutColumnBreak(Component colbreak, PDFStyle style)
+        protected virtual void DoLayoutColumnBreak(Component colbreak, Style style)
         {
             if (colbreak.Visible == false)
                 return;
@@ -731,7 +731,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="linebreak"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutLineBreak(IPDFLayoutBreak linebreak, PDFStyle style)
+        protected virtual void DoLayoutLineBreak(IPDFLayoutBreak linebreak, Style style)
         {
             if (linebreak is Component && !((Component)linebreak).Visible)
                 return;
@@ -766,7 +766,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="invisible"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, PDFStyle style)
+        protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, Style style)
         {
             ComponentList children;
 
@@ -774,7 +774,7 @@ namespace Scryber.Layout
             //so that inner unstyled components (test literals etc) use it.
             //Styled components will build their own from the full stack
 
-            PDFStyle prev = this.FullStyle;
+            Style prev = this.FullStyle;
             this.FullStyle = style;
 
             //Extract the collection of child components in this container
@@ -796,7 +796,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="image">The image reference to layout</param>
         /// <param name="style">The image style</param>
-        protected virtual void DoLayoutImageComponent(IPDFImageComponent image, PDFStyle style)
+        protected virtual void DoLayoutImageComponent(IPDFImageComponent image, Style style)
         {
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
@@ -842,7 +842,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="comp"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutPathComponent(IPDFGraphicPathComponent comp, PDFStyle style)
+        protected virtual void DoLayoutPathComponent(IPDFGraphicPathComponent comp, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
 
@@ -869,7 +869,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="text"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutTextComponent(IPDFTextComponent text, PDFStyle style)
+        protected virtual void DoLayoutTextComponent(IPDFTextComponent text, Style style)
         {
             try
             {
@@ -901,7 +901,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="comp">The image reference to layout</param>
         /// <param name="style">The image style</param>
-        protected virtual void DoLayoutVisualRenderComponent(IPDFVisualRenderComponent comp, PDFStyle style)
+        protected virtual void DoLayoutVisualRenderComponent(IPDFVisualRenderComponent comp, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
 
@@ -926,7 +926,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="viewPort"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutViewPortComponent(IPDFViewPortComponent viewPort, PDFStyle style)
+        protected virtual void DoLayoutViewPortComponent(IPDFViewPortComponent viewPort, Style style)
         {
             try
             {
@@ -1334,7 +1334,7 @@ namespace Scryber.Layout
         /// <param name="linetoAddTo">The current line in the layout.</param>
         /// <param name="options">The position options</param>
         /// <returns>True if the component could be added (i.e. there was enough space) or false.</returns>
-        protected bool AddComponentRunToLayoutWithSize(PDFSize required, IPDFComponent component, PDFStyle style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
+        protected bool AddComponentRunToLayoutWithSize(PDFSize required, IPDFComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
         {
             PDFRect content = new PDFRect(
                 options.Padding.Top + options.Margins.Top,
@@ -1473,7 +1473,7 @@ namespace Scryber.Layout
         /// <param name="marginThick"></param>
         /// <param name="padThick"></param>
         /// <returns></returns>
-        protected PDFSize BuildContentSizes(PDFStyle style, PDFPositionOptions options, PDFSize origsize, out PDFRect border, out PDFRect content, out PDFRect total, out bool hasmargins, out bool haspadding, out PDFThickness marginThick, out PDFThickness padThick)
+        protected PDFSize BuildContentSizes(Style style, PDFPositionOptions options, PDFSize origsize, out PDFRect border, out PDFRect content, out PDFRect total, out bool hasmargins, out bool haspadding, out PDFThickness marginThick, out PDFThickness padThick)
         {
 
             //Extract the margins and padding from the options
@@ -1567,7 +1567,7 @@ namespace Scryber.Layout
         /// <param name="block"></param>
         /// <param name="bounds"></param>
         /// <param name="style"></param>
-        protected void InitBlock(PDFLayoutBlock block, PDFRect bounds, PDFStyle style)
+        protected void InitBlock(PDFLayoutBlock block, PDFRect bounds, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
             PDFColumnOptions columns = style.CreateColumnOptions();

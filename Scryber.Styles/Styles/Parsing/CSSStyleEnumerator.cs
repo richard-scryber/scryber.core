@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Scryber.Styles.Parsing
 {
-    public class CSSStyleEnumerator : IEnumerator<PDFStyle>
+    public class CSSStyleEnumerator : IEnumerator<Style>
     {
         private StringEnumerator _str;
         private CSSStyleParser _owner;
-        private PDFStyle _curr;
+        private Style _curr;
 
         public CSSStyleEnumerator(StringEnumerator str, CSSStyleParser owner)
         {
@@ -17,7 +17,7 @@ namespace Scryber.Styles.Parsing
             this._owner = owner;
         }
 
-        PDFStyle IEnumerator<PDFStyle>.Current
+        Style IEnumerator<Style>.Current
         {
             get { return _curr; }
         }
@@ -58,8 +58,9 @@ namespace Scryber.Styles.Parsing
 
         private const char CSSStart = '{';
         private const char CSSEnd = '}';
+        
 
-        private PDFStyle ParseNextStyle()
+        private Style ParseNextStyle()
         {
             if (!this._str.MoveNext())
                 return null;
@@ -82,13 +83,13 @@ namespace Scryber.Styles.Parsing
             }
 
             string selector = "";
-            PDFStyle parsed = null;
+            Style parsed = null;
 
             try
             {
                 selector = this._str.Substring(start, next - start);
                 string style = this._str.Substring(next + 1, end - (next + 1));
-                PDFStyleDefn defn = new PDFStyleDefn();
+                StyleDefn defn = new StyleDefn();
 
                 defn.Match = selector;
                 CSSStyleItemReader reader = new CSSStyleItemReader(style);

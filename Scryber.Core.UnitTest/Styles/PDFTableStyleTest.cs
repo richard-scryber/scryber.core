@@ -71,9 +71,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Table_ConstructorTest()
         {
-            PDFTableStyle target = new PDFTableStyle();
+            TableStyle target = new TableStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.TableItemKey,target.ItemKey);
+            Assert.AreEqual(StyleKeys.TableItemKey,target.ItemKey);
         }
 
         
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Table_CellColumnSpanTest()
         {
-            PDFTableStyle target = new PDFTableStyle(); 
+            TableStyle target = new TableStyle(); 
             Assert.AreEqual(1, target.CellColumnSpan);
 
             target.CellColumnSpan = 4;
@@ -101,7 +101,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Table_RowRepeatTest()
         {
-            PDFTableStyle target = new PDFTableStyle();
+            TableStyle target = new TableStyle();
             Assert.AreEqual(TableRowRepeat.None, target.RowRepeat);
 
             target.RowRepeat = TableRowRepeat.RepeatAtTop;

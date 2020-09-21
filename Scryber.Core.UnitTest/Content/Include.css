@@ -1,4 +1,21 @@
-﻿body
+﻿
+/* This is the grey body */
+body.grey
 {
-    background-color:#808080;
+    background-color:#808080; /* body background */
+    color: #222;
+}
+
+body.grey div{
+    padding: 10px;
+    /*color: #AAA;*/
+    margin:10px;
+}
+
+
+body.grey div.reverse{
+    
+    /* Reverse the colors */
+    background-color: #222;
+    color:#808080;
 }

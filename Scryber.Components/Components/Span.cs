@@ -39,9 +39,9 @@ namespace Scryber.Components
 
         
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            Styles.PDFStyle inline = base.GetBaseStyle();
+            Styles.Style inline = base.GetBaseStyle();
             inline.Position.PositionMode = Drawing.PositionMode.Inline;
             return inline;
         }
@@ -68,7 +68,7 @@ namespace Scryber.Components
         }
 
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return base.GetBaseStyle();
         }
@@ -95,9 +95,9 @@ namespace Scryber.Components
         }
 
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            Styles.PDFStyle bold = base.GetBaseStyle();
+            Styles.Style bold = base.GetBaseStyle();
             bold.Font.FontBold = true;
             return bold;
         }
@@ -123,9 +123,9 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            Styles.PDFStyle bold = base.GetBaseStyle();
+            Styles.Style bold = base.GetBaseStyle();
             bold.Font.FontItalic = true;
             return bold;
         }
@@ -150,9 +150,9 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            Styles.PDFStyle under = base.GetBaseStyle();
+            Styles.Style under = base.GetBaseStyle();
             under.Text.Decoration |= Text.TextDecoration.Underline;
             return under;
         }

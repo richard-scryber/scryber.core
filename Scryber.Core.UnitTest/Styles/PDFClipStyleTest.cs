@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void ClipStyle_ConstructorTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.ClipItemKey,target.ItemKey);
+            Assert.AreEqual(StyleKeys.ClipItemKey,target.ItemKey);
         }
 
 
@@ -85,7 +85,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_TryGetThicknessTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
 
             PDFThickness actual;
             PDFThickness expected = PDFThickness.Empty();
@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_SetThicknessTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             target.All = 12;
             target.Left = 13;
             target.Right = 14;
@@ -149,7 +149,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_AllTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             Assert.AreEqual(PDFUnit.Zero, target.All);
 
             target.All = 20;
@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_BottomTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Bottom);
 
             target.Bottom = 20;
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_LeftTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Left);
 
             target.Left = 20;
@@ -220,7 +220,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_RightTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Right);
 
             target.Right = 20;
@@ -237,7 +237,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Clip_TopTest()
         {
-            PDFClipStyle target = new PDFClipStyle();
+            ClipStyle target = new ClipStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Top);
 
             target.Top = 20;

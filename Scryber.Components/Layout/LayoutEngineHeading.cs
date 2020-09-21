@@ -28,8 +28,8 @@ namespace Scryber.Layout
         protected override void DoLayoutComponent()
         {
             bool restoreText = false;
-            ListNumberingGroupStyle style = this.FullStyle.GetValue(PDFStyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.None);
-            string grpname = this.FullStyle.GetValue(PDFStyleKeys.ListGroupKey, string.Empty);
+            ListNumberingGroupStyle style = this.FullStyle.GetValue(StyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.None);
+            string grpname = this.FullStyle.GetValue(StyleKeys.ListGroupKey, string.Empty);
 
             if (style != ListNumberingGroupStyle.None && !string.IsNullOrEmpty(grpname))
             {
@@ -77,13 +77,13 @@ namespace Scryber.Layout
             /// The value for a groug index that has not been registered
             /// </summary>
             private const string UnregisteredGroup = null;
-            private const PDFStyle UnregisteredStyle = null;
+            private const Style UnregisteredStyle = null;
 
             /// <summary>
             /// A list of all the names of the groups registered based on their index
             /// </summary>
             private List<string> _registeredGroups = new List<string>();
-            private List<PDFStyle> _registeredStyles = new List<PDFStyle>();
+            private List<Style> _registeredStyles = new List<Style>();
 
             
             /// <summary>
@@ -96,7 +96,7 @@ namespace Scryber.Layout
             /// </summary>
             private List<int> _currRoute = new List<int>();
 
-            public string PushHeading(int index, string grpName, PDFStyle style)
+            public string PushHeading(int index, string grpName, Style style)
             {
 
                 //We add nulls in to the list of group names up to the index
@@ -148,7 +148,7 @@ namespace Scryber.Layout
                 foreach (int exist in _currRoute)
                 {
                     string grpname = _registeredGroups[exist];
-                    PDFStyle grpstyle = _registeredStyles[exist];
+                    Style grpstyle = _registeredStyles[exist];
                     _numbering.PushGroup(grpname, grpstyle);
                 }
 

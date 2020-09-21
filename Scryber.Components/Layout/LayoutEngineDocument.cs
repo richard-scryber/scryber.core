@@ -78,7 +78,7 @@ namespace Scryber.Layout
         {
 
             this.Context.DocumentLayout = CreateDocumentLayout();
-            PDFStyle style = this.FullStyle;
+            Style style = this.FullStyle;
 
             this.StartPageNumbering(style);
 
@@ -107,7 +107,7 @@ namespace Scryber.Layout
         }
 
 
-        protected virtual void LayoutAdditions(PDFStyle docStyle)
+        protected virtual void LayoutAdditions(Style docStyle)
         {
             if(this.Document.HasAdditions)
             {
@@ -143,12 +143,12 @@ namespace Scryber.Layout
         }
 
 
-        protected virtual void StartPageNumbering(PDFStyle full)
+        protected virtual void StartPageNumbering(Style full)
         {
             this.DocumentLayout.StartPageNumbering(full.CreatePageNumberOptions());
         }
 
-        protected virtual void EndPageNumbering(PDFStyle full)
+        protected virtual void EndPageNumbering(Style full)
         {
             this.DocumentLayout.EndPageNumbering();
         }
@@ -173,13 +173,13 @@ namespace Scryber.Layout
         /// <param name="pg">The page to perform the layout on</param>
         protected virtual void LayoutPage(PageBase pg)
         {
-            PDFStyle style = pg.GetAppliedStyle();
+            Style style = pg.GetAppliedStyle();
             
             if(null != style)
                 this.StyleStack.Push(style);
 
 
-            PDFStyle full = this.Context.StyleStack.GetFullStyle(pg);
+            Style full = this.Context.StyleStack.GetFullStyle(pg);
 
 
             
@@ -190,7 +190,7 @@ namespace Scryber.Layout
                 this.Context.StyleStack.Pop();
         }
 
-        protected void LayoutPageWithStyle(PageBase pg, PDFStyle full)
+        protected void LayoutPageWithStyle(PageBase pg, Style full)
         {
             PDFArtefactRegistrationSet artefacts = pg.RegisterLayoutArtefacts(this.Context, full);
 

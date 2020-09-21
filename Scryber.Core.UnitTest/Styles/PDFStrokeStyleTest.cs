@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_ConstructorTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.StrokeItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.StrokeItemKey, target.ItemKey);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_CreatePenTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
 
             //No values
 
@@ -141,7 +141,7 @@ namespace Scryber.Core.UnitTests.Styles
             ((PDFSolidPen)expected).Color = PDFColors.Lime;
             expected.Width = 8;
 
-            target = new PDFStrokeStyle();
+            target = new StrokeStyle();
             target.Dash = dash;
             target.Width = 8;
             target.Color = PDFColors.Lime;
@@ -191,7 +191,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Style_ColorTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
             Assert.AreEqual(target.Color, PDFColors.Transparent);
 
             target.Color = PDFColors.Red;
@@ -211,7 +211,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_DashTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
             
             //Default
 
@@ -250,7 +250,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_LineCapTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
 
             //Default 
 
@@ -287,7 +287,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_LineJoinTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
 
             //Default 
 
@@ -324,42 +324,42 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_LineStyleTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
             
             //Default 
 
-            LineStyle expected = LineStyle.None;
+            LineType expected = LineType.None;
             Assert.AreEqual(expected, target.LineStyle);
 
             //With color - should be solid
             target.Color = PDFColors.Red;
-            expected = LineStyle.Solid;
+            expected = LineType.Solid;
             Assert.AreEqual(expected, target.LineStyle);
 
             //With dash - should be dashed
             target.Dash = new PDFDash(new int[] { 2, 3, 4 }, 10);
-            expected = LineStyle.Dash;
+            expected = LineType.Dash;
             Assert.AreEqual(expected, target.LineStyle);
             
 
             //Set value (should override the dash and color options)
 
-            expected = LineStyle.Solid;
-            LineStyle actual;
+            expected = LineType.Solid;
+            LineType actual;
             target.LineStyle = expected;
             actual = target.LineStyle;
             Assert.AreEqual(expected, actual);
 
             // Change Value
 
-            expected = LineStyle.None;
+            expected = LineType.None;
             target.LineStyle = expected;
             actual = target.LineStyle;
             Assert.AreEqual(expected, actual);
 
             //Remove value
 
-            expected = LineStyle.None;
+            expected = LineType.None;
             target.RemoveLineStyle();
             target.RemoveDash();
             target.RemoveColor();
@@ -374,7 +374,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_MitreTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
 
             // Default value
 
@@ -411,7 +411,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_OpacityTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
 
             // Default value
 
@@ -448,7 +448,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Stroke_WidthTest()
         {
-            PDFStrokeStyle target = new PDFStrokeStyle();
+            StrokeStyle target = new StrokeStyle();
             // Default value
 
             PDFUnit expected = PDFUnit.Empty;

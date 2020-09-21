@@ -88,7 +88,7 @@ namespace Scryber.Components
 
         #region IPDFViewPortComponent Members
 
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new Layout.LayoutEnginePanel(this, parent);
         }

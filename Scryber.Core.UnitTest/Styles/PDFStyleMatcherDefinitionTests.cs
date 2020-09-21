@@ -38,7 +38,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void SimpleIsMatch_Test()
         {
             int priority;
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = PDFStyleMatcher.Parse(".red");
 
 
@@ -54,7 +54,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void DualIsMatch_Test()
         {
             int priority;
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = PDFStyleMatcher.Parse("doc:Div.red");
 
 
@@ -75,7 +75,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
 
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = "doc:Div.red";
 
 
@@ -101,7 +101,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
 
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = "doc:Div.red";
 
 
@@ -136,7 +136,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
 
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = ".red .blue";
 
             var div1 = new Div();
@@ -162,7 +162,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
 
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = "doc:Div#MyDiv doc:Para.blue";
 
             var div1 = new Div();
@@ -194,7 +194,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void DirectNestedClassMatch_Test()
         {
             int priority;
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = "doc:Div.green > doc:Para.blue";
 
             var div1 = new Div();
@@ -231,7 +231,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
 
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = "doc:Div.green > .blue.green";
 
             var div1 = new Div();
@@ -275,7 +275,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority = 0;
 
-            var defn = new PDFStyleDefn();
+            var defn = new StyleDefn();
             defn.Match = "doc:Div.green > doc:Para.green.red, doc:Div.red > doc:Para.blue.green";
 
             var div1 = new Div();

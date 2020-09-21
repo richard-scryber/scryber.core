@@ -96,7 +96,7 @@ namespace Scryber
         /// <returns>The appropriate numbering stack.</returns>
         /// <remarks>Named stacks are remembered throughout the lisf of the document, so they can be re-opened at any point.
         /// Un-named stacks will only persist until they are completely colsed.</remarks>
-        public PDFListNumberingStack OpenNumberingStack(string name, PDFListStyle initStyle)
+        public PDFListNumberingStack OpenNumberingStack(string name, ListStyle initStyle)
         {
             //if we have a current stack and either both names are empty, or the names match - then this is the one.
             if (_currentStack != null && ((string.IsNullOrEmpty(name) && string.IsNullOrEmpty(_currentStack.Name)) || string.Equals(name, _currentStack.Name)))

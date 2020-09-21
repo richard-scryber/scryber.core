@@ -70,7 +70,7 @@ namespace Scryber
     {
         //Text.PDFTextLayout TextLayout { get; set; }
 
-        Text.PDFTextReader CreateReader(PDFLayoutContext context, PDFStyle fullstyle);
+        Text.PDFTextReader CreateReader(PDFLayoutContext context, Style fullstyle);
 
         //void ResetTextBlock();
     }
@@ -84,7 +84,7 @@ namespace Scryber
     /// </summary>
     public interface IPDFGraphicPathComponent : IPDFComponent, IPDFRenderComponent
     {
-        PDFGraphicsPath CreatePath(PDFSize avail, Styles.PDFStyle fullstyle);
+        PDFGraphicsPath CreatePath(PDFSize avail, Styles.Style fullstyle);
 
         /// <summary>
         /// Gets or sets the path generated with the CreatePath method
@@ -103,7 +103,7 @@ namespace Scryber
         /// Returns null if there is no image.
         /// </summary>
         /// <returns></returns>
-        Scryber.Resources.PDFImageXObject GetImageObject(PDFContextBase context, PDFStyle imagestyle);
+        Scryber.Resources.PDFImageXObject GetImageObject(PDFContextBase context, Style imagestyle);
 
     }
 
@@ -171,7 +171,7 @@ namespace Scryber
         /// <param name="context">The current layout context</param>
         /// <param name="appliedstyle">The style applied to the component</param>
         /// <returns>The required size of the component content (excluding any padding or margins)</returns>
-        PDFSize GetRequiredSizeForLayout(PDFSize available, PDFLayoutContext context, PDFStyle appliedstyle);
+        PDFSize GetRequiredSizeForLayout(PDFSize available, PDFLayoutContext context, Style appliedstyle);
 
         /// <summary>
         /// Applies the final render size(s) back to the visual render component.
@@ -180,7 +180,7 @@ namespace Scryber
         /// <param name="border">The border rectangle (content + padding)</param>
         /// <param name="total">The total bounds (content + padding + margins)</param>
         /// <param name="style">The full style</param>
-        void SetRenderSizes(PDFRect content, PDFRect border, PDFRect total, PDFStyle style);
+        void SetRenderSizes(PDFRect content, PDFRect border, PDFRect total, Style style);
     }
 
     #endregion
@@ -246,7 +246,7 @@ namespace Scryber
     /// </summary>
     public interface IPDFViewPortComponent : IPDFComponent
     {
-        IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle fullstyle);
+        IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle);
     }
 
     #endregion
@@ -324,7 +324,7 @@ namespace Scryber
         /// </summary>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        void Layout(PDFLayoutContext context, PDFStyle fullstyle);
+        void Layout(PDFLayoutContext context, Style fullstyle);
 
         /// <summary>
         /// Moves the provided block and region to a new page along with the provided stack of blocks

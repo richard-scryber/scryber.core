@@ -55,9 +55,9 @@ namespace Scryber.Components
         }
 
 
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle style = base.GetBaseStyle();
+            Styles.Style style = base.GetBaseStyle();
             style.Font.FontFamily = PDFFonts.Courier.Family;
             style.Text.WrapText = Scryber.Text.WordWrap.NoWrap;
             style.Text.PreserveWhitespace = true;

@@ -57,9 +57,9 @@ namespace Scryber.Components
         /// overrides base implementation to return a position mode of block
         /// </summary>
         /// <returns></returns>
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle b = base.GetBaseStyle();
+            Styles.Style b = base.GetBaseStyle();
             b.Position.PositionMode = Drawing.PositionMode.Block;
             b.Margins.Top = new Drawing.PDFUnit(5,Drawing.PageUnits.Points);
             

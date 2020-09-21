@@ -85,7 +85,7 @@ namespace Scryber.Components
         }
 
 
-        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
             //var form = this.GetParentForm(context);
             PDFAcrobatFormFieldWidget entry = GetFieldEntry(context);
@@ -114,19 +114,19 @@ namespace Scryber.Components
         }
 
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new Layout.LayoutEngineInput(this, parent);
             //base.CreateLayoutEngine(parent, context, style);
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
 
             style.Position.PositionMode = Drawing.PositionMode.Block;
             style.Border.Width = 1;
-            style.Border.LineStyle = Drawing.LineStyle.Solid;
+            style.Border.LineStyle = Drawing.LineType.Solid;
             style.Border.Color = Drawing.PDFColors.Black;
             style.Padding.All = 5;
             style.Size.FullWidth = true;

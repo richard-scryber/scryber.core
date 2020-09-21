@@ -53,7 +53,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             var compType = typeof(Scryber.Components.Document);
             var dataType = typeof(Scryber.Data.XMLDataSource);
-            var styleType = typeof(Scryber.Styles.PDFStyle);
+            var styleType = typeof(Scryber.Styles.Style);
 
             var full = compType.Namespace + ", " + compType.Assembly.FullName;
             

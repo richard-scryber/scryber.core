@@ -96,7 +96,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.AreEqual(color, target.Color);
             Assert.AreEqual(opacity, target.Opacity);
-            Assert.AreEqual(FillStyle.Solid, target.FillStyle);
+            Assert.AreEqual(FillType.Solid, target.FillStyle);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.AreEqual(PDFColors.Transparent, target.Color);
             Assert.AreEqual((PDFReal)1, target.Opacity);
-            Assert.AreEqual(FillStyle.Solid, target.FillStyle);
+            Assert.AreEqual(FillType.Solid, target.FillStyle);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.AreEqual(color, target.Color);
             Assert.AreEqual((PDFReal)1, target.Opacity);
-            Assert.AreEqual(FillStyle.Solid, target.FillStyle);
+            Assert.AreEqual(FillType.Solid, target.FillStyle);
         }
 
         /// <summary>
@@ -179,8 +179,8 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             PDFColor color = PDFColors.Aqua;
             PDFSolidBrush target = new PDFSolidBrush(color);
-            FillStyle expected = FillStyle.Solid;
-            FillStyle actual;
+            FillType expected = FillType.Solid;
+            FillType actual;
             actual = target.FillStyle;
             Assert.AreEqual(expected, actual);
         }

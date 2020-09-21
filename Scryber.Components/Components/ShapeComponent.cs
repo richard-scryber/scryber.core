@@ -45,16 +45,16 @@ namespace Scryber.Components
         }
 
 
-        protected abstract PDFGraphicsPath CreatePath(PDFSize available, PDFStyle fullstyle);
+        protected abstract PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle);
 
-        PDFGraphicsPath IPDFGraphicPathComponent.CreatePath(PDFSize available, PDFStyle fullstyle)
+        PDFGraphicsPath IPDFGraphicPathComponent.CreatePath(PDFSize available, Style fullstyle)
         {
             return this.CreatePath(available, fullstyle);
         }
 
         public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            PDFStyle fullstyle = context.FullStyle;
+            Style fullstyle = context.FullStyle;
             if (null == fullstyle)
                 throw new ArgumentNullException("context.FullStyle");
 

@@ -19,7 +19,7 @@ namespace Scryber.Layout
             set;
         }
 
-        public PDFStyle FullStyle
+        public Style FullStyle
         {
             get;
             set;
@@ -37,7 +37,7 @@ namespace Scryber.Layout
             get { return 0; }
         }
 
-        public PDFLayoutInlineBegin(PDFLayoutLine line, IPDFComponent owner, PDFPositionOptions pos, PDFStyle fullStyle)
+        public PDFLayoutInlineBegin(PDFLayoutLine line, IPDFComponent owner, PDFPositionOptions pos, Style fullStyle)
             : base(line, owner)
         {
             this.InlinePosition = pos;
@@ -60,8 +60,8 @@ namespace Scryber.Layout
             {
                 bg = this.FullStyle.CreateBackgroundBrush();
                 border = this.FullStyle.CreateBorderPen();
-                corner = this.FullStyle.GetValue(PDFStyleKeys.BorderCornerRadiusKey, 0.0);
-                sides = this.FullStyle.GetValue(PDFStyleKeys.BorderSidesKey, sides);
+                corner = this.FullStyle.GetValue(StyleKeys.BorderCornerRadiusKey, 0.0);
+                sides = this.FullStyle.GetValue(StyleKeys.BorderSidesKey, sides);
             }
 
             if (null != bg)

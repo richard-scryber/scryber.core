@@ -75,7 +75,7 @@ namespace Scryber.Data
         // style value properties
         //
 
-        private PDFStyle _itemstyle, _altitemstyle, _headstyle, _footstyle;
+        private Style _itemstyle, _altitemstyle, _headstyle, _footstyle;
 
         #region  public PDFStyle CellStyle {get;}
 
@@ -83,12 +83,12 @@ namespace Scryber.Data
         /// Gets the style that will be applied to the container of the item template.
         /// </summary>
         [PDFElement("CellStyle")]
-        public PDFStyle CellStyle
+        public Style CellStyle
         {
             get
             {
                 if (null == _itemstyle)
-                    _itemstyle = new PDFStyle();
+                    _itemstyle = new Style();
                 return _itemstyle;
             }
         }
@@ -101,12 +101,12 @@ namespace Scryber.Data
         /// Gets the style that will be applied to the container of any alternatint template.
         /// </summary>
         [PDFElement("AlternatingCellStyle")]
-        public PDFStyle AlternatingCellStyle
+        public Style AlternatingCellStyle
         {
             get
             {
                 if (null == _altitemstyle)
-                    _altitemstyle = new PDFStyle();
+                    _altitemstyle = new Style();
                 return _altitemstyle;
             }
         }
@@ -119,12 +119,12 @@ namespace Scryber.Data
         /// Gets the style that will be applied to the container of any header template
         /// </summary>
         [PDFElement("HeaderCellStyle")]
-        public PDFStyle HeaderCellStyle
+        public Style HeaderCellStyle
         {
             get
             {
                 if (null == _headstyle)
-                    _headstyle = new PDFStyle();
+                    _headstyle = new Style();
                 return _headstyle;
             }
         }
@@ -137,12 +137,12 @@ namespace Scryber.Data
         /// Gets the style that will be applied to the continer of any footer template
         /// </summary>
         [PDFElement("FooterCellStyle")]
-        public PDFStyle FooterCellStyle
+        public Style FooterCellStyle
         {
             get
             {
                 if (null == _footstyle)
-                    _footstyle = new PDFStyle();
+                    _footstyle = new Style();
                 return _footstyle;
             }
         }
@@ -233,10 +233,10 @@ namespace Scryber.Data
                 cell.StyleClass = this.CellClass;
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                this.Style.MergeInto(cell.Style, Style.DirectStylePriority);
 
             if (null != this._headstyle && _headstyle.HasValues)
-                this._headstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                this._headstyle.MergeInto(cell.Style, Style.DirectStylePriority);
         }
 
         void headerlbl_DataBinding(object sender, PDFDataBindEventArgs args)
@@ -296,13 +296,13 @@ namespace Scryber.Data
             
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                this.Style.MergeInto(cell.Style, Style.DirectStylePriority);
 
 
             if (rowindex % 2 == 1 && (null != this._altitemstyle && _altitemstyle.HasValues))
-                _altitemstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                _altitemstyle.MergeInto(cell.Style, Style.DirectStylePriority);
             else if (null != this._itemstyle && _itemstyle.HasValues)
-                _itemstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                _itemstyle.MergeInto(cell.Style, Style.DirectStylePriority);
         }
 
 
@@ -337,10 +337,10 @@ namespace Scryber.Data
             cell.StyleClass = this.HeaderCellClass;
 
             if (this.HasStyle && this.Style.HasValues)
-                this.Style.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                this.Style.MergeInto(cell.Style, Style.DirectStylePriority);
 
             if (null != this._footstyle && _footstyle.HasValues)
-                this._footstyle.MergeInto(cell.Style, PDFStyle.DirectStylePriority);
+                this._footstyle.MergeInto(cell.Style, Style.DirectStylePriority);
         }
 
         void footerlbl_DataBound(object sender, PDFDataBindEventArgs args)

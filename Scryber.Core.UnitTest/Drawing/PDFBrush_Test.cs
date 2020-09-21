@@ -81,9 +81,9 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FillStyle_Test()
         {
             PDFBrush target = CreatePDFSolidBrush();
-            FillStyle actual;
+            FillType actual;
             actual = target.FillStyle;
-            Assert.AreEqual(FillStyle.Solid, actual);
+            Assert.AreEqual(FillType.Solid, actual);
         }
     }
 }

@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void PDFPaddingStyleConstructorTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.PaddingItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.PaddingItemKey, target.ItemKey);
         }
 
 
@@ -85,7 +85,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_TryGetThicknessTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
 
             PDFThickness actual;
             PDFThickness expected = PDFThickness.Empty();
@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_SetThicknessTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             target.All = 12;
             target.Left = 13;
             target.Right = 14;
@@ -149,7 +149,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_AllTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             Assert.AreEqual(PDFUnit.Zero, target.All);
 
             target.All = 20;
@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_BottomTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Bottom);
 
             target.Bottom = 20;
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_LeftTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Left);
 
             target.Left = 20;
@@ -220,7 +220,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_RightTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Right);
 
             target.Right = 20;
@@ -237,7 +237,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Padding_TopTest()
         {
-            PDFPaddingStyle target = new PDFPaddingStyle();
+            PaddingStyle target = new PaddingStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Top);
 
             target.Top = 20;

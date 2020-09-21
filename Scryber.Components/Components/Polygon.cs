@@ -31,7 +31,7 @@ namespace Scryber.Components
         private PDFPointArray _pts;
 
 
-        [PDFAttribute("vertex-count", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("vertex-count", Scryber.Styles.Style.PDFStylesNamespace)]
         public int VertexCount
         {
             get { return this.Style.Shape.VertexCount; }
@@ -39,7 +39,7 @@ namespace Scryber.Components
         }
 
 
-        [PDFAttribute("vertex-step", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("vertex-step", Scryber.Styles.Style.PDFStylesNamespace)]
         public int VertexStep
         {
             get { return this.Style.Shape.VertexStep; }
@@ -82,7 +82,7 @@ namespace Scryber.Components
 
 
 
-        protected override Drawing.PDFPoint[] GetPoints(Drawing.PDFRect bounds, PDFStyle style)
+        protected override Drawing.PDFPoint[] GetPoints(Drawing.PDFRect bounds, Style style)
         {
             if (this.HasPoints)
             {
@@ -92,10 +92,10 @@ namespace Scryber.Components
                 return base.GetPoints(bounds, style);
         }
 
-        protected override void BuildPath(PDFGraphicsPath path, PDFPoint[] points, PDFStyle style, bool end)
+        protected override void BuildPath(PDFGraphicsPath path, PDFPoint[] points, Style style, bool end)
         {
-            int vertexstep = style.GetValue(PDFStyleKeys.ShapeVertexStepKey, 1);
-            bool closed = style.GetValue(PDFStyleKeys.ShapeClosedKey, true);
+            int vertexstep = style.GetValue(StyleKeys.ShapeVertexStepKey, 1);
+            bool closed = style.GetValue(StyleKeys.ShapeClosedKey, true);
 
             if (this.HasPoints == false && vertexstep > 1)
                 this.BuildPolygramPath(path, points, vertexstep, closed, end);

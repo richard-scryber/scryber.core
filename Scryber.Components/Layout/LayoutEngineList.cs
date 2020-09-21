@@ -147,9 +147,9 @@ namespace Scryber.Layout
         private void OpenListNumbering()
         {
             string groupname = string.Empty;
-            PDFStyleValue<string> grp;
+            StyleValue<string> grp;
 
-            if (this.FullStyle.TryGetValue(PDFStyleKeys.ListGroupKey,out grp))
+            if (this.FullStyle.TryGetValue(StyleKeys.ListGroupKey,out grp))
             {
                 groupname = grp.Value;
             }
@@ -190,8 +190,8 @@ namespace Scryber.Layout
         private int BuildListEntries(out PDFUnit width)
         {
             int index = 0;
-            HorizontalAlignment halign = this.FullStyle.GetValue(PDFStyleKeys.ListAlignmentKey, DefaultListItemAlignment);
-            PDFUnit defaultWidth = this.FullStyle.GetValue(PDFStyleKeys.ListInsetKey, Const.DefaultListNumberInset);
+            HorizontalAlignment halign = this.FullStyle.GetValue(StyleKeys.ListAlignmentKey, DefaultListItemAlignment);
+            PDFUnit defaultWidth = this.FullStyle.GetValue(StyleKeys.ListInsetKey, Const.DefaultListNumberInset);
 
 
             width = defaultWidth;
@@ -202,7 +202,7 @@ namespace Scryber.Layout
             {
                 if (item.Visible)
                 {
-                    PDFStyle applied, full;
+                    Style applied, full;
 
                     if (string.IsNullOrEmpty(item.DataStyleIdentifier) 
                         || !this.DocumentLayout.TryGetStyleWithIdentifier(item.DataStyleIdentifier, out applied, out full))
@@ -269,14 +269,14 @@ namespace Scryber.Layout
         /// <param name="itemWidth">If an explicit width has been set then this is returned (otherwise -1)</param>
         /// <param name="text">If this item has explict text (e.g Definiton list) then this is returned, otherwise empty</param>
         /// <returns>The correct PDFListItemLabel for the item</returns>
-        private Component BuildAListNumberComponent(ListItem item, PDFStyle itemstyle, ref HorizontalAlignment halign, 
+        private Component BuildAListNumberComponent(ListItem item, Style itemstyle, ref HorizontalAlignment halign, 
             out ListNumberingGroupStyle type, out PDFUnit itemWidth, out string text)
         {
             PDFListNumbering numbers = this.Component.Document.ListNumbering;
             type = numbers.CurrentGroup.Style;
-            itemWidth = itemstyle.GetValue(PDFStyleKeys.ListInsetKey, (PDFUnit)(-1));
-            text = itemstyle.GetValue(PDFStyleKeys.ListLabelKey, string.Empty);
-            halign = itemstyle.GetValue(PDFStyleKeys.ListAlignmentKey, halign);
+            itemWidth = itemstyle.GetValue(StyleKeys.ListInsetKey, (PDFUnit)(-1));
+            text = itemstyle.GetValue(StyleKeys.ListLabelKey, string.Empty);
+            halign = itemstyle.GetValue(StyleKeys.ListAlignmentKey, halign);
 
             ListItemLabel label;
 
@@ -348,7 +348,7 @@ namespace Scryber.Layout
             //restore the items applied style onto the stack
             this.StyleStack.Push(entry.AppliedStyle);
             
-            PDFStyle full = entry.FullStyle;
+            Style full = entry.FullStyle;
             PDFUnit numberWidth = entry.NumberWidth;
 
             PDFArtefactRegistrationSet artefacts = entry.ListItem.RegisterLayoutArtefacts(this.Context, full);
@@ -496,7 +496,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="entry">The entry whose number should be laid out</param>
         /// <returns></returns>
-        private PDFUnit LayoutItemNumber(ListNumberEntry entry, PDFStyle fullstyle)
+        private PDFUnit LayoutItemNumber(ListNumberEntry entry, Style fullstyle)
         {
             ListItem item = entry.ListItem;
             
@@ -504,7 +504,7 @@ namespace Scryber.Layout
             PDFUnit avail = _itemblock.CurrentRegion.AvailableHeight;
 
             ListItemLabel literal = (ListItemLabel)entry.NumberComponent;
-            PDFStyle applied = literal.GetAppliedStyle();
+            Style applied = literal.GetAppliedStyle();
             if (null != applied)
             {
                 this.StyleStack.Push(applied);
@@ -556,7 +556,7 @@ namespace Scryber.Layout
             if (container.HasContent)
             {
                 //because we are mimicing being the container - set the full style to the item style
-                PDFStyle last = this.FullStyle;
+                Style last = this.FullStyle;
                 this.FullStyle = entry.FullStyle;
 
                 contents = container.Content;
@@ -720,12 +720,12 @@ namespace Scryber.Layout
             /// <summary>
             /// The list item full style
             /// </summary>
-            public PDFStyle FullStyle;
+            public Style FullStyle;
 
             /// <summary>
             /// The list item applied style
             /// </summary>
-            public PDFStyle AppliedStyle;
+            public Style AppliedStyle;
 
             /// <summary>
             /// The index of the item in the list

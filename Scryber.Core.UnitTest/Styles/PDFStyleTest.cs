@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleConstructorTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
             Assert.IsNotNull(target);
             Assert.AreEqual(PDFObjectTypes.Style, target.Type);
             
@@ -89,7 +89,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void CreatePostionOptionsTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Default (empty) position options
             PDFPositionOptions actual = target.CreatePostionOptions();
@@ -122,7 +122,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(null, actual.MaximumHeight);
             Assert.AreEqual(null, actual.MaximumWidth);
 
-            target = new PDFStyle();
+            target = new Style();
             target.Position.PositionMode = PositionMode.Inline;
             target.Size.FullWidth = true;
             target.Position.HAlign = HorizontalAlignment.Center;
@@ -189,7 +189,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void CreateTextOptionsTest()
         {
 
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
             PDFTextRenderOptions actual = target.CreateTextOptions();
 
             Assert.IsNull(actual.Background);
@@ -208,17 +208,17 @@ namespace Scryber.Core.UnitTests.Styles
 
             //set the specific values
 
-            target = new PDFStyle();
+            target = new Style();
             
             target.Background.Color = PDFColors.Lime;
-            target.Background.FillStyle = FillStyle.Solid;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Solid;
 
             target.Fill.Color = PDFColors.Navy;
-            target.Fill.FillStyle = FillStyle.Solid;
+            target.Fill.Style = Scryber.Drawing.FillType.Solid;
 
             target.Stroke.Color = PDFColors.Purple;
             target.Stroke.Width = 2;
-            target.Stroke.LineStyle = LineStyle.Solid;
+            target.Stroke.LineStyle = LineType.Solid;
 
 
             target.Font.FontSize = 36;
@@ -263,24 +263,24 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void FlattenTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Add a background color and style
-            PDFBackgroundStyle bg = new PDFBackgroundStyle();
+            BackgroundStyle bg = new BackgroundStyle();
             target.Background.Color = PDFColors.Aqua;
-            target.Background.FillStyle = FillStyle.Pattern;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             //target.Background.AddItem(bg);
 
             //Add a font
-            PDFFontStyle fs = new PDFFontStyle();
+            Scryber.Styles.FontStyle fs = new Scryber.Styles.FontStyle();
             target.Font.FontBold = true;
             target.Font.FontFamily = "Bauhaus 92";
             //target.AddItem(fs);
 
             //Flattening process will remove the duplicates from the bottom up.
-            PDFStyle actual = target.Flatten();
+            Style actual = target.Flatten();
             Assert.AreEqual(PDFColors.Aqua, actual.Background.Color);
-            Assert.AreEqual(FillStyle.Pattern, actual.Background.FillStyle);
+            Assert.AreEqual(Scryber.Drawing.FillType.Pattern, actual.Background.FillStyle);
             Assert.AreEqual(true, actual.Font.FontBold);
             Assert.AreEqual("Bauhaus 92", actual.Font.FontFamily);
 
@@ -294,12 +294,12 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void GetStyleItemTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Add a background color and style
             //PDFBackgroundStyle bg = new PDFBackgroundStyle();
             target.Background.Color = PDFColors.Aqua;
-            target.Background.FillStyle = FillStyle.Pattern;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             //target.AddItem(bg);
 
             //Add a font
@@ -312,12 +312,12 @@ namespace Scryber.Core.UnitTests.Styles
 
             
             //Flattenting should replace the duplicate backgrounds
-            PDFBackgroundStyle actual = target.GetOrCreateItem<PDFBackgroundStyle>(PDFStyleKeys.BgItemKey) as PDFBackgroundStyle;
+            BackgroundStyle actual = target.GetOrCreateItem<BackgroundStyle>(StyleKeys.BgItemKey) as BackgroundStyle;
             Assert.IsNotNull(actual);
 
             //But we should not have lost any detail within the style for the background
             Assert.AreEqual(PDFColors.Aqua, actual.Color);
-            Assert.AreEqual(FillStyle.Pattern, actual.FillStyle);
+            Assert.AreEqual(Scryber.Drawing.FillType.Pattern, actual.FillStyle);
 
         }
 
@@ -330,11 +330,11 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeInheritedTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Add a background color and style - not inherited
             target.Background.Color = PDFColors.Aqua;
-            target.Background.FillStyle = FillStyle.Pattern;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
             target.Font.FontBold = true;
@@ -344,24 +344,24 @@ namespace Scryber.Core.UnitTests.Styles
             Label lbl = new Label();
             bool replace = false;
 
-            PDFStyle merged = new PDFStyle();
+            Style merged = new Style();
             merged.Margins.All = 10;
             
             target.MergeInherited(merged, replace, 0);
 
             //Font is inherited
             bool expected = true;
-            bool actual = merged.IsValueDefined(PDFStyleKeys.FontBoldKey);
+            bool actual = merged.IsValueDefined(StyleKeys.FontBoldKey);
             Assert.AreEqual(expected, actual);
 
             //Background was defined on the target, but is not inherited
             expected = false;
-            actual = merged.IsValueDefined(PDFStyleKeys.BgColorKey);
+            actual = merged.IsValueDefined(StyleKeys.BgColorKey);
             Assert.AreEqual(expected, actual);
 
             //Margins was defined on the actual style - should still be there.
             expected = true;
-            actual = merged.IsValueDefined(PDFStyleKeys.MarginsAllKey);
+            actual = merged.IsValueDefined(StyleKeys.MarginsAllKey);
             Assert.AreEqual(expected, actual);
         }
 
@@ -372,36 +372,36 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Add a background color and style - not inherited
             target.Background.Color = PDFColors.Aqua;
-            target.Background.FillStyle = FillStyle.Pattern;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
             target.Font.FontBold = true;
             target.Font.FontFamily = "Bauhaus 92";
             
 
-            PDFStyle merged = new PDFStyle();
+            Style merged = new Style();
             merged.Margins.All = 10;
 
-            int priority = PDFStyle.DirectStylePriority;
+            int priority = Style.DirectStylePriority;
 
             target.MergeInto(merged, priority);
 
             //Font is inherited
             bool expected = true;
-            bool actual = merged.IsValueDefined(PDFStyleKeys.FontFamilyKey);
+            bool actual = merged.IsValueDefined(StyleKeys.FontFamilyKey);
             Assert.AreEqual(expected, actual,"Font style was not found");
 
             //Background was defined on the target, but is not inherited
-            actual = merged.IsValueDefined(PDFStyleKeys.BgColorKey);
+            actual = merged.IsValueDefined(StyleKeys.BgColorKey);
             Assert.AreEqual(expected, actual, "Background was not found");
 
             //Margins was defined on the actual style - should still be there.
             expected = true;
-            actual = merged.IsValueDefined(PDFStyleKeys.MarginsAllKey);
+            actual = merged.IsValueDefined(StyleKeys.MarginsAllKey);
             Assert.AreEqual(expected, actual, "Margins was not found");
             
         }
@@ -413,17 +413,17 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest1()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Add a background color and style - not inherited
             target.Background.Color = PDFColors.Aqua;
-            target.Background.FillStyle = FillStyle.Pattern;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
             target.Font.FontBold = true;
             target.Font.FontFamily = "Bauhaus 92";
             
-            PDFStyle merged = new PDFStyle();
+            Style merged = new Style();
             merged.Margins.All = 10;
             
 
@@ -435,17 +435,17 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Font is inherited
             bool expected = true;
-            bool actual = merged.IsValueDefined(PDFStyleKeys.FontFamilyKey);
+            bool actual = merged.IsValueDefined(StyleKeys.FontFamilyKey);
             Assert.AreEqual(expected, actual, "Font style was not found");
 
             //Background was defined on the target
             expected = true;
-            actual = merged.IsValueDefined(PDFStyleKeys.BgColorKey);
+            actual = merged.IsValueDefined(StyleKeys.BgColorKey);
             Assert.AreEqual(expected, actual, "Background was not found");
 
             //Margins was defined on the actual style - should still be there.
             expected = true;
-            actual = merged.IsValueDefined(PDFStyleKeys.MarginsAllKey);
+            actual = merged.IsValueDefined(StyleKeys.MarginsAllKey);
             Assert.AreEqual(expected, actual, "Margins was not found");
         }
 
@@ -456,11 +456,11 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void RemoveTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
             //Add a background color and style - not inherited
             target.Background.Color = PDFColors.Aqua;
-            target.Background.FillStyle = FillStyle.Pattern;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
             target.Font.FontBold = true;
@@ -470,21 +470,21 @@ namespace Scryber.Core.UnitTests.Styles
             bool expected = true;
             bool actual;
 
-            actual = target.RemoveItemStyleValues(PDFStyleKeys.FontItemKey);
+            actual = target.RemoveItemStyleValues(StyleKeys.FontItemKey);
             Assert.AreEqual(expected, actual);
-            Assert.IsFalse(target.IsValueDefined(PDFStyleKeys.FontFamilyKey));
-            Assert.IsFalse(target.IsValueDefined(PDFStyleKeys.FontBoldKey));
+            Assert.IsFalse(target.IsValueDefined(StyleKeys.FontFamilyKey));
+            Assert.IsFalse(target.IsValueDefined(StyleKeys.FontBoldKey));
 
-            actual = target.RemoveItemStyleValues(PDFStyleKeys.BgItemKey);
+            actual = target.RemoveItemStyleValues(StyleKeys.BgItemKey);
             Assert.AreEqual(expected, actual);
-            Assert.IsFalse(target.IsValueDefined(PDFStyleKeys.BgColorKey));
-
-            expected = false;
-            actual = target.RemoveItemStyleValues(PDFStyleKeys.FontItemKey);
-            Assert.AreEqual(expected, actual);
+            Assert.IsFalse(target.IsValueDefined(StyleKeys.BgColorKey));
 
             expected = false;
-            actual = target.RemoveItemStyleValues(PDFStyleKeys.BgItemKey);
+            actual = target.RemoveItemStyleValues(StyleKeys.FontItemKey);
+            Assert.AreEqual(expected, actual);
+
+            expected = false;
+            actual = target.RemoveItemStyleValues(StyleKeys.BgItemKey);
             Assert.AreEqual(expected, actual);
         }
 
@@ -498,7 +498,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void TryGetStyleTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
             target.Background.Color = PDFColors.Aqua;
             
             target.Border.CornerRadius = 20;
@@ -511,8 +511,8 @@ namespace Scryber.Core.UnitTests.Styles
             
             //Text exists has data
             
-            PDFTextStyle text;
-            bool found = target.TryGetItem<PDFTextStyle>(PDFStyleKeys.TextItemKey, out text);
+            TextStyle text;
+            bool found = target.TryGetItem<TextStyle>(StyleKeys.TextItemKey, out text);
             Assert.IsTrue(found);
             Assert.IsNotNull(text);
             Assert.AreEqual(text.Type, PDFObjectTypes.StyleText);
@@ -530,9 +530,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void BackgroundTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFBackgroundStyle actual;
+            BackgroundStyle actual;
             actual = target.Background;
             Assert.IsNotNull(actual);
 
@@ -549,9 +549,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void BorderTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFBorderStyle actual;
+            BorderStyle actual;
             actual = target.Border;
             Assert.IsNotNull(actual);
 
@@ -567,9 +567,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void ColumnsTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFColumnsStyle actual;
+            ColumnsStyle actual;
             actual = target.Columns;
             Assert.IsNotNull(actual);
 
@@ -585,9 +585,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void FillTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFFillStyle actual;
+            Scryber.Styles.FillStyle actual;
             actual = target.Fill;
             Assert.IsNotNull(actual);
 
@@ -602,9 +602,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void FontTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFFontStyle actual;
+            Scryber.Styles.FontStyle actual;
             actual = target.Font;
             Assert.IsNotNull(actual);
 
@@ -621,9 +621,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MarginsTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFMarginsStyle actual;
+            MarginsStyle actual;
             actual = target.Margins;
             Assert.IsNotNull(actual);
 
@@ -638,9 +638,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void OutlineTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFOutlineStyle actual;
+            OutlineStyle actual;
             actual = target.Outline;
             Assert.IsNotNull(actual);
 
@@ -655,9 +655,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void OverflowTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFOverflowStyle actual;
+            OverflowStyle actual;
             actual = target.Overflow;
             Assert.IsNotNull(actual);
 
@@ -672,9 +672,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PaddingTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFPaddingStyle actual;
+            PaddingStyle actual;
             actual = target.Padding;
             Assert.IsNotNull(actual);
 
@@ -690,9 +690,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PageStyleTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFPageStyle actual;
+            PageStyle actual;
             actual = target.PageStyle;
             Assert.IsNotNull(actual);
 
@@ -708,9 +708,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PositionTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFPositionStyle actual;
+            PositionStyle actual;
             actual = target.Position;
             Assert.IsNotNull(actual);
 
@@ -724,9 +724,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void SizeTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFSizeStyle actual;
+            SizeStyle actual;
             actual = target.Size;
             Assert.IsNotNull(actual);
 
@@ -752,9 +752,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void StrokeTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFStrokeStyle actual;
+            StrokeStyle actual;
             actual = target.Stroke;
             Assert.IsNotNull(actual);
 
@@ -769,9 +769,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void TableTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFTableStyle actual;
+            TableStyle actual;
             actual = target.Table;
             Assert.IsNotNull(actual);
 
@@ -786,9 +786,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void TextTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
 
-            PDFTextStyle actual;
+            TextStyle actual;
             actual = target.Text;
             Assert.IsNotNull(actual);
 
@@ -804,7 +804,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void HasItemsTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
             bool actual;
             actual = target.HasValues;
             Assert.IsFalse(actual);
@@ -813,7 +813,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.HasValues;
             Assert.IsTrue(actual);
 
-            target.RemoveValue(PDFStyleKeys.PositionModeKey);
+            target.RemoveValue(StyleKeys.PositionModeKey);
             actual = target.HasValues;
             Assert.IsFalse(actual);
         }
@@ -825,7 +825,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void IDTest()
         {
-            PDFStyle target = new PDFStyle();
+            Style target = new Style();
             string expected = "MyStyle";
             string actual;
             target.ID = expected;

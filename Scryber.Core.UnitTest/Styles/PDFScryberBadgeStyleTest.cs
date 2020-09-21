@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Badge_ConstructorTest()
         {
-            PDFScryberBadgeStyle target = new PDFScryberBadgeStyle();
+            ScryberBadgeStyle target = new ScryberBadgeStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.BadgeItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.BadgeItemKey, target.ItemKey);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Badge_CornerTest()
         {
-            PDFScryberBadgeStyle target = new PDFScryberBadgeStyle(); 
+            ScryberBadgeStyle target = new ScryberBadgeStyle(); 
             
             //Default 
 
@@ -121,11 +121,11 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Badge_DisplayOptionTest()
         {
-            PDFScryberBadgeStyle target = new PDFScryberBadgeStyle(); 
+            ScryberBadgeStyle target = new ScryberBadgeStyle(); 
             
             //Default Value
 
-            BadgeType expected = PDFScryberBadgeStyle.DefaultDisplayOption;
+            BadgeType expected = ScryberBadgeStyle.DefaultDisplayOption;
             Assert.AreEqual(expected, target.DisplayOption);
 
             //Set value
@@ -145,7 +145,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Remove value
 
-            expected = PDFScryberBadgeStyle.DefaultDisplayOption;
+            expected = ScryberBadgeStyle.DefaultDisplayOption;
             target.RemoveDisplayOption();
             actual = target.DisplayOption;
             Assert.AreEqual(expected, actual);
@@ -159,11 +159,11 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Badge_XOffsetTest()
         {
-            PDFScryberBadgeStyle target = new PDFScryberBadgeStyle();
+            ScryberBadgeStyle target = new ScryberBadgeStyle();
 
             // Default value
 
-            PDFUnit expected = PDFScryberBadgeStyle.DefaultXOffset;
+            PDFUnit expected = ScryberBadgeStyle.DefaultXOffset;
             PDFUnit actual = target.XOffset;
             Assert.AreEqual(expected, actual);
 
@@ -183,7 +183,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Remove Value
 
-            expected = PDFScryberBadgeStyle.DefaultXOffset;
+            expected = ScryberBadgeStyle.DefaultXOffset;
             target.RemoveXOffset();
             actual = target.XOffset;
             Assert.AreEqual(expected, actual);
@@ -196,11 +196,11 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Badge_YOffsetTest()
         {
-            PDFScryberBadgeStyle target = new PDFScryberBadgeStyle();
+            ScryberBadgeStyle target = new ScryberBadgeStyle();
 
             // Default value
 
-            PDFUnit expected = PDFScryberBadgeStyle.DefaultYOffset;
+            PDFUnit expected = ScryberBadgeStyle.DefaultYOffset;
             PDFUnit actual = target.YOffset;
             Assert.AreEqual(expected, actual);
 
@@ -220,7 +220,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Remove Value
 
-            expected = PDFScryberBadgeStyle.DefaultYOffset;
+            expected = ScryberBadgeStyle.DefaultYOffset;
             target.RemoveYOffset();
             actual = target.YOffset;
             Assert.AreEqual(expected, actual);
