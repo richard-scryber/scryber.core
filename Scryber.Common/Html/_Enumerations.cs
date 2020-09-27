@@ -190,10 +190,13 @@ namespace Scryber.Html
             _name2color.Add("RebeccaPurple", "#663399");
             _name2color.Add("MediumAquaMarine", "#66CDAA");
             _name2color.Add("DimGray", "#696969");
+            _name2color.Add("DimGrey", "#696969");
             _name2color.Add("SlateBlue", "#6A5ACD");
             _name2color.Add("OliveDrab", "#6B8E23");
             _name2color.Add("SlateGray", "#708090");
+            _name2color.Add("SlateGrey", "#708090");
             _name2color.Add("LightSlateGray", "#778899");
+            _name2color.Add("LightSlateGrey", "#778899");
             _name2color.Add("MediumSlateBlue", "#7B68EE");
             _name2color.Add("LawnGreen", "#7CFC00");
             _name2color.Add("Chartreuse", "#7FFF00");
@@ -202,6 +205,7 @@ namespace Scryber.Html
             _name2color.Add("Purple", "#800080");
             _name2color.Add("Olive", "#808000");
             _name2color.Add("Gray", "#808080");
+            _name2color.Add("Grey", "#808080");
             _name2color.Add("SkyBlue", "#87CEEB");
             _name2color.Add("LightSkyBlue", "#87CEFA");
             _name2color.Add("BlueViolet", "#8A2BE2");
@@ -218,6 +222,7 @@ namespace Scryber.Html
             _name2color.Add("Sienna", "#A0522D");
             _name2color.Add("Brown", "#A52A2A");
             _name2color.Add("DarkGray", "#A9A9A9");
+            _name2color.Add("DarkGrey", "#A9A9A9");
             _name2color.Add("LightBlue", "#ADD8E6");
             _name2color.Add("GreenYellow", "#ADFF2F");
             _name2color.Add("PaleTurquoise", "#AFEEEE");
@@ -235,6 +240,7 @@ namespace Scryber.Html
             _name2color.Add("Chocolate", "#D2691E");
             _name2color.Add("Tan", "#D2B48C");
             _name2color.Add("LightGray", "#D3D3D3");
+            _name2color.Add("LightGrey", "#D3D3D3");
             _name2color.Add("Thistle", "#D8BFD8");
             _name2color.Add("Orchid", "#DA70D6");
             _name2color.Add("GoldenRod", "#DAA520");

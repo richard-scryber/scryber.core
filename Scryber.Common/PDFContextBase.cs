@@ -28,6 +28,7 @@ namespace Scryber
     {
 
         private PDFItemCollection _items;
+        private OutputFormat _format;
         private PDFTraceLog _log;
         private PDFPerformanceMonitor _perfmon;
         private ParserConformanceMode _conformance;
@@ -58,6 +59,12 @@ namespace Scryber
         {
             get { return _perfmon; }
             set { _perfmon = value; }
+        }
+
+        public OutputFormat OutputFormat
+        {
+            get { return this._format; }
+            set { this._format = value; }
         }
 
         /// <summary>
@@ -103,6 +110,8 @@ namespace Scryber
 
         public PDFContextBase(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
         {
+            this._format = OutputFormat.PDF;
+
             this._log = log;
             if (null == log)
                 _log = new Logging.DoNothingTraceLog(Scryber.TraceRecordLevel.Off);

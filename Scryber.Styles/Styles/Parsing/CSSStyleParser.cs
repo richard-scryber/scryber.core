@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Scryber.Styles.Parsing
 {
-    public class CSSStyleParser : IEnumerable<Style>
+    public class CSSStyleParser : IEnumerable<StyleBase>
     {
         private List<CSSParsingError> _err;
         private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("/\\*.*\\*/");
@@ -27,7 +27,7 @@ namespace Scryber.Styles.Parsing
             this._err = new List<CSSParsingError>();
         }
 
-        public IEnumerator<Style> GetEnumerator()
+        public IEnumerator<StyleBase> GetEnumerator()
         {
             var content = this.Content;
             if (CommentMatcher.Match(content).Success)

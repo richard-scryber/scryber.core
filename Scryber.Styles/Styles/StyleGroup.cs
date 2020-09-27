@@ -184,7 +184,7 @@ namespace Scryber.Styles
         /// <param name="state"></param>
         public override void MergeInto(Style style, IPDFComponent Component, ComponentState state)
         {
-            foreach (Style def in this.InnerItems)
+            foreach (StyleBase def in this.InnerItems)
             {
                 def.MergeInto(style, Component, state);
             }
