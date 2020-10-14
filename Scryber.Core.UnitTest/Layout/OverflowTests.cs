@@ -46,7 +46,7 @@ namespace Scryber.Core.UnitTests.Layout
             Div tooverflow = new Div() { Height = 150 };
             section.Contents.Add(tooverflow);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("SectionOverflow.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);

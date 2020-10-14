@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual,"Default not the same");
 
-            target.FontFamily = "Symbol";
+            target.FontFamily = (PDFFontSelector)"Symbol";
             expected = new PDFFont(StandardFont.Symbol, PDFStyleConst.DefaultFontSize);
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Symbol not the same");
@@ -101,7 +101,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Symbol 40pt not the same");
 
-            target.FontFamily = "Bauhaus 92";
+            target.FontFamily = (PDFFontSelector)"Bauhaus 92";
             target.FontBold = true;
             target.FontItalic = true;
             target.FontSize = new PDFUnit(10, PageUnits.Millimeters);
@@ -145,20 +145,20 @@ namespace Scryber.Core.UnitTests.Styles
         public void Font_FontFamilyTest()
         {
             Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
-            string expected = String.Empty;
+            string expected = null;
             Assert.AreEqual(expected, target.FontFamily);
 
             expected = "Arial MT";
-            target.FontFamily = expected;
-            Assert.AreEqual(expected, target.FontFamily);
+            target.FontFamily = (PDFFontSelector)expected;
+            Assert.AreEqual((PDFFontSelector)expected, target.FontFamily);
 
             expected = "Helvetica";
-            target.FontFamily = expected;
-            Assert.AreEqual(expected, target.FontFamily);
+            target.FontFamily = (PDFFontSelector)expected;
+            Assert.AreEqual((PDFFontSelector)expected, target.FontFamily);
 
 
             target.RemoveFontFamily();
-            expected = String.Empty;
+            expected = null;
             Assert.AreEqual(expected, target.FontFamily);
         }
 

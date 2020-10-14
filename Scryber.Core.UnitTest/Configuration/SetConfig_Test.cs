@@ -284,7 +284,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("MissingImageTest.pdf"))
                     doc.SaveAsPDF(stream);
             }
             catch (Exception)
@@ -331,7 +331,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("MissingImagesExplicit.pdf"))
                     doc.SaveAsPDF(stream);
             }
             catch (Exception)
@@ -385,9 +385,9 @@ namespace Scryber.Core.UnitTests.Configuration
             {
                 doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("DynamicImage.pdf"))
                 {
-                    doc.SaveAsPDF("C:\\Temp\\DynamicImage.pdf", FileMode.Create);
+                    doc.SaveAsPDF(stream);
 
                     //Check that the image was loaded and used.
                     var img = doc.FindAComponentById("LoadedImage") as Image;

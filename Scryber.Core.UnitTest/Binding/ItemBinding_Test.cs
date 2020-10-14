@@ -725,8 +725,8 @@ namespace Scryber.Core.UnitTests.Binding
                     {
                         TitleBg = new PDFColor(1, 0, 0),
                         TitleColor = new PDFColor(1, 1, 1),
-                        TitleFont = "Segoe UI Light",
-                        BodyFont = "Segoe UI",
+                        TitleFont = (PDFFontSelector)"Segoe UI Light",
+                        BodyFont = (PDFFontSelector)"Segoe UI",
                         BodySize = (PDFUnit)12
                     }
                 };

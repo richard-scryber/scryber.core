@@ -1050,21 +1050,21 @@ namespace Scryber.Styles
         internal protected virtual PDFFont DoCreateFont(bool force)
         {
             bool hasvalues = false;
-            StyleValue<string> familyVal;
+            StyleValue<PDFFontSelector> familyVal;
             StyleValue<PDFUnit> sizeVal;
             StyleValue<bool> boldVal, italicVal;
 
-            string family;
+            PDFFontSelector family;
             PDFUnit size;
             Drawing.FontStyle style = Drawing.FontStyle.Regular;
 
-            if (this.TryGetValue(StyleKeys.FontFamilyKey, out familyVal) && !string.IsNullOrEmpty(familyVal.Value))
+            if (this.TryGetValue(StyleKeys.FontFamilyKey, out familyVal) && (null != familyVal.Value))
             {
                 family = familyVal.Value;
                 hasvalues = true;
             }
             else
-                family = Const.DefaultFontFamily;
+                family = new PDFFontSelector(Const.DefaultFontFamily);
 
             if (this.TryGetValue(StyleKeys.FontSizeKey, out sizeVal))
             {

@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("MissingImagesDisAllowed.pdf"))
                     doc.SaveAsPDF(stream);
             }
             catch (Exception)
@@ -231,7 +231,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("MissingImagesAllowed.pdf"))
                     doc.SaveAsPDF(stream);
             }
             catch (Exception)

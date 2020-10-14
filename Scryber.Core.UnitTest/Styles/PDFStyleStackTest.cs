@@ -122,7 +122,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             Style root = new Style();
             root.Background.Color = PDFColors.Red; //Not inherited
-            root.Font.FontFamily = "Symbol"; //Font is inherited
+            root.Font.FontFamily = (PDFFontSelector)"Symbol"; //Font is inherited
             root.Font.FontSize = 20; //Font is inherited
 
             StyleStack target = new StyleStack(root);
@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Styles
             Label lbl = new Label();
             Style actual = target.GetFullStyle(lbl);
 
-            Assert.AreEqual("Symbol", actual.Font.FontFamily); //inherited from root
+            Assert.AreEqual("Symbol", actual.Font.FontFamily.FamilyName); //inherited from root
             Assert.AreEqual((PDFUnit)48, actual.Font.FontSize); //inherited from one
             Assert.AreEqual((PDFUnit)3, actual.Border.Width); //border from two
             Assert.AreEqual(PDFColors.Lime, actual.Border.Color); //border from two

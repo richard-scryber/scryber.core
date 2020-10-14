@@ -1209,44 +1209,59 @@ namespace Scryber.Styles.Parsing
 
     #region public class CSSFontFamilyParser : CSSStyleAttributeParser<string>
 
-    public class CSSFontFamilyParser : CSSStyleAttributeParser<string>
+    public class CSSFontFamilyParser : CSSStyleValueParser
     {
         public CSSFontFamilyParser()
-            : base(CSSStyleItems.FontFamily, StyleKeys.FontFamilyKey)
+            : base(CSSStyleItems.FontFamily)
         {
         }
 
         public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
 
-            bool result = false;
+            PDFFontSelector root = null;
+            PDFFontSelector curr = null;
 
             while(reader.ReadNextValue())
             {
-                string fontfamily = reader.CurrentTextValue;
-
-                if (TryGetActualFontFamily(fontfamily, out fontfamily))
+                string fontfamily = reader.CurrentTextValue.Trim();
+                PDFFontSelector found;
+                if(TryGetActualFontFamily(fontfamily, out found))
                 {
-                    this.SetValue(onStyle, fontfamily);
-                    result = true;
-                    break;
+                    if (null == root)
+                        root = found;
+                    if (null == curr)
+                        curr = found;
+                    else
+                    {
+                        curr.Next = found;
+                        curr = found;
+                    }
                 }
+
             }
-            return result;
+            if (null != root)
+            {
+                onStyle.SetValue(StyleKeys.FontFamilyKey, root);
+                return true;
+            }
+            else
+                return false;
 
         }
 
-        public static bool TryGetActualFontFamily(string fontfamily, out string found)
+        public static bool TryGetActualFontFamily(string fontfamily, out PDFFontSelector found)
         {
-            found = string.Empty;
+            found = null;
 
             if (string.IsNullOrEmpty(fontfamily))
                 return false;
 
             fontfamily = fontfamily.Trim();
-
             
-            bool result = false;
+            
+            
+            //bool result = false;
 
             if (fontfamily.EndsWith(","))
                 fontfamily = fontfamily.Substring(0, fontfamily.Length - 1);
@@ -1257,30 +1272,33 @@ namespace Scryber.Styles.Parsing
             if (string.IsNullOrEmpty(fontfamily))
                 return false;
 
-            if (fontfamily.Equals("sans-serif", StringComparison.OrdinalIgnoreCase))
-            {
-                found = Scryber.PDFFonts.Helvetica.Family;
-                result = true;
-            }
-            else if (fontfamily.Equals("serif", StringComparison.OrdinalIgnoreCase))
-            {
-                found = Scryber.PDFFonts.TimesRoman.Family;
-                result = true;
-            }
-            else if (fontfamily.Equals("monospace", StringComparison.OrdinalIgnoreCase))
-            {
-                found = Scryber.PDFFonts.Courier.Family;
-                result = true;
-            }
-            else if (PDFFontFactory.IsFontDefined(fontfamily, System.Drawing.FontStyle.Regular))
-            {
-                found = fontfamily;
-                result = true;
-            }
-            else
-                found = string.Empty;
+            found = new PDFFontSelector(fontfamily);
+            return true;
 
-            return result;
+            //if (fontfamily.Equals("sans-serif", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    found = Scryber.PDFFonts.Helvetica.Family;
+            //    result = true;
+            //}
+            //else if (fontfamily.Equals("serif", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    found = Scryber.PDFFonts.TimesRoman.Family;
+            //    result = true;
+            //}
+            //else if (fontfamily.Equals("monospace", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    found = Scryber.PDFFonts.Courier.Family;
+            //    result = true;
+            //}
+            //else if (PDFFontFactory.IsFontDefined(fontfamily, System.Drawing.FontStyle.Regular))
+            //{
+            //    found = fontfamily;
+            //    result = true;
+            //}
+            //else
+            //    found = string.Empty;
+
+            //return result;
         }
     }
 
@@ -1404,30 +1422,45 @@ namespace Scryber.Styles.Parsing
 
             //last one is multiple font families
             bool foundFamily = false;
+            PDFFontSelector root = null;
+
             do
             {
-                if (CSSFontFamilyParser.TryGetActualFontFamily(reader.CurrentTextValue, out family))
+                PDFFontSelector selector;
+                
+                PDFFontSelector curr = null;
+
+                if (CSSFontFamilyParser.TryGetActualFontFamily(reader.CurrentTextValue, out selector))
                 {
-                    onStyle.Font.FontFamily = family;
+                    if (null == root)
+                        root = selector;
+
+                    if (null == curr)
+                        curr = selector;
+                    else
+                    {
+                        curr.Next = selector;
+                        curr = selector;
+                    }
                     foundFamily = true;
                 }
 
             }
             while (reader.MoveToNextValue());
 
-            if (!foundFamily)
+            if(foundFamily)
+            {
+                onStyle.SetValue(StyleKeys.FontFamilyKey, root);
+            }
+            else
                 result = false;
-
-
-            //font-family
-
 
             return result;
         }
 
         private void ApplyFont(Style onStyle, PDFFont font)
         {
-            onStyle.SetValue(StyleKeys.FontFamilyKey, font.FamilyName);
+            onStyle.SetValue(StyleKeys.FontFamilyKey, font.Selector);
             onStyle.SetValue(StyleKeys.FontSizeKey, font.Size);
             onStyle.SetValue(StyleKeys.FontBoldKey, (font.FontStyle & Drawing.FontStyle.Bold) > 0);
             onStyle.SetValue(StyleKeys.FontItalicKey, (font.FontStyle & Drawing.FontStyle.Italic) > 0);

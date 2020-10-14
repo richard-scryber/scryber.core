@@ -222,7 +222,7 @@ namespace Scryber.Core.UnitTests.Styles
 
 
             target.Font.FontSize = 36;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             
             
             target.Text.WrapText = Text.WordWrap.NoWrap;
@@ -243,7 +243,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((PDFUnit)2, actual.Stroke.Width);
 
             Assert.IsInstanceOfType(actual.Font, typeof(PDFFont));
-            Assert.AreEqual("Bauhaus 92", actual.Font.FamilyName);
+            Assert.AreEqual((PDFFontSelector)"Bauhaus 92", actual.Font.Selector);
             Assert.AreEqual((PDFUnit)36, actual.Font.Size);
 
             
@@ -274,7 +274,7 @@ namespace Scryber.Core.UnitTests.Styles
             //Add a font
             Scryber.Styles.FontStyle fs = new Scryber.Styles.FontStyle();
             target.Font.FontBold = true;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             //target.AddItem(fs);
 
             //Flattening process will remove the duplicates from the bottom up.
@@ -282,7 +282,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(PDFColors.Aqua, actual.Background.Color);
             Assert.AreEqual(Scryber.Drawing.FillType.Pattern, actual.Background.FillStyle);
             Assert.AreEqual(true, actual.Font.FontBold);
-            Assert.AreEqual("Bauhaus 92", actual.Font.FontFamily);
+            Assert.AreEqual((PDFFontSelector)"Bauhaus 92", actual.Font.FontFamily);
 
             
         }
@@ -305,7 +305,7 @@ namespace Scryber.Core.UnitTests.Styles
             //Add a font
             //PDFFontStyle fs = new PDFFontStyle();
             target.Font.FontBold = true;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             //target.AddItem(fs);
 
             
@@ -338,7 +338,7 @@ namespace Scryber.Core.UnitTests.Styles
             
             //Add a font - inherited
             target.Font.FontBold = true;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             
 
             Label lbl = new Label();
@@ -380,7 +380,7 @@ namespace Scryber.Core.UnitTests.Styles
             
             //Add a font - inherited
             target.Font.FontBold = true;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             
 
             Style merged = new Style();
@@ -421,7 +421,7 @@ namespace Scryber.Core.UnitTests.Styles
             
             //Add a font - inherited
             target.Font.FontBold = true;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             
             Style merged = new Style();
             merged.Margins.All = 10;
@@ -464,7 +464,7 @@ namespace Scryber.Core.UnitTests.Styles
             
             //Add a font - inherited
             target.Font.FontBold = true;
-            target.Font.FontFamily = "Bauhaus 92";
+            target.Font.FontFamily = (PDFFontSelector)"Bauhaus 92";
             
 
             bool expected = true;
@@ -608,7 +608,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Font;
             Assert.IsNotNull(actual);
 
-            actual.FontFamily = "Bauhaus 92";
+            actual.FontFamily = (PDFFontSelector)"Bauhaus 92";
             Assert.AreEqual(actual.FontFamily, target.Font.FontFamily);
 
         }

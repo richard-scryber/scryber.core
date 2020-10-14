@@ -39,7 +39,8 @@ namespace Scryber.Core.UnitTests.Layout
                 doc.Pages.Add(pg);
             }
 
-            
+
+            doc.ViewPreferences.PageDisplay = PageDisplayMode.Thumbnails;
             doc.LayoutComplete += Doc_LayoutComplete;
 
             using (var ms = new System.IO.MemoryStream())
@@ -94,10 +95,10 @@ namespace Scryber.Core.UnitTests.Layout
                 doc.Pages.Add(pg);
             }
 
-            
+            doc.ViewPreferences.PageDisplay = PageDisplayMode.Thumbnails;
             doc.LayoutComplete += Doc_LayoutComplete;
 
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("Numbering_Simple.pdf"))
                 doc.SaveAsPDF(ms);
             var ldoc = this._layout;
             int last = -1;
@@ -154,10 +155,11 @@ namespace Scryber.Core.UnitTests.Layout
                 }
             }
 
-            
+
+            doc.ViewPreferences.PageDisplay = PageDisplayMode.Thumbnails;
             doc.LayoutComplete += Doc_LayoutComplete;
 
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("Numbering_MultiSection.pdf"))
                 doc.SaveAsPDF(ms);
             var ldoc = this._layout;
             int index = -1;
@@ -298,15 +300,19 @@ namespace Scryber.Core.UnitTests.Layout
 
                 for (int j = 0; j < 4; j++)
                 {
+                    PageNumberLabel pgNum = new PageNumberLabel();
+                    group.Contents.Add(pgNum);
+
                     PageBreak br = new PageBreak();
                     group.Contents.Add(br);
                 }
             }
 
-            
+
+            doc.ViewPreferences.PageDisplay = PageDisplayMode.Thumbnails;
             doc.LayoutComplete += Doc_LayoutComplete;
 
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("Numbering_StyledMultiSection.pdf"))
                 doc.SaveAsPDF(ms);
             var ldoc = this._layout;
 

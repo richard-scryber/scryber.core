@@ -56,6 +56,42 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-Bold-01.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-BoldItalic-02.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-DemiBold-03.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-DemiBoldItalic-04.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-Heavy-09.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-HeavyItalic-10.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-Italic-05.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-Medium-06.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-MediumItalic-07.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-Regular-08.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-UltraLight-11.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Mocks\Fonts\Avenir\AvenirNextCondensed-UltraLightItalic-12.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Mocks\Fonts\segoeui.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

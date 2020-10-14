@@ -70,9 +70,9 @@ namespace Scryber.Core.UnitTests.Generation
                 doc.Params["datatable"] = template;
 
 
-                using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("PlaceHolderTemplate.pdf"))
                 {
-                    doc.SaveAsPDF(ms);
+                    doc.SaveAsPDF(stream);
                     var placeholder = doc.FindAComponentById("DynamicContent") as PlaceHolder;
 
                     //placeholder should contain a template instance, that contains the table.

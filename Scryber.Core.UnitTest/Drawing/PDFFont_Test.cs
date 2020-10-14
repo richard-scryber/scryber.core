@@ -340,17 +340,17 @@ namespace Scryber.Core.UnitTests.Drawing
             FontStyle style = FontStyle.Regular;
             string expected = "Sans-Serif";
             string actual;
-            actual = PDFFont.GetFullName(family, style);
+            actual = PDFFont.GetFullName(family, false, false);
             Assert.AreEqual(expected, actual);
 
             style = FontStyle.Bold;
             expected = "Sans-Serif,Bold";
-            actual = PDFFont.GetFullName(family, style);
+            actual = PDFFont.GetFullName(family, true, false);
             Assert.AreEqual(expected, actual);
 
             style = FontStyle.Bold | FontStyle.Italic;
             expected = "Sans-Serif,Bold Italic";
-            actual = PDFFont.GetFullName(family, style);
+            actual = PDFFont.GetFullName(family, true, true);
             Assert.AreEqual(expected, actual);
 
         }

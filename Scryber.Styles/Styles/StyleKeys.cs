@@ -112,7 +112,7 @@ namespace Scryber.Styles
 
         //Font
         public static readonly StyleKey FontItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleFont, INHERITED);
-        public static readonly PDFStyleKey<string> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"faml", FontItemKey);
+        public static readonly PDFStyleKey<PDFFontSelector> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<PDFFontSelector>((PDFObjectType)"faml", FontItemKey);
         public static readonly PDFStyleKey<bool> FontBoldKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bold", FontItemKey);
         public static readonly PDFStyleKey<bool> FontItalicKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"ital", FontItemKey);
         public static readonly PDFStyleKey<PDFUnit> FontSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"size", FontItemKey);

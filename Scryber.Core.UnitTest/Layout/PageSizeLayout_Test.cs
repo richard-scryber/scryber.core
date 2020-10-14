@@ -26,7 +26,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperSize = PaperSize.A4;
             doc.Pages.Add(pg);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PageSizeA4.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
                 doc.SaveAsPDF(ms);
@@ -49,7 +49,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperOrientation = PaperOrientation.Landscape;
             doc.Pages.Add(pg);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PageSizeA4Landscape.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
                 doc.SaveAsPDF(ms);
@@ -71,7 +71,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperSize = PaperSize.A3;
             doc.Pages.Add(pg);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PageSizeA3.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
                 doc.SaveAsPDF(ms);
@@ -94,7 +94,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperOrientation = PaperOrientation.Landscape;
             doc.Pages.Add(pg);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PageSizeA3Landscape.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
                 doc.SaveAsPDF(ms);
@@ -116,7 +116,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperSize = PaperSize.Letter;
             doc.Pages.Add(pg);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PageSizeLetter.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
                 doc.SaveAsPDF(ms);
@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             doc.Pages.Add(pg);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PageSizeExplicit.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
                 doc.SaveAsPDF(ms);

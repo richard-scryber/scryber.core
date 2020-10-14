@@ -498,19 +498,19 @@ namespace Scryber.Components
         /// Gets or sets the Font Family of this component
         /// </summary>
         [PDFAttribute("font-family", Const.PDFStylesNamespace)]
-        public string FontFamily
+        public PDFFontSelector FontFamily
         {
             get
             {
-                StyleValue<string> val;
+                StyleValue<PDFFontSelector> val;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontFamilyKey, out val))
                     return val.Value;
                 else
-                    return string.Empty;
+                    return null;
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (null == value)
                     this.Style.RemoveValue(StyleKeys.FontFamilyKey);
                 else
                     this.Style.SetValue(StyleKeys.FontFamilyKey, value);

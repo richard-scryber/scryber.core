@@ -585,14 +585,16 @@ namespace Scryber.Drawing
             
             FontReference fref = _customfamilies[family, style];
 
+            //check if we are a standard font (that is not available in the custom families
+            if (null == fref && PDFFont.IsStandardFontFamily(family))
+                return PDFFontDefinition.LoadStandardFont(family, style);
+
             if (null == fref && usesystem)
                 fref = _systemfamilies[family, style];
             if (null == fref)
                 fref = _genericfamilies[family, style];
 
-            //check if we are a standard font (that is not available in the custom or system families
-            if (null == fref && PDFFont.IsStandardFontFamily(family))
-                return PDFFontDefinition.LoadStandardFont(family, style);
+           
 
             if (null == fref)
             {
@@ -731,6 +733,7 @@ namespace Scryber.Drawing
                 || _systemfamilies.TryGetFamily("System Font", out found))
             {
                 genericBag.AddFontFamily("Sans-Serif", found);
+                genericBag.AddFontFamily("Helvetica", found);
             }
 
             if(_customfamilies.TryGetFamily("Times New Roman",out found) || _customfamilies.TryGetFamily("Times", out found)
@@ -738,11 +741,14 @@ namespace Scryber.Drawing
                 || _systemfamilies.TryGetFamily(".New York", out found))
             {
                 genericBag.AddFontFamily("Serif", found);
+                genericBag.AddFontFamily("Times", found);
             }
 
-            if(_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found) || _systemfamilies.TryGetFamily("Courier", out found) || _systemfamilies.TryGetFamily("Courier New", out found))
+            if(_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found) 
+                || _systemfamilies.TryGetFamily("Courier", out found) || _systemfamilies.TryGetFamily("Courier New", out found))
             {
                 genericBag.AddFontFamily("Monospace", found);
+                genericBag.AddFontFamily("Courier", found);
             }
 
             if (_customfamilies.TryGetFamily("Comic Sans MS", out found) || _systemfamilies.TryGetFamily("Comic Sans MS", out found))
@@ -750,6 +756,11 @@ namespace Scryber.Drawing
                 genericBag.AddFontFamily("Cursive", found);
             }
 
+            if(_customfamilies.TryGetFamily("Zapf Dingbats", out found) || _systemfamilies.TryGetFamily("Zapf Dingbats", out found)
+               || _customfamilies.TryGetFamily("Webdings", out found) || _systemfamilies.TryGetFamily("Webdings", out found))
+            {
+                genericBag.AddFontFamily("Zapf Dingbats", found);
+            }
             return genericBag;
         }
 

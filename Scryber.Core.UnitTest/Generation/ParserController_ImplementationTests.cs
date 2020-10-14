@@ -207,10 +207,11 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(typeof(SimpleDocument_Controller), parsed.Controller.GetType());
             TestContext.WriteLine("Controller has been set correctly");
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("ControllerInstanceActions.pdf"))
             {
                 parsed.SaveAsPDF(ms);
             }
+
             TestContext.WriteLine("Document has been processed");
 
             Assert.IsNotNull(parsed);

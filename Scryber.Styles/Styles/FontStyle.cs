@@ -38,19 +38,19 @@ namespace Scryber.Styles
         
         [PDFAttribute("family")]
         [PDFJSConvertor("scryber.studio.design.convertors.string_css", JSParams = "\"font-family\"")]
-        public string FontFamily
+        public PDFFontSelector FontFamily
         {
             get
             {
-                string found;
+                PDFFontSelector found;
                 if (this.TryGetValue(StyleKeys.FontFamilyKey, out found))
                     return found;
                 else
-                    return string.Empty;
+                    return null;
             }
             set
             {
-                this.SetValue<string>(StyleKeys.FontFamilyKey, value);
+                this.SetValue<PDFFontSelector>(StyleKeys.FontFamilyKey, value);
             }
         }
 

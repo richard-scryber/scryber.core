@@ -953,19 +953,19 @@ namespace Scryber.Components
         [PDFAttribute("font-family", Const.PDFStylesNamespace)]
         [PDFDesignable("Family", Category = "Font", Priority = 1, Type = "Select")]
         [PDFJSConvertor("scryber.studio.design.convertors.string_css", JSParams = "\"font-family\"")]
-        public string FontFamily
+        public PDFFontSelector FontFamily
         {
             get
             {
-                StyleValue<string> val;
+                StyleValue<PDFFontSelector> val;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontFamilyKey, out val))
                     return val.Value;
                 else
-                    return string.Empty;
+                    return null;
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (null == value)
                     this.Style.RemoveValue(StyleKeys.FontFamilyKey);
                 else
                     this.Style.SetValue(StyleKeys.FontFamilyKey,value);

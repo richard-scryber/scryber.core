@@ -45,7 +45,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(panel);
 
             
-            using (System.IO.MemoryStream ms =new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsExplicitSizing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -137,7 +137,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(panel);
 
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthSizing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -239,7 +239,7 @@ namespace Scryber.Core.UnitTests.Layout
 
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthWithSpacing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -342,7 +342,7 @@ namespace Scryber.Core.UnitTests.Layout
 
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthWithSpacingBoth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -455,7 +455,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Contents.Add(lbl); //Will not push the panel beyond its minimumn width
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsMinWidthAndHeight.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -519,7 +519,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsBeyondMinWidth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -578,7 +578,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsBeyondMinWidthAndHeight.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);

@@ -234,7 +234,8 @@ namespace Scryber.Core.UnitTests.Styles
             {
                 var doc = Document.ParseDocument(ms, ParseSourceType.DynamicContent);
 
-                doc.SaveAsPDF("C:\\Temp\\PagedDoc.pdf", System.IO.FileMode.Create);
+                using (var stream = DocStreams.GetOutputStream("StylePriorityNested.pdf"))
+                    doc.SaveAsPDF(stream);
 
                 var pg = doc.FindAComponentById("pg");
                 var first = doc.FindAComponentById("first");
@@ -301,7 +302,8 @@ namespace Scryber.Core.UnitTests.Styles
             {
                 var doc = Document.ParseDocument(ms, ParseSourceType.DynamicContent);
 
-                doc.SaveAsPDF("C:\\Temp\\PagedDoc.pdf", System.IO.FileMode.Create);
+                using (var stream = DocStreams.GetOutputStream("StylePriorityNestedClasses.pdf"))
+                    doc.SaveAsPDF(stream);
 
                 var pg = doc.FindAComponentById("pg");
                 var first = doc.FindAComponentById("first");
