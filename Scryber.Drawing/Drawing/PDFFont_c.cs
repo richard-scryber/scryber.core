@@ -113,7 +113,18 @@ namespace Scryber.Drawing
         {
             get { return IsStandardFontFamily(this.FamilyName); }
         }
-        
+
+        private static Dictionary<string, bool> _stdFonts = new Dictionary<string, bool>()
+        {
+            {"Helvetica", true },
+            {"Times", true },
+            {"Symbol", true },
+            {"Courier", true },
+            {"Zapf Dingbats", true },
+            {"Serif", true },
+            {"Sans-Serif", true },
+            {"Monospace", true }
+        };
 
         /// <summary>
         /// Returns the flag to identify if this is a Standard PDF font (does not need to be included in PDF document.
@@ -122,18 +133,11 @@ namespace Scryber.Drawing
         /// <returns>Returns true if the family name is one of the defined standard values.</returns>
         public static bool IsStandardFontFamily(string family)
         {
-            switch (family)
-            {
-                case ("Helvetica"):
-                case ("Times"):
-                case ("Symbol"):
-                case ("Courier"):
-                case ("Zapf Dingbats"):
-                    return true;
-
-                default:
-                    return false;
-            }
+            bool found;
+            if (_stdFonts.TryGetValue(family, out found))
+                return found;
+            else
+                return false;
         }
 
         #endregion

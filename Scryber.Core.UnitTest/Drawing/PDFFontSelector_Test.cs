@@ -143,6 +143,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNull(curr);
         }
 
+       
 
     }
 }

@@ -79,7 +79,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, family);
             Assert.AreEqual(target.Size, size);
-            Assert.AreEqual(target.IsStandard, false);
+            Assert.AreEqual(target.IsStandard, true);
             Assert.AreEqual(target.FontStyle, FontStyle.Regular);
         }
 
@@ -118,7 +118,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, family);
             Assert.AreEqual(target.Size, size);
-            Assert.AreEqual(target.IsStandard, false);
+            Assert.AreEqual(target.IsStandard, true);
             Assert.AreEqual(target.FontStyle, FontStyle.Bold);
 
         }
@@ -522,7 +522,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             bool actual;
             actual = target.IsStandard;
-            Assert.IsFalse(actual);
+            Assert.IsTrue(actual);
 
             target = new PDFFont(StandardFont.Helvetica, 12);
             actual = target.IsStandard;

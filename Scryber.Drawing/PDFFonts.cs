@@ -281,18 +281,14 @@ namespace Scryber
         /// <returns></returns>
         public static PDFFontDefinition GetStandardFontDefinition(Scryber.Drawing.PDFFont font)
         {
-            foreach (PDFFontDefinition defn in _stds)
-            {
-                if (defn.Equals(font))
-                    return defn;
-            }
-            return null;
+            return GetStandardFontDefinition(font.FamilyName, font.GetDrawingStyle());
         }
 
         public static PDFFontDefinition GetStandardFontDefinition(string name, FontStyle style)
         {
             bool italic = (style & FontStyle.Italic) > 0;
             bool bold = (style & FontStyle.Bold) > 0;
+            name = TranslateGenericName(name);
 
             foreach (PDFFontDefinition defn in _stds)
             {
@@ -303,6 +299,18 @@ namespace Scryber
                 }
             } 
             return null;
+        }
+
+        private static string TranslateGenericName(string name)
+        {
+            if (name.Equals("sans-serif", StringComparison.OrdinalIgnoreCase))
+                return "Helvetica";
+            else if (name.Equals("serif", StringComparison.OrdinalIgnoreCase))
+                return "Times";
+            else if (name.Equals("monospace", StringComparison.OrdinalIgnoreCase))
+                return "Courier";
+            else
+                return name;
         }
     }
 }

@@ -58,5 +58,15 @@ namespace Scryber.Html.Components
         {
             return base.MapPath(path);
         }
+
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Fill.Color = Scryber.Drawing.PDFColors.Blue;
+            style.Text.Decoration = Text.TextDecoration.Underline;
+
+            return style;
+        }
     }
 }

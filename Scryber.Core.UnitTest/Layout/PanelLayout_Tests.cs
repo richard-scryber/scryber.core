@@ -42,6 +42,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.Width = expectedWidth;
             panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
             
@@ -134,6 +135,7 @@ namespace Scryber.Core.UnitTests.Layout
             
             panel.FullWidth = true;
             panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
@@ -235,6 +237,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             panel.FullWidth = true;
             panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
@@ -338,6 +341,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Height = explicitHeight;
             panel.Style.Margins.All = margin;
             panel.Style.Padding.All = padding;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
@@ -448,6 +452,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
@@ -512,6 +517,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
             Label lbl = new Label() { Text = "This label is wide enough to go beyond the 200pt minimum width of the panel " + 
@@ -567,6 +573,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
             Label lbl = new Label()

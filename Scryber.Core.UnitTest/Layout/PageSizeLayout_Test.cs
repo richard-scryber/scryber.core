@@ -26,6 +26,14 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperSize = PaperSize.A4;
             doc.Pages.Add(pg);
 
+            pg.Contents.Add(new TextLiteral("A4"));
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+            pg.VerticalAlignment = VerticalAlignment.Top;
+            pg.FontSize = 30;
+            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+
+            doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
+
             using (var ms = DocStreams.GetOutputStream("PageSizeA4.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
@@ -49,6 +57,14 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperOrientation = PaperOrientation.Landscape;
             doc.Pages.Add(pg);
 
+            pg.Contents.Add(new TextLiteral("A4 Landscape"));
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+            pg.VerticalAlignment = VerticalAlignment.Top;
+            pg.FontSize = 30;
+            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+
+            doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
+
             using (var ms = DocStreams.GetOutputStream("PageSizeA4Landscape.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
@@ -70,6 +86,14 @@ namespace Scryber.Core.UnitTests.Layout
             Page pg = new Page();
             pg.PaperSize = PaperSize.A3;
             doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral("A3"));
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+            pg.VerticalAlignment = VerticalAlignment.Top;
+            pg.FontSize = 30;
+            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+
+            doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
             using (var ms = DocStreams.GetOutputStream("PageSizeA3.pdf"))
             {
@@ -94,6 +118,14 @@ namespace Scryber.Core.UnitTests.Layout
             pg.PaperOrientation = PaperOrientation.Landscape;
             doc.Pages.Add(pg);
 
+            pg.Contents.Add(new TextLiteral("A3 Landscape"));
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+            pg.VerticalAlignment = VerticalAlignment.Top;
+            pg.FontSize = 30;
+            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+
+            doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
+
             using (var ms = DocStreams.GetOutputStream("PageSizeA3Landscape.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocument;
@@ -115,6 +147,14 @@ namespace Scryber.Core.UnitTests.Layout
             Page pg = new Page();
             pg.PaperSize = PaperSize.Letter;
             doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral("Letter"));
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+            pg.VerticalAlignment = VerticalAlignment.Top;
+            pg.FontSize = 30;
+            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+
+            doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
             using (var ms = DocStreams.GetOutputStream("PageSizeLetter.pdf"))
             {
@@ -139,6 +179,14 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Height = 800;
 
             doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral("Explicit 400 x 800"));
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+            pg.VerticalAlignment = VerticalAlignment.Top;
+            pg.FontSize = 30;
+            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+
+            doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
             using (var ms = DocStreams.GetOutputStream("PageSizeExplicit.pdf"))
             {
