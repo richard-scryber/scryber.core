@@ -14,7 +14,12 @@ namespace Scryber.Core.UnitTests
         {
 #if OutPutToFile
 
+#if MAC_OS
+            var path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+#else
             var path = System.IO.Path.GetTempPath();
+#endif
+
             path = System.IO.Path.Combine(path, "Scryber Test Output");
 
             if (!System.IO.Directory.Exists(path))
