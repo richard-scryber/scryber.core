@@ -543,7 +543,7 @@ namespace Scryber.Drawing
         // static methods
         //
 
-        public static PDFImageData LoadImageFromURI(IPDFDocument doc, IPDFComponent owner, string uri)
+        public static PDFImageData LoadImageFromURI(string uri, IPDFComponent owner = null)
         {
              System.Net.WebClient wc = new System.Net.WebClient();
              wc.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
@@ -563,13 +563,13 @@ namespace Scryber.Drawing
              
         }
 
-        public static PDFImageData LoadImageFromStream(IPDFDocument doc, IPDFComponent owner, string sourceKey, System.IO.Stream stream)
+        public static PDFImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IPDFComponent owner = null)
         {
             using (System.Drawing.Image bmp = System.Drawing.Image.FromStream(stream))
             {
                 bool compress = false;
 
-                if (owner is IPDFOptimizeComponent)
+                if (null != owner && owner is IPDFOptimizeComponent)
                     compress = ((IPDFOptimizeComponent)owner).Compress;
 
                 PDFImageData img;
@@ -578,7 +578,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public static PDFImageData LoadImageFromLocalFile(IPDFDocument doc, IPDFComponent owner, string path)
+        public static PDFImageData LoadImageFromLocalFile(string path, IPDFComponent owner = null)
         {
             System.IO.FileInfo fi = new System.IO.FileInfo(path);
             if (fi.Exists == false)
@@ -586,7 +586,7 @@ namespace Scryber.Drawing
 
             bool compress = false;
 
-            if (owner is IPDFOptimizeComponent)
+            if (null != owner && owner is IPDFOptimizeComponent)
                 compress = ((IPDFOptimizeComponent)owner).Compress;
 
             using (System.Drawing.Image bmp = System.Drawing.Image.FromFile(path))
@@ -607,7 +607,7 @@ namespace Scryber.Drawing
         /// <param name="sourcekey"></param>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static PDFImageData LoadImageFromBitmap(string sourcekey, System.Drawing.Bitmap bitmap, bool compress)
+        public static PDFImageData LoadImageFromBitmap(string sourcekey, System.Drawing.Bitmap bitmap, bool compress = false)
         {
             if (null == bitmap)
                 throw new ArgumentNullException("bitmap");

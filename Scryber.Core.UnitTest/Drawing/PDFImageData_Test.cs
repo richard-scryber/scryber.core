@@ -116,7 +116,7 @@ namespace Scryber.Core.UnitTests.Drawing
             {
                 string path = tmp;
                 PDFImageData actual;
-                actual = PDFImageData.LoadImageFromLocalFile(null, null, path);
+                actual = PDFImageData.LoadImageFromLocalFile(path);
                 Assert.IsNotNull(actual);
                 Assert.IsNotNull(actual.Data);
             }
@@ -135,7 +135,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             string uri = ImageUrlPath;
             PDFImageData actual;
-            actual = PDFImageData.LoadImageFromURI(null, null, uri);
+            actual = PDFImageData.LoadImageFromURI(uri);
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Data);
         }

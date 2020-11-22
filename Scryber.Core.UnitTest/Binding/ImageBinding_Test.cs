@@ -34,7 +34,7 @@ namespace Scryber.Core.UnitTests.Binding
         }
 
         [TestMethod]
-        public void ImageParamerterBinding()
+        public void ImagePathParamerterBinding()
         {
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
@@ -71,7 +71,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 path = System.IO.Path.GetFullPath(path);
 
-                var data = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(doc, doc, path);
+                var data = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(path);
                 doc.Params["MyImage"] = data;
 
                 var img = doc.FindAComponentById("LoadedImage") as Image;
@@ -79,12 +79,91 @@ namespace Scryber.Core.UnitTests.Binding
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
-
                 
                 Assert.IsNotNull(img.Data);
                 Assert.AreEqual(data, img.Data);
 
             }
+        }
+
+        [TestMethod()]
+        public void ImageDataParameterBinding()
+        {
+            var path = this.TestContext.TestDir;
+
+#if MAC_OS
+            // back up from obj/Debug/TestDirectoryName
+            path = System.IO.Path.Combine(path, "../../../Content/");
+#else
+            path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/"); ;
+#endif
+
+            path = System.IO.Path.GetFullPath(path);
+            if (!path.EndsWith("/"))
+                path += "/";
+
+            var imgData1 = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(path + "Toroid24.jpg");
+            var imgData2 = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(path + "group.png"); ;
+
+            var model = new
+            {
+                img1 = imgData1,
+                img2 = imgData2
+            };
+
+
+            var content = @"<?xml version='1.0' encoding='utf-8' ?>
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+  <Params>
+    <doc:Object-Param id='model' />
+  </Params>
+  <Pages>
+
+    <doc:Section styles:margins='20pt'>
+      <Content>
+        
+        <doc:Image id='LoadedImage1' img-data='{@:model.img1}' />
+        <doc:PageBreak/>
+        <doc:Image id='LoadedImage2' img-data='{@:model.img2}' />
+      </Content>
+    </doc:Section>
+
+  </Pages>
+
+</doc:Document>";
+
+            Document doc;
+            using (var reader = new System.IO.StringReader(content))
+            {
+                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+            }
+
+            doc.Params["model"] = model;
+            doc.LayoutComplete += Doc_LayoutComplete;
+
+            using (var stream = new System.IO.FileStream(path + "ImageOutput.pdf",System.IO.FileMode.Create))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+            var found1 = doc.FindAComponentById("LoadedImage1") as Image;
+            var found2 = doc.FindAComponentById("LoadedImage2") as Image;
+            Assert.IsNotNull(found1);
+            Assert.IsNotNull(found1.Data);
+            Assert.AreEqual(imgData1, found1.Data);
+
+            Assert.IsNotNull(found2);
+            Assert.IsNotNull(found2.Data);
+            Assert.AreEqual(imgData2, found2.Data);
+            
+        }
+
+        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            var layoutImage1 = args.Context.DocumentLayout.AllPages[0];
+            
         }
     }
 }

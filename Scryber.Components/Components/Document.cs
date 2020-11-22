@@ -2111,7 +2111,7 @@ namespace Scryber.Components
                     {
                         IPDFDataProvider prov;
                         if (isfile)
-                            data = PDFImageData.LoadImageFromLocalFile(this, owner, path);
+                            data = PDFImageData.LoadImageFromLocalFile(path, owner);
 
                         else if (this.DataProviders.TryGetDomainProvider("", path, out prov))
                         {
@@ -2129,7 +2129,7 @@ namespace Scryber.Components
                         else
                         {
                             
-                            data = PDFImageData.LoadImageFromURI(this, owner, path);
+                            data = PDFImageData.LoadImageFromURI(path, owner);
                         }
 
                         if (null != data)

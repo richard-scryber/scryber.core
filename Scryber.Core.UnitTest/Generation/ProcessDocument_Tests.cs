@@ -26,7 +26,7 @@ namespace Scryber.Core.UnitTests.Generation
         {
             using (Document doc = this.GenerateHelloWorld())
             {
-
+                doc.SaveAsPDF("./HelloWorld.pdf", System.IO.FileMode.Create);
             }
         }
 
