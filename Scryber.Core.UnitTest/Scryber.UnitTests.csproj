@@ -42,6 +42,7 @@
     <None Remove="Mocks\Fonts\segoeui.ttf" />
     <None Remove="Mocks\Fonts\segoeuib.ttf" />
     <None Remove="Mocks\Fonts\segoeuii.ttf" />
+    <None Remove="Content\ImageOutput.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />
