@@ -143,7 +143,7 @@ namespace Scryber
         /// <summary>
         /// Gets the output format for the document
         /// </summary>
-        public PDFOutputFormatting OutputFormat
+        public PDFOutputFormatting Formatting
         {
             get { return _format; }
         }

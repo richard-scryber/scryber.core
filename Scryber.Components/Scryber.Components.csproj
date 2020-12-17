@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.1-alpha</PackageVersion>
+    <PackageVersion>1.0.2-alpha</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
@@ -55,7 +55,6 @@ Added the default namespaces to the ParsingOptions, and updated version to match
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML, XHTML (and code)  including cascading styles, databinding and referenced files easily from your Apps or MVC web apps or Javascipt ajax calls.
 This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications.</Description>
     <PackOnBuild>true</PackOnBuild>
-    <PackageIconUrl></PackageIconUrl>
     <RootNamespace>Scryber</RootNamespace>
     <Version>1.0.1-alpha</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>

@@ -27,6 +27,9 @@ using System.Drawing;
 using System.Drawing.Text;
 using Scryber.Resources;
 using Scryber.Configuration;
+using System.Reflection;
+using Scryber.OpenType;
+using System.IO;
 
 namespace Scryber.Drawing
 {
@@ -321,6 +324,7 @@ namespace Scryber.Drawing
         private static FamilyReferenceBag _systemfamilies;
         private static FamilyReferenceBag _customfamilies;
         private static FamilyReferenceBag _genericfamilies;
+        private static FamilyReferenceBag _staticfamilies;
         private static bool _init;
         private static Exception _initex;
         private static object _initlock;
@@ -335,6 +339,7 @@ namespace Scryber.Drawing
         {
             _systemfamilies = null;
             _customfamilies = null;
+            _staticfamilies = null;
             _init = false;
             _initlock = new object();
             _initex = null;
@@ -666,6 +671,7 @@ namespace Scryber.Drawing
                         System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
                         _systemfamilies = LoadSystemFonts();
                         _customfamilies = LoadCustomFamilies();
+                        _staticfamilies = LoadStaticFamilies();
                         _genericfamilies = LoadGenericFamilies();
                         sw.Stop();
                         //System.Diagnostics.Debug.WriteLine("Loaded all system and custom fonts in :" + sw.Elapsed);
@@ -735,8 +741,15 @@ namespace Scryber.Drawing
                 genericBag.AddFontFamily("Sans-Serif", found);
                 genericBag.AddFontFamily("Helvetica", found);
             }
+            else if (_staticfamilies.TryGetFamily("Helvetica", out found))
+            {
+                genericBag.AddFontFamily("Sans-Serif", found);
+                genericBag.AddFontFamily("Helvetica", found);
+            }
+            else
+                throw new ConfigurationErrorsException("Could not find or load the standard font family for Helvetica");
 
-            if(_customfamilies.TryGetFamily("Times New Roman",out found) || _customfamilies.TryGetFamily("Times", out found)
+            if (_customfamilies.TryGetFamily("Times New Roman",out found) || _customfamilies.TryGetFamily("Times", out found)
                 || _systemfamilies.TryGetFamily("Times New Roman", out found) || _systemfamilies.TryGetFamily("Times", out found)
                 || _systemfamilies.TryGetFamily(".New York", out found))
             {
@@ -744,12 +757,19 @@ namespace Scryber.Drawing
                 genericBag.AddFontFamily("Times", found);
             }
 
-            if(_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found) 
+            if (_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found)
                 || _systemfamilies.TryGetFamily("Courier", out found) || _systemfamilies.TryGetFamily("Courier New", out found))
             {
                 genericBag.AddFontFamily("Monospace", found);
                 genericBag.AddFontFamily("Courier", found);
             }
+            else if (_staticfamilies.TryGetFamily("Courier", out found))
+            {
+                genericBag.AddFontFamily("Monospace", found);
+                genericBag.AddFontFamily("Courier", found);
+            }
+            else
+                throw new ConfigurationErrorsException("Could not find or load the standard font family for Courier");
 
             if (_customfamilies.TryGetFamily("Comic Sans MS", out found) || _systemfamilies.TryGetFamily("Comic Sans MS", out found))
             {
@@ -930,6 +950,72 @@ namespace Scryber.Drawing
         }
 
         #endregion
+
+        private static FamilyReferenceBag LoadStaticFamilies()
+        {
+            PrivateFontCollection priv = new PrivateFontCollection();
+            FamilyReferenceBag bag = new FamilyReferenceBag(priv);
+
+            var assm = typeof(PDFFontFactory).Assembly;
+            TTFRef fontRef;
+            byte[] fnt;
+
+            //Courier
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNew.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Regular, fnt, fontRef.HeadOffset);
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBold.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Bold, fnt, fontRef.HeadOffset);
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBoldItalic.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewItalic.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+
+            //Helvetica
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.Helvetica.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Regular, fnt, fontRef.HeadOffset);
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBold.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Bold, fnt, fontRef.HeadOffset);
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+
+            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaOblique.ttf", out fontRef);
+            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+
+            //Symbol
+
+            //Times
+
+            
+
+            return bag;
+        }
+
+        private static byte[] GetFontBinary(Assembly assembly, string rsrc, out TTFRef fontRef)
+        {
+            var stream = assembly.GetManifestResourceStream(rsrc);
+            byte[] data;
+
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                ms.Flush();
+                ms.Position = 0;
+
+                using (var ber = new BigEndianReader(ms))
+                {
+                    fontRef = TTFRef.LoadRef(ber, rsrc);
+                }
+                data = ms.ToArray();
+            }
+            return data;
+        }
+
 
         #region private static System.Resources.ResourceManager LoadResourceManager(string basename)
 

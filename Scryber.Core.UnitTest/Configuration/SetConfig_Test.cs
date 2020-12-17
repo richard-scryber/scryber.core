@@ -391,7 +391,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
                     //Check that the image was loaded and used.
                     var img = doc.FindAComponentById("LoadedImage") as Image;
-                    Assert.IsNotNull(img.XObject, "No Dynamic image was loaded");
+                    Assert.IsNotNull(img.Data, "No Dynamic image was loaded");
                 }
             }
 

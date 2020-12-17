@@ -906,6 +906,7 @@ namespace Scryber.Resources
         /// </summary>
         /// <param name="font"></param>
         /// <returns></returns>
+        [Obsolete("Use the generic bag instead", true)]
         internal static PDFFontDefinition LoadStandardFont(PDFFont font)
         {
             PDFFontDefinition defn;
@@ -926,6 +927,7 @@ namespace Scryber.Resources
         /// <param name="family"></param>
         /// <param name="style"></param>
         /// <returns></returns>
+        [Obsolete("Use the generic bag instead", true)]
         public static PDFFontDefinition LoadStandardFont(string family, System.Drawing.FontStyle style)
         {
             PDFFontDefinition defn;

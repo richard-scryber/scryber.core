@@ -1739,7 +1739,7 @@ namespace Scryber.Components
 
 
             //Layout components before rendering
-            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.OutputFormat, context.Items, context.TraceLog, context.PerformanceMonitor);
+            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.Formatting, context.Items, context.TraceLog, context.PerformanceMonitor);
             this.RegisterPreLayout(layoutcontext);
 
             context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document layout");
@@ -2111,7 +2111,7 @@ namespace Scryber.Components
                     {
                         IPDFDataProvider prov;
                         if (isfile)
-                            data = PDFImageData.LoadImageFromLocalFile(this, owner, path);
+                            data = PDFImageData.LoadImageFromLocalFile(path, owner);
 
                         else if (this.DataProviders.TryGetDomainProvider("", path, out prov))
                         {
@@ -2129,7 +2129,7 @@ namespace Scryber.Components
                         else
                         {
                             
-                            data = PDFImageData.LoadImageFromURI(this, owner, path);
+                            data = PDFImageData.LoadImageFromURI(path, owner);
                         }
 
                         if (null != data)
@@ -2627,7 +2627,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public static PDFDocument ParseDocument(stream stream, ParseSourceType type) + 3 overloads
+        #region public static PDFDocument ParseDocument(stream stream, ParseSourceType type) + 7 overloads
 
 
         public static Document ParseDocument(System.IO.Stream stream, ParseSourceType type)
@@ -2656,9 +2656,35 @@ namespace Scryber.Components
             return doc;
         }
 
-        public static Document ParseDocument(System.Xml.XmlReader reader, ParseSourceType type)
+        public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type)
+        {
+            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            IPDFComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type)
+        {
+            PDFReferenceChecker checker = new PDFReferenceChecker(path);
             IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))

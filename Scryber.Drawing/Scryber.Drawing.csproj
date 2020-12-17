@@ -29,4 +29,36 @@
   <ItemGroup>
     <Compile Remove="Errors1.Designer.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Text\_FontResources\" />
+    <Folder Include="Text\_FontResources\Helvetica\" />
+    <Folder Include="Text\_FontResources\Times\" />
+    <Folder Include="Text\_FontResources\Courier\" />
+    <Folder Include="Text\_FontResources\Zaph\" />
+    <Folder Include="Text\_FontResources\Symbol\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Text\_FontResources\Helvetica\Helvetica.ttf" />
+    <None Remove="Text\_FontResources\Helvetica\HelveticaBold.ttf" />
+    <None Remove="Text\_FontResources\Helvetica\HelveticaBoldOblique.ttf" />
+    <None Remove="Text\_FontResources\Helvetica\HelveticaOblique.ttf" />
+    <None Remove="Text\_FontResources\Symbol\Symbol.ttf" />
+    <None Remove="Text\_FontResources\Courier\CourierNew.ttf" />
+    <None Remove="Text\_FontResources\Courier\CourierNewBold.ttf" />
+    <None Remove="Text\_FontResources\Courier\CourierNewBoldItalic.ttf" />
+    <None Remove="Text\_FontResources\Courier\CourierNewItalic.ttf" />
+    <None Remove="Text\_FontResources\Zaph\ZapfDingbats.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Helvetica\HelveticaBold.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Helvetica\HelveticaBoldOblique.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Helvetica\HelveticaOblique.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Symbol\Symbol.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Courier\CourierNew.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Courier\CourierNewBold.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Courier\CourierNewBoldItalic.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Courier\CourierNewItalic.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Zaph\ZapfDingbats.ttf" />
+  </ItemGroup>
 </Project>

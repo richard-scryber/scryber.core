@@ -43,7 +43,7 @@ namespace Scryber.Core.UnitTests.Generation
   </Styles>
   <Pages>
    
-    <doc:Page styles:margins='20pt' styles:font-size='18pt'>
+    <doc:Page styles:margins='20pt' styles:font-size='18pt' styles:font-family='Helvetica Neue' >
       <Content>
         <doc:Div styles:class='bordered' >
           The content of this div is all as a block (by default)

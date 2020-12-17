@@ -18,7 +18,8 @@ namespace Scryber.Core.UnitTests.Generation
         {
             using (Document doc = Document.ParseDocument("./HelloWorld.pdfx"))
             {
-                doc.SaveAsPDF("./HelloWorld.pdf", System.IO.FileMode.Create);
+                using (var ms = DocStreams.GetOutputStream("HelloWorld.pdf"))
+                    doc.SaveAsPDF(ms);
             }
         }
 
@@ -26,7 +27,8 @@ namespace Scryber.Core.UnitTests.Generation
         {
             using (Document doc = this.GenerateHelloWorld())
             {
-
+                using (var ms = DocStreams.GetOutputStream("HelloWorldCode.pdf"))
+                    doc.SaveAsPDF(ms);
             }
         }
 

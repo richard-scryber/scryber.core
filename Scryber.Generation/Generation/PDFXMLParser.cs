@@ -1521,8 +1521,14 @@ namespace Scryber.Generation
         private bool TryGetClassDefinition(XmlReader reader, out ParserClassDefinition cdef, out bool isremote)
         {
             LogAdd(reader, TraceLevel.Debug, "Looking for PDFComponent declared with local name '{0}' and namespace '{1}'", reader.LocalName, reader.NamespaceURI);
-
-            cdef = ParserDefintionFactory.GetClassDefinition(reader.LocalName, reader.NamespaceURI, false, out isremote);
+            var ns = reader.NamespaceURI;
+            if(!string.IsNullOrEmpty(ns))
+            {
+                ns = ns.Trim();
+                if (ns.EndsWith(";"))
+                    ns = ns.Substring(0, ns.Length - 1);
+            }
+            cdef = ParserDefintionFactory.GetClassDefinition(reader.LocalName, ns, false, out isremote);
 
             if (null == cdef)
             {

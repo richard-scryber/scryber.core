@@ -24,6 +24,7 @@ using Scryber.Resources;
 
 namespace Scryber
 {
+    [Obsolete("Using the generic bag instead", true)]
     public static class PDFFonts
     {
         //Standard font definitions

@@ -83,7 +83,59 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        
+        [TestMethod()]
+        public void SimpleDocumentParsing2()
+        {
+            var src = @"<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <meta charset='utf-8' />
+    <title>First Test</title>
+
+    <style >
+        body {
+            background-color:#CCC;
+            padding:20pt;
+            font-size:medium;
+            margin:0pt;
+        }
+
+        h1{
+            font-size:30pt;
+            font-weight:bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div>Above the heading
+        <div>This is my first heading</div>
+        <div>And this is the content below the heading</div>
+    </div>
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("HtmlSimple2.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var page = doc.Pages[0] as Page;
+                var div = page.Contents[0] as Div;
+                var h1 = div.Contents[1] as Div;
+                Assert.IsNotNull(h1, "No heading found");
+                Assert.AreEqual(1, h1.Contents.Count);
+                var content = h1.Contents[0];
+            }
+        }
+
+
         [TestMethod()]
         public void LoadHtmlFromSource()
         {

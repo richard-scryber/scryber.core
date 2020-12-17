@@ -1,8 +1,10 @@
-﻿@media only screen and (min-width : 1224px) {
+
+@media only screen and (min-width : 1224px) {
     body.grey{
         font-family:'Times New Roman', Times, serif
     }
 }
+
 /* This is the grey body */
 body.grey
 {
@@ -38,4 +40,8 @@ body.grey div.reverse{
             font-weight: bold;
         }
     }
+
+﻿body.grey
+{
+    background-color:#808080;
 }

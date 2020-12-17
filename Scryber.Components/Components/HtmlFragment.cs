@@ -252,7 +252,7 @@ namespace Scryber.Components
             Stack<IPDFComponent> route = new Stack<IPDFComponent>();
 
             IPDFComponentList contents = container.Content;
-            int codeDepth = 0;
+            //int codeDepth = 0;
             foreach (Scryber.Html.Parsing.HTMLParserResult result in parser)
             {
                 if (result.Valid && null != result.Parsed)
