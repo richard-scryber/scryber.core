@@ -98,19 +98,20 @@ namespace Scryber.Core.UnitTests.Html
             padding:20pt;
             font-size:medium;
             margin:0pt;
+            font-family: 'Zapf Dingbats';
         }
 
         h1{
             font-size:30pt;
-            font-weight:bold;
+            font-weight:normal;
         }
 
     </style>
 </head>
 <body>
     <div>Above the heading
-        <div>This is my first heading</div>
-        <div>And this is the content below the heading</div>
+        <h1>This is my first heading</h1>
+        <div>And this is the content below the heading that should flow across multiple lines within the page and flow nicely along those lines.</div>
     </div>
 </body>
 </html>";
@@ -118,6 +119,8 @@ namespace Scryber.Core.UnitTests.Html
             using (var sr = new System.IO.StringReader(src))
             {
                 var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
 
                 using (var stream = DocStreams.GetOutputStream("HtmlSimple2.pdf"))
@@ -128,7 +131,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 var page = doc.Pages[0] as Page;
                 var div = page.Contents[0] as Div;
-                var h1 = div.Contents[1] as Div;
+                var h1 = div.Contents[1] as HTMLHead1;
                 Assert.IsNotNull(h1, "No heading found");
                 Assert.AreEqual(1, h1.Contents.Count);
                 var content = h1.Contents[0];

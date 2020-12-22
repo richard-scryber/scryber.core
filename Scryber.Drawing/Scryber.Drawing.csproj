@@ -48,6 +48,10 @@
     <None Remove="Text\_FontResources\Courier\CourierNewBoldItalic.ttf" />
     <None Remove="Text\_FontResources\Courier\CourierNewItalic.ttf" />
     <None Remove="Text\_FontResources\Zaph\ZapfDingbats.ttf" />
+    <None Remove="Text\_FontResources\Times\timesNewRoman.ttf" />
+    <None Remove="Text\_FontResources\Times\timesNewRomanBold.ttf" />
+    <None Remove="Text\_FontResources\Times\timesNewRomanBoldItalic.ttf" />
+    <None Remove="Text\_FontResources\Times\timesNewRomanItalic.ttf" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />
@@ -60,5 +64,9 @@
     <EmbeddedResource Include="Text\_FontResources\Courier\CourierNewBoldItalic.ttf" />
     <EmbeddedResource Include="Text\_FontResources\Courier\CourierNewItalic.ttf" />
     <EmbeddedResource Include="Text\_FontResources\Zaph\ZapfDingbats.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Times\timesNewRoman.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanBold.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanBoldItalic.ttf" />
+    <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanItalic.ttf" />
   </ItemGroup>
 </Project>

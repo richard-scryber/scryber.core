@@ -23,6 +23,7 @@ using System.Text;
 using System.Xml.Serialization;
 using Scryber.Drawing;
 using Scryber.Native;
+using Scryber.OpenType;
 
 namespace Scryber.Resources
 {
@@ -222,7 +223,7 @@ namespace Scryber.Resources
 
         #endregion
 
-        #region private Scryber.OpenType.TTFFile TTFFile
+        #region private Scryber.OpenType.TTFFile TTFFile {get;set;}
 
         /// <summary>
         /// Gets the OpenType font file associated with this descriptor
@@ -272,19 +273,22 @@ namespace Scryber.Resources
         public bool IsEmbedable
         {
             get { return _embed; }
-            private set { _embed = value; }
+            set { _embed = value; }
         }
 
         #endregion
 
         #region public bool IsStandard {get;}
 
+        private bool _std;
+
         /// <summary>
         /// Gets the flag that identifies if this font is a standard font (does not have a PDFFontDescriptor or PDFWidths)
         /// </summary>
         public bool IsStandard
         {
-            get { return this._desc == null && this._widths == null; }
+            get { return _std; }
+            set { _std = value; }
         }
 
         #endregion
@@ -303,10 +307,6 @@ namespace Scryber.Resources
         {
             get
             {
-                //if (this.Widths == null)
-                //    return false;
-                //else if (this.Widths.LastChar <= 255)
-                //    return false;
                 if (_isunicode.HasValue == false)
                     _isunicode = (this.IsStandard == false && this.TTFFile != null && this.Encoding == FontEncoding.UnicodeEncoding);
                 return _isunicode.Value;
@@ -360,8 +360,7 @@ namespace Scryber.Resources
 
         #endregion
 
-
-        //TODO: Calculate these values.
+        #region public double SpaceWidthFontUnits {get;set;}
 
         private double _spaceWidthFU;
 
@@ -371,6 +370,10 @@ namespace Scryber.Resources
             protected set { _spaceWidthFU = value; }
         }
 
+        #endregion
+
+        #region public double FontUnitsPerEm { get;set; }
+
         private double _unitsPerEm;
 
         public double FontUnitsPerEm
@@ -378,6 +381,8 @@ namespace Scryber.Resources
             get { return _unitsPerEm; }
             set { _unitsPerEm = value; }
         }
+
+        #endregion
 
         //
         // ctor
@@ -402,13 +407,14 @@ namespace Scryber.Resources
 
 
 
-        #region public System.Drawing.Font GetSystemFont(float pointsize)
+        #region OBSELETE public System.Drawing.Font GetSystemFont(float pointsize)
 
         /// <summary>
         /// Gets the System.Drawing.Font that represents this PDFFontDefintion
         /// </summary>
         /// <param name="pointsize"></param>
         /// <returns></returns>
+        [Obsolete("Dont use system fonts anymore", true)]
         public System.Drawing.Font GetSystemFont(float pointsize)
         {
             System.Drawing.FontStyle fs = System.Drawing.FontStyle.Regular;
@@ -580,6 +586,24 @@ namespace Scryber.Resources
 
         // Rendering
 
+        #region public PDFObjectRef RenderToPDF(string name, PDFContextBase context, PDFWriter writer)
+
+        public PDFObjectRef RenderToPDF(string rsrcName, PDFFontWidths widths, PDFContextBase context, PDFWriter writer)
+        {
+            if(this.IsStandard)
+            {
+                return this.RenderStandardFont(rsrcName, context, writer);
+            }
+            else if(this.IsUnicode)
+            {
+                string subsetName = PDFFontDescriptor.CreateSubset();
+                return this.RenderCompositeFont(subsetName, widths, context, writer);
+            }
+            else
+                return this.RenderAnsiFont(rsrcName, widths, context, writer);
+        }
+
+        #endregion
 
         #region public virtual PDFObjectRef RenderCompositeFont(string name, PDFUsedFontWidths used, PDFContextBase context, PDFWriter writer)
 
@@ -859,7 +883,7 @@ namespace Scryber.Resources
             }
 
             //Render the FontDescriptor
-            if (this.Descriptor != null)
+            if (this.Descriptor != null && this.IsEmbedable)
             {
                 PDFObjectRef desc = this.Descriptor.RenderToPDF(name, context, writer);
                 if (null != desc)
@@ -935,6 +959,9 @@ namespace Scryber.Resources
                 defn = PDFFonts.GetStandardFontDefinition(family, style);
             else
                 throw new InvalidOperationException("The font requested is not a standard font");
+
+            defn.IsStandard = true;
+
             return defn;
         }
 
@@ -1306,14 +1333,225 @@ namespace Scryber.Resources
         #endregion
 
 
+        //Standard font definitions
+        const int HelveticaSpaceWidthFU = 569;
+        const int TimesSpaceWidthFU = 512;
+        const int CourierSpaceWidthFU = 1228;
+        const int ZaphSpaceWidthFU = 544;
+        const int SymbolSpaceWidthFU = 512;
+
+        #region Helvetica, HelveticaBold, HelveticaOblique, HelveticaBoldOblique
+
+        private static PDFFontDefinition _helvetica = null;
+
+        public static PDFFontDefinition Helvetica
+        {
+            get
+            {
+                if (_helvetica == null)
+                {
+                    _helvetica = PDFFontDefinition.InitStdType1WinAnsi("Fhel", "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFU);
+                }
+                return _helvetica;
+            }
+
+        }
+
+
+        private static PDFFontDefinition _helveticabold = null;
+
+        public static PDFFontDefinition HelveticaBold
+        {
+            get
+            {
+                if (_helveticabold == null)
+                    _helveticabold = PDFFontDefinition.InitStdType1WinAnsi("FhelBl", "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFU);
+                return _helveticabold;
+            }
+        }
+
+
+        private static PDFFontDefinition _helveticaobl = null;
+
+        public static PDFFontDefinition HelveticaOblique
+        {
+            get
+            {
+                if (_helveticaobl == null)
+                    _helveticaobl = PDFFontDefinition.InitStdType1WinAnsi("FhelOb", "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFU);
+                return _helveticaobl;
+            }
+        }
+
+
+        private static PDFFontDefinition _helveticabolobl = null;
+
+        public static PDFFontDefinition HelveticaBoldOblique
+        {
+            get
+            {
+                if (_helveticabolobl == null)
+                    _helveticabolobl = PDFFontDefinition.InitStdType1WinAnsi("FhelObBl", "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFU);
+                return _helveticabolobl;
+            }
+        }
+
+
+        #endregion
+
+        #region TimesRoman, TimesBold, TimesItalic, TimesBoldItalic
+
+        private static PDFFontDefinition _times = null;
+
+        public static PDFFontDefinition TimesRoman
+        {
+            get
+            {
+                if (_times == null)
+                    _times = PDFFontDefinition.InitStdType1WinAnsi("Ftimes", "Times-Roman", "Times", false, false, TimesSpaceWidthFU);
+                return _times;
+            }
+        }
+
+
+        private static PDFFontDefinition _timesbold = null;
+
+        public static PDFFontDefinition TimesBold
+        {
+            get
+            {
+                if (_timesbold == null)
+                    _timesbold = PDFFontDefinition.InitStdType1WinAnsi("FtimesBo", "Times-Bold", "Times", true, false, TimesSpaceWidthFU);
+                return _timesbold;
+            }
+        }
+
+
+        private static PDFFontDefinition _timesboldital = null;
+
+        public static PDFFontDefinition TimesBoldItalic
+        {
+            get
+            {
+                if (_timesboldital == null)
+                    _timesboldital = PDFFontDefinition.InitStdType1WinAnsi("FtimesBoIt", "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFU);
+                return _timesboldital;
+            }
+        }
+
+
+        private static PDFFontDefinition _timesital = null;
+
+        public static PDFFontDefinition TimesItalic
+        {
+            get
+            {
+                if (_timesital == null)
+                    _timesital = PDFFontDefinition.InitStdType1WinAnsi("FtimesIt", "Times-Italic", "Times", false, true, TimesSpaceWidthFU);
+                return _timesital;
+            }
+        }
+
+        #endregion
+
+        #region Courier, CourierBold, CourierOblique, CourierBoldOblique
+
+        private static PDFFontDefinition _cour = null;
+
+        public static PDFFontDefinition Courier
+        {
+            get
+            {
+                if (_cour == null)
+                    _cour = PDFFontDefinition.InitStdType1WinAnsi("Fcour", "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFU);
+                return _cour;
+            }
+        }
+
+
+        private static PDFFontDefinition _courbold = null;
+
+        public static PDFFontDefinition CourierBold
+        {
+            get
+            {
+                if (_courbold == null)
+                    _courbold = PDFFontDefinition.InitStdType1WinAnsi("FcourBo", "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFU);
+                return _courbold;
+            }
+        }
+
+        private static PDFFontDefinition _courital = null;
+
+        public static PDFFontDefinition CourierOblique
+        {
+            get
+            {
+                if (_courital == null)
+                    _courital = PDFFontDefinition.InitStdType1WinAnsi("FcourOb", "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFU);
+                return _courital;
+            }
+        }
+
+        private static PDFFontDefinition _courboldital = null;
+
+        public static PDFFontDefinition CourierBoldOblique
+        {
+            get
+            {
+                if (_courboldital == null)
+                    _courboldital = PDFFontDefinition.InitStdType1WinAnsi("FcourBoOb", "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFU);
+                return _courboldital;
+            }
+        }
+
+        #endregion
+
+        #region ZapfDingbats
+
+        private static PDFFontDefinition _zaph = null;
+
+        public static PDFFontDefinition ZapfDingbats
+        {
+            get
+            {
+                if (_zaph == null)
+                {
+                    _zaph = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFU);
+                    _zaph.Family = "Zapf Dingbats";
+                    _zaph.WindowsName = "WingDings";
+                }
+                return _zaph;
+            }
+        }
+
+        #endregion
+
+        #region Symbol
+
+        private static PDFFontDefinition _sym = null;
+
+        public static PDFFontDefinition Symbol
+        {
+            get
+            {
+                if (_sym == null)
+                    _sym = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFU);
+                return _sym;
+            }
+        }
+
+        #endregion
+
+
         #region internal static PDFFont InitStdType1WinAnsi(string name, string basetype)
 
-        internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, int spaceWidthFU)
+        internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, int spaceWidthFU, TTFFile file = null)
         {
             return InitStdType1WinAnsi(name, basetype, basetype, false, false, spaceWidthFU);
         }
 
-        internal static PDFFontDefinition InitStdSymbolType1WinAnsi(string name, string basetype, int spaceWidthFU)
+        internal static PDFFontDefinition InitStdSymbolType1WinAnsi(string name, string basetype, int spaceWidthFU, TTFFile file = null)
         {
             PDFFontDefinition f = new PDFFontDefinition();
             f.SupportsVariants = false;
@@ -1325,10 +1563,13 @@ namespace Scryber.Resources
             f.Italic = false;
             f.SpaceWidthFontUnits = 577;
             f.FontUnitsPerEm = 2048;
+            f.TTFFile = file;
+            f.IsStandard = true;
+
             return f;
         }
 
-        internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, bool bold, bool italic, int spaceWidthFU)
+        internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, bool bold, bool italic, int spaceWidthFU, TTFFile file = null)
         {
             return InitStdType1WinAnsi(name, basetype, family, family, bold, italic, spaceWidthFU);
         }
@@ -1344,7 +1585,7 @@ namespace Scryber.Resources
         /// <param name="italic"></param>
         /// <param name="spaceWidthFU">Width of a space in font units where there are 2048 font units per em</param>
         /// <returns></returns>
-        internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, string winName, bool bold, bool italic, int spaceWidthFU)
+        internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, string winName, bool bold, bool italic, int spaceWidthFU, TTFFile file = null)
         {
             PDFFontDefinition f = new PDFFontDefinition();
             f.SubType = FontType.Type1;
@@ -1357,7 +1598,8 @@ namespace Scryber.Resources
             
             f.FontUnitsPerEm = 2048;
             f.SpaceWidthFontUnits = spaceWidthFU;
-
+            f.TTFFile = file;
+            f.IsStandard = true;
             return f;
 
         }

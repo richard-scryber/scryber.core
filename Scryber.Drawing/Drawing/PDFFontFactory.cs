@@ -30,6 +30,8 @@ using Scryber.Configuration;
 using System.Reflection;
 using Scryber.OpenType;
 using System.IO;
+using System.CodeDom.Compiler;
+using System.Data;
 
 namespace Scryber.Drawing
 {
@@ -173,7 +175,7 @@ namespace Scryber.Drawing
                 this.FamilyName = name;
             }
 
-            internal void Add(System.Drawing.FontStyle style, string filepath, int fileHeadOffset)
+            internal FontReference Add(System.Drawing.FontStyle style, string filepath, int fileHeadOffset)
             {
 
                 LinkedFontReference fontref = new LinkedFontReference(this.SystemFamily, this.FamilyName, style, filepath, fileHeadOffset);
@@ -181,15 +183,19 @@ namespace Scryber.Drawing
                     _first = fontref;
                 else
                     _first.Append(fontref);
+
+                return fontref;
             }
 
-            internal void Add(System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal FontReference Add(System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
             {
                 LinkedFontReference fontref = new LinkedFontReference(this.SystemFamily, this.FamilyName, style, data, fileHeadOffset);
                 if (null == _first)
                     _first = fontref;
                 else
                     _first.Append(fontref);
+
+                return fontref;
             }
 
             internal bool TryGetFont(System.Drawing.FontStyle style, out FontReference font)
@@ -262,6 +268,15 @@ namespace Scryber.Drawing
                 }
             }
 
+            internal bool HasFamily(string family)
+            {
+                FamilyReference fam;
+                if (_families.TryGetValue(family, out fam))
+                    return true;
+                else
+                    return false;
+            }
+
             internal void FillAllFamilies(List<string> families)
             {
                 foreach (string name in this._families.Keys)
@@ -270,7 +285,7 @@ namespace Scryber.Drawing
                 }
             }
 
-            internal virtual void AddFontFile(string family, System.Drawing.FontStyle style, string path, int fileHeadOffset)
+            internal virtual FontReference AddFontFile(string family, System.Drawing.FontStyle style, string path, int fileHeadOffset)
             {
                 FamilyReference fam;
                 if (_families.TryGetValue(family, out fam) == false)
@@ -278,10 +293,10 @@ namespace Scryber.Drawing
                     fam = new FamilyReference(family);
                     _families.Add(family, fam);
                 }
-                fam.Add(style, path, fileHeadOffset);
+                return fam.Add(style, path, fileHeadOffset);
             }
 
-            internal void AddFontResource(string family, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal FontReference AddFontResource(string family, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
             {
                 FamilyReference fam;
                 if (_families.TryGetValue(family, out fam) == false)
@@ -289,7 +304,7 @@ namespace Scryber.Drawing
                     fam = new FamilyReference(family);
                     _families.Add(family, fam);
                 }
-                fam.Add(style, data, fileHeadOffset);
+                return fam.Add(style, data, fileHeadOffset);
             }
 
             internal void AddFontFamily(string name, FamilyReference reference)
@@ -314,6 +329,8 @@ namespace Scryber.Drawing
         }
 
         #endregion
+
+  
 
 
         //
@@ -589,11 +606,8 @@ namespace Scryber.Drawing
             
             
             FontReference fref = _customfamilies[family, style];
-
-            //check if we are a standard font (that is not available in the custom families
-            if (null == fref && PDFFont.IsStandardFontFamily(family))
-                return PDFFontDefinition.LoadStandardFont(family, style);
-
+            
+            
             if (null == fref && usesystem)
                 fref = _systemfamilies[family, style];
             if (null == fref)
@@ -621,7 +635,7 @@ namespace Scryber.Drawing
                     //Fallback - use courier font definition
                     if (null == fref)
                     {
-                        return PDFFonts.Courier;
+                        throw new NullReferenceException(String.Format(Errors.FontNotFound, family + " " + style.ToString()));
                     }
                 }
                 else
@@ -634,6 +648,7 @@ namespace Scryber.Drawing
                 if(fref.LoadedDefintion == false)
                 {
                     PDFFontDefinition defn;
+                    
                     if (null == fref.FileData)
                         //Load from a file path if we don't have the binary data
                         defn = PDFFontDefinition.LoadOpenTypeFontFile(fref.FilePath, family, style, fref.FileHeadOffset);
@@ -705,7 +720,10 @@ namespace Scryber.Drawing
 
                 if (Scryber.Utilities.FrameworkHelper.IsMacOS())
                 {
-                    paths.Add(System.Environment.GetFolderPath(Environment.SpecialFolder.System) + "/Library/Fonts");
+                    var root = System.Environment.GetFolderPath(Environment.SpecialFolder.System) + "/Library/Fonts";
+                    paths.Add(root);
+                    //TODO: Add child folders
+
                     paths.Add(System.Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
                 }
                 else
@@ -756,6 +774,13 @@ namespace Scryber.Drawing
                 genericBag.AddFontFamily("Serif", found);
                 genericBag.AddFontFamily("Times", found);
             }
+            else if (_staticfamilies.TryGetFamily("Times", out found) || _staticfamilies.TryGetFamily("Times New Roman", out found))
+            {
+                genericBag.AddFontFamily("Serif", found);
+                genericBag.AddFontFamily("Times", found);
+            }
+            else
+                throw new ConfigurationErrorsException("Could not find or load the standard font family for Times");
 
             if (_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found)
                 || _systemfamilies.TryGetFamily("Courier", out found) || _systemfamilies.TryGetFamily("Courier New", out found))
@@ -781,6 +806,24 @@ namespace Scryber.Drawing
             {
                 genericBag.AddFontFamily("Zapf Dingbats", found);
             }
+            else if (_staticfamilies.TryGetFamily("Zapf Dingbats", out found))
+            {
+                genericBag.AddFontFamily("Zapf Dingbats", found);
+            }
+            else
+                throw new ConfigurationErrorsException("Could not find or load the standard font family for Zaph Dingbats");
+
+            if (_customfamilies.TryGetFamily("Symbol", out found) || _systemfamilies.TryGetFamily("Symbol", out found))
+            {
+                genericBag.AddFontFamily("Symbol", found);
+            }
+            else if (_staticfamilies.TryGetFamily("Symbol", out found))
+            {
+                genericBag.AddFontFamily("Symbol", found);
+            }
+            else
+                throw new ConfigurationErrorsException("Could not find or load the standard font family for Symbol");
+
             return genericBag;
         }
 
@@ -795,6 +838,9 @@ namespace Scryber.Drawing
             
             InstalledFontCollection install = new InstalledFontCollection();
             FamilyReferenceBag bag = new FamilyReferenceBag(install);
+            //TODO: Remove after testing
+            return bag;
+
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             //Check to see if we are allowed to use the system fonts
             if (config.FontOptions.UseSystemFonts)
@@ -816,7 +862,7 @@ namespace Scryber.Drawing
                                 {
                                     if (item.IsValid)
                                     {
-                                        bag.AddFontFile(item.FamilyName, GetFontStyle(item.FontSelection), item.FullPath, item.HeadOffset);
+                                        bag.AddFontFile(item.FamilyName, GetFontStyle(item.FontSelection, item.FontWeight), item.FullPath, item.HeadOffset);
                                     }
                                 }
 
@@ -928,7 +974,7 @@ namespace Scryber.Drawing
                                 }
 
                                 //font file added  - now register the family and style against the path
-                                bag.AddFontFile(item.FamilyName, GetFontStyle(item.FontSelection), item.FullPath, item.HeadOffset);
+                                bag.AddFontFile(item.FamilyName, GetFontStyle(item.FontSelection, item.FontWeight), item.FullPath, item.HeadOffset);
                             }
                             
                         }
@@ -951,47 +997,112 @@ namespace Scryber.Drawing
 
         #endregion
 
+        const int HelveticaSpaceWidthFU = 569;
+        const int TimesSpaceWidthFU = 512;
+        const int CourierSpaceWidthFU = 1228;
+        const int ZaphSpaceWidthFU = 544;
+        const int SymbolSpaceWidthFU = 512;
+
         private static FamilyReferenceBag LoadStaticFamilies()
         {
             PrivateFontCollection priv = new PrivateFontCollection();
             FamilyReferenceBag bag = new FamilyReferenceBag(priv);
 
             var assm = typeof(PDFFontFactory).Assembly;
-            TTFRef fontRef;
-            byte[] fnt;
-
+            TTFRef ttrRef;
+            byte[] bin;
+            FontReference fRef;
+            TTFFile file;
             //Courier
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNew.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Regular, fnt, fontRef.HeadOffset);
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNew.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fcour", "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFU, file); ;
+            
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBold.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Bold, fnt, fontRef.HeadOffset);
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBoldItalic.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBold.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBo", "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFU, file);
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewItalic.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Courier.Family, System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBoldItalic.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBoOb", "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFU, file);
+
+
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewItalic.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourOb", "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFU, file);
+
 
             //Helvetica
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.Helvetica.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Regular, fnt, fontRef.HeadOffset);
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.Helvetica.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fhel", "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFU, file);
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBold.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Bold, fnt, fontRef.HeadOffset);
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBold.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelBl", "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFU, file);
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelObBl", "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFU, file);
 
-            fnt = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaOblique.ttf", out fontRef);
-            bag.AddFontResource(PDFFonts.Helvetica.Family, System.Drawing.FontStyle.Italic, fnt, fontRef.HeadOffset);
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaOblique.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelOb", "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFU, file);
+
 
             //Symbol
 
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Symbol.Symbol.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Symbol", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFU, file);
+
+
             //Times
 
-            
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRoman.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Ftimes", "Times-Roman", "Times", false, false, TimesSpaceWidthFU, file);
+
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRomanBold.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBo", "Times-Bold", "Times", true, false, TimesSpaceWidthFU, file);
+
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRomanBoldItalic.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBoIt", "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFU, file);
+
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRomanItalic.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesIt", "Times-Italic", "Times", false, true, TimesSpaceWidthFU, file);
+
+
+
+            //Zapf
+
+            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Zaph.ZapfDingbats.ttf", out ttrRef);
+            fRef = bag.AddFontResource("Zapf Dingbats", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+            file = new TTFFile(bin, ttrRef.HeadOffset);
+            fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFU, file);
+            fRef.Definition.Family = "Zapf Dingbats";
+            fRef.Definition.WindowsName = "WingDings";
+
 
             return bag;
         }
@@ -1088,7 +1199,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        private static System.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs)
+        private static System.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs, Scryber.OpenType.SubTables.WeightClass wc)
         {
             System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
 
@@ -1099,6 +1210,9 @@ namespace Scryber.Drawing
             if ((fs & Scryber.OpenType.SubTables.FontSelection.Strikeout) > 0)
                 style |= System.Drawing.FontStyle.Strikeout;
             if ((fs & Scryber.OpenType.SubTables.FontSelection.Bold) > 0)
+                style |= System.Drawing.FontStyle.Bold;
+
+            if (wc == OpenType.SubTables.WeightClass.Bold)
                 style |= System.Drawing.FontStyle.Bold;
 
             return style;
