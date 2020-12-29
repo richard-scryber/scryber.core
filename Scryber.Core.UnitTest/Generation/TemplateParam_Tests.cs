@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Data;
@@ -13,19 +14,16 @@ namespace Scryber.Core.UnitTests.Generation
     public class TemplateParam_Test
     {
 
-        public TestContext TextContext
+        public TestContext TestContext
         {
             get;
             set;
         }
 
-        [TestMethod()]
-        [TestCategory("Components")]
-        public void PlaceholderTemplate()
-        {
-            var src = @"<?xml version='1.0' encoding='utf-8' ?>
+        string templateSrc = @"<?xml version='1.0' encoding='utf-8' ?>
 <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-                xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd' >
+                xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                xmlns='http://www.w3.org/1999/xhtml' >
 
   <Params>
     <!-- template parameter with -->
@@ -43,7 +41,7 @@ namespace Scryber.Core.UnitTests.Generation
   </Styles>
   <Pages>
    
-    <doc:Page styles:margins='20pt' styles:font-size='18pt' styles:font-family='Helvetica Neue' >
+    <doc:Page styles:margins='20pt' styles:font-size='18pt' styles:font-family='Helvetica' >
       <Content>
         <doc:Div styles:class='bordered' >
           The content of this div is all as a block (by default)
@@ -62,7 +60,13 @@ namespace Scryber.Core.UnitTests.Generation
 
 </doc:Document>";
 
-            var template = GetTemplateData();
+        [TestMethod()]
+        [TestCategory("Components")]
+        public void PlaceholderTemplate_ComponentString()
+        {
+            var src = templateSrc;
+
+            var template = GetTemplateComponentStringData();
 
             using (System.IO.StringReader sr = new System.IO.StringReader(src))
             {
@@ -71,6 +75,55 @@ namespace Scryber.Core.UnitTests.Generation
 
 
                 using (var stream = DocStreams.GetOutputStream("PlaceHolderTemplate.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                    var placeholder = doc.FindAComponentById("DynamicContent") as PlaceHolder;
+                    
+                    //placeholder should contain a template instance, that contains the table.
+
+                    Assert.IsTrue(placeholder.Contents.Count > 0);
+                    Assert.IsInstanceOfType(placeholder.Contents[0], typeof(TemplateInstance));
+
+                    var instance = placeholder.Contents[0] as TemplateInstance;
+                    Assert.IsTrue(instance.HasContent);
+                    Assert.IsInstanceOfType(instance.Content[0], typeof(TableGrid));
+                }
+            }
+        }
+
+
+        private string GetTemplateComponentStringData()
+        {
+            //This content could be from any source, and could use XElements, XMLNodes or any other source.
+            //And really we should be using a string builder anyway.
+
+            var str = "<doc:Table styles:full-width='true' >";
+            for (var i = 0; i < 5; i++)
+            {
+                str += "<doc:Row><doc:Cell >" + i + "</doc:Cell><doc:Cell >" + (i + 5) + "</doc:Cell></doc:Row>";
+            }
+            str += "</doc:Table>";
+
+            return str;
+
+        }
+
+
+        [TestMethod()]
+        [TestCategory("Components")]
+        public void PlaceholderTemplate_HTMLString()
+        {
+            var src = templateSrc;
+
+            var template = GetTemplateHTMLStringData();
+
+            using (System.IO.StringReader sr = new System.IO.StringReader(src))
+            {
+                Document doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.Params["datatable"] = template;
+
+
+                using (var stream = DocStreams.GetOutputStream("PlaceHolderTemplateHTML.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                     var placeholder = doc.FindAComponentById("DynamicContent") as PlaceHolder;
@@ -88,21 +141,24 @@ namespace Scryber.Core.UnitTests.Generation
         }
 
 
-        private string GetTemplateData()
+        private string GetTemplateHTMLStringData()
         {
             //This content could be from any source, and could use XElements, XMLNodes or any other source.
             //And really we should be using a string builder anyway.
 
-            var str = "<doc:Table styles:full-width='true' >";
+            var str = "<table styles:full-width='true' >";
             for (var i = 0; i < 5; i++)
             {
-                str += "<doc:Row><doc:Cell >" + i + "</doc:Cell><doc:Cell >" + (i + 5) + "</doc:Cell></doc:Row>";
+                str += "<tr><td >" + i + " html</td><td >" + (i + 5) + " html</td></tr>";
             }
-            str += "</doc:Table>";
+            str += "</table>";
 
             return str;
 
         }
+
+
+
 
     }
 }

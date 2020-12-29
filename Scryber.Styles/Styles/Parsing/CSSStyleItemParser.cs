@@ -1367,7 +1367,7 @@ namespace Scryber.Styles.Parsing
             bool bold;
             PDFUnit fsize, lineheight;
             double relativeLeading;
-            string family;
+            
 
             if (CSSFontStyleParser.TryGetFontStyle(reader.CurrentTextValue, out italic))
             {

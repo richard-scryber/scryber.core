@@ -838,9 +838,7 @@ namespace Scryber.Drawing
             
             InstalledFontCollection install = new InstalledFontCollection();
             FamilyReferenceBag bag = new FamilyReferenceBag(install);
-            //TODO: Remove after testing
-            return bag;
-
+            
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             //Check to see if we are allowed to use the system fonts
             if (config.FontOptions.UseSystemFonts)

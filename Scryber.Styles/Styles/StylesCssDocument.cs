@@ -8,7 +8,7 @@ namespace Scryber.Styles
     [PDFParsableComponent("Css")]
     public class StylesCssDocument : StyleBase
     {
-        private Styles.StyleCollection _linkedStyles;
+        
 
         [PDFAttribute("source")]
         public string Source { get; set; }

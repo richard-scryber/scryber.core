@@ -233,6 +233,7 @@ namespace Scryber.Generation
 
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 
+
         /// <summary>
         /// Top level Parse method which returns the complete component that was parsed from the source.
         /// </summary>
@@ -242,6 +243,7 @@ namespace Scryber.Generation
         /// <returns></returns>
         protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
         {
+            
             IDisposable recorder;
             if (type == ParseSourceType.Template)
                 recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Templates, source);
@@ -373,6 +375,7 @@ namespace Scryber.Generation
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = false;
             settings.DtdProcessing = DtdProcessing.Ignore;
+            
             return settings;
         }
 
@@ -452,6 +455,8 @@ namespace Scryber.Generation
         #endregion
 
         #region private void ParseComplexComponentXml(object component, XmlReader reader, ParserClassDefinition cdef)
+
+        
 
         /// <summary>
         /// Parses the actual XML content of the reader and pushes the parsed values onto the provided object.
