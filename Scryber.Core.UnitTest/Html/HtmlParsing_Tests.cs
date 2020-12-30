@@ -46,7 +46,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void SimpleDocumentParsing()
         {
-            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+            var src = @"<!DOCTYPE html>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
                                 <style>
@@ -56,7 +57,7 @@ namespace Scryber.Core.UnitTests.Html
                             </head>
 
                             <body class='strong' style='margin:20px;' >
-                                <p id='myPara' style='border: solid 1px blue; padding: 5px;' >This is a &quot;paragraph&quot; of content</p>
+                                <p id='myPara' style='border: solid 1px blue; padding: 5px;' >This is a paragraph&agrave;s of content</p>
                             </body>
 
                         </html>";

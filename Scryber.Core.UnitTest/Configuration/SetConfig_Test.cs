@@ -384,7 +384,7 @@ namespace Scryber.Core.UnitTests.Configuration
             using (var reader = new System.IO.StringReader(pdfx))
             {
                 doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-
+                
                 using (var stream = DocStreams.GetOutputStream("DynamicImage.pdf"))
                 {
                     doc.SaveAsPDF(stream);

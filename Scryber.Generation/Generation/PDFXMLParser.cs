@@ -188,7 +188,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IPDFComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = XmlReader.Create(stream, GetXmlSettings()))
+            using (XmlReader reader = new XmlHtmlEntityReader(stream, GetXmlSettings()))
             {
                 return Parse(source, reader, type);
             }
@@ -203,7 +203,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IPDFComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = XmlReader.Create(reader, GetXmlSettings()))
+            using (XmlReader xreader = new XmlHtmlEntityReader(reader, GetXmlSettings()))
             {
                 return this.Parse(source, xreader, type);
             }
@@ -375,9 +375,16 @@ namespace Scryber.Generation
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = false;
             settings.DtdProcessing = DtdProcessing.Ignore;
+            //settings.ValidationType = ValidationType.DTD;
+            //settings.ValidationEventHandler += Settings_ValidationEventHandler;
             
             return settings;
         }
+
+        //private void Settings_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e)
+        //{
+        //    this.LogAdd(null, TraceLevel.Error, "DTD Not present for the entity " + e.Message);
+        //}
 
         #endregion
 
