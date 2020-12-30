@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.2-alpha</PackageVersion>
+    <PackageVersion>5.0.1-alpha</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
@@ -13,7 +13,11 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.1-alpha
+    <PackageReleaseNotes>5.0.1-alpha
+
+Increased support for the HTML parsing with entities and DTD, along with the upgrade to dotnet 5
+
+1.0.1-alpha
 
 Significant updates to the Components namespace (removing the PDF prefix); support for the match='' style attribute; prioritizing style application based on selectors and complexity; direct parsing of XHTML; and support for styles based page breaking. With updated unit tests
 
@@ -47,10 +51,10 @@ PDFDocument fix for remote references.
 Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package
 
 Added the default namespaces to the ParsingOptions, and updated version to match MVC and OpenType</PackageReleaseNotes>
-    <Summary>The scryber library for easy, dynamic PDF document creation using dotnet core</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; HTML2PDF</PackageTags>
+    <Summary>The scryber library for easy, dynamic PDF document creation using dotnet 5</Summary>
+    <PackageTags>Scryber; PDF; dotnet core; HTML2PDF; dotnet 5;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The Scryber PDF Generation library for dotnet core 3.1
+    <Description>The Scryber PDF Generation library for dotnet 5
 
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML, XHTML (and code)  including cascading styles, databinding and referenced files easily from your Apps or MVC web apps or Javascipt ajax calls.
 This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications.</Description>
