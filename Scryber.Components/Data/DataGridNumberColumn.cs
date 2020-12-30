@@ -25,21 +25,21 @@ namespace Scryber.Data
         /// <summary>
         /// Gets or sets the format to use to convert the number value to a string
         /// </summary>
-        [PDFAttribute("number-format", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-format", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Number Format", Category = "Data", Priority = 1, Type = "NumberFormat")]
         public string NumberFormat
         {
             get
             {
-                PDFStyleValue<string> format;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.TextNumberFormatKey, out format))
+                StyleValue<string> format;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextNumberFormatKey, out format))
                     return format.Value;
                 else
                     return string.Empty;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.TextNumberFormatKey, value);
+                this.Style.SetValue(StyleKeys.TextNumberFormatKey, value);
             }
         }
 

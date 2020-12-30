@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Overflow_ConstructorTest()
         {
-            PDFOverflowStyle target = new PDFOverflowStyle();
+            OverflowStyle target = new OverflowStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.OverflowItemKey,target.ItemKey);
+            Assert.AreEqual(StyleKeys.OverflowItemKey,target.ItemKey);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Overflow_ActionTest()
         {
-            PDFOverflowStyle target = new PDFOverflowStyle(); 
+            OverflowStyle target = new OverflowStyle(); 
             OverflowAction expected = OverflowAction.None;
             Assert.AreEqual(expected, target.Action);
 
@@ -108,7 +108,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Overflow_SplitTest()
         {
-            PDFOverflowStyle target = new PDFOverflowStyle(); 
+            OverflowStyle target = new OverflowStyle(); 
             OverflowSplit expected = OverflowSplit.Any;
             Assert.AreEqual(expected, target.Split);
 

@@ -70,9 +70,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_ConstructorTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.BorderItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.BorderItemKey, target.ItemKey);
 
         }
 
@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_CreatePenTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
 
             //No values
 
@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Styles
             ((PDFSolidPen)expected).Color = PDFColors.Lime;
             expected.Width = 8;
 
-            target = new PDFBorderStyle();
+            target = new BorderStyle();
             target.Dash = dash;
             target.Width = 8;
             target.Color = PDFColors.Lime;
@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_ColorTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
             Assert.AreEqual(target.Color, PDFColors.Transparent);
 
             target.Color = PDFColors.Red;
@@ -213,7 +213,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_DashTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
 
             //Default
 
@@ -252,7 +252,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_LineCapTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
 
             //Default 
 
@@ -289,7 +289,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_LineJoinTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
 
             //Default 
 
@@ -326,42 +326,42 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_LineStyleTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle(); 
+            BorderStyle target = new BorderStyle(); 
 
             //Default 
 
-            LineStyle expected = LineStyle.None;
+            LineType expected = LineType.None;
             Assert.AreEqual(expected, target.LineStyle);
 
             //With color - should be solid
             target.Color = PDFColors.Red;
-            expected = LineStyle.Solid;
+            expected = LineType.Solid;
             Assert.AreEqual(expected, target.LineStyle);
 
             //With dash - should be dashed
             target.Dash = new PDFDash(new int[] { 2, 3, 4 }, 10);
-            expected = LineStyle.Dash;
+            expected = LineType.Dash;
             Assert.AreEqual(expected, target.LineStyle);
 
 
             //Set value (should override the dash and color options)
 
-            expected = LineStyle.Solid;
-            LineStyle actual;
+            expected = LineType.Solid;
+            LineType actual;
             target.LineStyle = expected;
             actual = target.LineStyle;
             Assert.AreEqual(expected, actual);
 
             // Change Value
 
-            expected = LineStyle.None;
+            expected = LineType.None;
             target.LineStyle = expected;
             actual = target.LineStyle;
             Assert.AreEqual(expected, actual);
 
             //Remove value
 
-            expected = LineStyle.None;
+            expected = LineType.None;
             target.RemoveLineStyle();
             target.RemoveDash();
             target.RemoveColor();
@@ -376,7 +376,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_MitreTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle(); 
+            BorderStyle target = new BorderStyle(); 
 
             // Default value
 
@@ -413,7 +413,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_OpacityTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
 
             // Default value
 
@@ -450,7 +450,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_WidthTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
             // Default value
 
             PDFUnit expected = PDFUnit.Empty;
@@ -486,7 +486,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Border_CornerRadiusTest()
         {
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
             Assert.AreEqual(PDFUnit.Zero, target.CornerRadius);
 
             PDFUnit expected = 10;
@@ -509,7 +509,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void Border_SidesTest()
         {
             Sides all = Sides.Bottom | Sides.Left | Sides.Right | Sides.Top;
-            PDFBorderStyle target = new PDFBorderStyle();
+            BorderStyle target = new BorderStyle();
             Assert.AreEqual(all, target.Sides);
 
             Sides expected = Sides.Bottom;

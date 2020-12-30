@@ -12,9 +12,9 @@ namespace Scryber.Components
     public class Block : Div
     {
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Padding.All = new Scryber.Drawing.PDFUnit(20, Drawing.PageUnits.Points);
             return style;
         }
@@ -25,9 +25,9 @@ namespace Scryber.Components
     public class SplitBlock : Block
     {
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 2;
             return style;
         }
@@ -38,9 +38,9 @@ namespace Scryber.Components
     public class Split12Block : SplitBlock
     {
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Columns.ColumnWidths = new Drawing.PDFColumnWidths(new double[] { 0.33 });
             return style;
         }
@@ -51,9 +51,9 @@ namespace Scryber.Components
     public class Split21Block : SplitBlock
     {
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Columns.ColumnWidths = new Drawing.PDFColumnWidths(new double[] { 0.66 });
             return style;
         }
@@ -64,9 +64,9 @@ namespace Scryber.Components
     public class Split3Block : SplitBlock
     {
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 3;
             style.Columns.ColumnWidths = new Drawing.PDFColumnWidths(new double[] { 0.33, 0.33 });
             return style;

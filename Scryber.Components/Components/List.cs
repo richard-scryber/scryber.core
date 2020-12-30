@@ -59,7 +59,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the list numbering style
         /// </summary>
-        [PDFAttribute("number-style", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-style", Styles.Style.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.listNumbers_attr")]
         [PDFDesignable("Number Style", Category ="General", Priority = 2, Type = "ListNumberSelect")]
         public ListNumberingGroupStyle NumberingStyle
@@ -75,7 +75,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets thelist numbering group
         /// </summary>
-        [PDFAttribute("number-group", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-group", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Number Group", Ignore = true)]
         public string NumberingGroup
         {
@@ -90,7 +90,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the number prefix string that will appear before the actual value
         /// </summary>
-        [PDFAttribute("number-prefix", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-prefix", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Prefix", Ignore = true)]
         public string NumberPrefix
         {
@@ -105,7 +105,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the number prefix string that will appear after the actual value
         /// </summary>
-        [PDFAttribute("number-postfix", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-postfix", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Postfix", Ignore = true)]
         public string NumberPostfix
         {
@@ -120,12 +120,12 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the amount of indentation before list item (not including the width of the number)
         /// </summary>
-        [PDFAttribute("number-inset", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-inset", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Inset", Ignore = true)]
         public PDFUnit NumberInset
         {
-            get { return this.Style.GetValue(PDFStyleKeys.ListInsetKey, Const.DefaultListNumberInset); }
-            set { this.Style.SetValue(PDFStyleKeys.ListInsetKey, value); }
+            get { return this.Style.GetValue(StyleKeys.ListInsetKey, Const.DefaultListNumberInset); }
+            set { this.Style.SetValue(StyleKeys.ListInsetKey, value); }
         }
 
         #endregion
@@ -135,7 +135,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the alignement of the item number (or label / image) that is shown
         /// </summary>
-        [PDFAttribute("number-alignment", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-alignment", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Alignment", Ignore = true)]
         public HorizontalAlignment NumberAlignment
         {
@@ -156,7 +156,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the flag that indicates if the list item numbering should be concatenated with the parent list.
         /// </summary>
-        [PDFAttribute("number-concat", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-concat", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Concatenate", Ignore = true)]
         public bool ConcatenateNumberWithParent
         {
@@ -186,15 +186,15 @@ namespace Scryber.Components
         /// Overrides the base implementation to apply the Decimals numbering group type
         /// </summary>
         /// <returns></returns>
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle style = base.GetBaseStyle();
+            Styles.Style style = base.GetBaseStyle();
             style.List.NumberingStyle = ListNumberingGroupStyle.Bullet;
             style.List.NumberAlignment = HorizontalAlignment.Right;
             return style;
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.PDFStyle style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.Style style)
         {
             return new Layout.LayoutEngineList(this, parent);
         }

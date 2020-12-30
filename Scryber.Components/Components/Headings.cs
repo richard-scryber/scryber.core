@@ -123,14 +123,14 @@ namespace Scryber.Components
             _numbertext = number;
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new Layout.LayoutEngineHeading(this, parent);
         }
 
-        protected static PDFStyle GetBaseStyles(PDFUnit fontsize, bool bold, bool italic, string groupname)
+        protected static Style GetBaseStyles(PDFUnit fontsize, bool bold, bool italic, string groupname)
         {
-            PDFStyle fs = new PDFStyle();
+            Style fs = new Style();
             fs.Font.FontSize = fontsize;
             fs.Font.FontBold = bold;
             fs.Font.FontItalic = italic;
@@ -159,7 +159,7 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return HeadingBase.GetBaseStyles(36,true, false, Heading1LabelGroupName);
         }
@@ -179,7 +179,7 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return HeadingBase.GetBaseStyles(30, true, true, Heading2LabelGroupName);
         }
@@ -199,7 +199,7 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return HeadingBase.GetBaseStyles(24, true, false, Heading3LabelGroupName);
         }
@@ -219,7 +219,7 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return HeadingBase.GetBaseStyles(20, true, true, Heading4LabelGroupName);
         }
@@ -239,7 +239,7 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return HeadingBase.GetBaseStyles(17, true, false, Heading5LabelGroupName);
         }
@@ -259,7 +259,7 @@ namespace Scryber.Components
         {
         }
 
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
             return HeadingBase.GetBaseStyles(15, true, true, Heading6LabelGroupName);
         }

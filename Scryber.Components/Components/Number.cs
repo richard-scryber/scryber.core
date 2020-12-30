@@ -54,15 +54,15 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<string> format;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.TextNumberFormatKey, out format))
+                StyleValue<string> format;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextNumberFormatKey, out format))
                     return format.Value;
                 else
                     return string.Empty;
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.TextNumberFormatKey, value);
+                this.Style.SetValue(StyleKeys.TextNumberFormatKey, value);
             }
         }
 
@@ -108,10 +108,10 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.PDFStyle fullstyle)
+        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style fullstyle)
         {
             string val;
-            string format = fullstyle.GetValue(PDFStyleKeys.TextNumberFormatKey, string.Empty);
+            string format = fullstyle.GetValue(StyleKeys.TextNumberFormatKey, string.Empty);
 
             if (null == this.FormatProvider)
             {

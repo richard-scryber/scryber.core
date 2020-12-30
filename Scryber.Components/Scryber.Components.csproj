@@ -1,18 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>1.0.0.25</PackageVersion>
+    <PackageVersion>1.0.2-alpha</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
+    <License>LICENSE.md</License>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/IQAndreas/markdown-licenses/master/gnu-lgpl-v3.0.md</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>1.0.0.25
+    <PackageReleaseNotes>1.0.1-alpha
+
+Significant updates to the Components namespace (removing the PDF prefix); support for the match='' style attribute; prioritizing style application based on selectors and complexity; direct parsing of XHTML; and support for styles based page breaking. With updated unit tests
+
+1.0.0.25
 -----------------
 Updated and improved HTML and Markdown handling.
 
@@ -24,27 +29,16 @@ Added the xsd files to the root of the components project
 Added a readme.txt file
 Added column-widths to the components and styles, with support for varable widths.
 Page numbering falls back to the page number format set on the page if not explicitly set.
-
 Removed the Page number prefix instead only supprting the page number display format
-
 Updated to add the static cache provider service
-
 Added the template property to the Placeholder, and support for updating templates to parameters
-
 Stronger typing on the parameters and object parameter, and support for XML pararmeters as XPath or XNode values.
-
 Passing any controller to the template generation so that it can be used to bind to events in templates.
-
 Updated the data components for ForEach, With, If, Choose:When to be able to use xpath and object binding expressions on the value property.
-
 Updated the PDFUser Component to use Params not Items
-
 Updated the bindings and Params. Autobind on the document defaults to true.
-
 Added the binding expressions as default in the parsing options
-
 Fixed the query string overrides on the item native values
-
 PDFDocument fix for remote references.
 
 
@@ -54,21 +48,32 @@ Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Upd
 
 Added the default namespaces to the ParsingOptions, and updated version to match MVC and OpenType</PackageReleaseNotes>
     <Summary>The scryber library for easy, dynamic PDF document creation using dotnet core</Summary>
-    <PackageTags>Scryber; PDF; dotnet core</PackageTags>
+    <PackageTags>Scryber; PDF; dotnet core; HTML2PDF</PackageTags>
     <Title>Scryber</Title>
     <Description>The Scryber PDF Generation library for dotnet core 3.1
 
-Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML (and code)  including cascading styles, databinding and referenced files easily from your Apps or MVC apps or Javascipt ajax calls.
+Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML, XHTML (and code)  including cascading styles, databinding and referenced files easily from your Apps or MVC web apps or Javascipt ajax calls.
 This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications.</Description>
     <PackOnBuild>true</PackOnBuild>
-    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <RootNamespace>Scryber</RootNamespace>
+    <Version>1.0.1-alpha</Version>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
+    <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <RepositoryType>Git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Web\**" />
     <EmbeddedResource Remove="Web\**" />
     <None Remove="Web\**" />
+    <None Include="..\ScyberLogo2_alpha_small.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -89,7 +94,7 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
+    <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

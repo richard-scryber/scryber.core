@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Components;
 using Scryber.Styles;
-using Scryber.Drawing;
+//using Scryber.Drawing;
 using Scryber.Native;
 
 namespace Scryber
@@ -207,8 +207,8 @@ namespace Scryber
         private PDFObjectRef RenderOutlineItem(PDFOutlineRef outlineref, PDFObjectRef parent, PDFObjectRef prev, PDFRenderContext context, PDFWriter writer, out int count)
         {
             PDFOutline outline = outlineref.Outline;
-            PDFColor c = outlineref.GetColor();
-            FontStyle fs = outlineref.GetFontStyle();
+            Scryber.Drawing.PDFColor c = outlineref.GetColor();
+            Scryber.Drawing.FontStyle fs = outlineref.GetFontStyle();
             bool isopen = outlineref.GetIsOpen();
             count = 1;//this one
             PDFObjectRef item = writer.BeginObject();
@@ -226,12 +226,12 @@ namespace Scryber
                 writer.EndDictionaryEntry();
             }
 
-            if (fs != FontStyle.Regular)
+            if (fs != Scryber.Drawing.FontStyle.Regular)
             {
                 int f = 0;
-                if ((fs & FontStyle.Bold) > 0)
+                if ((fs & Scryber.Drawing.FontStyle.Bold) > 0)
                     f = 2;
-                if ((fs & FontStyle.Italic) > 0)
+                if ((fs & Scryber.Drawing.FontStyle.Italic) > 0)
                     f += 1;
                 writer.WriteDictionaryNumberEntry("F", f);
             }
@@ -288,7 +288,7 @@ namespace Scryber
 
     {
         private PDFOutline _outline;
-        private PDFOutlineStyle _style;
+        private OutlineStyle _style;
         private PDFOutlineRefCollection _inneritems;
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Scryber
         /// <summary>
         /// Gets the style associated with this outline
         /// </summary>
-        internal PDFOutlineStyle Style { get { return _style; } }
+        internal OutlineStyle Style { get { return _style; } }
 
         /// <summary>
         /// Gets the collection of inner items - can be null
@@ -312,7 +312,7 @@ namespace Scryber
         internal bool HasInnerItems { get { return _inneritems != null && _inneritems.Count > 0; } }
 
 
-        internal PDFOutlineRef(PDFOutline outline, PDFOutlineStyle style)
+        internal PDFOutlineRef(PDFOutline outline, OutlineStyle style)
         {
             if (null == outline)
                 throw RecordAndRaise.ArgumentNull("outline");
@@ -328,38 +328,38 @@ namespace Scryber
             _inneritems.Add(outlineref);
         }
 
-        internal PDFColor GetColor()
+        internal Scryber.Drawing.PDFColor GetColor()
         {
-            PDFColor c = this.Outline.Color;
+            var c = this.Outline.Color;
 
-            if (c == null || c == PDFColors.Transparent)
+            if (c == null || c == Scryber.Drawing.PDFColors.Transparent)
             {
                 c = (null == this.Style) ? null : this.Style.Color;
-                if (c == PDFColors.Transparent)
+                if (c == Scryber.Drawing.PDFColors.Transparent)
                     c = null;
             }
 
             return c;
         }
 
-        internal FontStyle GetFontStyle()
+        internal Scryber.Drawing.FontStyle GetFontStyle()
         {
-            FontStyle fs = FontStyle.Regular;
+            var fs = Scryber.Drawing.FontStyle.Regular;
             if (this.Outline.HasBold)
             {
                 if (this.Outline.FontBold)
-                    fs = FontStyle.Bold;
+                    fs = Scryber.Drawing.FontStyle.Bold;
             }
             else if (this.Style.FontBold)
-                fs = FontStyle.Bold;
+                fs = Scryber.Drawing.FontStyle.Bold;
 
             if (this.Outline.HasItalic)
             {
                 if (this.Outline.FontItalic)
-                    fs |= FontStyle.Italic;
+                    fs |= Scryber.Drawing.FontStyle.Italic;
             }
             else if (this.Style.FontItalic)
-                fs |= FontStyle.Italic;
+                fs |= Scryber.Drawing.FontStyle.Italic;
 
             return fs;
         }
@@ -373,7 +373,7 @@ namespace Scryber
                 if (this.Outline.OutlineOpen)
                     open = true;
             }
-            else if (this.Style.TryGetValue(PDFStyleKeys.OutlineOpenKey, out styleOpen))
+            else if (this.Style.TryGetValue(StyleKeys.OutlineOpenKey, out styleOpen))
                 open = styleOpen;
 
             return open;

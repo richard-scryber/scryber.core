@@ -13,7 +13,7 @@ namespace Scryber.Html.Components
     {
         private string _href;
         private string _relationship;
-        private PDFStyleGroup _parsedGroup = null;
+        private StyleGroup _parsedGroup = null;
 
         [PDFAttribute("href")]
         public string Href
@@ -29,9 +29,9 @@ namespace Scryber.Html.Components
 
         #region protected PDFStyleCollection InnerItems
 
-        private PDFStyleCollection _innerItems;
+        private StyleCollection _innerItems;
 
-        protected PDFStyleCollection InnerItems
+        protected StyleCollection InnerItems
         {
             get
             {
@@ -53,7 +53,7 @@ namespace Scryber.Html.Components
         /// Gets all the styles in this group
         /// </summary>
         
-        public PDFStyleCollection Styles
+        public StyleCollection Styles
         {
             get { return this.InnerItems; }
         }
@@ -74,7 +74,7 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("media")]
-        public string Media
+        public Scryber.Styles.Selectors.MediaMatcher Media
         {
             get;
             set;
@@ -102,6 +102,16 @@ namespace Scryber.Html.Components
             }
         }
 
+        public bool IsSourceLoaded
+        {
+            get { 
+                if (string.IsNullOrEmpty(this.LoadedSource))
+                    return false;
+                else
+                    return true;
+            }
+        }
+
         public HTMLLink()
             : base((PDFObjectType)"htmL")
         {
@@ -111,7 +121,8 @@ namespace Scryber.Html.Components
         protected override void OnPreLayout(PDFLayoutContext context)
         {
              
-            this.AddStylesToDocument();
+            this.AddStylesToDocument(context);
+            
             base.OnPreLayout(context);
         }
 
@@ -124,14 +135,23 @@ namespace Scryber.Html.Components
             if (this._parsedGroup != null)
                 this.Document.Styles.Remove(this._parsedGroup);
             this._parsedGroup = null;
+            this.LoadedSource = string.Empty;
         }
 
         protected virtual void DoLoadReference()
         {
-            if (String.IsNullOrEmpty(this.Href) || String.IsNullOrEmpty(this.Relationship) || this.Relationship != "stylesheet")
+            if (String.IsNullOrEmpty(this.Href))
                 return;
+
+            if(String.IsNullOrEmpty(this.Relationship) || this.Relationship != "stylesheet")
+                return;
+
             if (null == this.Document)
                 return;
+
+            if (this.IsSourceLoaded)
+                return;
+
 
             bool isFile;
             
@@ -143,6 +163,7 @@ namespace Scryber.Html.Components
             }
             else if(isFile && System.IO.File.Exists(path))
             {
+                this.LoadedSource = path;
                 var css = System.IO.File.ReadAllText(path);
                 this.InnerItems = this.CreateInnerStyles(css);
             }
@@ -150,22 +171,51 @@ namespace Scryber.Html.Components
 
         protected virtual void DoLoadRemoteReference(string path)
         {
-
+            this.LoadedSource = path;
+            var request = System.Net.HttpWebRequest.Create(path);
+            var result = request.GetResponse();
+            this.DoLoadReferenceResult(result);
         }
 
-        protected PDFStyleCollection CreateInnerStyles(string content)
+        /// <summary>
+        /// Forces the completion and loading of the remote result.
+        /// </summary>
+        private void DoLoadReferenceResult(System.Net.WebResponse response)
         {
-            var collection = new PDFStyleCollection();
+
+            
+            try
+            {
+                string css;
+                using (var content = response.GetResponseStream())
+                {
+                    using (var reader = new System.IO.StreamReader(content))
+                    {
+                        css = reader.ReadToEnd();
+                    }
+                }
+                this._innerItems = this.CreateInnerStyles(css);
+            }
+            finally
+            {
+                response.Dispose();
+            }
+        }
+
+        protected StyleCollection CreateInnerStyles(string content)
+        {
+            var collection = new StyleCollection();
             this.AddCssStyles(collection, content);
             
             return collection;
         }
 
-        protected virtual void AddStylesToDocument()
+        protected virtual void AddStylesToDocument(PDFContextBase context)
         {
-            if (this.Visible && this.Styles.Count > 0)
+            if(this.ShouldAddStyles(context.OutputFormat))
             {
-                PDFStyleGroup grp = new PDFStyleGroup();
+
+                StyleGroup grp = new StyleGroup();
                 foreach (var style in this.Styles)
                 {
                     grp.Styles.Add(style);
@@ -173,34 +223,49 @@ namespace Scryber.Html.Components
 
                 this.Document.Styles.Add(grp);
                 this._parsedGroup = grp;
+
             }
         }
 
-        protected virtual void AddCssStyles(PDFStyleCollection collection, string content)
+        private bool ShouldAddStyles(OutputFormat format)
         {
+            //If we have a media value and it's not for this format, then we don't add them
+            if (null != Media && this.Media.IsMatchedTo(format) == false)
+                return false;
+            //If we have a relationship value and it's not a stylesheet, then we don't add them
+            if (!string.IsNullOrEmpty(this.Relationship) && this.Relationship.Equals("stylesheet", StringComparison.OrdinalIgnoreCase) == false)
+                return false;
+
+            if (!this.Visible)
+                return false;
+
+            if (null == this.Styles)
+                return false;
+
+            return true;
+        }
+
+        protected virtual void AddCssStyles(StyleCollection collection, string content)
+        {
+            bool parseCss = true;
+
             if(!string.IsNullOrEmpty(this.Relationship))
             {
                 if (this.Relationship.Equals("stylesheet", StringComparison.OrdinalIgnoreCase) == false)
-                    return;
+                    parseCss = false;
             }
 
-            if(!string.IsNullOrEmpty(this.Media))
+            
+
+            if (parseCss)
             {
-                if (this.Media == "all" || this.Media.StartsWith("all "))
-                    ;
-                else if (this.Media == "print" || this.Media.StartsWith("print "))
-                    ;
-                else
-                    return;
+                var parser = new Scryber.Styles.Parsing.CSSStyleParser(content);
+                foreach (var style in parser)
+                {
+                    if (null != style)
+                        collection.Add(style);
+                }
             }
-
-            var parser = new Scryber.Styles.Parsing.CSSStyleParser(content);
-            foreach (var style in parser)
-            {
-                if (null != style)
-                    collection.Add(style);
-            }
-
         }
 
 

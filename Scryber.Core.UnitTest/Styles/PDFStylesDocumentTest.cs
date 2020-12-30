@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStylesDocumentConstructorTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             Assert.IsNotNull(target);
             
         }
@@ -87,7 +87,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void PDFStylesDocumentConstructorTest1()
         {
             PDFObjectType type = (PDFObjectType)"0000";
-            PDFStylesDocument target = new PDFStylesDocument(type);
+            StylesDocument target = new StylesDocument(type);
             Assert.AreEqual(type, target.Type);
         }
 
@@ -99,7 +99,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void DisposeTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument(); 
+            StylesDocument target = new StylesDocument(); 
             target.Dispose();
             //Just make sure it doesn't throw an exception
         }
@@ -119,7 +119,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void InitTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument(); // TODO: Initialize to an appropriate value
+            StylesDocument target = new StylesDocument(); // TODO: Initialize to an appropriate value
             PDFInitContext context = new PDFInitContext(new PDFItemCollection(null), 
                 new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
             target.Initialized += target_Initialized;
@@ -142,7 +142,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Relative file path
             
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             string path = @"..\Images\MyImage.png";
             char separator = System.IO.Path.DirectorySeparatorChar;
             string root = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -209,7 +209,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             // web url test
 
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             target.LoadedSource = @"http://www.scryber.co.uk/Documents/PDFs/MyStyles.psfx";
             string source = @"/Documents/Images/MyImage.png";
             bool isfile = false;
@@ -233,25 +233,25 @@ namespace Scryber.Core.UnitTests.Styles
 
         }
 
-        private void InitStylesDocument(PDFStylesDocument target)
+        private void InitStylesDocument(StylesDocument target)
         {
-            PDFStyleDefn defn = new PDFStyleDefn();
+            StyleDefn defn = new StyleDefn();
             defn.AppliedType = typeof(Label);
             defn.AppliedClass = "sea";
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
-            defn.Font.FontFamily = "Helvetica";
+            defn.Font.FontFamily = (PDFFontSelector)"Helvetica";
             target.Styles.Add(defn);
 
-            PDFStyleDefn defn2 = new PDFStyleDefn();
+            StyleDefn defn2 = new StyleDefn();
             defn2.AppliedClass = "sea";
 
             defn2.Border.Color = PDFColors.Gray;
             defn2.Columns.ColumnCount = 3;
             target.Styles.Add(defn2);
 
-            PDFStyleDefn defn3 = new PDFStyleDefn();
+            StyleDefn defn3 = new StyleDefn();
             defn3.AppliedClass = "other";
             defn3.Border.Width = 20;
             defn3.Stroke.Color = PDFColors.Aqua;
@@ -267,20 +267,20 @@ namespace Scryber.Core.UnitTests.Styles
         public void MergeIntoTest()
         {
             string classname = "sea";
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
 
             // same class, same type = applied
-            PDFStyleDefn defn = new PDFStyleDefn();
+            StyleDefn defn = new StyleDefn();
             defn.AppliedType = typeof(Label);
             defn.AppliedClass = classname;
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
-            defn.Font.FontFamily = "Helvetica";
+            defn.Font.FontFamily = (PDFFontSelector)"Helvetica";
             target.Styles.Add(defn);
 
             // same class no type = applied (lower priority)
-            PDFStyleDefn defn2 = new PDFStyleDefn();
+            StyleDefn defn2 = new StyleDefn();
             defn2.AppliedClass = classname;
 
             defn2.Border.Color = PDFColors.Gray;
@@ -288,23 +288,23 @@ namespace Scryber.Core.UnitTests.Styles
             target.Styles.Add(defn2);
 
             // different class = not applied
-            PDFStyleDefn defn3 = new PDFStyleDefn();
+            StyleDefn defn3 = new StyleDefn();
             defn3.AppliedClass = "other";
             defn3.Border.Width = 20;
             defn3.Stroke.Color = PDFColors.Aqua;
             target.Styles.Add(defn3);
 
             //same class but different type = not applied
-            PDFStyleDefn defn4 = new PDFStyleDefn();
+            StyleDefn defn4 = new StyleDefn();
             defn4.AppliedClass = classname;
             defn4.AppliedType = typeof(Image);
-            defn4.Font.FontFamily = "Symbol";
+            defn4.Font.FontFamily = (PDFFontSelector)"Symbol";
             target.Styles.Add(defn4);
 
 
             
 
-            PDFStyle actual = new PDFStyle();
+            Style actual = new Style();
             Label lbl = new Label();
             lbl.StyleClass = classname;
             target.MergeInto(actual, lbl, ComponentState.Normal);
@@ -313,7 +313,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(PDFColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
             Assert.AreEqual((PDFUnit)10, actual.Border.Width); // from defn
             Assert.AreEqual(3, actual.Columns.ColumnCount); //from defn2 
-            Assert.AreEqual("Helvetica", actual.Font.FontFamily);
+            Assert.AreEqual((PDFFontSelector)"Helvetica", actual.Font.FontFamily);
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void DocumentTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             Document root = new Document();
             root.Styles.Add(target);
 
@@ -339,7 +339,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void IDTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             string expected = "MyStylesDocument";
             string actual;
             target.ID = expected;
@@ -355,7 +355,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void LoadedSourceTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             string expected = @"C:\Documents\PDFs\MyStyles.psfx";
             string actual;
             target.LoadedSource = expected;
@@ -370,7 +370,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void ParentTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument();
+            StylesDocument target = new StylesDocument();
             Document expected = new Document();
             expected.Styles.Add(target);
             target.Parent = expected;
@@ -387,15 +387,15 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void StylesTest()
         {
-            PDFStylesDocument target = new PDFStylesDocument();
-            PDFStyleCollection expected = target.Styles;
+            StylesDocument target = new StylesDocument();
+            StyleCollection expected = target.Styles;
             Assert.IsNotNull(expected, "Styles collection is not initialized");
             Assert.AreEqual(target, expected.Owner, "Check the owner is set");
 
-            expected = new PDFStyleCollection();
+            expected = new StyleCollection();
             target.Styles = expected;
 
-            PDFStyleCollection actual = target.Styles;
+            StyleCollection actual = target.Styles;
             Assert.AreEqual(expected, actual);
             Assert.AreEqual(actual.Owner, target, "Check the owner is reset");
            

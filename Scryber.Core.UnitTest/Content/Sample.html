@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
 
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'
                 xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
@@ -42,7 +43,7 @@
     <link rel="stylesheet" href="..\Content\Include.css" media="print" />
 
 </head>
-<body title="Outer">
+<body class="grey" title="Outer">
     <p class='highlight' style="margin-top:0px" >This is the body</p>
     <div style="margin:30px" title="Inner">
         <img src='Toroid24.jpg' alt='Just a toroid' style='width:200px;' hidden="hidden" />
@@ -81,6 +82,13 @@
                 </tr>
             </tfoot>
         </table>
+        <div class="reverse">And this is reversed text and content with &ldquo;entity references&rdquo;</div>
+        <div class="entities">
+            And these are some entitiy characters<br/>
+            &acirc;<br />
+            &#x21CF;<br />
+            &Aacute;<br />
+        </div>
     </div>
 </body>
 </html>

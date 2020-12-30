@@ -16,9 +16,9 @@ namespace Scryber
 
         public Component Component { get; private set; }
 
-        public Styles.PDFStyle AnnotationStyle { get; private set; }
+        public Styles.Style AnnotationStyle { get; private set; }
 
-        public PDFAnnotationLinkEntry(Component component, Styles.PDFStyle style)
+        public PDFAnnotationLinkEntry(Component component, Styles.Style style)
         {
             this.Component = component;
             if (null == component)
@@ -72,13 +72,13 @@ namespace Scryber
                 writer.WriteDictionaryStringEntry("NM", name);
 
                 //Draw the border
-                PDFStyleValue<LineStyle> lstyle;
+                StyleValue<LineType> lstyle;
 
-                if (this.AnnotationStyle != null && this.AnnotationStyle.TryGetValue(PDFStyleKeys.BorderStyleKey, out lstyle) && lstyle != null && lstyle.Value != LineStyle.None)
+                if (this.AnnotationStyle != null && this.AnnotationStyle.TryGetValue(StyleKeys.BorderStyleKey, out lstyle) && lstyle != null && lstyle.Value != LineType.None)
                 {
-                    PDFUnit corner = this.AnnotationStyle.GetValue(PDFStyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
-                    PDFUnit width = this.AnnotationStyle.GetValue(PDFStyleKeys.BorderWidthKey, (PDFUnit)1);
-                    PDFColor c = this.AnnotationStyle.GetValue(PDFStyleKeys.BorderColorKey, PDFColors.Transparent);
+                    PDFUnit corner = this.AnnotationStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
+                    PDFUnit width = this.AnnotationStyle.GetValue(StyleKeys.BorderWidthKey, (PDFUnit)1);
+                    PDFColor c = this.AnnotationStyle.GetValue(StyleKeys.BorderColorKey, PDFColors.Transparent);
 
                     if (c != null && width > 0)
                     {

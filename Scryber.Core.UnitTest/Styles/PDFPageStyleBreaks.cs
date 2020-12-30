@@ -56,8 +56,8 @@ namespace Scryber.Core.UnitTests.Styles
             using(var ms = new System.IO.StringReader(src))
             {
                 var doc = Document.ParseDocument(ms, ParseSourceType.DynamicContent);
-
-                doc.SaveAsPDF("C:\\Temp\\PagedDoc.pdf", System.IO.FileMode.Create);
+                using (var stream = DocStreams.GetOutputStream("PageBreaksInline.pdf"))
+                    doc.SaveAsPDF(stream);
 
                 var arrange = doc.Pages[0].GetFirstArrangement() as PDFComponentMultiArrangement;
                 Assert.IsNotNull(arrange, "The page arrangement should be a multi page arrangement");
@@ -126,7 +126,8 @@ namespace Scryber.Core.UnitTests.Styles
             {
                 var doc = Document.ParseDocument(ms, ParseSourceType.DynamicContent);
 
-                doc.SaveAsPDF("C:\\Temp\\PagedDoc.pdf", System.IO.FileMode.Create);
+                using (var stream = DocStreams.GetOutputStream("PageBreaksCSS.pdf"))
+                    doc.SaveAsPDF(stream);
 
                 var arrange = doc.Pages[0].GetFirstArrangement() as PDFComponentMultiArrangement;
                 Assert.IsNotNull(arrange, "The page arrangement should be a multi page arrangement");

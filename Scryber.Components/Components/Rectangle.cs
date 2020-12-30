@@ -44,9 +44,9 @@ namespace Scryber.Components
             this.DefaultRotation = 0;
         }
 
-        protected override PDFPoint[] GetPoints(PDFRect bounds, PDFStyle style)
+        protected override PDFPoint[] GetPoints(PDFRect bounds, Style style)
         {
-            double angle = style.GetValue(PDFStyleKeys.ShapeRotationKey, this.DefaultRotation);
+            double angle = style.GetValue(StyleKeys.ShapeRotationKey, this.DefaultRotation);
             double x = bounds.Width.PointsValue / 2;
             double y = bounds.Height.PointsValue / 2;
             PDFPoint[] all = new PDFPoint[4];

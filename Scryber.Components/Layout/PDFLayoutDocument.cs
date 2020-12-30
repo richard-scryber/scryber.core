@@ -135,7 +135,7 @@ namespace Scryber.Layout
         /// Creates a new PDFLayoutDocument
         /// </summary>
         public PDFLayoutDocument(Document doc, IPDFLayoutEngine engine)
-            : base(null, doc, engine, new PDFStyle())
+            : base(null, doc, engine, new Style())
         {
             AllPages = new PDFLayoutPageCollection();
             CurrentPageIndex = -1;
@@ -170,7 +170,7 @@ namespace Scryber.Layout
                 pg.Close();
 
             PDFSize size = pg.Size;
-            PDFStyle style = pg.FullStyle;
+            Style style = pg.FullStyle;
             Page owner = pg.Owner as Page;
             OverflowAction overflow = pg.OverflowAction;
 
@@ -188,7 +188,7 @@ namespace Scryber.Layout
         /// <param name="size">The actual size of the page</param>
         /// <param name="full">The full style of the page</param>
         /// <returns></returns>
-        public PDFLayoutPage BeginNewPage(PageBase owner, IPDFLayoutEngine engine, PDFStyle full, OverflowAction action)
+        public PDFLayoutPage BeginNewPage(PageBase owner, IPDFLayoutEngine engine, Style full, OverflowAction action)
         {
             int pgIndex = this.AllPages.Count;
             PDFLayoutPage pg = CreateNewPageInstance(owner, engine, full, action, pgIndex);
@@ -199,7 +199,7 @@ namespace Scryber.Layout
             return pg;
         }
 
-        protected virtual PDFLayoutPage CreateNewPageInstance(PageBase owner, IPDFLayoutEngine engine, PDFStyle full, OverflowAction action, int pageIndex)
+        protected virtual PDFLayoutPage CreateNewPageInstance(PageBase owner, IPDFLayoutEngine engine, Style full, OverflowAction action, int pageIndex)
         {
             PDFLayoutPage pg = new PDFLayoutPage(this, owner, engine, full, action);
             pg.PageIndex = pageIndex;
@@ -812,7 +812,7 @@ namespace Scryber.Layout
         // cached styles based on identifier strings
         //
 
-        private Dictionary<string, PDFStyle[]> _documentcache = new Dictionary<string, PDFStyle[]>();
+        private Dictionary<string, Style[]> _documentcache = new Dictionary<string, Style[]>();
 
         private const int AppliedIndex = 0;
         private const int FullIndex = 1;
@@ -828,9 +828,9 @@ namespace Scryber.Layout
         /// <param name="foundApplied"></param>
         /// <param name="foundFull"></param>
         /// <returns></returns>
-        public bool TryGetStyleWithIdentifier(string identifier, out PDFStyle foundApplied, out PDFStyle foundFull)
+        public bool TryGetStyleWithIdentifier(string identifier, out Style foundApplied, out Style foundFull)
         {
-            PDFStyle[] both;
+            Style[] both;
             if (_documentcache.Count > 0 && _documentcache.TryGetValue(identifier, out both))
             {
                 foundApplied = both[AppliedIndex];
@@ -855,7 +855,7 @@ namespace Scryber.Layout
         /// <param name="identifier"></param>
         /// <param name="applied"></param>
         /// <param name="full"></param>
-        public void SetStyleWithIdentifier(string identifier, PDFStyle applied, PDFStyle full)
+        public void SetStyleWithIdentifier(string identifier, Style applied, Style full)
         {
             if (string.IsNullOrEmpty(identifier))
                 throw new ArgumentNullException("identifier");
@@ -867,7 +867,7 @@ namespace Scryber.Layout
             applied.Immutable = true;
             full.Immutable = true;
 
-            PDFStyle[] both = new PDFStyle[2];
+            Style[] both = new Style[2];
             both[AppliedIndex] = applied;
             both[FullIndex] = full;
             _documentcache[identifier] = both;

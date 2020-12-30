@@ -37,7 +37,7 @@ namespace Scryber.Html.Components
         }
 
 
-        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new Scryber.Layout.LayoutEnginePage(this, parent);
         }
@@ -46,9 +46,9 @@ namespace Scryber.Html.Components
         /// Overrides the base behaviour to add the overflow action of new page to this elements style.
         /// </summary>
         /// <returns></returns>
-        protected override Scryber.Styles.PDFStyle GetBaseStyle()
+        protected override Scryber.Styles.Style GetBaseStyle()
         {
-            Scryber.Styles.PDFStyle flat = base.GetBaseStyle();
+            Scryber.Styles.Style flat = base.GetBaseStyle();
             flat.Overflow.Action = Scryber.Drawing.OverflowAction.NewPage;
 
             return flat;

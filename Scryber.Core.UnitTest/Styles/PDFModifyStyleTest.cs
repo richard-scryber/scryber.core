@@ -71,9 +71,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Modify_ConstructorTest()
         {
-            PDFModifyPageStyle target = new PDFModifyPageStyle();
+            ModifyPageStyle target = new ModifyPageStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.ModifyPageItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.ModifyPageItemKey, target.ItemKey);
         }
 
         
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Modify_PageStartIndexTest()
         {
-            PDFModifyPageStyle target = new PDFModifyPageStyle(); 
+            ModifyPageStyle target = new ModifyPageStyle(); 
             Assert.AreEqual(0, target.PageStartIndex);
 
             target.PageStartIndex = 4;
@@ -101,7 +101,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Modify_PageCountTest()
         {
-            PDFModifyPageStyle target = new PDFModifyPageStyle();
+            ModifyPageStyle target = new ModifyPageStyle();
             Assert.AreEqual(1, target.PageCount);
 
             target.PageCount = 4;
@@ -118,7 +118,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Modify_ModificationTypeTest()
         {
-            PDFModifyPageStyle target = new PDFModifyPageStyle();
+            ModifyPageStyle target = new ModifyPageStyle();
             Assert.AreEqual(ModificationType.None, target.ModificationType);
 
             target.ModificationType = ModificationType.Append;
@@ -138,7 +138,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Modify_ContentRetentionTest()
         {
-            PDFModifyPageStyle target = new PDFModifyPageStyle();
+            ModifyPageStyle target = new ModifyPageStyle();
             Assert.AreEqual(ModifiedContentAction.OnTop, target.ContentAction);
 
             target.ContentAction = ModifiedContentAction.Replace;

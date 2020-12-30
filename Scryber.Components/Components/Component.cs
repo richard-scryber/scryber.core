@@ -52,7 +52,7 @@ namespace Scryber.Components
 
         // ivars
 
-        private PDFStyle _appliedStyle = null; //local caching for a the style information on this Component
+        private Style _appliedStyle = null; //local caching for a the style information on this Component
         private PDFComponentArrangement _arrange = null; //the arrangement from the layout
         private PDFEventList _events; //holds any registered events without needing a field for each.
 
@@ -977,7 +977,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public virtual PDFArtefactRegistrationSet RegisterLayoutArtefacts(PDFLayoutContext context, PDFStyle fullstyle)
+        public virtual PDFArtefactRegistrationSet RegisterLayoutArtefacts(PDFLayoutContext context, Style fullstyle)
         {
             PDFArtefactRegistrationSet set = new PDFArtefactRegistrationSet(context.DocumentLayout, this);
 
@@ -1013,13 +1013,13 @@ namespace Scryber.Components
             return this.HasOutline && !(this is IPDFInvisibleContainer);
         }
 
-        protected virtual void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
+        protected virtual void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
 
         }
 
 
-        public void CloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, PDFStyle fullstyle)
+        public void CloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
         {
             object outline, name;
             if (artefacts.TryGetArtefact(PDFArtefactTypes.Outlines, out outline))
@@ -1032,7 +1032,7 @@ namespace Scryber.Components
         }
 
 
-        protected virtual void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, PDFStyle fullstyle)
+        protected virtual void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
         {
             //Does nothing in base class
         }
@@ -1052,7 +1052,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="styles">The styles of the new graphics context</param>
         /// <returns>A newly instantiated graphics context</returns>
-        public PDFGraphics CreateGraphics(PDFStyleStack styles, PDFContextBase context)
+        public PDFGraphics CreateGraphics(StyleStack styles, PDFContextBase context)
         {
             return this.CreateGraphics(null, styles, context);
         }
@@ -1064,7 +1064,7 @@ namespace Scryber.Components
         /// <param name="writer">The writer used to write graphical instructions to</param>
         /// <param name="styles">The styles of the new graphics context</param>
         /// <returns>A newly instantiated graphics context</returns>
-        public virtual PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles, PDFContextBase context)
+        public virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
         {
             if (this.Parent == null)
                 throw RecordAndRaise.NullReference(Errors.InvalidCallToGetGraphicsForStructure);
@@ -1081,11 +1081,11 @@ namespace Scryber.Components
         /// Gets the Defined Style for this Component (Style Items that are to be applied directly)
         /// </summary>
         /// <returns></returns>
-        public PDFStyle GetAppliedStyle()
+        public Style GetAppliedStyle()
         {
             if (null == _appliedStyle)
             {
-                PDFStyle s = this.GetAppliedStyle(this, GetBaseStyle());
+                Style s = this.GetAppliedStyle(this, GetBaseStyle());
 
                 MergeDeclaredStyles(s);
                 _appliedStyle = s;
@@ -1097,13 +1097,13 @@ namespace Scryber.Components
         /// Merges any explictly declared styles on this component, onto the cacluated applied style
         /// </summary>
         /// <param name="applied"></param>
-        protected virtual void MergeDeclaredStyles(PDFStyle applied)
+        protected virtual void MergeDeclaredStyles(Style applied)
         {
             if (this is IPDFStyledComponent)
             {
                 IPDFStyledComponent styledComponent = this as IPDFStyledComponent;
                 if (styledComponent.HasStyle)
-                    styledComponent.Style.MergeInto(applied, PDFStyle.DirectStylePriority);
+                    styledComponent.Style.MergeInto(applied, Style.DirectStylePriority);
             }
         }
 
@@ -1111,9 +1111,9 @@ namespace Scryber.Components
         /// Gets the base style for this component. Any styles that would be applied if no explict user styles override. Default is empty
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFStyle GetBaseStyle()
+        protected virtual Style GetBaseStyle()
         {
-            return new PDFStyle();
+            return new Style();
         }
 
         /// <summary>
@@ -1122,7 +1122,7 @@ namespace Scryber.Components
         /// <param name="forComponent">The Component to get the style for</param>
         /// <param name="baseStyle"></param>
         /// <returns>The merged style</returns>
-        public virtual PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
+        public virtual Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
             if (this.Parent != null)
                 return this.Parent.GetAppliedStyle(forComponent, baseStyle);
@@ -1331,7 +1331,7 @@ namespace Scryber.Components
         #region public void SetArrangement(PDFComponentArrangement arrange) + GetArrangement() + ClearArrangement()
 
 
-        public void SetArrangement(PDFRenderContext context, PDFStyle style, PDFRect contentBounds)
+        public void SetArrangement(PDFRenderContext context, Style style, PDFRect contentBounds)
         {
             PDFComponentMultiArrangement arrange = new PDFComponentMultiArrangement();
             arrange.PageIndex = context.PageIndex;

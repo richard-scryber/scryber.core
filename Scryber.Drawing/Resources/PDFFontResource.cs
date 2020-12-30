@@ -212,14 +212,7 @@ namespace Scryber.Resources
         /// <remarks>Should only be called once for any document as the underlying resource holds any indirect object reference.</remarks>
         protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
         {
-
-            if (this.Definition.IsUnicode)
-            {
-                string subsetName = PDFFontDescriptor.CreateSubset();
-                return this.Definition.RenderCompositeFont(subsetName, this.Widths, context, writer);
-            }
-            else
-                return this.Definition.RenderAnsiFont(this.Name.Value, this.Widths, context, writer);
+            return this.Definition.RenderToPDF(this.Name.Value, this.Widths, context, writer);
         }
 
         #endregion

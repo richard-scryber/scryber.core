@@ -24,14 +24,14 @@ namespace Scryber.Data
         /// <summary>
         /// Gets or sets the format to use to convert the number value to a string
         /// </summary>
-        [PDFAttribute("date-format", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("date-format", Scryber.Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Date Format", Category = "General", Priority = 5, Type = "DateFormat")]
         public string DateFormat
         {
             get
             {
-                PDFStyleValue<string> style;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.TextDateFormatKey, out style))
+                StyleValue<string> style;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextDateFormatKey, out style))
                     return style.Value;
                 else
                     return string.Empty;

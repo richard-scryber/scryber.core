@@ -246,7 +246,7 @@ namespace Scryber.Data
             context.NamespaceResolver = lastResolver;
         }
 
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle fullstyle)
+        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
             return new Scryber.Layout.LayoutEnginePanel(this, parent);
         }

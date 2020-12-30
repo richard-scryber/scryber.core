@@ -49,7 +49,7 @@ namespace Scryber
         /// <summary>
         /// Gets the output format for the document
         /// </summary>
-        public PDFOutputFormatting OutputFormat
+        public PDFOutputFormatting Formatting
         {
             get { return _format; }
         }
@@ -69,8 +69,8 @@ namespace Scryber
 
         #endregion
 
-        public PDFLayoutContext(PDFStyle style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
-            : base(new PDFStyleStack(style), items, log, perfmon)
+        public PDFLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
+            : base(new StyleStack(style), items, log, perfmon)
         {
             this._format = format;
             

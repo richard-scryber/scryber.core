@@ -15,7 +15,7 @@ namespace Scryber.Html.Components
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
         [PDFAttribute("style")]
-        public override PDFStyle Style { get => base.Style; set => base.Style = value; }
+        public override Style Style { get => base.Style; set => base.Style = value; }
 
 
         /// <summary>
@@ -57,6 +57,16 @@ namespace Scryber.Html.Components
         public override string MapPath(string path)
         {
             return base.MapPath(path);
+        }
+
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Fill.Color = Scryber.Drawing.PDFColors.Blue;
+            style.Text.Decoration = Text.TextDecoration.Underline;
+
+            return style;
         }
     }
 }

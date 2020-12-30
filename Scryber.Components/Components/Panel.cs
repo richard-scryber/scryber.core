@@ -60,14 +60,14 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the overflow action for this panel
         /// </summary>
-        [PDFAttribute("overflow-action", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("overflow-action", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable(Ignore = true)]
         public OverflowAction OverflowAction
         {
             get
             {
-                PDFStyleValue<OverflowAction> action;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.OverflowActionKey,out action))
+                StyleValue<OverflowAction> action;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.OverflowActionKey,out action))
                 {
                     return action.Value;
                 }
@@ -76,7 +76,7 @@ namespace Scryber.Components
             }
             set
             {
-                this.Style.SetValue(PDFStyleKeys.OverflowActionKey, value);
+                this.Style.SetValue(StyleKeys.OverflowActionKey, value);
             }
         }
 
@@ -87,7 +87,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the inset of the clipping rectangle in relation to the panel contents
         /// </summary>
-        [PDFAttribute("clipping-inset", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("clipping-inset", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable(Ignore = true)]
         public PDFThickness ClippingInset
         {
@@ -126,9 +126,9 @@ namespace Scryber.Components
         /// Overrides the base style to set the position mode as a block
         /// </summary>
         /// <returns></returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Position.PositionMode = Drawing.PositionMode.Block;
             return style;
         }
@@ -136,12 +136,12 @@ namespace Scryber.Components
 
         #region IPDFViewPortComponent Members
 
-        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return this.CreateLayoutEngine(parent, context, style);
         }
 
-        protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new Layout.LayoutEnginePanel(this, parent);
         }

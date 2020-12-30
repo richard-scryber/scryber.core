@@ -8,7 +8,7 @@ using Scryber.Drawing;
 
 namespace Scryber
 {
-    internal class PDFTraceLogStyles : PDFStylesDocument
+    internal class PDFTraceLogStyles : StylesDocument
     {
 
         public PDFTraceLogStyles()
@@ -23,26 +23,26 @@ namespace Scryber
 
         private void InitTraceLogStyles()
         {
-            PDFStyleDefn traceSect = new PDFStyleDefn() { AppliedType = typeof(Section) };
+            StyleDefn traceSect = new StyleDefn() { AppliedType = typeof(Section) };
             traceSect.Margins.All = 10;
             traceSect.PageStyle.PaperSize = PaperSize.A4;
-            traceSect.Font.FontFamily = "Helvetica";
+            traceSect.Font.FontFamily = (PDFFontSelector)"Helvetica";
             this.Styles.Add(traceSect);
 
-            PDFStyleDefn h1 = new PDFStyleDefn() { AppliedType = typeof(Head1) };
+            StyleDefn h1 = new StyleDefn() { AppliedType = typeof(Head1) };
             h1.Background.Color = new PDFColor(0.6);
             h1.Size.FullWidth = true;
             h1.Fill.Color = PDFColors.White;
             h1.Padding.All = 5;
             this.Styles.Add(h1);
 
-            PDFStyleDefn h3 = new PDFStyleDefn() { AppliedType = typeof(Head3) };
+            StyleDefn h3 = new StyleDefn() { AppliedType = typeof(Head3) };
             h3.Background.Color = new PDFColor(0.9);
             h3.Size.FullWidth = true;
             h3.Padding.All = 5;
             this.Styles.Add(h3);
 
-            PDFStyleDefn tbl = new PDFStyleDefn() { AppliedType = typeof(TableGrid)};
+            StyleDefn tbl = new StyleDefn() { AppliedType = typeof(TableGrid)};
             tbl.Size.FullWidth = true;
             tbl.Margins.All = 10;
             tbl.Font.FontSize = 10;
@@ -52,7 +52,7 @@ namespace Scryber
 
             //general cell
 
-            PDFStyleDefn tcell = new PDFStyleDefn()
+            StyleDefn tcell = new StyleDefn()
             {
                 AppliedType = typeof(TableCell)
             };
@@ -61,14 +61,14 @@ namespace Scryber
             tcell.Padding.All = 2;
             this.Styles.Add(tcell);
 
-            PDFStyleDefn tcellhead = new PDFStyleDefn()
+            StyleDefn tcellhead = new StyleDefn()
             {
                 AppliedType = typeof(TableHeaderCell)
             };
             tcellhead.Font.FontBold = true;
             this.Styles.Add(tcellhead);
 
-            PDFStyleDefn tcellnum = new PDFStyleDefn()
+            StyleDefn tcellnum = new StyleDefn()
             {
                 AppliedType = typeof(TableCell),
                 AppliedClass = "number"
@@ -79,21 +79,21 @@ namespace Scryber
 
             //log level styles
 
-            PDFStyleDefn logGrid = new PDFStyleDefn()
+            StyleDefn logGrid = new StyleDefn()
             {
                 AppliedClass = "log-grid"
             };
             logGrid.Font.FontSize = 9;
             this.Styles.Add(logGrid);
 
-            PDFStyleDefn logMsg = new PDFStyleDefn()
+            StyleDefn logMsg = new StyleDefn()
             {
                 AppliedClass = "Message"
             };
             logMsg.Fill.Color = PDFColors.Green;
             this.Styles.Add(logMsg);
 
-            PDFStyleDefn logErr = new PDFStyleDefn()
+            StyleDefn logErr = new StyleDefn()
             {
                 AppliedClass = "Error"
             };
@@ -101,21 +101,21 @@ namespace Scryber
             logErr.Background.Color = PDFColors.Red;
             this.Styles.Add(logErr);
 
-            PDFStyleDefn logWarn = new PDFStyleDefn()
+            StyleDefn logWarn = new StyleDefn()
             {
                 AppliedClass = "Warning"
             };
             logWarn.Fill.Color = PDFColors.Red;
             this.Styles.Add(logWarn);
 
-            PDFStyleDefn logVerb = new PDFStyleDefn()
+            StyleDefn logVerb = new StyleDefn()
             {
                 AppliedClass = "Verbose"
             };
             logVerb.Fill.Color = PDFColors.Black;
             this.Styles.Add(logVerb);
 
-            PDFStyleDefn logDebug = new PDFStyleDefn()
+            StyleDefn logDebug = new StyleDefn()
             {
                 AppliedClass = "Debug"
             };

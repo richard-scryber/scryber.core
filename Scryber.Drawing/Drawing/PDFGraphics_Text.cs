@@ -492,8 +492,6 @@ namespace Scryber.Drawing
             }
             else
             {
-                
-
                 string glyphs = this.CurrentFontResource.Widths.RegisterGlyphs(chars);
                 //this.CurrentFontResource.Widths.RegisterGlyphs(_stringCache, 0, _stringCache.Length);
                 this.Writer.WriteStringLiteralS(glyphs, this.CurrentFontResource.Encoding);

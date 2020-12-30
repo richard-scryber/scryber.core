@@ -131,7 +131,7 @@ namespace Scryber.Styles.Parsing
 
         public bool MoveToNextValue()
         {
-            return ReadNextValue(' ', ';');
+            return ReadNextValue(';');
         }
 
         public bool MoveToNextAttribute()
@@ -182,7 +182,7 @@ namespace Scryber.Styles.Parsing
 
         public bool ReadNextValue()
         {
-            return ReadNextValue(';');
+            return ReadNextValue(' ',';');
         }
 
         public bool ReadNextValue(char separator)

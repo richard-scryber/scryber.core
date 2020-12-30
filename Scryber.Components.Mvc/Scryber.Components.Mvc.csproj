@@ -1,47 +1,79 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>1.0.0.25</PackageVersion>
+    <PackageVersion>1.0.1-alpha</PackageVersion>
+    <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
 
 Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML Templates and code, including styles, binding and component references. 
 Written entirely in C# for the dotnet core framework, without reliance on 3rd party tools or command line libraries.</Description>
     <Copyright>Richard Hewitson 2020</Copyright>
+    <License>LICENSE.md</License>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>v1.0.0.25
------------------
+    <PackageReleaseNotes>1.0.1-alpha
 
-Updated support for html and markdown
+      Significant updates to the Components namespace (removing the PDF prefix); support for the match='' style attribute; prioritizing style application based on selectors and complexity; direct parsing of XHTML; and support for styles based page breaking. With updated unit tests
 
-v1.0.0.24
------------------
+      v1.0.0.25
+      -----------------
 
-Release package for Nuget
-Updated support for missing images
-Added read me
-Updated for the page numbering fallback
-Updated for the code Page Numbering display format
-Updated for the Caching Provider, and the pages style
- Forcing the update to the PDFTemplateItemValue
-Template Parameters values and Placeholder templates
-Strongly typed parameter settings.
-Updated to the latest Scryber.Core with template item controller binding.
-Updated with new features in ForEach, With, If and Choose for the Value property
-Linked to the Scryber.Core of the same version.
+      Updated support for html and markdown
 
-v1.0.0.5
-Updated for of the Core library with atomatic inclusion of the http namespace references, and also added the model extension methods</PackageReleaseNotes>
+      v1.0.0.24
+      -----------------
+
+      Release package for Nuget
+      Updated support for missing images
+      Added read me
+      Updated for the page numbering fallback
+      Updated for the code Page Numbering display format
+      Updated for the Caching Provider, and the pages style
+      Forcing the update to the PDFTemplateItemValue
+      Template Parameters values and Placeholder templates
+      Strongly typed parameter settings.
+      Updated to the latest Scryber.Core with template item controller binding.
+      Updated with new features in ForEach, With, If and Choose for the Value property
+      Linked to the Scryber.Core of the same version.
+
+      v1.0.0.5
+            Significant updates to the Components namespace (removing the PDF prefix); support for the match='' style attribute; prioritizing style application based on selectors and complexity; direct parsing of XHTML; and support for styles based page breaking. With updated unit tests
+
+      v1.0.0.25
+      -----------------
+
+      Updated support for html and markdown
+
+      v1.0.0.24
+      -----------------
+
+      Release package for Nuget
+      Updated support for missing images
+      Added read me
+      Updated for the page numbering fallback
+      Updated for the code Page Numbering display format
+      Updated for the Caching Provider, and the pages style
+      Forcing the update to the PDFTemplateItemValue
+      Template Parameters values and Placeholder templates
+      Strongly typed parameter settings.
+      Updated to the latest Scryber.Core with template item controller binding.
+      Updated with new features in ForEach, With, If and Choose for the Value property
+      Linked to the Scryber.Core of the same version.
+      v1.0.0.5
+      Updated for of the Core library with atomatic inclusion of the http namespace references, and also added the model extension methods</PackageReleaseNotes>
     <Summary>The MVC extensions for the Scryber PDF creation library</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; MVC</PackageTags>
+    <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF</PackageTags>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
     <Title>Scryber MVC Extensions</Title>
-    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,12 +82,16 @@ Updated for of the Core library with atomatic inclusion of the http namespace re
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scryber.Core" Version="1.0.0.25" />
+    <PackageReference Include="Scryber.Core" Version="1.0.1-alpha" />
   </ItemGroup>
       
   <ItemGroup>
     <None Include="readme.txt" pack="true">
       <IncludeInPackage>true</IncludeInPackage>
+    </None>
+    <None Include="..\ScyberLogo2_alpha_small.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
     

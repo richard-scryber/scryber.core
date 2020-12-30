@@ -69,9 +69,9 @@ namespace Scryber.Core.UnitTests.Styles
         /// Creates a new style with the Background and 
         /// </summary>
         /// <returns></returns>
-        internal virtual PDFStyleDefn CreatePDFStyleBase()
+        internal virtual StyleDefn CreatePDFStyleBase()
         {
-            PDFStyleDefn style = new PDFStyleDefn();
+            StyleDefn style = new StyleDefn();
             style.AppliedClass = "sea";
             style.AppliedID = "mylabel";
             style.AppliedType = typeof(Components.Label);
@@ -85,12 +85,12 @@ namespace Scryber.Core.UnitTests.Styles
             return style;
         }
 
-        private PDFStyleDefn CreateAlternateStyle()
+        private StyleDefn CreateAlternateStyle()
         {
-            PDFStyleDefn style = new PDFStyleDefn();
+            StyleDefn style = new StyleDefn();
             style.Padding.All = 10;
             style.Background.Color = Scryber.Drawing.PDFColors.Yellow;
-            style.Background.FillStyle = Scryber.Drawing.FillStyle.Pattern;
+            style.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             return style;
         }
 
@@ -108,7 +108,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void DataBindTest()
         {
-            PDFStyle target = CreatePDFStyleBase();
+            Style target = CreatePDFStyleBase();
             PDFDataContext context = new PDFDataContext(new PDFItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true));
 
             bg_bound = false;
@@ -164,8 +164,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            PDFStyleDefn target = CreatePDFStyleBase();
-            PDFStyleDefn style = CreateAlternateStyle();
+            StyleDefn target = CreatePDFStyleBase();
+            StyleDefn style = CreateAlternateStyle();
 
             //
             // label with matching class name - should be merged
@@ -181,8 +181,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); // part of style
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.PDFColors.Aqua); // should have been replaced by targets color
-            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillStyle.Pattern); //from the target - not replaced by the change of color
-            Assert.IsTrue(style.IsValueDefined(PDFStyleKeys.BorderColorKey));
+            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern); //from the target - not replaced by the change of color
+            Assert.IsTrue(style.IsValueDefined(StyleKeys.BorderColorKey));
             Assert.AreEqual(style.Border.Width, (Scryber.Drawing.PDFUnit)4); //from the target - not originally in style
             Assert.AreEqual(style.Border.Color, Scryber.Drawing.PDFColors.Blue); //from the target - not originally in style
 
@@ -196,8 +196,8 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, lbl, state);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); 
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.PDFColors.Yellow); 
-            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillStyle.Pattern);
-            Assert.IsFalse(style.IsValueDefined(PDFStyleKeys.BorderColorKey));
+            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
+            Assert.IsFalse(style.IsValueDefined(StyleKeys.BorderColorKey));
 
             //Different ID so should not be merged.
             
@@ -210,8 +210,8 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, lbl, state);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); 
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.PDFColors.Yellow);
-            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillStyle.Pattern);
-            Assert.IsFalse(style.IsValueDefined(PDFStyleKeys.BorderColorKey));
+            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
+            Assert.IsFalse(style.IsValueDefined(StyleKeys.BorderColorKey));
 
             // different type
 
@@ -221,8 +221,8 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, img, state);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10);
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.PDFColors.Yellow);
-            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillStyle.Pattern);
-            Assert.IsFalse(style.IsValueDefined(PDFStyleKeys.BorderColorKey));
+            Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
+            Assert.IsFalse(style.IsValueDefined(StyleKeys.BorderColorKey));
         }
     }
 }

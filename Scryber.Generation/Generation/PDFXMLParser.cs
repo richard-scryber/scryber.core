@@ -188,7 +188,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IPDFComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = XmlReader.Create(stream, GetXmlSettings()))
+            using (XmlReader reader = new XmlHtmlEntityReader(stream, GetXmlSettings()))
             {
                 return Parse(source, reader, type);
             }
@@ -203,7 +203,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IPDFComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = XmlReader.Create(reader, GetXmlSettings()))
+            using (XmlReader xreader = new XmlHtmlEntityReader(reader, GetXmlSettings()))
             {
                 return this.Parse(source, xreader, type);
             }
@@ -233,6 +233,7 @@ namespace Scryber.Generation
 
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 
+
         /// <summary>
         /// Top level Parse method which returns the complete component that was parsed from the source.
         /// </summary>
@@ -242,6 +243,7 @@ namespace Scryber.Generation
         /// <returns></returns>
         protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
         {
+            
             IDisposable recorder;
             if (type == ParseSourceType.Template)
                 recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Templates, source);
@@ -373,8 +375,16 @@ namespace Scryber.Generation
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = false;
             settings.DtdProcessing = DtdProcessing.Ignore;
+            //settings.ValidationType = ValidationType.DTD;
+            //settings.ValidationEventHandler += Settings_ValidationEventHandler;
+            
             return settings;
         }
+
+        //private void Settings_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e)
+        //{
+        //    this.LogAdd(null, TraceLevel.Error, "DTD Not present for the entity " + e.Message);
+        //}
 
         #endregion
 
@@ -452,6 +462,8 @@ namespace Scryber.Generation
         #endregion
 
         #region private void ParseComplexComponentXml(object component, XmlReader reader, ParserClassDefinition cdef)
+
+        
 
         /// <summary>
         /// Parses the actual XML content of the reader and pushes the parsed values onto the provided object.
@@ -1521,8 +1533,14 @@ namespace Scryber.Generation
         private bool TryGetClassDefinition(XmlReader reader, out ParserClassDefinition cdef, out bool isremote)
         {
             LogAdd(reader, TraceLevel.Debug, "Looking for PDFComponent declared with local name '{0}' and namespace '{1}'", reader.LocalName, reader.NamespaceURI);
-
-            cdef = ParserDefintionFactory.GetClassDefinition(reader.LocalName, reader.NamespaceURI, false, out isremote);
+            var ns = reader.NamespaceURI;
+            if(!string.IsNullOrEmpty(ns))
+            {
+                ns = ns.Trim();
+                if (ns.EndsWith(";"))
+                    ns = ns.Substring(0, ns.Length - 1);
+            }
+            cdef = ParserDefintionFactory.GetClassDefinition(reader.LocalName, ns, false, out isremote);
 
             if (null == cdef)
             {

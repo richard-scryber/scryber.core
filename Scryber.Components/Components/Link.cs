@@ -180,7 +180,7 @@ namespace Scryber.Components
         #endregion
 
 
-        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
             base.DoRegisterArtefacts(context, set, fullstyle);
 
@@ -271,7 +271,7 @@ namespace Scryber.Components
 
         }
 
-        private object[] AddActionAnnotationToChildren(PDFLayoutContext context, Styles.PDFStyle style, PDFAction action)
+        private object[] AddActionAnnotationToChildren(PDFLayoutContext context, Styles.Style style, PDFAction action)
         {
             List<object> entries = new List<object>();
             Layout.PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
@@ -280,7 +280,7 @@ namespace Scryber.Components
             return entries.ToArray();
         }
 
-        private void FillActionAnnotations(PDFLayoutContext context, Styles.PDFStyle style,
+        private void FillActionAnnotations(PDFLayoutContext context, Styles.Style style,
                                            PDFAction action, List<object> entries, 
                                            Layout.PDFLayoutPage pg, ComponentList contents)
         {
@@ -334,7 +334,7 @@ namespace Scryber.Components
             return false;
         }
 
-        protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Styles.PDFStyle fullstyle)
+        protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Styles.Style fullstyle)
         {
             base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
 

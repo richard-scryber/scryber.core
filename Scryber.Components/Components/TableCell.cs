@@ -46,8 +46,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<int> count;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.TableCellColumnSpanKey, out count))
+                StyleValue<int> count;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TableCellColumnSpanKey, out count))
                     return count.Value;
                 else
                     return 1;
@@ -109,8 +109,8 @@ namespace Scryber.Components
         // internal build properties
         //
 
-        internal PDFStyle appliedStyle { get; set; }
-        internal PDFStyle fullStyle { get; set; }
+        internal Style appliedStyle { get; set; }
+        internal Style fullStyle { get; set; }
         internal PDFPositionOptions positionOptions { get; set; }
         internal int columnIndex { get; set; }
         internal int columnSpan { get; set; }
@@ -152,14 +152,14 @@ namespace Scryber.Components
         /// Specifically: FullWidth = true, so that each cell fills the row region it is assigned to.
         /// </summary>
         /// <returns>The populated style</returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
             style.Padding.All = (PDFUnit)4;
             style.Border.Color = new PDFColor(0.65,0.65,0.65);
-            style.Border.LineStyle = LineStyle.Solid;
+            style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (PDFUnit)1;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row
             return style;
@@ -179,7 +179,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new Layout.LayoutEnginePanel(this, parent);
         }

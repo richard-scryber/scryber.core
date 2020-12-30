@@ -293,7 +293,7 @@ namespace Scryber.Layout
         #endregion
 
 
-        public PDFLayoutInlineBegin AddInlineRunStart(IPDFLayoutEngine engine, IPDFComponent component, PDFPositionOptions options, PDFStyle full)
+        public PDFLayoutInlineBegin AddInlineRunStart(IPDFLayoutEngine engine, IPDFComponent component, PDFPositionOptions options, Style full)
         {
             PDFLayoutInlineBegin begin = new PDFLayoutInlineBegin(this, component, options, full);
             this.Runs.Add(begin);
@@ -307,7 +307,7 @@ namespace Scryber.Layout
             return end;
         }
 
-        public PDFLayoutXObject AddXObjectRun(IPDFLayoutEngine engine, IPDFComponent component, PDFLayoutRegion container, PDFPositionOptions options, PDFStyle full)
+        public PDFLayoutXObject AddXObjectRun(IPDFLayoutEngine engine, IPDFComponent component, PDFLayoutRegion container, PDFPositionOptions options, Style full)
         {
             PDFLayoutXObject xobject = new PDFLayoutXObject(this, container, component);
             this.Runs.Add(xobject);
@@ -344,7 +344,7 @@ namespace Scryber.Layout
         /// <returns>The created run</returns>
         public virtual PDFLayoutRun AddComponentRun(IPDFComponent comp, PDFRect total, PDFRect border, 
                                             PDFRect content, PDFUnit baselineOffset,
-                                            PDFPositionOptions options, PDFStyle style)
+                                            PDFPositionOptions options, Style style)
         {
             PDFLayoutComponentRun comprun = new PDFLayoutComponentRun(this, comp, style);
             this.Runs.Add(comprun);

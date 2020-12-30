@@ -52,9 +52,9 @@ namespace Scryber.Components
         /// Block quote overrides the default panel style to have Block positioning, 10pt margins all around and an italic font
         /// </summary>
         /// <returns></returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             style.Position.PositionMode = Drawing.PositionMode.Block;
             style.Margins.All = 10;
             style.Font.FontItalic = true;

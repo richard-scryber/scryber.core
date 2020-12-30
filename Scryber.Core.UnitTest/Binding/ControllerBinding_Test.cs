@@ -78,7 +78,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.IsNotNull(controller.Title);
                 
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("BindingController.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }
@@ -162,7 +162,7 @@ namespace Scryber.Core.UnitTests.Binding
                 var mockresults = controller.Results;
 
                 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("BindingControllerValidated.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }

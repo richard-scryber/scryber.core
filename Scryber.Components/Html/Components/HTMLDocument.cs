@@ -87,7 +87,7 @@ namespace Scryber.Html.Components
         public override PageList Pages { get { return base.Pages; } }
 
 
-        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
+        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
             

@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_ConstructorTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.BgItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.BgItemKey, target.ItemKey);
         }
 
 
@@ -86,8 +86,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_CreateBrushTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
-            target.FillStyle = FillStyle.Solid;
+            BackgroundStyle target = new BackgroundStyle();
+            target.FillStyle = FillType.Solid;
             target.Color = PDFColors.Red;
             PDFBrush expected = new PDFSolidBrush(PDFColors.Red);
             PDFBrush actual;
@@ -100,8 +100,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(solidexpected.Color, solidactual.Color);
             Assert.AreEqual(solidexpected.Opacity, solidactual.Opacity);
 
-            target = new PDFBackgroundStyle();
-            target.FillStyle = FillStyle.Image;
+            target = new BackgroundStyle();
+            target.FillStyle = FillType.Image;
             target.ImageSource = "../images/animage.png";
             target.PatternRepeat = PatternRepeat.RepeatBoth;
             target.PatternXPosition = 10;
@@ -132,16 +132,16 @@ namespace Scryber.Core.UnitTests.Styles
 
             target.PatternRepeat = PatternRepeat.RepeatX;
             imgactual = (PDFImageBrush)target.CreateBrush();
-            Assert.AreEqual(imgactual.YStep, PDFStyle.NoYRepeatStepSize);
+            Assert.AreEqual(imgactual.YStep, Style.NoYRepeatStepSize);
 
             target.PatternRepeat = PatternRepeat.RepeatY;
             imgactual = (PDFImageBrush)target.CreateBrush();
-            Assert.AreEqual(imgactual.XStep, PDFStyle.NoXRepeatStepSize);
+            Assert.AreEqual(imgactual.XStep, Style.NoXRepeatStepSize);
 
             target.PatternRepeat = PatternRepeat.None;
             imgactual = (PDFImageBrush)target.CreateBrush();
-            Assert.AreEqual(imgactual.YStep, PDFStyle.NoYRepeatStepSize);
-            Assert.AreEqual(imgactual.XStep, PDFStyle.NoXRepeatStepSize);
+            Assert.AreEqual(imgactual.YStep, Style.NoYRepeatStepSize);
+            Assert.AreEqual(imgactual.XStep, Style.NoXRepeatStepSize);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_ColorTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.AreEqual(target.Color, PDFColor.Transparent);
 
             target.Color = PDFColors.Red;
@@ -172,19 +172,19 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_FillStyleTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
-            Assert.AreEqual(target.FillStyle, FillStyle.None);
+            BackgroundStyle target = new BackgroundStyle();
+            Assert.AreEqual(target.FillStyle, FillType.None);
 
-            target.FillStyle = FillStyle.Solid;
-            Assert.AreEqual(target.FillStyle, FillStyle.Solid);
+            target.FillStyle = FillType.Solid;
+            Assert.AreEqual(target.FillStyle, FillType.Solid);
 
 
-            target.FillStyle = FillStyle.Image;
-            Assert.AreEqual(target.FillStyle, FillStyle.Image);
+            target.FillStyle = FillType.Image;
+            Assert.AreEqual(target.FillStyle, FillType.Image);
 
 
             target.RemoveFillStyle();
-            Assert.AreEqual(target.FillStyle, FillStyle.None);
+            Assert.AreEqual(target.FillStyle, FillType.None);
 
 
         }
@@ -196,7 +196,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_ImageSourceTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.IsTrue(string.IsNullOrEmpty(target.ImageSource));
 
             string path = "../images/image.png";
@@ -218,7 +218,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_OpacityTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.AreEqual(target.Opacity, 1.0);
 
             double opacity = 0.4;
@@ -240,7 +240,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternRepeatTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.AreEqual(target.PatternRepeat, PatternRepeat.RepeatBoth); //RepeatBoth is the current default.
 
             target.PatternRepeat = PatternRepeat.RepeatX;
@@ -261,7 +261,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternXPositionTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle(); 
+            BackgroundStyle target = new BackgroundStyle(); 
             Assert.AreEqual(target.PatternXPosition, PDFUnit.Zero);
 
             PDFUnit expected = (PDFUnit)10;
@@ -283,7 +283,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternXSizeTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle(); 
+            BackgroundStyle target = new BackgroundStyle(); 
             Assert.AreEqual(target.PatternXSize, PDFUnit.Zero);
 
             PDFUnit expected = (PDFUnit)10;
@@ -306,7 +306,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternXStepTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle(); // TODO: Initialize to an appropriate value
+            BackgroundStyle target = new BackgroundStyle(); // TODO: Initialize to an appropriate value
             Assert.AreEqual(target.PatternXStep, PDFUnit.Zero);
 
             PDFUnit expected = (PDFUnit)10;
@@ -332,7 +332,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternYPositionTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle(); 
+            BackgroundStyle target = new BackgroundStyle(); 
             Assert.AreEqual(target.PatternYPosition, PDFUnit.Zero);
 
             PDFUnit expected = (PDFUnit)10;
@@ -355,7 +355,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternYSizeTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.AreEqual(target.PatternYSize, PDFUnit.Zero);
 
             PDFUnit expected = (PDFUnit)10;
@@ -377,7 +377,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Background_PatternYStepTest()
         {
-            PDFBackgroundStyle target = new PDFBackgroundStyle();
+            BackgroundStyle target = new BackgroundStyle();
             Assert.AreEqual(target.PatternYStep, PDFUnit.Zero);
 
             PDFUnit expected = (PDFUnit)10;

@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_ConstructorTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.MarginsItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.MarginsItemKey, target.ItemKey);
         }
 
 
@@ -85,7 +85,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_TryGetThicknessTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
 
             PDFThickness actual;
             PDFThickness expected = PDFThickness.Empty();
@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_SetThicknessTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             target.All = 12;
             target.Left = 13;
             target.Right = 14;
@@ -149,7 +149,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_AllTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             Assert.AreEqual(PDFUnit.Zero, target.All);
 
             target.All = 20;
@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_BottomTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Bottom);
 
             target.Bottom = 20;
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_LeftTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Left);
 
             target.Left = 20;
@@ -220,7 +220,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_RightTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Right);
 
             target.Right = 20;
@@ -237,7 +237,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Margins_TopTest()
         {
-            PDFMarginsStyle target = new PDFMarginsStyle();
+            MarginsStyle target = new MarginsStyle();
             Assert.AreEqual(PDFUnit.Zero, target.Top);
 
             target.Top = 20;

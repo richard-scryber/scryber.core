@@ -86,9 +86,9 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LineStyle_Test()
         {
             PDFNoPen target = new PDFNoPen(); // TODO: Initialize to an appropriate value
-            LineStyle actual;
+            LineType actual;
             actual = target.LineStyle;
-            Assert.AreEqual(LineStyle.None, actual);
+            Assert.AreEqual(LineType.None, actual);
         }
     }
 }

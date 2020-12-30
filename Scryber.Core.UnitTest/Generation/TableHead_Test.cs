@@ -50,7 +50,7 @@ namespace Scryber.Core.UnitTests.Generation
             tbhead.Repeat = TableRowRepeat.None;
             tb.Rows.Add(tbhead);
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("TableHeadTest.pdf"))
             {
                 doc.SaveAsPDF(ms);
             }

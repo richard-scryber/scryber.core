@@ -74,8 +74,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleStackConstructorTest()
         {
-            PDFStyle root = new PDFStyle();
-            PDFStyleStack target = new PDFStyleStack(root);
+            Style root = new Style();
+            StyleStack target = new StyleStack(root);
             Assert.IsNotNull(target);
             Assert.IsNotNull(target.Current);
             Assert.AreEqual(root, target.Current);
@@ -88,22 +88,22 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void CloneTest()
         {
-            PDFStyle root = new PDFStyle();
-            PDFStyleStack target = new PDFStyleStack(root);
+            Style root = new Style();
+            StyleStack target = new StyleStack(root);
 
-            PDFStyle one = new PDFStyle();
+            Style one = new Style();
             target.Push(one);
 
-            PDFStyle two = new PDFStyle();
+            Style two = new Style();
             target.Push(two);
 
-            PDFStyleStack expected = target;
-            PDFStyleStack actual;
+            StyleStack expected = target;
+            StyleStack actual;
             actual = target.Clone();
 
             //pop them off in sequence
             
-            PDFStyle popped = expected.Pop();
+            Style popped = expected.Pop();
             Assert.AreEqual(popped, actual.Pop());
             
             popped = expected.Pop();
@@ -120,36 +120,36 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void GetFullStyleTest()
         {
-            PDFStyle root = new PDFStyle();
+            Style root = new Style();
             root.Background.Color = PDFColors.Red; //Not inherited
-            root.Font.FontFamily = "Symbol"; //Font is inherited
+            root.Font.FontFamily = (PDFFontSelector)"Symbol"; //Font is inherited
             root.Font.FontSize = 20; //Font is inherited
 
-            PDFStyleStack target = new PDFStyleStack(root);
+            StyleStack target = new StyleStack(root);
 
-            PDFStyle one = new PDFStyle();
-            one.Background.FillStyle = FillStyle.Pattern; //Background is not inherited
+            Style one = new Style();
+            one.Background.FillStyle = FillType.Pattern; //Background is not inherited
             one.Border.Width = 2; //Border is not inherited
             one.Font.FontSize = 48; //Font is inherited - override root
             target.Push(one);
 
             //last item will always be merged in a full style - actual, not inherited values
-            PDFStyle two = new PDFStyle();
+            Style two = new Style();
             two.Border.Color = PDFColors.Lime;
             two.Border.Width = 3;
             two.Font.FontItalic = true;
             target.Push(two);
 
             Label lbl = new Label();
-            PDFStyle actual = target.GetFullStyle(lbl);
+            Style actual = target.GetFullStyle(lbl);
 
-            Assert.AreEqual("Symbol", actual.Font.FontFamily); //inherited from root
+            Assert.AreEqual("Symbol", actual.Font.FontFamily.FamilyName); //inherited from root
             Assert.AreEqual((PDFUnit)48, actual.Font.FontSize); //inherited from one
             Assert.AreEqual((PDFUnit)3, actual.Border.Width); //border from two
             Assert.AreEqual(PDFColors.Lime, actual.Border.Color); //border from two
             Assert.AreEqual(true, actual.Font.FontItalic); //font from two
             Assert.AreEqual(PDFColor.Transparent, actual.Background.Color); //not inherited from root
-            Assert.AreEqual(FillStyle.None, actual.Background.FillStyle); //not inherited from one
+            Assert.AreEqual(FillType.None, actual.Background.FillStyle); //not inherited from one
             
         }
 
@@ -160,17 +160,17 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PopTest()
         {
-            PDFStyle root = new PDFStyle();
-            PDFStyleStack target = new PDFStyleStack(root);
+            Style root = new Style();
+            StyleStack target = new StyleStack(root);
 
-            PDFStyle one = new PDFStyle();
+            Style one = new Style();
             target.Push(one);
 
-            PDFStyle two = new PDFStyle();
+            Style two = new Style();
             target.Push(two);
 
-            PDFStyle expected = two;
-            PDFStyle actual;
+            Style expected = two;
+            Style actual;
             actual = target.Pop();
             Assert.AreEqual(expected, actual);
 
@@ -201,13 +201,13 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PushTest()
         {
-            PDFStyle root = new PDFStyle();
-            PDFStyleStack target = new PDFStyleStack(root);
+            Style root = new Style();
+            StyleStack target = new StyleStack(root);
 
-            PDFStyle one = new PDFStyle();
+            Style one = new Style();
             target.Push(one);
 
-            PDFStyle two = new PDFStyle();
+            Style two = new Style();
             target.Push(two);
 
             Assert.AreEqual(3, target.Count);
@@ -221,15 +221,15 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void CurrentTest()
         {
-            PDFStyle root = new PDFStyle();
-            PDFStyleStack target = new PDFStyleStack(root);
+            Style root = new Style();
+            StyleStack target = new StyleStack(root);
             Assert.AreEqual(root, target.Current);
 
-            PDFStyle one = new PDFStyle();
+            Style one = new Style();
             target.Push(one);
             Assert.AreEqual(one, target.Current);
 
-            PDFStyle two = new PDFStyle();
+            Style two = new Style();
             target.Push(two);
             Assert.AreEqual(two, target.Current);
 
@@ -242,15 +242,15 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void CountTest()
         {
-            PDFStyle root = new PDFStyle();
-            PDFStyleStack target = new PDFStyleStack(root);
+            Style root = new Style();
+            StyleStack target = new StyleStack(root);
             Assert.AreEqual(1, target.Count);
 
-            PDFStyle one = new PDFStyle();
+            Style one = new Style();
             target.Push(one);
             Assert.AreEqual(2, target.Count);
 
-            PDFStyle two = new PDFStyle();
+            Style two = new Style();
             target.Push(two);
             Assert.AreEqual(3, target.Count);
 

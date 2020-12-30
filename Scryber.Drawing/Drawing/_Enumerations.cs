@@ -50,7 +50,7 @@ namespace Scryber.Drawing
     /// <summary>
     /// The style of fill
     /// </summary>
-    public enum FillStyle
+    public enum FillType
     {
         None,
         Solid,
@@ -68,7 +68,7 @@ namespace Scryber.Drawing
         Right = 8
     }
 
-    public enum LineStyle
+    public enum LineType
     {
         None,
         Solid,

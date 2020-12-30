@@ -59,7 +59,7 @@ namespace Scryber.Core.UnitTests.Generation
             }
 
             parsed.LayoutComplete += DefaultFont_LayoutComplete;
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("DefaultFont.pdf"))
                 parsed.SaveAsPDF(ms);
 
         }
@@ -86,11 +86,12 @@ namespace Scryber.Core.UnitTests.Generation
 
                                     <doc:Page id='titlepage' >
                                       <Content>
-                                        <doc:Span id='mylabel' styles:font-family='Helvetica' >This is text in the Helvetica font</doc:Span>
-                                        <doc:Span id='mylabel' styles:font-family='Times' >This is text in the Times font</doc:Span>
-                                        <doc:Span id='mylabel' styles:font-family='Courier' >This is text in the Courier font</doc:Span>
-                                        <doc:Span id='mylabel' styles:font-family='Zapf Dingbats' >This is text in the Dingbats font</doc:Span>
-                                        <doc:Span id='mylabel' styles:font-family='Symbol' >This is text in the Symbol font</doc:Span>
+                                        <doc:Span id='mylabel' styles:font-family='Helvetica' >This is text in the Helvetica font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:font-family='Times' >This is text in the Times font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:font-family='Courier' >This is text in the Courier font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:font-family='Zapf Dingbats' >This is text in the Dingbats font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:font-family='Symbol' >This is text in the Symbol font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:font-family='Times' styles:font-bold='true' >This is text in the Times font that is bold</doc:Span><doc:Br/>
                                       </Content>
                                     </doc:Page>
 
@@ -104,7 +105,7 @@ namespace Scryber.Core.UnitTests.Generation
             }
 
             parsed.LayoutComplete += StandardFont_LayoutComplete;
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("StandardFont.pdf"))
                 parsed.SaveAsPDF(ms);
 
         }
@@ -118,16 +119,79 @@ namespace Scryber.Core.UnitTests.Generation
             var cour = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Courier") as Scryber.Resources.PDFFontResource;
             var zapf = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Zapf Dingbats") as Scryber.Resources.PDFFontResource;
             var sym = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Symbol") as Scryber.Resources.PDFFontResource;
+            var timesB = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Times,Bold") as Scryber.Resources.PDFFontResource;
 
             Assert.IsNotNull(hel, "Helvetica is null");
             Assert.IsNotNull(times, "Times is null");
             Assert.IsNotNull(cour, "Courier is null");
             Assert.IsNotNull(zapf, "Zapf is null");
             Assert.IsNotNull(sym, "Symbol is null");
+            Assert.IsNotNull(timesB, "Times Bold is null");
+        }
 
-          
+
+        [TestMethod()]
+        public void ValidateSelectorUse()
+        {
+            string sansFontFamily = "\"Does not exist\", Futura, Arial, sans-serif";
+            string serifFontFamily = "\"ITC Clearface\", Romana, serif ";
+
+            string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
+                                <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' ?>
+                                <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+                                              xmlns:styles='Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
+                                              id='outerdoc' >
+                                  <Styles>
+                                    <styles:Style match='doc:Span.sans' >
+                                        <styles:Font family='"+ sansFontFamily + @"'/>
+                                    </styles:Style>
+                                    <styles:Style match='doc:Span.serif' >
+                                        <styles:Font family='" + serifFontFamily + @"'/>
+                                    </styles:Style>
+                                  </Styles>
+                                  <Pages>
+
+                                    <doc:Page id='titlepage' >
+                                      <Content>
+                                        <doc:Span id='mylabel' styles:class='sans' >This is text in the Sans family font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:class='serif' >This is text in the Times font</doc:Span><doc:Br/>
+                                      </Content>
+                                    </doc:Page>
+
+                                  </Pages>
+                                </doc:Document>";
+
+            Document parsed;
+            using (System.IO.StringReader sr = new System.IO.StringReader(documentxml))
+            {
+                parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            }
+
+            parsed.LayoutComplete += SelectorFont_LayoutComplete;
+            using (var ms = DocStreams.GetOutputStream("FontSelectorChoice.pdf"))
+                parsed.SaveAsPDF(ms);
 
         }
 
+        private void SelectorFont_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            //Default font is Sans-Serif
+            var doc = args.Context.DocumentLayout.DocumentComponent;
+            
+            var sans = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Arial") as Scryber.Resources.PDFFontResource;
+            
+            if (null == sans) //Arial might not be present and if not then should fall back to the sans-serif
+                sans = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "sans-serif") as Scryber.Resources.PDFFontResource;
+
+            var serif = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "serif") as Scryber.Resources.PDFFontResource;
+
+            Assert.IsNotNull(sans, "Sans-Serif is null");
+            Assert.IsNotNull(serif, "Serif is null");
+            
+
+            
+
+
+        }
     }
 }

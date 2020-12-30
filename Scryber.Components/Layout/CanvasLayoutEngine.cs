@@ -45,12 +45,12 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="comp"></param>
         /// <param name="full"></param>
-        protected override void DoLayoutAChild(IPDFComponent comp, Styles.PDFStyle full)
+        protected override void DoLayoutAChild(IPDFComponent comp, Styles.Style full)
         {
 
             //For each child if there is not an explict Absolute setting then
             //we should treat them as relative
-            Styles.PDFPositionStyle pos = full.Position;
+            Styles.PositionStyle pos = full.Position;
             PositionMode mode = pos.PositionMode;
             
             if (mode != PositionMode.Absolute)

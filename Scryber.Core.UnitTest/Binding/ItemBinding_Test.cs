@@ -100,7 +100,7 @@ namespace Scryber.Core.UnitTests.Binding
                             <doc:Unit-Param id='unit' value='" + expectedUnit+ @"' />
                             <doc:Color-Param id='color' value='" + expectedColor + @"' />
                             <doc:Thickness-Param id='thick' value='" + expectedThickness + @"' />
-                            <doc:Enum-Param id='enum' type='Scryber.Drawing.LineStyle, Scryber.Drawing' value='" + expectedEnum + @"' />
+                            <doc:Enum-Param id='enum' type='Scryber.Drawing.LineType, Scryber.Drawing' value='" + expectedEnum + @"' />
                         </Params>
 
                         <Pages>
@@ -136,7 +136,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual(Scryber.Drawing.PDFColor.Parse(expectedColor), label.FillColor, "The Label fill colour does not match");
                 Assert.AreEqual(Scryber.Drawing.PDFUnit.Parse(expectedUnit), label.X, "The label x offsets do not match");
                 Assert.AreEqual(Scryber.Drawing.PDFThickness.Parse(expectedThickness), label.Padding, "The label paddings do not match");
-                Assert.AreEqual(Scryber.Drawing.LineStyle.Dash, label.BorderStyle, "The label border styles do not match");
+                Assert.AreEqual(Scryber.Drawing.LineType.Dash, label.BorderStyle, "The label border styles do not match");
                 Assert.AreEqual(DateTime.Parse(expectedDate), date.Value, "The date time values do not match");
                 Assert.AreEqual(expectedInt, (int)num1.Value,"The integers do not match");
                 Assert.AreEqual(expectedBool, num1.FontBold, "The bool values do not match");
@@ -200,20 +200,20 @@ namespace Scryber.Core.UnitTests.Binding
 
                 var sect = doc.Pages[0] as Section;
                 var label = sect.Contents[0] as Label;
-                var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
+                var style = doc.Styles[0] as Scryber.Styles.Style;
 
                 doc.InitializeAndLoad();
                 doc.DataBind();
 
                 Assert.AreEqual(expectedString, label.Text, "The label text does not match");
 
-                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.BgColorKey), "The background colour is not set");
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background colour is not set");
                 Assert.AreEqual(Scryber.Drawing.PDFColor.Parse(expectedColor), style.Background.Color, "The style color does not match");
 
-                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.FontBoldKey), "The font bold is not set");
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.FontBoldKey), "The font bold is not set");
                 Assert.AreEqual(expectedBool, style.Font.FontBold, "The font bolds do not match");
 
-                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.PaddingTopKey), "The padding top is not set");
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.PaddingTopKey), "The padding top is not set");
                 Assert.AreEqual(Scryber.Drawing.PDFUnit.Parse(expectedUnit), style.Padding.Top, "The padding top values do not match");
 
             }
@@ -287,8 +287,8 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
 
-                var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
-                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.BgColorKey), "The background color is not assigned");
+                var style = doc.Styles[0] as Scryber.Styles.Style;
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background color is not assigned");
                 Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color, "The background colors do not match");
             }
 
@@ -725,8 +725,8 @@ namespace Scryber.Core.UnitTests.Binding
                     {
                         TitleBg = new PDFColor(1, 0, 0),
                         TitleColor = new PDFColor(1, 1, 1),
-                        TitleFont = "Segoe UI Light",
-                        BodyFont = "Segoe UI",
+                        TitleFont = (PDFFontSelector)"Segoe UI Light",
+                        BodyFont = (PDFFontSelector)"Segoe UI",
                         BodySize = (PDFUnit)12
                     }
                 };
@@ -744,12 +744,12 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.IsNotNull(second, "Could not find the second label");
                 Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
 
-                var style = doc.Styles[0] as Scryber.Styles.PDFStyle;
-                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.PDFStyleKeys.BgColorKey), "The background color is not assigned");
+                var style = doc.Styles[0] as Scryber.Styles.Style;
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background color is not assigned");
                 Assert.AreEqual(binding.Theme.TitleBg, style.Background.Color, "The background colors do not match");
                 Assert.AreEqual(binding.Theme.TitleColor, style.Fill.Color, "The foreground colours do not match");
 
-                style = doc.Styles[1] as Scryber.Styles.PDFStyle;
+                style = doc.Styles[1] as Scryber.Styles.Style;
                 Assert.AreEqual(binding.Theme.BodyFont, style.Font.FontFamily, "Body fonts do not match");
                 Assert.AreEqual(binding.Theme.BodySize, style.Font.FontSize, "Body font sizes do not match");
 

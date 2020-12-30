@@ -36,17 +36,17 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the fill style associated with this polygon
         /// </summary>
-        [PDFAttribute("fill-style", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
-        public FillStyle FillStyle
+        [PDFAttribute("fill-style", Scryber.Styles.Style.PDFStylesNamespace)]
+        public FillType FillStyle
         {
-            get { return this.Style.Fill.FillStyle; }
-            set { this.Style.Fill.FillStyle = value; }
+            get { return this.Style.Fill.Style; }
+            set { this.Style.Fill.Style = value; }
         }
 
         /// <summary>
         /// Gets or sets the flag for if this polygon is closed or open
         /// </summary>
-        [PDFAttribute("closed", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("closed", Scryber.Styles.Style.PDFStylesNamespace)]
         public bool Closed
         {
             get { return this.Style.Shape.Closed; }
@@ -57,7 +57,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the rotation angle of the polygon
         /// </summary>
-        [PDFAttribute("rotate", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("rotate", Scryber.Styles.Style.PDFStylesNamespace)]
         public double Rotation
         {
             get { return this.Style.Shape.Rotation; }
@@ -99,7 +99,7 @@ namespace Scryber.Components
         /// <param name="available"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override PDFGraphicsPath CreatePath(PDFSize available, PDFStyle fullstyle)
+        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             PDFRect rect = this.GetPrescribedBounds(available, fullstyle);
 
@@ -118,11 +118,11 @@ namespace Scryber.Components
         /// <param name="bounds">The bounds this polygo should fit into.</param>
         /// <param name="style">The style of the polygon</param>
         /// <returns>An array of points</returns>
-        protected virtual Drawing.PDFPoint[] GetPoints(Drawing.PDFRect bounds, PDFStyle style)
+        protected virtual Drawing.PDFPoint[] GetPoints(Drawing.PDFRect bounds, Style style)
         {
 
-            int vCount = style.GetValue(PDFStyleKeys.ShapeVertexCountKey, this.DefaultShapeVetexCount);
-            double rotation = style.GetValue(PDFStyleKeys.ShapeRotationKey, 0.0);
+            int vCount = style.GetValue(StyleKeys.ShapeVertexCountKey, this.DefaultShapeVetexCount);
+            double rotation = style.GetValue(StyleKeys.ShapeRotationKey, 0.0);
 
             if (vCount > 2)
             {
@@ -154,7 +154,7 @@ namespace Scryber.Components
         /// <param name="points">The points to add lines between</param>
         /// <param name="close">Closes the path (adds an extra line back to the starting point</param>
         /// <param name="end">If true then ends the path so no more points can be added to it</param>
-        protected virtual void BuildPath(PDFGraphicsPath path, PDFPoint[] points, PDFStyle style, bool end)
+        protected virtual void BuildPath(PDFGraphicsPath path, PDFPoint[] points, Style style, bool end)
         {
             if (path.HasCurrentPath == false)
                 path.BeginPath();
@@ -167,7 +167,7 @@ namespace Scryber.Components
                     path.LineTo(points[i]);
             }
 
-            bool closed = style.GetValue(PDFStyleKeys.ShapeClosedKey, true);
+            bool closed = style.GetValue(StyleKeys.ShapeClosedKey, true);
             if (closed)
                 path.ClosePath(end);
             else if (end)
@@ -184,12 +184,12 @@ namespace Scryber.Components
         /// <param name="avail"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected virtual PDFRect GetPrescribedBounds(PDFSize avail, PDFStyle fullstyle)
+        protected virtual PDFRect GetPrescribedBounds(PDFSize avail, Style fullstyle)
         {
-            PDFUnit x = fullstyle.GetValue(PDFStyleKeys.PositionXKey, 0);
-            PDFUnit y = fullstyle.GetValue(PDFStyleKeys.PositionYKey, 0);
-            PDFUnit w = fullstyle.GetValue(PDFStyleKeys.SizeWidthKey, avail.Width);
-            PDFUnit h = fullstyle.GetValue(PDFStyleKeys.SizeHeightKey, avail.Height);
+            PDFUnit x = fullstyle.GetValue(StyleKeys.PositionXKey, 0);
+            PDFUnit y = fullstyle.GetValue(StyleKeys.PositionYKey, 0);
+            PDFUnit w = fullstyle.GetValue(StyleKeys.SizeWidthKey, avail.Width);
+            PDFUnit h = fullstyle.GetValue(StyleKeys.SizeHeightKey, avail.Height);
 
             return new PDFRect(x, y, w, h);
         }

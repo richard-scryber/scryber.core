@@ -216,7 +216,7 @@ namespace Scryber.Layout
         /// <param name="full">The full style for the page</param>
         /// <remarks>The PDFLayout page has one block. The TopBlock. 
         /// This contains all the regions and content for the page.</remarks>
-        public PDFLayoutPage(PDFLayoutDocument doc, PageBase page, IPDFLayoutEngine engine, PDFStyle full, OverflowAction overflow)
+        public PDFLayoutPage(PDFLayoutDocument doc, PageBase page, IPDFLayoutEngine engine, Style full, OverflowAction overflow)
             : base(doc, page, engine, full)
         {
             this.OverflowAction = overflow;
@@ -274,7 +274,7 @@ namespace Scryber.Layout
         /// <param name="owner"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewBlock(IPDFComponent owner, IPDFLayoutEngine engine, PDFStyle fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewBlock(IPDFComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
         {
             if (this.IsClosed)
                 throw new InvalidOperationException(Errors.CannotLayoutAPageThatHasBeenClosed);
@@ -322,7 +322,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Begins a header on a the current document page
         /// </summary>
-        public void BeginHeader(PDFPageHeader owner, PDFStyle full, PDFLayoutContext context)
+        public void BeginHeader(PDFPageHeader owner, Style full, PDFLayoutContext context)
         {
             if (null != this.HeaderBlock)
                 throw RecordAndRaise.LayoutException(Errors.AlreadyAHeaderDefinedOnPage);
@@ -384,7 +384,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Begins the footer on the current document page
         /// </summary>
-        public void BeginFooter(PDFPageFooter owner, PDFStyle full, PDFLayoutContext context)
+        public void BeginFooter(PDFPageFooter owner, Style full, PDFLayoutContext context)
         {
             PDFLayoutBlock block = new PDFLayoutBlock(this, owner, this.Engine, full, OverflowSplit.Never);
 
@@ -515,9 +515,9 @@ namespace Scryber.Layout
                 return;
             }
 
-            PDFScryberBadgeStyle style;
-            if (!this.FullStyle.TryGetItem(PDFStyleKeys.BadgeItemKey, out style))
-                style = new PDFScryberBadgeStyle();
+            ScryberBadgeStyle style;
+            if (!this.FullStyle.TryGetItem(StyleKeys.BadgeItemKey, out style))
+                style = new ScryberBadgeStyle();
 
 
             //get any existing badge resource registered in the document
@@ -670,10 +670,10 @@ namespace Scryber.Layout
                 context.TraceLog.Add(TraceLevel.Message, "Layout Page", "Rendering layout page " + this.PageIndex);
 
             //get the current style and aply it to the style stack
-            PDFStyle style = this.FullStyle;
+            Style style = this.FullStyle;
             context.StyleStack.Push(style);
 
-            PDFPageSize pagesize = this.PageOwner.GetPageSize(style);
+            PageSize pagesize = this.PageOwner.GetPageSize(style);
             //PDFPageNumbering num = this.GetNumbering(style);
             //this.Document.RegisterPageNumbering(context.PageIndex, this, num);
             PDFObjectRef last = writer.LastObjectReference();
@@ -717,9 +717,9 @@ namespace Scryber.Layout
             writer.BeginDictionaryEntry("MediaBox");
             writer.WriteArrayRealEntries(0.0, 0.0, this.Size.Width.ToPoints().Value, this.Size.Height.ToPoints().Value);
             writer.EndDictionaryEntry();
-            if(this.FullStyle.IsValueDefined(PDFStyleKeys.PageAngle))
+            if(this.FullStyle.IsValueDefined(StyleKeys.PageAngle))
             {
-                int value = this.FullStyle.GetValue(PDFStyleKeys.PageAngle, 0);
+                int value = this.FullStyle.GetValue(StyleKeys.PageAngle, 0);
                 writer.WriteDictionaryNumberEntry("Rotate", value);
             }
 
@@ -847,7 +847,7 @@ namespace Scryber.Layout
 
         
 
-        protected virtual PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles, PDFRenderContext context)
+        protected virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFRenderContext context)
         {
            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, this.Size, context);
         }

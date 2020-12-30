@@ -93,9 +93,9 @@ namespace Scryber.Drawing
         }
 
 
-        public override FillStyle FillStyle
+        public override FillType FillStyle
         {
-            get { return FillStyle.Image; }
+            get { return FillType.Image; }
         }
 
         public PDFFullImageBrush()

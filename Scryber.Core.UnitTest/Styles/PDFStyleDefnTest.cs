@@ -72,7 +72,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStyleDefnConstructorTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             Assert.IsNotNull(target);
             Assert.AreEqual(false, target.HasValues);
             Assert.IsTrue(string.IsNullOrEmpty(target.AppliedClass));
@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Styles
             Type appliedtype = typeof(Scryber.Components.Label);
             string appliedid = "myid";
             string appliedclassname = "myclass";
-            PDFStyleDefn target = new PDFStyleDefn(appliedtype, appliedid, appliedclassname);
+            StyleDefn target = new StyleDefn(appliedtype, appliedid, appliedclassname);
 
             Assert.IsNotNull(target);
             Assert.IsFalse(target.HasValues);
@@ -108,7 +108,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void IsCatchAllStyleTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             bool expected = true;
             bool actual;
             actual = target.IsCatchAllStyle();
@@ -119,13 +119,13 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.IsCatchAllStyle();
             Assert.AreEqual(expected, actual);
 
-            target = new PDFStyleDefn();
+            target = new StyleDefn();
             target.AppliedID = "AnId";
             expected = false;
             actual = target.IsCatchAllStyle();
             Assert.AreEqual(expected, actual);
 
-            target = new PDFStyleDefn();
+            target = new StyleDefn();
             target.AppliedType = typeof(Scryber.Components.Label);
             expected = false;
             actual = target.IsCatchAllStyle();
@@ -149,7 +149,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void IsMatchedToTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
 
             //Catch All with document
             int priority;
@@ -263,10 +263,10 @@ namespace Scryber.Core.UnitTests.Styles
             lbl.StyleClass = "myclass";
             lbl.ID = "myId";
 
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             target.Background.Color = Scryber.Drawing.PDFColors.Aqua;
 
-            PDFStyle style = new PDFStyle();
+            Style style = new Style();
             style.Background.Color = Scryber.Drawing.PDFColors.Blue;
 
             //matched should have aqua applied, non-matching should stay blue
@@ -281,7 +281,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //non-matching applied type
             target.AppliedType = typeof(Scryber.Components.TableCell);
-            style = new PDFStyle();
+            style = new Style();
             style.Background.Color = Scryber.Drawing.PDFColors.Blue;
 
             target.MergeInto(style, lbl, ComponentState.Normal);
@@ -296,7 +296,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void AppliedClassTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             string expected = "myclass";
             string actual;
             target.AppliedClass = expected;
@@ -312,7 +312,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void AppliedIDTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             string expected = "myID";
             string actual;
             target.AppliedID = expected;
@@ -328,7 +328,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void AppliedStateTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             ComponentState expected = ComponentState.Down;
             ComponentState actual;
             target.AppliedState = expected;
@@ -344,7 +344,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void AppliedTypeTest()
         {
-            PDFStyleDefn target = new PDFStyleDefn();
+            StyleDefn target = new StyleDefn();
             Type expected = typeof(Scryber.Components.TableCell);
             Type actual;
             target.AppliedType = expected;

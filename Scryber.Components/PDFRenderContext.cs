@@ -128,7 +128,7 @@ namespace Scryber
         /// <summary>
         /// Gets or sets the full style for the current component
         /// </summary>
-        public PDFStyle FullStyle
+        public Style FullStyle
         {
             get;
             set;
@@ -143,7 +143,7 @@ namespace Scryber
         /// <summary>
         /// Gets the output format for the document
         /// </summary>
-        public PDFOutputFormatting OutputFormat
+        public PDFOutputFormatting Formatting
         {
             get { return _format; }
         }
@@ -154,12 +154,12 @@ namespace Scryber
         // .ctor
         //
 
-        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.PDFStyle root, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
-            : this(origin,pageCount,format, new Scryber.Styles.PDFStyleStack(root), items, log, perfmon)
+        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.Style root, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
+            : this(origin,pageCount,format, new Scryber.Styles.StyleStack(root), items, log, perfmon)
         {
         }
 
-        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.PDFStyleStack stack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon) 
+        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.StyleStack stack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon) 
             : base(stack, items, log, perfmon)
         {
             this._origin = origin;

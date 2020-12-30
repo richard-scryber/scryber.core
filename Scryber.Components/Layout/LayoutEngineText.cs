@@ -84,12 +84,12 @@ namespace Scryber.Layout
 
         #region public PDFStyle FullStyle {get; protected set;}
 
-        private PDFStyle _fullstyle;
+        private Style _fullstyle;
 
         /// <summary>
         /// Gets the full style associated with this text component
         /// </summary>
-        public PDFStyle FullStyle
+        public Style FullStyle
         {
             get { return _fullstyle; }
             protected set { _fullstyle = value; }
@@ -244,7 +244,7 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        public void Layout(PDFLayoutContext context, Styles.PDFStyle fullstyle)
+        public void Layout(PDFLayoutContext context, Styles.Style fullstyle)
         {
             if (null == context)
                 throw new ArgumentNullException("context");

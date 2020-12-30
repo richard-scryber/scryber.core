@@ -170,7 +170,7 @@ namespace Scryber.Components
         }
 
 
-        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
             _orgitems = context.Items;
 
@@ -184,7 +184,7 @@ namespace Scryber.Components
             base.DoRegisterArtefacts(context, set, fullstyle);
         }
 
-        protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, PDFStyle fullstyle)
+        protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
         {
             base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
 

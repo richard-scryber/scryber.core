@@ -125,7 +125,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.PDFStyle style)
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.Style style)
         {
             return new Layout.LayoutEnginePageGroup(this, parent, context, style);
         }

@@ -95,9 +95,9 @@ namespace Scryber.Core.UnitTests.Styles
 
                 Assert.IsTrue(parsed);
                 Assert.AreEqual(3, doc.Styles.Count);
-                Assert.AreEqual(".head", (doc.Styles[0] as PDFStyleDefn).Match.ToString());
-                Assert.AreEqual(".body", (doc.Styles[1] as PDFStyleDefn).Match.ToString());
-                Assert.AreEqual(".body doc:Para", (doc.Styles[2] as PDFStyleDefn).Match.ToString());
+                Assert.AreEqual(".head", (doc.Styles[0] as StyleDefn).Match.ToString());
+                Assert.AreEqual(".body", (doc.Styles[1] as StyleDefn).Match.ToString());
+                Assert.AreEqual(".body doc:Para", (doc.Styles[2] as StyleDefn).Match.ToString());
             }
 
            

@@ -57,8 +57,8 @@ namespace Scryber.Components
         {
             get
             {
-                PDFStyleValue<string> style;
-                if (this.HasStyle && this.Style.TryGetValue(PDFStyleKeys.TextDateFormatKey, out style))
+                StyleValue<string> style;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextDateFormatKey, out style))
                     return style.Value;
                 else
                     return string.Empty;
@@ -106,10 +106,10 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.PDFStyle fullstyle)
+        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style fullstyle)
         {
             string val;
-            string format = fullstyle.GetValue(PDFStyleKeys.TextDateFormatKey, string.Empty);
+            string format = fullstyle.GetValue(StyleKeys.TextDateFormatKey, string.Empty);
 
             if (string.IsNullOrEmpty(format))
                 val = this.Value.ToString();

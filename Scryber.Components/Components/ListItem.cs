@@ -51,7 +51,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the label text associated with this list item
         /// </summary>
-        [PDFAttribute("item-label", Scryber.Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("item-label", Scryber.Styles.Style.PDFStylesNamespace)]
         public string ItemLabelText
         {
             get { return this.Style.List.ItemLabel; }
@@ -65,7 +65,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the amount of indentation before list item (not including the width of the number)
         /// </summary>
-        [PDFAttribute("number-inset", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-inset", Styles.Style.PDFStylesNamespace)]
         public PDFUnit NumberInset
         {
             get { return this.Style.List.NumberInset; }
@@ -79,7 +79,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the alignement of the item number (or label / image) that is shown
         /// </summary>
-        [PDFAttribute("number-alignment", Styles.PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("number-alignment", Styles.Style.PDFStylesNamespace)]
         public HorizontalAlignment NumberAlignment
         {
             get
@@ -123,9 +123,9 @@ namespace Scryber.Components
             
         }
 
-        protected override Styles.PDFStyle GetBaseStyle()
+        protected override Styles.Style GetBaseStyle()
         {
-            Styles.PDFStyle defaultStyle = base.GetBaseStyle();
+            Styles.Style defaultStyle = base.GetBaseStyle();
             defaultStyle.Overflow.Split = Drawing.OverflowSplit.Never;
             return defaultStyle;
         }

@@ -38,7 +38,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the format of the string to be displayed. Using the indexes of the page numbering data
         /// </summary>
-        [PDFAttribute("display-format", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("display-format", Style.PDFStylesNamespace)]
         [PDFDesignable("Format", Category = "General", Priority = 4, Type = "PageFormat")]
         public string DisplayFormat 
         { 
@@ -56,7 +56,7 @@ namespace Scryber.Components
         /// <remarks>Becasue we do not know the total page count until layout has completed 
         /// we need something to tell us what length the total page count will be. 
         /// This is the hint.</remarks>
-        [PDFAttribute("total-count-hint", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("total-count-hint", Style.PDFStylesNamespace)]
         public int TotalPageCountHint
         {
             get { return this.Style.PageStyle.PageTotalCountHint; }
@@ -74,7 +74,7 @@ namespace Scryber.Components
         /// <remarks>Becasue we do not know the total page count until layout has completed 
         /// we need something to tell us what length the total page count will be. 
         /// This is the hint and the default value is %%</remarks>
-        [PDFAttribute("group-count-hint", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("group-count-hint", Style.PDFStylesNamespace)]
         public int GroupPageCountHint
         {
             get { return this.Style.PageStyle.PageGroupCountHint; }
@@ -90,10 +90,10 @@ namespace Scryber.Components
         private int _renderpageindex = -1;
 
         //local reference to the full style of this label
-        private PDFStyle _fullstyle = null;
+        private Style _fullstyle = null;
 
         //local reference to the full style of the layout page
-        private PDFStyle _pgstyle = null;
+        private Style _pgstyle = null;
         
         //The text proxy op who's text will be replaced with the page number on render complete.
         Scryber.Text.PDFTextProxyOp _numberProxy;
@@ -131,7 +131,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.PDFStyle style)
+        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style style)
         {
             _doc = context.DocumentLayout;
             _renderpageindex = _doc.CurrentPageIndex;
@@ -197,7 +197,7 @@ namespace Scryber.Components
         ///                     {2} global page index, {3} global page count,
         ///                     {4} index in group, {5} group count
         /// </remarks>
-        private string GetDisplayText(int pageindex, PDFStyle style, bool rendering)
+        private string GetDisplayText(int pageindex, Style style, bool rendering)
         {
             if (null == this._doc)
                 throw new ArgumentNullException("The PageNumberLabel does not have a layout document associated with it, so cannot get the page number in the document");
@@ -219,9 +219,9 @@ namespace Scryber.Components
             //So we use the hints from the style or our default values
             if (!rendering)
             {
-                int grp = style.GetValue(PDFStyleKeys.PageNumberGroupHintKey, DefaultGroupPageCountHint);
+                int grp = style.GetValue(StyleKeys.PageNumberGroupHintKey, DefaultGroupPageCountHint);
                 num.GroupLastNumber = grp;
-                num.LastPageNumber = style.GetValue(PDFStyleKeys.PageNumberTotalHintKey, DefaultTotalPageCountHint);
+                num.LastPageNumber = style.GetValue(StyleKeys.PageNumberTotalHintKey, DefaultTotalPageCountHint);
                 num.LastLabel = num.GroupOptions.GetPageLabel(grp);
             }
 
@@ -230,21 +230,21 @@ namespace Scryber.Components
 
         #endregion
 
-        private string GetPageFormat(PDFStyle full)
+        private string GetPageFormat(Style full)
         {
-            string format = this.Style.GetValue(PDFStyleKeys.PageNumberFormatKey, string.Empty);
+            string format = this.Style.GetValue(StyleKeys.PageNumberFormatKey, string.Empty);
 
             if (!string.IsNullOrEmpty(format))
                 return format;
 
-            format = _pgstyle.GetValue(PDFStyleKeys.PageNumberFormatKey, string.Empty);
+            format = _pgstyle.GetValue(StyleKeys.PageNumberFormatKey, string.Empty);
 
             if (!string.IsNullOrEmpty(format))
                 return format;
 
             //Not defined on this component - so search the hierarchy.
 
-            var stack = new List<PDFStyle>();
+            var stack = new List<Style>();
             var parent = this.Parent;
 
             while(null != parent)
@@ -261,8 +261,8 @@ namespace Scryber.Components
 
             foreach (var style in stack)
             {
-                PDFStyleValue<string> val;
-                if (style.TryGetValue(PDFStyleKeys.PageNumberFormatKey, out val))
+                StyleValue<string> val;
+                if (style.TryGetValue(StyleKeys.PageNumberFormatKey, out val))
                     format = val.Value;
             }
 

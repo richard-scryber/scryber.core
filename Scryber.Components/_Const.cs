@@ -105,7 +105,7 @@ namespace Scryber
 
         public const string PDFDataNamespace = "Scryber.Data, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
         public const string PDFComponentNamespace = "Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";
-        public const string PDFStylesNamespace = Scryber.Styles.PDFStyle.PDFStylesNamespace;
+        public const string PDFStylesNamespace = Scryber.Styles.Style.PDFStylesNamespace;
         
 
         //public const string PDFDataNamespace = "http://www.scryber.co.uk/schemas/v08/Scryber.Data.xsd";

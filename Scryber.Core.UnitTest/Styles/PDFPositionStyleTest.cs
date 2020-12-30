@@ -76,9 +76,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Position_ConstructorTest()
         {
-            PDFPositionStyle target = new PDFPositionStyle();
+            PositionStyle target = new PositionStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.PositionItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.PositionItemKey, target.ItemKey);
         }
 
         #endregion
@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_FullWidthTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.FullWidth);
 
@@ -123,7 +123,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Position_HAlignTest()
         {
-            PDFPositionStyle target = new PDFPositionStyle();
+            PositionStyle target = new PositionStyle();
 
             //Default 
 
@@ -165,7 +165,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Position_PositionModeTest()
         {
-            PDFPositionStyle target = new PDFPositionStyle();
+            PositionStyle target = new PositionStyle();
 
             //Default 
 
@@ -197,7 +197,7 @@ namespace Scryber.Core.UnitTests.Styles
             // Check the X or Y setting to relative
 
             expected = PositionMode.Relative;
-            target = new PDFPositionStyle();
+            target = new PositionStyle();
             target.X = 20;
             actual = target.PositionMode;
             Assert.AreEqual(expected, actual);
@@ -232,7 +232,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Position_VAlignTest()
         {
-            PDFPositionStyle target = new PDFPositionStyle();
+            PositionStyle target = new PositionStyle();
 
             //Default 
 
@@ -274,7 +274,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Position_XTest()
         {
-            PDFPositionStyle target = new PDFPositionStyle();
+            PositionStyle target = new PositionStyle();
 
             // Default value
 
@@ -316,7 +316,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Position_YTest()
         {
-            PDFPositionStyle target = new PDFPositionStyle();
+            PositionStyle target = new PositionStyle();
 
             // Default value
 

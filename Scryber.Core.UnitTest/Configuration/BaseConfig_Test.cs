@@ -53,7 +53,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             var compType = typeof(Scryber.Components.Document);
             var dataType = typeof(Scryber.Data.XMLDataSource);
-            var styleType = typeof(Scryber.Styles.PDFStyle);
+            var styleType = typeof(Scryber.Styles.Style);
 
             var full = compType.Namespace + ", " + compType.Assembly.FullName;
             
@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("MissingImagesDisAllowed.pdf"))
                     doc.SaveAsPDF(stream);
             }
             catch (Exception)
@@ -231,7 +231,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                using (var stream = new System.IO.MemoryStream())
+                using (var stream = DocStreams.GetOutputStream("MissingImagesAllowed.pdf"))
                     doc.SaveAsPDF(stream);
             }
             catch (Exception)

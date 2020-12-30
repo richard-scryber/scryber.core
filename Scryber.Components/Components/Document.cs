@@ -537,14 +537,14 @@ namespace Scryber.Components
 
         #region public PDFStyleCollection Styles {get;} + protected virtual PDFStyleCollection CreateStyleCollection()
 
-        private PDFStyleCollection _styles;
+        private StyleCollection _styles;
 
         /// <summary>
         /// Gets the collection of styles in this document
         /// </summary>
         [PDFElement("Styles")]
-        [PDFArray(typeof(PDFStyleBase))]
-        public PDFStyleCollection Styles
+        [PDFArray(typeof(StyleBase))]
+        public StyleCollection Styles
         {
             get
             {
@@ -558,9 +558,9 @@ namespace Scryber.Components
         /// Creates a new empty style collection
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFStyleCollection CreateStyleCollection()
+        protected virtual StyleCollection CreateStyleCollection()
         {
-            return new PDFStyleCollection(this);
+            return new StyleCollection(this);
         }
 
         #endregion
@@ -601,7 +601,7 @@ namespace Scryber.Components
 
         // IPDFStyledComponent explicit interface
 
-        PDFStyle IPDFStyledComponent.Style { get; }
+        Style IPDFStyledComponent.Style { get; }
 
         bool IPDFStyledComponent.HasStyle { get { return null != (this as IPDFStyledComponent).Style; } }
 
@@ -807,10 +807,10 @@ namespace Scryber.Components
         /// <param name="forComponent">The Component to get the styles for</param>
         /// <param name="baseStyle">The base set of styles for the component</param>
         /// <returns>A newly constructed style appropriate for the Component</returns>
-        public override PDFStyle GetAppliedStyle(Component forComponent, PDFStyle baseStyle)
+        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
             if (null == baseStyle)
-                baseStyle = new PDFStyle();
+                baseStyle = new Style();
             this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
             return baseStyle;
         }
@@ -824,13 +824,13 @@ namespace Scryber.Components
         /// Inheritors can override this to adjust the default style for any document
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFStyle CreateDefaultStyle()
+        protected virtual Style CreateDefaultStyle()
         {
-            PDFStyle style = this.GetBaseStyle();
+            Style style = this.GetBaseStyle();
 
 
             //Get the applied style and then merge it into the base style
-            PDFStyle applied = this.GetAppliedStyle(this, style);
+            Style applied = this.GetAppliedStyle(this, style);
             //if (null != applied)
             //    applied.MergeInto(style);
             applied.Flatten();
@@ -844,25 +844,25 @@ namespace Scryber.Components
         /// Overrides the base implementation to get a full (yet empty) style for a document.
         /// </summary>
         /// <returns></returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle style = base.GetBaseStyle();
+            Style style = base.GetBaseStyle();
             //style.Items.Add(new PDFBackgroundStyle());
             //style.Items.Add(new PDFBorderStyle());
             //style.Items.Add(new PDFStrokeStyle());
-            PDFFillStyle fill = new PDFFillStyle();
+            Styles.FillStyle fill = new Styles.FillStyle();
             style.StyleItems.Add(fill);
             fill.Color = new PDFColor(ColorSpace.RGB, System.Drawing.Color.Black);
 
 
-            PDFPageStyle defpaper = new PDFPageStyle();
+            PageStyle defpaper = new PageStyle();
             style.StyleItems.Add(defpaper);
             defpaper.PaperSize = PaperSize.A4;
             defpaper.PaperOrientation = PaperOrientation.Portrait;
 
-            PDFFontStyle fs = new PDFFontStyle();
+            Styles.FontStyle fs = new Styles.FontStyle();
             style.StyleItems.Add(fs);
-            fs.FontFamily = ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
+            fs.FontFamily = (PDFFontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
             fs.FontSize = new PDFUnit(24.0, PageUnits.Points);
 
 
@@ -1362,7 +1362,7 @@ namespace Scryber.Components
         {
             if (this.Styles != null && this.Styles.Count > 0)
             {
-                foreach (PDFStyleBase style in this.Styles)
+                foreach (StyleBase style in this.Styles)
                 {
                     try
                     {
@@ -1422,7 +1422,7 @@ namespace Scryber.Components
         {
             if (this.Styles != null && this.Styles.Count > 0)
             {
-                foreach (PDFStyleBase style in this.Styles)
+                foreach (StyleBase style in this.Styles)
                 {
                     try
                     {
@@ -1532,7 +1532,7 @@ namespace Scryber.Components
         {
             if (this.Styles != null && this.Styles.Count > 0)
             {
-                foreach (PDFStyleBase style in this.Styles)
+                foreach (StyleBase style in this.Styles)
                 {
                     try
                     {
@@ -1735,11 +1735,11 @@ namespace Scryber.Components
         {
 
 
-            PDFStyle style = this.GetAppliedStyle();
+            Style style = this.GetAppliedStyle();
 
 
             //Layout components before rendering
-            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.OutputFormat, context.Items, context.TraceLog, context.PerformanceMonitor);
+            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.Formatting, context.Items, context.TraceLog, context.PerformanceMonitor);
             this.RegisterPreLayout(layoutcontext);
 
             context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document layout");
@@ -1926,7 +1926,7 @@ namespace Scryber.Components
         /// <param name="items">A PDFItemCollection</param>
         /// <param name="log">The log to use</param>
         /// <returns>A new layout context</returns>
-        protected virtual PDFLayoutContext CreateLayoutContext(PDFStyle style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
+        protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
         {
             PDFLayoutContext context = new PDFLayoutContext(style, format, items, log, perfmon);
             PopulateContextBase(context);
@@ -1937,7 +1937,7 @@ namespace Scryber.Components
 
         #region public IPDFLayoutEngine GetEngine(...)
 
-        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle style)
+        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return this.GetEngine(parent, context);
         }
@@ -1987,7 +1987,7 @@ namespace Scryber.Components
             PDFPerformanceMonitor perfmon = this.PerformanceMonitor;
 
 
-            PDFStyle def = this.CreateDefaultStyle();
+            Style def = this.CreateDefaultStyle();
             PDFOutputFormatting format = this.GetOutputFormat(this.RenderOptions.OuptputCompliance);
             PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, format, def, this.Params, log, perfmon);
 
@@ -2627,7 +2627,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public static PDFDocument ParseDocument(stream stream, ParseSourceType type) + 3 overloads
+        #region public static PDFDocument ParseDocument(stream stream, ParseSourceType type) + 7 overloads
 
 
         public static Document ParseDocument(System.IO.Stream stream, ParseSourceType type)
@@ -2656,9 +2656,35 @@ namespace Scryber.Components
             return doc;
         }
 
-        public static Document ParseDocument(System.Xml.XmlReader reader, ParseSourceType type)
+        public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type)
+        {
+            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            IPDFComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type)
+        {
+            PDFReferenceChecker checker = new PDFReferenceChecker(path);
             IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))

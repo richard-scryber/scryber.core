@@ -27,7 +27,7 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public abstract class PDFPen : PDFGraphicsAdapter
     {
-        public abstract LineStyle LineStyle { get;}
+        public abstract LineType LineStyle { get;}
 
         #region PDFPenFlags
 
@@ -139,7 +139,7 @@ namespace Scryber.Drawing
 
         public static PDFPen Create(PDFBrush brush, PDFUnit width)
         {
-            if (brush.FillStyle == FillStyle.Solid)
+            if (brush.FillStyle == FillType.Solid)
             {
                 PDFSolidBrush solid = (PDFSolidBrush)brush;
                 PDFPen pen = Create(solid.Color, width);
@@ -155,9 +155,9 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFNoPen : PDFPen
     {
-        public override LineStyle LineStyle
+        public override LineType LineStyle
         {
-            get { return LineStyle.None; }
+            get { return LineType.None; }
         }
 
         public PDFNoPen()
@@ -177,9 +177,9 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFSolidPen : PDFPen
     {
-        public override LineStyle LineStyle
+        public override LineType LineStyle
         {
-            get { return LineStyle.Solid; }
+            get { return LineType.Solid; }
         }
 
         private PDFColor _col;
@@ -220,11 +220,11 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFDashPen : PDFSolidPen
     {
-        public override LineStyle LineStyle
+        public override LineType LineStyle
         {
             get
             {
-                return LineStyle.Dash;
+                return LineType.Dash;
             }
         }
 

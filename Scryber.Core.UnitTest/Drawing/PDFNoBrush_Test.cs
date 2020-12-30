@@ -85,9 +85,9 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FillStyle_Test()
         {
             PDFNoBrush target = new PDFNoBrush();
-            FillStyle actual;
+            FillType actual;
             actual = target.FillStyle;
-            Assert.AreEqual(FillStyle.None, actual);
+            Assert.AreEqual(FillType.None, actual);
 
         }
     }

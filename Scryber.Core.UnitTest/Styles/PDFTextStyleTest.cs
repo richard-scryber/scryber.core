@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_ConstructorTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.TextItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.TextItemKey, target.ItemKey);
         }
 
         
@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_DateFormatTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             string expected = string.Empty;
             string actual;
             actual = target.DateFormat;
@@ -117,7 +117,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_DecorationTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             TextDecoration expected = TextDecoration.None;
             Assert.AreEqual(expected, target.Decoration);
 
@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void Text_FirstLineInsetTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             PDFUnit expected = PDFUnit.Zero;
             Assert.AreEqual(expected, target.FirstLineInset);
             
@@ -175,7 +175,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_LeadingTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             PDFUnit expected = PDFUnit.Zero;
             Assert.AreEqual(expected, target.Leading);
 
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_NumberFormatTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             string expected = string.Empty;
             string actual;
             actual = target.NumberFormat;
@@ -232,7 +232,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_PreserveWhitespaceTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.PreserveWhitespace);
 
@@ -259,7 +259,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_WordSpacingTest()
         {
-            PDFTextStyle target = new PDFTextStyle();
+            TextStyle target = new TextStyle();
             
             // Default value
 
@@ -296,7 +296,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Text_WrapTextTest()
         {
-            PDFTextStyle target = new PDFTextStyle(); 
+            TextStyle target = new TextStyle(); 
             
             //Default 
 

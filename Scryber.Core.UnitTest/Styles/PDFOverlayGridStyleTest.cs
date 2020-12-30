@@ -73,9 +73,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_ConstructorTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
+            OverlayGridStyle target = new OverlayGridStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.OverlayItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.OverlayItemKey, target.ItemKey);
         }
 
         
@@ -87,7 +87,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_GetPenTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
+            OverlayGridStyle target = new OverlayGridStyle();
             PDFSolidPen expected = null;
 
             PDFSolidPen actual;
@@ -95,8 +95,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNull(actual);
 
             target.ShowGrid = true;
-            expected = new PDFSolidPen(PDFOverlayGridStyle.DefaultGridColor, PDFOverlayGridStyle.DefaultGridPenWidth);
-            expected.Opacity = PDFOverlayGridStyle.DefaultGridOpacity;
+            expected = new PDFSolidPen(OverlayGridStyle.DefaultGridColor, OverlayGridStyle.DefaultGridPenWidth);
+            expected.Opacity = OverlayGridStyle.DefaultGridOpacity;
             actual = (PDFSolidPen)target.GetPen();
             Assert.IsNotNull(actual);
 
@@ -107,7 +107,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.GridColor = PDFColors.Purple;
             target.GridOpacity = 0.3;
 
-            expected = new PDFSolidPen(PDFColors.Purple, PDFOverlayGridStyle.DefaultGridPenWidth);
+            expected = new PDFSolidPen(PDFColors.Purple, OverlayGridStyle.DefaultGridPenWidth);
             expected.Opacity = 0.3;
 
             actual = (PDFSolidPen)target.GetPen();
@@ -126,8 +126,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_GridColorTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
-            PDFColor expected = PDFOverlayGridStyle.DefaultGridColor;
+            OverlayGridStyle target = new OverlayGridStyle();
+            PDFColor expected = OverlayGridStyle.DefaultGridColor;
             Assert.AreEqual(expected, target.GridColor);
 
             expected = PDFColors.Teal;
@@ -139,7 +139,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.GridColor);
 
             target.RemoveGridColor();
-            expected = PDFOverlayGridStyle.DefaultGridColor;
+            expected = OverlayGridStyle.DefaultGridColor;
             Assert.AreEqual(expected, target.GridColor);
 
             target.GridColor = expected; //Default
@@ -153,8 +153,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_GridOpacityTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
-            double expected = PDFOverlayGridStyle.DefaultGridOpacity;
+            OverlayGridStyle target = new OverlayGridStyle();
+            double expected = OverlayGridStyle.DefaultGridOpacity;
             Assert.AreEqual(expected, target.GridOpacity);
 
             expected = 1.0;
@@ -166,7 +166,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.GridOpacity);
 
             target.RemoveGridOpacity();
-            expected = PDFOverlayGridStyle.DefaultGridOpacity;
+            expected = OverlayGridStyle.DefaultGridOpacity;
             Assert.AreEqual(expected, target.GridOpacity);
 
             target.GridOpacity = expected; //Default
@@ -180,8 +180,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_GridYOffsetTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
-            PDFUnit expected = PDFOverlayGridStyle.DefaultYOffset;
+            OverlayGridStyle target = new OverlayGridStyle();
+            PDFUnit expected = OverlayGridStyle.DefaultYOffset;
             Assert.AreEqual(expected, target.GridYOffset);
 
             expected = 20;
@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.GridYOffset);
 
             target.RemoveGridYOffset();
-            expected = PDFOverlayGridStyle.DefaultYOffset;
+            expected = OverlayGridStyle.DefaultYOffset;
             Assert.AreEqual(expected, target.GridYOffset);
 
             target.GridYOffset = expected; //Default
@@ -207,8 +207,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_GridXOffsetTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
-            PDFUnit expected = PDFOverlayGridStyle.DefaultXOffset;
+            OverlayGridStyle target = new OverlayGridStyle();
+            PDFUnit expected = OverlayGridStyle.DefaultXOffset;
             Assert.AreEqual(expected, target.GridXOffset);
 
             expected = 20;
@@ -220,7 +220,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.GridXOffset);
 
             target.RemoveGridXOffset();
-            expected = PDFOverlayGridStyle.DefaultXOffset;
+            expected = OverlayGridStyle.DefaultXOffset;
             Assert.AreEqual(expected, target.GridXOffset);
 
             target.GridXOffset = expected; //Default
@@ -234,8 +234,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_GridSpacingTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
-            PDFUnit expected = PDFOverlayGridStyle.DefaultGridSpacing;
+            OverlayGridStyle target = new OverlayGridStyle();
+            PDFUnit expected = OverlayGridStyle.DefaultGridSpacing;
             Assert.AreEqual(expected, target.GridSpacing);
 
             expected = 20;
@@ -247,7 +247,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.GridSpacing);
 
             target.RemoveGridSpacing();
-            expected = PDFOverlayGridStyle.DefaultGridSpacing;
+            expected = OverlayGridStyle.DefaultGridSpacing;
             Assert.AreEqual(expected, target.GridSpacing);
 
             target.GridSpacing = expected; //Default
@@ -261,7 +261,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_HighlightColumnsTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
+            OverlayGridStyle target = new OverlayGridStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.HighlightColumns);
 
@@ -285,7 +285,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void OverlayGrid_ShowGridTest()
         {
-            PDFOverlayGridStyle target = new PDFOverlayGridStyle();
+            OverlayGridStyle target = new OverlayGridStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.ShowGrid);
 

@@ -46,19 +46,41 @@ namespace Scryber.Drawing
         // properties
         //
 
+
+        private PDFFontSelector _selector;
+
+        public PDFFontSelector Selector
+        {
+            get { return this._selector; }
+            set 
+            { 
+                this._selector = value;
+                this.ClearSystemFont();
+            }
+        }
+
         #region public string FamilyName {get; set;}
 
-        private string _name;
+        private string _familyName;
+        
         /// <summary>
         /// Gets or sets the FamilyName for this font (e.g. Times, Helvetica, Courier, Arial)
         /// </summary>
         public string FamilyName
         {
-            get { return _name; }
+            get 
+            {
+                //Ensure we have loaded the system font
+                //This will also set the familyName
+
+                if (this.GetSystemFont() != null)
+                    return this._familyName;
+                else
+                    return string.Empty;
+            }
             set 
-            { 
-                _name = value;
-                this._std = IsStandardFontFamily(value);
+            {
+                this.Selector = PDFFontSelector.Parse(value);
                 this.ClearSystemFont();
             }
         }
@@ -82,16 +104,28 @@ namespace Scryber.Drawing
 
         #region public bool IsStandard {get;} + private static bool DerriveIsStandard(string value)
 
-        private bool _std;
+        
 
         /// <summary>
         /// Gets the flag to identify if the font is one of the standard PDF fonts.
         /// </summary>
         public bool IsStandard
         {
-            get { return this._std; }
+            get { return IsStandardFontFamily(this.FamilyName); }
         }
-        
+
+        private static Dictionary<string, bool> _stdFonts = new Dictionary<string, bool>()
+        {
+            {"Helvetica", true },
+            {"Times", true },
+            {"Symbol", true },
+            {"Courier", true },
+            {"Zapf Dingbats", true },
+            {"Serif", true },
+            {"Sans-Serif", true },
+            {"Monospace", true }
+        };
+
         /// <summary>
         /// Returns the flag to identify if this is a Standard PDF font (does not need to be included in PDF document.
         /// </summary>
@@ -99,14 +133,12 @@ namespace Scryber.Drawing
         /// <returns>Returns true if the family name is one of the defined standard values.</returns>
         public static bool IsStandardFontFamily(string family)
         {
-            family = family.Replace(' ', '_');
-            if (Enum.IsDefined(typeof(StandardFont), family))
-                return true;
+            bool found;
+            if (_stdFonts.TryGetValue(family, out found))
+                return found;
             else
                 return false;
         }
-
-
 
         #endregion
 
@@ -183,8 +215,10 @@ namespace Scryber.Drawing
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="size">The new font size</param>
         public PDFFont(PDFFont basefont, PDFUnit size)
-            : this(basefont.FamilyName, size, basefont.FontStyle, basefont.IsStandard)
+            : this(basefont.Selector, size, basefont.FontStyle)
         {
+            this._sysfont = basefont._sysfont;
+            this._familyName = basefont._familyName;
         }
 
         /// <summary>
@@ -193,8 +227,10 @@ namespace Scryber.Drawing
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="style">The new FontStyle</param>
         public PDFFont(PDFFont basefont, FontStyle style)
-            : this(basefont.FamilyName, basefont.Size, style, basefont.IsStandard)
+            : this(basefont.Selector, basefont.Size, style)
         {
+            this._sysfont = basefont._sysfont;
+            this._familyName = basefont._familyName;
         }
 
         /// <summary>
@@ -204,8 +240,10 @@ namespace Scryber.Drawing
         /// <param name="size">the new font size</param>
         /// <param name="style">the new font style</param>
         public PDFFont(PDFFont basefont, PDFUnit size, FontStyle style)
-            : this(basefont.FamilyName, size, style, basefont.IsStandard)
+            : this(basefont.Selector, size, style)
         {
+            this._sysfont = basefont._sysfont;
+            this._familyName = basefont._familyName;
         }
 
 
@@ -215,7 +253,7 @@ namespace Scryber.Drawing
         /// <param name="font">One of the PDF Standard fonts that does not need to be included in the PDF file</param>
         /// <param name="size">The em size of the font</param>
         public PDFFont(StandardFont font, PDFUnit size)
-            : this(font.ToString(), size, FontStyle.Regular, true)
+            : this(font.ToString(), size, FontStyle.Regular)
         {
         }
 
@@ -226,7 +264,7 @@ namespace Scryber.Drawing
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
         public PDFFont(StandardFont font, PDFUnit size, FontStyle style)
-            : this(font.ToString(), size, style, true)
+            : this(font.ToString(), size, style)
         {
         }
 
@@ -236,7 +274,7 @@ namespace Scryber.Drawing
         /// <param name="family">The family name of the font (e.g. Arial, Helvetica, Courier)</param>
         /// <param name="size">The em size of the font</param>
         public PDFFont(string family, PDFUnit size)
-            : this(family, size, FontStyle.Regular, IsStandardFontFamily(family))
+            : this(family, size, FontStyle.Regular)
         {
         }
 
@@ -247,9 +285,11 @@ namespace Scryber.Drawing
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
         public PDFFont(string family, PDFUnit size, FontStyle style)
-            : this(family, size, style, IsStandardFontFamily(family))
+            : this(PDFFontSelector.Parse(family), size, style)
         {
         }
+
+        
 
         /// <summary>
         /// Private constructor accepting the full set of parameters in order to construct a full PDFFont
@@ -258,12 +298,12 @@ namespace Scryber.Drawing
         /// <param name="size">The fonts unit size</param>
         /// <param name="style">The fonts style</param>
         /// <param name="isStd">Flag to identify if this is one of the PDF standard fonts.</param>
-        private PDFFont(string family, PDFUnit size, FontStyle style, bool isStd)
+        public PDFFont(PDFFontSelector selector, PDFUnit size, FontStyle style)
         {
-            this._name = family;
+            this._selector = selector;
             this._size = size;
             this._style = style;
-            this._std = isStd;
+            this.ClearSystemFont();
         }
 
         #endregion
@@ -337,6 +377,7 @@ namespace Scryber.Drawing
         protected virtual void ClearSystemFont()
         {
             this._sysfont = null;
+            this._familyName = null;
             this._cachedmetrics = null;
         }
 
@@ -349,18 +390,35 @@ namespace Scryber.Drawing
         {
             if (_sysfont == null)
             {
-                System.Drawing.FontStyle fs = GetDrawingStyle(this.FontStyle);
-                if (!this.IsStandard)
-                {
-                    _sysfont = PDFFontFactory.GetSystemFont(this.FamilyName, fs, (float)this.Size.PointsValue);
-                }
-                else
-                {
-                    //We are a standard font
-                    string sysfamily = PDFFontFactory.GetSystemFontFamilyNameForStandardFont(this.FamilyName);
-                    _sysfont = new Font(sysfamily, (float)this.Size.PointsValue, fs);
+                _familyName = null;
 
+                System.Drawing.FontStyle fs = GetDrawingStyle(this.FontStyle);
+                var sel = this.Selector;
+
+                while (null != sel )
+                {
+                    if (PDFFontFactory.IsFontDefined(sel.FamilyName, fs))
+                    {
+                        _sysfont = PDFFontFactory.GetSystemFont(sel.FamilyName, fs, (float)this.Size.PointsValue);
+                        _familyName = sel.FamilyName;
+                        sel = null;
+                    }
+                    //not defined so move next
+                    else
+                        sel = sel.Next;
+                        
                 }
+                //if (!this.IsStandard)
+                //{
+                //    _sysfont = PDFFontFactory.GetSystemFont(this.FamilyName, fs, (float)this.Size.PointsValue);
+                //}
+                //else
+                //{
+                //    //We are a standard font
+                //    string sysfamily = PDFFontFactory.GetSystemFontFamilyNameForStandardFont(this.FamilyName);
+                //    _sysfont = new Font(sysfamily, (float)this.Size.PointsValue, fs);
+
+                //}
             }
             return _sysfont;
         }
@@ -436,29 +494,27 @@ namespace Scryber.Drawing
         /// <param name="family"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public static string GetFullName(string family, FontStyle style)
+        public static string GetFullName(string font, FontStyle style)
         {
             bool bold = (style & FontStyle.Bold) > 0;
             bool ital = (style & FontStyle.Italic) > 0;
-            return GetFullName(family, bold, ital);
+            return GetFullName(font, bold, ital);
         }
 
         #endregion
 
-        
 
-        #region public static string GetFullName(string family, bool bold, bool italic)
 
-        /// <summary>
-        /// Gets a full name for a font based upon the family name and its font style
-        /// </summary>
-        public static string GetFullName(string family, bool bold, bool italic)
+        #region public static string GetFullName(PDFFontSelector family, bool bold, bool italic)
+
+
+        public static string GetFullName(string familyName, bool bold, bool italic)
         {
             string fn;
-            if (string.IsNullOrEmpty(family))
+            if (string.IsNullOrEmpty(familyName))
                 fn = "UNKNOWN_FONT";
             else
-                fn = family;
+                fn = familyName;
 
             if (bold)
                 fn += ",Bold";
@@ -475,6 +531,6 @@ namespace Scryber.Drawing
 
         #endregion
 
-        
+
     }
 }

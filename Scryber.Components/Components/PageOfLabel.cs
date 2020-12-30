@@ -41,7 +41,7 @@ namespace Scryber.Components
         private int _componentpageindex = -1;
 
         //local reference to the full style of this label
-        private PDFStyle _fullstyle = null;
+        private Style _fullstyle = null;
 
         //The text proxy op who's text will be replaced with the page number on render complete.
         Scryber.Text.PDFTextProxyOp _numberProxy;
@@ -106,7 +106,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the format of the string to be displayed. Using the indexes of the page numbering data
         /// </summary>
-        [PDFAttribute("display-format", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("display-format", Style.PDFStylesNamespace)]
         public string DisplayFormat
         {
             get { return this.Style.PageStyle.PageNumberFormat; }
@@ -123,7 +123,7 @@ namespace Scryber.Components
         /// <remarks>Becasue we do not know the total page count until layout has completed 
         /// we need something to tell us what length the total page count will be. 
         /// This is the hint.</remarks>
-        [PDFAttribute("total-count-hint", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("total-count-hint", Style.PDFStylesNamespace)]
         public int TotalPageCountHint
         {
             get { return this.Style.PageStyle.PageTotalCountHint; }
@@ -140,7 +140,7 @@ namespace Scryber.Components
         /// <remarks>Becasue we do not know the total page count until layout has completed 
         /// we need something to tell us what length the total page count will be. 
         /// This is the hint and the default value is %%</remarks>
-        [PDFAttribute("group-count-hint", PDFStyle.PDFStylesNamespace)]
+        [PDFAttribute("group-count-hint", Style.PDFStylesNamespace)]
         public int GroupPageCountHint
         {
             get { return this.Style.PageStyle.PageGroupCountHint; }
@@ -159,7 +159,7 @@ namespace Scryber.Components
         }
 
 
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.PDFStyle fullstyle)
+        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style fullstyle)
         {
             _doc = context.DocumentLayout;
 
@@ -223,7 +223,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private string GetDisplayText(int pageIndex, PDFStyle style, bool rendering)
+        private string GetDisplayText(int pageIndex, Style style, bool rendering)
         {
             string empty = this.NotFoundText;
             if (string.IsNullOrEmpty(empty))
@@ -243,7 +243,7 @@ namespace Scryber.Components
         private const int DefaultTotalPageCountHint = 99;
         private const string DefaultNotFoundText = "??";
 
-        private string GetPageNumberText(int pageIndex, string notfound, PDFStyle style, bool rendering)
+        private string GetPageNumberText(int pageIndex, string notfound, Style style, bool rendering)
         {
             if (null == this._doc)
                 throw new ArgumentNullException("The PageOfLabel does not have a layout document associated with it, so cannot get the page number in the document");
@@ -263,7 +263,7 @@ namespace Scryber.Components
                 throw new NullReferenceException("No numbers associated with the page at index '" + pageIndex + "'");
 
 
-            string format = style.GetValue(PDFStyleKeys.PageNumberFormatKey, string.Empty);
+            string format = style.GetValue(StyleKeys.PageNumberFormatKey, string.Empty);
             int total = -1;
             int grp = -1;
 
@@ -282,8 +282,8 @@ namespace Scryber.Components
 
             if (!rendering)
             {
-                grp = style.GetValue(PDFStyleKeys.PageNumberGroupHintKey, DefaultGroupPageCountHint);
-                total = style.GetValue(PDFStyleKeys.PageNumberTotalHintKey, DefaultTotalPageCountHint);
+                grp = style.GetValue(StyleKeys.PageNumberGroupHintKey, DefaultGroupPageCountHint);
+                total = style.GetValue(StyleKeys.PageNumberTotalHintKey, DefaultTotalPageCountHint);
 
                 nums.LastPageNumber = total;
                 nums.GroupLastNumber = grp;

@@ -39,7 +39,7 @@ namespace Scryber
         /// <summary>
         /// Gets or sets the complete style for this component
         /// </summary>
-        public PDFStyle FullStyle { get; set; }
+        public Style FullStyle { get; set; }
 
         /* Legacy Properties
          * 

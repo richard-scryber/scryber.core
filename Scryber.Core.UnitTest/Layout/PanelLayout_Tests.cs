@@ -42,10 +42,11 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.Width = expectedWidth;
             panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
             
-            using (System.IO.MemoryStream ms =new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsExplicitSizing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -134,10 +135,11 @@ namespace Scryber.Core.UnitTests.Layout
             
             panel.FullWidth = true;
             panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthSizing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -235,11 +237,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             panel.FullWidth = true;
             panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthWithSpacing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -338,11 +341,12 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Height = explicitHeight;
             panel.Style.Margins.All = margin;
             panel.Style.Padding.All = padding;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthWithSpacingBoth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -448,6 +452,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
 
@@ -455,7 +460,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Contents.Add(lbl); //Will not push the panel beyond its minimumn width
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsMinWidthAndHeight.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -512,6 +517,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
             Label lbl = new Label() { Text = "This label is wide enough to go beyond the 200pt minimum width of the panel " + 
@@ -519,7 +525,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsBeyondMinWidth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -567,6 +573,7 @@ namespace Scryber.Core.UnitTests.Layout
             Panel panel = new Panel();
             panel.MinimumWidth = expectedMinWidth;
             panel.MinimumHeight = expectedMinHeight;
+            panel.BorderColor = Scryber.Drawing.PDFColors.Black;
             pg.Contents.Add(panel);
 
             Label lbl = new Label()
@@ -578,7 +585,7 @@ namespace Scryber.Core.UnitTests.Layout
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
             
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (var ms = DocStreams.GetOutputStream("PanelsBeyondMinWidthAndHeight.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);

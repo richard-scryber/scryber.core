@@ -147,9 +147,9 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             PDFPen target = PDFPen.Create(PDFColors.Aqua, 1);
             
-            LineStyle actual;
+            LineType actual;
             actual = target.LineStyle;
-            Assert.AreEqual(LineStyle.Solid, actual);
+            Assert.AreEqual(LineType.Solid, actual);
         }
 
         /// <summary>

@@ -57,10 +57,10 @@ namespace Scryber.Components
 
         #region protected virtual PDFTextReader CreateReader() + Interface implementation
 
-        protected virtual PDFTextReader CreateReader(PDFLayoutContext context, PDFStyle fullstyle)
+        protected virtual PDFTextReader CreateReader(PDFLayoutContext context, Style fullstyle)
         {
             TextFormat format = TextFormat.Plain;
-            bool preserveWhitespace = fullstyle.GetValue(PDFStyleKeys.TextWhitespaceKey, false);
+            bool preserveWhitespace = fullstyle.GetValue(StyleKeys.TextWhitespaceKey, false);
 
 
             if (this is IPDFTextLiteral)
@@ -69,7 +69,7 @@ namespace Scryber.Components
             return PDFTextReader.Create(this.BaseText, format, preserveWhitespace, context.TraceLog);
         }
 
-        PDFTextReader IPDFTextComponent.CreateReader(PDFLayoutContext context, PDFStyle fullstyle)
+        PDFTextReader IPDFTextComponent.CreateReader(PDFLayoutContext context, Style fullstyle)
         {
             return this.CreateReader(context, fullstyle);
         }
@@ -83,9 +83,9 @@ namespace Scryber.Components
         /// Inheritors can override to apply their own styles too.
         /// </summary>
         /// <returns></returns>
-        protected override PDFStyle GetBaseStyle()
+        protected override Style GetBaseStyle()
         {
-            PDFStyle def = base.GetBaseStyle();
+            Style def = base.GetBaseStyle();
             def.Position.PositionMode = Scryber.Drawing.PositionMode.Inline;
 
             return def;
@@ -100,7 +100,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle fullstyle)
+        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
             return new Layout.LayoutEngineText(this, parent);
         }

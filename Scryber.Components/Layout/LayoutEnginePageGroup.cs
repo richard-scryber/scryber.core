@@ -31,7 +31,7 @@ namespace Scryber.Layout
         private PageGroup _group;
         private IPDFLayoutEngine _parent;
         private PDFLayoutContext _context;
-        private PDFStyle _full;
+        private Style _full;
         
         public bool ContinueLayout
         {
@@ -39,7 +39,7 @@ namespace Scryber.Layout
             set;
         }
 
-        public LayoutEnginePageGroup(PageGroup group, IPDFLayoutEngine parent, PDFLayoutContext context, PDFStyle full)
+        public LayoutEnginePageGroup(PageGroup group, IPDFLayoutEngine parent, PDFLayoutContext context, Style full)
         {
             if (null == group)
                 throw new ArgumentNullException("group");
@@ -57,7 +57,7 @@ namespace Scryber.Layout
             get { return _context; }
         }
 
-        public void Layout(PDFLayoutContext context, Styles.PDFStyle fullstyle)
+        public void Layout(PDFLayoutContext context, Styles.Style fullstyle)
         {
             bool first = true;
 
@@ -92,12 +92,12 @@ namespace Scryber.Layout
             this.PushGroupHeader(pg, first);
             this.PushGroupFooter(pg, first);
 
-            PDFStyle style = pg.GetAppliedStyle();
+            Style style = pg.GetAppliedStyle();
 
             if (null != style)
                 this.Context.StyleStack.Push(style);
 
-            PDFStyle full = this.Context.StyleStack.GetFullStyle(pg);
+            Style full = this.Context.StyleStack.GetFullStyle(pg);
 
             PDFArtefactRegistrationSet artefacts = pg.RegisterLayoutArtefacts(this.Context, full);
 

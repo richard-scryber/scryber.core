@@ -76,9 +76,9 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_ConstructorTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFStyleKeys.SizeItemKey, target.ItemKey);
+            Assert.AreEqual(StyleKeys.SizeItemKey, target.ItemKey);
         }
 
         #endregion
@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_FullWidthTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
             bool expected = false;
             Assert.AreEqual(expected, target.FullWidth);
 
@@ -123,7 +123,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_HeightTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
 
             // Default value
 
@@ -165,7 +165,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_MaximumWidthTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
 
             // Default value
 
@@ -207,7 +207,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_MaximumHeightTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
 
             // Default value
 
@@ -249,7 +249,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_MinimumWidthTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
 
             // Default value
 
@@ -291,7 +291,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_MinimumHeightTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
 
             // Default value
 
@@ -333,7 +333,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Style Values")]
         public void Size_WidthTest()
         {
-            PDFSizeStyle target = new PDFSizeStyle();
+            SizeStyle target = new SizeStyle();
 
             // Default value
 
