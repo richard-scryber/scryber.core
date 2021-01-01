@@ -88,7 +88,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Header")]
-        public IPDFTemplate Header
+        public virtual IPDFTemplate Header
         {
             get { return _header; }
             set { _header = value; }
@@ -105,7 +105,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Footer")]
-        public IPDFTemplate Footer
+        public virtual IPDFTemplate Footer
         {
             get { return _footer; }
             set { _footer = value; }

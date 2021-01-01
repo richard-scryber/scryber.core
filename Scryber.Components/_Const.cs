@@ -70,7 +70,7 @@ namespace Scryber
         public const string UniqueIDSeparator = "_";
         
 
-        public static readonly string ScryberProducer = "Scryber PDF Generator - PerceiveIT Limited " + Utilities.FrameworkHelper.CurrentVersion;
+        public static readonly string ScryberProducer = "Scryber PDF Generator " + Utilities.FrameworkHelper.CurrentVersion;
         public const string PDFMimeType = "application/pdf";
 
         public const int StreamEncoding = 1252;

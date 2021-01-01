@@ -39,7 +39,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Continuation-Header")]
-        public IPDFTemplate ContinuationHeader
+        public virtual IPDFTemplate ContinuationHeader
         {
             get { return _header; }
             set { _header = value; }
@@ -57,7 +57,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Continuation-Footer")]
-        public IPDFTemplate ContinuationFooter
+        public virtual IPDFTemplate ContinuationFooter
         {
             get { return _footer; }
             set { _footer = value; }
