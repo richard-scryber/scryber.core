@@ -1,0 +1,41 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    <title>This is a body with headers and footers</title>
+    <style>
+        .spaced{
+            padding:20pt;
+        }
+        /* generic image style of black border and some margins and padding*/
+        img{
+            border:solid 1px black;
+            padding:4pt;
+            margin:4pt;
+        }
+    </style>
+</head>
+<body class="grey" title="Outer">
+    <header><p>This is the header</p></header>
+    <footer><p>This is the footer</p></footer>
+    <!-- The rest of the content should go into the body -->
+    <div class="spaced">
+        <p style="margin-top:0px;">This is the body</p>
+
+        <!-- A local image relative to the html-->
+        <img style="width:100pt"
+             src="images/ScyberLogo2_alpha_small.png"
+             alt="Local Scryber Logo" />
+
+        <!-- A remote image with full path -->
+        <img style="width:100pt"
+             src="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png"
+             alt="Remote logo file" />
+        <p style="margin-top:0px;">This is after the images</p>
+    </div>
+</body>
+</html>

@@ -99,7 +99,7 @@ namespace Scryber.Core.UnitTests.Html
             padding:20pt;
             font-size:medium;
             margin:0pt;
-            font-family: 'Zapf Dingbats';
+            font-family: 'Segoe UI';
         }
 
         h1{
@@ -193,6 +193,153 @@ namespace Scryber.Core.UnitTests.Html
                 
 
             }
+        }
+
+
+        [TestMethod()]
+        public void BodyAsASection()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyheadfoot.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodyheadfoot.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                    
+                }
+
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0];
+                Assert.IsNotNull(body.HeaderBlock);
+                Assert.IsNotNull(body.FooterBlock);
+            }
+
+        }
+
+        [TestMethod()]
+        public void BodyWithBinding()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bindingcontent.html");
+
+            var model = new
+            {
+                headerText = "Bound Header",
+                footerText = "Bound Footer",
+                content = "This is the bound content text",
+                bodyStyle = "background-color:red; color:#FFF; padding: 20pt",
+                bodyClass = "top"
+            };
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodyWithBinding.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.AutoBind = true;
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+            }
+
+            var body = _layoutcontext.DocumentLayout.AllPages[0];
+            Assert.IsNotNull(body.HeaderBlock);
+            Assert.IsNotNull(body.FooterBlock);
+
+            // Header content check
+
+            var pgHead = body.HeaderBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var pBlock = pgHead.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            var pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            var pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
+
+            Assert.AreEqual(pRun.Characters, model.headerText);
+
+            // Footer content check
+
+            var pgFoot = body.FooterBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pBlock = pgFoot.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
+
+            Assert.AreEqual(pRun.Characters, model.footerText);
+
+            //First page check
+            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
+
+            Assert.AreEqual(pRun.Characters, "Bound value of ");
+
+            pRun = pLine.Runs[4] as PDFTextRunCharacter;
+
+            Assert.AreEqual(pRun.Characters, model.content);
+
+            var bgColor = pBlock.FullStyle.Background.Color;
+            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+
+            var color = pBlock.FullStyle.Fill.Color;
+            Assert.AreEqual("rgb (255,255,255)", color);
+
+            //Second page check
+
+            Assert.AreEqual(_layoutcontext.DocumentLayout.AllPages.Count, 2);
+            body = _layoutcontext.DocumentLayout.AllPages[1];
+            Assert.IsNotNull(body);
+
+            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
+
+            Assert.AreEqual("This is the content on the next page ", pRun.Characters);
+
+            bgColor = pBlock.FullStyle.Background.Color;
+            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+
+            color = pBlock.FullStyle.Fill.Color;
+            Assert.AreEqual("rgb (255,255,255)", color);
+
+        }
+
+
+        [TestMethod()]
+        public void LocalAndRemoteImages()
+        {
+            var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var client = new System.Net.WebClient();
+            var data = client.DownloadData(imagepath);
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/RelativeAndAbsoluteImages.html");
+
+            Assert.IsTrue(System.IO.File.Exists(path));
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("LocalAndRemoteImages.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+                
+            }
+
         }
     }
 }

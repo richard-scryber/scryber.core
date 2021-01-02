@@ -1048,10 +1048,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public PDFImageXObject GetImageResource(string fullpath, Component owner, bool create)
         {
-            fullpath = fullpath.ToLower();
-            
             PDFImageXObject img = this.GetResource(PDFResource.XObjectResourceType, owner, fullpath, create) as PDFImageXObject;
-
             return img;
 
         }
@@ -2815,11 +2812,11 @@ namespace Scryber.Components
                 }
                 else if (System.Uri.IsWellFormedUriString(filepath, UriKind.Absolute))
                 {
-                    fullpath = filepath.ToLower();
+                    fullpath = filepath;
                 }
                 else if (System.IO.Path.IsPathRooted(filepath))
                 {
-                    fullpath = filepath.ToLower();
+                    fullpath = filepath;
                 }
                 else if (_route.Count > 0)
                 {

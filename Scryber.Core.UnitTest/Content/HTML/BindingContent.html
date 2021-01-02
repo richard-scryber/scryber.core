@@ -1,0 +1,44 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    
+    <title>This is a body with headers and footers</title>
+    <style type="text/css" >
+        .grey{
+            background-color: #333;
+            color: #EEE;
+        }
+        p{
+            margin-top:0px;
+        }
+        div.pg-break-after{ page-break-after:always;}
+    </style>
+</head>
+
+<body class="grey" title="Outer">
+
+    <header>
+        <p class="grey">{@:model.headerText}</p>
+    </header>
+    <footer>
+        <p class="grey">{@:model.footerText}</p>
+    </footer>
+
+    <!-- The rest of the content should go into the body -->
+    <p class='{@:model.bodyClass}' title="{@:model.content}" style="{@:model.bodyStyle}" >
+     Bound value of {@:model.content}</p>
+
+    <div class="pg-break-after"></div>
+
+    <p class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
+        This is the content on the next page
+    </p>
+    
+    
+</body>
+</html>

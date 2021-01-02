@@ -61,6 +61,8 @@ namespace Scryber.Generation
         private const string ItemBindingKey = "item";
         private const string QueryStringBindingKey = "qs";
         private const string XPathBindingKey = "xpath";
+        private static System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"{\w+\:[\w\.\[\]]+}|{@\:[\w\.\[\]]+}");
+
 
         private static object _configlock = new object();
         private static Dictionary<string, IPDFBindingExpressionFactory> _configFactories = null;
@@ -110,6 +112,69 @@ namespace Scryber.Generation
         }
 
         #endregion
+
+        public static bool ContainsBindingExpressions(string value, out string[] parts, out IPDFBindingExpressionFactory[] factories)
+        {
+
+            if (value.IndexOf(BindingStartChar) < 0)
+            {
+                parts = null;
+                factories = null;
+                return false;
+            }
+
+            var match = regex.Match(value);
+            if(match == null || match.Success == false)
+            {
+                parts = null;
+                factories = null;
+                return false;
+            }
+
+            List<string> partColl = new List<string>();
+            List<IPDFBindingExpressionFactory> factColl = new List<IPDFBindingExpressionFactory>();
+
+            var pos = 0;
+            bool found = false;
+
+            while(match != null && match.Success)
+            {
+                string sub;
+                IPDFBindingExpressionFactory fact;
+
+                if(match.Index > pos)
+                {
+                    sub = value.Substring(pos, match.Index - pos);
+                    partColl.Add(sub);
+                    factColl.Add(null);
+                }
+                sub = match.Value;
+                if(IsBindingExpression(ref sub, out fact))
+                {
+                    partColl.Add(sub);
+                    factColl.Add(fact);
+                    found = true;
+                }
+                else
+                {
+                    partColl.Add(match.Value);
+                    factColl.Add(null);
+                }
+                pos = match.Index + match.Value.Length;
+                match = match.NextMatch();
+            }
+
+            if(pos < value.Length)
+            {
+                partColl.Add(value.Substring(pos));
+                factColl.Add(null);
+            }
+
+            parts = partColl.ToArray();
+            factories = factColl.ToArray();
+
+            return found;
+        }
 
         #region internal static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings)
 

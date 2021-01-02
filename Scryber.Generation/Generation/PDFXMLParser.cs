@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Data.Common;
 
 namespace Scryber.Generation
 {
@@ -1471,22 +1472,68 @@ namespace Scryber.Generation
         private void AppendTextToCollection(StringBuilder textString, ParserArrayDefinition arraydefn, object collection)
         {
             TextFormat format = TextFormat.XML;
-            Type literaltype = this.Settings.TextLiteralType;
-            object obj = CreateInstance(literaltype);
-            if (!(obj is IPDFTextLiteral))
-                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, literaltype, typeof(IPDFTextLiteral)));
-
-            IPDFTextLiteral literal = (IPDFTextLiteral)obj;
+            
+            //Add any bindings to the text
             string textSubString = textString.ToString();
-            literal.Text = textSubString;
+
+            string[] splits;
+            IPDFBindingExpressionFactory[] factories;
+
+            if(ParserHelper.ContainsBindingExpressions(textSubString, out splits, out factories))
+            {
+                for (int i = 0; i < splits.Length; i++)
+                {
+                    var content = splits[i];
+                    var factory = factories[i];
+                    if(null == factory)
+                    {
+                        AddTextString(content, arraydefn, collection, format);
+                    }
+                    else
+                    {
+                        AddTextBindingExpression(content, arraydefn, collection, factory, format);
+                    }
+                }
+            }
+            else
+            {
+                AddTextString(textSubString, arraydefn, collection, format);
+            }
+            
+        }
+
+        private void AddTextBindingExpression(string expr, ParserArrayDefinition arraydefn, object collection, IPDFBindingExpressionFactory factory, TextFormat format)
+        {
+            Type literaltype = this.Settings.TextLiteralType;
+
+            IPDFTextLiteral lit = (IPDFTextLiteral)CreateInstance(literaltype);
+
+            IPDFBindableComponent bindable = (IPDFBindableComponent)lit;
+
+            lit.ReaderFormat = format;
+            arraydefn.AddToCollection(collection, lit);
+
+            var cdef = this.AssertGetClassDefinition(this.Settings.TextLiteralType);
+            var prop = cdef.Attributes["value"];
+
+            GenerateBindingExpression(null, lit, cdef, prop, expr, factory);
+
+        }
+
+        private void AddTextString(string text, ParserArrayDefinition arraydefn, object collection, TextFormat format)
+        {
+            Type literaltype = this.Settings.TextLiteralType;
+            IPDFTextLiteral literal = (IPDFTextLiteral)CreateInstance(literaltype);
+            
+            literal.Text = text;
             literal.ReaderFormat = format;
 
             if (this.Settings.TraceLog.ShouldLog(TraceLevel.Debug))
             {
-                if (textSubString.Length > 60)
-                    textSubString = textSubString.Substring(0, 30) + "..." + textSubString.Substring(textString.Length - 30);
+                if (text.Length > 60)
+                    text = text.Substring(0, 30) + "..." + text.Substring(text.Length - 30);
 
-                this.LogAdd(null, TraceLevel.Debug, "Generated text literal component with text '{0}' in format {1}", textSubString, format);
+                this.LogAdd(null, TraceLevel.Debug, "Generated text literal component with text '{0}' in format {1}", text, format);
             }
 
             arraydefn.AddToCollection(collection, literal);
@@ -1572,6 +1619,25 @@ namespace Scryber.Generation
 
             if (null == cdef)
                 throw this.BuildParserXMLException(reader, Errors.NoTypeFoundWithPDFComponentNameInNamespace, reader.LocalName, reader.NamespaceURI);
+            return cdef;
+        }
+
+        
+        /// <summary>
+        /// Attempts to retrieve the class definition of the element the XmlReader is currently positioned on. 
+        /// Setting isremote to true if the reference is to a remote component.
+        /// If the definition cannot be found then an exception is raised.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="isremote"></param>
+        /// <returns></returns>
+        private ParserClassDefinition AssertGetClassDefinition(Type type)
+        {
+            
+            ParserClassDefinition cdef = ParserDefintionFactory.GetClassDefinition(type);
+
+            if (null == cdef)
+                throw new PDFParserException("Parser definition could not be found for type '" + type.FullName + "'");
             return cdef;
         }
 
@@ -1911,7 +1977,7 @@ namespace Scryber.Generation
         /// <returns></returns>
         protected Exception BuildParserXMLException(Exception inner, XmlReader reader, string msg, params object[] args)
         {
-            if (reader is IXmlLineInfo)
+            if (null != reader && (reader is IXmlLineInfo))
             {
                 IXmlLineInfo li = (IXmlLineInfo)reader;
                 msg = string.Format(msg, args) + " [line " + li.LineNumber + ", pos " + li.LinePosition + "]";

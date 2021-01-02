@@ -23,9 +23,11 @@ namespace Scryber.Html.Components
         public override ComponentList Contents => base.Contents;
 
         [PDFElement("header")]
+        [PDFTemplate()]
         public override IPDFTemplate Header { get => base.Header; set => base.Header = value; }
 
         [PDFElement("footer")]
+        [PDFTemplate()]
         public override IPDFTemplate Footer { get => base.Footer; set => base.Footer = value; }
 
         /// <summary>
