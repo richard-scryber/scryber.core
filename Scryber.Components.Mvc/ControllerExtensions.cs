@@ -3,7 +3,14 @@ using System.Collections.Generic;
 using System.Collections;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Linq;
+using System.Threading.Tasks;
+using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Scryber.Components.Mvc
 {
@@ -75,7 +82,6 @@ namespace Scryber.Components.Mvc
         }
 
         #endregion
-
 
         #region Generic type model
 
@@ -150,6 +156,76 @@ namespace Scryber.Components.Mvc
 
         #endregion
 
+        #region ParseView[<TModel>](this Controller controller...)
+
+        public static async Task<Document> ParseView<TModel>(this Controller controller, string viewName, TModel model = null, bool partial = false) where TModel : class
+        {
+            StringBuilder builder = new StringBuilder();
+            string path;
+
+            using (StringWriter sw = new StringWriter(builder))
+            {
+                path = await RenderViewAsync(controller, viewName, model, sw, partial);
+
+                if (string.IsNullOrEmpty(path))
+                    return null;
+            }
+
+            using (StringReader reader = new StringReader(builder.ToString()))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.LocalFile);
+                var request = controller.Request;
+                doc.LoadedSource = request.Scheme + "://" + request.Host.Value + request.Path.Value;
+
+                return doc;
+            }
+
+        }
+
+
+        internal static async Task<string> RenderViewAsync<TModel>(Controller controller, string viewName, TModel model, TextWriter writer, bool partial) where TModel : class
+        {
+            string path;
+
+            if (string.IsNullOrEmpty(viewName))
+            {
+                viewName = controller.ControllerContext.ActionDescriptor.ActionName;
+            }
+
+            if (null != model)
+                controller.ViewData.Model = model;
+
+
+            IViewEngine viewEngine = controller.HttpContext.RequestServices.GetService(typeof(ICompositeViewEngine)) as ICompositeViewEngine;
+            ViewEngineResult viewResult = viewEngine.FindView(controller.ControllerContext, viewName, !partial);
+
+            if (viewResult.Success == false)
+            {
+                path = string.Empty;
+                return path;
+            }
+
+            path = viewResult.View.Path;
+
+            ViewContext viewContext = new ViewContext(
+                controller.ControllerContext,
+                viewResult.View,
+                controller.ViewData,
+                controller.TempData,
+                writer,
+                new HtmlHelperOptions()
+            );
+
+            await viewResult.View.RenderAsync(viewContext);
+
+            return path;
+
+        }
+
+
+        #endregion
+
+        #region GetDocumentName(Document doc, ControllerBase controller)
 
         private static string GetDocumentName(Document doc, ControllerBase controller)
         {
@@ -181,6 +257,8 @@ namespace Scryber.Components.Mvc
 
             return name;
         }
+
+        #endregion
 
     }
 }

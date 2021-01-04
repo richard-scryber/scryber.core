@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.0.1-alpha</PackageVersion>
+    <PackageVersion>5.0.2-alpha</PackageVersion>
     <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation library.
@@ -19,7 +19,11 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.1-alpha
+    <PackageReleaseNotes>5.0.2-alpha
+
+Added the support for parsing a view into a document, allowing for a model.
+
+5.0.1-alpha
 
 Increased support for HTML parsing using DTD entities and xhtml namespace, along with recompilation for the dotnet 5 framework.
 
@@ -87,6 +91,7 @@ Increased support for HTML parsing using DTD entities and xhtml namespace, along
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Scryber.Core" Version="5.0.1-alpha" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
   </ItemGroup>
       
   <ItemGroup>
