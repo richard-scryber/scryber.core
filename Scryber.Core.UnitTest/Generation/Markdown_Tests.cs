@@ -16,7 +16,7 @@ namespace Scryber.Core.UnitTests.Generation
         public void MarkdownToHtmlTest()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/Markdown.md");
+            path = System.IO.Path.Combine(path, "../../../Content/Markdown/Markdown.md");
             path = System.IO.Path.GetFullPath(path);
             var content = System.IO.File.ReadAllText(path);
             
@@ -31,7 +31,7 @@ namespace Scryber.Core.UnitTests.Generation
         public void MarkdownToPDFTest()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/Markdown.md");
+            path = System.IO.Path.Combine(path, "../../../Content/Markdown/Markdown.md");
             path = System.IO.Path.GetFullPath(path);
             var content = System.IO.File.ReadAllText(path);
 

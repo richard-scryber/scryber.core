@@ -64,9 +64,9 @@ namespace Scryber.Core.UnitTests.Binding
 
 #if MAC_OS
                 // back up from obj/Debug/TestDirectoryName
-                path = System.IO.Path.Combine(path, "../../../Content/Toroid24.jpg");
+                path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid24.jpg");
 #else
-                path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/Toroid24.jpg"); ;
+                path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
 #endif
 
                 path = System.IO.Path.GetFullPath(path);
@@ -93,9 +93,9 @@ namespace Scryber.Core.UnitTests.Binding
 
 #if MAC_OS
             // back up from obj/Debug/TestDirectoryName
-            path = System.IO.Path.Combine(path, "../../../Content/");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/");
 #else
-            path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/"); ;
+            path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/HTML/Images/"); ;
 #endif
 
             path = System.IO.Path.GetFullPath(path);

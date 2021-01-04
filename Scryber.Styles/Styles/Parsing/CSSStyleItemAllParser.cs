@@ -74,6 +74,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BackgroundColor, new CSSBackgroundColorParser());
             all.Add(CSSStyleItems.BackgroundImage, new CSSBackgroundImageParser());
             all.Add(CSSStyleItems.BackgroundRepeat, new CSSBackgroundRepeatParser());
+            all.Add(CSSStyleItems.BackgroundPosition, new CSSBackgroundPositionParser());
+            all.Add(CSSStyleItems.BackgroundSize, new CSSBackgroundSizeParser());
 
             all.Add(CSSStyleItems.FontStyle, new CSSFontStyleParser());
             all.Add(CSSStyleItems.FontWeight, new CSSFontWeightParser());

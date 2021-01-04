@@ -220,7 +220,7 @@ body.grey div.reverse{
         {
             //This is a minimised version of the styles above
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/include.min.css");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/CSS/include.min.css");
             path = System.IO.Path.GetFullPath(path);
             var css = System.IO.File.ReadAllText(path);
 

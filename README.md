@@ -1,9 +1,7 @@
 # scryber.core
-The dotnet core scryber pdf creation library
+Make documents easily.
 
-## Scryber PDF Library
-
-The scryber library is an advanced, complete, pdf creation library for dotnet core. 
+The scryber engine is an advanced, complete, pdf creation library for dotnet core. 
 It supports the easy definition of documents, pages, content, shapes and images either by xml templates or simple code. 
 
 With a styles based layout it is easy to create good looking and flowing documents. 
@@ -26,7 +24,7 @@ The full documentation is available here
 
 [scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
 
-## Hello World Plus
+## Hello World
 
 Just a bit more than a hello world example.
 
@@ -34,36 +32,93 @@ Just a bit more than a hello world example.
 
 ```xml
 
-      <?xml version='1.0' encoding='utf-8' ?>
-      <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-                    xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
-                    xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
-        <Params>
-          <doc:String-Param id='Title' value='Hello World'  />
-        </Params>
-        <Styles>
-          <styles:Style applied-type='doc:Page'>
-            <styles:Font family='Arial' size='14pt' />
-          </styles:Style>
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                        xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                        xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                        title='Hello World' >
+    <Params>
+      <doc:Object-Param id='model'  />
+    </Params>
+    <Info >
+        <Title>Hello World</Title>
+    </Info>
+    <Styles>
+      <!-- Standard page font -->
+      <styles:Style match='doc:Page'>
+        <styles:Font family='sans-serif' size='14pt' />
+      </styles:Style>
 
-          <styles:Style applied-class='heading' >
-            <styles:Fill color='#FF7777'/>
-            <styles:Text decoration='Underline'/>
-          </styles:Style>
-      
-        </Styles>
-        <Pages>
+      <!-- Class definition -->
+      <styles:Style match='p.header' >
+        <styles:Background color='#333'
+                img-src='../html/images/ScyberLogo2_alpha_small.png' repeat='None' 
+                x-pos='10pt' y-pos='10pt' x-size='20pt' />
+        <styles:Fill color='#AAA' />
+        <styles:Margins top='0pt' />
+        <styles:Padding all='10pt' left='35pt' />
+      </styles:Style>
 
-          <doc:Page styles:margins='20pt'>
-            <Content>
-              <doc:H1 styles:class='heading' text='{@:Title}' />
-              <doc:Div>We hope you like scryber.</doc:Div>
+    </Styles>
 
-            </Content>
-          </doc:Page>
-        </Pages>
+    <Pages>
+  
+      <doc:Page styles:padding='0pt'>
+        <!-- Header definition, with the class -->
+        <Header>
+            <doc:Para styles:class='header'>Scryber document creation</doc:Para>
+        </Header>
+        <Content>
+         <!-- Single page content with bound data -->
+         <doc:Div styles:padding='10pt' >
+            <doc:H2 styles:style='{@:model.TitleStyle}' text='{@:model.Title}' />
+            <doc:Div>We hope you like scryber.</doc:Div>
+          </doc:Div>
+        </Content>
+      </doc:Page>
+    </Pages>
 
-      </doc:Document>
+    </doc:Document>
+```
+
+### Or using XHTML
+
+```html
+
+    <!DOCTYPE HTML >
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+        <head>
+            <meta charset='utf-8' name='author' content='Richard Hewitson' />
+            <title>Hello World</title>
+            <style>
+                body{
+                    font-family: sans-serif;
+                    font-size: 14pt;
+                }
+
+                p.header {
+                    color: #AAA;
+                    background-color: #333;
+                    background-image: url('../html/images/ScyberLogo2_alpha_small.png');
+                    background-repeat: no-repeat;
+                    background-position: 10pt 10pt;
+                    background-size: 20pt 20pt;
+                    margin-top: 0pt;
+                    padding: 10pt 10pt 10pt 35pt;
+                }
+            </style>
+        </head>
+        <body>
+            <header>
+                <p class="header">Scryber document creation</p>
+            </header>
+            <div style="padding:10pt" >
+                <h2 class="heading" style="{@:model.TitleStyle}" >{@:model.Title}</h2>
+                <div>We hope you like scryber.</div>
+            </div>
+        </body>
+    </html>
+
 ```
 
 ### From your application code.
@@ -74,11 +129,14 @@ Just a bit more than a hello world example.
 
       static void Main(string[] args)
       {
-          using(var doc = PDFDocument.ParseDocument("[input template].pdfx"))
+          using(var doc = Document.ParseDocument("[input template]"))
           {
-              doc.Params["Title"] = "Hello World from Scryber";
-              var page = doc.Pages[0] as PDFPage;
-              page.Contents.Add(new PDFLabel(){ Text = "My Content" });
+              doc.Params["model"] = new
+                {
+                    Title = "This is the title",
+                    TitleStyle = "color:red;"
+                };
+              
               doc.ProcessDocument("[output file].pdf");
           }
       }
@@ -91,14 +149,16 @@ Just a bit more than a hello world example.
       //using Scryber.Components
       //using Scryber.Components.Mvc
 
-      public IActionResult HelloWorld(string title = "Hello World from Scryber")
+      public IActionResult HelloWorld(string title = "This is the title")
       {
-        using(var doc = PDFDocument.ParseDocument("[input template].pdfx"))
+          using(var doc = Document.ParseDocument("[input template]"))
           {
-              doc.Params["Title"] = title;
-              var page = doc.Pages[0] as PDFPage;
-              page.Contents.Add(new PDFLabel(){ Text = "My Content" });
-          
+              doc.Params["model"] = new
+                {
+                    Title = title,
+                    TitleStyle = "color:red;"
+                };
+              
               return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
           }
       }

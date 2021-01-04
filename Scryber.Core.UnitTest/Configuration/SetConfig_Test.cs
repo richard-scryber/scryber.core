@@ -234,7 +234,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             var trace = service.TracingOptions;
             Assert.IsNotNull(trace, "The tracing options are null");
-            Assert.AreEqual(TraceRecordLevel.Diagnostic, trace.TraceLevel, "Trace level is not Debug");
+            Assert.AreEqual(TraceRecordLevel.Warnings, trace.TraceLevel, "Trace level is not Debug");
 
             Assert.IsNotNull(trace.Loggers, "The tracing loggers is null");
             Assert.AreEqual(2, trace.Loggers.Length, "The length of the tracing loggers is not 1");
@@ -393,8 +393,8 @@ namespace Scryber.Core.UnitTests.Configuration
                     var img = doc.FindAComponentById("LoadedImage") as Image;
                     Assert.IsNotNull(img.XObject, "No Dynamic image was loaded as an XObject");
                     var key = img.XObject.ResourceKey;
-                    var expected = "/this+is+an+image.dynamic";
-                    Assert.IsTrue(key.EndsWith(expected));
+                    var expected = "/This+is+an+image.dynamic";
+                    Assert.IsTrue(key.EndsWith(expected), "The key '" + key + "' does not end with '" + expected + "'");
                     //Assert.IsTrue(doc.SharedResources.GetResource(Resources.PDFImageXObject.XObjectResourceType, img.Source))
                 }
             }

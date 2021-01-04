@@ -57,7 +57,7 @@ namespace Scryber.Core.UnitTests.Html
                             </head>
 
                             <body class='strong' style='margin:20px;' >
-                                <p id='myPara' style='border: solid 1px blue; padding: 5px;' >This is a paragraph&agrave;s of content</p>
+                                <p id='myPara' style='border: solid 1px blue; padding: 5px;' >This is a paragraph of content</p>
                             </body>
 
                         </html>";
@@ -144,7 +144,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LoadHtmlFromSource()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/sample.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/sample.html");
 
             using (var doc = Document.ParseDocument(path))
             {

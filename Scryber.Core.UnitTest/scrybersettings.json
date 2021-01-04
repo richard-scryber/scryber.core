@@ -67,7 +67,7 @@
       ]
     },
     "Tracing": {
-      "TraceLevel": "Warning",
+      "TraceLevel": "Warnings",
       "Loggers": [
         {
           "Name": "Spoof",
