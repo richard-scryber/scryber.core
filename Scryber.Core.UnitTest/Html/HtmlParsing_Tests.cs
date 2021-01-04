@@ -341,5 +341,52 @@ namespace Scryber.Core.UnitTests.Html
             }
 
         }
+
+        [TestMethod()]
+        public void BodyTemplating()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodytemplating.html");
+
+            dynamic[] all = new dynamic[100];
+            int total = 0;
+
+            for(var i = 0; i < 100; i++)
+            {
+                var val = i + 1;
+                all[i] = new { Name = "Name " + val.ToString(), Cost = "£" + val + ".00" };
+                total += val;
+            }
+
+            var model = new
+            {
+                Items = all,
+                One = new
+                {
+                    Name = "Total",
+                    Cost = "£" + total + ".00"
+                }
+            };
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodytemplating.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0];
+                Assert.IsNotNull(body.HeaderBlock);
+                Assert.IsNotNull(body.FooterBlock);
+            }
+
+        }
     }
 }

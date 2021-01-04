@@ -57,6 +57,22 @@ namespace Scryber.Components.Mvc
         }
 
         /// <summary>
+        /// Generate and return a PDF document file result from the template in the content stream
+        /// </summary>
+        /// <param name="controller">Self reference to the controller as an extension method</param>
+        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="path">The path to the file for any relative references</param>
+        /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
+        /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
+        /// <returns>A file action result with the appropriate headers and content type</returns>
+        public static IActionResult PDF(this ControllerBase controller, System.IO.Stream content, string path, bool inline = true, string outputFileName = "")
+        {
+            var doc = Document.ParseDocument(content, path, ParseSourceType.DynamicContent);
+
+            return PDF(controller, doc, inline, outputFileName);
+        }
+
+        /// <summary>
         /// Generate and return a PDF document file result from the PDFDocument instance
         /// </summary>
         /// <param name="controller">Self reference to the controller as an extension method</param>
@@ -125,6 +141,24 @@ namespace Scryber.Components.Mvc
         }
 
         /// <summary>
+        /// Generate and return a PDF document file result from the template in the content stream
+        /// </summary>
+        /// <typeparam name="T">The generic type declaration for the model to be passed to the document when binding</typeparam>
+        /// <param name="controller">Self reference to the controller as an extension method</param>
+        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="path">The path of the file for any relative references</param>
+        /// <param name="model">The instance of the model to use when binding</param>
+        /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
+        /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
+        /// <returns>A file action result with the appropriate headers and content type</returns>
+        public static IActionResult PDF<T>(this ControllerBase controller, System.IO.Stream content, string path, T model, bool inline = true, string outputFileName = "")
+        {
+            var doc = Document.ParseDocument(content,path, ParseSourceType.DynamicContent);
+
+            return PDF(controller, doc, model, inline, outputFileName);
+        }
+
+        /// <summary>
         /// Generate and return a PDF document file result from the PDFDocument instance
         /// </summary>
         /// <typeparam name="T">The generic type declaration for the model to be passed to the document when binding</typeparam>
@@ -158,7 +192,7 @@ namespace Scryber.Components.Mvc
 
         #region ParseView[<TModel>](this Controller controller...)
 
-        public static async Task<Document> ParseView<TModel>(this Controller controller, string viewName, TModel model = null, bool partial = false) where TModel : class
+        public static async Task<Document> ParseDocumentView<TModel>(this Controller controller, string viewName, TModel model = null, bool partial = false) where TModel : class
         {
             StringBuilder builder = new StringBuilder();
             string path;
@@ -173,9 +207,11 @@ namespace Scryber.Components.Mvc
 
             using (StringReader reader = new StringReader(builder.ToString()))
             {
-                var doc = Document.ParseDocument(reader, ParseSourceType.LocalFile);
                 var request = controller.Request;
-                doc.LoadedSource = request.Scheme + "://" + request.Host.Value + request.Path.Value;
+                path = request.Scheme + "://" + request.Host.Value + request.Path.Value;
+                var doc = Document.ParseDocument(reader, path, ParseSourceType.LocalFile);
+
+                doc.LoadedSource = path;
 
                 return doc;
             }

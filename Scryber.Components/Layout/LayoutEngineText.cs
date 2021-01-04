@@ -263,9 +263,12 @@ namespace Scryber.Layout
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Layout);
 
             this._reader = this.TextComponent.CreateReader(context, fullstyle);
-            this.ContinueLayout = true;
 
-            this.DoLayoutText();
+            if (null != this._reader)
+            {
+                this.ContinueLayout = true;
+                this.DoLayoutText();
+            }
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Layout);
 

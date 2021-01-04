@@ -85,6 +85,9 @@ namespace Scryber.Components
 
         public virtual PDFTextReader CreateReader(PDFLayoutContext context, Style fullstyle)
         {
+            if (string.IsNullOrEmpty(this.Text))
+                return null;
+
             TextFormat format = this.ReaderFormat;
             bool preserveWhitespace = fullstyle.GetValue(StyleKeys.TextWhitespaceKey, false);
             if (preserveWhitespace)

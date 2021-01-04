@@ -1906,9 +1906,10 @@ namespace Scryber.Styles.Parsing
         {
             int number;
 
-            if (reader.ReadNextValue() && ParseInteger(reader.CurrentTextValue, out number) && number >= 1 && number < 100)
+            if (reader.ReadNextValue())
             {
-                this.SetValue(onStyle, number);
+                if (ParseInteger(reader.CurrentTextValue, out number))
+                    this.SetValue(onStyle, number);
                 return true;
             }
             return false;

@@ -282,7 +282,7 @@ namespace Scryber.Styles.Parsing
                 end = this.InnerEnumerator.Offset;
             }
 
-            if (end > start)
+            if (end >= start)
             {
                 this.Buffer.Append(this.InnerEnumerator.InnerString, start, (end - start) + 1);
                 this._value = this.Buffer.ToString();
