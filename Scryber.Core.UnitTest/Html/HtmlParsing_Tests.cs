@@ -159,7 +159,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RemoteCssFileLoading()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/Include.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>

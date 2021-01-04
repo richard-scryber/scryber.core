@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Binding
             doc.Params["model"] = model;
             doc.LayoutComplete += Doc_LayoutComplete;
 
-            using (var stream = new System.IO.FileStream(path + "ImageOutput.pdf",System.IO.FileMode.Create))
+            using (var stream = DocStreams.GetOutputStream("DataImageOutput.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }

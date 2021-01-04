@@ -84,9 +84,8 @@ namespace Scryber.Core.UnitTests.Html
             var one = col[0] as StyleDefn;
 
             Assert.AreEqual("body.grey", one.Match.ToString());
-            Assert.AreEqual(3, one.ValueCount);
+            Assert.AreEqual(2, one.ValueCount);
             Assert.AreEqual((PDFColor)"#808080", one.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
-            Assert.AreEqual(FillType.Solid, one.GetValue(StyleKeys.BgStyleKey, FillType.None));
             Assert.AreEqual((PDFColor)"#222", one.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
             var two = col[1] as StyleDefn;
@@ -100,9 +99,8 @@ namespace Scryber.Core.UnitTests.Html
             var three = col[2] as StyleDefn;
 
             Assert.AreEqual("body.grey div.reverse", three.Match.ToString());
-            Assert.AreEqual(3, one.ValueCount);
+            Assert.AreEqual(2, one.ValueCount);
             Assert.AreEqual((PDFColor)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
-            Assert.AreEqual(FillType.Solid, three.GetValue(StyleKeys.BgStyleKey, FillType.None));
             Assert.AreEqual((PDFColor)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
 
@@ -180,7 +178,7 @@ body.grey div.reverse{
 
             //Second one normal style
             Assert.IsInstanceOfType(col[1], typeof(StyleDefn));
-            Assert.AreEqual(3, col[1].ValueCount);
+            Assert.AreEqual(2, col[1].ValueCount);
 
             //Third is a media for print
             Assert.IsInstanceOfType(col[2], typeof(StyleMediaGroup));
@@ -196,7 +194,7 @@ body.grey div.reverse{
             Assert.AreEqual("body.grey div", (col[3] as StyleDefn).Match.ToString());
 
             Assert.IsInstanceOfType(col[4], typeof(StyleDefn));
-            Assert.AreEqual(3, col[4].ValueCount); //Include the background type
+            Assert.AreEqual(2, col[4].ValueCount); //Include the background type
             Assert.AreEqual("body.grey div.reverse", (col[4] as StyleDefn).Match.ToString());
 
             //Sixth is nested
@@ -248,7 +246,7 @@ body.grey div.reverse{
             //Second one normal style
             Assert.IsInstanceOfType(col[1], typeof(StyleDefn));
             Assert.AreEqual("body.grey", (media.Styles[0] as StyleDefn).Match.ToString());
-            Assert.AreEqual(3, col[1].ValueCount);
+            Assert.AreEqual(2, col[1].ValueCount);
 
             //Third is a media for print
             Assert.IsInstanceOfType(col[2], typeof(StyleMediaGroup));
@@ -264,7 +262,7 @@ body.grey div.reverse{
             Assert.AreEqual("body.grey div", (col[3] as StyleDefn).Match.ToString());
 
             Assert.IsInstanceOfType(col[4], typeof(StyleDefn));
-            Assert.AreEqual(3, col[4].ValueCount); //Include the background type
+            Assert.AreEqual(2, col[4].ValueCount); //Include the background type
             Assert.AreEqual("body.grey div.reverse", (col[4] as StyleDefn).Match.ToString());
 
             //Sixth is nested
@@ -286,7 +284,7 @@ body.grey div.reverse{
         [TestMethod()]
         public void RemoteCssFileLoading()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/Include.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
