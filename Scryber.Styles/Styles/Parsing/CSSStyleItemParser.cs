@@ -855,8 +855,8 @@ namespace Scryber.Styles.Parsing
             bool result = base.SetStyleValue(onStyle, reader);
 
             //We need to set the fill style to solid if we have a color.
-            if (result)
-                onStyle.SetValue(StyleKeys.BgStyleKey, Drawing.FillType.Solid);
+            //if (result)
+            //    onStyle.SetValue(StyleKeys.BgStyleKey, Drawing.FillType.Solid);
 
             return result;
         }
@@ -881,8 +881,8 @@ namespace Scryber.Styles.Parsing
             bool result = base.SetStyleValue(onStyle, reader);
 
             //We need to set the fill style to image if we have a value.
-            if (result)
-                onStyle.SetValue(StyleKeys.BgStyleKey, Drawing.FillType.Image);
+            //if (result)
+            //   onStyle.SetValue(StyleKeys.BgStyleKey, Drawing.FillType.Image);
 
             return result;
         }
@@ -890,6 +890,104 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    #region public class CSSBackgroundSizeParser : CSSStyleValueParser
+
+    public class CSSBackgroundSizeParser : CSSStyleValueParser
+    {
+        public CSSBackgroundSizeParser(): base(CSSStyleItems.BackgroundSize)
+        {
+        }
+
+        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            string h, v;
+            PDFUnit uh, uv;
+
+            if (reader.ReadNextValue())
+            {
+                h = reader.CurrentTextValue;
+
+                if (reader.ReadNextValue())
+                    v = reader.CurrentTextValue;
+                else
+                    v = h;
+
+                bool set = false;
+
+                if (PDFUnit.TryParse(h, out uh))
+                {
+                    style.Background.PatternXSize = uh;
+                    set = true;
+                }
+                else
+                    set = false;
+
+                if (PDFUnit.TryParse(v, out uv))
+                {
+                    style.Background.PatternYSize = uv;
+                    set = true;
+                }
+                else
+                    set = false;
+
+                return set;
+            }
+            else
+                return false;
+        }
+    }
+
+    #endregion
+
+
+    #region public class CSSBackgroundPositionParser : CSSStyleValueParser
+
+    public class CSSBackgroundPositionParser : CSSStyleValueParser
+    {
+        public CSSBackgroundPositionParser() : base(CSSStyleItems.BackgroundPosition)
+        {
+        }
+
+        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            string h, v;
+            PDFUnit uh, uv;
+
+            if (reader.ReadNextValue())
+            {
+                h = reader.CurrentTextValue;
+
+                if (reader.ReadNextValue())
+                    v = reader.CurrentTextValue;
+                else
+                    v = h;
+
+                bool set = false;
+
+                if (PDFUnit.TryParse(h, out uh))
+                {
+                    style.Background.PatternXPosition = uh;
+                    set = true;
+                }
+                else
+                    set = false;
+
+                if (PDFUnit.TryParse(v, out uv))
+                {
+                    style.Background.PatternYPosition = uv;
+                    set = true;
+                }
+                else
+                    set = false;
+
+                return set;
+            }
+            else
+                return false;
+        }
+    }
+
+    #endregion
     #region public class CSSBackgroundRepeatParser : CSSEnumStyleParser<PatternRepeat>
 
     /// <summary>
@@ -941,7 +1039,7 @@ namespace Scryber.Styles.Parsing
                     return true;
 
                 default:
-                    repeat = PatternRepeat.None;
+                    repeat = PatternRepeat.RepeatBoth;
                     return false;
 
             }

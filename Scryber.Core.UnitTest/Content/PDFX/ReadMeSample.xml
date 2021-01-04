@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                    xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                    xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+                    title='Hello World' >
+<Params>
+  <doc:Object-Param id='model'  />
+</Params>
+<Info >
+    <Title>Hello World</Title>
+</Info>
+<Styles>
+  <!-- Standard page font -->
+  <styles:Style match='doc:Page'>
+    <styles:Font family='sans-serif' size='14pt' />
+  </styles:Style>
+
+  <!-- Class definition -->
+  <styles:Style match='p.header' >
+    <styles:Background color='#333'
+            img-src='../html/images/ScyberLogo2_alpha_small.png' repeat='None' 
+            x-pos='10pt' y-pos='10pt' x-size='20pt' />
+    <styles:Fill color='#AAA' />
+    <styles:Margins top='0pt' />
+    <styles:Padding all='10pt' left='35pt' />
+  </styles:Style>
+
+</Styles>
+
+<Pages>
+  
+  <doc:Page styles:padding='0pt'>
+    <!-- Header definition, with the class -->
+    <Header>
+        <doc:Para styles:class='header'>Scryber document creation</doc:Para>
+    </Header>
+    <Content>
+     <!-- Single page content with bound data -->
+     <doc:Div styles:padding='10pt' >
+        <doc:H2 styles:style='{@:model.TitleStyle}' text='{@:model.Title}' />
+        <doc:Div>We hope you like scryber.</doc:Div>
+      </doc:Div>
+    </Content>
+  </doc:Page>
+</Pages>
+
+</doc:Document>

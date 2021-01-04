@@ -69,6 +69,8 @@ namespace Scryber.Html
         public const string BackgroundImage = "background-image";
         public const string BackgroundColor = "background-color";
         public const string BackgroundRepeat = "background-repeat";
+        public const string BackgroundSize = "background-size";
+        public const string BackgroundPosition = "background-position";
 
         public const string FontStyle = "font-style";
         public const string FontWeight = "font-weight";

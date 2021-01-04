@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Scryber.Binding
@@ -35,6 +36,9 @@ namespace Scryber.Binding
         private string _expr;
         private System.Reflection.PropertyInfo _property;
         private ParserItemExpression _path;
+        private bool? _parsable;
+        private MethodInfo _parseMethod;
+        private static Type[] _parseParams = new Type[] { typeof(string) };
 
         public string Expression
         {
@@ -63,10 +67,14 @@ namespace Scryber.Binding
                     {
                         if (args.Context.ShouldLogVerbose)
                             args.Context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the item binding expression '" + this.Expression + "' to value '" + value.ToString() + "'");
-
+                        MethodInfo parse;
                         if (this._property.PropertyType == typeof(string))
                             value = value.ToString();
 
+                        else if(this.IsParsable(out parse) && (value is string))
+                        {
+                            value = parse.Invoke(null, new object[] { value as string });
+                        }
                         this._property.SetValue(sender, value, null);
                     }
                     else if (args.Context.ShouldLogVerbose)
@@ -191,6 +199,29 @@ namespace Scryber.Binding
             }
 
             return binding;
+        }
+
+        
+
+        private bool IsParsable(out MethodInfo found)
+        {
+            if(!_parsable.HasValue)
+            {
+                _parsable = false;
+                var type = this._property.PropertyType;
+                var attr = type.GetCustomAttribute(typeof(PDFParsableValueAttribute), true);
+                if (attr != null)
+                {
+                    var meth = type.GetMethod("Parse", _parseParams);
+                    if (null == meth)
+                        throw new InvalidOperationException("The class " + type.FullName + " declares the PDFParsableComponentAttribute, but does not appear to have a Parse(string) static method");
+                    _parseMethod = meth;
+                    _parsable = true;
+                }
+            }
+
+            found = _parseMethod;
+            return _parsable.Value;
         }
 
         //Item Expressions inner classes

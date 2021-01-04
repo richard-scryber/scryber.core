@@ -22,6 +22,14 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
+        [PDFElement("header")]
+        [PDFTemplate()]
+        public override IPDFTemplate Header { get => base.Header; set => base.Header = value; }
+
+        [PDFElement("footer")]
+        [PDFTemplate()]
+        public override IPDFTemplate Footer { get => base.Footer; set => base.Footer = value; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>

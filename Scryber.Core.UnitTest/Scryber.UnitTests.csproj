@@ -36,6 +36,11 @@
     <Folder Include="Mocks\" />
     <Folder Include="Mocks\Fonts\" />
     <Folder Include="Mocks\Fonts\Avenir\" />
+    <Folder Include="Content\HTML\" />
+    <Folder Include="Content\HTML\Images\" />
+    <Folder Include="Content\HTML\CSS\" />
+    <Folder Include="Content\Markdown\" />
+    <Folder Include="Content\PDFX\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
