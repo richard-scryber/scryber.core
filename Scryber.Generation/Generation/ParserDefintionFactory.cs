@@ -588,7 +588,7 @@ namespace Scryber.Generation
 
             PDFRemoteParsableComponentAttribute remote = GetCustomAttribute<PDFRemoteParsableComponentAttribute>(parsertype, true);
             if (null != remote)
-                defn.SetRemoteParsable(true, remote.ElementName);
+                defn.SetRemoteParsable(true, remote.ElementName, remote.SourceAttribute);
         }
 
         #endregion

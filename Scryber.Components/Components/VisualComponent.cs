@@ -62,7 +62,7 @@ namespace Scryber.Components
         /// Gets the flag to indicate if this page Component has style 
         /// information associated with it.
         /// </summary>
-        public bool HasStyle
+        public virtual bool HasStyle
         {
             get { return this._style != null && this._style.HasValues; }
         }

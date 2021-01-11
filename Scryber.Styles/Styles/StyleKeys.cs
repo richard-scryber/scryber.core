@@ -209,6 +209,7 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<int> PageNumberTotalHintKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"thnt", PageItemKey);
         public static readonly PDFStyleKey<bool> PageBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bkpb", PageItemKey);
         public static readonly PDFStyleKey<bool> PageBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bkpa", PageItemKey);
+        public static readonly PDFStyleKey<string> PageNameGroupKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"pgnm", PageItemKey);
 
         //Shape
         public static readonly StyleKey ShapeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.ShapeStyle, NOT_INHERITED);

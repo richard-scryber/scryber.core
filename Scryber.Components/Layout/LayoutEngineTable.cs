@@ -188,6 +188,13 @@ namespace Scryber.Layout
 
             RowReference rowRef = _tblRef.AllRows[index];
 
+            Style rowStyle = rowRef.FullStyle;
+            this.Context.StyleStack.Push(rowRef.AppliedStyle);
+
+
+            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+                return PDFUnit.Zero;
+
             if (repeating) //for repeating rows we hold it in the grid
             {
                 rowRef = rowRef.Clone();
@@ -195,8 +202,7 @@ namespace Scryber.Layout
             }
                            
 
-            Style rowStyle = rowRef.FullStyle;
-            this.Context.StyleStack.Push(rowRef.AppliedStyle);
+            
 
 
             PDFArtefactRegistrationSet artefacts = null;
@@ -368,7 +374,7 @@ namespace Scryber.Layout
                 cellRegion.TotalBounds = total;
                 this._rowblock.CurrentRegion.SetMaxWidth(_widths[cellindex].Size);
 
-                if (cref.IsEmpty == false && cref.Cell.Visible)
+                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) != PositionMode.Invisible)
                 {
                     this.DoLayoutARowCell(cref, cref.Cell, cellindex, rowindex, repeating);
                 }
@@ -554,6 +560,17 @@ namespace Scryber.Layout
 
                 }
 
+                //If we are set to invisible then ingnore eveything
+
+                StyleValue<PositionMode> found;
+                if(rowfull.TryGetValue(StyleKeys.PositionModeKey, out found)
+                    && found.Value == PositionMode.Invisible)
+                {
+                    this.StyleStack.Pop();
+                    row.Visible = false;
+                    continue;
+                }
+
                 rowapplieds.Add(rowapplied);
                 rowfulls.Add(rowfull);
 
@@ -589,7 +606,17 @@ namespace Scryber.Layout
 
                         this.Context.PerformanceMonitor.End(PerformanceMonitorType.Style_Build);
                     }
-                    
+
+                    //If we are set to invisible then ingnore eveything
+
+                    if (cellfull.TryGetValue(StyleKeys.PositionModeKey, out found)
+                        && found.Value == PositionMode.Invisible)
+                    {
+                        this.StyleStack.Pop();
+                        cell.Visible = false;
+                        continue;
+                    }
+
                     rowcellapplieds.Add(cellapplied);
                     rowcellstyles.Add(cellfull);
 
@@ -924,6 +951,7 @@ namespace Scryber.Layout
 
                 Style applied = _rowappliedstyles[rowIndex];
                 Style full = _rowfullstyles[rowIndex];
+
 
                 RowReference rref = tbl.AddRowReference(row, grid, applied, full, rowIndex);
 

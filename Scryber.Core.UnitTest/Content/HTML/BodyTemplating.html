@@ -13,6 +13,15 @@
         .container {
             column-count:2;
             font-size: 12pt;
+            page: rotated;
+        }
+
+        @page{
+            size:A3 landscape;
+        }
+
+        @page rotated{
+            size:landscape;
         }
 
     </style>
@@ -23,7 +32,7 @@
     <!-- The rest of the content should go into the body -->
     <p class='highlight' style="margin-top:0px">This is the body</p>
     <div class="container">
-        <table>
+        <table id="grid">
             <thead>
                 <tr>
                     <td>Name</td>
@@ -31,13 +40,13 @@
                 </tr>
             </thead>
             <template data-bind="{@:model.Items}">
-                <tr>
+                <tr style="{@:.Style}">
                     <td>{@:.Name}</td>
                     <td>{@:.Cost}</td>
                 </tr>
             </template>
             <tfoot>
-                <template data-bind="{@:model.One}">
+                <template data-bind="{@:model.Total}">
                     <tr>
                         <td>{@:.Name}</td>
                         <td>{@:.Cost}</td>
@@ -46,6 +55,9 @@
             </tfoot>
         </table>
     </div>
-    <footer><p>This is the footer</p></footer>
+    <footer><p>This is the footer</p>
+    <link href="" type="text/html" />
+    
+    </footer>
 </body>
 </html>

@@ -130,6 +130,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PageBreakInside, new CSSPageBreakInsideParser());
             all.Add(CSSStyleItems.PageBreakAfter, new CSSPageBreakAfterParser());
             all.Add(CSSStyleItems.PageBreakBefore, new CSSPageBreakBeforeParser());
+            all.Add(CSSStyleItems.PageSize, new CSSPageSizeParser());
+            all.Add(CSSStyleItems.PageGroupName, new CSSPageNameParser());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

@@ -6,6 +6,7 @@ namespace Scryber.Options
     public class TracingOptions
     {
         public const string TracingSection = ScryberOptions.ScryberSectionStub + "Tracing";
+        private const TraceRecordLevel _defaultTraceLevel = TraceRecordLevel.Messages;
 
         public TraceRecordLevel TraceLevel { get; set; }
 
@@ -13,6 +14,7 @@ namespace Scryber.Options
 
         public TracingOptions()
         {
+            this.TraceLevel = _defaultTraceLevel;
         }
 
         private Scryber.IPDFTraceLogFactory[] _factories;

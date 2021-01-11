@@ -39,6 +39,20 @@ namespace Scryber.Data
             set;
         }
 
+        /// <summary>
+        /// Gets or sets the name of the element that was parsed.
+        /// </summary>
+        public string ElementName { get; set; }
+
+
+        [PDFAttribute("class", Scryber.Styles.Style.PDFStylesNamespace)]
+        public string StyleClass { get; set; }
+
+        [PDFAttribute("style", Scryber.Styles.Style.PDFStylesNamespace)]
+        [PDFElement("Style")]
+        public Scryber.Styles.Style Style { get; set; }
+
+
         public IDictionary<string,string> NamespacePrefixMappings { get; set; }
 
         public ParsableTemplateGenerator()
@@ -209,6 +223,13 @@ namespace Scryber.Data
                     throw RecordAndRaise.InvalidCast(Errors.CannotConvertObjectToType, comp.GetType(), typeof(TemplateInstance));
 
                 TemplateInstance template = (TemplateInstance)comp;
+
+                if (null != this.Style && (template is IPDFStyledComponent))
+                    this.Style.MergeInto((template as IPDFStyledComponent).Style);
+
+                template.StyleClass = this.StyleClass;
+                template.ElementName = this.ElementName;
+
                 List<IPDFComponent> all = new List<IPDFComponent>(1);
 
                 all.Add(template);

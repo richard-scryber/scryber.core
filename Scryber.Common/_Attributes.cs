@@ -112,12 +112,18 @@ namespace Scryber
         }
 
         /// <summary>
+        /// Gets or sets the name of the attribute on the remote component, that will specify the source location.
+        /// </summary>
+        public string SourceAttribute { get; set; }
+
+        /// <summary>
         /// Creates a new instance of the PDFComponent Attribute with the specific name
         /// </summary>
         /// <param name="name">The Components name</param>
         public PDFRemoteParsableComponentAttribute(string name)
         {
             this._name = name;
+            this.SourceAttribute = "source";
         }
     }
 

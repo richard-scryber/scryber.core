@@ -26,6 +26,7 @@ namespace Scryber.Generation
     {
         private string _remoteName;
         private bool _remoteSupported;
+        private string _remoteSourceAttribute;
         private Type _classtype;
         private Version _min = PDFRequiredFrameworkAttribute.Empty;
         private Version _max = PDFRequiredFrameworkAttribute.Empty;
@@ -131,6 +132,15 @@ namespace Scryber.Generation
             get { return _remoteName; }
         }
 
+        /// <summary>
+        /// Gets the attribute name that should contain the
+        /// source path value for a remote reference
+        /// </summary>
+        public string RemoteSourceAttribute
+        {
+            get { return _remoteSourceAttribute; }
+        }
+
         public ParserClassDefinition(Type classtype)
         {
             this._classtype = classtype;
@@ -142,11 +152,11 @@ namespace Scryber.Generation
             return "Class '" + this.ClassType.Name + "'";
         }
 
-        internal void SetRemoteParsable(bool isremote, string remoteName)
+        internal void SetRemoteParsable(bool isremote, string remoteName, string remoteSourceAttribute)
         {
             this._remoteName = remoteName;
             this._remoteSupported = isremote;
-
+            this._remoteSourceAttribute = (string.IsNullOrEmpty(remoteSourceAttribute)) ? "source" : remoteSourceAttribute;
             if (isremote && string.IsNullOrEmpty(remoteName))
                 throw new ArgumentNullException("remoteName", "A remote parsable component cannot have an empty remote element name");
         }

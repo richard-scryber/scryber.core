@@ -178,9 +178,9 @@ namespace Scryber.Layout
             }
         }
 
-        public bool MoveToNextPage(Stack<Layout.PDFLayoutBlock> depth, ref Layout.PDFLayoutRegion region, ref Layout.PDFLayoutBlock block)
+        public bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<Layout.PDFLayoutBlock> depth, ref Layout.PDFLayoutRegion region, ref Layout.PDFLayoutBlock block)
         {
-            return this._parent.MoveToNextPage(depth, ref region, ref block);
+            return this._parent.MoveToNextPage(initiator, initiatorStyle, depth, ref region, ref block);
         }
 
         public Layout.PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(Layout.PDFLayoutBlock blockToClose, Layout.PDFLayoutRegion joinToRegion)

@@ -94,6 +94,28 @@ namespace Scryber.Styles.Parsing
                     parsed = media;
                     this._str.Offset = innerEnd;
                 }
+                else if(this.IsPageQuery(ref selector))
+                {
+                    var match = Selectors.PageMatcher.Parse(selector);
+                    StylePageGroup pg = new StylePageGroup(match);
+                    var innerEnd = MoveToNextStyleEnd();
+                    if (innerEnd <= next)
+                        return null;
+
+                    string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+
+                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
+                    CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
+
+                    while (reader.ReadNextAttributeName())
+                    {
+                        parser.SetStyleValue(pg, reader);
+                    }
+
+
+                    parsed = pg;
+                    this._str.Offset = innerEnd;
+                }
                 else
                 {
                     var end = MoveToNextStyleEnd();
@@ -139,6 +161,21 @@ namespace Scryber.Styles.Parsing
             if (!string.IsNullOrEmpty(selector) && selector.StartsWith("@media "))
             {
                 selector = selector.Substring("@media ".Length);
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool IsPageQuery(ref string selector)
+        {
+            if (!string.IsNullOrEmpty(selector) && selector.StartsWith("@page"))
+            {
+                if (selector == "@page")
+                    selector = string.Empty;
+                else
+                    selector = selector.Substring("@page".Length).Trim();
+
                 return true;
             }
             else

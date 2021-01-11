@@ -167,6 +167,29 @@ namespace Scryber.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, LayoutEnginePage.LOG_CATEGORY, "Un-registered the page numbering");
         }
 
+        private PDFSize GetNextPageSize(IPDFComponent owner, Style full, PDFSize orig)
+        {
+            var name = full.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
+
+            if(!string.IsNullOrEmpty(name))
+            {
+                var style = new Style();
+                var prev = this.Page.StyleClass;
+
+                if (name != "initial") //The use of initial will make this the default sizes, otherwise we look for the page selector with the class name selector.
+                    this.Page.StyleClass = name;
+
+                style = this.DocumentLayout.DocumentComponent.GetAppliedStyle(this.Page, style);
+
+                var pgSize = style.CreatePageSize();
+                orig = pgSize.Size;
+
+                this.Page.StyleClass = prev;
+            }
+
+            return orig;
+        }
+
         /// <summary>
         /// Checks the overflow style and if new pages are supported closes the current page layout and
         /// creates a new page layout (becomming the current page) and returns true. 
@@ -175,8 +198,9 @@ namespace Scryber.Layout
         /// <param name="region">If there is a change in current page, this is set to the new region</param>
         /// <param name="block">If there is a change in current page, this is set to the new block</param>
         /// <returns></returns>
-        public override bool MoveToNextPage(Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
+        public override bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
+            
             
             StyleValue<OverflowAction> action;
             if (this.FullStyle.TryGetValue(StyleKeys.OverflowActionKey, out action) && action.Value == OverflowAction.NewPage)
@@ -213,7 +237,8 @@ namespace Scryber.Layout
                     //open = parent;
                 }
                 lastpage.Close();
-                PDFLayoutPage page = BuildContinuationPage(lastpage);
+                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size);
+                PDFLayoutPage page = BuildContinuationPage(lastpage, pgSize);
 
                 block = page.CurrentBlock;
                 region = block.CurrentRegion;
@@ -238,13 +263,15 @@ namespace Scryber.Layout
         /// </summary>
         /// <param name="copyfrom"></param>
         /// <returns></returns>
-        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom)
+        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, PDFSize size)
         {
             //Take a reference of the current stack and replace with the page stack from first page
             StyleStack orig = this.Context.StyleStack;
             this.Context.StyleStack = this.PageStyleStack;
 
-            PDFLayoutPage page = this.BuildNewPage(copyfrom.Size, copyfrom.PositionOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
+            
+
+            PDFLayoutPage page = this.BuildNewPage(size, copyfrom.PositionOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
 
             //becasue we are a continuation page, we have the same number style, so let's just register it with null
             this.DocumentLayout.RegisterPageNumbering(page, null);

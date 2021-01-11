@@ -815,7 +815,14 @@ namespace Scryber.Components
 
             applied.RemoveItemStyleValues(StyleKeys.MarginsItemKey);
             applied.RemoveItemStyleValues(StyleKeys.PaddingItemKey);
-            applied.RemoveValue(StyleKeys.PositionModeKey);
+
+            //Remove the position mode if it is not set to invisible
+            StyleValue<PositionMode> pos;
+            if (applied.IsValueDefined(StyleKeys.PositionModeKey) && applied.TryGetValue(StyleKeys.PositionModeKey, out pos) && pos.Value != PositionMode.Invisible)
+            {
+                applied.RemoveValue(StyleKeys.PositionModeKey);
+            }
+
             applied.RemoveValue(StyleKeys.SizeHeightKey);
             applied.RemoveValue(StyleKeys.PositionXKey);
             applied.RemoveValue(StyleKeys.PositionYKey);

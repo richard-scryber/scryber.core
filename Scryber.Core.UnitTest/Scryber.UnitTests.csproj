@@ -41,6 +41,7 @@
     <Folder Include="Content\HTML\CSS\" />
     <Folder Include="Content\Markdown\" />
     <Folder Include="Content\PDFX\" />
+    <Folder Include="Content\HTML\Fragments\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />

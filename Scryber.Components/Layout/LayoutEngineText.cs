@@ -255,8 +255,16 @@ namespace Scryber.Layout
             this._ctx = context;
             this._fullstyle = fullstyle;
 
+            
             this._posopts = fullstyle.CreatePostionOptions();
             this._textopts = fullstyle.CreateTextOptions();
+
+            if (this._posopts.PositionMode == PositionMode.Invisible)
+            {
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the text component " + this.TextComponent.ID + " as it is invisible");
+                return;
+            }
 
             this._frsrc = ((Document)this.TextComponent.Document).GetFontResource(this.TextRenderOptions.Font, true);
 
@@ -935,7 +943,7 @@ namespace Scryber.Layout
             }
         }
 
-        public bool MoveToNextPage(Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
+        public bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
             throw new NotSupportedException("TextLayoutEngine should never be the top layout engine - and therefore should never control pages");
         }

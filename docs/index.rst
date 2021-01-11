@@ -1,11 +1,17 @@
 =============
-Scryber Core
+Scryber
 =============
 
-Scryber.Core is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
+Scryber is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
 It's open source; flexible; styles based; data driven and with a low learning curve. 
 
-A document generation tool written entirely in C# for dotnet core.
+A document generation tool written entirely in C# for dotnet 5 using XHTML, XML or even MVC Views.
+
+
+.. code-block:: html
+
+
+
 
 .. code-block:: xml
 

@@ -229,6 +229,59 @@ namespace Scryber.Components
 
         #endregion
 
+        public bool Move(int fromIndex, int toIndex, bool isChange = false)
+        {
+            if (fromIndex != toIndex)
+            {
+                var item = this.Items[fromIndex];
+                //We add it then remove the component - so the indexes are always valid
+                this.Items.Insert(toIndex, item);
+                if (toIndex > fromIndex)
+                    fromIndex++;
+
+                this.Items.RemoveAt(fromIndex);
+
+                if (isChange)
+                    this.OnCollectionChanged();
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public bool MoveTo(Component comp, int toIndex, bool isChange = false)
+        {
+            var fromIndex = this.Items.IndexOf(comp);
+            if (fromIndex < 0)
+                return false;
+
+            if (fromIndex != toIndex)
+            {
+                var item = this.Items[fromIndex];
+                //We add it then remove the component - so the indexes are always valid
+                if (toIndex < 0)
+                {
+                    this.Items.Add(item);
+                    toIndex = this.Items.Count - 1;
+                }
+                else
+                    this.Items.Insert(toIndex, item);
+
+                if (toIndex < fromIndex)
+                    fromIndex++;
+
+                this.Items.RemoveAt(fromIndex);
+
+                if (isChange)
+                    this.OnCollectionChanged();
+
+                return true;
+            }
+            else
+                return false;
+        }
+
         public Component[] ToArray()
         {
             return this.Items.ToArray();

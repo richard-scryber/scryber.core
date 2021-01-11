@@ -830,6 +830,8 @@ namespace Scryber.Styles.Parsing
                     else
                         failed++;
                 }
+
+                //TODO: Parse sizes and positions
             }
             
             return count > 0 && failed == 0;
@@ -988,6 +990,7 @@ namespace Scryber.Styles.Parsing
     }
 
     #endregion
+
     #region public class CSSBackgroundRepeatParser : CSSEnumStyleParser<PatternRepeat>
 
     /// <summary>
@@ -1373,30 +1376,6 @@ namespace Scryber.Styles.Parsing
             found = new PDFFontSelector(fontfamily);
             return true;
 
-            //if (fontfamily.Equals("sans-serif", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    found = Scryber.PDFFonts.Helvetica.Family;
-            //    result = true;
-            //}
-            //else if (fontfamily.Equals("serif", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    found = Scryber.PDFFonts.TimesRoman.Family;
-            //    result = true;
-            //}
-            //else if (fontfamily.Equals("monospace", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    found = Scryber.PDFFonts.Courier.Family;
-            //    result = true;
-            //}
-            //else if (PDFFontFactory.IsFontDefined(fontfamily, System.Drawing.FontStyle.Regular))
-            //{
-            //    found = fontfamily;
-            //    result = true;
-            //}
-            //else
-            //    found = string.Empty;
-
-            //return result;
         }
     }
 
@@ -2372,21 +2351,19 @@ namespace Scryber.Styles.Parsing
         {
             bool result = true;
             PositionMode display;
-            if (reader.ReadNextValue() && TryGetDecorationEnum(reader.CurrentTextValue, out display))
-                this.SetValue(onStyle, display);
+            if (reader.ReadNextValue()) {
+                if (TryGetPositionEnum(reader.CurrentTextValue, out display))
+                    this.SetValue(onStyle, display);
+            }
             else
                 result = false;
 
             return result;
         }
 
-        public static bool IsDecorationEnum(string value)
-        {
-            PositionMode display;
-            return TryGetDecorationEnum(value, out display);
-        }
+        
 
-        public static bool TryGetDecorationEnum(string value, out PositionMode display)
+        public static bool TryGetPositionEnum(string value, out PositionMode display)
         {
             switch (value.ToLower())
             {
@@ -2397,7 +2374,9 @@ namespace Scryber.Styles.Parsing
                 case ("block"):
                     display = PositionMode.Block;
                     return true;
-
+                case ("none"):
+                    display = PositionMode.Invisible;
+                    return true;
                default:
                     display = PositionMode.Block;
                     return false;
@@ -2648,7 +2627,7 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
-    // page-break-inside
+    // page-breaks
 
     #region public class CSSPageBreakInsideParser : CSSStyleValueParser
 
@@ -2690,9 +2669,7 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
-    // page-break-inside
-
-    #region public class CSSPageBreakInsideParser : CSSStyleValueParser
+    #region public class CSSPageBreakBeforeParser : CSSStyleValueParser
 
     public class CSSPageBreakBeforeParser : CSSStyleValueParser
     {
@@ -2732,7 +2709,7 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
-    #region public class CSSPageBreakInsideParser : CSSStyleValueParser
+    #region public class CSSPageBreakAfterParser : CSSStyleValueParser
 
     public class CSSPageBreakAfterParser : CSSStyleValueParser
     {
@@ -2771,4 +2748,66 @@ namespace Scryber.Styles.Parsing
     }
 
     #endregion
+
+    public class CSSPageNameParser : CSSStyleValueParser
+    {
+        public CSSPageNameParser(): base(CSSStyleItems.PageGroupName)
+        {
+        }
+
+        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            if (reader.MoveToNextValue() && !string.IsNullOrEmpty(reader.CurrentTextValue))
+            {
+                style.PageStyle.PageNameGroup = reader.CurrentTextValue;
+                return true;
+            }
+            else
+                return false;
+        }
+    }
+
+    public class CSSPageSizeParser : CSSStyleValueParser
+    {
+        public CSSPageSizeParser() : base(CSSStyleItems.PageSize)
+        { }
+
+        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            if(reader.MoveToNextValue())
+            {
+                PaperSize paper;
+                PDFUnit width;
+                PaperOrientation orient;
+
+                if (Enum.TryParse<PaperSize>(reader.CurrentTextValue, out paper))
+                {
+                    style.PageStyle.PaperSize = paper;
+
+                    if (reader.MoveToNextValue() && Enum.TryParse<PaperOrientation>(reader.CurrentTextValue, true, out orient))
+                        style.PageStyle.PaperOrientation = orient;
+
+                    return true;
+                }
+                else if(Enum.TryParse<PaperOrientation>(reader.CurrentTextValue, true, out orient))
+                {
+                    style.PageStyle.PaperOrientation = orient;
+
+                    return true;
+                }
+                else if(ParseCSSUnit(reader.CurrentTextValue, out width))
+                {
+                    PDFUnit height;
+                    if (!reader.MoveToNextValue() || !ParseCSSUnit(reader.CurrentTextValue, out height))
+                        height = width;
+
+                    style.PageStyle.Width = width;
+                    style.PageStyle.Height = height;
+
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }

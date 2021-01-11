@@ -416,6 +416,38 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public string PageNameGroup {get;set;}
+
+        /// <summary>
+        /// Not currently used
+        /// </summary>
+        [PDFAttribute("page")]
+        public string PageNameGroup
+        {
+            get
+            {
+                string value;
+                if (this.TryGetValue(StyleKeys.PageNameGroupKey, out value))
+                    return value;
+                else
+                    return string.Empty;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PageNameGroupKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Clears any existing number group value from this style
+        /// </summary>
+        public void RemoveNameGroup()
+        {
+            this.RemoveValue(StyleKeys.PageNameGroupKey);
+        }
+
+        #endregion
+
         //
         // ctor
         //

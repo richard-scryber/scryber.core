@@ -524,7 +524,7 @@ namespace Scryber.Generation
             string ns = reader.NamespaceURI;
             bool empty = reader.IsEmptyElement;
 
-            if (!reader.MoveToAttribute(FilePathAttributeName))
+            if (!reader.MoveToAttribute(cdef.RemoteSourceAttribute))
                 throw BuildParserXMLException(reader, Errors.RequiredAttributeNoFoundOnElement, FilePathAttributeName, element);
 
             string path = reader.Value;
@@ -951,13 +951,26 @@ namespace Scryber.Generation
         /// <param name="prop"></param>
         private void ParseTemplateContent(object container, XmlReader reader, ParserPropertyDefinition prop)
         {
-            string all = reader.ReadInnerXml();
 
             object gen = CreateInstance(this.Settings.TempateGeneratorType);
+
+            if (gen is Scryber.IPDFComponent)
+                (gen as IPDFComponent).ElementName = reader.Name;
+
+            var defn = ParserDefintionFactory.GetClassDefinition(this.Settings.TempateGeneratorType);
+            
             IPDFTemplateGenerator tempgen = (IPDFTemplateGenerator)gen;
+
+            if (reader.HasAttributes)
+            {
+                this.ParseAttributes(tempgen, false, reader, defn);
+                reader.MoveToElement();
+            }
+            
+            string all = reader.ReadInnerXml();
             tempgen.InitTemplate(all, new XmlNamespaceManager(reader.NameTable));
 
-            prop.PropertyInfo.SetValue(container, gen, null);
+            prop.PropertyInfo.SetValue(container, tempgen, null);
         }
 
         #endregion

@@ -333,7 +333,7 @@ namespace Scryber
         /// <param name="region"></param>
         /// <param name="block"></param>
         /// <returns></returns>
-        bool MoveToNextPage(Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block);
+        bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block);
 
         /// <summary>
         /// Request to the engine to close the block and begin in a new region

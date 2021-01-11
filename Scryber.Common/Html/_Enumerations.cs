@@ -125,6 +125,8 @@ namespace Scryber.Html
         public const string PageBreakInside = "page-break-inside";
         public const string PageBreakAfter = "page-break-after";
         public const string PageBreakBefore = "page-break-before";
+        public const string PageSize = "size";
+        public const string PageGroupName = "page";
 
     }
 

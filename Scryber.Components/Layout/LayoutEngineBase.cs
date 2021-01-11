@@ -204,7 +204,15 @@ namespace Scryber.Layout
                 this._currentBlock = context.DocumentLayout.CurrentPage.CurrentBlock;
 
             this._style = fullstyle;
-            this.DoLayoutComponent();
+
+            StyleValue<PositionMode> found;
+            if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value == PositionMode.Invisible)
+            {
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of component '" + this.Component.UniqueID + "' as it is invisible");
+            }
+            else
+                this.DoLayoutComponent();
         }
 
         #endregion
@@ -628,7 +636,7 @@ namespace Scryber.Layout
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
             Stack<PDFLayoutBlock> depth = BuildLayoutStack(block);
-            if (this.MoveToNextPage(depth, ref region, ref block) == false)
+            if (this.MoveToNextPage(pgbreak, style, depth, ref region, ref block) == false)
             {
                 this.ContinueLayout = false;
             }
@@ -1069,7 +1077,7 @@ namespace Scryber.Layout
                 }
 
                 PDFLayoutBlock top = reverseBlocks.Pop(); //Get the top level block.
-                newPage = top.Engine.MoveToNextPage(reverseBlocks, ref region, ref block);
+                newPage = top.Engine.MoveToNextPage(this.Component, this.FullStyle, reverseBlocks, ref region, ref block);
 
 
                 if (newPage)
@@ -1273,9 +1281,9 @@ namespace Scryber.Layout
         /// <param name="region"></param>
         /// <param name="block"></param>
         /// <returns></returns>
-        public virtual bool MoveToNextPage(Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
+        public virtual bool MoveToNextPage(IPDFComponent initiator, Style inititorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
-            return this.ParentEngine.MoveToNextPage(depth, ref region, ref block);
+            return this.ParentEngine.MoveToNextPage(initiator, inititorStyle, depth, ref region, ref block);
         }
 
         #endregion

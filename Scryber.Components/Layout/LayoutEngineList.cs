@@ -220,7 +220,15 @@ namespace Scryber.Layout
                     else
                         this.StyleStack.Push(applied);
 
+                    if(full.Position.PositionMode == PositionMode.Invisible)
+                    {
+                        this.StyleStack.Pop();
 
+                        if (this.Context.ShouldLogDebug)
+                            this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of list item '" + item.UniqueID + "' as it is invisible");
+
+                        continue;
+                    }
 
                     PDFUnit itemWidth;
                     ListNumberingGroupStyle numberStyle;
@@ -350,6 +358,8 @@ namespace Scryber.Layout
             
             Style full = entry.FullStyle;
             PDFUnit numberWidth = entry.NumberWidth;
+
+
 
             PDFArtefactRegistrationSet artefacts = entry.ListItem.RegisterLayoutArtefacts(this.Context, full);
 

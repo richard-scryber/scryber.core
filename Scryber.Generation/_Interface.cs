@@ -83,6 +83,11 @@ namespace Scryber
     /// </summary>
     public interface IPDFTemplateGenerator
     {
+        /// <summary>
+        /// Gets the full name of the elememnt that the 
+        /// </summary>
+        string ElementName { get; set; }
+
         void InitTemplate(string xmlContent, System.Xml.XmlNamespaceManager namespaces);
     }
 

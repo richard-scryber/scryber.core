@@ -14,20 +14,30 @@
             color: #EEE;
             font-size:12pt;
         }
-
         p{
             margin-top:0px;
         }
-
         div.pg-break-after {
             page-break-after: always;
         }
 
-        
-        .large{
-            font-size:20pt;
+        div {
+            page: initial;
         }
+
+        div.landscape{
+            page: landscape;
+        }
+
         
+        @page {
+            size:A4;
+        }
+
+
+        @page landscape{
+            size: landscape;
+        }
         
     </style>
 </head>
@@ -37,19 +47,25 @@
     <header>
         <p class="grey">{@:model.headerText}</p>
     </header>
-        <!-- The rest of the content should go into the body -->
-        <p class='{@:model.bodyClass}' title="{@:model.content}" style="{@:model.bodyStyle}">
-            Bound value of {@:model.content}
-        </p>
-
-        <div class="pg-break-after"></div>
-
-        <p class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
-            This is the content on the next page
-        </p>
-
     <footer>
         <p class="grey">{@:model.footerText}</p>
     </footer>
+
+    <!-- The rest of the content should go into the body -->
+    <p class='{@:model.bodyClass}' title="{@:model.content}" style="{@:model.bodyStyle}">
+        Bound value of {@:model.content}
+    </p>
+
+    <div class="pg-break-after landscape"></div>
+
+    <p class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
+        This is the content on the next page
+    </p>
+
+    <div class="pg-break-after portrait"></div>
+
+    <p class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
+        This is the content on the last page
+    </p>
 </body>
 </html>

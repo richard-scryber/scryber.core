@@ -1125,14 +1125,20 @@ namespace Scryber.Styles
 
         public static Style Parse(string value)
         {
-            CSSStyleItemReader reader = new CSSStyleItemReader(value);
+            
             Style style = new Style();
 
-            while (reader.ReadNextAttributeName())
+            if (!string.IsNullOrEmpty(value))
             {
-                var parser = new CSSStyleItemAllParser();
-                parser.SetStyleValue(style, reader);
+                CSSStyleItemReader reader = new CSSStyleItemReader(value);
+
+                while (reader.ReadNextAttributeName())
+                {
+                    var parser = new CSSStyleItemAllParser();
+                    parser.SetStyleValue(style, reader);
+                }
             }
+
             return style;
         }
     }

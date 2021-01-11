@@ -167,6 +167,7 @@ namespace Scryber.Drawing
         /// A postion that is set explicitly on the page, no matter where its parent is
         /// </summary>
         Absolute,
+
         /// <summary>
         /// A postion that is set relative to this Components parent position.
         /// </summary>
@@ -181,7 +182,12 @@ namespace Scryber.Drawing
         /// No Expicit postion - if it fits next to the last component on the current line, then it will be appended,
         /// otherwise a new line will be created. Following elements will be appended to the same line
         /// </summary>
-        Inline
+        Inline,
+
+        /// <summary>
+        /// If invisible, then it takes up no room, and does not impact the layout
+        /// </summary>
+        Invisible
 
         //TODO:Float - Appears at the current position with content flowing around it
     }

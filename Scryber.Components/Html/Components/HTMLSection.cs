@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
-    [PDFParsableComponent("body")]
-    public class HTMLBody : Scryber.Components.Section
+    [PDFParsableComponent("section")]
+    public class HTMLSection : Section
     {
 
         [PDFAttribute("class")]
@@ -18,13 +14,9 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
 
-        
         [PDFElement("")]
         [PDFArray(typeof(Component))]
-        public override ComponentList Contents
-        {
-            get { return base.Contents; }
-        }
+        public override ComponentList Contents => base.Contents;
 
         [PDFElement("header")]
         [PDFTemplate()]
@@ -63,10 +55,8 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
-        public HTMLBody()
-            : base()
+        public HTMLSection()
         {
-            
         }
     }
 }

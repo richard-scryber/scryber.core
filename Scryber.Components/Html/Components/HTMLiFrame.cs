@@ -1,38 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Scryber.Components;
+using System.Diagnostics.Tracing;
 using Scryber.Styles;
+using Scryber.Components;
 
 namespace Scryber.Html.Components
 {
-    [PDFParsableComponent("body")]
-    public class HTMLBody : Scryber.Components.Section
+    [PDFParsableComponent("iframeContent")]
+    [PDFRemoteParsableComponent("iframe", SourceAttribute = "src")]
+    public class HTMLiFrame : Div
     {
 
         [PDFAttribute("class")]
-        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
-
-        [PDFAttribute("style")]
-        public override Style Style { get => base.Style; set => base.Style = value; }
-
-        
-        [PDFElement("")]
-        [PDFArray(typeof(Component))]
-        public override ComponentList Contents
+        public override string StyleClass
         {
-            get { return base.Contents; }
+            get => base.StyleClass;
+            set => base.StyleClass = value;
         }
 
-        [PDFElement("header")]
-        [PDFTemplate()]
-        public override IPDFTemplate Header { get => base.Header; set => base.Header = value; }
+        [PDFAttribute("style")]
+        public override Style Style
+        {
+            get => base.Style;
+            set => base.Style = value;
+        }
 
-        [PDFElement("footer")]
-        [PDFTemplate()]
-        public override IPDFTemplate Footer { get => base.Footer; set => base.Footer = value; }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -63,10 +54,16 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
-        public HTMLBody()
-            : base()
+        [PDFElement("")]
+        [PDFArray(typeof(Component))]
+        public override ComponentList Contents
         {
-            
+            get { return base.Contents; }
+        }
+
+
+        public HTMLiFrame()
+        {
         }
     }
 }

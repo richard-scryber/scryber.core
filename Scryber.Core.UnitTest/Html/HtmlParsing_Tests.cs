@@ -11,6 +11,7 @@ using Scryber.Drawing;
 using Scryber.Styles.Parsing;
 
 using Scryber.Layout;
+using System.Xml.Schema;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -144,7 +145,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LoadHtmlFromSource()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/sample.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/LoadedFromSource.html");
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -248,7 +249,6 @@ namespace Scryber.Core.UnitTests.Html
 
                 }
 
-
                 var pg = doc.Pages[0] as Section;
                 Assert.IsNotNull(pg.Header);
                 Assert.IsNotNull(pg.Footer);
@@ -297,7 +297,7 @@ namespace Scryber.Core.UnitTests.Html
 
             //Second page check
 
-            Assert.AreEqual(_layoutcontext.DocumentLayout.AllPages.Count, 2);
+            
             body = _layoutcontext.DocumentLayout.AllPages[1];
             Assert.IsNotNull(body);
 
@@ -361,7 +361,7 @@ namespace Scryber.Core.UnitTests.Html
             var model = new
             {
                 Items = all,
-                One = new
+                Total = new
                 {
                     Name = "Total",
                     Cost = "£" + total + ".00"
@@ -377,6 +377,88 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
 
                 }
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0];
+                Assert.IsNotNull(body.HeaderBlock);
+                Assert.IsNotNull(body.FooterBlock);
+
+                var table = doc.FindAComponentById("grid") as TableGrid;
+                Assert.IsNotNull(table);
+                Assert.AreEqual(2 + model.Items.Length, table.Rows.Count);
+            }
+
+        }
+
+        [TestMethod]
+        public void DisplayNoneHidden()
+        {
+            dynamic[] all = new dynamic[100];
+            int total = 0;
+
+            for (var i = 0; i < 100; i++)
+            {
+                var val = i + 1;
+                //Hide every tenth one.
+                var vis = (i % 10 == 0) ? "display:none" : "";
+
+                all[i] = new { Name = "Name " + val.ToString(), Cost = "£" + val + ".00", Style = vis };
+                if (i % 10 != 0)
+                    total += val;
+            }
+
+            var model = new
+            {
+                Items = all,
+                Total = new
+                {
+                    Name = "Total",
+                    Cost = "£" + total + ".00"
+                }
+            };
+
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/displaynone.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("htmlDisplayNone.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+                var layout = this._layoutcontext.DocumentLayout;
+                var pDiv = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                Assert.AreEqual(pDiv.Columns[0].Contents.Count, 2, "There should be only 2 layout items in the set of paragraphs");
+
+                var p1 = pDiv.Columns[0].Contents[0] as PDFLayoutBlock;
+                Assert.AreEqual("pshow1", p1.Owner.ID);
+
+                var p2 = pDiv.Columns[0].Contents[1] as PDFLayoutBlock;
+                Assert.AreEqual("pshow2", p2.Owner.ID);
+            }
+
+        }
+
+        [TestMethod()]
+        public void TopAndTailed()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/topandtailed.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("topandtailed.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
 
                 var pg = doc.Pages[0] as Section;
                 Assert.IsNotNull(pg.Header);
@@ -385,6 +467,40 @@ namespace Scryber.Core.UnitTests.Html
                 var body = _layoutcontext.DocumentLayout.AllPages[0];
                 Assert.IsNotNull(body.HeaderBlock);
                 Assert.IsNotNull(body.FooterBlock);
+            }
+
+        }
+
+        [TestMethod()]
+        public void HtmlIFrameFragments()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/BodyFraming.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var model = new
+                {
+                    fragmentContent = "Content for the fragment"
+                };
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("FrameContent.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+                var para = doc.FindAComponentById("FrameInner") as Paragraph;
+                Assert.IsNotNull(para);
+
+                //Get the second paragraph
+                para = doc.FindAComponentById("FrameDynamic") as Paragraph;
+                Assert.AreEqual(2, para.Contents.Count);
+
+                //Check that the inner text of the para matches the bound value.
+                var span = para.Contents[1] as IPDFTextLiteral;
+                Assert.AreEqual(model.fragmentContent, span.Text);
             }
 
         }

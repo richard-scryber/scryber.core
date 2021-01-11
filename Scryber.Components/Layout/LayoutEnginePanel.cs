@@ -35,8 +35,6 @@ namespace Scryber.Layout
         // ctor
         //
 
-        public static int PanelLayoutEngineInstances = 0;
-
         #region protected LayoutEnginePanel(PDFContainerComponent container, IPDFLayoutEngine parent)
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace Scryber.Layout
         public LayoutEnginePanel(ContainerComponent container, IPDFLayoutEngine parent)
             : base(container, parent)
         {
-            PanelLayoutEngineInstances++;
+            
         }
 
 
