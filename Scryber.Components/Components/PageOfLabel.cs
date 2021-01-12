@@ -323,7 +323,7 @@ namespace Scryber.Components
             }
             else
             {
-                comp = Document.FindAComponentByName(this.ComponentName);
+                comp = Document.FindAComponentByName(name);
             }
 
             if (null == comp && string.IsNullOrEmpty(this.NotFoundText))

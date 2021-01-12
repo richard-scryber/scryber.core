@@ -1,0 +1,135 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Scryber.Styles;
+using Scryber.Components;
+using Scryber.Text;
+
+namespace Scryber.Html.Components
+{
+    /// <summary>
+    /// Explicit sub class of the PDFDiv under the HTML Namespace that can be styled independantly
+    /// </summary>
+    [PDFParsableComponent("page")]
+    public class HTMLPageNumber : Scryber.Components.PageNumberLabel
+    {
+        [PDFAttribute("class")]
+        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
+
+        [PDFAttribute("style")]
+        public override Style Style { get => base.Style; set => base.Style = value; }
+
+        /// <summary>
+        /// Global Html hidden attribute used with xhtml as hidden='hidden'
+        /// </summary>
+        [PDFAttribute("hidden")]
+        public string Hidden
+        {
+            get
+            {
+                if (this.Visible)
+                    return string.Empty;
+                else
+                    return "hidden";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value != "hidden")
+                    this.Visible = true;
+                else
+                    this.Visible = false;
+            }
+        }
+
+        [PDFAttribute("property")]
+        public string Property { get; set; }
+
+        [PDFAttribute("for")]
+        public string ForComponent { get; set; }
+
+
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+
+        public HTMLPageNumber()
+            : base()
+        {
+        }
+
+        private const string TotalPageCountFormat = "{1}";
+        private const string SectionPage = "{2}";
+        private const string SectionTotal = "{3}";
+
+        protected override string GetDisplayText(int pageindex, Style style, bool rendering)
+        {
+            int index = pageindex;
+            if(!string.IsNullOrEmpty(this.ForComponent))
+            {
+                index = -1;
+                var found = this.LookupExternalComponent(rendering, this.ForComponent);
+                if (null != found)
+                {
+                    index = found.PageLayoutIndex;
+                }
+            }
+            return base.GetDisplayText(index, style, rendering);
+        }
+
+
+        protected override string GetPageFormat(Style full)
+        {
+            if(!string.IsNullOrEmpty(this.Property))
+            {
+                switch (this.Property.ToLower())
+                {
+                    case ("total"):
+                    case ("t"):
+                        return TotalPageCountFormat;
+                    case ("section"):
+                    case ("s"):
+                        return SectionPage;
+                    case ("sectiontotal"):
+                    case ("st"):
+                        return SectionTotal;
+                    default:
+                        break;
+                }
+            }
+
+            return base.GetPageFormat(full);
+        }
+
+        #region private void LookupExternalComponent(PDFLayoutContext context, string name)
+
+        /// <summary>
+        /// Looks for the component with the specified name or ID and sets instance variables appropriately
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="name"></param>
+        private Component LookupExternalComponent(bool rendering, string name)
+        {
+            Component comp;
+
+            if (name.StartsWith(Const.ComponentIDPrefix))
+            {
+                name = name.Substring(Const.ComponentIDPrefix.Length);
+                comp = this.Document.FindAComponentById(name);
+            }
+            else
+            {
+                comp = Document.FindAComponentById(name);
+            }
+
+            return comp;
+        }
+
+        #endregion
+
+    }
+}

@@ -51,10 +51,6 @@ namespace Scryber.Core.UnitTests.Html
                         <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
-                                <style>
-                                    .strong { font-weight: bold; color: #880088; }
-                                    body.strong p { background-color: #F8F; }
-                                </style>
                             </head>
 
                             <body class='strong' style='margin:20px;' >
@@ -78,9 +74,7 @@ namespace Scryber.Core.UnitTests.Html
                 var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
                 var p = body.Columns[0].Contents[0] as PDFLayoutBlock;
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
-                Assert.AreEqual(Scryber.Drawing.PDFColor.Parse("#880088"), body.FullStyle.Fill.Color, "Fill colors do not match");
-                Assert.AreEqual(Scryber.Drawing.PDFColor.Parse("#F8F"), p.FullStyle.Background.Color, "Background color has not been applied");
-                Assert.AreEqual(Scryber.Drawing.PDFColor.Parse("blue"), p.FullStyle.Border.Color, "Inline Border Color not correct");
+                
 
             }
         }
@@ -145,7 +139,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LoadHtmlFromSource()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/LoadedFromSource.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/HtmlFromSource.html");
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -178,7 +172,7 @@ namespace Scryber.Core.UnitTests.Html
                 var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
 
-                using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSS.pdf"))
+                using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoading.pdf"))
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
@@ -227,7 +221,7 @@ namespace Scryber.Core.UnitTests.Html
         public void BodyWithBinding()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bindingcontent.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithBinding.html");
 
             var model = new
             {
@@ -324,7 +318,7 @@ namespace Scryber.Core.UnitTests.Html
             var data = client.DownloadData(imagepath);
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/RelativeAndAbsoluteImages.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/LocalAndRemoteImages.html");
 
             Assert.IsTrue(System.IO.File.Exists(path));
 
@@ -485,7 +479,7 @@ namespace Scryber.Core.UnitTests.Html
                 };
                 doc.Params["model"] = model;
 
-                using (var stream = DocStreams.GetOutputStream("FrameContent.pdf"))
+                using (var stream = DocStreams.GetOutputStream("BodyFraming.pdf"))
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
@@ -501,6 +495,153 @@ namespace Scryber.Core.UnitTests.Html
                 //Check that the inner text of the para matches the bound value.
                 var span = para.Contents[1] as IPDFTextLiteral;
                 Assert.AreEqual(model.fragmentContent, span.Text);
+            }
+
+        }
+
+        [TestMethod()]
+        public void HtmlLinksLocalAndRemote()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/LinksLocalAndRemote.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var model = new
+                {
+                    fragmentContent = "Content for the fragment"
+                };
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("LinksLocalAndRemote.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+                
+            }
+
+        }
+
+
+        [TestMethod()]
+        public void BodyWithPageNumbers()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithPageNums.html");
+
+            var model = new
+            {
+                headerText = "Bound Header",
+                footerText = "Bound Footer",
+                content = "This is the bound content text",
+                bodyStyle = "background-color:red; color:#FFF; padding: 20pt",
+                bodyClass = "top"
+            };
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodyWithPageNums.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.AutoBind = true;
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+            }
+
+
+            return;
+
+            var body = _layoutcontext.DocumentLayout.AllPages[0];
+            Assert.IsNotNull(body.HeaderBlock);
+            Assert.IsNotNull(body.FooterBlock);
+
+            // Header content check
+
+            var pgHead = body.HeaderBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var pBlock = pgHead.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            var pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            var pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
+
+            Assert.AreEqual(pRun.Characters, model.headerText);
+
+            // Footer content check
+
+            var pgFoot = body.FooterBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pBlock = pgFoot.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
+
+            Assert.AreEqual(pRun.Characters, model.footerText);
+
+            //First page check
+            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
+
+            Assert.AreEqual(pRun.Characters, "Bound value of ");
+
+            pRun = pLine.Runs[4] as PDFTextRunCharacter;
+
+            Assert.AreEqual(pRun.Characters, model.content);
+
+            var bgColor = pBlock.FullStyle.Background.Color;
+            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+
+            var color = pBlock.FullStyle.Fill.Color;
+            Assert.AreEqual("rgb (255,255,255)", color);
+
+            //Second page check
+
+
+            body = _layoutcontext.DocumentLayout.AllPages[1];
+            Assert.IsNotNull(body);
+
+            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
+
+            Assert.AreEqual("This is the content on the next page ", pRun.Characters);
+
+            bgColor = pBlock.FullStyle.Background.Color;
+            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+
+            color = pBlock.FullStyle.Fill.Color;
+            Assert.AreEqual("rgb (255,255,255)", color);
+
+        }
+
+
+        [TestMethod()]
+        public void Html5Tags()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Html5AllTags.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var model = new
+                {
+                    fragmentContent = "Content for the fragment"
+                };
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("Html5AllTags.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
             }
 
         }

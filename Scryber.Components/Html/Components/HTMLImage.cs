@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -43,6 +44,20 @@ namespace Scryber.Html.Components
         {
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
+        }
+
+        [PDFAttribute("width")]
+        public override PDFUnit Width
+        {
+            get => base.Width;
+            set => base.Width = value;
+        }
+
+        [PDFAttribute("height")]
+        public override PDFUnit Height
+        {
+            get => base.Height;
+            set => base.Height = value;
         }
 
         public HTMLImage()

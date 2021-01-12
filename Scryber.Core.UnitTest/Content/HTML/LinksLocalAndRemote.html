@@ -1,0 +1,38 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+      xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    <title>This is a body with headers and footers</title>
+    <style>
+        .break{
+            page-break-before:always;
+        }
+        .spaced{
+            margin:4pt; border: solid 1px gray; padding:4pt;
+        }
+    </style>
+</head>
+<body class="grey" title="Outer">
+    <header><p>This is the header</p></header>
+    <!-- The rest of the content should go into the body -->
+    <p id="firstpage" class="spaced">
+        <a href="#lastpage" >Link to the last page.</a>
+    </p>
+    <p class='spaced break' >
+        On the next page
+        <a href="https://github.com/richard-scryber/scryber.core" >Link to git repository</a>
+    </p>
+    <p id="lastpage" class="spaced break" >
+        On the last page.
+        <a href="#firstpage" >Image and Back to the first page
+            <img src="images/Toroid24.jpg" width="150" />
+        </a>
+    </p>
+
+    <footer><p>This is the footer</p></footer>
+</body>
+</html>

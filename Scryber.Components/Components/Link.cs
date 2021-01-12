@@ -112,7 +112,7 @@ namespace Scryber.Components
         /// use the components name or unique id).
         /// </summary>
         [PDFAttribute("destination")]
-        public string Destination
+        public virtual string Destination
         {
             get { return _dest; }
             set { _dest = value; }
@@ -128,7 +128,7 @@ namespace Scryber.Components
         /// Gets or sets the path to the remote file
         /// </summary>
         [PDFAttribute("file")]
-        public string File
+        public virtual string File
         {
             get { return _file; }
             set { _file = value; }
@@ -380,7 +380,7 @@ namespace Scryber.Components
         /// <param name="dest"></param>
         /// <param name="file"></param>
         /// <returns></returns>
-        private LinkAction ResolveActionType(string dest, string file)
+        protected virtual LinkAction ResolveActionType(string dest, string file)
         {
             if (string.IsNullOrEmpty(file))
             {

@@ -89,8 +89,12 @@ namespace Scryber.Components
         //local value for the page index of this label
         private int _renderpageindex = -1;
 
+        protected int RenderPageIndex { get { return _renderpageindex; } set { _renderpageindex = value; } }
+
         //local reference to the full style of this label
         private Style _fullstyle = null;
+
+        protected Style RenderStyle { get { return _fullstyle; } set { _fullstyle = value; } }
 
         //local reference to the full style of the layout page
         private Style _pgstyle = null;
@@ -176,7 +180,7 @@ namespace Scryber.Components
         private const int DefaultGroupPageCountHint = 10;
         private const int DefaultTotalPageCountHint = 99;
 
-        private string GetDisplayText(bool rendering)
+        protected virtual string GetDisplayText(bool rendering)
         {
             if (null == this._doc)
                 return string.Empty;
@@ -197,7 +201,7 @@ namespace Scryber.Components
         ///                     {2} global page index, {3} global page count,
         ///                     {4} index in group, {5} group count
         /// </remarks>
-        private string GetDisplayText(int pageindex, Style style, bool rendering)
+        protected virtual string GetDisplayText(int pageindex, Style style, bool rendering)
         {
             if (null == this._doc)
                 throw new ArgumentNullException("The PageNumberLabel does not have a layout document associated with it, so cannot get the page number in the document");
@@ -230,7 +234,7 @@ namespace Scryber.Components
 
         #endregion
 
-        private string GetPageFormat(Style full)
+        protected virtual string GetPageFormat(Style full)
         {
             string format = this.Style.GetValue(StyleKeys.PageNumberFormatKey, string.Empty);
 

@@ -12,27 +12,41 @@
             padding:20pt;
         }
         /* generic image style of black border and some margins and padding*/
-        img{
+        img, .bordered{
             border:solid 1px black;
             padding:4pt;
             margin:4pt;
         }
+        body{ padding:10pt; }
+        .newpage{ page-break-before:always; }
     </style>
 </head>
+
 <body class="grey" title="Outer">
-    <header><p>This is the header</p></header>
-    <footer><p>This is the footer</p></footer>
-    <!-- The rest of the content should go into the body -->
+    <header>
+        <p class="bordered">This is the header</p>
+    </header>
+    <footer><p class="bordered">This is the footer</p></footer>
+    <main class="bordered">
+        <header>Main content header</header>
+        <p class="bordered">Main content area</p>
+        <footer>Main content footer</footer>
+    </main>
+
+    <section id="afterMain" class="newpage" >
+        <header><p class="bordered" >Main section header</p></header>
+    </section>
+
     <div class="spaced">
         <p style="margin-top:0px;">This is the body</p>
 
         <!-- A local image relative to the html-->
-        <img style="width:100pt"
+        <img style="width:80pt; display:inline"
              src="images/ScyberLogo2_alpha_small.png"
-             alt="Local Scryber Logo" />
+             alt="Local Scryber Logo"/>
 
         <!-- A remote image with full path -->
-        <img style="width:100pt"
+        <img style="width:100pt; display: inline;"
              src="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png"
              alt="Remote logo file" />
         <p style="margin-top:0px;">This is after the images</p>

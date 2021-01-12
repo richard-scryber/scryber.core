@@ -1,0 +1,69 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    
+    <title>This is a body with headers and footers</title>
+    <style type="text/css" >
+        .grey{
+            background-color: #333;
+            color: #EEE;
+            font-size:12pt;
+        }
+
+        p{
+            margin-top:0px;
+        }
+
+        div.pg-break-after {
+            page-break-after: always;
+        }
+
+        
+        .large{
+            font-size:20pt;
+        }
+
+        @page{
+            size:A4 landscape;
+            
+        }
+
+        p.foot,  p.head{ padding:5pt;}
+        
+    </style>
+</head>
+
+<body class="grey" title="Outer">
+
+    <header>
+        <p class="grey head">{@:model.headerText}</p>
+    </header>
+    <!-- The rest of the content should go into the body -->
+    <p id="firstPara" class='{@:model.bodyClass}' title="{@:model.content}" style="{@:model.bodyStyle}">
+        Bound value of {@:model.content}.
+    </p>
+    <p>The second paragraph is on page <page for="#secondPara" /></p>
+    <p>The third paragraph is on page <page for="#thirdPara" /></p>
+
+    <div class="pg-break-after"></div>
+
+    <p id="secondPara" class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
+        This is the content on the next page
+    </p>
+
+    <div class="pg-break-after"></div>
+
+    <p id="thirdPara" class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
+        This is the content on the last page
+    </p>
+    <p>The first paragraph is on page <page for="#firstPara" /></p>
+    <footer>
+        <p class="grey foot">Page <page /> of <page property="Total" /></p>
+    </footer>
+</body>
+</html>

@@ -343,9 +343,10 @@ namespace Scryber
         Initialized = 1,
         Loaded = 2,
         Bound = 3,
-        Laidout = 4,
-        Written = 5,
-        Disposed = 6
+        LayingOut = 4,
+        Laidout = 5,
+        Written = 6,
+        Disposed = 7
     }
 
     /// <summary>

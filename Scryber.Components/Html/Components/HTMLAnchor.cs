@@ -48,6 +48,10 @@ namespace Scryber.Html.Components
         }
 
 
+        [PDFAttribute("href")]
+        public override string File { get => base.File; set => base.File = value; }
+
+
         public HTMLAnchor()
             : base()
         {
@@ -59,6 +63,26 @@ namespace Scryber.Html.Components
             return base.MapPath(path);
         }
 
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
+        {
+            if (!string.IsNullOrEmpty(this.File) && this.File.StartsWith("#"))
+            {
+                this.Destination = this.File;
+            }
+
+            base.DoRegisterArtefacts(context, set, fullstyle);
+        }
+
+        protected override LinkAction ResolveActionType(string dest, string file)
+        {
+            if (!string.IsNullOrEmpty(file) && file.StartsWith("#"))
+            {
+                this.Destination = file;
+                return LinkAction.Destination;
+            }
+            else
+                return base.ResolveActionType(dest, file);
+        }
 
         protected override Style GetBaseStyle()
         {
