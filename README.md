@@ -166,7 +166,7 @@ Just a bit more than a hello world example.
 
 ### And the output
 
-![Hello World Output](docs/images/helloworld.png)
+![Hello World Output](https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/helloworld.png)
 
 Check out Read the Docs for more information on how to use the library.
 
