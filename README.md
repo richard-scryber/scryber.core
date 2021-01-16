@@ -20,15 +20,15 @@ If you know HTML you can create documents.
 
 scryber supports:
 
-    - standard html and many newer html 5 tags.
-    - cascading styles: linked; embedded or inline.
-    - databinding on simple and complex objects.
-    - databinding and repeating templates on dynamic parameters,
-    - iframe imports of external content,
-    - a flowing and flexible layout with multiple page sizes and page break support.
-    - sizing and positioning of elements inline, block, relative or absolute.
-    - images and colours with backgrounds
-    - multiple fonts and text alignment; spacing; leading and breaking.
+- standard html and many newer html5 tags.
+- cascading styles: linked; embedded or inline.
+- databinding on simple and complex objects.
+- databinding and repeating templates on dynamic parameters,
+- iframe imports of external content,
+- a flowing and flexible layout with multiple page sizes and page break support.
+- sizing and positioning of elements inline, block, relative or absolute.
+- images and colours with backgrounds
+- multiple fonts and text alignment; spacing; leading and breaking.
 
 If you have used the previous pdfx files, the older templates should continue to work. But we will be concentrating on html, css and svg going forwards.
 
