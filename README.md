@@ -53,7 +53,7 @@ Create a new html template file with your content.
             <meta charset='utf-8' name='author' content='Richard Hewitson' />
             <title>Hello World</title>
 
-            <!-- support for complex css selectors (or link ot external style sheets )-->
+            <!-- support for complex css selectors (or link to external style sheets )-->
             <style>
                 body{
                     font-family: sans-serif;
@@ -113,9 +113,10 @@ Create a new html template file with your content.
                 <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
                 <div>We hope you like it.</div>
                 <ol>
-                    <!-- Loop through the items in the model -->
+                    <!-- Loop through the binding items passed in the parameters -->
                     <template data-bind='{@:model.items}'>
-                        <li>{@:.name}</li> <!-- and bind the name value -->
+                        <!-- and bind the name value in the current context -->
+                        <li>{@:.name}</li> 
                     </template>
                 </ol>
             </main>
@@ -145,7 +146,7 @@ Create a new html template file with your content.
           var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/READMESample.html");
 
-            //pass paramters as needed, supporting arrays, dictionaries or complex classes.
+            //create our sample model data.
 
             var model = new
             {
@@ -161,11 +162,13 @@ Create a new html template file with your content.
 
             using (var doc = Document.ParseDocument(path))
             {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
+                //pass data paramters as needed, supporting simple values, arrays or complex classes.
 
                 doc.Params["author"] = "Scryber Engine";
                 doc.Params["model"] = model;
-                using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
+
+                //And save it to a file or a stream
+                using (var stream = new System.IO.FileStream("READMESample.pdf", System.IO.FileMode.Create))
                 {
                     doc.SaveAsPDF(stream);
                 }
@@ -187,7 +190,8 @@ Create a new html template file with your content.
           {
               doc.Params["author"] = "Scryber Engine";
               doc.Params["model"] = GetMyParameters(title);
-              
+
+              //This will output to the response inline.
               return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
           }
       }

@@ -622,6 +622,7 @@ namespace Scryber.Core.UnitTests.Html
                 doc.Params["model"] = model;
                 using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
                 {
+                    
                     doc.SaveAsPDF(stream);
                 }
 
