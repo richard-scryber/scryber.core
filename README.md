@@ -6,16 +6,23 @@
 
 ## Make documents easily
 
-The scryber engine is an advanced, complete, pdf creation library for dotnet core. 
-It supports the easy definition of documents, pages, content, shapes and images either by html and templates or simple code. 
+The scryber engine is an advanced, complete, pdf creation library for dotnet core 5.
+It supports the easy definition of documents, pages, content, shapes and images with html templates and simple code. 
 
 With a styles based layout it is easy to create good looking and flowing documents. 
-Binding in xml allows you to quickly load data from many sources and output to PDF.
+Binding allows you to quickly load data from many sources and output the templates PDF.
+
 
 ## HTML First
 
 The latest version of scryber makes a significant switch to an XHTML first approach.
-This supports cascading style sheets, databinding, repeating templates, imports and page directives.
+If you know HTML you can create documents.
+
+scryber supports cascading style sheets, databinding, repeating templates, iframe imports and page directives.
+
+
+If you have used the previous pdfx files, the older templates should continue to work. But we will be concentrating on html, css and svg going forwards.
+
 
 ## Getting Started
 
@@ -29,12 +36,13 @@ OR for asp.net mvc
 [scryber.core.mvc package](https://www.nuget.org/packages/scryber.core.mvc/)
 (Which includes the scryber.core package).
 
-The full documentation is available here
+Check out Read the Docs for more information on how to use the library.
 
 [scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
 
 ## Example Template
 
+Create a new html template file with your content.
 
 ```html
 
@@ -44,6 +52,7 @@ The full documentation is available here
             <!-- support for standard document attributes -->
             <meta charset='utf-8' name='author' content='Richard Hewitson' />
             <title>Hello World</title>
+
             <!-- support for complex css selectors (or link ot external style sheets )-->
             <style>
                 body{
@@ -136,24 +145,24 @@ The full documentation is available here
           var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/READMESample.html");
 
-            //pass paramters as needed, supporting arrays or complex classes.
-            var items = new[]
-            {
-                new { name = "First item" },
-                new { name = "Second item" },
-                new { name = "Third item" },
-            };
+            //pass paramters as needed, supporting arrays, dictionaries or complex classes.
 
             var model = new
             {
                 titlestyle = "color:#ff6347",
                 title = "Hello from scryber",
-                items = items
+                items = new[]
+                {
+                    new { name = "First item" },
+                    new { name = "Second item" },
+                    new { name = "Third item" },
+                }
             };
 
             using (var doc = Document.ParseDocument(path))
             {
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
+
                 doc.Params["author"] = "Scryber Engine";
                 doc.Params["model"] = model;
                 using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
@@ -176,6 +185,7 @@ The full documentation is available here
       {
           using(var doc = Document.ParseDocument("[input template]"))
           {
+              doc.Params["author"] = "Scryber Engine";
               doc.Params["model"] = GetMyParameters(title);
               
               return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
