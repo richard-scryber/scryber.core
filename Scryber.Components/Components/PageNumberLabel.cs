@@ -116,6 +116,20 @@ namespace Scryber.Components
         }
 
         /// <summary>
+        /// Gets the text value (to be) rendered for this page number
+        /// </summary>
+        public string OutputValue
+        {
+            get
+            {
+                if (null != _numberProxy)
+                    return _numberProxy.Text;
+                else
+                    return string.Empty;
+            }
+        }
+
+        /// <summary>
         /// Gets the actual text proxy for this page number.
         /// </summary>
         public Scryber.Text.PDFTextProxyOp Proxy

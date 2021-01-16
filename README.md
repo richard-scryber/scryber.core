@@ -1,3 +1,9 @@
+<div style='align:center; height:200px;'>
+    <img src='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png'/>
+    <br/>
+    <h1>Scryber PDF Engine</h1>
+</div>
+
 # scryber.core
 Make documents easily.
 

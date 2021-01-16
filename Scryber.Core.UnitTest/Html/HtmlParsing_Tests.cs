@@ -554,69 +554,17 @@ namespace Scryber.Core.UnitTests.Html
                 var pg = doc.Pages[0] as Section;
                 Assert.IsNotNull(pg.Header);
                 Assert.IsNotNull(pg.Footer);
+
+
+
+                var p2ref = doc.FindAComponentById("secondParaPage") as HTMLPageNumber;
+                var p3ref = doc.FindAComponentById("thirdParaPage") as HTMLPageNumber;
+                var p3act = doc.FindAComponentById("thirdPageValue") as HTMLPageNumber;
+
+                Assert.AreEqual("2", p2ref.OutputValue, "The P2 reference was not valid");
+                Assert.AreEqual("3", p3ref.OutputValue, "The P3 reference was not valid");
+                Assert.AreEqual("3", p3act.OutputValue, "The P3 actual was not valid");
             }
-
-
-            return;
-
-            var body = _layoutcontext.DocumentLayout.AllPages[0];
-            Assert.IsNotNull(body.HeaderBlock);
-            Assert.IsNotNull(body.FooterBlock);
-
-            // Header content check
-
-            var pgHead = body.HeaderBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            var pBlock = pgHead.Columns[0].Contents[0] as PDFLayoutBlock;
-
-            var pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            var pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
-
-            Assert.AreEqual(pRun.Characters, model.headerText);
-
-            // Footer content check
-
-            var pgFoot = body.FooterBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            pBlock = pgFoot.Columns[0].Contents[0] as PDFLayoutBlock;
-
-            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
-
-            Assert.AreEqual(pRun.Characters, model.footerText);
-
-            //First page check
-            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
-
-            Assert.AreEqual(pRun.Characters, "Bound value of ");
-
-            pRun = pLine.Runs[4] as PDFTextRunCharacter;
-
-            Assert.AreEqual(pRun.Characters, model.content);
-
-            var bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
-
-            var color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color);
-
-            //Second page check
-
-
-            body = _layoutcontext.DocumentLayout.AllPages[1];
-            Assert.IsNotNull(body);
-
-            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
-
-            Assert.AreEqual("This is the content on the next page ", pRun.Characters);
-
-            bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
-
-            color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color);
 
         }
 

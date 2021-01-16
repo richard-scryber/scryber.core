@@ -47,8 +47,8 @@
     <p id="firstPara" class='{@:model.bodyClass}' title="{@:model.content}" style="{@:model.bodyStyle}">
         Bound value of {@:model.content}.
     </p>
-    <p>The second paragraph is on page <page for="#secondPara" /></p>
-    <p>The third paragraph is on page <page for="#thirdPara" /></p>
+    <p>The second paragraph is on page <page id="secondParaPage" for="#secondPara" /></p>
+    <p>The third paragraph is on page <page id="thirdParaPage" for="#thirdPara" /></p>
 
     <div class="pg-break-after"></div>
 
@@ -59,7 +59,7 @@
     <div class="pg-break-after"></div>
 
     <p id="thirdPara" class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
-        This is the content on the last page
+        This is the content on the last page, number : <page id="thirdPageValue" />
     </p>
     <p>The first paragraph is on page <page for="#firstPara" /></p>
     <footer>
