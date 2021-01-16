@@ -18,8 +18,17 @@ Binding allows you to quickly load data from many sources and output the templat
 The latest version of scryber makes a significant switch to an XHTML first approach.
 If you know HTML you can create documents.
 
-scryber supports cascading style sheets, databinding, repeating templates, iframe imports and page directives.
+scryber supports:
 
+    - standard html and many newer html 5 tags.
+    - cascading styles: linked; embedded or inline.
+    - databinding on simple and complex objects.
+    - databinding and repeating templates on dynamic parameters,
+    - iframe imports of external content,
+    - a flowing and flexible layout with multiple page sizes and page break support.
+    - sizing and positioning of elements inline, block, relative or absolute.
+    - images and colours with backgrounds
+    - multiple fonts and text alignment; spacing; leading and breaking.
 
 If you have used the previous pdfx files, the older templates should continue to work. But we will be concentrating on html, css and svg going forwards.
 
@@ -71,32 +80,11 @@ Create a new html template file with your content.
                     padding: 10pt 10pt 10pt 35pt;
                 }
 
-                .foot{ display:none; }
-                page { display:none; }
-            
-
-                /* Page directives and breaks are supported, as are @media
-                    directives for print only */
-
-                @page{
-                    size: A4;
-                }
-
-                @media print {
-
-                    page {
-                        display: inline;
-                    }
-
-                    .foot {
-                        display: block;
-                        font-size: 10pt;
-                        margin-bottom: 10pt;
-                    }
-                    .foot td{
-                        border:none;
-                        text-align:center;
-                    }
+                .foot td {
+                    border: none;
+                    text-align: center;
+                    font-size: 10pt;
+                    margin-bottom: 10pt;
                 }
 
             </style>
@@ -112,10 +100,10 @@ Create a new html template file with your content.
                 <!-- binding style and values on content -->
                 <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
                 <div>We hope you like it.</div>
+                <!-- Loop over or nested items binding in the parameters -->
                 <ol>
-                    <!-- Loop through the binding items passed in the parameters -->
                     <template data-bind='{@:model.items}'>
-                        <!-- and bind the name value in the current context -->
+                        <!-- and bind the name value in the current object -->
                         <li>{@:.name}</li> 
                     </template>
                 </ol>
