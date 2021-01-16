@@ -1,18 +1,21 @@
 <h1 align='center'>
     <img height='200' src='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png'/>
     <br/>
-    Scryber PDF Engine
+    scryber.core pdf engine
 </h1>
 
-# scryber.core
-Make documents easily.
+## Make documents easily
 
 The scryber engine is an advanced, complete, pdf creation library for dotnet core. 
-It supports the easy definition of documents, pages, content, shapes and images either by xml templates or simple code. 
+It supports the easy definition of documents, pages, content, shapes and images either by html and templates or simple code. 
 
 With a styles based layout it is easy to create good looking and flowing documents. 
-Binding in xml allows you to quickly load data from many sources and output to PDF. 
+Binding in xml allows you to quickly load data from many sources and output to PDF.
 
+## HTML First
+
+The latest version of scryber makes a significant switch to an XHTML first approach.
+This supports cascading style sheets, databinding, repeating templates, imports and page directives.
 
 ## Getting Started
 
