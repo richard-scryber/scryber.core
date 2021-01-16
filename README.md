@@ -33,72 +33,18 @@ The full documentation is available here
 
 [scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
 
-## Hello World
+## Example Template
 
-Just a bit more than a hello world example.
-
-### Create your template pdfx (xml) file.
-
-```xml
-
-    <?xml version="1.0" encoding="UTF-8" ?>
-    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-                        xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
-                        xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
-                        title='Hello World' >
-    <Params>
-      <doc:Object-Param id='model'  />
-    </Params>
-    <Info >
-        <Title>Hello World</Title>
-    </Info>
-    <Styles>
-      <!-- Standard page font -->
-      <styles:Style match='doc:Page'>
-        <styles:Font family='sans-serif' size='14pt' />
-      </styles:Style>
-
-      <!-- Class definition -->
-      <styles:Style match='p.header' >
-        <styles:Background color='#333'
-                img-src='../html/images/ScyberLogo2_alpha_small.png' repeat='None' 
-                x-pos='10pt' y-pos='10pt' x-size='20pt' />
-        <styles:Fill color='#AAA' />
-        <styles:Margins top='0pt' />
-        <styles:Padding all='10pt' left='35pt' />
-      </styles:Style>
-
-    </Styles>
-
-    <Pages>
-  
-      <doc:Page styles:padding='0pt'>
-        <!-- Header definition, with the class -->
-        <Header>
-            <doc:Para styles:class='header'>Scryber document creation</doc:Para>
-        </Header>
-        <Content>
-         <!-- Single page content with bound data -->
-         <doc:Div styles:padding='10pt' >
-            <doc:H2 styles:style='{@:model.TitleStyle}' text='{@:model.Title}' />
-            <doc:Div>We hope you like scryber.</doc:Div>
-          </doc:Div>
-        </Content>
-      </doc:Page>
-    </Pages>
-
-    </doc:Document>
-```
-
-### Or using XHTML
 
 ```html
 
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
         <head>
+            <!-- support for standard document attributes -->
             <meta charset='utf-8' name='author' content='Richard Hewitson' />
             <title>Hello World</title>
+            <!-- support for complex css selectors (or link ot external style sheets )-->
             <style>
                 body{
                     font-family: sans-serif;
@@ -115,16 +61,65 @@ Just a bit more than a hello world example.
                     margin-top: 0pt;
                     padding: 10pt 10pt 10pt 35pt;
                 }
+
+                .foot{ display:none; }
+                page { display:none; }
+            
+
+                /* Page directives and breaks are supported, as are @media
+                    directives for print only */
+
+                @page{
+                    size: A4;
+                }
+
+                @media print {
+
+                    page {
+                        display: inline;
+                    }
+
+                    .foot {
+                        display: block;
+                        font-size: 10pt;
+                        margin-bottom: 10pt;
+                    }
+                    .foot td{
+                        border:none;
+                        text-align:center;
+                    }
+                }
+
             </style>
         </head>
         <body>
             <header>
+                <!-- document headers -->
                 <p class="header">Scryber document creation</p>
             </header>
-            <div style="padding:10pt" >
-                <h2 class="heading" style="{@:model.TitleStyle}" >{@:model.Title}</h2>
-                <div>We hope you like scryber.</div>
-            </div>
+            <!-- support for many HTML5 tags-->
+            <main style="padding:10pt">
+
+                <!-- binding style and values on content -->
+                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+                <div>We hope you like it.</div>
+                <ol>
+                    <!-- Loop through the items in the model -->
+                    <template data-bind='{@:model.items}'>
+                        <li>{@:.name}</li> <!-- and bind the name value -->
+                    </template>
+                </ol>
+            </main>
+            <footer>
+                <!-- footers and page numbers -->
+                <table class="foot" style="width:100%">
+                    <tr>
+                        <td>{@:author}</td>
+                        <td><page /></td>
+                        <td>Hello World Sample</td>
+                    </tr>
+                </table>
+            </footer>
         </body>
     </html>
 
@@ -138,16 +133,35 @@ Just a bit more than a hello world example.
 
       static void Main(string[] args)
       {
-          using(var doc = Document.ParseDocument("[input template]"))
-          {
-              doc.Params["model"] = new
+          var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/READMESample.html");
+
+            //pass paramters as needed, supporting arrays or complex classes.
+            var items = new[]
+            {
+                new { name = "First item" },
+                new { name = "Second item" },
+                new { name = "Third item" },
+            };
+
+            var model = new
+            {
+                titlestyle = "color:#ff6347",
+                title = "Hello from scryber",
+                items = items
+            };
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+                doc.Params["author"] = "Scryber Engine";
+                doc.Params["model"] = model;
+                using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
                 {
-                    Title = "This is the title",
-                    TitleStyle = "color:red;"
-                };
-              
-              doc.ProcessDocument("[output file].pdf");
-          }
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
       }
 ```
 
@@ -162,11 +176,7 @@ Just a bit more than a hello world example.
       {
           using(var doc = Document.ParseDocument("[input template]"))
           {
-              doc.Params["model"] = new
-                {
-                    Title = title,
-                    TitleStyle = "color:red;"
-                };
+              doc.Params["model"] = GetMyParameters(title);
               
               return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
           }
@@ -175,7 +185,7 @@ Just a bit more than a hello world example.
 
 ### And the output
 
-![Hello World Output](docs/images/helloworld.png)
+![Hello World Output](https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/docs/images/helloworld.png)
 
 Check out Read the Docs for more information on how to use the library.
 

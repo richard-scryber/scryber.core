@@ -593,5 +593,39 @@ namespace Scryber.Core.UnitTests.Html
             }
 
         }
+
+        [TestMethod()]
+        public void READMESample()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/READMESample.html");
+
+            //pass paramters as needed, supporting arrays or complex classes.
+            var items = new[]
+            {
+                new { name = "First item" },
+                new { name = "Second item" },
+                new { name = "Third item" },
+            };
+
+            var model = new
+            {
+                titlestyle = "color:#ff6347",
+                title = "Hello from scryber",
+                items = items
+            };
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+                doc.Params["author"] = "Scryber Engine";
+                doc.Params["model"] = model;
+                using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
     }
 }
