@@ -676,8 +676,8 @@ namespace Scryber.Data
                 context.TraceLog.Add(TraceLevel.Debug, "DataGrid", "Initializing and loading root component before binding");
 
             PDFTraceLog log = context.TraceLog;
-            PDFInitContext init = new PDFInitContext(context.Items, log, context.PerformanceMonitor);
-            PDFLoadContext load = new PDFLoadContext(context.Items, log, context.PerformanceMonitor);
+            PDFInitContext init = new PDFInitContext(context.Items, log, context.PerformanceMonitor, this.Document);
+            PDFLoadContext load = new PDFLoadContext(context.Items, log, context.PerformanceMonitor, this.Document);
 
             built.Init(init);
             built.Load(load);

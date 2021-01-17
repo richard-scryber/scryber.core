@@ -287,14 +287,14 @@ namespace Scryber.Components
         private PDFInitContext GetInitContext(PDFDataContext dataContext)
         {
             if (null == _initContext)
-                _initContext = new PDFInitContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor);
+                _initContext = new PDFInitContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
             return _initContext;
         }
 
         private PDFLoadContext GetLoadContext(PDFDataContext dataContext)
         {
             if (null == _loadContext)
-                _loadContext = new PDFLoadContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor);
+                _loadContext = new PDFLoadContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
             return _loadContext;
         }
 

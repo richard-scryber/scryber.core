@@ -85,8 +85,8 @@ namespace Scryber
         /// </summary>
         /// <param name="items"></param>
         /// <param name="log"></param>
-        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
-            : this(items, log, perfmon, new PDFDataStack())
+        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IPDFDocument document)
+            : this(items, log, perfmon, new PDFDataStack(), document)
         {
         }
 
@@ -100,8 +100,8 @@ namespace Scryber
         /// <param name="items"></param>
         /// <param name="log"></param>
         /// <param name="stack"></param>
-        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFDataStack stack)
-            : base(items, log, perfmon)
+        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFDataStack stack, IPDFDocument document)
+            : base(items, log, perfmon, document)
         {
             this._datastack = stack;
         }

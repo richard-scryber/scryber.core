@@ -92,7 +92,7 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<int> ColumnCountKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"cont", ColumnItemKey);
         public static readonly PDFStyleKey<PDFUnit> ColumnAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ally", ColumnItemKey);
         public static readonly PDFStyleKey<bool> ColumnFlowKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"flow", ColumnItemKey);
-        public static readonly PDFStyleKey<PDFColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<PDFColumnWidths>((PDFObjectType)"cwid",ColumnItemKey);
+        public static readonly PDFStyleKey<PDFColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<PDFColumnWidths>((PDFObjectType)"cwid", ColumnItemKey);
         public static readonly PDFStyleKey<bool> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"brcb", ColumnItemKey);
         public static readonly PDFStyleKey<bool> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"brca", ColumnItemKey);
 
@@ -129,7 +129,7 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<PositionMode> PositionModeKey = StyleKey.InternalCreateStyleValueKey<PositionMode>((PDFObjectType)"mode", PositionItemKey);
         public static readonly PDFStyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((PDFObjectType)"vlgn", PositionItemKey);
         public static readonly PDFStyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"hlgn", PositionItemKey);
-        
+
         //Size
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleSize, NOT_INHERITED);
         public static readonly PDFStyleKey<PDFUnit> SizeWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", SizeItemKey);
@@ -164,7 +164,7 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<TextDirection> TextDirectionKey = StyleKey.InternalCreateStyleValueKey<TextDirection>((PDFObjectType)"tdir", TextItemKey);
         public static readonly PDFStyleKey<Scryber.Text.WordWrap> TextWordWrapKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.WordWrap>((PDFObjectType)"wrap", TextItemKey);
         public static readonly PDFStyleKey<Scryber.Text.TextDecoration> TextDecorationKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecoration>((PDFObjectType)"decr", TextItemKey);
-        
+
         //List
         public static readonly StyleKey ListItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleList, NOT_INHERITED);
         public static readonly PDFStyleKey<ListNumberingGroupStyle> ListNumberStyleKey = StyleKey.InternalCreateStyleValueKey<ListNumberingGroupStyle>((PDFObjectType)"styl", ListItemKey);
@@ -248,6 +248,15 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<float> TransformYSkewKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"yskw", TransformItemKey);
         public static readonly PDFStyleKey<float> TransformYOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"yoff", TransformItemKey);
         public static readonly PDFStyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((PDFObjectType)"orig", TransformItemKey);
+
+        //FontFace
+        public static readonly StyleKey FontFaceItemKey = StyleKey.InternalCreateStyleItemKey((PDFObjectType)"csff", NOT_INHERITED);
+        public static readonly PDFStyleKey<PDFFontSource> FontFaceSrcKey = StyleKey.InternalCreateStyleValueKey<PDFFontSource>((PDFObjectType)"fsrc", FontFaceItemKey);
+        public static readonly PDFStyleKey<string> FontFaceFamilyKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"ffam", FontFaceItemKey);
+        public static readonly PDFStyleKey<bool> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"fwgt", FontFaceItemKey);
+        public static readonly PDFStyleKey<bool> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"fsyl", FontFaceItemKey);
+
+
 
     }
 }

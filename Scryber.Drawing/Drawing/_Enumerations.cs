@@ -161,6 +161,22 @@ namespace Scryber.Drawing
         Bold = 262144
     }
 
+    public enum FontSourceType
+    {
+        Local,
+        Url
+    }
+
+    public enum FontSourceFormat
+    {
+        Default,
+        EmbeddedOpenType,
+        WOFF2,
+        WOFF,
+        TrueType, OpenType, TTC, //Currently the only supported versions.
+        SVG
+    }
+
     public enum PositionMode
     {
         /// <summary>

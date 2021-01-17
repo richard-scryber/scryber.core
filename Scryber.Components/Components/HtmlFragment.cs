@@ -192,7 +192,7 @@ namespace Scryber.Components
                 {
                     //Need to do the initialization for each of the items.
 
-                    PDFInitContext initContext = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor);
+                    PDFInitContext initContext = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                     for (int i = 0; i < _added.Count; i++)
                     {
                         _added[i].Init(initContext);
@@ -203,7 +203,7 @@ namespace Scryber.Components
 
                     if (performload)
                     {
-                        PDFLoadContext loadContext = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor);
+                        PDFLoadContext loadContext = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                         for (int i = 0; i < _added.Count; i++)
                         {
                             IPDFComponent comp = _added[i];

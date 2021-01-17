@@ -283,7 +283,7 @@ namespace Scryber.Core.UnitTests.Generation
             var log = config.TracingOptions.GetTraceLog();
 
             PDFItemCollection items = new PDFItemCollection(null);
-            PDFDataContext context = new PDFDataContext(items, log, new PDFPerformanceMonitor(true));
+            PDFDataContext context = new PDFDataContext(items, log, new PDFPerformanceMonitor(true), null);
             PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
             return args;
         }

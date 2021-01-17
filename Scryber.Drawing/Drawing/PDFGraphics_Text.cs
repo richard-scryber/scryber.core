@@ -23,6 +23,7 @@ using Scryber.Text;
 using Scryber.Native;
 using System.Drawing;
 using Scryber.Resources;
+using System.Runtime.CompilerServices;
 
 namespace Scryber.Drawing
 {

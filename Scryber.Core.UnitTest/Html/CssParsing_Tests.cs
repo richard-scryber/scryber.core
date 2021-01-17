@@ -319,5 +319,141 @@ body.grey div.reverse{
 
             }
         }
+
+        [TestMethod]
+        public void ParsePDFFontSource()
+        {
+            string sample = "url(https://somewebsite.com/path/to/font.woff)";
+
+            PDFFontSource parsed;
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("https://somewebsite.com/path/to/font.woff", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+            sample = "url(path/to/font.woff)";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("path/to/font.woff", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+            sample = "url(path/to/font.woff) format(\"woff\")";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("path/to/font.woff", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.WOFF, parsed.Format);
+
+            sample = "url('path/to/font.woff')";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("path/to/font.woff", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+            sample = "url(\"path/to/svgfont.svg#example\")";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("path/to/svgfont.svg#example", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+
+            sample = "url(\"path/to/svgfont.svg#example\") format(\"svg\")";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("path/to/svgfont.svg#example", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.SVG, parsed.Format);
+
+            //Some locals
+
+            sample = "local(font)";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Local, parsed.Type);
+            Assert.AreEqual("font", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+            sample = "local(some font)";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Local, parsed.Type);
+            Assert.AreEqual("some font", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+
+            sample = "local('some font') format(truetype)";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Local, parsed.Type);
+            Assert.AreEqual("some font", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.TrueType, parsed.Format);
+
+
+            sample = "local(\"some other font\") format(\"opentype\")";
+
+            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.AreEqual(FontSourceType.Local, parsed.Type);
+            Assert.AreEqual("some other font", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.OpenType, parsed.Format);
+
+            //empty is false
+            Assert.IsFalse(PDFFontSource.TryParseOneValue("", out parsed));
+
+            //unbalanced quotes is false
+            Assert.IsFalse(PDFFontSource.TryParseOneValue("local(\"some other font) format(\"opentype\")", out parsed));
+
+            //Unknown source type is false
+            Assert.IsFalse(PDFFontSource.TryParseOneValue("remote(\"path/to/svgfont.svg#example\") format(\"svg\")", out parsed));
+
+            //Other marker e.g. other is ignored so true
+            Assert.IsTrue(PDFFontSource.TryParseOneValue("url(\"path/to/svgfont.svg#example\") other(\"svg\")", out parsed));
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual("path/to/svgfont.svg#example", parsed.Source);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+            //Parse Multiple
+
+            var full = @"local(font), url(path/to/font.svg) format('svg'),
+                url(path/to/font.woff) format('woff'),
+                url(path/to/font.ttf) format(truetype),
+                url('path/to/font.otf') format(embedded-opentype)";
+
+            Assert.IsTrue(PDFFontSource.TryParse(full, out parsed));
+
+            Assert.AreEqual("font", parsed.Source);
+            Assert.AreEqual(FontSourceType.Local, parsed.Type);
+            Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
+
+            parsed = parsed.Next;
+            Assert.IsNotNull(parsed);
+
+            Assert.AreEqual("path/to/font.svg", parsed.Source);
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual(FontSourceFormat.SVG, parsed.Format);
+
+            parsed = parsed.Next;
+            Assert.IsNotNull(parsed);
+
+            Assert.AreEqual("path/to/font.woff", parsed.Source);
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual(FontSourceFormat.WOFF, parsed.Format);
+
+            parsed = parsed.Next;
+            Assert.IsNotNull(parsed);
+
+            Assert.AreEqual("path/to/font.ttf", parsed.Source);
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual(FontSourceFormat.TrueType, parsed.Format);
+
+            parsed = parsed.Next;
+            Assert.IsNotNull(parsed);
+
+            Assert.AreEqual("path/to/font.otf", parsed.Source);
+            Assert.AreEqual(FontSourceType.Url, parsed.Type);
+            Assert.AreEqual(FontSourceFormat.EmbeddedOpenType, parsed.Format);
+        }
     }
 }

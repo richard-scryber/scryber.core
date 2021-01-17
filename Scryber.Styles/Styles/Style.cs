@@ -1131,10 +1131,10 @@ namespace Scryber.Styles
             if (!string.IsNullOrEmpty(value))
             {
                 CSSStyleItemReader reader = new CSSStyleItemReader(value);
+                var parser = new CSSStyleItemAllParser();
 
                 while (reader.ReadNextAttributeName())
                 {
-                    var parser = new CSSStyleItemAllParser();
                     parser.SetStyleValue(style, reader);
                 }
             }

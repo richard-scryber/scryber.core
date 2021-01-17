@@ -154,13 +154,13 @@ namespace Scryber
         // .ctor
         //
 
-        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.Style root, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
-            : this(origin,pageCount,format, new Scryber.Styles.StyleStack(root), items, log, perfmon)
+        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.Style root, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IPDFDocument document)
+            : this(origin,pageCount,format, new Scryber.Styles.StyleStack(root), items, log, perfmon, document)
         {
         }
 
-        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.StyleStack stack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon) 
-            : base(stack, items, log, perfmon)
+        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.StyleStack stack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IPDFDocument document) 
+            : base(stack, items, log, perfmon, document)
         {
             this._origin = origin;
             this._offset = new PDFPoint();

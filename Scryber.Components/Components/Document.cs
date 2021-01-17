@@ -1064,14 +1064,49 @@ namespace Scryber.Components
         /// <param name="font">The font to get the resource for</param>
         /// <param name="create">true if the PDFFontResource should be created if it is not already listed</param>
         /// <returns>A PDFFontResource that will be included in the document (or null if it is not loaded and should not be created)</returns>
-        public virtual PDFFontResource GetFontResource(PDFFont font, bool create)
+        public virtual PDFFontResource GetFontResource(PDFFont font, bool create, bool throwOnNotFound = true)
         {
-            string fullname = font.FullName;
+            
 
             string type = PDFResource.FontDefnResourceType;
+            var sel = font.Selector;
 
-            PDFFontResource rsrc = this.GetResource(type, fullname, true) as PDFFontResource;
-            return rsrc;
+            while (null != sel)
+            {
+                var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontStyle);
+                var rsrc = this.GetResource(type, this, fullname, false) as PDFFontResource;
+                if (null != rsrc)
+                {
+                    font.SetResourceFont(sel.FamilyName, rsrc.Definition);
+                    return rsrc;
+                }
+                sel = sel.Next;
+            }
+
+            //not found so we should create
+            if(create)
+            {
+                sel = font.Selector;
+                while (null != sel)
+                {
+                    var found = PDFFontFactory.GetFontDefinition(sel.FamilyName, PDFFont.GetDrawingStyle(font.FontStyle), false);
+                    if (null != found)
+                    {
+                        var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontStyle);
+                        var rsrc = this.RegisterFontResource(fullname, this, found);
+                        font.SetResourceFont(sel.FamilyName, rsrc.Definition);
+                        return rsrc;
+                    }
+                    else
+                        sel = sel.Next;
+                }
+            }
+
+            if (throwOnNotFound)
+                throw new NullReferenceException("No fonts could be found that matched the selector " + font.Selector.ToString() + " with style" + font.FontStyle.ToString());
+
+            font.ClearResourceFont();
+            return null;
 
         }
 
@@ -1126,9 +1161,6 @@ namespace Scryber.Components
             else
                 throw new ArgumentOutOfRangeException("resourceType");
 
-            if (null != created)
-                created = this.SharedResources.Add(created);
-
             return created;
         }
 
@@ -1143,9 +1175,7 @@ namespace Scryber.Components
                 PDFImageData data = this.LoadImageData(owner, fullpath);
                 if (null != data)
                 {
-                    string id = this.GetIncrementID(PDFObjectTypes.ImageXObject);
-                    PDFImageXObject img = PDFImageXObject.Load(data, id);
-                    return img;
+                    return RegisterImageResource(fullpath, owner, data);
                 }
                 else
                     return null;
@@ -1161,12 +1191,88 @@ namespace Scryber.Components
             using (this.PerformanceMonitor.Record(PerformanceMonitorType.Font_Load, fullname))
             {
                 PDFFontDefinition defn = PDFFontFactory.GetFontDefinition(fullname);
+                return RegisterFontResource(fullname, owner, defn);
+            }
+        }
+
+        #endregion
+
+        #region public PDFResource EnsureResource(string type, string fullname, object resource) + 1 overload
+
+        public PDFResource EnsureResource(string type, string fullname, object resource)
+        {
+            return EnsureResource(type, fullname, this, resource);
+        }
+
+        public PDFResource EnsureResource(string type, string fullname, Component owner, object resource)
+        {
+            PDFResource found = this.SharedResources.GetResource(type, fullname);
+            if (null != found)
+                return found;
+
+            if (type == PDFResource.XObjectResourceType)
+                return this.RegisterImageResource(fullname, owner, resource);
+
+            else if (type == PDFResource.FontDefnResourceType)
+                return this.RegisterFontResource(fullname, owner, resource);
+
+            else if (resource is PDFResource)
+            {
+                PDFResource exist = resource as PDFResource;
+                this.SharedResources.Add(exist);
+                return exist;
+            }
+            else
+                throw new InvalidCastException("The resource type could not be determined, or is is not a PDFResourceType");
+             
+        }
+
+        #endregion
+
+        #region protected PDFImageXObject RegisterImageResource(string fullname, Component owner, object resource)
+
+        protected PDFImageXObject RegisterImageResource(string fullname, Component owner, object resource)
+        {
+            if(resource is PDFImageData)
+            {
+                PDFImageData data = resource as PDFImageData;
+                string id = this.GetIncrementID(PDFObjectTypes.ImageXObject);
+                PDFImageXObject img = PDFImageXObject.Load(data, id);
+                resource = img;
+            }
+            if(resource is PDFImageXObject)
+            {
+                PDFImageXObject xobj = resource as PDFImageXObject;
+                this.SharedResources.Add(xobj);
+                return xobj;
+            }
+            else throw new InvalidCastException("The image resource is not image data or an image xobj");
+        }
+
+        #endregion
+
+        #region protected PDFFontResource RegisterFontResource(string fullname, Component owner, object resource)
+
+        protected PDFFontResource RegisterFontResource(string fullname, Component owner, object resource)
+        {
+
+            if (resource is PDFFontDefinition)
+            {
+                PDFFontDefinition defn = (PDFFontDefinition)resource;
                 string id = this.GetIncrementID(PDFObjectTypes.FontResource);
-                PDFFontResource rsrc = PDFFontResource.Load(defn, id);
+                resource = PDFFontResource.Load(defn, id);
+            }
+            if (resource is PDFFontResource)
+            {
+                PDFFontResource rsrc = resource as PDFFontResource;
                 if (rsrc.ResourceKey.Equals(fullname) == false)
                     rsrc.SetResourceKey(fullname);
+
+                this.SharedResources.Add(rsrc);
+
                 return rsrc;
             }
+            else throw new InvalidCastException("The font resource is not a font definition or font resource");
         }
 
         #endregion
@@ -1309,14 +1415,14 @@ namespace Scryber.Components
 
         protected virtual PDFInitContext CreateInitContext(PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFItemCollection items)
         {
-            PDFInitContext icontext = new PDFInitContext(items, log, perfmon);
+            PDFInitContext icontext = new PDFInitContext(items, log, perfmon, this);
             this.PopulateContextBase(icontext);
             return icontext;
         }
 
         protected virtual PDFLoadContext CreateLoadContext(PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFItemCollection items)
         {
-            PDFLoadContext loadcontext = new PDFLoadContext(items, log, perfmon);
+            PDFLoadContext loadcontext = new PDFLoadContext(items, log, perfmon, this);
             this.PopulateContextBase(loadcontext);
             return loadcontext;
         }
@@ -1474,7 +1580,7 @@ namespace Scryber.Components
         protected virtual PDFDataContext CreateDataContext(PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFItemCollection items)
         {
 
-            PDFDataContext context = new PDFDataContext(items, log, perfmon);
+            PDFDataContext context = new PDFDataContext(items, log, perfmon, this);
             this.PopulateContextBase(context);
             return context;
         }
@@ -1766,7 +1872,6 @@ namespace Scryber.Components
         #endregion
 
         
-
         #region protected virtual void DoOutputAndAppendToPDF(PDFLayoutDocument doc, PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
@@ -1925,7 +2030,7 @@ namespace Scryber.Components
         /// <returns>A new layout context</returns>
         protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
         {
-            PDFLayoutContext context = new PDFLayoutContext(style, format, items, log, perfmon);
+            PDFLayoutContext context = new PDFLayoutContext(style, format, items, log, perfmon, this);
             PopulateContextBase(context);
             return context;
         }
@@ -1986,7 +2091,7 @@ namespace Scryber.Components
 
             Style def = this.CreateDefaultStyle();
             PDFOutputFormatting format = this.GetOutputFormat(this.RenderOptions.OuptputCompliance);
-            PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, format, def, this.Params, log, perfmon);
+            PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, format, def, this.Params, log, perfmon, this);
 
             this.PopulateContextBase(context);
             return context;
@@ -3061,9 +3166,7 @@ namespace Scryber.Components
         
         #endregion
 
-        
-
-        
+ 
     }
 
 

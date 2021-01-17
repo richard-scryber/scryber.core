@@ -57,9 +57,9 @@ namespace Scryber.Components
             if (generated.Count == 0)
                 return;
 
-            PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor);
-            PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor);
-            PDFDataContext data = new PDFDataContext(context.Items, context.TraceLog, context.PerformanceMonitor);
+            PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+            PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+            PDFDataContext data = new PDFDataContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
 
 
             IPDFContainerComponent container = this;

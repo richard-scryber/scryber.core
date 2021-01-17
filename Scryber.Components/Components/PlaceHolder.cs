@@ -173,8 +173,8 @@ namespace Scryber.Components
 
                 //Do the init and load for these components
 
-                PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor);
-                PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor);
+                PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                 foreach (IPDFComponent child in all)
                 {
                     child.Init(init);

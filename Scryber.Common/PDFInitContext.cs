@@ -26,8 +26,8 @@ namespace Scryber
 
     public class PDFInitContext : PDFContextBase
     {
-        public PDFInitContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
-            : base(items, log, perfmon)
+        public PDFInitContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IPDFDocument document)
+            : base(items, log, perfmon, document)
         {
         }
     }

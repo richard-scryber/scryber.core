@@ -32,6 +32,8 @@ using Scryber.OpenType;
 using System.IO;
 using System.CodeDom.Compiler;
 using System.Data;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization.Formatters;
 
 namespace Scryber.Drawing
 {
@@ -342,6 +344,9 @@ namespace Scryber.Drawing
         private static FamilyReferenceBag _customfamilies;
         private static FamilyReferenceBag _genericfamilies;
         private static FamilyReferenceBag _staticfamilies;
+
+        private static Dictionary<string, PDFFontDefinition> _remotefamilies;
+
         private static bool _init;
         private static Exception _initex;
         private static object _initlock;
@@ -365,10 +370,10 @@ namespace Scryber.Drawing
         #endregion
 
         //
-        // public methods
+        // public retrieval methods
         //
 
-        #region  internal static string GetSystemFontFamilyNameForStandardFont(string pdffamilyname)
+        #region  public static string GetSystemFontFamilyNameForStandardFont(string pdffamilyname)
 
         /// <summary>
         /// Gets the system name of the font for the PDF family name
@@ -409,7 +414,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region internal static Font GetSystemFont(string family, System.Drawing.FontStyle style, float size)
+        #region public static Font GetSystemFont(string family, System.Drawing.FontStyle style, float size)
 
         /// <summary>
         /// Gets a System.Drawing.Font based upon the family, style and size.
@@ -472,17 +477,27 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region internal static PDFFontDefinition GetFontDefinition(PDFFont font)
+        #region public static PDFFontDefinition GetFontDefinition(PDFFont font)
 
-        public static PDFFontDefinition GetFontDefinition(PDFFont font)
+        public static PDFFontDefinition GetFontDefinition(PDFFont font, bool throwNotFound = true)
         {
             //Make sure we are initialized and OK
             AssertInitialized();
 
             System.Drawing.FontStyle fs = font.GetDrawingStyle();
-            string family = font.FamilyName;
-            return GetFontDefinition(family, fs);
+            PDFFontSelector selector = font.Selector;
+            while (null != selector)
+            {
+                var found = GetFontDefinition(selector.FamilyName, fs, false);
+                if (null != found)
+                    return found;
 
+                selector = selector.Next;
+            }
+            if (throwNotFound)
+                throw new NullReferenceException(String.Format(Errors.FontNotFound, font.Selector.ToString() + " " + fs.ToString()));
+            else
+                return null;
         }
 
         #endregion
@@ -534,6 +549,8 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public static string[] GetAllCustomFontFamilies()
+
         public static string[] GetAllCustomFontFamilies()
         {
             AssertInitialized();
@@ -542,6 +559,10 @@ namespace Scryber.Drawing
                 _customfamilies.FillAllFamilies(all);
             return all.ToArray();
         }
+
+        #endregion
+
+        #region public static string[] GetAllSystemFontFamilies()
 
         public static string[] GetAllSystemFontFamilies()
         {
@@ -554,13 +575,20 @@ namespace Scryber.Drawing
 
         }
 
+        #endregion
+
+        #region public static string[] GetAllGenericFontFamilies()
+
         public static string[] GetAllGenericFontFamilies()
         {
             string[] found = new string[] { "Sans-Serif", "Serif", "Cursive", "Monospace" };
             return found;
         }
 
-        
+        #endregion
+
+        #region public static PDFFontDefinition GetFontDefinition(string fullname)
+
         public static PDFFontDefinition GetFontDefinition(string fullname)
         {
             int pos = fullname.IndexOf(",");
@@ -583,15 +611,19 @@ namespace Scryber.Drawing
             
         }
 
-        #region internal static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style)
+        #endregion
+
+        #region public static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style, bool throwNotFound = true)
 
         /// <summary>
         /// Gets the PDFFontDefinition for the specified famil and style
         /// </summary>
         /// <param name="family"></param>
         /// <param name="style"></param>
+        /// <param name="throwNotFound">If true (default) then if the font cannot be found an exception will be raised.
+        /// If not, then null will be returned.</param>
         /// <returns></returns>
-        public static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style)
+        public static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style, bool throwNotFound = true)
         {
             //Make sure we are initialized and OK
             AssertInitialized();
@@ -613,13 +645,11 @@ namespace Scryber.Drawing
             if (null == fref)
                 fref = _genericfamilies[family, style];
 
-           
-
             if (null == fref)
             {
 
                 if (usesubstitute && style != System.Drawing.FontStyle.Regular && !PDFFont.IsStandardFontFamily(family))
-                    return GetFontDefinition(family, System.Drawing.FontStyle.Regular);            
+                    return GetFontDefinition(family, System.Drawing.FontStyle.Regular);
 
                 //We dont have the explicit font so if we should substitue then 
                 //try to find the family and return that otherwise use courier.
@@ -635,12 +665,19 @@ namespace Scryber.Drawing
                     //Fallback - use courier font definition
                     if (null == fref)
                     {
-                        throw new NullReferenceException(String.Format(Errors.FontNotFound, family + " " + style.ToString()));
+                        if (throwNotFound)
+                            throw new NullReferenceException(String.Format(Errors.FontNotFound, family + " " + style.ToString()));
+                        else
+                            return null;
                     }
                 }
                 else
-                    throw new NullReferenceException(String.Format(Errors.FontNotFound, family + " " + style.ToString()));
-                
+                {
+                    if (throwNotFound)
+                        throw new NullReferenceException(String.Format(Errors.FontNotFound, family + " " + style.ToString()));
+                    else
+                        return null;
+                }
             }
 
             lock (fref.LoadLock)
@@ -688,6 +725,7 @@ namespace Scryber.Drawing
                         _customfamilies = LoadCustomFamilies();
                         _staticfamilies = LoadStaticFamilies();
                         _genericfamilies = LoadGenericFamilies();
+                        _remotefamilies = new Dictionary<string, PDFFontDefinition>(StringComparer.InvariantCultureIgnoreCase);
                         sw.Stop();
                         //System.Diagnostics.Debug.WriteLine("Loaded all system and custom fonts in :" + sw.Elapsed);
                     }
@@ -707,6 +745,8 @@ namespace Scryber.Drawing
         }
 
         #endregion
+
+        #region private static string[] GetFontsDirectory()
 
         private static string[] _fontspaths = null;
         private const string FontsDirectoryName = "Fonts";
@@ -744,6 +784,10 @@ namespace Scryber.Drawing
             }
             return _fontspaths;
         }
+
+        #endregion
+
+        #region private static FamilyReferenceBag LoadGenericFamilies()
 
         private static FamilyReferenceBag LoadGenericFamilies()
         {
@@ -826,6 +870,8 @@ namespace Scryber.Drawing
 
             return genericBag;
         }
+
+        #endregion
 
         #region private static FamilyReferenceBag LoadSystemFonts()
 
@@ -995,6 +1041,8 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region private static FamilyReferenceBag LoadStaticFamilies()
+
         const int HelveticaSpaceWidthFU = 569;
         const int TimesSpaceWidthFU = 512;
         const int CourierSpaceWidthFU = 1228;
@@ -1105,6 +1153,10 @@ namespace Scryber.Drawing
             return bag;
         }
 
+        #endregion
+
+        #region private static byte[] GetFontBinary(Assembly assembly, string rsrc, out TTFRef fontRef)
+
         private static byte[] GetFontBinary(Assembly assembly, string rsrc, out TTFRef fontRef)
         {
             var stream = assembly.GetManifestResourceStream(rsrc);
@@ -1125,6 +1177,7 @@ namespace Scryber.Drawing
             return data;
         }
 
+        #endregion
 
         #region private static System.Resources.ResourceManager LoadResourceManager(string basename)
 
@@ -1217,6 +1270,105 @@ namespace Scryber.Drawing
         }
 
         #endregion
+
+        //
+        // PDFFontSource ensure methods
+        //
+
+        public static bool TryEnsureFont(IPDFComponent mapper, PDFFontSource source, string familyName, System.Drawing.FontStyle style, out PDFFontDefinition definition)
+        {
+            AssertInitialized();
+
+            bool found = false;
+            definition = null;
+
+            PDFFontSource curr = source;
+            
+            while (null != curr)
+            {
+                if(curr.Type == FontSourceType.Local)
+                {
+                    definition = GetFontDefinition(source.Source, style, false);
+                    if(definition != null)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                else if(curr.Type == FontSourceType.Url)
+                {
+                    var url = curr.Source;
+                    if(!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                    {
+                        url = mapper.MapPath(url);
+                    }
+                    if (_remotefamilies.TryGetValue(url, out definition))
+                    {
+                        found = null != definition;
+                        if (found)
+                            break;
+                    }
+                    else if (CanUseFormat(curr.Format, url) && TryLoadRemoteDefinition(url, familyName, style, out definition))
+                    {
+                        lock (_initlock)
+                        {
+                            _remotefamilies[url] = definition;
+                        }
+                        found = null != definition;
+
+                        if (found) //The returned definition can be null.
+                            break;
+                    }
+                }
+                curr = curr.Next;
+            }
+
+            return found;
+        }
+
+        private static bool TryLoadRemoteDefinition(string url, string family, System.Drawing.FontStyle style, out PDFFontDefinition definition)
+        {
+            System.Net.WebClient client = null;
+            bool tried = true;
+
+            try
+            {
+                client = new System.Net.WebClient();
+                var data = client.DownloadData(url);
+                definition = PDFFontDefinition.LoadOpenTypeFontFile(data, family, style, 0);
+            }
+            catch(Exception ex)
+            {
+                definition = null;
+            }
+            finally
+            {
+                if (null != client)
+                    client.Dispose();
+            }
+
+            return tried;
+        }
+
+        private static bool CanUseFormat(FontSourceFormat format, string url)
+        {
+            switch (format)
+            {
+                case (FontSourceFormat.OpenType):
+                case (FontSourceFormat.TrueType):
+                case (FontSourceFormat.EmbeddedOpenType):
+                    return true;
+
+                case (FontSourceFormat.Default):
+                    if (url.EndsWith(".ttf") || url.EndsWith(".otf"))
+                        return true;
+                    else
+                        return false;
+
+                default:
+                    return false; 
+            }
+        }
 
     }
 }

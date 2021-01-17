@@ -1381,6 +1381,57 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    public class CSSFontSourceParser : CSSStyleValueParser
+    {
+        public CSSFontSourceParser(): base(CSSStyleItems.FontSource)
+        { }
+
+        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            PDFFontSource root = null;
+            PDFFontSource curr = null;
+            StringBuilder all = new StringBuilder();
+
+            while (reader.ReadNextValue(',',';', true))
+            {
+                string src = reader.CurrentTextValue.Trim();
+                PDFFontSource found;
+                if (TryGetFontSource(src, out found))
+                {
+                    if (null == root)
+                        root = found;
+                    if (null == curr)
+                        curr = found;
+                    else
+                    {
+                        curr.Next = found;
+                        curr = found;
+                    }
+                }
+                //We need this to go past the original comma on the following ones,
+                //becase we ignore white space in values, bit of a hack
+                if (!reader.InnerEnumerator.EOS && reader.InnerEnumerator.Current == ',')
+                    reader.InnerEnumerator.MoveNext();
+            }
+            if (null != root)
+            {
+                style.SetValue(StyleKeys.FontFaceSrcKey, root);
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool TryGetFontSource(string value, out PDFFontSource found)
+        {
+            if (PDFFontSource.TryParseOneValue(value, out found))
+                return true;
+            else
+                return false;
+        }
+    }
+
+
     #region public class CSSFontParser : CSSStyleValueParser
 
     public class CSSFontParser : CSSStyleValueParser

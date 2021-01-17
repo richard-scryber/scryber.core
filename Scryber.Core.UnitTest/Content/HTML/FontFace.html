@@ -1,0 +1,42 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    
+    <title>This is a body with headers and footers</title>
+    <style type="text/css" >
+
+
+        @font-face {
+            font-family: "Open Sans";
+            font-style: normal;
+            font-weight: bold;
+            src: local("Open Sans"),
+                url(https://fonts.gstatic.com/s/opensans/v18/mem8YaGs126MiZpBA-U1Ug.ttf) format('truetype'),
+                url(https://github.com/google/fonts/blob/master/apache/opensans/OpenSans-Bold.woff) format('woff')
+        }
+
+        
+        
+    </style>
+</head>
+
+<body class="grey" title="Outer">
+
+    <header>
+        <p class="grey">This should use the open sans font</p>
+    </header>
+   
+
+    <!-- The rest of the content should go into the body -->
+    <p>
+        Body value of open sans with bound {@:model.fragmentContent}
+    </p>
+
+   
+</body>
+</html>

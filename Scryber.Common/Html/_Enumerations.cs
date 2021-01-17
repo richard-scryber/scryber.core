@@ -78,6 +78,7 @@ namespace Scryber.Html
         public const string FontFamily = "font-family";
         public const string FontLineHeight = "line-height";
         public const string Font = "font";
+        public const string FontSource = "src";
 
         public const string Margins = "margin";
         public const string MarginsLeft = "margin-left";

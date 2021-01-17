@@ -520,7 +520,7 @@ namespace Scryber.Layout
         {
             this.AssertCurrentLine();
 
-
+            
             PDFUnit lineheight = this.TextRenderOptions.GetLineHeight();
             ZeroLineCounter zeros = new ZeroLineCounter();
 

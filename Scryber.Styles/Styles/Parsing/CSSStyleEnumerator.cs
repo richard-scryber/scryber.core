@@ -116,6 +116,26 @@ namespace Scryber.Styles.Parsing
                     parsed = pg;
                     this._str.Offset = innerEnd;
                 }
+                else if(this.IsFontFace(ref selector))
+                {
+                    StyleFontFace ff = new StyleFontFace();
+                    var innerEnd = MoveToNextStyleEnd();
+                    if (innerEnd <= next)
+                        return null;
+
+                    string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
+                    CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
+
+                    while (reader.ReadNextAttributeName())
+                    {
+                        parser.SetStyleValue(ff, reader);
+                    }
+
+
+                    parsed = ff;
+                    this._str.Offset = innerEnd;
+                }
                 else
                 {
                     var end = MoveToNextStyleEnd();
@@ -175,6 +195,21 @@ namespace Scryber.Styles.Parsing
                     selector = string.Empty;
                 else
                     selector = selector.Substring("@page".Length).Trim();
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool IsFontFace(ref string selector)
+        {
+            if (!string.IsNullOrEmpty(selector) && selector.StartsWith("@font-face"))
+            {
+                if (selector == "@font-face")
+                    selector = string.Empty;
+                else
+                    selector = selector.Substring("@font-face".Length).Trim();
 
                 return true;
             }

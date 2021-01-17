@@ -464,7 +464,7 @@ namespace Scryber
     #endregion
 
     /// <summary>
-    /// Interface for the 
+    /// Interface for the configuration service
     /// </summary>
     public interface IScryberConfigurationService
     {
@@ -526,6 +526,16 @@ namespace Scryber
         /// <param name="key">The resource key </param>
         /// <returns></returns>
         PDFResource GetResource(string type, string key, bool create);
+
+        /// <summary>
+        /// Ensures that the provided resource is registered in the documents
+        /// shared resources, and if not, then it is added and a resource reference returned.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="key"></param>
+        /// <param name="resource"></param>
+        /// <returns></returns>
+        PDFResource EnsureResource(string type, string key, object resource);
 
         /// <summary>
         /// Returns a document unique identifier for a particular object type

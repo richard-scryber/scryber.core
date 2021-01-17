@@ -72,9 +72,8 @@ namespace Scryber.Drawing
             {
                 //Ensure we have loaded the system font
                 //This will also set the familyName
-
-                if (this.GetSystemFont() != null)
-                    return this._familyName;
+                if (null != this.Selector)
+                    return this.Selector.FamilyName;
                 else
                     return string.Empty;
             }

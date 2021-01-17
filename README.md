@@ -28,7 +28,7 @@ scryber supports:
 - a flowing and flexible layout with multiple page sizes and page break support.
 - sizing and positioning of elements inline, block, relative or absolute.
 - images and colours with backgrounds
-- multiple fonts and text alignment; spacing; leading and breaking.
+- multiple fonts and text alignment; spacing; leading; decoration and breaking.
 
 If you have used the previous pdfx files, the older templates should continue to work. But we will be concentrating on html, css and svg going forwards.
 

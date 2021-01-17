@@ -185,7 +185,7 @@ namespace Scryber.Styles.Parsing
             return ReadNextValue(' ',';');
         }
 
-        public bool ReadNextValue(char separator)
+        public bool ReadNextValue(char separator, bool ignoreWhiteSpace = false)
         {
             if (!this.BeginValueRead())
                 return false;
@@ -203,7 +203,7 @@ namespace Scryber.Styles.Parsing
             while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
-                if (CurrentIsWhiteSpace())
+                if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
                 {
                     if (!inquote && !indoublequote && !inparentheses)
                         break;
@@ -238,7 +238,7 @@ namespace Scryber.Styles.Parsing
                 return false;
         }
 
-        public bool ReadNextValue(char separator1, char separator2)
+        public bool ReadNextValue(char separator1, char separator2, bool ignoreWhiteSpace = false)
         {
             if (!this.BeginValueRead())
                 return false;
@@ -256,7 +256,7 @@ namespace Scryber.Styles.Parsing
             while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
-                if (CurrentIsWhiteSpace())
+                if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
                 {
                     if (!inquote && !indoublequote && !inparentheses)
                         break;
@@ -292,7 +292,7 @@ namespace Scryber.Styles.Parsing
                 return false;
         }
 
-        public bool ReadNextValue(char separator1, char separator2, char separator3)
+        public bool ReadNextValue(char separator1, char separator2, char separator3, bool ignoreWhiteSpace = false)
         {
             if (!this.BeginValueRead())
                 return false;
@@ -313,7 +313,7 @@ namespace Scryber.Styles.Parsing
             while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
-                if (CurrentIsWhiteSpace())
+                if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
                 {
                     if (!inquote && !indoublequote && !inparentheses)
                         break;
