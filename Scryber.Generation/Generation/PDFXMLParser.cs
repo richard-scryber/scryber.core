@@ -455,7 +455,7 @@ namespace Scryber.Generation
             }
             catch (Exception ex)
             {
-                throw BuildParserXMLException(reader, Errors.CouldNotParseComponentOfType, cdef.ClassType, ex.Message);
+                throw BuildParserXMLException(ex, reader, Errors.CouldNotParseComponentOfType, cdef.ClassType, ex.Message);
             }
             return value;
         }

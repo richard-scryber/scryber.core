@@ -265,7 +265,11 @@ namespace Scryber.Components
             {
                 //We dont have an explicit size
                 //So set it to the line height.
-                h = opts.GetAscent();
+                if (opts.Font != null && opts.Font.FontMetrics != null)
+                    h = opts.Font.FontMetrics.Ascent;
+                else
+                    h = opts.Font.Size * 0.75;
+
                 w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
             }
             else //We are in a block on our own line

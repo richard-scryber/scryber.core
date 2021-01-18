@@ -148,16 +148,17 @@ namespace Scryber
         /// <summary>
         /// Gets the System.Drawing.Font font that is representative of the Scyber font in these rending options
         /// </summary>
+        [Obsolete("No longer using system fonts", true)]
         public System.Drawing.Font SystemFont
         {
             get
             {
-                if (null == _sysfont)
-                {
-                    if (null == _font)
-                        return null;
-                    _sysfont = _font.GetSystemFont();
-                }
+                //if (null == _sysfont)
+                //{
+                //    if (null == _font)
+                //        return null;
+                //    _sysfont = _font.GetSystemFont();
+                //}
                 return _sysfont;
             }
         }
@@ -292,8 +293,10 @@ namespace Scryber
         {
             if (this.Leading.HasValue)
                 return this.Leading.Value;
-            else
+            else if (null != this.Font.FontMetrics)
                 return this.Font.FontMetrics.LineHeight;
+            else
+                return this.Font.Size * 1.2;
         }
 
         #endregion
@@ -306,10 +309,26 @@ namespace Scryber
         /// <returns></returns>
         public PDFUnit GetAscent()
         {
-            return this.Font.FontMetrics.Ascent;
+            if (null == this.Font)
+                return PDFUnit.Zero;
+            else if (null != this.Font.FontMetrics)
+                return this.Font.FontMetrics.Ascent;
+            else
+                return this.Font.Size * 0.75;
+
         }
 
         #endregion
+
+        public PDFUnit GetDescender()
+        {
+            if (null == this.Font)
+                return PDFUnit.Zero;
+            else if (null != this.Font.FontMetrics)
+                return this.Font.FontMetrics.Descent;
+            else
+                return this.Font.Size * 0.25;
+        }
 
         #region public PDFUnit GetFirstLineInset()
 

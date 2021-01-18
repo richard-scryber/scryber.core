@@ -153,8 +153,10 @@ namespace Scryber.Core.UnitTests.Generation
 
                                     <doc:Page id='titlepage' >
                                       <Content>
-                                        <doc:Span id='mylabel' styles:class='sans' >This is text in the Sans family font</doc:Span><doc:Br/>
-                                        <doc:Span id='mylabel' styles:class='serif' >This is text in the Times font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:class='sans' >This is text in the Sans family font
+that will flow across multiple lines and show the expected default leading for the font</doc:Span><doc:Br/>
+                                        <doc:Span id='mylabel' styles:class='serif' >This is text in the Times font
+that will flow across multiple lines and show the expected default leading for the font</doc:Span><doc:Br/>
                                       </Content>
                                     </doc:Page>
 

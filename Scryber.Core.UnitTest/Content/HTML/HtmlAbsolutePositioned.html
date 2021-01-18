@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Absolute positioned tags</title>
+    <style type="text/css">
+        p {
+            padding: 5pt;
+        }
+
+        .pos {
+            position: absolute;
+            left: 40pt;
+            top: 100pt;
+            width: 180pt;
+            background-color: #EEEEEE;
+        }
+    </style>
+</head>
+<body>
+    <p>This is some normal content</p>
+    <p class="pos" >This is some absolutely positioned content relative to the page.</p>
+    <div style="page-break-before:always; margin-top:100pt; border:solid 1pt #333;" >
+        <p>This is more normal content</p>
+        <p style="position:relative; left:20pt; top:90pt; width:400pt; height:100pt; background-color:#EEE; "></p>
+        <p>After the relative block</p>
+    </div>
+    <p>This is after the div</p>
+</body> 
+</html>

@@ -107,7 +107,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.IsNotNull(font, "The font options are null");
 
             Assert.IsTrue(font.UseSystemFonts, "Use System Foints is not true");
-            Assert.IsFalse(font.FontSubstitution, "Use Font Substitution is not false");
+            Assert.IsTrue(font.FontSubstitution, "Use Font Substitution is not true");
             Assert.IsTrue(string.IsNullOrEmpty(font.DefaultDirectory), "The default font directory is not null");
             Assert.AreEqual(font.DefaultFont, "Sans-Serif", "The default font is not 'Sans-Serif'");
 

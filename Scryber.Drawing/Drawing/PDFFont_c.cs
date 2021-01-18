@@ -22,6 +22,7 @@ using System.Text;
 using System.Drawing;
 using Scryber.Configuration;
 using System.ComponentModel;
+using Scryber.Resources;
 
 namespace Scryber.Drawing
 {
@@ -55,7 +56,7 @@ namespace Scryber.Drawing
             set 
             { 
                 this._selector = value;
-                this.ClearSystemFont();
+                this.ClearResourceFont();
             }
         }
 
@@ -70,6 +71,9 @@ namespace Scryber.Drawing
         {
             get 
             {
+                if (string.IsNullOrEmpty(this._familyName) == false)
+                    return _familyName;
+
                 //Ensure we have loaded the system font
                 //This will also set the familyName
                 if (null != this.Selector)
@@ -80,7 +84,7 @@ namespace Scryber.Drawing
             set 
             {
                 this.Selector = PDFFontSelector.Parse(value);
-                this.ClearSystemFont();
+                this.ClearResourceFont();
             }
         }
 
@@ -154,7 +158,7 @@ namespace Scryber.Drawing
             set 
             {
                 _size = value;
-                this.ClearSystemFont();
+                this.ClearResourceFont();
             }
         }
 
@@ -173,7 +177,7 @@ namespace Scryber.Drawing
             set 
             {
                 _style = value;
-                this.ClearSystemFont();
+                this.ClearResourceFont();
             }
         }
 
@@ -190,12 +194,11 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets the Metrics (ascent, descent etc.) associated with this this font.
         /// </summary>
+        [Obsolete("Use the font definition GetFontMetrics", false)]
         public PDFFontMetrics FontMetrics
         {
             get
             {
-                if (this._cachedmetrics == null)
-                    this._cachedmetrics = GetFontMetrics();
                 return this._cachedmetrics;
             }
         }
@@ -216,7 +219,6 @@ namespace Scryber.Drawing
         public PDFFont(PDFFont basefont, PDFUnit size)
             : this(basefont.Selector, size, basefont.FontStyle)
         {
-            this._sysfont = basefont._sysfont;
             this._familyName = basefont._familyName;
         }
 
@@ -228,7 +230,6 @@ namespace Scryber.Drawing
         public PDFFont(PDFFont basefont, FontStyle style)
             : this(basefont.Selector, basefont.Size, style)
         {
-            this._sysfont = basefont._sysfont;
             this._familyName = basefont._familyName;
         }
 
@@ -241,7 +242,6 @@ namespace Scryber.Drawing
         public PDFFont(PDFFont basefont, PDFUnit size, FontStyle style)
             : this(basefont.Selector, size, style)
         {
-            this._sysfont = basefont._sysfont;
             this._familyName = basefont._familyName;
         }
 
@@ -302,7 +302,7 @@ namespace Scryber.Drawing
             this._selector = selector;
             this._size = size;
             this._style = style;
-            this.ClearSystemFont();
+            this.ClearResourceFont();
         }
 
         #endregion
@@ -361,65 +361,28 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region _sysfont, ClearSystenFont(), GetSystemFont()
+        #region ClearResourceFont(), SetResourceFont()
 
-        /// <summary>
-        /// private ivar to cache the System Font - this is safe because it is not IDisposable.
-        /// </summary>
-        private System.Drawing.Font _sysfont = null;
+
         
         /// <summary>
         /// Clears any cached information about this fonts system equivalent.
         /// </summary>
         /// <remarks>Inheritors should override this method if they store system information, 
         /// and call this method if any properties would invalidate the cached font.</remarks>
-        protected virtual void ClearSystemFont()
+        public virtual void ClearResourceFont()
         {
-            this._sysfont = null;
             this._familyName = null;
             this._cachedmetrics = null;
         }
 
-        /// <summary>
-        /// Returns the equivalent System.Drawing.Font for this PDF Font.
-        /// </summary>
-        /// <returns>A System.Drawing.Font matching this instance.</returns>
-        /// <remarks>This method looks at the configuration file for any font name mappings before creating the font to match PDFX names to System Names.</remarks>
-        public System.Drawing.Font GetSystemFont()
+        public virtual void SetResourceFont(string name, PDFFontDefinition definition)
         {
-            if (_sysfont == null)
-            {
-                _familyName = null;
-
-                System.Drawing.FontStyle fs = GetDrawingStyle(this.FontStyle);
-                var sel = this.Selector;
-
-                while (null != sel )
-                {
-                    if (PDFFontFactory.IsFontDefined(sel.FamilyName, fs))
-                    {
-                        _sysfont = PDFFontFactory.GetSystemFont(sel.FamilyName, fs, (float)this.Size.PointsValue);
-                        _familyName = sel.FamilyName;
-                        sel = null;
-                    }
-                    //not defined so move next
-                    else
-                        sel = sel.Next;
-                        
-                }
-                //if (!this.IsStandard)
-                //{
-                //    _sysfont = PDFFontFactory.GetSystemFont(this.FamilyName, fs, (float)this.Size.PointsValue);
-                //}
-                //else
-                //{
-                //    //We are a standard font
-                //    string sysfamily = PDFFontFactory.GetSystemFontFamilyNameForStandardFont(this.FamilyName);
-                //    _sysfont = new Font(sysfamily, (float)this.Size.PointsValue, fs);
-
-                //}
-            }
-            return _sysfont;
+            this._familyName = name;
+            this._cachedmetrics = definition.GetFontMetrics(this.Size);
+            //var style = this.GetDrawingStyle();
+            //var sys = PDFFontFactory.GetSystemFont(this._familyName, this.GetDrawingStyle(), (float)this.Size.PointsValue);
+            //int line = sys.FontFamily.GetLineSpacing(style);
         }
 
         public System.Drawing.FontStyle GetDrawingStyle()
@@ -454,18 +417,14 @@ namespace Scryber.Drawing
         /// <returns>The font metrics for this font</returns>
         protected PDFFontMetrics GetFontMetrics()
         {
-            Font f = this.GetSystemFont();
-            if (f == null)
-                throw new NullReferenceException(String.Format(Errors.NullSystemFont, this.FamilyName));
-            FontFamily ff = f.FontFamily;
-            if (ff == null)
-                throw new NullReferenceException(String.Format(Errors.NullSystemFont, this.FamilyName));
-
+            return this._cachedmetrics;
+            /*
             double factor = (double)f.SizeInPoints / ff.GetEmHeight(f.Style);
             double ascent = ff.GetCellAscent(f.Style) * factor;
             double descent = ff.GetCellDescent(f.Style) * factor;
             double lineheight = ff.GetLineSpacing(f.Style) * factor;
             return new PDFFontMetrics(f.SizeInPoints, ascent, descent, lineheight);
+            */
         }
 
         #endregion

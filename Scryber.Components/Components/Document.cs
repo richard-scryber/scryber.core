@@ -1070,7 +1070,7 @@ namespace Scryber.Components
 
             string type = PDFResource.FontDefnResourceType;
             var sel = font.Selector;
-
+            
             while (null != sel)
             {
                 var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontStyle);

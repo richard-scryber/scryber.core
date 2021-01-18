@@ -134,6 +134,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PageSize, new CSSPageSizeParser());
             all.Add(CSSStyleItems.PageGroupName, new CSSPageNameParser());
 
+            all.Add(CSSStyleItems.PositionModeType, new CSSPositionModeParser());
+
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }
     }

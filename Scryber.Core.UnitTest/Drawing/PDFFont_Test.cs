@@ -416,29 +416,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
         }
 
-        /// <summary>
-        ///A test for GetSystemFont
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Fonts")]
-        public void GetSystemFont_Test()
-        {
-            string family = "Sans-Serif";
-            System.Drawing.FontStyle style = System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic;
-            PDFUnit size = 12;
-
-            PDFFont target = new PDFFont(family, size);
-
-            System.Drawing.Font expected = new System.Drawing.Font(family, (float)size.PointsValue, style);
-            System.Drawing.Font actual;
-            actual = target.GetSystemFont();
-
-
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(actual.SizeInPoints, target.Size.PointsValue);
-            Assert.AreEqual((int)actual.Style, (int)target.FontStyle);
-            
-        }
+        
 
         /// <summary>
         ///A test for FamilyName

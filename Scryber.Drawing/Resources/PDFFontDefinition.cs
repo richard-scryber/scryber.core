@@ -560,6 +560,32 @@ namespace Scryber.Resources
 
         #endregion
 
+        public PDFFontMetrics GetFontMetrics(PDFUnit fontSize)
+        {
+            double scale = fontSize.PointsValue / ((double)this.FontUnitsPerEm);
+            if (null != this.Descriptor)
+            {
+                double ascent = (double)this.Descriptor.Ascent * scale;
+                double descent = Math.Abs((double)this.Descriptor.Descent * scale);
+
+                double line = ((double)(this.Descriptor.Leading) * scale);
+
+                return new PDFFontMetrics(fontSize.PointsValue, ascent, descent, line);
+            }
+            else if (this.IsStandard)
+            {
+                double ascent = fontSize.PointsValue * 0.75;
+                double descent = fontSize.PointsValue * 0.25;
+                double line = fontSize.PointsValue * 1.2;
+
+                return new PDFFontMetrics(fontSize.PointsValue, ascent, descent, line);
+            }
+            else
+                throw new InvalidOperationException("The font does not have a descriptor");
+ 
+        }
+
+
         #region public PDFFontWidths GetWidths()
 
         /// <summary>
@@ -1313,14 +1339,26 @@ namespace Scryber.Resources
 
             desc.StemV = 80;// (int)os2.WidthClass;
             desc.Flags = 32;
-            desc.AvgWidth = 342;
-            desc.Ascent = ((int)os2.TypoAscender * PDFGlyphUnits) / unitsperem;
-            desc.CapHeight = (os2.CapHeight * PDFGlyphUnits) / unitsperem;
-            desc.Descent = (os2.TypoDescender * PDFGlyphUnits) / unitsperem;
+            desc.AvgWidth = os2.XAverageCharWidth;
+
+#if USETYPOGRAPHICLEADING
+
+            desc.Ascent = os2.TypoAscender;
+            desc.CapHeight = os2.CapHeight;
+            desc.Descent = os2.TypoDescender;
+            desc.Leading = os2.TypoLineGap - os2.TypoDescender + os2.TypoAscender;
+#else
+            desc.Descent = os2.TypoDescender;
+            desc.CapHeight = os2.CapHeight;
+            desc.Ascent = (int)(unitsperem + os2.TypoDescender); //2048 + (-250)
+            desc.Leading = (int)(unitsperem * 1.2);
+#endif
+
+            
             //MaxWidth 1086/FontWeight 700/XHeight 250/Leading 32
             desc.MaxWidth = (head.XMax * PDFGlyphUnits) / unitsperem;
-            desc.XHeight = 250;
-            desc.Leading = 32;
+            desc.XHeight = os2.CapHeight;
+
             
             if (embed)
                 desc.FontFile = ttf.FileData;
@@ -1330,7 +1368,7 @@ namespace Scryber.Resources
             return desc;
         }
 
-        #endregion
+#endregion
 
 
         //Standard font definitions
@@ -1340,7 +1378,7 @@ namespace Scryber.Resources
         const int ZaphSpaceWidthFU = 544;
         const int SymbolSpaceWidthFU = 512;
 
-        #region Helvetica, HelveticaBold, HelveticaOblique, HelveticaBoldOblique
+#region Helvetica, HelveticaBold, HelveticaOblique, HelveticaBoldOblique
 
         private static PDFFontDefinition _helvetica = null;
 
@@ -1397,9 +1435,9 @@ namespace Scryber.Resources
         }
 
 
-        #endregion
+#endregion
 
-        #region TimesRoman, TimesBold, TimesItalic, TimesBoldItalic
+#region TimesRoman, TimesBold, TimesItalic, TimesBoldItalic
 
         private static PDFFontDefinition _times = null;
 
@@ -1452,9 +1490,9 @@ namespace Scryber.Resources
             }
         }
 
-        #endregion
+#endregion
 
-        #region Courier, CourierBold, CourierOblique, CourierBoldOblique
+#region Courier, CourierBold, CourierOblique, CourierBoldOblique
 
         private static PDFFontDefinition _cour = null;
 
@@ -1505,9 +1543,9 @@ namespace Scryber.Resources
             }
         }
 
-        #endregion
+#endregion
 
-        #region ZapfDingbats
+#region ZapfDingbats
 
         private static PDFFontDefinition _zaph = null;
 
@@ -1525,9 +1563,9 @@ namespace Scryber.Resources
             }
         }
 
-        #endregion
+#endregion
 
-        #region Symbol
+#region Symbol
 
         private static PDFFontDefinition _sym = null;
 
@@ -1541,10 +1579,10 @@ namespace Scryber.Resources
             }
         }
 
-        #endregion
+#endregion
 
 
-        #region internal static PDFFont InitStdType1WinAnsi(string name, string basetype)
+#region internal static PDFFont InitStdType1WinAnsi(string name, string basetype)
 
         internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, int spaceWidthFU, TTFFile file = null)
         {
@@ -1605,7 +1643,7 @@ namespace Scryber.Resources
         }
 
 
-        #endregion
+#endregion
 
 
     }

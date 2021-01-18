@@ -6,37 +6,43 @@
       title="Root">
 <head>
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
-    
     <title>This is a body with headers and footers</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" title="Fraunces" />
     <style type="text/css" >
 
 
+        /* Roboto black */
         @font-face {
-            font-family: "Open Sans";
+            font-family: "Roboto Black";
             font-style: normal;
-            font-weight: bold;
-            src: local("Open Sans"),
-                url(https://fonts.gstatic.com/s/opensans/v18/mem8YaGs126MiZpBA-U1Ug.ttf) format('truetype'),
-                url(https://github.com/google/fonts/blob/master/apache/opensans/OpenSans-Bold.woff) format('woff')
+            src: url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmYUtvAw.ttf) format('truetype')
         }
 
-        
-        
+
+    body { font-family: 'Fraunces'; }
+
+    .grey{
+        font: 'Roboto Black' 12pt;
+        padding: 5pt;
+        color:#999;
+        border: solid 1px #999;
+    }
     </style>
 </head>
 
-<body class="grey" title="Outer">
+<body title="Outer">
 
     <header>
-        <p class="grey">This should use the open sans font</p>
+        <div class="grey">This should use the gray class with Roboto Black font</div>
     </header>
    
-
+    <div>
     <!-- The rest of the content should go into the body -->
     <p>
-        Body value of open sans with bound {@:model.fragmentContent}
+        Body with bound value :<b> {@:model.fragmentContent}</b>
     </p>
-
-   
+    <p style="font-style:italic">And this has <b>Bold</b> in an italic span</p>
+   </div>
+    <div style="font-family:'Roboto Black'; color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Roboto font</div>
 </body>
 </html>

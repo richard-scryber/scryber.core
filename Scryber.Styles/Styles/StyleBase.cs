@@ -1237,7 +1237,7 @@ namespace Scryber.Styles
         internal protected virtual PDFPen DoCreateBorderPen()
         {
             
-            PDFPen pen;
+            PDFPen pen = null;
 
             StyleValue<LineType> penstyle;
             StyleValue<PDFDash> dash;
@@ -1316,7 +1316,11 @@ namespace Scryber.Styles
 
                 pen = new PDFSolidPen() { Color = PDFColors.Black, Width = width.Value };
             }
-            else //no values set
+
+            //TODO: Pens for border-bottom, top, left and right. Then use a CompoundPen to support this.
+
+            //no values set
+            if (null == pen)
                 return null;
 
             StyleValue<LineJoin> join;

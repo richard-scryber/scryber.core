@@ -73,6 +73,8 @@ namespace Scryber.Html.Components
             }
         }
 
+        
+
         [PDFAttribute("media")]
         public Scryber.Styles.Selectors.MediaMatcher Media
         {
@@ -118,16 +120,36 @@ namespace Scryber.Html.Components
             
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnLoaded(PDFLoadContext context)
         {
-             
-            this.AddStylesToDocument(context);
-            
-            base.OnPreLayout(context);
+            base.OnLoaded(context);
+
+            DoLoadReference();
         }
 
+        protected override void OnDataBinding(PDFDataContext context)
+        {
+            base.OnDataBinding(context);
 
-        
+            DoLoadReference();
+            if (this.IsSourceLoaded && null != this.InnerItems)
+                this.InnerItems.DataBind(context);
+        }
+
+        protected override void OnDataBound(PDFDataContext context)
+        {
+            base.OnDataBound(context);
+            
+        }
+
+        protected override void OnPreLayout(PDFLayoutContext context)
+        {
+            base.OnPreLayout(context);
+
+            DoLoadReference();
+            if (this.IsSourceLoaded)
+                this.AddStylesToDocument(context);
+        }
 
         protected void ClearInnerStyles()
         {
@@ -167,6 +189,7 @@ namespace Scryber.Html.Components
                 var css = System.IO.File.ReadAllText(path);
                 this.InnerItems = this.CreateInnerStyles(css);
             }
+
         }
 
         protected virtual void DoLoadRemoteReference(string path)

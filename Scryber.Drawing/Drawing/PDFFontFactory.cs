@@ -649,7 +649,7 @@ namespace Scryber.Drawing
             {
 
                 if (usesubstitute && style != System.Drawing.FontStyle.Regular && !PDFFont.IsStandardFontFamily(family))
-                    return GetFontDefinition(family, System.Drawing.FontStyle.Regular);
+                    return GetFontDefinition(family, System.Drawing.FontStyle.Regular, throwNotFound);
 
                 //We dont have the explicit font so if we should substitue then 
                 //try to find the family and return that otherwise use courier.

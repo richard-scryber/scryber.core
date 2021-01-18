@@ -24,6 +24,7 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
 
 
+
 tags with property or for attributes. Fix for anchor links with internal and external href.
 
 5.0.3-alpha

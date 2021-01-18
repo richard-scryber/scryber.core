@@ -9,7 +9,7 @@ namespace Scryber.Options
 
         public const bool DefaultUseSystemFonts = true;
         public const string DefaultFontName = "Sans-Serif";
-        public const bool DefaultUseFontSubstitution = false;
+        public const bool DefaultUseFontSubstitution = true;
 
         public string DefaultDirectory { get; set; }
 

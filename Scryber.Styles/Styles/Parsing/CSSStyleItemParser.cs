@@ -2565,6 +2565,49 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    // position mode
+
+    public class CSSPositionModeParser: CSSEnumStyleParser<PositionMode>
+    {
+        public CSSPositionModeParser() : base(CSSStyleItems.PositionModeType, StyleKeys.PositionModeKey)
+        { }
+
+        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            bool result = true;
+            PositionMode found = PositionMode.Block;
+            if (reader.ReadNextValue() && TryGetPositionMode(reader.CurrentTextValue, out found))
+                this.SetValue(onStyle, found);
+            else
+                result = false;
+
+            return result;
+        }
+
+        protected virtual bool TryGetPositionMode(string value, out PositionMode mode)
+        {
+            mode = PositionMode.Block;
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            switch (value.ToLower())
+            {
+                case ("relative"):
+                    mode = PositionMode.Relative;
+                    return true;
+
+                case ("absolute"):
+                    mode = PositionMode.Absolute;
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+    }
+
+
     // list-style-type
 
 

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Absolute positioned tags</title>
+    <style type="text/css">
+        p {
+            padding: 5pt;
+        }
+
+        .pos {
+            position: absolute;
+            left: 40pt;
+            top: 100pt;
+            width: 180pt;
+            background-color: #EEEEEE;
+        }
+
+        .green {
+            stroke: green;
+            stroke-width:1pt;
+            fill:transparent;
+        }
+    </style>
+</head>
+<body>
+    <p>This is some normal content</p>
+    <svg xmlns="" width="200" height="200" style="border:solid 1px blue;" > 
+        <circle cx="10" cy="20" r="10" class="green" />
+        <ellipse cx="10" cy="20" rx="15" ry="10" class="green" />
+        <circle cx="10" cy="20" r="5" fill="green" />
+    </svg>
+</body> 
+</html>

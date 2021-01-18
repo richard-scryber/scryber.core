@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNull(actual.Font, "Font is not null");
             Assert.IsNull(actual.Stroke);
             Assert.IsFalse(actual.Leading.HasValue);
-            Assert.IsNull(actual.SystemFont);
+            
             Assert.IsFalse(actual.WrapText.HasValue);
 
             //set the specific values

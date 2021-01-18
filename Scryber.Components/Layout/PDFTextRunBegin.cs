@@ -427,6 +427,7 @@ namespace Scryber.Layout
 
         public void RenderUnderlines(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
+            
             PDFUnit offsetV = this.TextRenderOptions.GetAscent() / UnderlineOffsetFactor;
             PDFUnit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
             

@@ -129,6 +129,8 @@ namespace Scryber.Html
         public const string PageSize = "size";
         public const string PageGroupName = "page";
 
+        public const string PositionModeType = "position";
+
     }
 
     /// <summary>

@@ -145,6 +145,7 @@ namespace Scryber.Drawing
         /// <param name="wrapping">The word wrapping options</param>
         /// <param name="charsfitted">Set to the number of characters that could be fitted in the available space</param>
         /// <returns>The final size of the single line of text that can be fitted</returns>
+        [Obsolete("No longer using the system rendering", true)]
         protected PDFSize MeasureGraphicsString(string chars, PDFSize available, WordWrap wrapping, out int charsfitted)
         {
             //PDFUnit h = options.Leading.HasValue? options.Leading.Value : options.Font.Size;
@@ -164,7 +165,7 @@ namespace Scryber.Drawing
                 StringFormat format = GetStringFormatting(wrapping);
 
                 System.Drawing.SizeF size = new SizeF((float)available.Width.PointsValue, (float)available.Height.PointsValue);
-                System.Drawing.Font sysfont = this.CurrentFont.GetSystemFont();
+                System.Drawing.Font sysfont = null;// this.CurrentFont.GetSystemFont();
                 int linesfitted;
                 if (wrapping == WordWrap.NoWrap)
                 {
@@ -263,9 +264,11 @@ namespace Scryber.Drawing
             }
             else
             {
-                if (startIndex > 0)
-                    chars = chars.Substring(startIndex);
-                measured = this.MeasureGraphicsString(chars, available, options.WrapText.HasValue ? options.WrapText.Value : WordWrap.Auto, out charsfitted);
+                throw new NotSupportedException("The font definition cannot measure strings");
+
+                //if (startIndex > 0)
+                //   chars = chars.Substring(startIndex);
+                //measured = this.MeasureGraphicsString(chars, available, options.WrapText.HasValue ? options.WrapText.Value : WordWrap.Auto, out charsfitted);
             }
 
             return measured;
@@ -279,12 +282,13 @@ namespace Scryber.Drawing
                 return 0.0;
         }
 
+        [Obsolete("No Longer Using System Fonts", true)]
         private System.Drawing.Font GetSystemFont(PDFTextRenderOptions options)
         {
-            if (options == null || options.Font == null)
+            //if (options == null || options.Font == null)
                 return null;
-            else
-                return options.Font.GetSystemFont();
+            //else
+            //   return options.Font.GetSystemFont();
             
         }
 
@@ -334,7 +338,14 @@ namespace Scryber.Drawing
 
         public void SetTextLeading(PDFTextRenderOptions options)
         {
-            PDFUnit h = options.GetLineHeight();
+            PDFUnit h;
+            if (options.Leading.HasValue)
+                h = options.Leading.Value;
+            else if (options.Font.FontMetrics != null)
+                h = options.Font.FontMetrics.LineHeight;
+            else
+                h = options.Font.Size.PointsValue * 1.2;
+
             this.Writer.WriteOpCodeS(PDFOpCode.TxtLeading, h.RealValue);
         }
 
