@@ -4,13 +4,13 @@
     scryber.core pdf engine
 </h1>
 
-## Make documents easily
+## Change the way you create documents.
 
 The scryber engine is an advanced, complete, pdf creation library for dotnet core 5.
 It supports the easy definition of documents, pages, content, shapes and images with html templates and simple code. 
 
-With a styles based layout it is easy to create good looking and flowing documents. 
-Binding allows you to quickly load data from many sources and output the templates PDF.
+With a styles based template layout it is easy to create good looking,
+flowing documents with dynamic content from you applications or sites.
 
 
 ## HTML First
@@ -20,15 +20,14 @@ If you know HTML you can create documents.
 
 scryber supports:
 
-- standard html and many newer html5 tags.
-- cascading styles: linked; embedded or inline.
-- databinding on simple and complex objects.
-- databinding and repeating templates on dynamic parameters,
+- standard html body, tables, lists, divs and spans and many newer html5 tags
+- flowing and flexible layout with multiple pages in css sizes, along with page headers, footers and breaks.
+- cascading styles: linked, embedded or inline using css syntax and priority.
+- databinding for dynamic content on simple and complex objects with repeating templates.
 - iframe imports of external content,
-- a flowing and flexible layout with multiple page sizes and page break support.
 - sizing and positioning of elements inline, block, relative or absolute.
-- images and colours with backgrounds
-- multiple fonts and text alignment; spacing; leading; decoration and breaking.
+- images and colours with text and shape fills backgrounds and borders.
+- multiple fonts, including google fonts, supporting text alignment; spacing; leading; decoration and breaking.
 
 If you have used the previous pdfx files, the older templates should continue to work. But we will be concentrating on html, css and svg going forwards.
 
