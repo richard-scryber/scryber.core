@@ -4,13 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.0.3-beta</PackageVersion>
+    <PackageVersion>5.0.3</PackageVersion>
     <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
-    <Description>The Mvc extensions for the Scryber.Core PDF creation library.
+    <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
 
-Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML Templates and code, including styles, binding and component references. 
-Written entirely in C# for the dotnet core framework, without reliance on 3rd party tools or command line libraries.</Description>
+Scryber is an advanced PDF generation engine based around HTML templates,  CSS styles and binding content (plus XML and code where wanted). It  includes full styles support, dynamic object binding and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+
+This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -19,9 +20,15 @@ Written entirely in C# for the dotnet core framework, without reliance on 3rd pa
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.3-beta
+    <PackageReleaseNotes>5.0.4
+
+Public release of the dotnet 5 engine, supporting google fonts, full css files and html5
+
+5.0.3-beta
 
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
+
+
 
 
 
@@ -94,6 +101,7 @@ Increased support for HTML parsing using DTD entities and xhtml namespace, along
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
     <Title>Scryber MVC Extensions</Title>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -102,7 +110,7 @@ Increased support for HTML parsing using DTD entities and xhtml namespace, along
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scryber.Core" Version="5.0.3-beta" />
+    <PackageReference Include="Scryber.Core" Version="5.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
   </ItemGroup>
       

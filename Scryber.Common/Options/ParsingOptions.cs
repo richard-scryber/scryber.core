@@ -38,6 +38,10 @@ namespace Scryber.Options
                                                         Namespace = "Scryber.Html.Components",
                                                         Assembly = "Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
+            Namespaces.Add(new NamespaceMappingOption() { Source= "http://www.w3.org/2000/svg",
+                                                        Namespace = "Scryber.Svg.Components",
+                                                        Assembly = "Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
 
             Bindings = new List<BindingPrefixOption>();
             Bindings.Add(new BindingPrefixOption() { Prefix = "item",
