@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+
+        .box {
+            border-radius: 5pt;
+        }
+
+        path.transparentish {
+            fill: aqua;
+            fill-opacity: 0.5;
+            stroke-opacity: 0.5;
+        }
+    </style>
+    <style>
+        body { font: 12pt serif; padding:10pt;}
+        .small {
+            font: italic 13px sans-serif;
+        }
+
+        .heavy {
+            font: bold 30px sans-serif;
+        }
+
+        /* Multi line
+            comment */
+        .red {
+            font: italic 40px serif;
+            fill:/* in attribute*/red;
+        }
+    </style>
+</head>
+<body>
+   <!-- <p>This is above the svg canvas</p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="200pt" height="200pt" class="canvas">
+        <rect class="box" x="10pt" y="110pt" width="40pt" height="30pt" stroke="green" stroke-width="2pt"></rect>
+        <ellipse cx="30pt" cy="140pt" rx="20pt" ry="10pt" stroke="green" stroke-width="2pt" fill="transparent"></ellipse>
+        <circle cx="30pt" cy="140pt" r="10pt" stroke="green" stroke-width="2pt" fill="transparent"></circle>
+        <circle cx="30pt" cy="140pt" r="5pt" fill="green"></circle>
+        <line x1="100pt" y1="190pt" x2="50pt" y2="140pt" stroke="yellow" stroke-width="2pt"></line>
+        <polyline points="150,0 121,90 198,35 102,35 179,90" stroke="blue" fill="transparent" stroke-width="2pt"></polyline>
+        <polygon points="150,100 121,190 198,135 102,135 179,190" stroke="blue" fill="transparent" stroke-width="2pt"></polygon>
+        <path class="transparentish" d="M 10,30
+           A 20,20 0,0,1 50,30
+           A 20,20 0,0,1 90,30
+           Q 90,60 50,90
+           Q 10,60 10,30 z" stroke="blue" stroke-width="2pt"></path>
+    </svg>
+
+    <p style="font-style:italic;">This is some text</p>
+    <svg xmlns="http://www.w3.org/2000/svg">
+        <text x="20" y="35" class="small">My</text>
+        <text x="40" y="35" class="heavy">cat</text>
+        <text x="55" y="65" class="small">is</text>
+        <text x="65" y="65" class="red">Grumpy!</text>
+    </svg>
+
+    <p style="font-style:italic;">This is some text</p> -->
+    <svg xmlns="http://www.w3.org/2000/svg">
+        <text x="20" y="35" class="small">My</text>
+        <text x="40" y="35" class="heavy">cat <tspan style="fill:red;">is Grumpy</tspan> </text>
+    </svg>
+
+    <!--<p>Adding links</p>
+    <svg viewBox="0 0 100 100" width="100" xmlns="http://www.w3.org/2000/svg">
+
+        <a href="http://www.google.co.uk">
+            <circle cx="50" cy="40" r="35" />
+        </a>
+
+
+        <a href="http://www.google.co.uk">
+            <text x="25" y="90">
+                &lt;circle&gt;
+            </text>
+        </a>
+    </svg> -->
+</body>
+</html>

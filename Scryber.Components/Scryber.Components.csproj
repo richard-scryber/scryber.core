@@ -25,6 +25,7 @@ Working with support for @page css directives for the whole document and section
 
 
 
+
  tags with property or for attributes. Fix for anchor links with internal and external href.
 
 5.0.3-alpha
@@ -155,4 +156,7 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     </None>
   </ItemGroup>
   
+  <ItemGroup>
+    <Folder Include="Svg\Layout\" />
+  </ItemGroup>
 </Project>

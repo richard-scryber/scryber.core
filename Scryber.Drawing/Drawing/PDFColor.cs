@@ -392,9 +392,14 @@ namespace Scryber.Drawing
             get { return PDFColors.Transparent; }
         }
 
+        public bool IsTransparent
+        {
+            get { return this.Color == System.Drawing.Color.Transparent; }
+        }
+
         public bool IsEmpty
         {
-            get { return this.Color.IsEmpty; }
+            get { return this.Color.IsEmpty || this.IsTransparent; }
         }
 
         #region IPDFSimpleCodeDomValue Members

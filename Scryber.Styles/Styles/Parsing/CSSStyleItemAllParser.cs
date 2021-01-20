@@ -70,6 +70,7 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.FillColor, new CSSFillColourParser());
 
+
             all.Add(CSSStyleItems.Background, new CSSBackgroundParser());
             all.Add(CSSStyleItems.BackgroundColor, new CSSBackgroundColorParser());
             all.Add(CSSStyleItems.BackgroundImage, new CSSBackgroundImageParser());
@@ -135,6 +136,12 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PageGroupName, new CSSPageNameParser());
 
             all.Add(CSSStyleItems.PositionModeType, new CSSPositionModeParser());
+
+            all.Add(CSSStyleItems.StrokeColor, new CSSStrokeColorParser());
+            all.Add(CSSStyleItems.StrokeOpacity, new CSSStrokeOpacityParser());
+
+            all.Add(CSSStyleItems.FillOpacity, new CSSFillOpacityParser());
+            all.Add("fill", new CSSFillColourParser("fill", StyleKeys.FillColorKey));
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

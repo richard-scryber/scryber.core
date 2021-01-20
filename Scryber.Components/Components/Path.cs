@@ -26,7 +26,7 @@ using Scryber.Styles;
 
 namespace Scryber.Components
 {
-    [PDFParsableComponent("Path")]
+    [PDFParsableComponent("path")]
     public class Path : ShapeComponent
     {
 

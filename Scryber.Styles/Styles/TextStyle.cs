@@ -277,6 +277,27 @@ namespace Scryber.Styles
 
         #endregion
 
+        /// <summary>
+        /// If false then the measurement of any font and text rendering will be from the top left.
+        /// This is the default option, but if the text should be rendered from the baseline of the font
+        /// characters, set it to true.
+        /// </summary>
+        public bool PositionFromBaseline
+        {
+            get
+            {
+                bool value;
+                if (this.TryGetValue(StyleKeys.TextPositionFromBaseline, out value))
+                    return value;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextPositionFromBaseline, value);
+            }
+        }
+
         #region public string DateFormat {get;set;} + RemoveDateText()
 
         /// <summary>

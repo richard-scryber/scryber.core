@@ -30,8 +30,8 @@ namespace Scryber.Styles.Parsing
         public IEnumerator<StyleBase> GetEnumerator()
         {
             var content = this.Content;
-            if (CommentMatcher.Match(content).Success)
-                content = CommentMatcher.Replace(content, "");
+            content = this.RemoveComments(content);
+
 
             var strEnum = new StringEnumerator(content);
             return new CSSStyleEnumerator(strEnum, this);
@@ -45,6 +45,23 @@ namespace Scryber.Styles.Parsing
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        private string RemoveComments(string contnet)
+        {
+            int start = contnet.IndexOf("/*");
+            while (start >= 0)
+            {
+                int end = contnet.IndexOf("*/");
+
+                if (end <= start)
+                    return contnet;
+
+                contnet = contnet.Substring(0, start) + contnet.Substring(end + 2);
+
+                start = contnet.IndexOf("/*");
+            }
+            return contnet;
         }
     }
 

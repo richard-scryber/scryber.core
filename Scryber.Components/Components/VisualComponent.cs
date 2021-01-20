@@ -736,7 +736,7 @@ namespace Scryber.Components
         [PDFAttribute("fill-color", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"color\"")]
         [PDFDesignable("Color", Category = "Fill", Priority = 1, Type = "PDFColor")]
-        public PDFColor FillColor
+        public virtual PDFColor FillColor
         {
             get
             {
@@ -761,7 +761,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("fill-image", Const.PDFStylesNamespace)]
         [PDFDesignable("Image", Ignore = true, Category = "Fill", Priority = 2, Type = "ImageFile")]
-        public string FillImage
+        public virtual string FillImage
         {
             get
             {
@@ -789,7 +789,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("fill-repeat", Const.PDFStylesNamespace)]
         [PDFDesignable("Repeat", Ignore = true,  Category = "Fill", Priority = 2, Type = "Select")]
-        public PatternRepeat FillRepeat
+        public virtual PatternRepeat FillRepeat
         {
             get
             {
@@ -815,7 +815,7 @@ namespace Scryber.Components
         [PDFAttribute("fill-opacity", Const.PDFStylesNamespace)]
         [PDFDesignable("Opacity", Category = "Fill", Priority = 1, Type = "Percent")]
         [PDFJSConvertor("scryber.studio.design.convertors.opacity_css", JSParams = "\"opacity\"")]
-        public PDFReal FillOpacity
+        public virtual PDFReal FillOpacity
         {
             get
             {
@@ -843,7 +843,7 @@ namespace Scryber.Components
         [PDFAttribute("stroke-width", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"stroke-width\"")]
         [PDFDesignable("Width", Category = "Stroke", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit StrokeWidth
+        public virtual PDFUnit StrokeWidth
         {
             get
             {
@@ -869,7 +869,7 @@ namespace Scryber.Components
         [PDFAttribute("stroke-color", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"stroke\"")]
         [PDFDesignable("Color", Category = "Stroke", Priority = 1, Type = "Color")]
-        public PDFColor StrokeColor
+        public virtual PDFColor StrokeColor
         {
             get
             {
@@ -897,7 +897,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("stroke-dash", Const.PDFStylesNamespace)]
         [PDFDesignable("Dash", Category = "Stroke", Priority = 3, Type = "Select")]
-        public PDFDash StrokeDashPattern
+        public virtual PDFDash StrokeDashPattern
         {
             get
             {
@@ -925,7 +925,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("stroke-opacity", Const.PDFStylesNamespace)]
         [PDFDesignable("Opacity", Category = "Stroke", Priority = 2, Type = "Percent")]
-        public double StrokeOpacity
+        public virtual double StrokeOpacity
         {
             get
             {

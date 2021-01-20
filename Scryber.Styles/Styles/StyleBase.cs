@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Xsl;
 using Scryber;
 using Scryber.Drawing;
 
@@ -1199,6 +1200,10 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.TextDecorationKey, out decor))
                 options.TextDecoration = decor.Value;
 
+            StyleValue<bool> frombase;
+            if (this.TryGetValue(StyleKeys.TextPositionFromBaseline, out frombase))
+                options.DrawTextFromTop = !frombase.Value;
+
             return options;
         }
 
@@ -1365,7 +1370,7 @@ namespace Scryber.Styles
 
                 //Check the color and width
 
-                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value == PDFColors.Transparent)
+                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value.IsTransparent)
                     return null;
 
                 if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value <= 0)
@@ -1398,7 +1403,7 @@ namespace Scryber.Styles
             }
             else if (this.TryGetValue(StyleKeys.StrokeDashKey, out dash))
             {
-                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value == PDFColors.Transparent)
+                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value.IsTransparent)
                     return null;
                 if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value <= 0)
                     return null;
@@ -1411,7 +1416,7 @@ namespace Scryber.Styles
             }
             else if (this.TryGetValue(StyleKeys.StrokeColorKey, out c))
             {
-                if (c.Value == PDFColors.Transparent)
+                if (c.Value.IsTransparent)
                     return null;
                 if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value <= 0)
                     return null;
@@ -1479,7 +1484,7 @@ namespace Scryber.Styles
 
             PDFBrush brush = null;
 
-            if ((this).TryGetValue(StyleKeys.BgColorKey, out color) && (fillstyle == null || fillstyle.Value == Drawing.FillType.Solid))
+            if ((this).TryGetValue(StyleKeys.BgColorKey, out color) && !color.Value.IsTransparent && (fillstyle == null || fillstyle.Value == Drawing.FillType.Solid))
             {
                 PDFSolidBrush solid = new PDFSolidBrush(color.Value);
 
@@ -1622,7 +1627,7 @@ namespace Scryber.Styles
             }
 
             //if we have a colour and a solid style (or no style)
-            else if ((this).TryGetValue(StyleKeys.FillColorKey, out color) && (fillstyle == null || fillstyle.Value == Drawing.FillType.Solid))
+            else if ((this).TryGetValue(StyleKeys.FillColorKey, out color) && !color.Value.IsTransparent && (fillstyle == null || fillstyle.Value == Drawing.FillType.Solid))
             {
                 PDFSolidBrush solid = new PDFSolidBrush(color.Value);
 
