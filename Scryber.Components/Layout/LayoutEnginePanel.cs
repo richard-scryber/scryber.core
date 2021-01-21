@@ -108,7 +108,7 @@ namespace Scryber.Layout
         /// Lays out all the content of this panel
         /// </summary>
         /// <param name="position"></param>
-        protected void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
+        protected virtual void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             PDFLayoutBlock containerBlock = CreateContinerBlock(position);
             if (null == containerBlock)

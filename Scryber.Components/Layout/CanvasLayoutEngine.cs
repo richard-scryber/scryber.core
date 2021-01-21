@@ -38,6 +38,22 @@ namespace Scryber.Layout
         {
         }
 
+        protected override void CreateBlockRegions(PDFLayoutBlock containerBlock, PDFPositionOptions position, PDFColumnOptions columnOptions)
+        {
+            if(position.ViewPort.HasValue)
+            {
+                this.ApplyViewPort(containerBlock, position);
+            }
+            base.CreateBlockRegions(containerBlock, position, columnOptions);
+        }
+
+
+        protected virtual void ApplyViewPort(PDFLayoutBlock containerBlock, PDFPositionOptions position)
+        {
+            containerBlock.IsFormXObject = true;
+            containerBlock.XObjectViewPort = position.ViewPort.Value;
+        }
+
         #region protected override void DoLayoutAChild(IPDFComponent comp, Styles.PDFStyle full)
 
         /// <summary>

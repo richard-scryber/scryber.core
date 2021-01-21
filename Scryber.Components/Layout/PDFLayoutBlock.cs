@@ -943,6 +943,9 @@ namespace Scryber.Layout
 
         #endregion
 
+
+        #region public override void ResetAvailableHeight(PDFUnit height, bool includeChildren)
+
         public override void ResetAvailableHeight(PDFUnit height, bool includeChildren)
         {
             this._avail.Height = height;
@@ -957,6 +960,8 @@ namespace Scryber.Layout
             }
             base.ResetAvailableHeight(height, includeChildren);
         }
+
+        #endregion
 
         #region public override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
 
@@ -1189,7 +1194,7 @@ namespace Scryber.Layout
         
 #endregion
 
-#region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
+        #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
         /// Renders the inner content in this block
@@ -1212,9 +1217,9 @@ namespace Scryber.Layout
             }
         }
 
-#endregion
+        #endregion
 
-#region protected virtual bool ShouldOutput(PDFRenderContext context)
+        #region protected virtual bool ShouldOutput(PDFRenderContext context)
 
         /// <summary>
         /// Returns true if this block should actually be written.
@@ -1244,9 +1249,9 @@ namespace Scryber.Layout
                 return false;
         }
 
-#endregion
+        #endregion
 
-#region private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
+        #region private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
 
         private const double ColumnOverlayOpacity = 0.4;
 
@@ -1273,9 +1278,9 @@ namespace Scryber.Layout
 
         }
 
-#endregion
+        #endregion
 
-#region private void OutputOverlayGrid(PDFOverlayGridStyle grid, PDFRenderContext context)
+        #region private void OutputOverlayGrid(PDFOverlayGridStyle grid, PDFRenderContext context)
 
         /// <summary>
         /// Renders any overlay grid and column highlights
@@ -1332,9 +1337,9 @@ namespace Scryber.Layout
             graphics.RestoreGraphicsState();
         }
 
-#endregion
+        #endregion
 
-#region internal void Offset(PDFUnit x, PDFUnit y)
+        #region internal void Offset(PDFUnit x, PDFUnit y)
 
         /// <summary>
         /// Offsets this block by the specifed amounts
@@ -1354,9 +1359,9 @@ namespace Scryber.Layout
             this.TotalBounds = total;
         }
 
-#endregion
+        #endregion
 
-#region internal void Shrink(PDFUnit width, PDFUnit height)
+        #region internal void Shrink(PDFUnit width, PDFUnit height)
 
         /// <summary>
         /// Reduces the size of this layout block bythe specifed amount
@@ -1388,7 +1393,7 @@ namespace Scryber.Layout
             }
         }
 
-#endregion
+        #endregion
 
     }
 

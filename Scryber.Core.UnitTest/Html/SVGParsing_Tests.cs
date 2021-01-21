@@ -66,6 +66,8 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
                 using (var stream = DocStreams.GetOutputStream("SVGComponents.pdf"))
                 {
                     doc.SaveAsPDF(stream);
