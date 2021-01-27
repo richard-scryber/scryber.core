@@ -67,7 +67,7 @@ namespace Scryber.Components
 
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new Layout.CanvasLayoutEngine(this, parent);
+            return new Layout.LayoutEngineCanvas(this, parent);
         }
 
         #endregion

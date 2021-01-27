@@ -900,6 +900,12 @@ namespace Scryber.Styles
             else
                 options.MaximumHeight = null;
 
+
+            //viewport
+            StyleValue<PDFRect> rect;
+            if (this.TryGetValue(StyleKeys.PositionViewPort, out rect))
+                options.ViewPort = rect.Value;
+
             StyleValue<bool> b;
             if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
                 options.FillWidth = b.Value;
@@ -1022,8 +1028,6 @@ namespace Scryber.Styles
                 if (options.PositionMode != PositionMode.Absolute)
                     options.PositionMode = PositionMode.Relative;
             }
-
-            
 
             options.TransformMatrix = transform;
             

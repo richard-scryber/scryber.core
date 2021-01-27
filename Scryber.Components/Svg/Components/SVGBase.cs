@@ -45,6 +45,13 @@ namespace Scryber.Svg.Components
             set { this.Style.Stroke.LineCap = value; }
         }
 
+        [PDFAttribute("stroke-linejoin")]
+        public LineJoin StrokeLineJoin
+        {
+            get { return this.Style.Stroke.LineJoin; }
+            set { this.Style.Stroke.LineJoin = value; }
+        }
+
         [PDFAttribute("stroke-dasharray")]
         public override PDFDash StrokeDashPattern
         {

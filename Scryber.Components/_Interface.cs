@@ -157,7 +157,7 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFCustomRenderComponent : IPDFRenderComponent
+    #region public interface IPDFVisualRenderComponent : IPDFRenderComponent
 
     /// <summary>
     /// Interface for components to implement that render their own contents within the content of a page, but don't need to implement a layout engine.

@@ -200,5 +200,11 @@ namespace Scryber
         }
 
 
+        public PDFPositionOptions Clone()
+        {
+            var result = this.MemberwiseClone() as PDFPositionOptions;
+            return result;
+        }
+
     }
 }

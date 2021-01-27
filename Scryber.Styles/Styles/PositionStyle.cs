@@ -177,6 +177,36 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public PDFRect ViewPort {get;set;}
+
+        [PDFAttribute("viewport")]
+        public PDFRect ViewPort
+        {
+            get
+            {
+                PDFRect f;
+                if (this.TryGetValue(StyleKeys.PositionViewPort, out f))
+                    return f;
+                else
+                    return PDFRect.Empty;
+
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionViewPort, value);
+            }
+        }
+
+        public void RemoveViewPort()
+        {
+            this.RemoveValue(StyleKeys.PositionViewPort);
+        }
+
+        #endregion
+
+
+        // obselete legacy properties - moved to Size
+
 
         #region public PDFUnit Width {get;set;} + RemoveWidth()
 

@@ -416,7 +416,7 @@ namespace Scryber.Generation
 
             if (value.IndexOf(' ') > -1)
                 value = value.Replace(' ', ',');
-            return Enum.Parse(requiredType, value);
+            return Enum.Parse(requiredType, value, true);
         }
 
         #endregion

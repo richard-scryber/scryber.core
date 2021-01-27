@@ -2,6 +2,8 @@
 using Scryber.Styles;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.Native;
+using Scryber.Styles.Parsing;
 
 namespace Scryber.Svg.Components
 {
@@ -48,6 +50,111 @@ namespace Scryber.Svg.Components
             set => base.OutlineTitle = value;
         }
 
+        [PDFAttribute("stroke")]
+        public override PDFColor StrokeColor
+        {
+            get => base.StrokeColor;
+            set => base.StrokeColor = value;
+        }
+
+
+        [PDFAttribute("stroke-width")]
+        public override PDFUnit StrokeWidth
+        {
+            get => base.StrokeWidth;
+            set => base.StrokeWidth = value;
+        }
+
+        [PDFAttribute("stroke-linecap")]
+        public LineCaps StrokeLineCap
+        {
+            get { return this.Style.Stroke.LineCap; }
+            set { this.Style.Stroke.LineCap = value; }
+        }
+
+        [PDFAttribute("stroke-linejoin")]
+        public LineJoin StrokeLineJoin
+        {
+            get { return this.Style.Stroke.LineJoin; }
+            set { this.Style.Stroke.LineJoin = value; }
+        }
+
+        [PDFAttribute("stroke-dasharray")]
+        public override PDFDash StrokeDashPattern
+        {
+            get => base.StrokeDashPattern;
+            set => base.StrokeDashPattern = value;
+        }
+
+        [PDFAttribute("stroke-opacity")]
+        public override double StrokeOpacity { get => base.StrokeOpacity; set => base.StrokeOpacity = value; }
+
+        [PDFAttribute("fill-opacity")]
+        public override PDFReal FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
+
+        // fill
+
+        [PDFAttribute("fill")]
+        public override PDFColor FillColor
+        {
+            get => base.FillColor;
+            set => base.FillColor = value;
+        }
+
+        #region public PDFRect ViewBox {get; set;}
+
+        [PDFAttribute("viewBox")]
+        public PDFRect ViewBox
+        {
+            get
+            {
+                StyleValue<PDFRect> rect;
+                if (this.Style.TryGetValue(StyleKeys.PositionViewPort, out rect))
+                    return rect.Value;
+                else
+                    return PDFRect.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionViewPort, value);
+            }
+        }
+
+        public void RemoveViewBox()
+        {
+            this.Style.RemoveValue(StyleKeys.PositionViewPort);
+        }
+
+        #endregion
+
+        #region public SVGAspectRatio PreserveAspectRatio
+
+        [PDFAttribute("preserveAspectRatio")]
+        public SVGAspectRatio PreserveAspectRatio
+        {
+            get
+            {
+                StyleValue<SVGAspectRatio> aspect;
+                if (this.Style.TryGetValue(SVGAspectRatio.AspectRatioStyleKey, out aspect))
+                {
+                    return aspect.Value;
+                }
+                else
+                    return SVGAspectRatio.Default;
+            }
+            set
+            {
+                this.Style.SetValue(SVGAspectRatio.AspectRatioStyleKey, value);
+            }
+        }
+
+        public void RemoveAspectRatio()
+        {
+            this.Style.RemoveValue(SVGAspectRatio.AspectRatioStyleKey);
+        }
+
+        #endregion
+
         //style attributes
 
         [PDFAttribute("width")]
@@ -59,6 +166,11 @@ namespace Scryber.Svg.Components
 
         public SVGCanvas()
         {
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            return base.GetBaseStyle();
         }
     }
 }

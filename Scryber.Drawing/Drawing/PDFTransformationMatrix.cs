@@ -159,37 +159,6 @@ namespace Scryber.Drawing
             return new PDFRect(minX, minY, maxX - minX, maxY - minY);
         }
 
-        public PDFRect TransformBoundsOld(PDFRect bounds)
-        {
-            if (this.IsIdentity)
-                return bounds;
-
-            System.Drawing.PointF[] all = new System.Drawing.PointF[4];
-            
-            all[0] = new System.Drawing.PointF((float)bounds.X.PointsValue, (float)bounds.Y.PointsValue);
-            all[1] = new System.Drawing.PointF((float)bounds.X.PointsValue, (float)(bounds.Y.PointsValue + bounds.Height.PointsValue));
-            all[2] = new System.Drawing.PointF((float)(bounds.X.PointsValue + bounds.Width.PointsValue), (float)(bounds.Y.PointsValue + bounds.Height.PointsValue));
-            all[3] = new System.Drawing.PointF((float)(bounds.X.PointsValue + bounds.Width.PointsValue), (float)bounds.Y.PointsValue);
-
-            this._matrix.TransformPoints(all);
-
-            double maxX = all[0].X;
-            double minX = all[0].X;
-            double maxY = all[0].Y;
-            double minY = all[0].Y;
-
-            for (int i = 1; i < 4; i++)
-            {
-                maxX = Math.Max(maxX, all[i].X);
-                minX = Math.Min(minX, all[i].X);
-                maxY = Math.Max(maxY, all[i].Y);
-                minY = Math.Min(minY, all[i].Y);
-            }
-
-            return new PDFRect(minX, minY, maxX - minX, maxY - minY);
-            
-        }
-        
         public PDFPoint TransformPoint(PDFPoint pt)
         {
             if (IsIdentity)
@@ -222,6 +191,11 @@ namespace Scryber.Drawing
             return Multiply(one, two);
         }
 
+        public static PDFTransformationMatrix Identity()
+        {
+            
+            return new PDFTransformationMatrix(0, 0, 0, 1, 1);
+        }
         //
         // graphics adapters
         //

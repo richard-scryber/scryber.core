@@ -52,7 +52,18 @@ namespace Scryber.Components
             }
             set
             {
-                this._style = value;
+                if (this._style != null && this._style.HasValues)
+                {
+                    if (null == value)
+                        this._style = null;
+                    else
+                    {
+                        this._style.MergeInto(value);
+                        this._style = value;
+                    }
+                }
+                else
+                    this._style = value;
             }
         }
 
