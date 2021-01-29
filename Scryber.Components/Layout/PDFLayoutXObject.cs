@@ -20,14 +20,16 @@ namespace Scryber.Layout
         private PDFLayoutRegion _childContainer;
         private PDFResourceList _resources;
         private PDFLayoutPage _page;
+        private PDFPositionOptions _position;
 
-        public PDFLayoutXObject(PDFLayoutLine parent, PDFLayoutRegion childContainer, IPDFComponent owner) 
+        public PDFLayoutXObject(PDFLayoutLine parent, PDFLayoutRegion childContainer, PDFPositionOptions position, IPDFComponent owner) 
             :base(parent, owner as IPDFComponent)
         {
             this._childContainer = childContainer;
             this._resources = new PDFResourceList(this, false);
             this.SubType = "Form";
             this.Matrix = PDFTransformationMatrix.Identity();
+            this._position = position;
         }
 
         public PDFTransformationMatrix Matrix { get; set; }
@@ -104,6 +106,7 @@ namespace Scryber.Layout
 
                 
                 var x = context.Graphics.GetXPosition(context.Offset.X).Value;
+
                 var y = context.Graphics.GetYPosition(context.Offset.Y + this.Height).Value;
 
                 if(this.ClipRect.HasValue)

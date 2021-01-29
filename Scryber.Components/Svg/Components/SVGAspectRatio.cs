@@ -106,16 +106,81 @@ namespace Scryber.Svg.Components
             double offx = 0; // viewport.X.PointsValue;
             double offy = 0; // viewport.Y.PointsValue;
             float min = (float)Math.Min(scalex, scaley);
+            double w = source.Width.PointsValue * min;
+            double h = source.Height.PointsValue * min;
             switch (align)
             {
                 case (AspectRatioAlign.xMinYMin):
                     //Scale to fit within the size without overflow and show at the top (so no x or y offset)
+                    offx = 0;
+                    offy = (dest.Height.PointsValue - h); //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
+                case (AspectRatioAlign.xMidYMin):
+                    //Scale to fit within the size without overflow and then position in the middle
+                    offx = (dest.Width.PointsValue - w) / 2;
+                    offy = (dest.Height.PointsValue - h); //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
+                case (AspectRatioAlign.xMaxYMin):
+                    //Scale to fit within the size without overflow and show at the top (so no x or y offset)
+                    offx = dest.Width.PointsValue - w;
+                    offy = (dest.Height.PointsValue - h); //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
+                case (AspectRatioAlign.xMinYMid):
+                    //Scale to fit within the size without overflow and show at the top (so no x or y offset)
+                    offx = 0;
+                    offy = (dest.Height.PointsValue - h) / 2; //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
                     onmatrix.SetScale(min, min);
                     break;
                 case (AspectRatioAlign.xMidYMid):
                     //Scale to fit within the size without overflow and then position in the middle
+                    offx = (dest.Width.PointsValue - w) / 2;
+                    offy = (dest.Height.PointsValue - h) / 2; //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
                     onmatrix.SetScale(min, min);
                     break;
+
+                case (AspectRatioAlign.xMaxYMid):
+                    //Scale to fit within the size without overflow and show at the top (so no x or y offset)
+                    offx = dest.Width.PointsValue - w;
+                    offy = (dest.Height.PointsValue - h) / 2; //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
+                case (AspectRatioAlign.xMinYMax):
+                    //Scale to fit within the size without overflow and show at the top (so no x or y offset)
+                    offx = 0;
+                    offy = 0; //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
+                case (AspectRatioAlign.xMidYMax):
+                    //Scale to fit within the size without overflow and then position in the middle
+                    offx = (dest.Width.PointsValue - w) / 2;
+                    offy = 0; //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
+                case (AspectRatioAlign.xMaxYMax):
+                    //Scale to fit within the size without overflow and show at the top (so no x or y offset)
+                    offx = dest.Width.PointsValue - w;
+                    offy = 0; //plus as from the bottom
+                    onmatrix.SetTranslation(offx, offy);
+                    onmatrix.SetScale(min, min);
+                    break;
+
                 default:
                     break;
             }
@@ -125,8 +190,16 @@ namespace Scryber.Svg.Components
 
         }
 
-        public static void ApplyUniformStretching(PDFTransformationMatrix onmatrix, PDFSize destm, PDFRect viewport, AspectRatioAlign align)
+        public static void ApplyUniformStretching(PDFTransformationMatrix onmatrix, PDFSize dest, PDFRect viewport, AspectRatioAlign align)
         {
+            PDFSize source = viewport.Size;
+            double scalex = dest.Width.PointsValue / source.Width.PointsValue;
+            double scaley = dest.Height.PointsValue / source.Height.PointsValue;
+            double offx = 0; // viewport.X.PointsValue;
+            double offy = 0; // viewport.Y.PointsValue;
+            float min = (float)Math.Min(scalex, scaley);
+            double w = source.Width.PointsValue * min;
+            double h = source.Height.PointsValue * min;
 
         }
     }

@@ -309,7 +309,7 @@ namespace Scryber.Layout
 
         public PDFLayoutXObject AddXObjectRun(IPDFLayoutEngine engine, IPDFComponent component, PDFLayoutRegion container, PDFPositionOptions options, Style full)
         {
-            PDFLayoutXObject xobject = new PDFLayoutXObject(this, container, component);
+            PDFLayoutXObject xobject = new PDFLayoutXObject(this, container, options, component);
             this.Runs.Add(xobject);
             return xobject;
         }
