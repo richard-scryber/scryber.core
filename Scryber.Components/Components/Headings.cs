@@ -131,6 +131,7 @@ namespace Scryber.Components
         protected static Style GetBaseStyles(PDFUnit fontsize, bool bold, bool italic, string groupname)
         {
             Style fs = new Style();
+            fs.Padding.Top = 10;
             fs.Font.FontSize = fontsize;
             fs.Font.FontBold = bold;
             fs.Font.FontItalic = italic;

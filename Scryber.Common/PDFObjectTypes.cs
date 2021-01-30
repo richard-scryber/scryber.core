@@ -55,6 +55,7 @@ namespace Scryber
         public static readonly PDFObjectType FontWidths = (PDFObjectType)"fwdt";
         public static readonly PDFObjectType FontDescriptor = (PDFObjectType)"fdec";
         public static readonly PDFObjectType ImageXObject = (PDFObjectType)"imgx";
+        public static readonly PDFObjectType CanvasXObject = (PDFObjectType)"canx";
         public static readonly PDFObjectType ExtGState = (PDFObjectType)"gxst";
         public static readonly PDFObjectType GraphicsPath = (PDFObjectType)"gpth";
         public static readonly PDFObjectType Pattern = (PDFObjectType)"patt";
@@ -73,6 +74,7 @@ namespace Scryber
         public static readonly PDFObjectType PageSize = (PDFObjectType)"pgsz";
         public static readonly PDFObjectType Image = (PDFObjectType)"img ";
         public static readonly PDFObjectType ImageData = (PDFObjectType)"imgd";
+        public static readonly PDFObjectType GraphicsPathData = (PDFObjectType)"gphd";
         public static readonly PDFObjectType Table = (PDFObjectType)"tble";
 
         public static readonly PDFObjectType TableRow = (PDFObjectType)"trow";

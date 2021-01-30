@@ -285,11 +285,11 @@ namespace Scryber.Resources
 
             writer.WriteDictionaryNumberEntry("FontWeight", 700);
             writer.WriteDictionaryNumberEntry("Flags", (int)this.Flags);
-            writer.WriteDictionaryNumberEntry("Ascent",this.Ascent);
+            writer.WriteDictionaryNumberEntry("Ascent",(int)(this.Ascent * 0.6));
             writer.WriteDictionaryNumberEntry("Descent", this.Descent);
 
-            if (this.Leading != 0.0)
-                writer.WriteDictionaryNumberEntry("Leading", this.Leading);
+            //if (this.Leading != 0.0)
+            //    writer.WriteDictionaryNumberEntry("Leading", this.Leading);
 
             if(this.CapHeight != 0.0)
                 writer.WriteDictionaryNumberEntry("CapHeight", this.CapHeight);

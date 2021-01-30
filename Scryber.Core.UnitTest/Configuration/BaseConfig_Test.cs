@@ -49,7 +49,7 @@ namespace Scryber.Core.UnitTests.Configuration
             //We should have 3 namespaces by default for Scryber.Components, Scryber.Data and Scryber.Styles
             Assert.IsNotNull(parsing.Namespaces, "Namespace Mappings are null");
 
-            Assert.AreEqual(4, parsing.Namespaces.Count, "There are not 4 namespaces");
+            Assert.AreEqual(5, parsing.Namespaces.Count, "There are not 4 namespaces");
 
             var compType = typeof(Scryber.Components.Document);
             var dataType = typeof(Scryber.Data.XMLDataSource);

@@ -52,9 +52,9 @@ namespace Scryber.Components
             fullstyle.TryGetValue(StyleKeys.ShapeClosedKey, out isclosed);
             fullstyle.TryGetValue(StyleKeys.ShapeRotationKey, out rotation);
             PDFGraphicsPath path = new PDFGraphicsPath();
-            this.BuildElipse(path, bounds, 
+            BuildElipse(path, bounds,
                                 (isclosed == null)? true : isclosed.Value, 
-                                (rotation == null)? 0.0 : rotation.Value);
+                                ((rotation == null)? 0.0 : rotation.Value) + this.DefaultRotation);
 
             return path;
         }
@@ -63,7 +63,7 @@ namespace Scryber.Components
         //used for calculating the handle points of a bezier curve to approximage an arc
         public const double CircularityFactor = 0.5522847498;
 
-        private void BuildElipse(PDFGraphicsPath path, PDFRect rect, bool closed, double angle)
+        public static void BuildElipse(PDFGraphicsPath path, PDFRect rect, bool closed, double angle)
         {
 
             double width = rect.Width.PointsValue;
@@ -85,8 +85,7 @@ namespace Scryber.Components
             double lengthX = (double)((width * CircularityFactor) / 2.0);
             double lengthY = (double)((height * CircularityFactor) / 2.0);
 
-            double rotationDegrees = angle + DefaultRotation;
-            double rotation = rotationDegrees * InRadians;
+            double rotation = angle * InRadians;
 
             //start at left, middle
             PDFPoint start = Rotate(new PDFPoint(-radX, 0), rotation);

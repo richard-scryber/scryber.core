@@ -44,12 +44,16 @@ namespace Scryber.Styles
 
         protected override void DoClear()
         {
+            this.ClearFullRefs();
+            base.DoClear();
+        }
+
+        public void ClearFullRefs()
+        {
             this._pos = null;
             this._pgsize = null;
             this._text = null;
             this._pageNums = null;
-
-            base.DoClear();
         }
 
         protected override void BeginStyleChange()

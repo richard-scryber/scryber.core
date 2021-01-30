@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Scryber.Drawing;
 using Scryber.Native;
 using Scryber.Resources;
@@ -14,35 +15,46 @@ namespace Scryber.Layout
     /// </summary>
     public class PDFLayoutXObject : PDFLayoutRun, IPDFResourceContainer
     {
-        private static readonly double[] IdentityMatrix = new double[] { 1, 0, 0, 1, 0, 0 };
+        
 
         private PDFLayoutRegion _childContainer;
         private PDFResourceList _resources;
         private PDFLayoutPage _page;
+        private PDFPositionOptions _position;
 
-        public PDFLayoutXObject(PDFLayoutLine parent, PDFLayoutRegion childContainer, IPDFComponent owner) 
+        public PDFLayoutXObject(PDFLayoutLine parent, PDFLayoutRegion childContainer, PDFPositionOptions position, IPDFComponent owner) 
             :base(parent, owner as IPDFComponent)
         {
             this._childContainer = childContainer;
             this._resources = new PDFResourceList(this, false);
             this.SubType = "Form";
-            this.Matrix = IdentityMatrix;
+            this.Matrix = PDFTransformationMatrix.Identity();
+            this._position = position;
         }
 
-        public double[] Matrix { get; set; }
+        public PDFTransformationMatrix Matrix { get; set; }
+
+        public PDFRect? ClipRect { get; set; }
+
 
         public string SubType { get; set; }
 
         public PDFPoint Location { get; private set; }
 
+
+        private PDFUnit? _explicitH;
+        private PDFUnit? _explicitW;
+
         public override PDFUnit Height
         {
-            get { return this._childContainer.Height; }
+            get { return _explicitH.HasValue ? _explicitH.Value : this._childContainer.Height; }
+            
         }
 
         public override PDFUnit Width
         {
-            get { return this._childContainer.Width; }
+            get { return _explicitW.HasValue ? _explicitW.Value :  this._childContainer.Width; }
+            
         }
 
         public IPDFDocument Document
@@ -50,6 +62,18 @@ namespace Scryber.Layout
             get { return this.Owner.Document; }
         }
 
+        #region public PDFObjectRef RenderReference {get;}
+
+        private PDFObjectRef _renderRef;
+
+        public PDFObjectRef RenderReference
+        {
+            get { return _renderRef; }
+        }
+
+        #endregion
+
+        
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
         {
             this._page = context.DocumentLayout.CurrentPage;
@@ -64,31 +88,89 @@ namespace Scryber.Layout
             return base.DoClose(ref msg);
         }
 
-        private PDFObjectRef _renderRef;
+        
+        private PDFName _OutPutName;
+
+        /// <summary>
+        /// If set then this xObject will be rendered to the current stream with a /name Do operation.
+        /// </summary>
+        public PDFName OutPutName { get; set; }
+
+
+        /// <summary>
+        /// This will render the transformation matrix and then the XObject name operation.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
+        protected virtual bool OutputDrawingContent(PDFRenderContext context, PDFWriter writer)
+        {
+            
+            if (null != this.OutPutName)
+            {
+                context.Graphics.SaveGraphicsState();
+
+
+                var x = context.Offset.X.RealValue;
+                x = context.Graphics.GetXPosition(x);
+
+                var y = (context.Offset.Y + this.Height).RealValue;
+                y = context.Graphics.GetYPosition(y);
+
+                if(this.ClipRect.HasValue)
+                {
+                    //var rect = this.ClipRect.Value.Offset(context.Offset.X, context.Offset.Y);
+                    //context.Graphics.SetClipRect(rect);
+                }
+                var matrix = new PDFTransformationMatrix();
+                matrix.SetTranslation((float)x, (float)y);
+                //Set the transformation matrix for the current offset
+                context.Graphics.SetTransformationMatrix(matrix, true, true);
+
+                if(!this.Matrix.IsIdentity)
+                {
+                    context.Graphics.SetTransformationMatrix(this.Matrix, true, true);
+                }
+
+                context.Graphics.PaintXObject(this.OutPutName);
+
+                context.Graphics.RestoreGraphicsState();
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void SetOutputSize(PDFUnit? width, PDFUnit? height)
+        {
+            this._explicitW = width;
+            this._explicitH = height;
+        }
 
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             //Only do this once, but can be referenced from multiple places;
+            
+
             if (null == _renderRef)
             {
                 _renderRef = this.OutputContent(context, writer);
             }
+
+            OutputDrawingContent(context, writer);
+
             return _renderRef;
         }
 
-        protected string GetMarkedContentType()
-        {
-            string type;
-            switch (this.SubType)
-            {
-                default:
-                    type = "Tx"; //TExt form input type
-                    break;
-            }
-
-            return type;
-        }
-
+        
+        /// <summary>
+        /// This will render the actual content of the XObject graphical content in a new object reference.
+        /// This can then be referred to.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
         private PDFObjectRef OutputContent(PDFRenderContext context, PDFWriter writer)
         {
             PDFObjectRef xObject = writer.BeginObject();
@@ -108,8 +190,6 @@ namespace Scryber.Layout
 
                 context.Offset = Drawing.PDFPoint.Empty;
 
-                string contentType = this.GetMarkedContentType();
-                
                 this._childContainer.OutputToPDF(context, writer);
 
             }
@@ -135,15 +215,27 @@ namespace Scryber.Layout
                 writer.WriteDictionaryNameEntry("Subtype", "Form");
 
             writer.BeginDictionaryEntry("Matrix");
-            writer.WriteArrayRealEntries(this.Matrix);
+            writer.WriteArrayRealEntries(PDFTransformationMatrix.Identity().Components); // this.Matrix.Components);
             writer.EndDictionaryEntry();
 
             writer.BeginDictionaryEntry("BBox");
             writer.BeginArrayS();
-            writer.WriteReal(0.0F);
-            writer.WriteRealS(0.0F);
-            writer.WriteRealS(this.Width.PointsValue);
-            writer.WriteRealS(this.Height.PointsValue);
+
+            if (this._position.ViewPort.HasValue)
+            {
+                PDFRect vp = this._position.ViewPort.Value;
+                writer.WriteReal(vp.X.PointsValue);
+                writer.WriteRealS(vp.Y.PointsValue);
+                writer.WriteRealS(vp.Width.PointsValue);
+                writer.WriteRealS(vp.Height.PointsValue);
+            }
+            else
+            {
+                writer.WriteReal(0.0F);
+                writer.WriteRealS(0.0F);
+                writer.WriteRealS(this._childContainer.Height.PointsValue);
+                writer.WriteRealS(this._childContainer.Height.PointsValue);
+            }
             writer.EndArray();
             writer.EndDictionaryEntry();
 
@@ -179,7 +271,12 @@ namespace Scryber.Layout
 
         protected virtual PDFGraphics CreateGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
         {
-            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, new PDFSize(this.Width, this.Height), context);
+            var sz = new PDFSize(this._childContainer.Width, this._childContainer.Height);
+            if(this._position.ViewPort.HasValue)
+            {
+                sz = this._position.ViewPort.Value.Size;
+            }
+            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, sz, context);
         }
 
         public PDFName Register(PDFResource rsrc)

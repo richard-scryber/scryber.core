@@ -661,6 +661,27 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public void PaintXObject(Scryber.Resources.PDFResource rsrc)
+
+        public void PaintXObject(Scryber.Resources.PDFResource rsrc)
+        {
+            if (null == rsrc )
+                throw new ArgumentNullException("The resource cannot be null");
+
+            var name = rsrc.Name;
+            this.PaintXObject(name);
+        }
+
+        public void PaintXObject(PDFName name)
+        {
+            if (null == name || string.IsNullOrEmpty(name.Value))
+                throw new ArgumentNullException("The value of name cannot be null");
+
+            this.Writer.WriteOpCodeS(PDFOpCode.XobjPaint, name);
+        }
+
+        #endregion
+
         #region public void PaintImageRef()
 
         /// <summary>

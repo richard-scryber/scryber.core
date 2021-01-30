@@ -247,6 +247,19 @@ namespace Scryber
 
         #endregion
 
+        private bool _drawFromTop = true;
+
+        /// <summary>
+        /// If true then the measurements are based on the top of the font ascender.
+        /// This is the default.
+        /// If falue then the drawing positions are based around the baseline of the text.
+        /// </summary>
+        public bool DrawTextFromTop
+        {
+            get { return this._drawFromTop; }
+            set { this._drawFromTop = value; }
+        }
+
         //
         // .ctor
         //

@@ -108,7 +108,7 @@ namespace Scryber.Layout
         /// Lays out all the content of this panel
         /// </summary>
         /// <param name="position"></param>
-        protected void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
+        protected virtual void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             PDFLayoutBlock containerBlock = CreateContinerBlock(position);
             if (null == containerBlock)
@@ -122,7 +122,9 @@ namespace Scryber.Layout
             EnsureContentsFit();
         }
 
-        private void CreateBlockRegions(PDFLayoutBlock containerBlock, PDFPositionOptions position, PDFColumnOptions columnOptions)
+        
+
+        protected virtual void CreateBlockRegions(PDFLayoutBlock containerBlock, PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             PDFRect unused = containerBlock.CurrentRegion.UnusedBounds;
             PDFUnit yoffset = containerBlock.CurrentRegion.Height;
@@ -145,7 +147,7 @@ namespace Scryber.Layout
             CurrentBlock.InitRegions(total, position, columnOptions, this.Context);
         }
 
-        protected PDFLayoutBlock CreateContinerBlock(PDFPositionOptions position)
+        protected virtual PDFLayoutBlock CreateContinerBlock(PDFPositionOptions position)
         {
             bool newPage = false;
             PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();

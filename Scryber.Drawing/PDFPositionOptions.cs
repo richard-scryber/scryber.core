@@ -84,7 +84,11 @@ namespace Scryber
         /// Gets or sets the Maximum Height
         /// </summary>
         public PDFUnit? MaximumHeight { get; set; }
-        
+
+        /// <summary>
+        /// The form viewport if this has one.
+        /// </summary>
+        public PDFRect? ViewPort { get; set; }
 
         /// <summary>
         /// Gets or sets if these options specifiy that the copmonent these options refer to should fill the available horizontal space
@@ -195,6 +199,12 @@ namespace Scryber
             //this.TransformationOrigin = TransformationOrigin.CenterMiddle;
         }
 
+
+        public PDFPositionOptions Clone()
+        {
+            var result = this.MemberwiseClone() as PDFPositionOptions;
+            return result;
+        }
 
     }
 }

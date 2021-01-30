@@ -400,6 +400,7 @@ namespace Scryber.Styles
 
         #endregion
 
+        
     }
 
     /// <summary>

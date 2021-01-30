@@ -373,9 +373,12 @@ namespace Scryber.Layout
 
             //With mixed content
             if (this.TextRenderOptions.Leading.HasValue)
+            {
                 cursor.Height += this.TextRenderOptions.Leading.Value - metrics.Descent;
+            }
             else
                 cursor.Height += this.Line.BaseLineOffset;
+            
 
             if (context.ShouldLogDebug)
                 context.TraceLog.Add(TraceLevel.Debug, "Text Begin", "Marker to beginning to render the text for component " + this.Owner.ToString() + " at cursor position " + cursor);

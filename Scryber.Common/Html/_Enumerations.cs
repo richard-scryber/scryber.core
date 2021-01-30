@@ -93,6 +93,8 @@ namespace Scryber.Html
         public const string PaddingBottom = "padding-bottom";
 
         public const string Opacity = "opacity";
+        public const string FillOpacity = "fill-opacity";
+
         public const string ColumnCount = "column-count";
         public const string ColumnGap = "column-gap";
 
@@ -130,6 +132,11 @@ namespace Scryber.Html
         public const string PageGroupName = "page";
 
         public const string PositionModeType = "position";
+
+        public const string StrokeColor = "stroke";
+        public const string StrokeOpacity = "stroke-opacity";
+        public const string StrokeWidth = "stroke-width";
+        public const string StrokeDash = "stroke-dasharray";
 
     }
 

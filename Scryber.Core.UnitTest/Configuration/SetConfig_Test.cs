@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Configuration
             //Namespace Mappings
             Assert.IsNotNull(parsing.Namespaces, "Namespace mappings is null");
 
-            int expectedLength = 5;
+            int expectedLength = 6;
             string expectedNs = "Scryber.Core.UnitTests.Generation.Fakes";
             string expectedAssm = "Scryber.UnitTests";
             string expectedSrc = "http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Fakes.xsd";

@@ -492,7 +492,7 @@ namespace Scryber.Drawing
 
             val = GetNumber(ref offset, value);
             if (offset < value.Length)
-                unit = GetUnit(ref offset, value);
+                unit = GetUnit(ref offset, value, ref val);
             else
                 unit = PageUnits.Points;
 
@@ -553,7 +553,7 @@ namespace Scryber.Drawing
             return parsed;
         }
 
-        private static PageUnits GetUnit(ref int offset, string value)
+        private static PageUnits GetUnit(ref int offset, string value, ref double number)
         {
             string end = value.Substring(offset).Trim().ToLower();
             if (end == MillimeterPostFix)
@@ -562,6 +562,11 @@ namespace Scryber.Drawing
                 return PageUnits.Inches;
             else if (end == ExplicitPointPostFix)
                 return PageUnits.Points;
+            else if (end == ExplicitPixelPostFix)
+            {
+                number = number * (72.0 / 96.0);
+                return PageUnits.Points;
+            }
             else
                 throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
 
@@ -687,6 +692,7 @@ namespace Scryber.Drawing
         public const string MillimeterPostFix = "mm";
         public const string InchPostFix = "in";
         public const string ExplicitPointPostFix = "pt";
+        public const string ExplicitPixelPostFix = "px";
         public const string PointPostFix = "";
 
 

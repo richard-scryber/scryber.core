@@ -1175,7 +1175,7 @@ namespace Scryber.Components
                 PDFImageData data = this.LoadImageData(owner, fullpath);
                 if (null != data)
                 {
-                    return RegisterImageResource(fullpath, owner, data);
+                    return RegisterXObjectResource(fullpath, owner, data) as PDFImageXObject;
                 }
                 else
                     return null;
@@ -1211,7 +1211,7 @@ namespace Scryber.Components
                 return found;
 
             if (type == PDFResource.XObjectResourceType)
-                return this.RegisterImageResource(fullname, owner, resource);
+                return this.RegisterXObjectResource(fullname, owner, resource);
 
             else if (type == PDFResource.FontDefnResourceType)
                 return this.RegisterFontResource(fullname, owner, resource);
@@ -1231,7 +1231,7 @@ namespace Scryber.Components
 
         #region protected PDFImageXObject RegisterImageResource(string fullname, Component owner, object resource)
 
-        protected PDFImageXObject RegisterImageResource(string fullname, Component owner, object resource)
+        protected PDFResource RegisterXObjectResource(string fullname, Component owner, object resource)
         {
             if(resource is PDFImageData)
             {
@@ -1240,13 +1240,18 @@ namespace Scryber.Components
                 PDFImageXObject img = PDFImageXObject.Load(data, id);
                 resource = img;
             }
-            if(resource is PDFImageXObject)
+            if (resource is PDFImageXObject)
             {
                 PDFImageXObject xobj = resource as PDFImageXObject;
                 this.SharedResources.Add(xobj);
                 return xobj;
             }
-            else throw new InvalidCastException("The image resource is not image data or an image xobj");
+            else if (resource is PDFResource)
+            {
+                this.SharedResources.Add(resource as PDFResource);
+                return (resource as PDFResource);
+            }
+            else throw new InvalidCastException("The resource is not image data or image xobj, or standard XObjectResouce");
         }
 
         #endregion

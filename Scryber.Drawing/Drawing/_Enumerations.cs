@@ -88,7 +88,8 @@ namespace Scryber.Drawing
     {
         Butt = 0,
         Round = 1,
-        Projecting = 2
+        Projecting = 2,
+        Square = 2
     }
 
 

@@ -112,11 +112,32 @@ namespace Scryber.Layout
 
         #endregion
 
+        #region public PDFColumnOptions ColumnOptions { get; private set; }
+
         /// <summary>
         /// Gets the options for the column layout in this block
         /// </summary>
         public PDFColumnOptions ColumnOptions { get; private set; }
 
+        #endregion
+
+        #region public bool IsFormXObject { get; set; }
+
+        /// <summary>
+        /// Returns true if this block should be rendered as an xObject (independent of the main content stream (or out xObject)
+        /// </summary>
+        public bool IsFormXObject { get; set; }
+
+        #endregion
+
+        #region public PDFRect XObjectViewPort {get;set;}
+
+        /// <summary>
+        /// Gets the view port rectangle for the xObject
+        /// </summary>
+        public PDFRect XObjectViewPort {get;set;}
+
+        #endregion
 
         #region public PDFRect AvailableBounds { get; private set; }
 
@@ -943,6 +964,9 @@ namespace Scryber.Layout
 
         #endregion
 
+
+        #region public override void ResetAvailableHeight(PDFUnit height, bool includeChildren)
+
         public override void ResetAvailableHeight(PDFUnit height, bool includeChildren)
         {
             this._avail.Height = height;
@@ -957,6 +981,8 @@ namespace Scryber.Layout
             }
             base.ResetAvailableHeight(height, includeChildren);
         }
+
+        #endregion
 
         #region public override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
 
@@ -1002,10 +1028,13 @@ namespace Scryber.Layout
             Style prevStyle = context.FullStyle;
             PDFSize prevSize = context.Space;
             PDFPoint prevLoc = context.Offset;
+            PDFObjectRef xobj = null;
+
             try
             {
                 context.FullStyle = fullstyle;
-
+                
+                
 
                 //If we have a transformation matrix applied.
                 if(this.Position.HasTransformation)
@@ -1020,32 +1049,6 @@ namespace Scryber.Layout
                     offsetToOriginX -= this.TotalBounds.Width / 2;
                     offsetToOriginY -= this.TotalBounds.Height / 2;
 
-                    /* TransformationOrigin is not currently supported
-                     
-                    switch (this.Position.TransformationOrigin)
-                    {
-                        case TransformationOrigin.CenterMiddle:
-                            offsetToOriginX -= this.TotalBounds.Width / 2;
-                            offsetToOriginY -= this.TotalBounds.Height / 2;
-                            break;
-                        case TransformationOrigin.TopLeft:
-                            offsetToOriginY -= this.TotalBounds.Height;
-                            break;
-                        case TransformationOrigin.TopRight:
-                            offsetToOriginY -= this.TotalBounds.Height;
-                            offsetToOriginX -= this.TotalBounds.Width;
-                            break;
-                        case TransformationOrigin.BottomLeft:
-                            //Nothing to do - this is the PDF standard
-                            break;
-                        case TransformationOrigin.BottomRight:
-                            offsetToOriginX -= this.TotalBounds.Width;
-                            break;
-                        default:
-                            break;
-                    }
-                    */
-
                     //the translate to origin transformation
                     PDFTransformationMatrix offsetToOrigin = new PDFTransformationMatrix();
                     offsetToOrigin.SetTranslation(context.Graphics.GetXPosition(offsetToOriginX).Value, -context.Graphics.GetYPosition(offsetToOriginY).Value);
@@ -1053,9 +1056,6 @@ namespace Scryber.Layout
                     //the translate back to original location post transformation
                     PDFTransformationMatrix offsetToActual = new PDFTransformationMatrix();
                     offsetToActual.SetTranslation(- context.Graphics.GetXPosition(offsetToOriginX).Value, context.Graphics.GetYPosition(offsetToOriginY).Value);
-
-                    
-                    
 
                     //multiply the matricies into a single set
                     PDFTransformationMatrix full = offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
@@ -1082,6 +1082,8 @@ namespace Scryber.Layout
 
                 }
 
+
+
                 PDFRect total = this.TotalBounds;
                 total = total.Offset(context.Offset);
 
@@ -1106,7 +1108,7 @@ namespace Scryber.Layout
                 if (this.Position.OverflowAction == OverflowAction.Clip)
                 {
                     if (logdebug)
-                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
+                       context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
                     this.OutputClipping(context, borderRect, corner, sides, this.Position.ClipInset);
                 }
 
@@ -1189,7 +1191,7 @@ namespace Scryber.Layout
         
 #endregion
 
-#region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
+        #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
         /// Renders the inner content in this block
@@ -1199,6 +1201,8 @@ namespace Scryber.Layout
         protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
         {
             
+            PDFPoint prev = context.Offset;
+
             if (this.Columns.Length > 1)
             {
                 foreach (PDFLayoutRegion region in this.Columns)
@@ -1212,9 +1216,9 @@ namespace Scryber.Layout
             }
         }
 
-#endregion
+        #endregion
 
-#region protected virtual bool ShouldOutput(PDFRenderContext context)
+        #region protected virtual bool ShouldOutput(PDFRenderContext context)
 
         /// <summary>
         /// Returns true if this block should actually be written.
@@ -1244,9 +1248,9 @@ namespace Scryber.Layout
                 return false;
         }
 
-#endregion
+        #endregion
 
-#region private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
+        #region private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
 
         private const double ColumnOverlayOpacity = 0.4;
 
@@ -1273,9 +1277,9 @@ namespace Scryber.Layout
 
         }
 
-#endregion
+        #endregion
 
-#region private void OutputOverlayGrid(PDFOverlayGridStyle grid, PDFRenderContext context)
+        #region private void OutputOverlayGrid(PDFOverlayGridStyle grid, PDFRenderContext context)
 
         /// <summary>
         /// Renders any overlay grid and column highlights
@@ -1332,9 +1336,9 @@ namespace Scryber.Layout
             graphics.RestoreGraphicsState();
         }
 
-#endregion
+        #endregion
 
-#region internal void Offset(PDFUnit x, PDFUnit y)
+        #region internal void Offset(PDFUnit x, PDFUnit y)
 
         /// <summary>
         /// Offsets this block by the specifed amounts
@@ -1354,9 +1358,9 @@ namespace Scryber.Layout
             this.TotalBounds = total;
         }
 
-#endregion
+        #endregion
 
-#region internal void Shrink(PDFUnit width, PDFUnit height)
+        #region internal void Shrink(PDFUnit width, PDFUnit height)
 
         /// <summary>
         /// Reduces the size of this layout block bythe specifed amount
@@ -1388,7 +1392,7 @@ namespace Scryber.Layout
             }
         }
 
-#endregion
+        #endregion
 
     }
 

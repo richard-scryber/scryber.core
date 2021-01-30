@@ -916,11 +916,7 @@ namespace Scryber.Styles
         }
 
         
-        public override void MergeInto(StyleBase style, int priority)
-        {
-            base.MergeInto(style, priority);
-        }
-
+        
         //
         // createXXX methods
         //

@@ -5,19 +5,25 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.0.3-beta</PackageVersion>
+    <PackageVersion>5.0.4</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/IQAndreas/markdown-licenses/master/gnu-lgpl-v3.0.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.3-beta
+    <PackageReleaseNotes>5.0.4
+
+Added SVG Support, and local font urls
+
+5.0.3
+
+Public release with most of the issue ironed out (just let us know if not). Along with @font-face, absolute, relative and display css.
+
+5.0.3-beta
 
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
-
-
  tags with property or for attributes. Fix for anchor links with internal and external href.
 
 5.0.3-alpha
@@ -62,13 +68,14 @@ PDFDocument fix for remote references.
 Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package
 
 Added the default namespaces to the ParsingOptions, and updated version to match MVC and OpenType</PackageReleaseNotes>
-    <Summary>The scryber library for easy, dynamic PDF document creation using dotnet 5</Summary>
+    <Summary>The scryber engine for easy, dynamic PDF document creation using dotnet 5 and xhtml templates</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML2PDF; dotnet 5;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The Scryber PDF Generation library for dotnet 5
+    <Description>The scryber pdf engine for dotnet 5 - change the way you make documents.
 
-Scryber is an advanced PDF generation tool that allows complete definition of a dynamic PDF document based on XML, XHTML (and code)  including cascading styles, databinding and referenced files easily from your Apps or MVC web apps or Javascipt ajax calls.
-This framework is built entirely in .NETCore and is released under the LGPL licence so you can link to it in commercial applications.</Description>
+Scryber is an advanced PDF generation engine based around XHTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+
+This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>true</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
     <Version>1.0.1-alpha</Version>
@@ -79,8 +86,13 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
     <FileVersion>1.0.1.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType></DebugType>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Web\**" />
     <EmbeddedResource Remove="Web\**" />
@@ -142,4 +154,7 @@ This framework is built entirely in .NETCore and is released under the LGPL lice
     </None>
   </ItemGroup>
   
+  <ItemGroup>
+    <Folder Include="Svg\Layout\" />
+  </ItemGroup>
 </Project>

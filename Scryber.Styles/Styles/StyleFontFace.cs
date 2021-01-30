@@ -168,7 +168,7 @@ namespace Scryber.Styles
                 {
                     string name = PDFFont.GetFullName(this.FontFamily.FamilyName, this.FontBold, this.FontItalic);
                     //PDFFontResource resource = PDFFontResource.Load(definition, name);
-
+                    
                     doc.EnsureResource(PDFFontResource.FontDefnResourceType, name, definition);
                 }
             }

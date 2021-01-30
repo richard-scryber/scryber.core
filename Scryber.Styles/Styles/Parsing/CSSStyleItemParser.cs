@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Html;
+using System.Runtime.CompilerServices;
 
 namespace Scryber.Styles.Parsing
 {
@@ -1881,22 +1882,36 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
-    // opacity and color
+    // fill
 
     #region public class CSSOpacityParser : CSSStyleAttributeParser<double>
+
+    public class CSSFillOpacityParser : CSSOpacityParser
+    {
+        public CSSFillOpacityParser()
+            : base(CSSStyleItems.FillOpacity, StyleKeys.FillOpacityKey)
+        {
+        }
+    }
 
     public class CSSOpacityParser : CSSStyleAttributeParser<double>
     {
         public CSSOpacityParser()
-            : base(CSSStyleItems.Opacity, StyleKeys.FillOpacityKey)
+            : this(CSSStyleItems.Opacity, StyleKeys.FillOpacityKey)
         {
+        }
+
+        public CSSOpacityParser(string css, PDFStyleKey<double> key)
+            : base(css, key)
+        {
+
         }
 
         public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             double number;
 
-            if(reader.ReadNextValue() && ParseDouble(reader.CurrentTextValue, out number) && number >= 0.0 && number <= 1.0)
+            if (reader.ReadNextValue() && ParseDouble(reader.CurrentTextValue, out number) && number >= 0.0 && number <= 1.0)
             {
                 this.SetValue(onStyle, number);
                 return true;
@@ -1912,10 +1927,13 @@ namespace Scryber.Styles.Parsing
     public class CSSFillColourParser : CSSColorStyleParser
     {
         public CSSFillColourParser()
-            : base(CSSStyleItems.FillColor, StyleKeys.FillColorKey)
+            : this(CSSStyleItems.FillColor, StyleKeys.FillColorKey)
         {
         }
 
+        public CSSFillColourParser(string css, PDFStyleKey<PDFColor> key)
+            : base(css, key)
+        { }
 
     }
 
@@ -2904,4 +2922,22 @@ namespace Scryber.Styles.Parsing
             return false;
         }
     }
+
+    public class CSSStrokeOpacityParser: CSSOpacityParser
+    {
+        public CSSStrokeOpacityParser(): base(CSSStyleItems.StrokeOpacity, StyleKeys.StrokeOpacityKey)
+        { }
+    }
+
+    public class CSSStrokeColorParser : CSSColorStyleParser
+    {
+        public CSSStrokeColorParser()
+            : base(CSSStyleItems.StrokeColor, StyleKeys.StrokeColorKey)
+        {
+
+        }
+    }
+
+
+
 }
