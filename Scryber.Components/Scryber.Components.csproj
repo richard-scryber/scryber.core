@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.0.3</PackageVersion>
+    <PackageVersion>5.0.4</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
@@ -13,22 +13,17 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.3
+    <PackageReleaseNotes>5.0.4
+
+Added SVG Support, and local font urls
+
+5.0.3
 
 Public release with most of the issue ironed out (just let us know if not). Along with @font-face, absolute, relative and display css.
 
 5.0.3-beta
 
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
-
-
-
-
-
-
-
-
-
  tags with property or for attributes. Fix for anchor links with internal and external href.
 
 5.0.3-alpha
@@ -73,12 +68,12 @@ PDFDocument fix for remote references.
 Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package
 
 Added the default namespaces to the ParsingOptions, and updated version to match MVC and OpenType</PackageReleaseNotes>
-    <Summary>The scryber engine for easy, dynamic PDF document creation using dotnet 5</Summary>
+    <Summary>The scryber engine for easy, dynamic PDF document creation using dotnet 5 and xhtml templates</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML2PDF; dotnet 5;</PackageTags>
     <Title>Scryber</Title>
     <Description>The scryber pdf engine for dotnet 5 - change the way you make documents.
 
-Scryber is an advanced PDF generation engine based around HTML templates,  CSS styles and binding content (plus XML and code where wanted). It  includes full styles support, dynamic object binding and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+Scryber is an advanced PDF generation engine based around XHTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
 This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>true</PackOnBuild>
