@@ -7,7 +7,7 @@ using Scryber.Html.Components;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("a")]
-    public class SVGAnchor : HTMLAnchor
+    public class SVGAnchor : HTMLAnchor, ICloneable
     {
 
         public SVGAnchor()
@@ -21,6 +21,23 @@ namespace Scryber.Svg.Components
             style.Fill.RemoveColor();
             style.Text.RemoveDecoration();
             return style;
+        }
+
+        public SVGAnchor Clone()
+        {
+            var a = this.MemberwiseClone() as SVGAnchor;
+            a.Parent = null;
+            if(this.Style.HasValues)
+            {
+                a.Style = new Style();
+                this.Style.MergeInto(a.Style);
+            }
+            return a;
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
         }
     }
 }

@@ -1302,6 +1302,7 @@ namespace Scryber.Drawing
                     {
                         url = mapper.MapPath(url);
                     }
+                    
                     if (_remotefamilies.TryGetValue(url, out definition))
                     {
                         found = null != definition;
@@ -1328,24 +1329,42 @@ namespace Scryber.Drawing
 
         private static bool TryLoadRemoteDefinition(string url, string family, System.Drawing.FontStyle style, out PDFFontDefinition definition)
         {
-            System.Net.WebClient client = null;
             bool tried = true;
+            definition = null;
 
-            try
+            if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
-                client = new System.Net.WebClient();
-                var data = client.DownloadData(url);
-                definition = PDFFontDefinition.LoadOpenTypeFontFile(data, family, style, 0);
+                System.Net.WebClient client = null;
+
+
+                try
+                {
+                    client = new System.Net.WebClient();
+                    var data = client.DownloadData(url);
+                    definition = PDFFontDefinition.LoadOpenTypeFontFile(data, family, style, 0);
+                }
+                catch (Exception ex)
+                {
+                    definition = null;
+                }
+                finally
+                {
+                    if (null != client)
+                        client.Dispose();
+                }
             }
-            catch(Exception ex)
+            else if (System.IO.File.Exists(url))
             {
-                definition = null;
+                try
+                {
+                    definition = PDFFontDefinition.LoadOpenTypeFontFile(url, family, style, 0);
+                }
+                catch
+                {
+                    definition = null;
+                }
             }
-            finally
-            {
-                if (null != client)
-                    client.Dispose();
-            }
+            
 
             return tried;
         }

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
 <head>
     <meta charset="utf-8" />
     <title></title>
@@ -20,9 +20,11 @@
     </style>
     <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
     <style>
+
+        
         body {
             font: 12pt 'Roboto';
-            padding: 10pt;
+            padding: 20pt;
         }
         .small {
             font: italic 13px 'Roboto';
@@ -48,8 +50,8 @@
         }
     </style>
 </head>
-<body>
-    <p>Add your content below</p>
+<body title="SVG Samples" >
+    <p title="Clock Icon">Add your content below</p>
     <svg id="ClockIcon" class="svg-icon" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
         <path fill="blue" d="M11.088,2.542c0.063-0.146,0.103-0.306,0.103-0.476c0-0.657-0.534-1.19-1.19-1.19c-0.657,0-1.19,
               0.533-1.19,1.19c0,0.17,0.038,0.33,0.102,0.476c-4.085,0.535-7.243,
@@ -62,50 +64,132 @@
               9.26c0.002-0.018,0.011-0.034,0.011-0.053V5.24c0-0.219-0.177-0.396-0.396-0.396c-0.22,
               0-0.397,0.177-0.397,0.396v3.967c0,0.019,0.008,0.035,0.011,0.053c-0.689,0.173-1.201,0.792-1.201,1.534c0,0.324,0.098,0.625,0.264,0.875c-0.079,0.014-0.155,0.043-0.216,0.104l-2.244,2.244c-0.155,0.154-0.155,0.406,0,0.561s0.406,0.154,0.561,0l2.244-2.242c0.061-0.062,0.091-0.139,0.104-0.217c0.251,0.166,0.551,0.264,0.875,0.264c0.876,0,1.587-0.711,1.587-1.587C11.587,10.052,11.075,9.433,10.386,9.26z M10,11.586c-0.438,0-0.793-0.354-0.793-0.792c0-0.438,0.355-0.792,0.793-0.792c0.438,0,0.793,0.355,0.793,0.792C10.793,11.232,10.438,11.586,10,11.586z"></path>
     </svg>
-    <p>This is above the svg canvas</p>
+    <p title="Irregular Shapes" >This is above the svg canvas</p>
     <svg xmlns="http://www.w3.org/2000/svg" width="200pt" height="200pt" class="canvas">
+        <defs>
+            <g id="eye" stroke="green" stroke-width="2pt" fill="transparent">
+                <ellipse cx="30pt" cy="140pt" rx="20pt" ry="10pt"></ellipse>
+                <circle cx="30pt" cy="140pt" r="10pt"></circle>
+                <circle cx="30pt" cy="140pt" r="5pt" fill="red"></circle>
+            </g>
+        </defs>
         <path class="transparentish" d="M 10,30
            A 20,20 0,0,1 50,30
            A 20,20 0,0,1 90,30
            Q 90,60 50,90
            Q 10,60 10,30 z" stroke="blue" stroke-width="2pt"></path>
         <rect class="box" x="10pt" y="110pt" width="40pt" height="30pt" stroke="green" stroke-width="2pt"></rect>
-        <ellipse cx="30pt" cy="140pt" rx="20pt" ry="10pt" stroke="green" stroke-width="2pt" fill="transparent"></ellipse>
-        <circle cx="30pt" cy="140pt" r="10pt" stroke="green" stroke-width="2pt" fill="transparent"></circle>
-        <circle cx="30pt" cy="140pt" r="5pt" fill="green"></circle>
+        <use href="#eye" x="-10pt" y="-10pt" style="position:absolute;" />
         <line x1="100pt" y1="190pt" x2="50pt" y2="140pt" stroke="yellow" stroke-width="2pt"></line>
+
         <polyline points="150,0 121,90 198,35 102,35 179,90" stroke="blue" fill="transparent" stroke-width="2pt"></polyline>
         <polygon points="150,100 121,190 198,135 102,135 179,190" stroke="blue" fill="transparent" stroke-width="2pt"></polygon>
     </svg>
-    <p>This has a view box traslation and scale</p>
-    <div style="background-color: aliceblue;">
-        <svg xmlns="http://www.w3.org/2000/svg" x="0" y="0" width="20pt" height="10pt" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+
+    <div style="page-break-before:always"></div>
+
+    <p title="Positioned Smileys">This has a view box traslation and scale</p>
+    <!-- taken from the mozzila aspect ratio tests -->
+    <!-- https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio -->
+
+    <svg xmlns="http://www.w3.org/2000/svg">
+        <defs>
             <path id="smiley" fill="yellow" stroke="black" stroke-width="8pt" stroke-linecap="round" stroke-linejoin="round"
                   d="M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60" />
+        </defs>
+        <!-- meet horizontal align -->
+        <svg id="smileyWrapper" x="0" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+             preserveAspectRatio="xMidYMid">
+            <use href="#smiley" />
         </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" x="25pt" y="0" width="20pt" height="10pt" viewBox="0 0 100 100" preserveAspectRatio="xMinYMid meet">
-            <path id="smiley" fill="yellow" stroke="black" stroke-width="8pt" stroke-linecap="round" stroke-linejoin="round"
-                  d="M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60" />
+
+        <svg id="smileyWrapper" x="55" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#55FF55;"
+             preserveAspectRatio="xMinYMid">
+            <use href="#smiley" />
         </svg>
-    </div>
-    <p>This is after the view box svg</p>
-    <!--
-    <p style="font-style:italic;">This is some text</p>
+
+        <svg id="smileyWrapper" x="110" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#FF5555;"
+             preserveAspectRatio="xMaxYMid">
+            <use href="#smiley" />
+        </svg>
+
+        <!-- scale horizontal align -->
+        <svg id="smileyWrapper" x="0" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+             preserveAspectRatio="xMidYMin slice">
+            <use href="#smiley" />
+        </svg>
+
+        <svg id="smileyWrapper" x="55" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#55FF55;"
+             preserveAspectRatio="xMidYMid slice">
+            <use href="#smiley" />
+        </svg>
+
+
+        <svg id="smileyWrapper" x="110" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#FF5555;"
+             preserveAspectRatio="xMidYMax slice">
+            <use href="#smiley" />
+        </svg>
+
+        <!-- meet vertical align -->
+        <svg id="smileyWrapper" x="165" width="25pt" height="55pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+             preserveAspectRatio="xMidYMin">
+            <use href="#smiley" />
+        </svg>
+
+        <svg x="195" width="25pt" height="55pt" style="background-color:#55FF55;" viewBox="0 0 100 100"
+             preserveAspectRatio="xMidYMid meet">
+            <use href="#smiley" />
+        </svg>
+
+        <svg x="225" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
+             preserveAspectRatio="xMidYMin meet">
+            <use href="#smiley" />
+        </svg>
+
+        <!-- scale vertical align -->
+        <svg id="smileyWrapper" x="255" width="25pt" height="55pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+             preserveAspectRatio="xMinYMax slice">
+            <use href="#smiley" />
+        </svg>
+
+        <svg x="285" width="25pt" height="55pt" style="background-color:#55FF55;" viewBox="0 0 100 100"
+             preserveAspectRatio="xMidYMax slice">
+            <use href="#smiley" />
+        </svg>
+
+        <svg x="315" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
+             preserveAspectRatio="xMaxYMax slice">
+            <use href="#smiley" />
+        </svg>
+
+        <svg x="0" y="60" width="340pt" height="155pt" style="background-color:#555555;" viewBox="0 0 100 100"
+             preserveAspectRatio="none">
+            <use href="#smiley" />
+        </svg>
+
+
+    </svg>
+    <p title="Explicit text layout">This is after the view box svg</p>
+
+    <p>This is some text</p>
     <svg xmlns="http://www.w3.org/2000/svg">
         <text x="20" y="35" class="small">My</text>
-        <text x="40" y="35" class="heavy">cat</text>
-        <text x="55" y="65" class="small">is</text>
-        <text x="65" y="65" class="red">Grumpy!</text>
+        <text x="35" y="35" class="heavy">cat</text>
+        <text x="55" y="60" class="small">is</text>
+        <text x="60" y="60" class="red">Grumpy!</text>
     </svg>
 
-    <p style="font-style:italic;">This is some text</p>
+
+    <p style="font-style:italic;">This is some text in spans</p>
     <svg xmlns="http://www.w3.org/2000/svg">
         <text x="20" y="35" class="small">My</text>
         <text x="40" y="35" class="heavy">cat <tspan style="fill:red;">is Grumpy</tspan> </text>
     </svg>
 
-    <p>Adding links</p>
-    <svg width="100"  xmlns="http://www.w3.org/2000/svg">
+    <div style="page-break-before:always"></div>
+
+    <p title="With Links">Adding links</p>
+    <svg width="100" xmlns="http://www.w3.org/2000/svg">
 
         <a href="http://www.google.co.uk">
             <circle cx="50" cy="40" r="35" />
@@ -118,7 +202,7 @@
             </text>
         </a>
     </svg>
-    <p>Copied SVG</p>-->
+    <p>End of SVG Components</p>
 
 </body>
 </html>

@@ -6,7 +6,7 @@ using Scryber.Styles;
 
 namespace Scryber.Svg.Components
 {
-    public abstract class SVGBase : VisualComponent
+    public abstract class SVGBase : VisualComponent, ICloneable
     {
         [PDFAttribute("class")]
         public override string StyleClass
@@ -79,5 +79,23 @@ namespace Scryber.Svg.Components
         {
         }
 
+
+        public virtual SVGBase Clone()
+        {
+            var c = this.MemberwiseClone() as SVGBase;
+            c.Parent = null;
+            if(this.Style.HasValues)
+            {
+                c.Style = new Style();
+                this.Style.MergeInto(c.Style);
+            }
+            
+            return c;
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
     }
 }

@@ -46,6 +46,13 @@ namespace Scryber.Layout
 
         protected override void DoLayoutComponent()
         {
+            base.DoLayoutComponent();
+
+            
+        }
+
+        protected override void DoLayoutChildren()
+        {
             PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
             PDFLayoutXObject canvas = null;
             if (position.ViewPort.HasValue)
@@ -53,12 +60,12 @@ namespace Scryber.Layout
                 canvas = this.ApplyViewPort(position, position.ViewPort.Value);
             }
 
-            base.DoLayoutComponent();
+            base.DoLayoutChildren();
 
-            if(null != canvas)
+            if (null != canvas)
             {
                 canvas.Close();
-                
+
                 this.CloseCurrentLine();
 
                 canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(PDFObjectTypes.CanvasXObject);
@@ -80,15 +87,19 @@ namespace Scryber.Layout
         {
 
             PDFTransformationMatrix matrix = PDFTransformationMatrix.Identity();
-            if(ratio.Align == AspectRatioAlign.None)
+            if (ratio.Align == AspectRatioAlign.None)
             {
                 SVGAspectRatio.ApplyMaxNonUniformScaling(matrix, available, view);
-
             }
-            else if(ratio.Meet == AspectRatioMeet.Meet)
+            else if (ratio.Meet == AspectRatioMeet.Meet)
             {
                 SVGAspectRatio.ApplyUniformScaling(matrix, available, view, ratio.Align);
             }
+            else if (ratio.Meet == AspectRatioMeet.Slice)
+            {
+                SVGAspectRatio.ApplyUniformStretching(matrix, available, view, ratio.Align);
+            }
+            else throw new ArgumentOutOfRangeException(nameof(ratio));
             
             return matrix;
         }

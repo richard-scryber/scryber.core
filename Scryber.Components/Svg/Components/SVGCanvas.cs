@@ -43,6 +43,27 @@ namespace Scryber.Svg.Components
             get { return base.Contents; }
         }
 
+        [PDFAttribute("x")]
+        public override PDFUnit X { get => base.X; set => base.X = value; }
+
+        [PDFAttribute("y")]
+        public override PDFUnit Y { get => base.Y; set => base.Y = value; }
+
+        private ComponentList _definitions;
+
+        [PDFElement("defs")]
+        [PDFArray(typeof(Component))]
+        public ComponentList Definitions
+        {
+            get
+            {
+                if (_definitions == null)
+                    _definitions = new ComponentList(this, PDFObjectTypes.ShapePath);
+                return _definitions;
+            }
+        }
+
+
         [PDFAttribute("title")]
         public override string OutlineTitle
         {
@@ -171,6 +192,37 @@ namespace Scryber.Svg.Components
         protected override Style GetBaseStyle()
         {
             return base.GetBaseStyle();
+        }
+
+        public bool TryFindComponentByID(string id, out IPDFComponent found)
+        {
+            if(null != this._definitions)
+            {
+                foreach (var item in this._definitions)
+                {
+                    if (item.ID == id)
+                    {
+                        found = item;
+                        return true;
+                    }
+                }
+            }
+            foreach (var item in this.Contents)
+            {
+                if (item.ID == id)
+                {
+                    found = item;
+                    return true;
+                }
+                else if (item is SVGCanvas)
+                {
+                    if ((item as SVGCanvas).TryFindComponentByID(id, out found))
+                        return true;
+                }
+            }
+
+            found = null;
+            return false;
         }
     }
 }

@@ -97,6 +97,12 @@ namespace Scryber.Layout
         public PDFName OutPutName { get; set; }
 
 
+        /// <summary>
+        /// This will render the transformation matrix and then the XObject name operation.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
         protected virtual bool OutputDrawingContent(PDFRenderContext context, PDFWriter writer)
         {
             
@@ -104,10 +110,12 @@ namespace Scryber.Layout
             {
                 context.Graphics.SaveGraphicsState();
 
-                
-                var x = context.Graphics.GetXPosition(context.Offset.X).Value;
 
-                var y = context.Graphics.GetYPosition(context.Offset.Y + this.Height).Value;
+                var x = context.Offset.X.RealValue;
+                x = context.Graphics.GetXPosition(x);
+
+                var y = (context.Offset.Y + this.Height).RealValue;
+                y = context.Graphics.GetYPosition(y);
 
                 if(this.ClipRect.HasValue)
                 {
@@ -156,7 +164,13 @@ namespace Scryber.Layout
         }
 
         
-
+        /// <summary>
+        /// This will render the actual content of the XObject graphical content in a new object reference.
+        /// This can then be referred to.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
         private PDFObjectRef OutputContent(PDFRenderContext context, PDFWriter writer)
         {
             PDFObjectRef xObject = writer.BeginObject();
@@ -206,10 +220,22 @@ namespace Scryber.Layout
 
             writer.BeginDictionaryEntry("BBox");
             writer.BeginArrayS();
-            writer.WriteReal(0.0F);
-            writer.WriteRealS(0.0F);
-            writer.WriteRealS(this._childContainer.Width.PointsValue);
-            writer.WriteRealS(this._childContainer.Height.PointsValue);
+
+            if (this._position.ViewPort.HasValue)
+            {
+                PDFRect vp = this._position.ViewPort.Value;
+                writer.WriteReal(vp.X.PointsValue);
+                writer.WriteRealS(vp.Y.PointsValue);
+                writer.WriteRealS(vp.Width.PointsValue);
+                writer.WriteRealS(vp.Height.PointsValue);
+            }
+            else
+            {
+                writer.WriteReal(0.0F);
+                writer.WriteRealS(0.0F);
+                writer.WriteRealS(this._childContainer.Height.PointsValue);
+                writer.WriteRealS(this._childContainer.Height.PointsValue);
+            }
             writer.EndArray();
             writer.EndDictionaryEntry();
 
@@ -245,7 +271,12 @@ namespace Scryber.Layout
 
         protected virtual PDFGraphics CreateGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
         {
-            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, new PDFSize(this._childContainer.Width, this._childContainer.Height), context);
+            var sz = new PDFSize(this._childContainer.Width, this._childContainer.Height);
+            if(this._position.ViewPort.HasValue)
+            {
+                sz = this._position.ViewPort.Value.Size;
+            }
+            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, sz, context);
         }
 
         public PDFName Register(PDFResource rsrc)
