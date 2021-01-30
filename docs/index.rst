@@ -167,7 +167,7 @@ Generating the template in an MVC view
 And the output
 ---------------
 
-..image:: https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/docs/images/helloworld.png
+.. image:: https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/docs/images/helloworld.png
 
 
 Easy, and intuitive structure
