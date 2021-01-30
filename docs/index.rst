@@ -1,82 +1,174 @@
 =============
-Scryber
+Scryber 5.0
 =============
 
 Scryber is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
 It's open source; flexible; styles based; data driven and with a low learning curve. 
 
-A document generation tool written entirely in C# for dotnet 5 using XHTML, XML or even MVC Views.
+A document generation tool written entirely in C# for dotnet 5 using XHTML, CSS and even SVG.
 
+**Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_**
+
+-----------------
+Hello World +
+-----------------
 
 .. code-block:: html
 
+    <!DOCTYPE HTML >
+    <!-- The xmlns is needed, and it should all be valid xhtml -->
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+        <head>
+            <!-- support for standard document attributes -->
+            <title>Hello World</title>
+            <meta charset='utf-8' name='author' content='Richard Hewitson' />
+            
+
+            <!-- support for external style sheets - in this case the Fraunces google font (watch out for the &amp; link in the url) -->
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" title="Fraunces" />
+
+            <!-- support for css selectors -->
+            <style>
+
+                /* Setting the defaults */
+
+                body{
+                    font-family: 'Fraunces', serif;
+                    font-size: 14pt;
+                }
+
+                /* Complex style with backgrounds, images and color */
+
+                p.header {
+                    color: #AAA;
+                    background-color: #333;
+                    background-image: url('../html/images/ScyberLogo2_alpha_small.png');
+                    background-repeat: no-repeat;
+                    background-position: 10pt 10pt;
+                    background-size: 20pt 20pt;
+                    margin-top: 0pt;
+                    padding: 10pt 10pt 10pt 35pt;
+                }
+
+                /* print only css with nested selectors */
+
+                @media print {
+
+                    .foot td {
+                        border: none;
+                        text-align: center;
+                        font-size: 10pt;
+                        margin-bottom: 10pt;
+                    }
+                }
+
+                /* page selectors for sizing and allows page breaks */
+
+                @page {
+                    size:A4 portrait;
+                }
+
+            </style>
+
+        </head>
+        <body>
+
+            <!-- document headers are supported -->
+            <header>
+                <p class="header">Scryber document creation</p>
+            </header>
+
+            <!-- support for many HTML5 tags and inline style support -->
+            <main style="padding:10pt">
+
+                <!-- binding styles and values on content -->
+                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+
+                <div>We hope you like it.</div>
+
+                <!-- Loop with nested item collection binding to the objects -->
+                <ol>
+                    <template data-bind='{@:model.items}'>
+                        <!-- just a list, but can be anything, and can be nested -->
+                        <li>{@:.name}</li> 
+                    </template>
+                </ol>
+            </main>
 
 
+            <!-- footers that will repeat across pages, using custom paramters -->
+            <footer>
+                <table class="foot" style="width:100%">
+                    <tr>
+                        <td>{@:author}</td>
 
-.. code-block:: xml
+                        <!-- output the current page number using the special page tag -->
+                        <td><page /></td>
 
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-        <Params>
-            <doc:String-Param id="Title" value="Document Title" />
-        </Params>
-        
-        <Data>
-            <data:XmlDataSource id="XmlSource" source-path="http://localhost:5000/Home/Xml" ></data:XmlDataSource>
-        </Data>
-        
-        <Styles>
-            <styles:Style applied-type="doc:H1" applied-class="title" >
-                <styles:Background color="#323232" 
-                                img-source="images/logo.png" repeat="None" x-pos="10pt" y-pos="10pt" x-size="35pt" />
-                <styles:Fill color="#00a8a1"/>
-                <styles:Font family="Gill Sans" size="24pt" italic="true"/>
-            </styles:Style>
-        </Styles>
-        
-        <Pages>
+                        <td>Hello World Sample</td>
+                    </tr>
+                </table>
 
-            <doc:Page styles:margins="20pt">
-                <Content>
-                    <data:With datasource-id="XmlSource"  >
+            </footer>
+        </body>
+    </html>
 
-                        <doc:H1 styles:class="title" text="{@:Title}" > </doc:H1>
-                        
-                        <doc:Ul>
-                            <data:ForEach value="{xpath:Entries/Entry}" >
-                            <Template>
-                                <doc:Li>
-                                <doc:Text value="{xpath:Name}" />
-                                </doc:Li>
-                            </Template>
-                            </data:ForEach>
-                        </doc:Ul>
-                    </data:With>
-                    
-                </Content>
-            </doc:Page>
-        </Pages>
-
-    </doc:Document>
-
+----------------------------------------
+Generating the template in an MVC view
+----------------------------------------
 
 .. code-block:: csharp
 
+    //add the namespaces
+    //using Scryber.Components;
+    //using Scryber.Components.Mvc;
 
     public IActionResult HelloWorld()
     {
         var path = _env.ContentRootPath;
-        path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.pdfx");
+        path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.html");
 
-        return this.PDF(path, );
+        //parsing the document creates a complete object graph from the content
+        using(var doc = Document.ParseDocument(path))
+        {
+            //your model can be anything
+            var model = GetHelloWorldData();
+
+            //make any changes to the document you want, or add paramters (just like a view bag).
+            doc.Info.Title = "Hello World Sample";
+            doc.Params["author"] = "Scryber Engine";
+
+            //And simply return it as a response with your model data automatically bound
+            return this.PDF(doc, model); // , inline:false, outputFileName:"HelloWorld.pdf");
+        }
     }
+
+    private dynamic GetHelloWorldData()
+    {
+        //get your model data however you wish
+        //it's just a sample object for this one.
+
+        var model = new
+            {
+                titlestyle = "color:#ff6347", //binding style data
+                title = "Hello from scryber", //binding simple content
+                items = new[]                 //or even binding complex object data
+                {
+                    new { name = "First item" },
+                    new { name = "Second item" },
+                    new { name = "Third item" },
+                }
+            };
+
+        return model;
+    }
+
+
 
 Easy, and intuitive structure
 -----------------------------
 
-Whether you are using xml templates or directly in code, scryber
+Whether you are using xhtml templates or directly in code, scryber
 is quick and easy to build complex documents from your designs and data.
 
 
@@ -90,7 +182,7 @@ Cascading Styles
 ----------------
 
 With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
-or a combination of all 3 to apply style information to your documents.
+or nested selectors.
 
 Low code, zero code development
 -------------------------------
@@ -98,11 +190,12 @@ Low code, zero code development
 Scryber is based around xml templates - just like XHTML. It can be transformed, it can be added to,
 and it can be dynamic built. By design we minimise errors, reduce effort and allow reuse.
 
-Html Content and Remote sources
+Minimal learning curve
 -------------------------------
 
-Scryber can use native html content and layout neatly and easily within pages.
+Scryber uses native html content and layout neatly and easily within pages.
 It also supports the use of inline and class styles.
+This makes it simple to define your templates.
 
 
 Binding to your data
@@ -112,98 +205,5 @@ With a simple binding notation it's easy to add references to your data structur
 and complex data to your document from SQL, JSON, Entity Model and more.
 Or get the document to look up and bind the data for you.
 
-Learn More
-----------
-
-
-.. toctree::
-    :caption: Getting Started
-    :maxdepth: 1
-
-    mvc_controller_full
-    gui_controller_full
-
-.. toctree::
-    :caption: Documents and Pages.
-    :maxdepth: 1
-
-    document_code_vs_xml
-    document_structure
-    document_lifecycle
-    document_components
-    document_styles
-    document_pages
-    document_columns
-    document_references
-    document_pagenumbers
-    document_outline
-
-.. toctree::
-    :caption: Layout Content.
-    :maxdepth: 1
-
-    drawing_units
-    drawing_colors
-    drawing_images
-    drawing_fonts
-    drawing_paths
-    component_positioning
-    component_sizing
-    component_alignment
-
-.. toctree::
-    :caption: Component types
-    :maxdepth: 1
-
-    component_tables
-    component_lists
-    component_textblocks
-    component_textelements
-    component_linking
-    component_html
-    component_placeholder
-
-.. toctree::
-    :caption: Html Content
-    :maxdepth: 1
-
-    html_simple
-    html_dynamic
-    html_tags
-    html_markdown
-
-.. toctree::
-    :caption: Binding to data
-    :maxdepth: 1
-
-    binding_model
-    binding_parameters
-    binding_parameterrefs
-    binding_dataxmlsources
-    binding_dataobjectsources
-    binding_grids
-    binding_lists
-    binding_loops
-    binding_choices
-    binding_gridsandlists
-    binding_controllers
-
-.. toctree::
-    :caption: Extending Scryber
-    :maxdepth: 1
-
-    extending_configuration
-    extending_dynamic_loading
-    extending_classes
-    extending_namespaces_and_assemblies
-    extending_scryber
-
-.. toctree::
-    :caption: Reference
-    :maxdepth: 1
-
-    libgdiplus
-    version_history
-    reference/index
 
 
