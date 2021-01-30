@@ -7,7 +7,7 @@ It's open source; flexible; styles based; data driven and with a low learning cu
 
 A document generation tool written entirely in C# for dotnet 5 using XHTML, CSS and even SVG.
 
-**Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_**
+Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_
 
 -----------------
 Hello World +
@@ -113,7 +113,7 @@ Hello World +
         </body>
     </html>
 
-----------------------------------------
+
 Generating the template in an MVC view
 ----------------------------------------
 
@@ -163,6 +163,11 @@ Generating the template in an MVC view
         return model;
     }
 
+
+And the output
+---------------
+
+..image:: https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/docs/images/helloworld.png
 
 
 Easy, and intuitive structure
