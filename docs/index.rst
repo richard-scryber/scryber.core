@@ -18,9 +18,10 @@ We hope srcryber works just as you would expect. The scryber engine is based aro
 and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly, 
 **just as you would with web pages**.
 
-.. image:: images/scrybermvcgraphic.png
+.. image:: images/ScryberMVCGraphic.png
 
-Hello World +
+
+Hello World Plus
 -----------------
 
 .. code-block:: html
