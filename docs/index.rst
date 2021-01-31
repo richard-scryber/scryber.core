@@ -17,7 +17,7 @@ How it works
 We hope srcryber works just as you would expect. The scryber engine is based around using XHTML templates with css, graphics 
 and images along with your model data to create PDF documents quickly, easily and flexibly, just as you would with web pages.
 
-.. image:: ./images/scrybermvcgraphic.png
+.. image:: ./_images/scrybermvcgraphic.png
 
 Hello World +
 -----------------
