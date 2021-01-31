@@ -2,6 +2,8 @@
 Scryber 5.0
 =============
 
+**Helping to change the way we can use documents is at the heart of everything we do.**
+
 Scryber is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
 It's open source; flexible; styles based; data driven and with a low learning curve. 
 
@@ -9,7 +11,14 @@ A document generation tool written entirely in C# for dotnet 5 using XHTML, CSS 
 
 Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_
 
------------------
+How it works
+--------------
+
+We hope srcryber works just as you would expect. The scryber engine is based around using XHTML templates with css, graphics 
+and images along with your model data to create PDF documents quickly, easily and flexibly, just as you would with web pages.
+
+.. image:: ./images/scrybermvcgraphic.png
+
 Hello World +
 -----------------
 
@@ -192,7 +201,7 @@ or nested selectors.
 Low code, zero code development
 -------------------------------
 
-Scryber is based around xml templates - just like XHTML. It can be transformed, it can be added to,
+Scryber is based around templates - just like XHTML. It can be transformed, it can be added to,
 and it can be dynamic built. By design we minimise errors, reduce effort and allow reuse.
 
 Minimal learning curve
