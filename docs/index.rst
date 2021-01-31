@@ -14,27 +14,64 @@ Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://
 How it works
 --------------
 
-We hope srcryber works just as you would expect. The scryber engine is based around the controllers you have, using XHTML template views with css, graphics 
+We hope scryber works just as you would expect. The scryber engine is based around the controllers you have, using XHTML template views with css, graphics 
 and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly, 
 **just as you would with web pages**.
 
 .. image:: images/ScryberMVCGraphic.png
 
+Hello World
+-----------
 
-Hello World Plus
------------------
+Start with a template. **The namespace declaration is important.**
 
 .. code-block:: html
 
     <!DOCTYPE HTML >
-    <!-- The xmlns is needed, and it should all be valid xhtml -->
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+        <head>
+            <title>Hello World</title>
+        </head>
+        <body>
+            <div style='padding:10px'>Hello World.</div>
+        </body>
+    </html>
+
+And then generate your template in a view.
+
+.. code-block:: csharp
+
+    //add the namespaces
+    //using Scryber.Components;
+    //using Scryber.Components.Mvc;
+
+    public IActionResult HelloWorld()
+    {
+        var path = _env.ContentRootPath;
+        path = System.IO.Path.Combine(path, "HelloWorld.html");
+
+        //parsing the document creates a complete object graph from the content
+        using(var doc = Document.ParseDocument(path))
+        {
+            return this.PDF(doc); //convenience extension method to return the result.
+        }
+    }
+
+
+Hello World Plus
+-----------------
+
+Adding content, styles and a model to the template to make it a bit more interesting.
+
+.. code-block:: html
+
+    <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
         <head>
             <!-- support for standard document attributes -->
             <title>Hello World</title>
             <meta charset='utf-8' name='author' content='Richard Hewitson' />
             
-
             <!-- support for external style sheets - in this case the Fraunces google font (watch out for the &amp; link in the url) -->
             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" title="Fraunces" />
 
@@ -84,7 +121,7 @@ Hello World Plus
         </head>
         <body>
 
-            <!-- document headers are supported -->
+            <!-- document headers are supported and repeat -->
             <header>
                 <p class="header">Scryber document creation</p>
             </header>
@@ -92,7 +129,7 @@ Hello World Plus
             <!-- support for many HTML5 tags and inline style support -->
             <main style="padding:10pt">
 
-                <!-- binding styles and values on content -->
+                <!-- binding styles and values on content using the {@: ... } syntax -->
                 <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
 
                 <div>We hope you like it.</div>
@@ -100,7 +137,7 @@ Hello World Plus
                 <!-- Loop with nested item collection binding to the objects -->
                 <ol>
                     <template data-bind='{@:model.items}'>
-                        <!-- just a list, but can be anything, and can be nested -->
+                        <!-- binding within the model.items content, and can be nested -->
                         <li>{@:.name}</li> 
                     </template>
                 </ol>
@@ -129,10 +166,6 @@ Generating the template in an MVC view
 ----------------------------------------
 
 .. code-block:: csharp
-
-    //add the namespaces
-    //using Scryber.Components;
-    //using Scryber.Components.Mvc;
 
     public IActionResult HelloWorld()
     {
@@ -206,12 +239,11 @@ Low code, zero code development
 Scryber is based around templates - just like XHTML. It can be transformed, it can be added to,
 and it can be dynamic built. By design we minimise errors, reduce effort and allow reuse.
 
-Minimal learning curve
+Extensible Framework
 -------------------------------
 
-Scryber uses native html content and layout neatly and easily within pages.
-It also supports the use of inline and class styles.
-This makes it simple to define your templates.
+Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
+From the parser namespaces to the object graph to the writer - it can be built and extended.
 
 
 Binding to your data
