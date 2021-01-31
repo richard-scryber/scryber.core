@@ -14,10 +14,11 @@ Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://
 How it works
 --------------
 
-We hope srcryber works just as you would expect. The scryber engine is based around using XHTML templates with css, graphics 
-and images along with your model data to create PDF documents quickly, easily and flexibly, just as you would with web pages.
+We hope srcryber works just as you would expect. The scryber engine is based around the controllers you have, using XHTML template views with css, graphics 
+and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly, 
+**just as you would with web pages**.
 
-.. image:: ./_images/scrybermvcgraphic.png
+.. image:: images/scrybermvcgraphic.png
 
 Hello World +
 -----------------
