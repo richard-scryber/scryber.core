@@ -240,7 +240,7 @@ Easy, and intuitive structure
 Whether you are using xhtml templates or directly in code, scryber
 is quick and easy to build complex documents from your designs and data using standard xhtml.
 
-See `html_tags` and `document_structure`
+See `document_structure` and `html_tags`
 
 
 Intelligent flowing layout engine
@@ -282,6 +282,19 @@ Scryber was designed from the ground up to be extensible. If it doesn't do what 
 From the parser namespaces to the object graph to the writer - it can be built and extended.
 
 See: `extending_scryber` and `extending_configuration`
+
+
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+
+    index
+    extending_configuration
+    extending_dynamic_loading
+    extending_classes
+    extending_namespaces_and_assemblies
+    extending_scryber
+
 
 
 
