@@ -21,7 +21,11 @@ and images you are used to, along with your model data you have, to create PDF d
 .. image:: images/ScryberMVCGraphic.png
 
 Hello World
------------
+-------------
+
+Download the nuget package
+
+`<https://www.nuget.org/packages/Scryber.Core.Mvc>`_
 
 Start with a template. **The namespace declaration is important.**
 
@@ -44,17 +48,32 @@ And then generate your template in a view.
     //add the namespaces
     //using Scryber.Components;
     //using Scryber.Components.Mvc;
+    //using Microsoft.AspNetCore.Mvc;
 
-    public IActionResult HelloWorld()
+    public class HomeController : Controller
     {
-        var path = _env.ContentRootPath;
-        path = System.IO.Path.Combine(path, "HelloWorld.html");
-
-        //parsing the document creates a complete object graph from the content
-        using(var doc = Document.ParseDocument(path))
+        
+        private readonly IWebHostEnvironment _env;
+        
+        public HomeController(IWebHostEnvironment environment)
         {
-            return this.PDF(doc); //convenience extension method to return the result.
+            _env = environment;
         }
+
+        [HttpGet]
+        public IActionResult HelloWorld()
+        {
+            // get the path to where you have saved your template 
+            var path = _env.ContentRootPath;
+            path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.html");
+
+            //parsing the document creates a complete object graph from the content
+            using(var doc = Document.ParseDocument(path))
+            {
+                return this.PDF(doc); //convenience extension method to return the result.
+            }
+        }
+
     }
 
 
@@ -167,6 +186,7 @@ Generating the template in an MVC view
 
 .. code-block:: csharp
 
+    []
     public IActionResult HelloWorld()
     {
         var path = _env.ContentRootPath;
@@ -218,7 +238,9 @@ Easy, and intuitive structure
 -----------------------------
 
 Whether you are using xhtml templates or directly in code, scryber
-is quick and easy to build complex documents from your designs and data.
+is quick and easy to build complex documents from your designs and data using standard xhtml.
+
+See `html_tags` and `document_structure`
 
 
 Intelligent flowing layout engine
@@ -227,24 +249,22 @@ Intelligent flowing layout engine
 In scryber, content can either be laid out explicitly, or jut flowing with the the page.
 Change the page size, or insert content and everything will adjust around it.
 
+See `component_positioning` and `document_pages`
+
 Cascading Styles 
 ----------------
 
 With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
 or nested selectors.
 
-Low code, zero code development
+See `document_styles` and `document_structure`
+
+Drawing and Typographic support
 -------------------------------
 
-Scryber is based around templates - just like XHTML. It can be transformed, it can be added to,
-and it can be dynamic built. By design we minimise errors, reduce effort and allow reuse.
+Scryber supports inclusion of Images, Fonts (inc. Google fonts) and SVG components for drawing graphics and icons.
 
-Extensible Framework
--------------------------------
-
-Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
-From the parser namespaces to the object graph to the writer - it can be built and extended.
-
+See `drawing_images`, `drawing_fonts` and `drawing_paths`
 
 Binding to your data
 --------------------
@@ -252,6 +272,16 @@ Binding to your data
 With a simple binding notation it's easy to add references to your data structures and pass information
 and complex data to your document from SQL, JSON, Entity Model and more.
 Or get the document to look up and bind the data for you.
+
+See `binding_model` and `binding_templates`
+
+Extensible Framework
+-------------------------------
+
+Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
+From the parser namespaces to the object graph to the writer - it can be built and extended.
+
+See: `extending_scryber` and `extending_configuration`
 
 
 
