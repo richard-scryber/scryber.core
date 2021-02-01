@@ -20,8 +20,8 @@ and images you are used to, along with your model data you have, to create PDF d
 
 .. image:: images/ScryberMVCGraphic.png
 
-Hello World
--------------
+Hello World MVC
+-----------------
 
 Download the nuget package
 
@@ -76,9 +76,15 @@ And then generate your template in a view.
 
     }
 
-
 Hello World Plus
 -----------------
+
+Check out 
+
+:doc:`mvc_controller_full` for a full MVC example with styles and binding, 
+
+or :doc:`gui_controller_full` for a full gui application example (with styles and binding)
+
 
 Adding content, styles and a model to the template to make it a bit more interesting.
 
