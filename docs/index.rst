@@ -2,6 +2,52 @@
 Scryber 5.0
 =============
 
+
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+    :caption: Getting started
+
+    index
+    mvc_controller_full
+    gui_controller_full
+
+
+.. toctree::
+    :caption: Standard features
+    :maxdepth: 2
+    :hidden:
+
+    document_structure
+    document_styles
+    document_components
+    referencing_files
+    binding_content
+    binding_model
+    component_linking
+    page_numbers
+    drawing_fonts
+    document_textlayout
+    drawing_colors
+    drawing_units
+    drawing_paths
+
+
+.. toctree::
+    :caption: In depth capabilities
+    :maxdepth: 2
+    :hidden:
+
+    mvc_views
+    html_tags
+    document_code_vs_xml
+    mvc_views
+    extending_configuration
+    extending_scryber
+    namespaces_and_assemblies
+    version_history
+
+
 **Helping to change the way we can use documents is at the heart of everything we do.**
 
 Scryber is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
@@ -127,49 +173,4 @@ From the parser namespaces to the object graph to the writer - it can be built a
 
 See: `extending_scryber` and `extending_configuration`
 
-
-.. toctree::
-    :maxdepth: 2
-    :hidden:
-    :caption: Getting started
-
-    index
-    mvc_controller_full
-    gui_controller_full
-
-
-
-.. toctree::
-    :caption: In depth capabilities
-    :maxdepth: 2
-    :hidden:
-
-    mvc_views
-    html_tags
-    document_code_vs_xml
-    mvc_views
-    extending_configuration
-    extending_scryber
-    namespaces_and_assemblies
-    version_history
-
-
-.. toctree::
-    :cation: Standard features
-    :maxdepth: 2
-    :hidden:
-
-    document_structure
-    document_styles
-    document_components
-    referencing_files
-    binding_content
-    binding_model
-    component_linking
-    page_numbers
-    drawing_fonts
-    document_textlayout
-    drawing_colors
-    drawing_units
-    drawing_paths
 
