@@ -298,9 +298,12 @@ Page Breaks and sizes
 Scryber's flexible layout engine supports the use of the @media and @page css at-rules to be able to explicitly style
 content just for document output, and also set page sizes and orientiations.
 
-If we add a new css styles file to our site we can alter the layout easily, (HelloPrint.css)
+If we add a new css styles file to our site we can alter the layout easily and know it will not affect anything else we might
+be using our page for.
 
-.. code-block:: html
+.. code-block:: css
+
+    /* HelloPrint.css */
 
     @media print {
 
@@ -326,7 +329,8 @@ If we add a new css styles file to our site we can alter the layout easily, (Hel
     }
 
 
-And we can add a link to this in our html file
+And we can add a link to this in our html file. The media attribute is optional, as our css has it, but we 
+know browsers will not load the file if it's marked for print.
 
 .. code-block:: html
 
@@ -336,7 +340,7 @@ And we can add a link to this in our html file
             media='print' />
     </head>
 
-And in our footer we can add the current page number (of total pages) and an author property directly
+In our footer we can add the current page number (of total pages) and an author property directly
 
 .. code-block:: html
 
@@ -363,12 +367,17 @@ What Next
 ==========
 
 We have no idea what you can create with scryber. 
-It's just there to hopefully help you create amazing documents in an easy and repeatable way.
+It's just there to hopefully help you build amazing documents in an easy and repeatable way.
 
-* :doc:`document_parameters`
 * :doc:`document_structure`
 * :doc:`document_styles`
+* :doc:`referencing_files`
+* :doc:`binding_content`
+* :doc:`page_numbers`
+* :doc:`drawing_units`
+* :doc:`drawing_paths`
 * :doc:`referencing_files`
 * :doc:`supported_tags`
 * :doc:`supported_css`
 * :doc:`mvc_views`
+* :doc:`extending_scryber`

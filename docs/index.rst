@@ -80,7 +80,6 @@ or :doc:`gui_controller_full` for a full gui application example (with styles an
 
 
 
-
 Easy, and intuitive structure
 -----------------------------
 
@@ -134,13 +133,45 @@ See: `extending_scryber` and `extending_configuration`
 .. toctree::
     :maxdepth: 2
     :hidden:
+    :caption: Getting started
 
     index
+    mvc_controller_full
+    gui_controller_full
+
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+    :cation: Standard features
+
+    document_structure
+    document_styles
+    document_components
+    referencing_files
+    binding_content
+    binding_model
+    component_linking
+    page_numbers
+    drawing_fonts
+    document_textlayout
+    drawing_colors
+    drawing_units
+    drawing_paths
+
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+    :caption: In depth capabilities
+
+    html_markdown
+    mvc_views
+    html_tags
+    document_code_vs_xml
+    mvc_views
     extending_configuration
-    extending_dynamic_loading
-    extending_classes
-    extending_namespaces_and_assemblies
     extending_scryber
+    namespaces_and_assemblies
+    version_history
 
 
 
