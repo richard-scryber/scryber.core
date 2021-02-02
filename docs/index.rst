@@ -144,7 +144,6 @@ See: `extending_scryber` and `extending_configuration`
     :maxdepth: 2
     :hidden:
 
-    html_markdown
     mvc_views
     html_tags
     document_code_vs_xml
