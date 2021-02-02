@@ -71,11 +71,7 @@ And then generate your template in a view.
 Hello World Plus
 -----------------
 
-Check out 
-
-:doc:`mvc_controller_full` for a full MVC example with styles and binding, 
-
-or :doc:`gui_controller_full` for a full gui application example (with styles and binding)
+Check out :doc:`mvc_controller_full` for a full MVC example with styles and binding, or :doc:`gui_controller_full` for a full gui application example (with styles and binding)
 
 
 Features
@@ -141,10 +137,11 @@ See: `extending_scryber` and `extending_configuration`
     mvc_controller_full
     gui_controller_full
 
+
 .. toctree::
+    :cation: Standard features
     :maxdepth: 2
     :hidden:
-    :cation: Standard features
 
     document_structure
     document_styles
@@ -161,9 +158,9 @@ See: `extending_scryber` and `extending_configuration`
     drawing_paths
 
 .. toctree::
+    :caption: In depth capabilities
     :maxdepth: 2
     :hidden:
-    :caption: In depth capabilities
 
     html_markdown
     mvc_views
