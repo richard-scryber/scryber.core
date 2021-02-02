@@ -3,7 +3,7 @@ File structure
 ----------------
 
 Scryber expects all content to be in valid XHTML structrure.
-Tags must be properly closed, and ampersands (&) must either be escaped or valid character notations (&amp;)
+Tags must be properly closed, and ampersands (&) must either be escaped or valid html character notations (&amp; &quot; etc.)
 
 
 Example
@@ -22,13 +22,13 @@ Example
         </body>
     </html>
 
-At the top of the file scryber has it's own optional processing instuctions to specify log levels and output.
+At the top of the file scryber has it's own **optional** processing instuctions to specify log levels and output.
 This is so you can quickly and easily check what is actually going on under the hood.
 
 The DOCTYPE is not required, and if present will be ignored in preference to the xmlns (next).
 
-The html tag has the xmlns attribute - this tells scryber to expect an XHTML formatted document. 
-Rather than any other document description. It is required, although you can use prefixes and any other supported namespaces (see :doc:`drawing_paths`)
+The html tag has the xmlns attribute - this tells scryber to expect an XHTML formatted document,
+rather than any other document description. It is required, although you can use prefixes and any other supported namespaces (see :doc:`drawing_paths`)
 
 The rest of the document follows the standard html structure, which is discussed in detail below.
 
@@ -64,7 +64,7 @@ The following are the supported options on the processing instruction.
 
 
 Namespaces
-==========
+----------
 
 Scryber is dynamic and extensible. The xml namespaces refer directly to namespaces (and assemblies) in the library.
 There are 3 primary namespaces, and a convention for the prefixes for those namespaces.
@@ -92,39 +92,12 @@ Scryber requires the use of a prefix for all of the namespaces (as there are con
 
 For more information on how these are mapped, and also adding your own namespaces see :doc:`namespaces_and_assemblies` along with :doc:`scryber_configuration`
 
-Params
-======
-
-
-The 'Params' element (short for parameters) contains the strongly typed values for parameters (aka variables) that can be used in the document, to alter the final content output.
-They form a key part of the document creation process, and allow creators to pass information from their code into the template(s).
-
-In fact they are so key to PDF generation, they have their own section, terminology, and functions (see: :doc:`document_parameters`).
-
-
-Data
-====
-
-The `Data` element is a new element for version 1.0. Previously all sources of data would be mixed into the content of the document.
-With the separation and full support for data binding (see: :doc:`document_databinding`), with a top level element it's easier to structure and separate and keep the visual content in Pages.
-
-.. note:: It's not an error to put your data components in the Pages section, as there can be times when it's really useful.
-
-Styles
-======
-
-The `Styles` element contains all the document style class information that is not inline of the components themselves, along with any references to stylesheets.
-Document styles (:doc:`document_styles`) are fully bindable to any data components or prameters.
-
-Pages
-=====
-
 The `Pages` element contains the visual content of the document. Whether that is single pages, sections of multiple pages, or references to external pages.
 See :doc:`document_pages` for more information on the visual content.
 
 
 Viewer Options
-==============
+---------------
 
 The viewer options within the Document level element alter how readers (should) show the document and it's contents.
 Not all readers support these (especially browsers), but it can help.
@@ -170,7 +143,7 @@ The following options are declared and supported in the Viewer element
 
 
 Render Options
-==============
+---------------
 
 This element controls the output of the PDF content itself. 
 Most of the default values are correct for the best output, but can be altered if needed.
@@ -201,7 +174,7 @@ The Render element also allows an inner `<Writer>` element.
 This can support other writers including the secure writer and the protected writer. (coming soon)
 
 Document Info
-==============
+--------------
 
 This controlls the output document information, that can be seen in the document properties of acrobat reader.
 This information is also, open and indexed by many search engines and forms the key metadata about the document.
