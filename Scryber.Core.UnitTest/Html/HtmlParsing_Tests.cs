@@ -659,6 +659,19 @@ namespace Scryber.Core.UnitTests.Html
 
         }
 
+        public class ReadMeModel
+        {
+            public string titlestyle { get; set; }
+            public string title { get; set; }
+            public ReadMeModelItem[] items { get; set; }
+        }
+
+        public class ReadMeModelItem
+        {
+            public string name { get; set; }
+        }
+
+
         [TestMethod()]
         public void READMESample()
         {
@@ -673,8 +686,7 @@ namespace Scryber.Core.UnitTests.Html
                 new { name = "Third item" },
             };
 
-            var model = new
-            {
+            var model = new{
                 titlestyle = "color:#ff6347",
                 title = "Hello from scryber",
                 items = items
@@ -688,6 +700,19 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
                 {
                     
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+                doc.Params["author"] = "Scryber Engine";
+                doc.Params["model"] = model;
+                using (var stream = DocStreams.GetOutputStream("READMESample2.pdf"))
+                {
+
                     doc.SaveAsPDF(stream);
                 }
 

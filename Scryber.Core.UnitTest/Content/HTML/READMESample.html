@@ -1,5 +1,6 @@
-﻿<!DOCTYPE HTML >
-<html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+﻿<?scryber append-log='true' log-level='Verbose' parser-log='true' ?>
+<!DOCTYPE HTML>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <!-- support for standard document attributes -->
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
@@ -35,33 +36,33 @@
         }
     </style>
 </head>
-    <body>
-        <header>
-            <!-- document headers -->
-            <p class="header">Scryber document creation</p>
-        </header>
-        <!-- support for many HTML5 tags-->
-        <main style="padding:10pt; font-family: Fraunces, serif">
+<body>
+    <header>
+        <!-- document headers -->
+        <p class="header">Scryber document creation</p>
+    </header>
+    <!-- support for many HTML5 tags-->
+    <main style="padding:10pt; font-family: Fraunces, serif">
 
-            <!-- binding style and values on content -->
-            <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
-            <div>We hope you like it.</div>
-            <ol class="portrait">
-                <!-- Loop through the items in the model -->
-                <template data-bind='{@:model.items}'>
-                    <li>{@:.name}</li> <!-- and bind the name value -->
-                </template>
-            </ol>
-        </main>
-        <footer>
-            <!-- footers and page numbers -->
-            <table class="foot" style="width:100%">
-                <tr>
-                    <td>{@:author}</td>
-                    <td>Page <page /> of <page property="total" /></td>
-                    <td>Hello World Sample</td>
-                </tr>
-            </table>
-        </footer>
-    </body>
+        <!-- binding style and values on content -->
+        <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+        <div>We hope you like it.</div>
+        <ol class="portrait">
+            <!-- Loop through the items in the model -->
+            <template data-bind='{@:model.items}'>
+                <li>{@:.name}</li> <!-- and bind the name value -->
+            </template>
+        </ol>
+    </main>
+    <footer>
+        <!-- footers and page numbers -->
+        <table class="foot" style="width:100%">
+            <tr>
+                <td>{@:author}</td>
+                <td>Page <page /> of <page property="total" /></td>
+                <td>Hello World Sample</td>
+            </tr>
+        </table>
+    </footer>
+</body>
 </html>

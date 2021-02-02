@@ -23,7 +23,7 @@ namespace Scryber.Html.Components
             {
                 this._href = value;
                 this.ClearInnerStyles();
-                this.DoLoadReference();
+                //this.DoLoadReference();
             }
         }
 
@@ -35,8 +35,6 @@ namespace Scryber.Html.Components
         {
             get
             {
-                if (this._innerItems == null)
-                    this.DoLoadReference();
                 return this._innerItems;
             }
             set
@@ -69,7 +67,6 @@ namespace Scryber.Html.Components
             {
                 this._relationship = value;
                 this.ClearInnerStyles();
-                this.DoLoadReference();
             }
         }
 
@@ -124,14 +121,14 @@ namespace Scryber.Html.Components
         {
             base.OnLoaded(context);
 
-            DoLoadReference();
+            DoLoadReference(context);
         }
 
         protected override void OnDataBinding(PDFDataContext context)
         {
             base.OnDataBinding(context);
 
-            DoLoadReference();
+            DoLoadReference(context);
             if (this.IsSourceLoaded && null != this.InnerItems)
                 this.InnerItems.DataBind(context);
         }
@@ -146,7 +143,7 @@ namespace Scryber.Html.Components
         {
             base.OnPreLayout(context);
 
-            DoLoadReference();
+            DoLoadReference(context);
             if (this.IsSourceLoaded)
                 this.AddStylesToDocument(context);
         }
@@ -160,13 +157,14 @@ namespace Scryber.Html.Components
             this.LoadedSource = string.Empty;
         }
 
-        protected virtual void DoLoadReference()
+        protected virtual void DoLoadReference(PDFContextBase context)
         {
             if (String.IsNullOrEmpty(this.Href))
+            {
+                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    context.TraceLog.Add(TraceLevel.Verbose, "HTML", "No href value on the html link tag " + this.UniqueID);
                 return;
-
-            if(String.IsNullOrEmpty(this.Relationship) || this.Relationship != "stylesheet")
-                return;
+            }
 
             if (null == this.Document)
                 return;
@@ -174,41 +172,77 @@ namespace Scryber.Html.Components
             if (this.IsSourceLoaded)
                 return;
 
+            if (this.ShouldAddStyles(context.OutputFormat) == false)
+            {
+                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Link " + this.UniqueID + " is not a stylesheet print reference (@rel), so ignoring");
+                return;
+            }
 
             bool isFile;
-            
+
             var path = this.MapPath(this.Href, out isFile);
 
-            if(!isFile && Uri.IsWellFormedUriString(path, UriKind.Absolute))
+            if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                context.TraceLog.Add(TraceLevel.Verbose, "HTML", "href for link " + this.UniqueID + " mapped to path '" + path + "'");
+
+            if (!isFile && Uri.IsWellFormedUriString(path, UriKind.Absolute))
             {
-                DoLoadRemoteReference(path);
+
+                if (context.PerformanceMonitor.RecordMeasurements)
+                    context.PerformanceMonitor.Begin(PerformanceMonitorType.Font_Load);
+
+                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
+
+                DoLoadRemoteReference(path, context);
+
+                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    context.TraceLog.End(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
+
+                else if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                    context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded remote href file " + path + " for link " + this.UniqueID);
             }
-            else if(isFile && System.IO.File.Exists(path))
+            else if (isFile && System.IO.File.Exists(path))
             {
+                if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                    context.TraceLog.Begin(TraceLevel.Message, "HTML", "Initiating the load of local href file " + path + " for link " + this.UniqueID);
+
                 this.LoadedSource = path;
                 var css = System.IO.File.ReadAllText(path);
-                this.InnerItems = this.CreateInnerStyles(css);
-            }
 
+                this.InnerItems = this.CreateInnerStyles(css, context);
+
+                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    context.TraceLog.End(TraceLevel.Message, "HTML", "Completed the load of local file " + path + " for link " + this.UniqueID);
+
+                else if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                    context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded local file " + path + " for link " + this.UniqueID);
+            }
         }
 
-        protected virtual void DoLoadRemoteReference(string path)
+        protected virtual void DoLoadRemoteReference(string path, PDFContextBase context)
         {
+            //TODO: Use the document for any client web requests.
+            //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
             this.LoadedSource = path;
             var request = System.Net.HttpWebRequest.Create(path);
+
             var result = request.GetResponse();
-            this.DoLoadReferenceResult(result);
+            this.DoLoadReferenceResult(result, path, context);
+            
         }
 
         /// <summary>
         /// Forces the completion and loading of the remote result.
         /// </summary>
-        private void DoLoadReferenceResult(System.Net.WebResponse response)
+        private void DoLoadReferenceResult(System.Net.WebResponse response, string path, PDFContextBase context)
         {
 
             
             try
             {
+                
                 string css;
                 using (var content = response.GetResponseStream())
                 {
@@ -217,7 +251,16 @@ namespace Scryber.Html.Components
                         css = reader.ReadToEnd();
                     }
                 }
-                this._innerItems = this.CreateInnerStyles(css);
+                this._innerItems = this.CreateInnerStyles(css, context);
+            }
+            catch(Exception ex)
+            {
+                if (context.Conformance == ParserConformanceMode.Lax)
+                {
+                    context.TraceLog.Add(TraceLevel.Error, "HTML", "Could not load link href the response from '" + path + "'", ex);
+                }
+                else
+                    throw;
             }
             finally
             {
@@ -225,9 +268,13 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected StyleCollection CreateInnerStyles(string content)
+        protected StyleCollection CreateInnerStyles(string content, PDFContextBase context)
         {
             var collection = new StyleCollection();
+
+            if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Parsing the css selectors from string for link " + this.UniqueID);
+
             this.AddCssStyles(collection, content);
             
             return collection;
@@ -235,7 +282,7 @@ namespace Scryber.Html.Components
 
         protected virtual void AddStylesToDocument(PDFContextBase context)
         {
-            if(this.ShouldAddStyles(context.OutputFormat))
+            if(null != this.Styles && this.ShouldAddStyles(context.OutputFormat))
             {
 
                 StyleGroup grp = new StyleGroup();
@@ -262,9 +309,7 @@ namespace Scryber.Html.Components
             if (!this.Visible)
                 return false;
 
-            if (null == this.Styles)
-                return false;
-
+            
             return true;
         }
 

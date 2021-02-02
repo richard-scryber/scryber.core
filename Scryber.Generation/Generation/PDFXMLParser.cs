@@ -961,11 +961,11 @@ namespace Scryber.Generation
             
             IPDFTemplateGenerator tempgen = (IPDFTemplateGenerator)gen;
 
-            if (reader.HasAttributes)
-            {
-                this.ParseAttributes(tempgen, false, reader, defn);
-                reader.MoveToElement();
-            }
+            //if (reader.HasAttributes)
+            //{
+            //    this.ParseAttributes(tempgen, false, reader, defn);
+            //    reader.MoveToElement();
+            //}
             
             string all = reader.ReadInnerXml();
             tempgen.InitTemplate(all, new XmlNamespaceManager(reader.NameTable));

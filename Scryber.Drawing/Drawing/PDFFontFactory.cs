@@ -1275,7 +1275,7 @@ namespace Scryber.Drawing
         // PDFFontSource ensure methods
         //
 
-        public static bool TryEnsureFont(IPDFComponent mapper, PDFFontSource source, string familyName, System.Drawing.FontStyle style, out PDFFontDefinition definition)
+        public static bool TryEnsureFont(IPDFComponent mapper, PDFContextBase context, PDFFontSource source, string familyName, System.Drawing.FontStyle style, out PDFFontDefinition definition)
         {
             AssertInitialized();
 
@@ -1288,9 +1288,12 @@ namespace Scryber.Drawing
             {
                 if(curr.Type == FontSourceType.Local)
                 {
-                    definition = GetFontDefinition(source.Source, style, false);
+                    definition = GetFontDefinition(curr.Source, style, false);
                     if(definition != null)
                     {
+                        if (context.ShouldLogVerbose)
+                            context.TraceLog.Add(TraceLevel.Verbose, "FONT", "Font " + curr.Source + " found in existing fonts");
+
                         found = true;
                         break;
                     }
@@ -1307,15 +1310,34 @@ namespace Scryber.Drawing
                     {
                         found = null != definition;
                         if (found)
-                            break;
-                    }
-                    else if (CanUseFormat(curr.Format, url) && TryLoadRemoteDefinition(url, familyName, style, out definition))
-                    {
-                        lock (_initlock)
                         {
-                            _remotefamilies[url] = definition;
+                            if (context.ShouldLogVerbose)
+                                context.TraceLog.Add(TraceLevel.Verbose, "FONT", "Font " + curr.Source + " found in previously loaded remote fonts with url " + url);
+
+                            break;
                         }
-                        found = null != definition;
+                    }
+                    else if (CanUseFormat(curr.Format, url))
+                    {
+                        if (context.ShouldLogMessage)
+                            context.TraceLog.Begin(TraceLevel.Message, "FONT", "Initiating the remote load of font " + curr.Source + " from url " + url);
+
+                        if (TryLoadRemoteDefinition(context, url, familyName, style, out definition))
+                        {
+                            lock (_initlock)
+                            {
+                                _remotefamilies[url] = definition;
+                            }
+                            found = null != definition;
+                        }
+
+                        if (context.ShouldLogMessage)
+                        {
+                            if (null == definition)
+                                context.TraceLog.Add(TraceLevel.Message, "FONT", "Ended the remote load of font " + curr.Source + " from url " + url + " but no font was able to be loaded");
+                            else
+                                context.TraceLog.Add(TraceLevel.Message, "FONT", "Ended the remote load of font " + curr.Source + " from url " + url + " and font definition was found : " + definition.FullName);
+                        }
 
                         if (found) //The returned definition can be null.
                             break;
@@ -1327,44 +1349,63 @@ namespace Scryber.Drawing
             return found;
         }
 
-        private static bool TryLoadRemoteDefinition(string url, string family, System.Drawing.FontStyle style, out PDFFontDefinition definition)
+        private static bool TryLoadRemoteDefinition(PDFContextBase context, string url, string family, System.Drawing.FontStyle style, out PDFFontDefinition definition)
         {
             bool tried = true;
             definition = null;
+            IDisposable monitor = null;
+
 
             if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
                 System.Net.WebClient client = null;
-
+                
 
                 try
                 {
+                    if (context.PerformanceMonitor != null && context.PerformanceMonitor.RecordMeasurements)
+                        monitor = context.PerformanceMonitor.Record(PerformanceMonitorType.Font_Load, url);
                     client = new System.Net.WebClient();
                     var data = client.DownloadData(url);
                     definition = PDFFontDefinition.LoadOpenTypeFontFile(data, family, style, 0);
                 }
                 catch (Exception ex)
                 {
+                    context.TraceLog.Add(TraceLevel.Error, "FONT", "Could not load the font from the url " + url);
                     definition = null;
                 }
                 finally
                 {
                     if (null != client)
                         client.Dispose();
+
+                    if (null != monitor)
+                        monitor.Dispose();
                 }
             }
             else if (System.IO.File.Exists(url))
             {
                 try
                 {
+                    if (context.PerformanceMonitor != null && context.PerformanceMonitor.RecordMeasurements)
+                        monitor = context.PerformanceMonitor.Record(PerformanceMonitorType.Font_Load, url);
+
                     definition = PDFFontDefinition.LoadOpenTypeFontFile(url, family, style, 0);
                 }
                 catch
                 {
+                    context.TraceLog.Add(TraceLevel.Error, "FONT", "Could not open the font from the file path " + url);
                     definition = null;
                 }
+                finally
+                {
+                    if (null != monitor)
+                        monitor.Dispose();
+                }
             }
-            
+            else
+                context.TraceLog.Add(TraceLevel.Error, "FONT", "Font from the path " + url + " could not be found");
+
 
             return tried;
         }

@@ -164,7 +164,7 @@ namespace Scryber.Styles
             {
                 PDFFontDefinition definition;
 
-                if(this.TryGetFont(doc, out definition))
+                if(this.TryGetFont(doc, context, out definition))
                 {
                     string name = PDFFont.GetFullName(this.FontFamily.FamilyName, this.FontBold, this.FontItalic);
                     //PDFFontResource resource = PDFFontResource.Load(definition, name);
@@ -182,7 +182,7 @@ namespace Scryber.Styles
         
 
         
-        private bool TryGetFont(IPDFDocument doc, out PDFFontDefinition definition)
+        private bool TryGetFont(IPDFDocument doc, PDFContextBase context, out PDFFontDefinition definition)
         {
             System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
             if (this.FontBold)
@@ -192,7 +192,7 @@ namespace Scryber.Styles
 
             string name = this.FontFamily.FamilyName;
 
-            PDFFontFactory.TryEnsureFont(doc, this.Source, name, style, out definition);
+            PDFFontFactory.TryEnsureFont(doc, context, this.Source, name, style, out definition);
             
             return null != definition;
         }
