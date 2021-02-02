@@ -217,7 +217,7 @@ Here we are
 
 The css style could just have easily come from another referenced stylesheet.
 
-.. code-block: html
+.. code-block:: html
 
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
@@ -274,7 +274,7 @@ The css style could just have easily come from another referenced stylesheet.
                 </ol>
             </main>
             <footer>
-                <!-- footers and page numbers -->
+                <!-- footers in a table with style -->
                 <table class="foot" style="width:100%">
                     <tr>
                         <td>{@:author}</td>
