@@ -78,19 +78,21 @@ Check out
 or :doc:`gui_controller_full` for a full gui application example (with styles and binding)
 
 
+Features
+--------
 
 
 Easy, and intuitive structure
------------------------------
+=============================
 
 Whether you are using xhtml templates or directly in code, scryber
 is quick and easy to build complex documents from your designs and data using standard xhtml.
 
-See `document_structure` and `html_tags`
+See :doc:`document_structure` and `html_tags`
 
 
 Intelligent flowing layout engine
----------------------------------
+=================================
 
 In scryber, content can either be laid out explicitly, or jut flowing with the the page.
 Change the page size, or insert content and everything will adjust around it.
@@ -98,7 +100,7 @@ Change the page size, or insert content and everything will adjust around it.
 See `component_positioning` and `document_pages`
 
 Cascading Styles 
-----------------
+================
 
 With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
 or nested selectors.
@@ -106,14 +108,14 @@ or nested selectors.
 See `document_styles` and `document_structure`
 
 Drawing and Typographic support
--------------------------------
+===============================
 
 Scryber supports inclusion of Images, Fonts (inc. Google fonts) and SVG components for drawing graphics and icons.
 
 See `drawing_images`, `drawing_fonts` and `drawing_paths`
 
 Binding to your data
---------------------
+====================
 
 With a simple binding notation it's easy to add references to your data structures and pass information
 and complex data to your document from SQL, JSON, Entity Model and more.
@@ -122,7 +124,7 @@ Or get the document to look up and bind the data for you.
 See `binding_model` and `binding_templates`
 
 Extensible Framework
--------------------------------
+=====================
 
 Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
 From the parser namespaces to the object graph to the writer - it can be built and extended.
