@@ -2,23 +2,31 @@
 MVC Controller - Getting Started
 ================================
 
-A Complete example for creating a hello world PDF file from an MVC Controller in C#
+A Complete example for creating a styled and databound hello world PDF file from an MVC Controller in C#
+
+How it works
+--------------
+
+We hope scryber works just as you would expect. The engine is based around the controllers you have, using XHTML template views with css, graphics 
+and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly.
+
+.. image:: images/ScryberMVCGraphic.png
 
 Nuget Packages
 ==============
 
-If you have not done so already, make sure you install the Nuget Packages
+If you have not done so already, make sure you install the Nuget Package in your new or existing MVC project.
 
 `<https://www.nuget.org/packages/Scryber.Core.Mvc>`_
 
-This will add the latest version of the Scryber.Core nuget package, and the Scryber.Core.Mvc extension methods.
+This will add the latest version of the Scryber.Core, and also the Scryber.Core.Mvc Controller extension methods.
 
 
 Add a document template
 =======================
 
 In our applications we like to add our templates to a PDF folder the Views folder. You can break it down however 
-works for you, but for a create a new XML file called HelloWorld.pdfx in your folder.
+works for you, but for now, a create a new xhtml file called HelloWorld.html in your folder.
 
 And paste the following content into the file
 
@@ -167,9 +175,9 @@ The general syntax for referring paramters in a template is
 {@:**parameter[.property]**}
 
 And the html5 tag 'template' is used with the data-bind attribute to loop over one or more items in a collection, and the 
-inner objects and properties can be used with the . prefix to reference the current data context.
+inner objects and properties can be used with the '.' prefix to reference the current data context.
 
-So we can expand our template body to use our model.
+So we can expand our document body to use the model schema.
 
 .. code-block:: html
 
@@ -194,43 +202,50 @@ So we can expand our template body to use our model.
         </body>
 
 
+.. image:: images/helloworldwithdata.png
 
 Adding Fonts and Styles
 =======================
 
-It's good but simple. With scryber we can use css styles as we would in html.
+It's good but rather uninspiring. With scryber we can use css styles, just as we would in html.
+Here we are 
+
+* Adding a stylesheet link to the google 'Fraunces' font (watch that &display=swap link - it's not xhtml)
+* Adding some document styles for the body
+* A complex style for a page header, with a colour and single background image, that will be repeated across any page.
+* And a page footer table with full width and associated style on the inner cells, that will again be repeated.
+
+The css style could just have easily come from another referenced stylesheet.
 
 .. code-block: html
 
-    <!-- support for external style sheets - in this case the Fraunces google font (watch out for the &amp; link in the url) -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" title="Fraunces" />
+    <!DOCTYPE HTML >
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+        <head>
+            <title>Hello World</title>
 
-        <!-- support for css selectors -->
-        <style>
+            <!-- support for complex css selectors (or link ot external style sheets )-->
+            <link rel="stylesheet"
+                href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap"
+                title="Fraunces" />
 
-            /* Setting the defaults */
+            <style>
+                body {
+                    font-family: sans-serif;
+                    font-size: 14pt;
+                }
 
-            body{
-                font-family: 'Fraunces', serif;
-                font-size: 14pt;
-            }
+                p.header {
+                    color: #AAA;
+                    background-color: #333;
+                    background-image: url('../html/images/ScyberLogo2_alpha_small.png');
+                    background-repeat: no-repeat;
+                    background-position: 10pt 10pt;
+                    background-size: 20pt 20pt;
+                    margin-top: 0pt;
+                    padding: 10pt 10pt 10pt 35pt;
+                }
 
-            /* Complex style with backgrounds, images and color */
-
-            p.header {
-                color: #AAA;
-                background-color: #333;
-                background-image: url('../html/images/ScyberLogo2_alpha_small.png');
-                background-repeat: no-repeat;
-                background-position: 10pt 10pt;
-                background-size: 20pt 20pt;
-                margin-top: 0pt;
-                padding: 10pt 10pt 10pt 35pt;
-            }
-
-            /* print only css with nested selectors */
-
-            @media print {
 
                 .foot td {
                     border: none;
@@ -238,21 +253,53 @@ It's good but simple. With scryber we can use css styles as we would in html.
                     font-size: 10pt;
                     margin-bottom: 10pt;
                 }
-            }
+            </style>
+        </head>
+        <body>
+            <header>
+                <!-- document headers -->
+                <p class="header">Scryber document creation</p>
+            </header>
+            <!-- support for many HTML5 tags-->
+            <main style="padding:10pt">
 
-            /* page selectors for sizing and allows page breaks */
+                <!-- binding style and values on content -->
+                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+                <div>We hope you like it.</div>
+                <ol>
+                    <!-- Loop through the items in the model -->
+                    <template data-bind='{@:model.items}'>
+                        <li>{@:.name}</li> <!-- and bind the name value -->
+                    </template>
+                </ol>
+            </main>
+            <footer>
+                <!-- footers and page numbers -->
+                <table class="foot" style="width:100%">
+                    <tr>
+                        <td>{@:author}</td>
+                        <td>Hello World Sample</td>
+                    </tr>
+                </table>
+            </footer>
+        </body>
+    </html>
 
-            @page {
-                size:A4 portrait;
-            }
 
-        </style>
+The output from this is much more pleasing. Especially that Fruances font :-)
 
+.. image:: images/helloworldwithstyle.png
 
-You can read more about what css selectors we
+What Next
+==========
 
-* :doc:`document_model`
+We have no idea what you can create with scryber. 
+It's just there to hopefully help you create amazing documents in an easy and repeatable way.
+
+* :doc:`document_parameters`
 * :doc:`document_structure`
-* :doc:`component_types`
 * :doc:`document_styles`
 * :doc:`referencing_files`
+* :doc:`supported_tags`
+* :doc:`supported_css`
+* :doc:`mvc_views`
