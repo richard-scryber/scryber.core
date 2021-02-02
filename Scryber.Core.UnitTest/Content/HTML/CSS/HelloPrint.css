@@ -1,2 +1,18 @@
-﻿body {
+﻿
+@media print {
+
+    main ol {
+        page-break-before: always;
+        padding-top: 20pt;
+        page: portrait;
+    }
+
+    @page {
+        size: A4 landscape;
+    }
+
+    @page portrait {
+        size: A4 portrait;
+    }
+
 }

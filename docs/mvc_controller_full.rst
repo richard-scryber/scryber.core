@@ -208,10 +208,11 @@ Adding Fonts and Styles
 =======================
 
 It's good but rather uninspiring. With scryber we can use css styles, just as we would in html.
-Here we are 
 
-* Adding a stylesheet link to the google 'Fraunces' font (watch that &display=swap link - it's not xhtml)
-* Adding some document styles for the body
+Here we are:
+
+* Adding a stylesheet link to the google 'Fraunces' font with the @font-face at-rule (watch that &display=swap link - it's not xhtml)
+* Adding some document styles for the body with fall-back fonts.
 * A complex style for a page header, with a colour and single background image, that will be repeated across any page.
 * And a page footer table with full width and associated style on the inner cells, that will again be repeated.
 
@@ -231,7 +232,7 @@ The css style could just have easily come from another referenced stylesheet.
 
             <style>
                 body {
-                    font-family: sans-serif;
+                    font-family: 'Roboto', sans-serif;
                     font-size: 14pt;
                 }
 
@@ -289,6 +290,74 @@ The css style could just have easily come from another referenced stylesheet.
 The output from this is much more pleasing. Especially that Fruances font :-)
 
 .. image:: images/HelloWorldWithStyle.png
+
+
+Page Breaks and sizes
+=====================
+
+Scryber's flexible layout engine supports the use of the @media and @page css at-rules to be able to explicitly style
+content just for document output, and also set page sizes and orientiations.
+
+If we add a new css styles file to our site we can alter the layout easily, (HelloPrint.css)
+
+.. code-block:: html
+
+    @media print {
+
+        /* We have a new page before the ordered list
+         * And this new page uses the 'portrait' option */
+        main ol {
+            page-break-before: always;
+            padding-top: 20pt;
+            page: portrait;
+        }
+
+        /* Default style is A4 landscape */
+
+        @page {
+            size: A4 landscape;
+        }
+
+        /* But can use specific sizes for sections
+        @page portrait {
+            size: A4 portrait;
+        }
+
+    }
+
+
+And we can add a link to this in our html file
+
+.. code-block:: html
+
+        </style>
+        <link type='stylesheet'
+            href='./CSS/HelloPrint.css' 
+            media='print' />
+    </head>
+
+And in our footer we can add the current page number (of total pages) and an author property directly
+
+.. code-block:: html
+
+    <footer>
+        <table class="foot" style="width:100%">
+            <tr>
+                <td>{@:author}</td>
+
+                <!-- the page tag is made up, and has a property attribute
+                    (open to suggestions on better syntax)  -->
+
+                <td>Page <page /> of <page property="total" /></td>
+                <td>Hello World Sample</td>
+            </tr>
+        </table>
+    </footer>
+
+With this we now alter the layout to use our new pages, and everything will flow nicely.
+
+.. image:: images/HelloPages.png
+
 
 What Next
 ==========

@@ -8,7 +8,7 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap"
           title="Fraunces" />
-
+    <link rel="stylesheet" media="print" href="./CSS/HelloPrint.css" />
     <style>
         body {
             font-family: sans-serif;
@@ -46,7 +46,7 @@
             <!-- binding style and values on content -->
             <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
             <div>We hope you like it.</div>
-            <ol>
+            <ol class="portrait">
                 <!-- Loop through the items in the model -->
                 <template data-bind='{@:model.items}'>
                     <li>{@:.name}</li> <!-- and bind the name value -->
@@ -58,7 +58,7 @@
             <table class="foot" style="width:100%">
                 <tr>
                     <td>{@:author}</td>
-                    <td><page /></td>
+                    <td>Page <page /> of <page property="total" /></td>
                     <td>Hello World Sample</td>
                 </tr>
             </table>
