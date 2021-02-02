@@ -356,7 +356,7 @@ And in our footer we can add the current page number (of total pages) and an aut
 
 With this we now alter the layout to use our new pages, and everything will flow nicely.
 
-.. image:: images/HelloPages.png
+.. image:: images/HelloWorldPages.png
 
 
 What Next
