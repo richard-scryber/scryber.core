@@ -1,3 +1,48 @@
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+    :caption: Getting started
+
+    index
+    mvc_controller_full
+    gui_controller_full
+
+
+.. toctree::
+    :caption: Standard features
+    :maxdepth: 1
+    :hidden:
+
+    document_structure
+    document_styles
+    document_components
+    referencing_files
+    binding_content
+    binding_model
+    component_linking
+    page_numbers
+    drawing_fonts
+    document_textlayout
+    drawing_colors
+    drawing_units
+    drawing_paths
+
+
+.. toctree::
+    :caption: In depth capabilities
+    :maxdepth: 1
+    :hidden:
+
+    mvc_views
+    html_tags
+    document_code_vs_xml
+    mvc_views
+    extending_configuration
+    extending_scryber
+    namespaces_and_assemblies
+    version_history
+
+
 =============
 Scryber 5.0
 =============
@@ -127,52 +172,3 @@ Scryber was designed from the ground up to be extensible. If it doesn't do what 
 From the parser namespaces to the object graph to the writer - it can be built and extended.
 
 See: `extending_scryber` and `extending_configuration`
-
-
-
-
-.. toctree::
-    :maxdepth: 1
-    :hidden:
-    :caption: Getting started
-
-    index
-    mvc_controller_full
-    gui_controller_full
-
-
-.. toctree::
-    :caption: Standard features
-    :maxdepth: 1
-    :hidden:
-
-    document_structure
-    document_styles
-    document_components
-    referencing_files
-    binding_content
-    binding_model
-    component_linking
-    page_numbers
-    drawing_fonts
-    document_textlayout
-    drawing_colors
-    drawing_units
-    drawing_paths
-
-
-.. toctree::
-    :caption: In depth capabilities
-    :maxdepth: 1
-    :hidden:
-
-    mvc_views
-    html_tags
-    document_code_vs_xml
-    mvc_views
-    extending_configuration
-    extending_scryber
-    namespaces_and_assemblies
-    version_history
-
-
