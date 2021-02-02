@@ -138,6 +138,23 @@ See: `extending_scryber` and `extending_configuration`
     gui_controller_full
 
 
+
+.. toctree::
+    :caption: In depth capabilities
+    :maxdepth: 2
+    :hidden:
+
+    html_markdown
+    mvc_views
+    html_tags
+    document_code_vs_xml
+    mvc_views
+    extending_configuration
+    extending_scryber
+    namespaces_and_assemblies
+    version_history
+
+
 .. toctree::
     :cation: Standard features
     :maxdepth: 2
@@ -156,22 +173,4 @@ See: `extending_scryber` and `extending_configuration`
     drawing_colors
     drawing_units
     drawing_paths
-
-.. toctree::
-    :caption: In depth capabilities
-    :maxdepth: 2
-    :hidden:
-
-    html_markdown
-    mvc_views
-    html_tags
-    document_code_vs_xml
-    mvc_views
-    extending_configuration
-    extending_scryber
-    namespaces_and_assemblies
-    version_history
-
-
-
 
