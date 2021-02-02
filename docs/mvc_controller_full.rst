@@ -202,7 +202,7 @@ So we can expand our document body to use the model schema.
         </body>
 
 
-.. image:: images/helloworldwithdata.png
+.. image:: images/HelloWorldWithData.png
 
 Adding Fonts and Styles
 =======================
@@ -288,7 +288,7 @@ The css style could just have easily come from another referenced stylesheet.
 
 The output from this is much more pleasing. Especially that Fruances font :-)
 
-.. image:: images/helloworldwithstyle.png
+.. image:: images/HelloWorldWithStyle.png
 
 What Next
 ==========
