@@ -1,1 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Project>
+    <PropertyGroup>
+        <Company>Scryber</Company>
+        <Copyright>Copyright © 2021</Copyright>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>5.0.0.4</FileVersion>
+        <Version>5.0.0.4</Version>
+    </PropertyGroup>
+</Project>

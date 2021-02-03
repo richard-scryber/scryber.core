@@ -24,6 +24,7 @@ Public release with most of the issue ironed out (just let us know if not). Alon
 5.0.3-beta
 
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
+
  tags with property or for attributes. Fix for anchor links with internal and external href.
 
 5.0.3-alpha
