@@ -33,8 +33,6 @@ namespace Scryber.Html.Components
         {
             get
             {
-                if (this._innerItems == null)
-                    this._innerItems = CreateInnerStyles();
                 return this._innerItems;
             }
             set
@@ -100,24 +98,24 @@ namespace Scryber.Html.Components
             
         }
 
-        private void AssertInnerStyles()
+        private void AssertInnerStyles(PDFContextBase context)
         {
             if(!string.IsNullOrEmpty(this.Contents))
             {
                 if (null == this._innerItems)
-                    this._innerItems = CreateInnerStyles();
+                    this._innerItems = CreateInnerStyles(context);
             }
         }
 
         protected override void OnLoaded(PDFLoadContext context)
         {
-            AssertInnerStyles();
+            AssertInnerStyles(context);
             base.OnLoaded(context);
         }
 
         protected override void OnDataBinding(PDFDataContext context)
         {
-            AssertInnerStyles();
+            AssertInnerStyles(context);
             base.OnDataBinding(context);
 
             if (null != this._innerItems)
@@ -141,10 +139,10 @@ namespace Scryber.Html.Components
             this._parsedGroup = null;
         }
 
-        protected StyleCollection CreateInnerStyles()
+        protected StyleCollection CreateInnerStyles(PDFContextBase context)
         {
             var collection = new StyleCollection(this);
-            this.AddCssStyles(collection);
+            this.AddCssStyles(collection, context);
             
             return collection;
         }
@@ -164,7 +162,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected virtual void AddCssStyles(StyleCollection collection)
+        protected virtual void AddCssStyles(StyleCollection collection, PDFContextBase context)
         {
             if(!string.IsNullOrEmpty(this.StyleType))
             {
@@ -182,7 +180,7 @@ namespace Scryber.Html.Components
                     return;
             }
 
-            var parser = new Scryber.Styles.Parsing.CSSStyleParser(this.Contents);
+            var parser = new Scryber.Styles.Parsing.CSSStyleParser(this.Contents, context);
             foreach (var style in parser)
             {
                 if (null != style)

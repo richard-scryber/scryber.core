@@ -1131,7 +1131,7 @@ namespace Scryber.Styles
 
                 while (reader.ReadNextAttributeName())
                 {
-                    parser.SetStyleValue(style, reader);
+                    parser.SetStyleValue(null, style, reader);
                 }
             }
 

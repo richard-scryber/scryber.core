@@ -88,3 +88,20 @@ The following are the supported options on the processing instruction.
 
 .. note:: If you set the log level to Diagnostic for the Hello World example, the appended log file is around 10 pages in length. If it's a long document - diagnostic is going to hurt.
 
+
+Tracing Details
+----------------
+
+There is some really good information available in the tracing output not just in the logging, but also on the metrics and overview.
+
+..image:: images/HelloWorldTraceOutput.png
+
+The top section will give information on the versions, file sizes and generation time (for the document without the logging).
+
+The middle section will give information on timings for each type fo activity. 
+If the trace level is Verbose (or Diagnostic) then the performance metrics will detail specific areas, for eaxmple below we can see that the loading of the google font(s) was causing our 
+template to increase generation time by 110 milliseconds to load the font css. Luckily the font files themselves are cached and did not need to be reloaded each time. 
+But we could save that time by using a local css.
+
+..image:: images/ReadMetTraceVerbose.png
+

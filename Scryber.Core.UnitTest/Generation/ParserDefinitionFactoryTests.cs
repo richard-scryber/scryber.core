@@ -88,9 +88,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             //Check the required versions
             Assert.AreEqual(new Version(0, 8, 0, 0), defn.MinRequiredFramework);
-            Assert.AreEqual(new Version(1, 0, 0, 0), defn.MaxSupportedFramework);
             Assert.IsTrue(defn.IsMinFrameworkSupported);
-            Assert.IsTrue(defn.IsMaxFrameworkSupported);
 
             //name attribute
             Assert.AreEqual(1, defn.Attributes.Count);

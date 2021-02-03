@@ -7,6 +7,7 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Html;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace Scryber.Styles.Parsing
 {
@@ -63,10 +64,30 @@ namespace Scryber.Styles.Parsing
 
         bool IParserStyleFactory.SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
         {
-            return this.SetStyleValue(onComponent.Style, reader);
+            return this.SetStyleValue(parser.Log, onComponent.Style, reader);
         }
 
-        public abstract bool SetStyleValue(Style style, CSSStyleItemReader reader);
+        public bool SetStyleValue(PDFTraceLog log, Style style, CSSStyleItemReader reader)
+        {
+            var attr = reader.CurrentAttribute;
+            var val = reader.CurrentTextValue;
+            bool success = this.DoSetStyleValue(style, reader);
+
+            if (null != log)
+            {
+                if (success && log.ShouldLog(TraceLevel.Debug))
+                {
+                    log.Add(TraceLevel.Debug, "CSS", "The css style item " + (string.IsNullOrEmpty(attr) ? "[UNKNOWN]" : attr) + " set on style " + style.ToString());
+                }
+                else if (!success && log.ShouldLog(TraceLevel.Warning))
+                {
+                    log.Add(TraceLevel.Warning, "CSS", "The css style item " + (string.IsNullOrEmpty(attr) ? "[UNKNOWN]" : attr) + " could not be set on style " + style.ToString());
+                }
+            }
+            return success;
+        }
+
+        protected abstract bool DoSetStyleValue(Style style, CSSStyleItemReader reader);
 
 
         #region protected bool IsColor(string part)
@@ -455,7 +476,7 @@ namespace Scryber.Styles.Parsing
             onStyle.SetValue(_pdfStyleAttr, value);
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool success = false;
             T result;
@@ -487,7 +508,7 @@ namespace Scryber.Styles.Parsing
             
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             if(reader.ReadNextValue())
@@ -521,7 +542,7 @@ namespace Scryber.Styles.Parsing
            
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             PDFColor color;
@@ -551,7 +572,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             string attrvalue;
@@ -586,7 +607,7 @@ namespace Scryber.Styles.Parsing
 
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = reader.ReadNextValue();
             PDFUnit unit;
@@ -636,7 +657,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             LineType converted;
@@ -728,7 +749,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
 
             int count = 0;
@@ -790,7 +811,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
 
 
@@ -853,9 +874,9 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            bool result = base.SetStyleValue(onStyle, reader);
+            bool result = base.DoSetStyleValue(onStyle, reader);
 
             //We need to set the fill style to solid if we have a color.
             //if (result)
@@ -879,9 +900,9 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            bool result = base.SetStyleValue(onStyle, reader);
+            bool result = base.DoSetStyleValue(onStyle, reader);
 
             //We need to set the fill style to image if we have a value.
             //if (result)
@@ -901,7 +922,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
             string h, v;
             PDFUnit uh, uv;
@@ -951,7 +972,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
             string h, v;
             PDFUnit uh, uv;
@@ -1004,7 +1025,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             PatternRepeat repeat;
@@ -1067,7 +1088,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool italic = true;
             bool result = true;
@@ -1121,7 +1142,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool bold = true;
             bool result = true;
@@ -1198,7 +1219,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             PDFUnit size = PDFUnit.Zero;
             bool result = true;
@@ -1276,7 +1297,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             double proportional;
             PDFUnit absolute;
@@ -1318,7 +1339,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
 
             PDFFontSelector root = null;
@@ -1387,7 +1408,7 @@ namespace Scryber.Styles.Parsing
         public CSSFontSourceParser(): base(CSSStyleItems.FontSource)
         { }
 
-        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
             PDFFontSource root = null;
             PDFFontSource curr = null;
@@ -1449,7 +1470,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             if (!reader.ReadNextValue())
@@ -1632,7 +1653,7 @@ namespace Scryber.Styles.Parsing
             AutoValue = PDFUnit.Zero;
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             if(reader.ReadNextValue())
             {
@@ -1688,7 +1709,7 @@ namespace Scryber.Styles.Parsing
         }
 
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             int count = 0;
             PDFUnit[] all = new PDFUnit[4];
@@ -1907,7 +1928,7 @@ namespace Scryber.Styles.Parsing
 
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             double number;
 
@@ -1950,7 +1971,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             int number;
 
@@ -1989,7 +2010,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             int number;
 
@@ -2044,7 +2065,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
             if (reader.ReadNextValue())
@@ -2150,7 +2171,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool success = true;
             HorizontalAlignment align;
@@ -2199,7 +2220,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool success = true;
             VerticalAlignment align;
@@ -2251,7 +2272,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             Text.TextDecoration decor;
@@ -2316,7 +2337,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             PDFUnit size = PDFUnit.Zero;
             bool result = true;
@@ -2367,7 +2388,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             PDFUnit size = PDFUnit.Zero;
             bool result = true;
@@ -2416,7 +2437,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             PositionMode display;
@@ -2471,7 +2492,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             OverflowAction over;
@@ -2524,7 +2545,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool success = true;
             Text.WordWrap wrap;
@@ -2590,7 +2611,7 @@ namespace Scryber.Styles.Parsing
         public CSSPositionModeParser() : base(CSSStyleItems.PositionModeType, StyleKeys.PositionModeKey)
         { }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             PositionMode found = PositionMode.Block;
@@ -2641,7 +2662,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
             ListNumberingGroupStyle type;
@@ -2714,7 +2735,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result;
             ListNumberingGroupStyle type;
@@ -2751,7 +2772,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result;
 
@@ -2791,7 +2812,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result;
 
@@ -2831,7 +2852,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result;
 
@@ -2867,7 +2888,7 @@ namespace Scryber.Styles.Parsing
         {
         }
 
-        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
             if (reader.MoveToNextValue() && !string.IsNullOrEmpty(reader.CurrentTextValue))
             {
@@ -2884,7 +2905,7 @@ namespace Scryber.Styles.Parsing
         public CSSPageSizeParser() : base(CSSStyleItems.PageSize)
         { }
 
-        public override bool SetStyleValue(Style style, CSSStyleItemReader reader)
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
             if(reader.MoveToNextValue())
             {

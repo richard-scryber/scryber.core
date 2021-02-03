@@ -17,7 +17,7 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
     /// </summary>
     /// 
     [PDFParsableComponent("Root1")]
-    [PDFRequiredFramework("0.8.0.0","1.0.0.0")]
+    [PDFRequiredFramework("0.8.0.0")]
     public class ParserRootOne : IPDFComponent
     {
         /// <summary>

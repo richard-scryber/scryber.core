@@ -123,7 +123,7 @@ namespace Scryber.Core.UnitTests.Configuration
             var img = service.ImagingOptions;
 
             Assert.IsNotNull(img, "The imaging options are null");
-            Assert.IsFalse(img.AllowMissingImages, "Missing images is not false");
+            Assert.IsTrue(img.AllowMissingImages, "Missing images is not true");
             Assert.AreEqual(-1, img.ImageCacheDuration, "The image cache duration is not -1");
             Assert.IsNull(img.Factories, "The image factories are not null");
         }
@@ -158,6 +158,9 @@ namespace Scryber.Core.UnitTests.Configuration
         [TestMethod()]
         public void MissingImageException_Test()
         {
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            var prev = service.ImagingOptions.AllowMissingImages;
+            service.ImagingOptions.AllowMissingImages = false;
 
             var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
 <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
@@ -194,6 +197,7 @@ namespace Scryber.Core.UnitTests.Configuration
                 caught = true;
             }
 
+            service.ImagingOptions.AllowMissingImages = prev;
             Assert.IsTrue(caught, "No Exception was raised for a missing image");
         }
 

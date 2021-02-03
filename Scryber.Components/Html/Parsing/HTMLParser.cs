@@ -82,6 +82,10 @@ namespace Scryber.Html.Parsing
 
         #endregion
 
+        public PDFTraceLog Log
+        {
+            get { return this._settings.TraceLog; }
+        }
         //
         // .ctor
         //
@@ -199,19 +203,6 @@ namespace Scryber.Html.Parsing
 
         #endregion
 
-        #region public void Log(string message)
-
-        /// <summary>
-        /// Outputs a message to this instances trace log.
-        /// </summary>
-        /// <param name="message"></param>
-        public void Log(string message)
-        {
-            if (this.IsLogging && !string.IsNullOrEmpty(message))
-                this.Settings.TraceLog.Add(this.Settings.LogLevel, LogCategory, message);
-        }
-
-        #endregion
     }
 
 }

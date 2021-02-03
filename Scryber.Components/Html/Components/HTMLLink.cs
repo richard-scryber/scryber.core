@@ -189,35 +189,38 @@ namespace Scryber.Html.Components
             if (!isFile && Uri.IsWellFormedUriString(path, UriKind.Absolute))
             {
 
-                if (context.PerformanceMonitor.RecordMeasurements)
-                    context.PerformanceMonitor.Begin(PerformanceMonitorType.Font_Load);
+                using (var measure = context.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, path))
+                {
+                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
 
-                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                    context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
+                    DoLoadRemoteReference(path, context);
 
-                DoLoadRemoteReference(path, context);
+                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
 
-                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                    context.TraceLog.End(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
-
-                else if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                    context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded remote href file " + path + " for link " + this.UniqueID);
+                    else if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded remote href file " + path + " for link " + this.UniqueID);
+                }
             }
             else if (isFile && System.IO.File.Exists(path))
             {
-                if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                    context.TraceLog.Begin(TraceLevel.Message, "HTML", "Initiating the load of local href file " + path + " for link " + this.UniqueID);
+                using (var measure = context.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, path))
+                {
+                    if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of local href file " + path + " for link " + this.UniqueID);
 
-                this.LoadedSource = path;
-                var css = System.IO.File.ReadAllText(path);
+                    this.LoadedSource = path;
+                    var css = System.IO.File.ReadAllText(path);
 
-                this.InnerItems = this.CreateInnerStyles(css, context);
+                    this.InnerItems = this.CreateInnerStyles(css, context);
 
-                if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                    context.TraceLog.End(TraceLevel.Message, "HTML", "Completed the load of local file " + path + " for link " + this.UniqueID);
+                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of local file " + path + " for link " + this.UniqueID);
 
-                else if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                    context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded local file " + path + " for link " + this.UniqueID);
+                    else if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded local file " + path + " for link " + this.UniqueID);
+                }
             }
             else if (context.Conformance == ParserConformanceMode.Strict)
                 throw new System.IO.FileLoadException("The stylesheet with href " + this.Href + " could not be loaded from path '" + path + "'");
@@ -280,7 +283,7 @@ namespace Scryber.Html.Components
             if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                 context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Parsing the css selectors from string for link " + this.UniqueID);
 
-            this.AddCssStyles(collection, content);
+            this.AddCssStyles(collection, content, context);
             
             return collection;
         }
@@ -318,7 +321,7 @@ namespace Scryber.Html.Components
             return true;
         }
 
-        protected virtual void AddCssStyles(StyleCollection collection, string content)
+        protected virtual void AddCssStyles(StyleCollection collection, string content, PDFContextBase context)
         {
             bool parseCss = true;
 
@@ -332,7 +335,7 @@ namespace Scryber.Html.Components
 
             if (parseCss)
             {
-                var parser = new Scryber.Styles.Parsing.CSSStyleParser(content);
+                var parser = new Scryber.Styles.Parsing.CSSStyleParser(content, context);
                 foreach (var style in parser)
                 {
                     if (null != style)

@@ -37,13 +37,15 @@ namespace Scryber.Styles.Parsing
 
             if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
                 return found.SetStyleValue(parser, component, reader);
-            else if (null != parser && parser.IsLogging)
-                parser.Log("Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
-
+            else
+            {
+                if (null != parser && parser.IsLogging)
+                    parser.Log.Add(TraceLevel.Warning, "CSS", "Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
+            }
             return false;
         }
 
-        public bool SetStyleValue( Style style, CSSStyleItemReader reader)
+        public bool SetStyleValue(PDFTraceLog log, Style style, CSSStyleItemReader reader)
         {
             IParserStyleFactory found;
 
@@ -51,9 +53,14 @@ namespace Scryber.Styles.Parsing
                 return false;
 
             if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
-                return found.SetStyleValue(style, reader);
+                return found.SetStyleValue(log, style, reader);
             else
+            {
+                if (null != log && log.ShouldLog(TraceLevel.Warning))
+                    log.Add(TraceLevel.Warning, "CSS", "Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
+
                 return false;
+            }
         }
 
 

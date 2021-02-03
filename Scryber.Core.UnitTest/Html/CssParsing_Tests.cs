@@ -69,7 +69,7 @@ namespace Scryber.Core.UnitTests.Html
                 color:#808080;
             }";
 
-            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css);
+            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);
 
             StyleCollection col = new StyleCollection();
 
@@ -157,7 +157,7 @@ body.grey div.reverse{
 }
 ";
 
-            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css);
+            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);
 
             StyleCollection col = new StyleCollection();
 
@@ -222,7 +222,7 @@ body.grey div.reverse{
             path = System.IO.Path.GetFullPath(path);
             var css = System.IO.File.ReadAllText(path);
 
-            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css);
+            var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);
 
             StyleCollection col = new StyleCollection();
 
