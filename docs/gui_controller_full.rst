@@ -369,20 +369,7 @@ With this we now alter the layout to use our new pages, and everything will flow
 Further reading
 -----------------
 
-You can read more about the what you can do with scryber here:
+You can read more about the what you can do with scryber from the contents.
 
-We have no idea what you can create with scryber. 
+We have no idea what you will be able to create with scryber. 
 It's just there to hopefully help you build amazing documents in an easy and repeatable way.
-
-* :doc:`document_structure`
-* :doc:`document_styles`
-* :doc:`referencing_files`
-* :doc:`binding_content`
-* :doc:`page_numbers`
-* :doc:`drawing_units`
-* :doc:`drawing_paths`
-* :doc:`referencing_files`
-* :doc:`supported_tags`
-* :doc:`supported_css`
-* :doc:`mvc_views`
-* :doc:`extending_scryber`

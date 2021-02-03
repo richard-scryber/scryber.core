@@ -148,6 +148,11 @@ namespace Scryber
         public static readonly PDFObjectType StyleFill = (PDFObjectType)"sfil";
         public static readonly PDFObjectType StyleBackground = (PDFObjectType)"sbak";
         public static readonly PDFObjectType StyleBorder = (PDFObjectType)"sbdr";
+        public static readonly PDFObjectType StyleBorderTop = (PDFObjectType)"sbdT";
+        public static readonly PDFObjectType StyleBorderLeft = (PDFObjectType)"sbdL";
+        public static readonly PDFObjectType StyleBorderBottom = (PDFObjectType)"sbdB";
+        public static readonly PDFObjectType StyleBorderRight = (PDFObjectType)"sbdR";
+
         public static readonly PDFObjectType StyleClip = (PDFObjectType)"sclp";
         public static readonly PDFObjectType StyleDocument = (PDFObjectType)"sdoc";
         public static readonly PDFObjectType StyleText = (PDFObjectType)"stxt";
