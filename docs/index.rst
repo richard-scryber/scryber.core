@@ -124,7 +124,6 @@ From the parser namespaces to the object graph to the writer - it can be built a
     :hidden:
     :caption: Getting started
 
-    index
     mvc_controller_full
     gui_controller_full
 
