@@ -94,7 +94,7 @@ Tracing Details
 
 There is some really good information available in the tracing output not just in the logging, but also on the metrics and overview.
 
-..image:: images/HelloWorldTraceOutput.png
+.. image:: images/HelloWorldTraceOutput.png
 
 The top section will give information on the versions, file sizes and generation time (for the document without the logging).
 
@@ -103,5 +103,5 @@ If the trace level is Verbose (or Diagnostic) then the performance metrics will 
 template to increase generation time by 110 milliseconds to load the font css. Luckily the font files themselves are cached and did not need to be reloaded each time. 
 But we could save that time by using a local css.
 
-..image:: images/ReadMetTraceVerbose.png
+.. image:: images/ReadMetTraceVerbose.png
 
