@@ -219,6 +219,11 @@ namespace Scryber.Html.Components
                 else if (context.TraceLog.ShouldLog(TraceLevel.Message))
                     context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded local file " + path + " for link " + this.UniqueID);
             }
+            else if (context.Conformance == ParserConformanceMode.Strict)
+                throw new System.IO.FileLoadException("The stylesheet with href " + this.Href + " could not be loaded from path '" + path + "'");
+            else
+                context.TraceLog.Add(TraceLevel.Error, "HTML", "The stylesheet with href " + this.Href + " could not be loaded from path '" + path + "'");
+
         }
 
         protected virtual void DoLoadRemoteReference(string path, PDFContextBase context)

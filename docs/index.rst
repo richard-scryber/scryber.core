@@ -117,6 +117,7 @@ Scryber was designed from the ground up to be extensible. If it doesn't do what 
 From the parser namespaces to the object graph to the writer - it can be built and extended.
 
 
+-----------------------
 
 .. toctree::
     :maxdepth: 1

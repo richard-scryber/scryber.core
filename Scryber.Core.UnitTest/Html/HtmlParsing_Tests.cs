@@ -720,6 +720,27 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        public void DocumentationOutput()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/documentation.html");
+
+
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+
+                using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
+                {
+
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
         public void BodyWithLongContent()
         {
             var path = System.Environment.CurrentDirectory;
