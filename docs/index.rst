@@ -1,48 +1,3 @@
-.. toctree::
-    :maxdepth: 1
-    :hidden:
-    :caption: Getting started
-
-    index
-    mvc_controller_full
-    gui_controller_full
-
-
-.. toctree::
-    :caption: Standard features
-    :maxdepth: 1
-    :hidden:
-
-    document_structure
-    document_styles
-    document_components
-    referencing_files
-    binding_content
-    binding_model
-    component_linking
-    page_numbers
-    drawing_fonts
-    document_textlayout
-    drawing_colors
-    drawing_units
-    drawing_paths
-
-
-.. toctree::
-    :caption: In depth capabilities
-    :maxdepth: 1
-    :hidden:
-
-    mvc_views
-    html_tags
-    document_code_vs_xml
-    mvc_views
-    extending_configuration
-    extending_scryber
-    namespaces_and_assemblies
-    version_history
-
-
 =============
 Scryber 5.0
 =============
@@ -125,38 +80,84 @@ Features
 
 
 Easy, and intuitive structure
-=============================
+------------------------------
 
 Whether you are using xhtml templates or directly in code, scryber
 is quick and easy to build complex documents from your designs and data using standard xhtml.
 
 
 Intelligent flowing layout engine
-=================================
+----------------------------------
 
 In scryber, content can either be laid out explicitly, or jut flowing with the the page.
 Change the page size, or insert content and everything will adjust around it.
 
 Cascading Styles 
-================
+-----------------
 
 With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
 or nested selectors.
 
 Drawing and Typographic support
-===============================
+--------------------------------
 
 Scryber supports inclusion of Images, Fonts (inc. Google fonts) and SVG components for drawing graphics and icons.
 
 Binding to your data
-====================
+---------------------
 
 With a simple binding notation it's easy to add references to your data structures and pass information
 and complex data to your document from SQL, JSON, Entity Model and more.
 Or get the document to look up and bind the data for you.
 
 Extensible Framework
-=====================
+-----------------------
 
 Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
 From the parser namespaces to the object graph to the writer - it can be built and extended.
+
+
+
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+    :caption: Getting started
+
+    index
+    mvc_controller_full
+    gui_controller_full
+
+
+.. toctree::
+    :caption: Standard features
+    :maxdepth: 1
+    :hidden:
+
+    document_structure
+    document_styles
+    document_components
+    referencing_files
+    binding_content
+    binding_model
+    component_linking
+    page_numbers
+    drawing_fonts
+    document_textlayout
+    drawing_colors
+    drawing_units
+    drawing_paths
+
+
+.. toctree::
+    :caption: In depth capabilities
+    :maxdepth: 1
+    :hidden:
+
+    mvc_views
+    html_tags
+    document_code_vs_xml
+    mvc_views
+    extending_configuration
+    extending_scryber
+    namespaces_and_assemblies
+    version_history
