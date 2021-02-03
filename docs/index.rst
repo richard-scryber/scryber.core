@@ -154,10 +154,9 @@ From the parser namespaces to the object graph to the writer - it can be built a
     :maxdepth: 1
     :hidden:
 
-    mvc_views
     html_tags
     document_code_vs_xml
-    mvc_views
+    extending_logging
     extending_configuration
     extending_scryber
     namespaces_and_assemblies

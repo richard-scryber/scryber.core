@@ -11,15 +11,29 @@ Example
 
 .. code-block:: html
 
+    <?xml version="1.0" encoding="utf-8" ?>
     <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
-    <!DOCTYPE HTML >
-    <html xmlns='http://www.w3.org/1999/xhtml' >
-        <head>
-            <title>Hello World</title>
-        </head>
-        <body>
-            <div style='padding:10px'>Hello World from scryber.</div>
-        </body>
+    <!DOCTYPE HTML>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Hello World</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" />
+        <style>
+            p {
+                font-family: Fraunces, 'Times New Roman', Times, serif;
+                font-size: 40pt;
+                border-bottom-color: aliceblue;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="pghead">Page Header</div>
+        </header>
+        <div style='padding:10px; text-align:center'>
+            <p>Hello World from scryber.</p>
+        </div>
+    </body>
     </html>
 
 At the top of the file scryber has it's own **optional** processing instuctions to specify log levels and output.
@@ -58,9 +72,9 @@ The following are the supported options on the processing instruction.
     * Strict - Will raise exceptions to the top of the stack and must be handled in your code. (Good for dev)
     * Lax - Default. If this is set  then the parser is more complianant, where errors will be logged, but not cause the output to fail. (Good for Prod).
 
-.. note:: If you set the log level to Diagnostic for the Hello World example in our Getting started examples, the appended log file is around 30 pages in length. If it's a long template - diagnostic is going to hurt, but for a quick check or a feature - it is awesome without needing debugging.
+There is a detailed explanation of the tracing and logging capabilities in :doc:`extending_logging` which is **really** useful.
 
-.. image:: images/HelloWorldTracing.png
+.. note:: If you set the log level to Diagnostic for the Hello World example in our Getting started examples, the appended log file is around 30 pages in length. If it's a long template - diagnostic is going to hurt, but for a quick check or a feature - it is awesome without needing debugging.
 
 
 Namespaces
@@ -115,3 +129,22 @@ Then it must have the 'rel' attribute of stylesheet and a 'href' to a valid css 
 .. note:: If the rel attribute is not set, then it is assumed to be a stylesheet, and loaded. But may not be able to be parsed.
 
 The href can either be relative to the current file, or a full absolute url to a file.
+
+Html style element
+-------------------
+
+Scryber supports many of the standard html css styles. 
+It also supports the use of @media at-rules so that css can be applied to only the document output.
+
+More information on what css selectors are supported and the css properties see :doc:`document_styles`
+
+
+The body
+----------
+
+The body element is the visual content of the document, as 1 or more pages of content with various sizes and many features.
+It also suppots the header and footer elements for creating repeating headers and footers.
+
+See :doc:`document_components` for a more general introduction to the visual content supported and :doc:`html_tags` for a full list of all the tags scyber currently supports.
+
+

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?scryber append-log='true' log-level='Verbose' parser-log='true' ?>
+<?scryber append-log='true' log-level='Messages' parser-log='true' ?>
 <!DOCTYPE HTML>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
@@ -11,9 +11,20 @@
             font-size: 40pt;
             border-bottom-color: aliceblue;
         }
+
+        date.head {
+            break-after: always;
+        }
+
     </style>
 </head>
 <body>
+    <header>
+        <div>
+            <date class="head" data-format="dd MMM YYYY" />
+        </div>
+        
+    </header>
     <div style='padding:10px; text-align:center'>
         <p>Hello World from scryber.</p>
     </div>
