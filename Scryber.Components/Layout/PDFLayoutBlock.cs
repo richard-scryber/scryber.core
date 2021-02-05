@@ -1091,25 +1091,14 @@ namespace Scryber.Layout
                 PDFRect contentRect = borderRect.Inset(this.Position.Padding);
 
                 //Get the border to draw
-                PDFPen border = this.FullStyle.CreateBorderPen();
-                PDFUnit corner;
-                Sides sides;
-                if (null != border)
-                {
-                    corner = this.FullStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
-                    sides = this.FullStyle.GetValue(StyleKeys.BorderSidesKey, Sides.Top | Sides.Bottom | Sides.Left | Sides.Right);
-                }
-                else
-                {
-                    corner = 0;
-                    sides = Sides.Top | Sides.Bottom | Sides.Left | Sides.Right;
-                }
+                PDFPenBorders border = this.FullStyle.CreateBorderPen();
+                
 
                 if (this.Position.OverflowAction == OverflowAction.Clip)
                 {
                     if (logdebug)
                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
-                    this.OutputClipping(context, borderRect, corner, sides, this.Position.ClipInset);
+                    this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
                 }
 
                 //Get the background brush
@@ -1118,7 +1107,7 @@ namespace Scryber.Layout
 
                 if (null != background)
                 {
-                    this.OutputBackground(background, border, corner, context, borderRect);
+                    this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, context, borderRect);
                 }
 
                 context.Offset = contentRect.Location;
@@ -1141,7 +1130,7 @@ namespace Scryber.Layout
                 {
                     if(logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
-                    this.OutputBorder(background, border, corner, sides, context, borderRect);
+                    this.OutputBorder(background, border, context, borderRect);
                 }
 
                 if (render && null != component)

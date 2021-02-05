@@ -1044,9 +1044,9 @@ namespace Scryber.Styles
         /// Creates a new appropriate PDFPen if this style has any border attributes assigned, otherwise returns null
         /// </summary>
         /// <returns></returns>
-        public PDFPen CreateBorderPen()
+        public PDFPenBorders CreateBorderPen()
         {
-            return this.DoCreateBorderPen();
+            return this.DoCreatePenBorders();
         }
 
         #endregion

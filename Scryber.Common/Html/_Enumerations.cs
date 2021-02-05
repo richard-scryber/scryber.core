@@ -63,6 +63,27 @@ namespace Scryber.Html
         public const string BorderStyle = "border-style";
         public const string BorderColor = "border-color";
 
+        public const string BorderTop = "border-top";
+        public const string BorderLeft = "border-left";
+        public const string BorderRight = "border-right";
+        public const string BorderBottom = "border-bottom";
+
+        public const string BorderTopWidth = "border-top-width";
+        public const string BorderLeftWidth = "border-left-width";
+        public const string BorderRightWidth = "border-right-width";
+        public const string BorderBottomWidth = "border-bottom-width";
+
+        public const string BorderTopColor = "border-top-color";
+        public const string BorderLeftColor = "border-left-color";
+        public const string BorderRightColor = "border-right-color";
+        public const string BorderBottomColor = "border-bottom-color";
+
+        public const string BorderTopStyle = "border-top-style";
+        public const string BorderLeftStyle = "border-left-style";
+        public const string BorderRightStyle = "border-right-style";
+        public const string BorderBottomStyle = "border-bottom-style";
+
+
         public const string FillColor = "color";
 
         public const string Background = "background";

@@ -218,27 +218,14 @@ namespace Scryber.Layout
                     size = size.Subtract(opts.Margins);
                 }
                 
-                PDFPen border = this.FullStyle.CreateBorderPen();
-                PDFUnit corner;
-                Sides sides;
-                if (null != border)
-                {
-                    corner = this.FullStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
-                    sides = this.FullStyle.GetValue(StyleKeys.BorderSidesKey, Sides.Top | Sides.Bottom | Sides.Left | Sides.Right);
-                }
-                else
-                {
-                    corner = 0;
-                    sides = Sides.Top | Sides.Bottom | Sides.Left | Sides.Right;
-                }
-                    
-                
+                PDFPenBorders border = this.FullStyle.CreateBorderPen();
+
 
                 PDFBrush background = this.FullStyle.CreateBackgroundBrush();
 
                 PDFRect borderRect = new PDFRect(loc, size);
                 if (null != background)
-                    this.OutputBackground(background, border, corner, context, borderRect);
+                    this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
                 
                
                 if (opts.Padding.IsEmpty == false)
@@ -266,7 +253,9 @@ namespace Scryber.Layout
 
                 //finally if we have a border then write this
                 if (null != border)
-                    this.OutputBorder(background, border, corner, sides, context, borderRect);
+                {
+                    this.OutputBorder(background, border, context, borderRect);
+                }
 
                 if (context.ShouldLogDebug)
                     context.TraceLog.End(TraceLevel.Verbose, "Layout Item", "Completed the rendering the referenced component " + this.Owner + " and arrangement set to border rect " + borderRect);

@@ -1213,6 +1213,8 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region internal protected virtual PDFColumnOptions DoCreateColumnOptions()
+
         internal protected virtual PDFColumnOptions DoCreateColumnOptions()
         {
             return new PDFColumnOptions()
@@ -1223,6 +1225,68 @@ namespace Scryber.Styles
                 AutoFlow = this.GetValue(StyleKeys.ColumnFlowKey, ColumnsStyle.DefaultAutoFlow)
             };
         }
+
+        #endregion
+
+        protected internal virtual PDFPenBorders DoCreatePenBorders()
+        {
+            var all = this.DoCreateBorderPen();
+
+            Sides side = 0;
+
+
+
+            var left = this.DoCreateBorderSidePen(Sides.Left, StyleKeys.BorderLeftColorKey,
+                                                              StyleKeys.BorderLeftWidthKey,
+                                                              StyleKeys.BorderLeftStyleKey,
+                                                              StyleKeys.BorderLeftDashKey);
+
+            var top = this.DoCreateBorderSidePen(Sides.Top, StyleKeys.BorderTopColorKey,
+                                                              StyleKeys.BorderTopWidthKey,
+                                                              StyleKeys.BorderTopStyleKey,
+                                                              StyleKeys.BorderTopDashKey);
+
+            var right = this.DoCreateBorderSidePen(Sides.Right, StyleKeys.BorderRightColorKey,
+                                                              StyleKeys.BorderRightWidthKey,
+                                                              StyleKeys.BorderRightStyleKey,
+                                                              StyleKeys.BorderRightDashKey);
+
+            var bottom = this.DoCreateBorderSidePen(Sides.Left, StyleKeys.BorderBottomColorKey,
+                                                              StyleKeys.BorderBottomWidthKey,
+                                                              StyleKeys.BorderBottomStyleKey,
+                                                              StyleKeys.BorderBottomDashKey);
+            PDFUnit? corner;
+
+            StyleValue<PDFUnit> cornerValue;
+            if (this.TryGetValue(StyleKeys.BorderCornerRadiusKey, out cornerValue))
+                corner = cornerValue.Value;
+            else
+                corner = null;
+
+            if (null == left)
+                side |= Sides.Left;
+            if (null == top)
+                side |= Sides.Top;
+            if (null == right)
+                side |= Sides.Right;
+            if (null == bottom)
+                side |= Sides.Bottom;
+
+            PDFPenBorders full = new PDFPenBorders()
+            {
+                AllPen = all,
+                AllSides = side,
+                LeftPen = left,
+                RightPen = right,
+                TopPen = top,
+                BottomPen = bottom,
+                CornerRadius = corner
+            };
+
+            return full;
+        }
+
+
         private static PDFDash DefaultDash = new PDFDash(new int[] { 4 }, 0);
         private static PDFUnit DefaultWidth = new PDFUnit(1, PageUnits.Points);
 
@@ -1241,11 +1305,118 @@ namespace Scryber.Styles
         /// </summary>
         public static readonly PDFUnit RepeatNaturalSize = 0;
 
+        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, PDFStyleKey<PDFColor> sideColor, PDFStyleKey<PDFUnit> sideWidth, PDFStyleKey<LineType> sideLine, PDFStyleKey<PDFDash> sideDash)
+        {
+            PDFPen pen = null;
+
+            StyleValue<LineType> styleValue;
+            StyleValue<PDFDash> dashValue;
+            StyleValue<PDFColor> colValue;
+            StyleValue<PDFUnit> widthValue;
+
+            LineType line = LineType.None;
+            PDFColor col = PDFColor.Transparent;
+            PDFUnit width = 0;
+            PDFDash dash = null;
+
+
+            //Logic
+            //If we have an explicit styleValue, then we definiteiy have
+            //a specific left pen in that style
+
+            
+            if (this.TryGetValue(sideLine, out styleValue))
+            {
+                if (styleValue.Value == LineType.None)
+                    return null;
+
+                line = styleValue.Value;
+
+                //now either use explicits or full border values
+
+                if (this.TryGetValue(sideColor, out colValue)
+                    || this.TryGetValue(StyleKeys.BorderColorKey, out colValue))
+                    col = colValue.Value;
+                else
+                    col = PDFColors.Black;
+
+                if (this.TryGetValue(sideWidth, out widthValue)
+                    || this.TryGetValue(StyleKeys.BorderWidthKey, out widthValue))
+                    width = widthValue.Value;
+                else
+                    width = 1;
+
+                if (this.TryGetValue(sideDash, out dashValue)
+                    || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
+                    dash = dashValue.Value;
+                else
+                    dash = null;
+            }
+            else if(this.TryGetValue(sideColor, out colValue))
+            {
+                //We have an explicit color, so we need a style set
+                if (!this.TryGetValue(StyleKeys.BorderStyleKey, out styleValue) || styleValue.Value == LineType.None)
+                    return null;
+
+                line = styleValue.Value;
+                col = colValue.Value;
+
+                if (this.TryGetValue(sideWidth, out widthValue) || this.TryGetValue(StyleKeys.BorderWidthKey, out widthValue))
+                    width = widthValue.Value;
+                else
+                    width = 1;
+
+                if (this.TryGetValue(sideDash, out dashValue) || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
+                    dash = dashValue.Value;
+                else
+                    dash = null;
+
+            }
+            else if(this.TryGetValue(sideWidth, out widthValue))
+            { 
+                //We have an explicit width, so we need a style set
+                if (!this.TryGetValue(StyleKeys.BorderStyleKey, out styleValue) || styleValue.Value == LineType.None)
+                    return null;
+
+                width = widthValue.Value;
+                line = styleValue.Value;
+
+                if (this.TryGetValue(StyleKeys.BorderColorKey, out colValue)) //We know there is no explicit side color
+                    col = colValue.Value;
+                else
+                    col = PDFColors.Black;
+
+                if (this.TryGetValue(sideDash, out dashValue) || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
+                    dash = dashValue.Value;
+                else
+                    dash = null;
+
+            }
+
+
+            if (line == LineType.None || col == PDFColors.Transparent || width <= 0)
+                pen = null; //This is an explicit pen that will not draw anything.
+
+            else if (line == LineType.Dash)
+            {
+                pen = new PDFDashPen(dash, col, width);
+            }
+            else if (line == LineType.Solid)
+                pen = new PDFSolidPen(col, width);
+            else
+                pen = null; // not supporting the pattern on borders
+
+            if (null != pen)
+                this.ApplyBorderAttributes(pen);
+
+            return pen;
+        }
+
         #region internal protected virtual PDFPen DoCreateBorderPen()
 
         internal protected virtual PDFPen DoCreateBorderPen()
         {
-            
+
             PDFPen pen = null;
 
             StyleValue<LineType> penstyle;
@@ -1272,18 +1443,22 @@ namespace Scryber.Styles
 
                 if (penstyle.Value == LineType.Solid)
                 {
-                    pen = new PDFSolidPen() { Color = (null == c)? PDFColors.Black : c.Value, Width = (null == width) ? 1.0 : width.Value  };
+                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value, Width = (null == width) ? 1.0 : width.Value };
                 }
                 else if (penstyle.Value == LineType.Dash)
                 {
                     if (this.TryGetValue(StyleKeys.BorderDashKey, out dash))
-                        pen = new PDFDashPen(dash.Value) { 
+                        pen = new PDFDashPen(dash.Value)
+                        {
                             Color = (null == c) ? PDFColors.Black : c.Value,
-                            Width = (null == width) ? 1.0 : width.Value };
+                            Width = (null == width) ? 1.0 : width.Value
+                        };
                     else // set as Dash, but there is none so use default
-                        pen = new PDFDashPen(DefaultDash) { 
+                        pen = new PDFDashPen(DefaultDash)
+                        {
                             Color = (null == c) ? PDFColors.Black : c.Value,
-                            Width = (null == width) ? 1.0 : width.Value };
+                            Width = (null == width) ? 1.0 : width.Value
+                        };
                 }
                 else
                     throw new IndexOutOfRangeException(StyleKeys.BorderStyleKey.ToString());
@@ -1301,7 +1476,7 @@ namespace Scryber.Styles
                     Color = (null == c) ? PDFColors.Black : c.Value,
                     Width = (null == width) ? 1.0 : width.Value
                 };
-            
+
             }
             else if (this.TryGetValue(StyleKeys.BorderColorKey, out c))
             {
@@ -1332,6 +1507,17 @@ namespace Scryber.Styles
             if (null == pen)
                 return null;
 
+            this.ApplyBorderAttributes(pen);
+
+            return pen;
+        }
+
+
+
+        #endregion
+
+        private void ApplyBorderAttributes(PDFPen pen)
+        {
             StyleValue<LineJoin> join;
             StyleValue<LineCaps> caps;
             StyleValue<float> mitre;
@@ -1348,11 +1534,7 @@ namespace Scryber.Styles
 
             if (this.TryGetValue(StyleKeys.BorderOpacityKey, out opacity))
                 pen.Opacity = (Scryber.Native.PDFReal)opacity.Value;
-
-            return pen;
         }
-
-        #endregion
 
         #region internal protected virtual PDFPen DoCreateStrokePen()
 
@@ -1445,6 +1627,15 @@ namespace Scryber.Styles
             else //no values set
                 return null;
 
+            this.ApplyStrokeAttributes(pen);
+
+            return pen;
+        }
+
+        #endregion
+
+        private void ApplyStrokeAttributes(PDFPen pen)
+        {
             StyleValue<LineJoin> join;
             StyleValue<LineCaps> caps;
             StyleValue<float> mitre;
@@ -1461,11 +1652,7 @@ namespace Scryber.Styles
 
             if (this.TryGetValue(StyleKeys.StrokeOpacityKey, out opacity))
                 pen.Opacity = (Scryber.Native.PDFReal)opacity.Value;
-
-            return pen;
         }
-
-        #endregion
 
         #region internal protected virtual PDFBrush DoCreateBackgroundBrush()
 

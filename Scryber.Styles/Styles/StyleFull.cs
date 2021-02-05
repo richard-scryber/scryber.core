@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 
 namespace Scryber.Styles
 {
@@ -35,6 +36,8 @@ namespace Scryber.Styles
         private Scryber.PageSize _pgsize;
         private Scryber.PDFTextRenderOptions _text;
         private Scryber.PDFPageNumberOptions _pageNums;
+        private Scryber.Drawing.PDFPenBorders _borders;
+
 
         public StyleFull()
             : base()
@@ -54,6 +57,7 @@ namespace Scryber.Styles
             this._pgsize = null;
             this._text = null;
             this._pageNums = null;
+            this._borders = null;
         }
 
         protected override void BeginStyleChange()
@@ -62,6 +66,7 @@ namespace Scryber.Styles
             this._pgsize = null;
             this._text = null;
             this._pageNums = null;
+            this._borders = null;
 
             base.BeginStyleChange();
         }
@@ -81,6 +86,13 @@ namespace Scryber.Styles
 
 
             return _text;
+        }
+
+        protected internal override PDFPenBorders DoCreatePenBorders()
+        {
+            if (null == _borders)
+                _borders = base.DoCreatePenBorders();
+            return _borders;
         }
 
         internal protected override Scryber.PageSize DoCreatePageSize()

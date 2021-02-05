@@ -68,24 +68,28 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<PDFColor> BorderTopColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemTopKey);
         public static readonly PDFStyleKey<LineType> BorderTopStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemTopKey);
         public static readonly PDFStyleKey<PDFUnit> BorderTopWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemTopKey);
+        public static readonly PDFStyleKey<PDFDash> BorderTopDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemTopKey);
 
         //Border Top
         public static readonly StyleKey BorderItemLeftKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderLeft, NOT_INHERITED);
         public static readonly PDFStyleKey<PDFColor> BorderLeftColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemLeftKey);
         public static readonly PDFStyleKey<LineType> BorderLeftStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemLeftKey);
         public static readonly PDFStyleKey<PDFUnit> BorderLeftWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemLeftKey);
+        public static readonly PDFStyleKey<PDFDash> BorderLeftDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemLeftKey);
 
         //Border Top
         public static readonly StyleKey BorderItemBottomKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderBottom, NOT_INHERITED);
         public static readonly PDFStyleKey<PDFColor> BorderBottomColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemBottomKey);
         public static readonly PDFStyleKey<LineType> BorderBottomStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemBottomKey);
         public static readonly PDFStyleKey<PDFUnit> BorderBottomWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemBottomKey);
+        public static readonly PDFStyleKey<PDFDash> BorderBottomDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemBottomKey);
 
         //Border Top
         public static readonly StyleKey BorderItemRightKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderRight, NOT_INHERITED);
         public static readonly PDFStyleKey<PDFColor> BorderRightColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemRightKey);
         public static readonly PDFStyleKey<LineType> BorderRightStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemRightKey);
         public static readonly PDFStyleKey<PDFUnit> BorderRightWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemRightKey);
+        public static readonly PDFStyleKey<PDFDash> BorderRightDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemRightKey);
 
         // Padding
         public static readonly StyleKey PaddingItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StylePadding, NOT_INHERITED);

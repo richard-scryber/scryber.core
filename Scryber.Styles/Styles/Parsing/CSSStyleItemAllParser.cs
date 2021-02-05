@@ -75,6 +75,26 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BorderColor, new CSSBorderColorParser());
             all.Add(CSSStyleItems.BorderWidth, new CSSBorderWidthParser());
 
+            all.Add(CSSStyleItems.BorderLeft, new CSSBorderLeftParser());
+            all.Add(CSSStyleItems.BorderRight, new CSSBorderRightParser());
+            all.Add(CSSStyleItems.BorderTop, new CSSBorderTopParser());
+            all.Add(CSSStyleItems.BorderBottom, new CSSBorderBottomParser());
+
+            all.Add(CSSStyleItems.BorderLeftWidth, new CSSBorderLeftWidthParser());
+            all.Add(CSSStyleItems.BorderRightWidth, new CSSBorderRightWidthParser());
+            all.Add(CSSStyleItems.BorderTopWidth, new CSSBorderTopWidthParser());
+            all.Add(CSSStyleItems.BorderBottomWidth, new CSSBorderBottomWidthParser());
+
+            all.Add(CSSStyleItems.BorderLeftColor, new CSSBorderLeftColorParser());
+            all.Add(CSSStyleItems.BorderRightColor, new CSSBorderRightColorParser());
+            all.Add(CSSStyleItems.BorderTopColor, new CSSBorderTopColorParser());
+            all.Add(CSSStyleItems.BorderBottomColor, new CSSBorderBottomColorParser());
+
+            all.Add(CSSStyleItems.BorderLeftStyle, new CSSBorderLeftStyleParser());
+            all.Add(CSSStyleItems.BorderRightStyle, new CSSBorderRightStyleParser());
+            all.Add(CSSStyleItems.BorderTopStyle, new CSSBorderTopStyleParser());
+            all.Add(CSSStyleItems.BorderBottomStyle, new CSSBorderBottomStyleParser());
+
             all.Add(CSSStyleItems.FillColor, new CSSFillColourParser());
 
 

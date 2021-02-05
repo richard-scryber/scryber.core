@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?scryber append-log="true" ?>
+<!DOCTYPE HTML>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Hello World</title>
+    <style>
+        div {
+            margin: 20pt;
+            padding: 10pt;
+        }
+
+        div.full {
+            border: solid 2pt;
+        }
+
+        div.left {
+            border-left: solid 4pt;
+        }
+
+        div.red{
+            border-bottom: dashed red;
+        }
+
+        div.left-thick{
+            border-left-width: 10pt;
+            border-left-color: blue;
+        }
+
+
+        div.bottom{
+            border-bottom-style:solid;
+        }
+    </style>
+</head>
+<body>
+    <div class="full">
+        A solid 2pt border.
+    </div>
+
+    <div class="left">
+        <p>Just a left solid 4pt border on it's own is enough.</p>
+    </div>
+
+    <div class="full red">
+        <p>
+            A solid 2pt border, but the bottom-border is dashed red.
+            Independent styling from a border-bottom needs the style, otherwise it will be none. This will then be combined with the other values.
+            When we parse the border, if style is not set, then set none.
+        </p>
+    </div>
+
+    <div class="full left-thick">
+        <p>The left border has an explicit left-border-width of 10pt. This is combined with the other borders</p>
+    </div>
+    <div class="left-thick">
+        <p>An explicit left-border-width of 10pt with a border color, and no style. This is style none</p>
+    </div>
+
+    <div class="bottom">
+        <p>An explicit bottom border of solid, and no style. This is black underline</p>
+    </div>
+
+
+</body>
+
+</html>

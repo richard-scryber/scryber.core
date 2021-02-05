@@ -52,7 +52,7 @@ namespace Scryber.Layout
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             Scryber.Drawing.PDFBrush bg = null;
-            Scryber.Drawing.PDFPen border = null;
+            Scryber.Drawing.PDFPenBorders border = null;
             Drawing.PDFUnit corner = Drawing.PDFUnit.Zero;
             Drawing.Sides sides = Drawing.Sides.Top | Drawing.Sides.Left | Drawing.Sides.Bottom | Drawing.Sides.Right;
 
@@ -65,12 +65,12 @@ namespace Scryber.Layout
             }
 
             if (null != bg)
-                this.OutputBackground(bg, border, corner, context, Drawing.PDFRect.Empty);
+                this.OutputBackground(bg, border.CornerRadius, context, Drawing.PDFRect.Empty);
 
             Scryber.Native.PDFObjectRef oref = base.DoOutputToPDF(context, writer);
 
             if (null != border)
-                this.OutputBorder(bg, border, corner, sides, context, Drawing.PDFRect.Empty);
+                this.OutputBorder(bg, border, context, Drawing.PDFRect.Empty);
 
             return oref;
         }

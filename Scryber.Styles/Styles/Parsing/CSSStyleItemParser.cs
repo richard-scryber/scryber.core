@@ -8,6 +8,7 @@ using Scryber.Drawing;
 using Scryber.Html;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Windows.Markup;
 
 namespace Scryber.Styles.Parsing
 {
@@ -459,6 +460,12 @@ namespace Scryber.Styles.Parsing
     {
         private PDFStyleKey<T> _pdfStyleAttr;
 
+        protected PDFStyleKey<T> StyleKey
+        {
+            get { return this._pdfStyleAttr; }
+            set { this._pdfStyleAttr = value; }
+        }
+
         private Type _enumType;
 
         public CSSEnumStyleParser(string styleItemKey, PDFStyleKey<T> pdfAttr)
@@ -593,7 +600,7 @@ namespace Scryber.Styles.Parsing
 
     // border
 
-    #region public class CSSBorderWidthParser : CSSUnitStyleParser
+    #region public class CSSBorderWidthParser : CSSUnitStyleParser + Border[Side]WidthParser
 
     public class CSSBorderWidthParser : CSSUnitStyleParser
     {
@@ -602,7 +609,13 @@ namespace Scryber.Styles.Parsing
         private static readonly PDFUnit ThickSize = (PDFUnit)3.0;
 
         public CSSBorderWidthParser()
-            : base(CSSStyleItems.BorderWidth, StyleKeys.BorderWidthKey)
+            : this(CSSStyleItems.BorderWidth, StyleKeys.BorderWidthKey)
+        {
+
+        }
+
+        public CSSBorderWidthParser(string attr, PDFStyleKey<PDFUnit> styleKey)
+            : base(attr, styleKey)
         {
 
         }
@@ -640,6 +653,34 @@ namespace Scryber.Styles.Parsing
         }
     }
 
+    public class CSSBorderLeftWidthParser: CSSBorderWidthParser
+    {
+        public CSSBorderLeftWidthParser() : base(CSSStyleItems.BorderLeftWidth, StyleKeys.BorderLeftWidthKey)
+        {
+        }
+    }
+
+    public class CSSBorderTopWidthParser : CSSBorderWidthParser
+    {
+        public CSSBorderTopWidthParser() : base(CSSStyleItems.BorderTopWidth, StyleKeys.BorderTopWidthKey)
+        {
+        }
+    }
+
+    public class CSSBorderRightWidthParser : CSSBorderWidthParser
+    {
+        public CSSBorderRightWidthParser() : base(CSSStyleItems.BorderRightWidth, StyleKeys.BorderRightWidthKey)
+        {
+        }
+    }
+
+    public class CSSBorderBottomWidthParser : CSSBorderWidthParser
+    {
+        public CSSBorderBottomWidthParser() : base(CSSStyleItems.BorderBottomWidth, StyleKeys.BorderBottomWidthKey)
+        {
+        }
+    }
+
     #endregion
 
     #region public class CSSBorderStyleParser : CSSEnumStyleParser<LineStyle>
@@ -652,9 +693,19 @@ namespace Scryber.Styles.Parsing
         public static readonly PDFDash DottedDashPattern = new PDFDash(new int[] { 1 }, 0);
         public static readonly PDFDash DashedDashPattern = new PDFDash(new int[] { 4 }, 0);
 
+        private PDFStyleKey<PDFDash> _dash;
+
+        protected PDFStyleKey<PDFDash> DashKey { get { return this._dash; } }
+
         public CSSBorderStyleParser()
-            : base(CSSStyleItems.BorderStyle, StyleKeys.BorderStyleKey)
+            : this(CSSStyleItems.BorderStyle, StyleKeys.BorderStyleKey, StyleKeys.BorderDashKey)
         {
+        }
+
+        public CSSBorderStyleParser(string attr, PDFStyleKey<LineType> style, PDFStyleKey<PDFDash> dash)
+            : base(attr, style)
+        {
+            this._dash = dash;
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
@@ -665,9 +716,9 @@ namespace Scryber.Styles.Parsing
 
             if (reader.ReadNextValue() && TryGetLineStyleFromReader(reader, out converted, out dash))
             {
-                onStyle.Border.LineStyle = converted;
+                onStyle.SetValue(this.StyleKey, converted);
                 if (null != dash)
-                    onStyle.Border.Dash = dash;
+                    onStyle.SetValue(DashKey, dash);
 
                 result = true;
             }
@@ -722,6 +773,31 @@ namespace Scryber.Styles.Parsing
         }
     }
 
+    public class CSSBorderLeftStyleParser : CSSBorderStyleParser
+    {
+
+        public CSSBorderLeftStyleParser() : base(CSSStyleItems.BorderLeftStyle, StyleKeys.BorderLeftStyleKey, StyleKeys.BorderLeftDashKey)
+        { }
+    }
+
+    public class CSSBorderTopStyleParser : CSSBorderStyleParser
+    {
+        public CSSBorderTopStyleParser() : base(CSSStyleItems.BorderTopStyle, StyleKeys.BorderTopStyleKey, StyleKeys.BorderTopDashKey)
+        { }
+    }
+
+    public class CSSBorderRightStyleParser : CSSBorderStyleParser
+    {
+        public CSSBorderRightStyleParser() : base(CSSStyleItems.BorderRightStyle, StyleKeys.BorderRightStyleKey, StyleKeys.BorderRightDashKey)
+        { }
+    }
+
+    public class CSSBorderBottomStyleParser : CSSBorderStyleParser
+    {
+        public CSSBorderBottomStyleParser() : base(CSSStyleItems.BorderBottomStyle, StyleKeys.BorderBottomStyleKey, StyleKeys.BorderBottomDashKey)
+        { }
+    }
+
     #endregion
 
     #region public class CSSBorderColorParser : CSSColorStyleParser
@@ -735,6 +811,42 @@ namespace Scryber.Styles.Parsing
         }
     }
 
+    public class CSSBorderLeftColorParser : CSSColorStyleParser
+    {
+
+        public CSSBorderLeftColorParser()
+            : base(CSSStyleItems.BorderLeftColor, StyleKeys.BorderLeftColorKey)
+        {
+        }
+    }
+
+    public class CSSBorderTopColorParser : CSSColorStyleParser
+    {
+
+        public CSSBorderTopColorParser()
+            : base(CSSStyleItems.BorderTopColor, StyleKeys.BorderTopColorKey)
+        {
+        }
+    }
+
+    public class CSSBorderBottomColorParser : CSSColorStyleParser
+    {
+
+        public CSSBorderBottomColorParser()
+            : base(CSSStyleItems.BorderBottomColor, StyleKeys.BorderBottomColorKey)
+        {
+        }
+    }
+
+    public class CSSBorderRightColorParser : CSSColorStyleParser
+    {
+
+        public CSSBorderRightColorParser()
+            : base(CSSStyleItems.BorderRightColor, StyleKeys.BorderRightColorKey)
+        {
+        }
+    }
+
     #endregion
 
     #region public class CSSBorderParser : CSSStyleItemParser
@@ -744,6 +856,8 @@ namespace Scryber.Styles.Parsing
     /// </summary>
     public class CSSBorderParser : CSSStyleValueParser
     {
+        
+
         public CSSBorderParser()
             : base(CSSStyleItems.Border)
         {
@@ -796,6 +910,102 @@ namespace Scryber.Styles.Parsing
     }
 
     #endregion
+
+    //Border Sides
+
+    public class CSSBorderSideParser : CSSStyleValueParser
+    {
+        private PDFStyleKey<PDFUnit> _width;
+        private PDFStyleKey<PDFColor> _color;
+        private PDFStyleKey<LineType> _style;
+        private PDFStyleKey<PDFDash> _dash;
+
+        public CSSBorderSideParser(string cssName, PDFStyleKey<PDFUnit> width, PDFStyleKey<PDFColor> color, PDFStyleKey<LineType> style, PDFStyleKey<PDFDash> dash)
+            : base(cssName)
+        {
+            this._width = width;
+            this._color = color;
+            this._style = style;
+            this._dash = dash;
+        }
+
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            int count = 0;
+            int failed = 0;
+
+            while (reader.ReadNextValue())
+            {
+                count++;
+
+                if (IsNumber(reader.CurrentTextValue))
+                {
+                    PDFUnit unit;
+                    if (ParseCSSUnit(reader.CurrentTextValue, out unit))
+                        style.SetValue(_width, unit);
+                    else
+                        failed++;
+
+                }
+                else if (IsColor(reader.CurrentTextValue))
+                {
+                    PDFColor color;
+                    if (ParseCSSColor(reader.CurrentTextValue, out color))
+                        style.SetValue(_color, color);
+                    else
+                        failed++;
+                }
+                else
+                {
+                    LineType line;
+                    PDFDash dash;
+
+                    if (CSSBorderStyleParser.TryGetLineStyleFromReader(reader, out line, out dash))
+                    {
+                        style.SetValue(_style, line);
+                        if (null != dash)
+                            style.SetValue(_dash, dash);
+                    }
+                    else
+                        failed++;
+                }
+
+            }
+            return count > 0 && failed == 0;
+        }
+    }
+
+    public class CSSBorderTopParser : CSSBorderSideParser
+    {
+        public CSSBorderTopParser(): base(CSSStyleItems.BorderTop, StyleKeys.BorderTopWidthKey, StyleKeys.BorderTopColorKey, StyleKeys.BorderTopStyleKey, StyleKeys.BorderTopDashKey)
+        {
+
+        }
+    }
+
+    public class CSSBorderLeftParser : CSSBorderSideParser
+    {
+        public CSSBorderLeftParser() : base(CSSStyleItems.BorderLeft, StyleKeys.BorderLeftWidthKey, StyleKeys.BorderLeftColorKey, StyleKeys.BorderLeftStyleKey, StyleKeys.BorderLeftDashKey)
+        {
+
+        }
+    }
+
+    public class CSSBorderRightParser : CSSBorderSideParser
+    {
+        public CSSBorderRightParser() : base(CSSStyleItems.BorderRight, StyleKeys.BorderRightWidthKey, StyleKeys.BorderRightColorKey, StyleKeys.BorderRightStyleKey, StyleKeys.BorderRightDashKey)
+        {
+
+        }
+    }
+
+    public class CSSBorderBottomParser : CSSBorderSideParser
+    {
+        public CSSBorderBottomParser() : base(CSSStyleItems.BorderBottom, StyleKeys.BorderBottomWidthKey, StyleKeys.BorderBottomColorKey, StyleKeys.BorderBottomStyleKey, StyleKeys.BorderBottomDashKey)
+        {
+
+        }
+    }
 
     // background
 

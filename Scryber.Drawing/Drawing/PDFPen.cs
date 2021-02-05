@@ -248,6 +248,12 @@ namespace Scryber.Drawing
             this.Dash = dash;
         }
 
+        public PDFDashPen(PDFDash dash, PDFColor color, PDFUnit width)
+            : base(color, width)
+        {
+            this.Dash = dash;
+        }
+
         public override void SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             base.SetUpGraphics(graphics, bounds);

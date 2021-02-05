@@ -53,46 +53,27 @@ Scryber processing instruction
 The following are the supported options on the processing instruction.
 
 * 'append-log' - Controls the tracing log output for a single document
-    * false - This is the default and the document will be rendered as normal.
-    * true - If set to true, then once the document has been generated, a trace log of output will be appended to the resultant file, containing all the recorded entries.
 * 'log-level' - This is an enumeration of the granularity of the logging performed on the pdf file. Values supported (from least to most) are
-    * Off - no entries be recorded.
-    * Errors - only errors will be recorded (depending on the parser mode switch)
-    * Warnings - warnings will occur if some of the contents cannot be loaded, or the parsing fails for a non-error condition.
-    * Messages - This will output key stage messages for the generation of the file.
-    * Verbose - A quantity of messages will be output for each of the compoents, and is a useful level to understand what is going wrong (if anything) with your document.
-    * Diagnostic - **Be carefull**, this will generate a large log file and can slow the creation of a PDF file significnatly. But it's very informative.
 * 'parser-log' - Controls the logging from the xml parser.
-    * true - then both the reading of the content, to create the document, as well as the output of the content to PDF will be recorded.
-    * false - then only messages from the content creation and output will be recorded.
 * 'parser-culture' - specifies the global culture settings when parsing a file for interpreting dates and number formats in the content. e.g.
-    * en-gb - This specifies the english, britsh culture. It can be useful for reading number formats or dates from files e.g. 
-    * es-es - This will read spanish nuber formats where . 'dot' is a thousand separator and , 'comma' is the decimal separator.
 * 'parser-mode' - Defines how errors will be recorded if unknown or invalid attributes values are encountered. 
-    * Strict - Will raise exceptions to the top of the stack and must be handled in your code. (Good for dev)
-    * Lax - Default. If this is set  then the parser is more complianant, where errors will be logged, but not cause the output to fail. (Good for Prod).
 
-There is a detailed explanation of the tracing and logging capabilities in :doc:`extending_logging` which is **really** useful.
-
-.. note:: If you set the log level to Diagnostic for the Hello World example in our Getting started examples, the appended log file is around 30 pages in length. If it's a long template - diagnostic is going to hurt, but for a quick check or a feature - it is awesome without needing debugging.
+See :doc:`extending_logging` for a detailed explanation of the tracing and logging capabilities in scryber which is **really** useful.
 
 
-Namespaces
-----------
+XML Namespaces
+---------------
 
-Scryber is dynamic and extensible. The xml namespaces refer directly to namespaces (and assemblies) in the library.
+Scryber is dynamic and extensible. The xml namespaces refers directly to namespaces (and assemblies) in the library, and is reqiured.
+If you don't have a known namepsace, then you will get an error.
 There are 2 primary namespaces in use with xhtml documents.
 
 
 * http://www.w3.org/1999/xhtml
     * This is the main visual and structural components in an html file or document.
-    * It refers to the assembly namespace `Scryber.Html.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
-    * see `<https://github.com/richard-scryber/scryber.core/tree/master/Scryber.Components/Html/Components>`_ for the classes in this namespace.
     * see :doc:`document_components` for a description of each of these.
 * http://www.w3.org/2000/svg
     * These are the svg graphics components. e.g. svg, path, line, rect 
-    * It refers directly to the assembly namespace `Scryber.Svg.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe`
-    * see `<https://github.com/richard-scryber/scryber.core/tree/master/Scryber.Components/Html/Components>`_ for the classes in this namespace.
     * see :doc:`drawing_paths` for a description of each of these.
 
 
@@ -101,7 +82,7 @@ For more information on how these are mapped, and also adding your own namespace
 Html header
 -----------
 
-The following tags are supports as direct mappings to the PDF document information.
+In the html header. the following tags are supports as direct mappings to the PDF document information.
 
 .. code-block:: html
 

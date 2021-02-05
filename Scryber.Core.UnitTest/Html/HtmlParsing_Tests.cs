@@ -466,6 +466,26 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        public void BordersAndSides()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/BorderSides.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("BorderSides.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+                
+            }
+
+        }
+
+        [TestMethod()]
         public void HtmlIFrameFragments()
         {
             var path = System.Environment.CurrentDirectory;
