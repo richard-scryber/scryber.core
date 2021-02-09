@@ -834,5 +834,23 @@ namespace Scryber.Core.UnitTests.Html
 
             }
         }
+
+        [TestMethod()]
+        public void RestrictedHtml()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/RestrictedHtml.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.PasswordProvider = new Scryber.Secure.DocumentPasswordProvider("Password");
+
+                using (var stream = DocStreams.GetOutputStream("RestrictedHtml.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
     }
 }

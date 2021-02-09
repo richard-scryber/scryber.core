@@ -19,8 +19,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using Scryber.Components;
+using Scryber.Secure;
 
 namespace Scryber
 {
@@ -55,16 +57,6 @@ namespace Scryber
 
         [PDFAttribute("image-compression")]
         public ImageCompressionType ImageCompression
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the version number or the PDF standard this document should / does conform to.
-        /// </summary>
-        [Obsolete("PDF Version is now set on the writer factory instance, rather than the render options.", true)]
-        public string PDFVersion
         {
             get;
             set;
@@ -111,17 +103,7 @@ namespace Scryber
             set;
         }
 
-        /// <summary>
-        /// If true (default) then object streams will be pooled and reused - which improves speed significantly.
-        /// If false then the layout of the final PDF document will be linear
-        /// </summary>
-        [Obsolete("Pooled streams is now set on the writer factory instance, rather than the render options.", true)]
-        public bool PooledStreams
-        {
-            get;
-            set;
-        }
-
+        
         [PDFElement("")]
         public Scryber.Components.PDFWriterFactory WriterFactory
         {
@@ -152,26 +134,65 @@ namespace Scryber
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            //sb.Append("PDF Version = ");
-            //sb.Append(this.PDFVersion);
             sb.Append("PDF Compliance = ");
             sb.Append(this.OuptputCompliance);
             sb.Append(", Compression = ");
             sb.Append(this.Compression);
             sb.Append(", Names = ");
             sb.Append(this.ComponentNames);
-            //sb.Append(", Pooled = ");
-            //sb.Append(this.PooledStreams);
             return sb.ToString();
         }
 
         public PDFWriter CreateWriter(Document forDoc, System.IO.Stream outputStream, int generation, PDFTraceLog log)
         {
             if (null == this.WriterFactory)
-                this.WriterFactory = new Scryber.Components.PDFDocumentWriter();
-
+            {
+                if (forDoc.Permissions.HasRestrictions)
+                    this.WriterFactory = GetSecureWriter(forDoc);
+                else
+                    this.WriterFactory = GetStandardWriter(forDoc);
+            }
             return this.WriterFactory.GetInstance(forDoc, outputStream, generation, this, log);
             
+        }
+
+        protected virtual PDFWriterFactory GetSecureWriter(Document forDoc)
+        {
+            if (null == forDoc)
+                throw new ArgumentNullException("forDoc");
+            
+            SecureString owner = null;
+            SecureString user = null;
+
+            PDFDocumentID id = forDoc.DocumentID;
+            var passwordProvider = forDoc.PasswordProvider;
+            var permissions = forDoc.Permissions;
+            IDocumentPasswordSettings settings;
+
+            if (null != passwordProvider && passwordProvider.IsSecure(forDoc.LoadedSource, out settings))
+            {
+                owner = settings.OwnerPassword;
+                user = settings.UserPassword;
+            }
+            
+            if(null == id)
+            {
+                id = PDFDocumentID.Create();
+                forDoc.DocumentID = id;
+            }
+
+            if (null == permissions)
+                permissions = new DocumentPermissions();
+
+            var encFactory = permissions.GetFactory();
+            var enc = encFactory.InitEncrypter(owner, user, id, permissions.GetRestrictions());
+            
+            return new PDFSecureWrite14Factory(enc);
+        }
+
+        protected virtual PDFWriterFactory GetStandardWriter(Document doc)
+        {
+            return new PDFDocumentWriterFactory();
         }
 
         public void Dispose()

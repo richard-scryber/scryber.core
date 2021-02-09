@@ -370,31 +370,6 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public OutputCompression Compression {get;set;}
-
-        /// <summary>
-        /// Gets or Sets the compression option for the output pdf. 
-        /// If Compress then content streams, images, fonts etc will be compressed using the Zlib/Deflate method
-        /// </summary>
-        /// <remarks>Surfaces the Output Compression type of the RenderOptions at the document level.
-        /// For greater control use the RenderOptions.Compression value</remarks>
-        [PDFAttribute("compression")]
-        [Obsolete("Use the RenderOptions.Compression attributes instead. Retained for backwards compatibility", false)]
-        [PDFDesignable("Compression", Ignore = true)]
-        public OutputCompression Compression
-        {
-            get { return this.RenderOptions.Compression == OutputCompressionType.None ? OutputCompression.None : OutputCompression.Compress; }
-            set
-            {
-                if (value == OutputCompression.Compress)
-                    this.RenderOptions.Compression = OutputCompressionType.FlateDecode;
-                else
-                    this.RenderOptions.Compression = OutputCompressionType.None;
-            }
-        }
-
-        #endregion
-
         #region public PDFDocumentViewPreferences ViewPreferences {get;set;}
 
         private DocumentViewPreferences _viewPrefs;
@@ -599,7 +574,46 @@ namespace Scryber.Components
 
         #endregion
 
-        // IPDFStyledComponent explicit interface
+        #region public Secure.DocumentPermissions Permissions {get;set;}
+
+        private Secure.DocumentPermissions _perms;
+
+        /// <summary>
+        /// Gets or sets the permissions for this document
+        /// </summary>
+        [PDFElement("Permissions")]
+        public Secure.DocumentPermissions Permissions
+        {
+            get
+            {
+                if (_perms == null)
+                    _perms = new Secure.DocumentPermissions();
+                return _perms;
+            }
+            set
+            {
+                _perms = value;
+            }
+        }
+
+        #endregion
+
+        #region public IPDFSecurePasswordProvider PasswordProvider {get;set;}
+
+        private Secure.IPDFSecurePasswordProvider _password;
+
+        /// <summary>
+        /// Gets or sets a password provider
+        /// </summary>
+        public Secure.IPDFSecurePasswordProvider PasswordProvider
+        {
+            get { return this._password; }
+            set { this._password = value; }
+        }
+
+        #endregion
+
+        // IPDFStyledComponent explicit interface - so we dont show the properties by default
 
         Style IPDFStyledComponent.Style { get; }
 
@@ -1876,7 +1890,6 @@ namespace Scryber.Components
 
         #endregion
 
-        
         #region protected virtual void DoOutputAndAppendToPDF(PDFLayoutDocument doc, PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
@@ -2142,8 +2155,6 @@ namespace Scryber.Components
         /// <returns>A new PDFWriter</returns>
         protected virtual PDFWriter DoCreateRenderWriter(System.IO.Stream tostream, PDFRenderContext context)
         {
-            //TODO: Add configuration for document writer version support.
-
             PDFWriter writer = this.RenderOptions.CreateWriter(this, tostream, 0, context.TraceLog);
 
             writer.UseHex = (this.RenderOptions.StringOutput == OutputStringType.Hex);
@@ -2155,6 +2166,7 @@ namespace Scryber.Components
         #endregion
 
         #region protected virtual IStreamFilter[] GetStreamFilters()
+
         /// <summary>
         /// Loads and returns the default stream filters
         /// </summary>
@@ -2347,7 +2359,6 @@ namespace Scryber.Components
         // Find a component
         //
 
-
         #region  public PDFComponent FindAComponent(string id) + 1 overload
 
         public Component FindAComponentById(string id)
@@ -2430,7 +2441,6 @@ namespace Scryber.Components
 
         #endregion
 
-        
         //
         // parse methods
         //
@@ -2670,6 +2680,7 @@ namespace Scryber.Components
         #endregion
 
         #region protected virtual PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver)
+
         /// <summary>
         /// Creates the generator settings required to parse the XML files
         /// </summary>
@@ -2717,6 +2728,9 @@ namespace Scryber.Components
         #endregion
 
 
+        //
+        // parse document
+        //
 
         #region public static PDFDocument ParseDocument(string path)
 
@@ -2804,6 +2818,10 @@ namespace Scryber.Components
 
         #endregion
 
+        //
+        // IPDFRemoteComponent
+        //
+
         #region IPDFRemoteComponent Members
 
         void Scryber.IPDFRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
@@ -2856,7 +2874,6 @@ namespace Scryber.Components
         //
         // inner classes
         //
-
 
         #region private class PDFReferenceChecker
 
@@ -3171,7 +3188,6 @@ namespace Scryber.Components
         
         #endregion
 
- 
     }
 
 

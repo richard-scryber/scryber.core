@@ -81,6 +81,24 @@
           "FactoryAssembly": "Scryber.UnitTests"
         }
       ]
+    },
+    "Security": {
+      "PasswordPaths": [
+        {
+          "Match": "Confidential/.*",
+          "Permissions": "AllowPrinting AllowFormFilling AllowAccessibleTextAndGraphics",
+          "OwnerPassword": "Password2",
+          "AllowOverrides": "False"
+        },
+        {
+          "Match": "Private/.*",
+          "Permissions": "AllowPrinting AllowFormFilling AllowAccessibleTextAndGraphics",
+          "OwnerPassword": "Password3",
+          "UserPassword": "---------",
+          "AllowOverrides": "True"
+        }
+
+      ]
     }
   }
 

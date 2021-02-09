@@ -64,7 +64,7 @@ namespace Scryber.Components
     }
 
     [PDFParsableComponent("Writer")]
-    public class PDFDocumentWriter : PDFWriterFactory
+    public class PDFDocumentWriterFactory : PDFWriterFactory
     {
         /// <summary>
         /// If true (default) then object streams will be pooled and reused - which improves speed significantly.
@@ -87,13 +87,13 @@ namespace Scryber.Components
             set;
         }
 
-        public PDFDocumentWriter() :
+        public PDFDocumentWriterFactory() :
             this(true, "1.4")
         {
 
         }
 
-        protected PDFDocumentWriter(bool pooled, string version)
+        public PDFDocumentWriterFactory(bool pooled, string version)
         {
             this.PooledStreams = pooled;
             this.PDFVersion = version;

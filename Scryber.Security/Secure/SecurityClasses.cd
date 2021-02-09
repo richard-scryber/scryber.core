@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Scryber.Secure.PDFSecureDocument">
+    <Position X="1.75" Y="2.5" Width="2" />
+    <Members>
+      <Field Name="_ownerunsecure" Hidden="true" />
+      <Field Name="_perms" Hidden="true" />
+      <Field Name="_userunsecure" Hidden="true" />
+      <Field Name="DefaultEncryptionRevision" Hidden="true" />
+      <Field Name="DefaultEncryptionVersion" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAIAAgAAACABAAAAAIAiAAAAAAAIAAACEAAIAAIAgAA=</HashCode>
+      <FileName>Secure\PDFSecureDocument.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Permissions" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Scryber.Components.PDFDocument" Collapsed="true">
+    <Position X="1.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scryber.Secure.PDFDocumentPermissions">
+    <Position X="5.75" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>IACAEIAIAAAAAIAAACAAAACAAEAAABAAAwAAAIgAEAA=</HashCode>
+      <FileName>Secure\PDFDocumentPermissions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scryber.Secure.PDFEncrypterFactory">
+    <Position X="10.25" Y="2.5" Width="2.5" />
+    <Members>
+      <Field Name="_md5" Hidden="true" />
+      <Field Name="_padding" Hidden="true" />
+      <Field Name="PaddedPasswordStringLength" Hidden="true" />
+      <Field Name="PaddingBytesString" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IQKIAAAAAIAAAAgAAAEAQAAAAEEEACAAAgIAAAAAAAA=</HashCode>
+      <FileName>Secure\PDFEncrypterFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scryber.Secure.PDFEncrypterV1R2Factory">
+    <Position X="9.25" Y="6.5" Width="2.25" />
+    <Members>
+      <Field Name="Rev2MD5Count" Hidden="true" />
+      <Field Name="Rev2RC4Length" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAIAQAIAAAAAAgAAAAAAAAAg=</HashCode>
+      <FileName>Secure\PDFEncrypterV1R2Factory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scryber.Secure.PDFEncrypterV2R3Factory">
+    <Position X="12" Y="6.5" Width="2.25" />
+    <Members>
+      <Field Name="Rev3MD5Count" Hidden="true" />
+      <Field Name="Rev3RC4Count" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAIAAAIAAAAAQgAAAAAEAAAA=</HashCode>
+      <FileName>Secure\PDFEncrypterV2R3Factory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

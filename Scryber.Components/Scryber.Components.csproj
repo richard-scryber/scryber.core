@@ -25,6 +25,7 @@ Public release with most of the issue ironed out (just let us know if not). Alon
 
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
 
+
  tags with property or for attributes. Fix for anchor links with internal and external href.
 
 5.0.3-alpha
@@ -157,5 +158,6 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
   
   <ItemGroup>
     <Folder Include="Svg\Layout\" />
+    <Folder Include="Secure\" />
   </ItemGroup>
 </Project>
