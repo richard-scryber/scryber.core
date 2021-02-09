@@ -2,12 +2,12 @@
 MVC Controller - Getting Started
 ================================
 
-A Complete example for creating a styled and databound hello world PDF file from an MVC Controller in C#
+A Complete example for creating a styled and databound hello world PDF file from an MVC Controller in C# with an HTML template
 
 How it works
 -------------
 
-We hope scryber works just as you would expect. The engine is based around the controllers you have, using XHTML template views with css, graphics 
+We hope scryber works just as you would expect. The engine is based around the controllers you have, using HTML template views with css, graphics 
 and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly.
 
 .. image:: images/ScryberMVCGraphic.png
@@ -26,7 +26,7 @@ Add a document template
 ------------------------
 
 In our applications we like to add our templates to a PDF folder the Views folder. You can break it down however 
-works for you, but for now, a create a new xhtml file called HelloWorld.html in your folder.
+works for you, but for now, a create a new html file called HelloWorld.html in your folder.
 
 And paste the following content into the file
 

@@ -3,12 +3,12 @@ Scryber 5.0
 =============
 
 
-**Helping to change the way we can use documents is at the heart of everything we do.**
+**What if there was a better way to create documents, is at the heart of everything we do.**
 
-Scryber is **the** engine to create dynamic documents quickly and easily with consistant styles and easy flowing layout.
+Scryber is **the** engine to create dynamic PDF documents quickly and easily from HTML templates with consistant styles, your own data, and an easy flowing layout.
 It's open source; flexible; styles based; data driven and with a low learning curve. 
 
-A document generation tool written entirely in C# for dotnet 5 using XHTML, CSS and even SVG.
+Written entirely in C# for dotnet 5 using HTML, CSS and SVG.
 
 Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_
 
@@ -27,10 +27,10 @@ Start with a template. **The namespace declaration is important.**
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
         <head>
-            <title>Hello World</title>
+            <title>{@:title}</title>
         </head>
         <body>
-            <div style='padding:10px'>Hello World.</div>
+            <div style='padding:10px'>{@:title}.</div>
         </body>
     </html>
 
@@ -63,11 +63,15 @@ And then generate your template in a view.
             //parsing the document creates a complete object graph from the content
             using(var doc = Document.ParseDocument(path))
             {
+                doc.Params["title"] = "Hello World";
                 return this.PDF(doc); //convenience extension method to return the result.
             }
         }
 
     }
+
+
+.. image:: images/HelloWorldIndex.png
 
 Hello World Plus
 -----------------
@@ -114,10 +118,12 @@ Extensible Framework
 -----------------------
 
 Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
-From the parser namespaces to the object graph to the writer - it can be built and extended.
+With iFrame includes, a namespace based parser engine, and configuration options for images, fonts, binding it's down to your imagination
 
-
+Secure and Encrypted
 -----------------------
+
+Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encryption of documents using owner and user passwords.
 
 .. toctree::
     :maxdepth: 1

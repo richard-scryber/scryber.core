@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Scryber</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
+    <ProjectReference Include="..\Scryber.Components\Scryber.Components.csproj" />
+    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
+    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Secure\Options\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Secure\Configuration\PasswordPathElement.cs" />
+    <Compile Remove="Secure\Configuration\ConfigPasswordProvider.cs" />
+    <Compile Remove="Secure\Configuration\SecurityConfiguration.cs" />
+    <Compile Remove="Secure\Configuration\SecurityFactoryElement.cs" />
+    <Compile Remove="Secure\Configuration\SecurityInfoFactoryCollection.cs" />
+    <Compile Remove="Secure\Configuration\SecurityConfigurationSection.cs" />
+    <Compile Remove="Secure\Configuration\SecurityFactoriesSection.cs" />
+    <Compile Remove="Secure\Configuration\PDFDocumentPasswordSettings.cs" />
+    <Compile Remove="Secure\Layout\SecureDocumentLayoutEngine.cs" />
+  </ItemGroup>
+</Project>

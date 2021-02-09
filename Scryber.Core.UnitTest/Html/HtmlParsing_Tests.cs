@@ -44,6 +44,8 @@ namespace Scryber.Core.UnitTests.Html
             _layoutcontext = args.Context;
         }
 
+
+
         [TestMethod()]
         public void SimpleDocumentParsing()
         {
@@ -147,6 +149,26 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     doc.SaveAsPDF(stream);
                 }
+            }
+
+        }
+
+        [TestMethod()]
+        public void HelloWorld()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                
+                doc.Params["title"] = "Hello World";
+
+                using (var stream = DocStreams.GetOutputStream("HelloWorld.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
             }
 
         }
@@ -844,6 +866,7 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 doc.PasswordProvider = new Scryber.Secure.DocumentPasswordProvider("Password");
+                doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("RestrictedHtml.pdf"))
                 {
@@ -863,6 +886,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 //Need to set this, otherwise the 
                 doc.ConformanceMode = ParserConformanceMode.Lax;
+                doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("RestrictedNoPasswordHtml.pdf"))
                 {
@@ -881,7 +905,7 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 doc.PasswordProvider = new Scryber.Secure.DocumentPasswordProvider("Password", "Password");
-                
+                doc.Params["title"] = "Hello World";
                 using (var stream = DocStreams.GetOutputStream("ProtectedHtml.pdf"))
                 {
                     doc.SaveAsPDF(stream);

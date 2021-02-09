@@ -35,7 +35,13 @@ namespace Scryber.Html.Components
         protected internal override void RegisterParent(Component parent)
         {
             base.RegisterParent(parent);
-            UpdateDocumentInfo(parent);
+            //UpdateDocumentInfo(parent);
+        }
+
+        protected override void OnDataBound(PDFDataContext context)
+        {
+            this.UpdateDocumentInfo(this.Parent);
+            base.OnDataBound(context);
         }
 
         private void UpdateDocumentInfo(Component parent)
