@@ -147,8 +147,26 @@ namespace Scryber
         {
             if (null == this.WriterFactory)
             {
-                if (forDoc.Permissions.HasRestrictions)
-                    this.WriterFactory = GetSecureWriter(forDoc);
+                IDocumentPasswordSettings settings = null;
+                if (forDoc.PasswordProvider != null && forDoc.PasswordProvider.IsSecure(forDoc.LoadedSource, out settings))
+                    this.WriterFactory = GetSecureWriter(forDoc, settings);
+
+                else if(forDoc.Permissions.HasRestrictions)
+                {
+                    if (forDoc.ConformanceMode == ParserConformanceMode.Lax)
+                    {
+                        forDoc.TraceLog.Add(TraceLevel.Error, "Writer", "No Password provider has been set on the document, so using a random password for this generation. As a minimum an owner password should be set.");
+                        Guid pass = Guid.NewGuid();
+                        var passS = pass.ToString().Substring(14);
+
+                        forDoc.PasswordProvider = new Secure.DocumentPasswordProvider(passS);
+                        forDoc.PasswordProvider.IsSecure(forDoc.LoadedSource, out settings);
+
+                        this.WriterFactory = GetSecureWriter(forDoc, settings);
+                    }
+                    else
+                        throw new System.Security.SecurityException("No Password provider has been set on the document, so restrictions cannot be applied. As a minimum an owner password should be set.");
+                }
                 else
                     this.WriterFactory = GetStandardWriter(forDoc);
             }
@@ -156,7 +174,7 @@ namespace Scryber
             
         }
 
-        protected virtual PDFWriterFactory GetSecureWriter(Document forDoc)
+        protected virtual PDFWriterFactory GetSecureWriter(Document forDoc, IDocumentPasswordSettings settings)
         {
             if (null == forDoc)
                 throw new ArgumentNullException("forDoc");
@@ -165,11 +183,10 @@ namespace Scryber
             SecureString user = null;
 
             PDFDocumentID id = forDoc.DocumentID;
-            var passwordProvider = forDoc.PasswordProvider;
             var permissions = forDoc.Permissions;
-            IDocumentPasswordSettings settings;
+            
 
-            if (null != passwordProvider && passwordProvider.IsSecure(forDoc.LoadedSource, out settings))
+            if (null != settings)
             {
                 owner = settings.OwnerPassword;
                 user = settings.UserPassword;
@@ -185,7 +202,7 @@ namespace Scryber
                 permissions = new DocumentPermissions();
 
             var encFactory = permissions.GetFactory();
-            var enc = encFactory.InitEncrypter(owner, user, id, permissions.GetRestrictions());
+            var enc = encFactory.InitEncrypter(owner, user, id, permissions.GetRestrictions(), forDoc.PerformanceMonitor);
             
             return new PDFSecureWrite14Factory(enc);
         }

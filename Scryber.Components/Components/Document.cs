@@ -29,6 +29,7 @@ using Scryber.Generation;
 using Scryber.Layout;
 using Scryber.Options;
 using System.Runtime.CompilerServices;
+using Scryber.Secure;
 
 namespace Scryber.Components
 {
@@ -1932,7 +1933,7 @@ namespace Scryber.Components
                 try
                 {
                     origFile = PDFFile.Load(interim, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off));
-                    appended = CreateTraceLogAppendDocument(genData, origFile, appended);
+                    appended = CreateTraceLogAppendDocument(genData, origFile);
                     appended.SaveAsPDF(writer.InnerStream, true);
                 }
                 finally
@@ -1954,9 +1955,12 @@ namespace Scryber.Components
             }
         }
 
-        protected virtual Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile, Document appended)
+        protected virtual Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile)
         {
-            appended = new PDFTraceLogDocument(this.FileName, origFile, genData);
+            var appended = new PDFTraceLogDocument(this.FileName, origFile, genData);
+            appended.PasswordProvider = this.PasswordProvider;
+            appended.Permissions = this.Permissions;
+            appended.DocumentID = this.DocumentID;
             return appended;
         }
 

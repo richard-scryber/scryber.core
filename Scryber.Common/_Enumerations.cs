@@ -100,7 +100,8 @@ namespace Scryber
         Font_Load = 15,
         Licensing_Check = 16,
         Data_Load = 17,
-        Count = 18
+        Encrypting_Streams=18,
+        Count = 19,
     }
 
     /// <summary>

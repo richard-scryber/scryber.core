@@ -49,8 +49,10 @@ namespace Scryber.Secure
         }
 
 
-        internal PDFEncryter InitEncrypter(SecureString ownerpassword, SecureString userpassword, PDFDocumentID documentid, PermissionFlags protection)
+        internal PDFEncryter InitEncrypter(SecureString ownerpassword, SecureString userpassword, PDFDocumentID documentid, PermissionFlags protection, PDFPerformanceMonitor monitor)
         {
+            IDisposable dur = null;
+
             if (null == ownerpassword || ownerpassword.Length == 0)
                 throw new ArgumentNullException("ownerpassword", "As a minimum the owner password is required");
 
@@ -60,6 +62,9 @@ namespace Scryber.Secure
 
             try
             {
+                if (null != monitor)
+                    dur = monitor.Record(PerformanceMonitorType.Encrypting_Streams, "Key creation");
+
                 owner = ConvertToPaddedBytes(ownerpassword);
                 user = ConvertToPaddedBytes(userpassword);
                 info = this.InitEncrypter(owner, user, documentid, protection);
@@ -74,14 +79,19 @@ namespace Scryber.Secure
                     ZeroArray(owner);
                 if (null != user)
                     ZeroArray(user);
+
+                if (null != dur)
+                    dur.Dispose();
             }
 
             return info;
         }
 
 
-        internal PDFEncryter InitEncrypter(string ownerpassword, string userpassword, PDFDocumentID documentid, PermissionFlags protection)
+        internal PDFEncryter InitEncrypter(string ownerpassword, string userpassword, PDFDocumentID documentid, PermissionFlags protection, PDFPerformanceMonitor monitor)
         {
+            IDisposable dur = null;
+
             if (string.IsNullOrEmpty(ownerpassword))
                 throw new ArgumentNullException("ownerpassword", "As a minimum the owner password is required");
 
@@ -91,6 +101,9 @@ namespace Scryber.Secure
 
             try
             {
+                if (null != monitor)
+                    dur = monitor.Record(PerformanceMonitorType.Encrypting_Streams, "Key creation");
+
                 owner = ConvertToPaddedBytes(ownerpassword);
                 user = ConvertToPaddedBytes(userpassword);
                 info = this.InitEncrypter(owner, user, documentid, protection);
@@ -105,6 +118,9 @@ namespace Scryber.Secure
                     ZeroArray(owner);
                 if (null != user)
                     ZeroArray(user);
+
+                if (null != dur)
+                    dur.Dispose();
             }
 
             return info;

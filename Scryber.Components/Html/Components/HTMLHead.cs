@@ -42,14 +42,17 @@ namespace Scryber.Html.Components
         {
             if (parent is Document)
             {
+
                 var doc = parent as Document;
+
+                bool logVerbose = doc.TraceLog.ShouldLog(TraceLevel.Verbose);
 
                 if (doc.TraceLog.ShouldLog(TraceLevel.Message))
                     doc.TraceLog.Add(TraceLevel.Message, "meta", "Updating the document information and restrictions");
 
                 if (!string.IsNullOrEmpty(this.Title))
                 {
-                    if (doc.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    if (logVerbose)
                         doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document title to " + this.Title);
 
                     doc.Info.Title = this.Title;
@@ -63,36 +66,45 @@ namespace Scryber.Html.Components
                         switch (meta.Name)
                         {
                             case ("author"):
-                                if (doc.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document author to " + meta.Content);
 
                                 doc.Info.Author = meta.Content;
                                 break;
                             case ("description"):
-                                if (doc.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document description to " + meta.Content);
 
                                 doc.Info.Subject = meta.Content;
                                 break;
                             case ("keywords"):
-                                if (doc.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document keywords to " + meta.Content);
 
                                 doc.Info.Keywords = meta.Content;
                                 break;
                             case ("generator"):
-                                if (doc.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document generator to " + meta.Content);
 
                                 doc.Info.Producer = meta.Content;
                                 break;
-                            case ("restrictions"):
-                                if (doc.TraceLog.ShouldLog(TraceLevel.Verbose))
+                            case ("print-restrictions"):
+                                if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document restrictions to " + meta.Content);
 
-                                ParseRestrictions(meta.Content, doc.Permissions);
+                                ParseRestrictions(meta.Content, doc.Permissions, doc.TraceLog);
+                                break;
+                            case ("print-encryption"):
+                                if (logVerbose)
+                                    doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document restrictions to " + meta.Content);
+
+                                ParseSecurityType(meta.Content, doc.Permissions, doc.TraceLog);
+
                                 break;
                             default:
+                                if (logVerbose)
+                                    doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Skipping unknown meta tag " + meta.Name);
                                 break;
                         }
                     }
@@ -100,16 +112,47 @@ namespace Scryber.Html.Components
             }
         }
 
+        protected void ParseSecurityType(string content, Secure.DocumentPermissions permissions, PDFTraceLog log)
+        {
+            if (!string.IsNullOrEmpty(content))
+            {
+                content = content.ToLower();
+                switch (content)
+                {
+                    case ("40bit"):
+                        if (log.ShouldLog(TraceLevel.Message))
+                            log.Add(TraceLevel.Message, "meta", "Set the document encryption to 40 bit standard (v1.2)");
+                        permissions.Type = Secure.SecurityType.Standard40Bit;
+                        break;
+                    case ("128bit"):
+                        if (log.ShouldLog(TraceLevel.Message))
+                            log.Add(TraceLevel.Message, "meta", "Set the document encryption to 128 bit standard (v2.3)");
+                        permissions.Type = Secure.SecurityType.Standard128Bit;
+                        break;
+                    default:
+                        if (log.ShouldLog(TraceLevel.Warning))
+                            log.Add(TraceLevel.Warning, "meta", "The document encryption " + content + " was not a recognised value, use 40bit or 128bit");
+
+                        break;
+                }
+            }
+        }
+
         private static readonly char[] _splits = new char[] { ' ', ',' };
 
-        protected void ParseRestrictions(string content, Secure.DocumentPermissions permissions)
+        protected void ParseRestrictions(string content, Secure.DocumentPermissions permissions, PDFTraceLog log)
         {
             if (string.IsNullOrEmpty(content))
                 return;
             content = content.Trim().ToLower();
 
+            bool logVerbose = log.ShouldLog(TraceLevel.Verbose);
             if (content == "none")
+            {
+                if (logVerbose)
+                    log.Add(TraceLevel.Verbose, "meta", "Cleared all restrictions from the document");
                 return;
+            }
 
             permissions.AllowAccessiblity = false;
             permissions.AllowAnnotations = false;
@@ -121,7 +164,12 @@ namespace Scryber.Html.Components
             permissions.AllowPrinting = false;
 
             if (content == "all")
+            {
+                if (logVerbose)
+                    log.Add(TraceLevel.Verbose, "meta", "Set restrictions to ALL for the document");
+
                 return;
+            }
 
             string[] parts = content.Split(_splits, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
@@ -133,29 +181,43 @@ namespace Scryber.Html.Components
                     case ("printing"):
                         permissions.AllowHighQualityPrinting = true;
                         permissions.AllowPrinting = true;
+                        if (logVerbose)
+                            log.Add(TraceLevel.Verbose, "meta", "Allowed printing for the document");
                         break;
                     case ("allow-accessibility"):
                     case ("accessibility"):
                         permissions.AllowAccessiblity = true;
+                        if (logVerbose)
+                            log.Add(TraceLevel.Verbose, "meta", "Allowed accessibility for the document");
                         break;
                     case ("allow-annotations"):
                     case ("annotations"):
                         permissions.AllowAnnotations = true;
+                        if (logVerbose)
+                            log.Add(TraceLevel.Verbose, "meta", "Allowed annotations for the document");
                         break;
                     case ("allow-copying"):
                     case ("copying"):
                         permissions.AllowCopying = true;
+                        if (logVerbose)
+                            log.Add(TraceLevel.Verbose, "meta", "Allowed copying for the document");
                         break;
                     case ("allow-modifications"):
                     case ("modifications"):
                         permissions.AllowModification = true;
                         permissions.AllowDocumentAssembly = true;
+                        if (logVerbose)
+                            log.Add(TraceLevel.Verbose, "meta", "Allowed modifications for the document");
                         break;
                     case ("allow-forms"):
                     case ("forms"):
                         permissions.AllowFormFilling = true;
+                        if (logVerbose)
+                            log.Add(TraceLevel.Verbose, "meta", "Allowed form filling for the document");
                         break;
                     default:
+                        if (log.ShouldLog(TraceLevel.Warning))
+                            log.Add(TraceLevel.Warning, "meta", "The restrictions part " + part + " was not recognised as a valid restriction");
                         break;
                 }
             }

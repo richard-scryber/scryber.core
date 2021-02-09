@@ -852,5 +852,42 @@ namespace Scryber.Core.UnitTests.Html
 
             }
         }
+
+        [TestMethod()]
+        public void RestrictedWithoutPasswordHtml()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/RestrictedHtml.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //Need to set this, otherwise the 
+                doc.ConformanceMode = ParserConformanceMode.Lax;
+
+                using (var stream = DocStreams.GetOutputStream("RestrictedNoPasswordHtml.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
+        public void RestrictedProtectedHtml()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/RestrictedHtml.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.PasswordProvider = new Scryber.Secure.DocumentPasswordProvider("Password", "Password");
+                
+                using (var stream = DocStreams.GetOutputStream("ProtectedHtml.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
     }
 }

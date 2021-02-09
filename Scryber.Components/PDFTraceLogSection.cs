@@ -46,8 +46,8 @@ namespace Scryber
                 this.AddOverviewRow(tbl, "Title", this.GenerationData.DocumentInfo.Title);
 
             if (null != this.GenerationData.DocumentID)
-                this.AddOverviewRow(tbl, "Document ID", this.GenerationData.DocumentID.One + " " + this.GenerationData.DocumentID.Two);
-
+                this.AddOverviewRow(tbl, "Document ID", Convert.ToBase64String(this.GenerationData.DocumentID.One) + "." + Convert.ToBase64String(this.GenerationData.DocumentID.Two));
+            
             if (!string.IsNullOrEmpty(this.GenerationData.TemplatePath))
                 this.AddOverviewRow(tbl, "Source Template", this.GenerationData.TemplatePath);
 

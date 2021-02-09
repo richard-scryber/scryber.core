@@ -40,11 +40,17 @@ namespace Scryber.Components
                 throw new InvalidOperationException(Errors.DocumentHasBeenDisposed);
             else
             {
-                return DoGetInstance(forDoc, stream, generation, options, log);
+                PDFPerformanceMonitor monitor;
+                if (null == forDoc.PerformanceMonitor)
+                    monitor = new PDFPerformanceMonitor(false);
+                else
+                    monitor = forDoc.PerformanceMonitor;
+
+                return DoGetInstance(forDoc, stream, generation, options, log, monitor);
             }
         }
 
-        protected abstract PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log);
+        protected abstract PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PDFPerformanceMonitor monitor);
 
         public void Dispose()
         {
@@ -99,7 +105,7 @@ namespace Scryber.Components
             this.PDFVersion = version;
         }
 
-        protected override PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log)
+        protected override PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PDFPerformanceMonitor monitor)
         {
             Version vers = (string.IsNullOrEmpty(this.PDFVersion)) ? new Version(1, 4) : System.Version.Parse(this.PDFVersion);
 

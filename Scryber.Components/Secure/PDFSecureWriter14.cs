@@ -58,6 +58,7 @@ namespace Scryber.Secure
         #region ivars
 
         private PDFEncryter _security;
+        private PDFPerformanceMonitor _monitor;
         private PDFObjectRef _encryptionobject;
         private Stack<PDFObjectEncryptionStream> _encrypters;
 
@@ -108,12 +109,13 @@ namespace Scryber.Secure
         /// <param name="stream">The stream to ultimately write the data to.</param>
         /// <param name="log">The log to write messages to.</param>
         /// <param name="security">The PDFEncrypter to use.</param>
-        internal PDFSecureWriter14(Stream stream, PDFTraceLog log, PDFEncryter security)
+        internal PDFSecureWriter14(Stream stream, PDFTraceLog log, PDFPerformanceMonitor monitor, PDFEncryter security)
             : base(stream, log)
         {
             if (null == security)
                 throw new ArgumentNullException("security");
             _security = security;
+            _monitor = monitor;
             _encrypters = new Stack<PDFObjectEncryptionStream>();
         }
 
@@ -128,12 +130,13 @@ namespace Scryber.Secure
         /// <param name="generation">The current generation of the PDF docucment.</param>
         /// <param name="log">The log to write messages to.</param>
         /// <param name="security">The PDFEncrypter to use.</param>
-        internal PDFSecureWriter14(Stream stream, int generation, PDFTraceLog log, Version vers, PDFEncryter security)
+        internal PDFSecureWriter14(Stream stream, int generation, PDFTraceLog log, PDFPerformanceMonitor monitor, Version vers, PDFEncryter security)
             : base(stream, generation, log, vers)
         {
             if (null == security)
                 throw new ArgumentNullException("security");
             _security = security;
+            _monitor = monitor;
             _encrypters = new Stack<PDFObjectEncryptionStream>();
         }
 
@@ -226,18 +229,23 @@ namespace Scryber.Secure
         {
             if(this.TraceLog.ShouldLog(TraceLevel.Debug))
                 this.TraceLog.Begin(TraceLevel.Debug, "Secure Writer", "Encrypting stream for object '" + pfo.Number + " " + pfo.Generation + "'");
-            
-            byte[] unencrypted = pfo.Stream.GetStreamData();
-            IStreamFilter enc = CreateEncryptionFilter(pfo.Number, pfo.Generation);
-            byte[] encrypted = enc.FilterStream(unencrypted);
-            if (this.TraceLog.ShouldLog(TraceLevel.Debug))
-                this.TraceLog.Add(TraceLevel.Debug,"Encryption", "Encrypted stream data, now writing");
-            this.BaseStream.Write(Constants.StartStream);
-            this.BaseStream.Write(encrypted);
-            this.BaseStream.Write(Constants.EndStream);
+            using (var mon = this._monitor.Record(PerformanceMonitorType.Encrypting_Streams, pfo.ToString()))
+            {
+                byte[] unencrypted = pfo.Stream.GetStreamData();
+                IStreamFilter enc = CreateEncryptionFilter(pfo.Number, pfo.Generation);
+                byte[] encrypted = enc.FilterStream(unencrypted);
 
+                if (this.TraceLog.ShouldLog(TraceLevel.Debug))
+                    this.TraceLog.Add(TraceLevel.Debug, "Encryption", "Encrypted stream from original " + unencrypted.Length + "bytes, now writing " + encrypted.Length + " encypted data bytes");
+
+                this.BaseStream.Write(Constants.StartStream);
+                this.BaseStream.Write(encrypted);
+                this.BaseStream.Write(Constants.EndStream);
+            }
             if (this.TraceLog.ShouldLog(TraceLevel.Debug))
                 this.TraceLog.End(TraceLevel.Debug, "Secure Writer", "Encrypting stream for object '" + pfo.Number + " " + pfo.Generation + "'");
+            else if (this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                this.TraceLog.Add(TraceLevel.Verbose, "Encryption", "Encrypted the stream data for " + pfo.ToString());
         }
 
         #endregion
@@ -371,9 +379,9 @@ namespace Scryber.Secure
             this._enc = enc;
         }
 
-        protected override PDFWriter DoGetInstance(Document forDoc, Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log)
+        protected override PDFWriter DoGetInstance(Document forDoc, Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PDFPerformanceMonitor monitor)
         {
-            return new PDFSecureWriter14(stream, log, this._enc);
+            return new PDFSecureWriter14(stream, log, monitor, this._enc);
         }
     }
 }
