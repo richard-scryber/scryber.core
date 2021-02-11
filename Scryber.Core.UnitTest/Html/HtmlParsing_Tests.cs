@@ -180,15 +180,6 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        private class MyFooter : IPDFTemplate
-        {
-            public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
-            {
-                var div = new Div();
-                div.Contents.Add(new PageNumberLabel());
-                return new IPDFComponent[] { div };
-            }
-        }
 
         [TestMethod()]
         public void RemoteCssFileLoading()

@@ -192,7 +192,7 @@ Every component supports the 'class' attribute. And the value of this can be one
 
 .. code-block:: html
 
-    <h1 id="FirstHead" class="warning border" style="font-italic:true" >Hello World from Scryber</h1>
+    <h1 id="FirstHead" class="warning border" style="font-italic:true" >Hello World, from scryber</h1>
 
 
 This will apply the h1 style, the 2 classes for the warning and border, and the h1.border applied in that precedence order and increase the size based on the ID of FirstHead.
@@ -274,9 +274,9 @@ Scryber has the same precedence order as html - based on the order in the docume
 
 1. The style from the parent is collected.
 2. Any styles in the document are evaluated in the order they appear.
-    1. What is the precedence of the matcher. Tag < Class <> ID.
-    2. What is the complexity of the match. Tag+Class < Tag+ID < Class+ID
-    3. And child selectors are evaluated to precedence Parent(s) + Child 
+    1. What is the precedence of the matcher. Tag < Class < ID.
+    2. What is the complexity of the match. Tag+Class < Tag+ID < Tag+Class+ID
+    3. And parent selectors are evaluated to precedence Parent(s) + Child 
 3. If a stylesheet reference is encountered, then the styles within it will be evaluated before moving on to the following styles
 4. Finally the styles directly applied will be evaluated, giving the full style result.
 
@@ -317,7 +317,7 @@ The following CSS standard tags are supported...
         * background-position
     * font
         * font-style
-        * font-weight (Translated to regular and bold (for the moment)
+        * font-weight - Translated to regular and bold (for the moment)
         * font-size
         * font-family
         * line-height
@@ -339,7 +339,7 @@ The following CSS standard tags are supported...
 
     * column-count
     * column-gap
-    * column-span
+    * column-span (for table cells)
 
     * page-break-inside
     * page-break-after
@@ -363,26 +363,37 @@ The following CSS standard tags are supported...
         * inline
         * block
         * none
+
     * overflow
+        * visible, auto
+        * hidden
+
+    * position
+        * relative
+        * absolute
+        * static
 
     * text-decoration
     * letter-spacing
     * word-spacing
 
     * white-space
-    * list-style-type
-    * list-style
+    * list-style-type (and list-style which is treated as equivalent)
+        * bullet, disc
+        * decimal
+        * lower-roman
+        * lower-alpha
+        * upper-roman
+        * upper-alpha
+        * none
 
-    * size
-    * page
-
-    * position
-        * relative
-        * absolute
-        * static
-    
     * stroke
         * stroke-opacity
         * stroke-width
 
+    * size
+        * A4, A3, Letter, etc.
+        * portrait or landscape
+    * page
+        * name (of an @page style)
 
