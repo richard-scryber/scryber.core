@@ -477,6 +477,8 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
+                doc.Params["title"] = "Title in code";
+
                 using (var stream = DocStreams.GetOutputStream("topandtailed.pdf"))
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;

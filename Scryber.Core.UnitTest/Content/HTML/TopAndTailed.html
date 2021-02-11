@@ -1,4 +1,6 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+﻿<?scryber append-log='true' parser-log='true' log-level='Verbose' ?>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
           "http://www.w3.org/TR/html4/strict.dtd">
 
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'
@@ -13,12 +15,39 @@
             border: red 1px solid;
         }
         .green{ border-color: #0F0;}
+
+        .wide{
+            page:A3Landscape;
+        }
+
+        @page A3Landscape{
+            size: A3 landscape;
+            padding:20pt;
+        }
+
+        @page{
+            size:A4 portrait;
+        }
     </style>
 </head>
 <body class="grey" title="Outer">
-    <header class="spaced"><p>This is the header</p></header>
+    <header class="spaced">
+        <p>This is the header</p>
+    </header>
 
-    <main class="spaced">
+    <section id="secondSection" style="page-break-before:avoid;">
+        <header>This is the section header</header>
+        <div>This is the section content and the parent content is on page <page for="#maincontent" /></div>
+        <footer>This is the section footer on page <page /> of <page property="total" /></footer>
+    </section>
+
+    <section id="secondSection" style="page:A3Landscape;">
+        <header>Another normal section</header>
+        <div style="height:200pt">With some content</div>
+        <footer>And a footer</footer>
+    </section>
+
+    <main id="maincontent" class="spaced" style="page-break-before:always;">
         <footer class="spaced green">
             <p class="spaced green">Main Footer</p>
         </footer>
@@ -26,16 +55,14 @@
             <p class="spaced">Main Header</p>
         </header>
         <p class="spaced">This is the body</p>
-        <section style="page-break-before:always">
-            <header>This is the section header</header>
-            <div>This is the section content</div>
-            <footer>This is the section footer</footer>
-        </section>
+        <script>This is some script</script>
+        <iframe src="./fragments/framingfragment.html">
+        </iframe>
     </main>
-    <script>This is some script</script>
-    <iframe src="./innercontent.html">
-        <param name="text" value="Just a test" />
-    </iframe>
-    <footer class="spaced"><p>This is the footer on page {page:number} of {page:count}</p></footer>
+
+    <footer class="spaced">
+        <p>This is the footer on page <page /> of <page property="total" /></p>
+    </footer>
+
 </body>
 </html>

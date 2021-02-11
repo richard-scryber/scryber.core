@@ -3038,6 +3038,10 @@ namespace Scryber.Styles.Parsing
                         onStyle.SetValue(StyleKeys.PageBreakBeforeKey, true);
                         result = true;
                         break;
+                    case ("avoid"):
+                        onStyle.SetValue(StyleKeys.PageBreakBeforeKey, false);
+                        result = true;
+                        break;
                     default:
                         result = false;
                         break;
@@ -3076,6 +3080,10 @@ namespace Scryber.Styles.Parsing
                     case ("left"):
                     case ("right"):
                         onStyle.SetValue(StyleKeys.PageBreakAfterKey, true);
+                        result = true;
+                        break;
+                    case ("avoid"):
+                        onStyle.SetValue(StyleKeys.PageBreakAfterKey, false);
                         result = true;
                         break;
                     default:

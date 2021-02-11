@@ -12,7 +12,7 @@ Styles on elements
 
     <div style='margin:20pt;padding:4pt; background-color:#FF0000; color:#FFFFFF; font-family: Arial, sans-serif; font-size:20pt' >
         <span>Hello World, from scryber.</span>
-    </doc:Div>
+    </div>
 
 Or if you are dynamically generating some content in the code
 
@@ -165,26 +165,6 @@ The same styles can also be applied in the code of the document styles
 
 
 
-Style Priority
------------------
-
-Scryber tries to apply a priority, just as html to styles as they are loaded.
-This is based on order, depth and explicit.
-
-div.class has a higher priority than .class 
-
-Explicit will be highest priority
-
-<div style='color:white' > 
-
-And it will always fall back to the default (e.g. blue underline for anchor links).
-
-..note:: Scryber does not support !important overrides, nor does it support the use of :first-child, :hover or other pseudo classes.
-
-See below for a full list of all the style attributes scryber supports.
-
-
-
 Applying Multiple Styles
 -------------------------
 
@@ -267,20 +247,35 @@ Were the code can provide new style colours and fonts for output.
 
 As per object databinding, you can even provide a specific class for binding or user dot notation to access inner properties.
 
+
 Order and Precedence
 ---------------------
 
+Scryber tries to apply a priority, just as html to styles as they are loaded.
+This is based on order, depth and explicit.
+
+div.class has a higher priority than .class 
+
+Explicit will be highest priority
+
+<div style='color:white' > 
+
+And it will always fall back to the default (e.g. blue underline for anchor links).
+
+.. note:: Scryber does not support !important overrides, nor does it support the use of :first-child, :hover or other pseudo classes.
+
+
 Scryber has the same precedence order as html - based on the order in the document.
 
-1. The style from the parent is collected.
+1. The inherited style from the parent is collected.
 2. Any styles in the document are evaluated in the order they appear.
     1. What is the precedence of the matcher. Tag < Class < ID.
     2. What is the complexity of the match. Tag+Class < Tag+ID < Tag+Class+ID
-    3. And parent selectors are evaluated to precedence Parent(s) + Child 
+    3. And parent selectors are evaluated to precedence Child < Parent(s) + Child 
 3. If a stylesheet reference is encountered, then the styles within it will be evaluated before moving on to the following styles
 4. Finally the styles directly applied will be evaluated, giving the full style result.
 
-This will then be flattened and used in the layout and rendering of the component.
+This will then be flattened as a complete style and used in the layout and rendering of the component.
 
 
 Supported CSS 
@@ -308,92 +303,92 @@ The following CSS standard tags are supported...
         * border-bottom-width
         * border-bottom-color
         * border-bottom-style
-    * color
-    * background
-        * background-image
-        * background-color
-        * background-repeat
-        * background-size
-        * background-position
-    * font
-        * font-style
-        * font-weight - Translated to regular and bold (for the moment)
-        * font-size
-        * font-family
-        * line-height
+* color
+* background
+    * background-image
+    * background-color
+    * background-repeat
+    * background-size
+    * background-position
+* font
+    * font-style
+    * font-weight - Translated to regular and bold (for the moment)
+    * font-size
+    * font-family
+    * line-height
 
-    * margin
-        * margin-left
-        * margin-right
-        * margin-top
-        * margin-bottom
+* margin
+    * margin-left
+    * margin-right
+    * margin-top
+    * margin-bottom
 
-    * padding
-        * padding-left
-        * padding-right
-        * padding-top
-        * padding-bottom
+* padding
+    * padding-left
+    * padding-right
+    * padding-top
+    * padding-bottom
 
-    * opacity
-    * fill-opacity
+* opacity
+* fill-opacity
 
-    * column-count
-    * column-gap
-    * column-span (for table cells)
+* column-count
+* column-gap
+* column-span (for table cells)
 
-    * page-break-inside
-    * page-break-after
-    * page-break-before
-        
+* page-break-inside
+* page-break-after
+* page-break-before
+    
 
-    * left
-    * top
-    * width
-    * height
+* left
+* top
+* width
+* height
 
-    * min-width
-    * min-height
-    * max-width
-    * max-height
+* min-width
+* min-height
+* max-width
+* max-height
 
-    * text-align
-    * vertical-align
+* text-align
+* vertical-align
 
-    * display
-        * inline
-        * block
-        * none
+* display
+    * inline
+    * block
+    * none
 
-    * overflow
-        * visible, auto
-        * hidden
+* overflow
+    * visible, auto
+    * hidden
 
-    * position
-        * relative
-        * absolute
-        * static
+* position
+    * relative
+    * absolute
+    * static
 
-    * text-decoration
-    * letter-spacing
-    * word-spacing
+* text-decoration
+* letter-spacing
+* word-spacing
 
-    * white-space
-    * list-style-type (and list-style which is treated as equivalent)
-        * bullet, disc
-        * decimal
-        * lower-roman
-        * lower-alpha
-        * upper-roman
-        * upper-alpha
-        * none
+* white-space
+* list-style-type (and list-style which is treated as equivalent)
+    * bullet, disc
+    * decimal
+    * lower-roman
+    * lower-alpha
+    * upper-roman
+    * upper-alpha
+    * none
 
-    * stroke
-        * stroke-opacity
-        * stroke-width
+* stroke
+    * stroke-opacity
+    * stroke-width
 
-    * size
-        * A4, A3, Letter, etc.
-        * portrait or landscape
-    * page
-        * name (of an @page style)
+* size
+    * A4, A3, Letter, etc.
+    * portrait or landscape
+* page
+    * name (of an @page style)
 

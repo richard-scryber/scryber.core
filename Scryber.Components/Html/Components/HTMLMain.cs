@@ -9,7 +9,7 @@ namespace Scryber.Html.Components
 {
 
     [PDFParsableComponent("main")]
-    public class HTMLMain : Scryber.Html.Components.HTMLHeadFootContainer
+    public class HTMLMain : HTMLHeadFootContainer
     {
 
         public HTMLMain()
