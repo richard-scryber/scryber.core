@@ -166,6 +166,7 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.StrokeColor, new CSSStrokeColorParser());
             all.Add(CSSStyleItems.StrokeOpacity, new CSSStrokeOpacityParser());
+            all.Add(CSSStyleItems.StrokeWidth, new CSSStrokeWidthParser());
 
             all.Add(CSSStyleItems.FillOpacity, new CSSFillOpacityParser());
             all.Add("fill", new CSSFillColourParser("fill", StyleKeys.FillColorKey));

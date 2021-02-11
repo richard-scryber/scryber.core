@@ -168,6 +168,11 @@ namespace Scryber.Styles
 
         #endregion 
 
+        public StyleDefn(string match)
+            : this()
+        {
+            this.Match = match;
+        }
         #region protected PDFStyleDefn(PDFObjectType type)
 
         protected StyleDefn(PDFObjectType type)

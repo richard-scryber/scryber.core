@@ -92,6 +92,7 @@ In the html header. the following tags are supports as direct mappings to the PD
         <meta name='description' content='This is the subject' />
         <meta name='keywords' content='Scryber; Document Info; Properties' />
         <meta name='generator' content='Scryber Documentation' />
+        <meta name='print-restrictions' content='none' />
     </head>
 
 
@@ -99,6 +100,7 @@ In the html header. the following tags are supports as direct mappings to the PD
 
 The header also supports the <link> and <style> elements discussed below, although these are happily supported elsewhere too.
 It is only the meta and title elements that need to be in the html head.
+The print-restrictions applies security to the document as discussed in :doc:`document_security`
 
 
 Html link element

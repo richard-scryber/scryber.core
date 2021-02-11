@@ -145,6 +145,16 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
+                var defn = new StyleDefn("h1.border");
+                defn.Background.Color = (PDFColor)"#FFA";
+                defn.Border.Width = 2;
+                defn.Border.Color = PDFColors.Red;
+                defn.Border.LineStyle = LineType.Solid;
+
+                doc.Styles.Add(defn);
+                
+                    
+                
                 using (var stream = DocStreams.GetOutputStream("HtmlFromSource.pdf"))
                 {
                     doc.SaveAsPDF(stream);
@@ -161,16 +171,23 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                
                 doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("HelloWorld.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }
-
             }
+        }
 
+        private class MyFooter : IPDFTemplate
+        {
+            public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+            {
+                var div = new Div();
+                div.Contents.Add(new PageNumberLabel());
+                return new IPDFComponent[] { div };
+            }
         }
 
         [TestMethod()]

@@ -142,6 +142,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     document_structure
     document_styles
     document_components
+    document_pages
     referencing_files
     binding_content
     binding_model
@@ -152,6 +153,8 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     drawing_colors
     drawing_units
     drawing_paths
+    drawing_images
+    document_security
 
 
 .. toctree::

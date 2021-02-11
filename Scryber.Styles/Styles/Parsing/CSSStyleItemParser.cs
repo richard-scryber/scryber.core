@@ -3160,6 +3160,12 @@ namespace Scryber.Styles.Parsing
         { }
     }
 
+    public class CSSStrokeWidthParser : CSSUnitStyleParser
+    {
+        public CSSStrokeWidthParser() : base(CSSStyleItems.StrokeWidth, StyleKeys.StrokeWidthKey)
+        { }
+    }
+
     public class CSSStrokeColorParser : CSSColorStyleParser
     {
         public CSSStrokeColorParser()

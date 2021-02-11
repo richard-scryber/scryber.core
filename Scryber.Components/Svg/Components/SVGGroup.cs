@@ -22,7 +22,12 @@ namespace Scryber.Svg.Components
         public override SVGBase Clone()
         {
             SVGGroup clone = base.Clone() as SVGGroup;
-            //TODO: Clone the inner contents
+            clone.Contents.Clear();
+
+            for (int i = 0; i < this.Contents.Count; i++)
+            {
+                clone.Contents.Add(((SVGBase)this.Contents[i]).Clone());
+            }
             return clone;
         }
 
