@@ -2,14 +2,14 @@
 Pages and Sections
 ================================
 
-All the visual content in a document sit's in pages. Scryber supports the use of both a single body with content within it.
-And also explicit flowing pages in a section.
+All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 
+and also explicit flowing pages in a section.
 
-The use of the page-break-before is set to 'always' on the section, but can, along with page-break-after, be set and supported on any component tag
+The use of the page-break-before is set to 'always' on a section, but can, along with page-break-after, be set and supported on any component tag
 
 The body has an optional header and footer that will be used on every page if set.
 
-scryber also supports the use of the @page rule to be able to change the size and orientation of each of the pages either as a whole, or within a section or tag.
+Scryber also supports the use of the @page rule to be able to change the size and orientation of each of the pages either as a whole, or within a section or tag.
 
 The body and its content
 --------------------------
@@ -100,13 +100,13 @@ Margins, padding and depth should be preserved during the page break.
 
     <?xml version="1.0" encoding="utf-8" ?>
     <html xmlns='http://www.w3.org/1999/xhtml' >
-        <body>
+        <body style='border:solid 1px gray;padding:5pt;'>
             <header>
                 <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua' >This is the header</h4>
             </header>
-            <h1 style='margins: 5pt; border-width: 1pt; border-color: green;' >This is the content</h1>
+            <h1 style='margin: 5pt; border-width: 1pt; border-color: green;' >This is the content</h1>
             <!-- Set a section to not break on the first page -->
-            <section styles="margins:5pt; font-size: 14pt; border-width: 1pt; border-color: navy; page-break-before: avoid">
+            <section style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
                 tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
                 mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
@@ -114,7 +114,7 @@ Margins, padding and depth should be preserved during the page break.
                 convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
             </section>
             <!-- By default this will start on a new page -->
-            <section styles="margins:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+            <section style="margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
                 <!-- Truncated for brevity 
                 .
                 . -->
@@ -134,11 +134,13 @@ Margins, padding and depth should be preserved during the page break.
     
     </html>
 
+.. image:: images/SectionsOverflow.png
+
 Page size and orientation
 -------------------------
 
 When outputting a page the default paper size is ISO A4 Portrait (210mm x 29.7mm), however Scryber supports setting the paper size 
-either on the page or via styles to the standard ISO or Imperial page sizes, in landscape or portrait, or even a custom size.
+either on the section or via styles to the standard ISO or Imperial page sizes, in landscape or portrait.
 
 * ISO 216 Standard Paper sizes
     * `A0 to A9 <https://papersizes.io/a/>`_
@@ -148,75 +150,65 @@ either on the page or via styles to the standard ISO or Imperial page sizes, in 
     * Quarto, Foolscap, Executive, GovermentLetter, Letter, Legal, Tabloid, Post, Crown, LargePost, Demy, Medium, Royal, Elephant, DoubleDemy, QuadDemy, Statement,
 
 
-A section can only be 1 size of paper, but different sections and different pages can have different sizes.
+The body or a section can only be 1 size of paper, but different sections (or page breaks) can be different pages and can have different sizes.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        
-        <!-- changing the default page size to A3 Landscape -->
-        <styles:Style applied-type="doc:Page" >
-        <styles:Page size="A3" orientation="Landscape"/>
-        </styles:Style>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style>
+            /* This changes the default page size to A4 landscape */
+            @page {
+                size: A4 landscape;
+            }
 
-        <!-- a style for portrait pages-->
-        <styles:Style applied-class="long" >
-        <styles:Page orientation="Portrait"/>
-        </styles:Style>
+            /* this is an explicit style of page size as A3 */
+            @page large {
+                size: A3 landscape;
+            }
 
-        <!-- set up the default style for a heading 1-->
-        <styles:Style applied-type="doc:H1" >
-        <styles:Border color="green" width="2"/>
-        <styles:Padding all="5pt"/>
-        <styles:Margins all="10pt"/>
-        <styles:Font size="60pt"/>
-        <styles:Position h-align="Center"/>
-        </styles:Style>
-    </Styles>
-    
-    <Pages>
-        <doc:Page>
-        <Content>
-            <doc:H1>This is the content on a default page size</doc:H1>
-        </Content>
-        </doc:Page>
+        </style>
+    </head>
+    <body style='border:solid 1px gray;padding:5pt;'>
+        <header>
+            <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua'>This is the header</h4>
+        </header>
+        <h1 style='margin:5pt; border-width: 1pt; border-color: green;'>This is the content</h1>
+        <!-- Set a section to not break on the first page -->
+        <section style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
+            .....
+        </section>
+        <!-- By default this will start on a new page with A3 size -->
+        <section style="page:large; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+            In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue
+            sit amet convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula
+            .....
+            Integer efficitur sapien lectus, non laoreet tellus dictum vel.<br />
+            <!-- Introducing an inner page break that follow the same A3 size -->
+            <div style="page-break-before:always">
+                Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
+                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
+                .....
+            </div>
+        </section>
+        <!-- Outside of the large page section use page: auto to revert to the default size -->
+        <div style="page-break-before:always; page: auto;">
+            Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
+            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
+            .....
+        </div>
+        <footer>
+            <h4 style="margin:5pt; border-width: 1pt; border-color: purple;">This is the footer</h4>
+        </footer>
+    </body>
 
-        <doc:Page styles:class="long">
-        <Content>
-            <doc:H1>This is the content on a portrait page</doc:H1>
-        </Content>
-        </doc:Page>
-
-        <doc:Section styles:class="long" styles:paper-size="A4">
-        <Content>
-            <doc:H1>This is the content on an explict page size</doc:H1>
-            <!-- Force a break in the page -->
-            <doc:PageBreak/>
-            <doc:H1 >That continues to the next page</doc:H1>
-        </Content>
-        </doc:Section>
-
-        <doc:Section>
-        <Content>
-            <doc:H1>And back to the default size</doc:H1>
-        </Content>
-        </doc:Section>
-    </Pages>
-    
-    </doc:Document>
+    </html>
 
 
-.. image:: images/documentpagesizes.png
+.. image:: images/SectionsPageSizes.png
 
-
-
-By applying a header at the group level, we can be sure that it is repeated across all pages.
-
-.. image:: images/documentpagegroups.png
 
 Page numbering
 ---------------

@@ -1,30 +1,70 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?scryber append-log='true' log-level='Messages' parser-log='true' ?>
-<!DOCTYPE HTML>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>Hello World</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" />
     <style>
-        p {
-            font-family: Fraunces, 'Times New Roman', Times, serif;
-            font-size: 40pt;
-            border-bottom-color: aliceblue;
+        /* This changes the default page size to A4 landscape */
+        @page {
+            size: A4 landscape;
         }
 
-        date.head {
-            break-after: always;
+        /* this is an explicit style of page size as A3 */
+        @page large {
+            size: A3 landscape;
         }
 
     </style>
 </head>
-<body>
+<body style='border:solid 1px gray;padding:5pt;'>
     <header>
-        <div class="pghead">Header Section</div>
+        <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua'>This is the header</h4>
     </header>
-    <div style='padding:10px; text-align:center'>
-        <p>Hello World from scryber.</p>
-        The day is <time date-format="dd MMM yyyy">2021-01-02</time>
+    <h1 style='margin:5pt; border-width: 1pt; border-color: green;'>This is the content</h1>
+    <!-- Set a section to not break on the first page -->
+    <section style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
+        tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum
+        mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus
+        pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id
+        convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
+    </section>
+    <!-- By default this will start on a new page with A3 size -->
+    <section style="page:large; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+        In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue
+        sit amet convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula
+        nibh tempor sed. Fusce gravida, orci eget venenatis hendrerit, augue erat euismod magna, nec interdum
+        eros dolor sed ipsum. Sed erat erat, egestas vulputate odio ullamcorper, vulputate dapibus libero.
+        Vestibulum pharetra tincidunt nisl, facilisis cursus tortor luctus ac. Pellentesque habitant morbi
+        tristique senectus et netus et malesuada fames ac turpis egestas. In auctor quam vel nibh accumsan
+        iaculis. Duis cursus tellus nec erat aliquet, id rutrum elit maximus. Suspendisse non ultricies mi.
+        Integer efficitur sapien lectus, non laoreet tellus dictum vel.<br />
+        <!-- Introducing an inner page break that follow the same A3 size -->
+        <div style="page-break-before:always">
+            Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
+            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
+            non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
+            dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
+            quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
+            dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
+            ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
+            maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
+            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<br />
+        </div>
+    </section>
+    <!-- Outside of the large page section will follow the default size -->
+    <div style="page-break-before:always; page: auto;">
+        Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
+        Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
+        non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
+        dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
+        quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
+        dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
+        ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
+        maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
+        nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<br />
     </div>
+    <footer>
+        <h4 style="margin:5pt; border-width: 1pt; border-color: purple;">This is the footer</h4>
+    </footer>
 </body>
+
 </html>
