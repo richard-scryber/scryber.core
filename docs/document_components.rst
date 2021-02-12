@@ -1,5 +1,5 @@
 =================================
-Standard document components - td
+Standard document components
 =================================
 
 The scryber library comes with all the standard components used in document creation, similar to HTML
@@ -11,9 +11,11 @@ Document level components
     * The document description meta tags
     * Also the area to put links and styles
     * Supports the security 'restrictions' meta tags.
+
 * body
     * The main pages within the document. 
     * Has an optional page header and page footer, as well as content.
+
 * section
     * A section can appear in the body and will by default be placed on a new page (or set of pages).
     * It supports the @page css at rule for altering the page size.
@@ -41,7 +43,7 @@ Structural components
 * pre(formatted)
     * A container for pre-formatted text, that will not flow over new lines, or remove line breaks (by detault).
 * iframe
-    * A reference to an external file or stream that will be injected into the page at runtime.
+    * A reference to an external file or stream that will be injected into the page(s) at runtime.
 * main
     * A block component within the body.
     * It has an optional header and a footer.

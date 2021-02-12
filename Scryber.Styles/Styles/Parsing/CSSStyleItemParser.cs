@@ -2997,6 +2997,7 @@ namespace Scryber.Styles.Parsing
             else if (reader.CurrentTextValue == "avoid")
             {
                 onStyle.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
+                onStyle.SetValue(StyleKeys.OverflowActionKey, OverflowAction.None);
                 result = true;
             }
             else

@@ -2,61 +2,60 @@
 Pages and Sections
 ================================
 
-All the visual content in a document sit's in pages. Scryber supports the use of both a single :doc:`reference/pdf_page` with content within it.
-And mutliple flowing pages in a :doc:`reference/pdf_section`.
+All the visual content in a document sit's in pages. Scryber supports the use of both a single body with content within it.
+And also explicit flowing pages in a section.
 
-A Page and its content
-======================
+The use of the page-break-before is set to 'always' on the section, but can, along with page-break-after, be set and supported on any component tag
+
+The body has an optional header and footer that will be used on every page if set.
+
+scryber also supports the use of the @page rule to be able to change the size and orientation of each of the pages either as a whole, or within a section or tag.
+
+The body and its content
+--------------------------
 
 
 A single page has a structure of optional elements
 
-* Header - Optional, but always sited at the top of a page
-* Content - Sited between the Header and Footer.
-* Footer - Optional, but always sited at the bottom of a page
+* header - Optional, but always sited at the top of a page
+* Sited between the Header and Footer is any content to be included within the page.
+* footer - Optional, but always sited at the bottom of a page
 
 If a page has a header or footer the available space for the content will be reduced.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Pages>
-        <doc:Page >
-            <Header>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-            </Header>
-            <Content>
-                <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-            </Content>
-            <Footer>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-            </Footer>
-        </doc:Page>
-    </Pages>
+    <html xmlns='http://www.w3.org/1999/xhtml' >
+    <body>
+        <header>
+            <h4 style="margins:5pt; border-width:1pt; border-color:aqua" >This is the header</h4>
+        </header>
+        <h1 style='margins:5pt; border-width=1pt; border-color:green;" >This is the content</h1>
+        <footer>
+            <h4 styles="margins:5pt; border-width:1pt; border-color:purple" >This is the footer</h4>
+        </footer>
+
+    </body>
     
-    </doc:Document>
+    </html>
 
 .. image:: images/documentpages1.png
 
-If the size of the content is more than can fit on a page it will be truncated.
+Flowing Pages
+---------------
+If the size of the content is more than can fit on a page it will overflow onto another page. Repeating any header or footer.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Pages>
-        <doc:Page>
-            <Header>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-            </Header>
-            <Content>
-                <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-                <doc:Div styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
+    <html xmlns='http://www.w3.org/1999/xhtml' >
+        <body>
+            <header>
+                <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua' >This is the header</h4>
+            </header>
+            <h1 style='margins: 5pt; border-width: 1pt; border-color: green;' >This is the content</h1>
+            <div styles="margins:5pt; font-size: 14pt; border-width: 1pt; border-color: navy">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
                 tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
                 mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
@@ -74,96 +73,69 @@ If the size of the content is more than can fit on a page it will be truncated.
                 ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
                 maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
                 nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
-            </doc:Div>
-            </Content>
-            <Footer>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-            </Footer>
-        </doc:Page>
-    </Pages>
+            </div>
+            <footer>
+                <h4 styles="margin:5pt; border-width: 1pt; border-color: purple;" >This is the footer</h4>
+            </footer>
+        </body>
     
-    </doc:Document>
-
-
-.. image:: images/documentpages2.png
-
-
-Sections and continuation
-=========================
-
-A section differs from a page in 2 ways. Firstly the default style has an overflow action of NewPage (rather than Truncate), 
-and it also has allows for a definition of a continuation header and footer.
-
-If defined, then the continuation headers and footers will be shown on the following pages, after the first.
-If not defined, then the main page headers and footers will be shown.
-
-So if we change our `doc:Page` element to a `doc:Section` we can add a continuation header and flow onto multiple pages.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Pages>
-        <doc:Section>
-            <Header>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-            </Header>
-            <Continuation-Header>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="fuschia" >This is the continuation header</doc:H4>
-            </Continuation-Header>
-            <Content>
-                <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-                <doc:Div styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-                tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-                mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-                pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-                convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
-                <doc:Br/>
-                <!-- Truncated for brevity 
-                .
-                . -->
-                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-                non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-                dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-                quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-                dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-                ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-                maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
-            </doc:Div>
-            </Content>
-            <Footer>
-                <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-            </Footer>
-        </doc:Section>
-    </Pages>
-    
-    </doc:Document>
+    </html>
 
 Here we can see that the content flows naturally onto the next page, including the padding and borders.
-And the continuation header is shown on the second page.
-
-The footer is consistent throughout, so shows on both output pages.
+And the header and footer are shown on the second page.
 
 .. image:: images/documentpages3.png
 
 Page breaks
-============
+-------------
 
-When using an overflowing section it's possible to explicitly force a break in the pages using the
-`doc:PageBreak` component. This can appear within any block, and will force all the other parent components to stop
-their layout on the current layout page, and move to the next layout page. Borders, margins and padding will (should) be preserved.
+When using a section it will by default force a break in the pages using the before the component. 
 
-As with other components, it is also possible to bind the visibility of a page break too. If it's visible then the break will occur if not then the\
-content will flow as normal.
+This can can be stopped by applying the css attribute for page-break-before='avoid' value,
+and a page break can be applied to any element using the page-break-before (or page-break-after) attribute set to 'always'.
 
-see `Page size and orientation`_ below for an example of using a page break.
+Margins, padding and depth should be preserved during the page break.
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <html xmlns='http://www.w3.org/1999/xhtml' >
+        <body>
+            <header>
+                <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua' >This is the header</h4>
+            </header>
+            <h1 style='margins: 5pt; border-width: 1pt; border-color: green;' >This is the content</h1>
+            <!-- Set a section to not break on the first page -->
+            <section styles="margins:5pt; font-size: 14pt; border-width: 1pt; border-color: navy; page-break-before: avoid">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
+                tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
+                mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
+                pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
+                convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
+            </section>
+            <!-- By default this will start on a new page -->
+            <section styles="margins:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+                <!-- Truncated for brevity 
+                .
+                . -->
+                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
+                non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
+                dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
+                quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
+                dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
+                ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
+                maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
+                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
+            </div>
+            <footer>
+                <h4 styles="margin:5pt; border-width: 1pt; border-color: purple;" >This is the footer</h4>
+            </footer>
+        </body>
+    
+    </html>
 
 Page size and orientation
-==========================
+-------------------------
 
 When outputting a page the default paper size is ISO A4 Portrait (210mm x 29.7mm), however Scryber supports setting the paper size 
 either on the page or via styles to the standard ISO or Imperial page sizes, in landscape or portrait, or even a custom size.
@@ -241,90 +213,13 @@ A section can only be 1 size of paper, but different sections and different page
 .. image:: images/documentpagesizes.png
 
 
-Page Groups
-============
-
-The `doc:PageGroup` allows for consistency across a set of pages. They will pass styles, page numbers, parameters, headers etc. 
-down to any pages within the group.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-
-        <!-- set up the default style for the header -->
-        <styles:Style applied-type="doc:Div" applied-class="header" >
-            <styles:Border color="aqua" width="2" sides="Bottom"/>
-            <styles:Padding all="5pt"/>
-            <styles:Margins all="10pt"/>
-            <styles:Font size="12pt"/>
-            <styles:Position h-align="Center"/>
-        </styles:Style>
-
-        <!-- a page numbering style for the page groups -->
-        <styles:Style applied-type="doc:PageGroup" >
-            <styles:Page number-prefix="Page #" number-style="Decimals"/>
-        </styles:Style>
-    </Styles>
-    
-    <Pages>
-
-        <doc:PageGroup>
-            <Params>
-                <!-- Set parameters, just for this group -->
-                <doc:String-Param id="sectTitle" value="Page Group Definitions" ></doc:String-Param>
-            </Params>
-            <!-- consistent header across the pages in this group (split into 3 columns -->
-            <Header>
-                <doc:Div styles:class="header" styles:column-count="3" >
-                    <doc:Label text="{@:sectTitle}" />
-                    <doc:ColumnBreak/>
-                    <doc:PageNumber />
-                    <doc:ColumnBreak/>
-                    <doc:Date styles:date-format="dd MMMM yyyy" />
-                </doc:Div>
-            </Header>
-
-            <Pages>
-
-                <doc:Page>
-                <Content>
-                    <doc:H3 >This is the first page</doc:H3>
-                </Content>
-                </doc:Page>
-
-                <doc:Section>
-                <Content>
-                    <doc:H3>This is the second page</doc:H3>
-                    <doc:PageBreak/>
-                    <doc:H3>This is the third page</doc:H3>
-                </Content>
-                </doc:Section>
-                
-            </Pages>
-        </doc:PageGroup>
-        
-        <doc:Page>
-            <Content>
-                <doc:H3 >This is after the group</doc:H3>
-            </Content>
-        </doc:Page>
-    
-    </Pages>
-    
-    </doc:Document>
-
 
 By applying a header at the group level, we can be sure that it is repeated across all pages.
 
 .. image:: images/documentpagegroups.png
 
 Page numbering
-==============
+---------------
 
 In the previous example we saw use of the :doc:`reference/pdf_pagenumber` component to display the current page number on a page.
 The actual numbering is held at a document level, but can be altered for each group, section or individual page.
