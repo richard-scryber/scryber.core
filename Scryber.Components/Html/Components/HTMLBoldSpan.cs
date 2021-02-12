@@ -50,4 +50,10 @@ namespace Scryber.Html.Components
         {
         }
     }
+
+    [PDFParsableComponent("strong")]
+    public class HTMLStrong : HTMLBoldSpan
+    {
+
+    }
 }

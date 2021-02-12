@@ -50,4 +50,10 @@ namespace Scryber.Html.Components
         {
         }
     }
+
+    [PDFParsableComponent("ins")]
+    public class HTMLInsertSpan : HTMLUnderlinedSpan
+    {
+
+    }
 }

@@ -42,7 +42,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("value")]
         [PDFDesignable("Value", Category = "General", Priority = 3, Type = "Date")]
-        public DateTime Value { get; set; }
+        public virtual DateTime Value { get; set; }
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("date-format", Const.PDFStylesNamespace)]
         [PDFDesignable("Format", Category = "General", Priority = 4, Type = "DateFormat")]
-        public string DateFormat
+        public virtual string DateFormat
         {
             get
             {

@@ -389,6 +389,16 @@ The following CSS standard tags are supported...
 * size
     * A4, A3, Letter, etc.
     * portrait or landscape
+    
 * page
-    * name (of an @page style)
+    * explicit name (of an @page style)
+
+at-rules supported
+-------------------
+
+The following at-rules are supported
+
+* @media - including or excluding css based on print.
+* @font-face - using explicit font files and names.
+* @page - specifying page sizes for sections and breaks.
 

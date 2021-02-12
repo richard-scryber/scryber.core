@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -11,10 +12,18 @@ namespace Scryber.Html.Components
     public class HTMLBlockQuote : Scryber.Components.BlockQuote
     {
         [PDFAttribute("class")]
-        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
+        public override string StyleClass
+        {
+            get => base.StyleClass;
+            set => base.StyleClass = value;
+        }
 
         [PDFAttribute("style")]
-        public override Style Style { get => base.Style; set => base.Style = value; }
+        public override Style Style
+        {
+            get => base.Style;
+            set => base.Style = value;
+        }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -48,6 +57,20 @@ namespace Scryber.Html.Components
         public HTMLBlockQuote()
             : base()
         {
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+
+            style.SetValue(StyleKeys.BorderLeftStyleKey, Drawing.LineType.Solid);
+            style.SetValue(StyleKeys.BorderLeftWidthKey, 2);
+            style.SetValue(StyleKeys.BorderLeftColorKey, PDFColors.Gray);
+            style.SetValue(StyleKeys.PaddingLeftKey, 5);
+            style.SetValue(StyleKeys.MarginsTopKey, 5);
+            style.SetValue(StyleKeys.MarginsBottomKey, 5);
+
+            return style;
         }
     }
 }

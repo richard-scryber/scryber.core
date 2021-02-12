@@ -4,172 +4,119 @@ Standard document components - td
 
 The scryber library comes with all the standard components used in document creation, similar to HTML
 
-Document level visual components
-================================
+Document level components
+--------------------------
 
-* Page
-    * A single page, where content that will extend beyond the boundaries is truncated
+* head
+    * The document description meta tags
+    * Also the area to put links and styles
+    * Supports the security 'restrictions' meta tags.
+* body
+    * The main pages within the document. 
     * Has an optional page header and page footer, as well as content.
-* Section
-    * A set of pages of the same size and orientation, where content that flow onto the next page.
-    * Has an optional continuation page header and footer, along with the page header, page footer and content.
-* Page-Group
-    * A group of pages that can have shared size, header and footer content, and style.
-    * Individual pages can override as needed.
-* Page-Ref
-    * A reference to one of the above components in a separate file.
-    * Specified via a required source attribute.
-* Column break
-    * Stops the flow of content within the current region, and moves any following content onto the next available column.
-    * Can be positioned at any depth within a multicolumn layout.
-* Page break
-    * Stops the flow of content within the current page, and moves any following content onto the next available page.
-    * Can be positioned at any depth within a layout.
+* section
+    * A section can appear in the body and will by default be placed on a new page (or set of pages).
+    * It supports the @page css at rule for altering the page size.
 
-See :doc:`document_pages` for a full use of pages, section and page breaks.
-See :doc:`document_columns` for more on the use of columns and column breaks.
 
-Standard structural components
-==============================
+Structural components
+--------------------------------
 
-* Div
+* div
     * a block level component that will fill the width of the available parent.
-* Span 
+* span 
     * an inline compnent that can have any content including text.
-* Table
+* table
     * A grid of rows and cells (that can be spanned across columns).
-* Lists
+* ol, ul, dl
     * Ordered lists with numbering styles.
     * Unodered lists with a bullet styles.
     * Definition lists with a label and content.
-* Paragraph
-    * A textual (and other content), that has a more defined style than a div.
-* Heading (1 to 6)
-    * A textual (and other content), that is given a pre-defined style based on it's level of 1 to 6
-    * All headings have a base of doc:Heading (which can be styled).
-    * H1, H2, H3, H4, H5, H6
-* Block Quote
+* p(aragraph)
+    * A textual block (and other content), that has a more defined style than a div.
+* h1 to h6
+    * A textual block (and other content), that is given a pre-defined style based on it's level of 1 to 6
+* blockquote
     * A panel with specific margins, and a left border by default.
-* Preformatted
+* pre(formatted)
     * A container for pre-formatted text, that will not flow over new lines, or remove line breaks (by detault).
-* Component-Ref
+* iframe
     * A reference to an external file or stream that will be injected into the page at runtime.
-* Layer-Group
-    * A wrapper for a set of Layers.
-    * Each layer will be relatively positioned (default to 0,0) ontop ove each other.
-    * Layers can be shown and hidden as needed.
-* Canvas
-    * A drawing panel that will by default relatively position all child components
-
-See :doc:`component_positioning` for use of the span and div;
-:doc:`compontent_textblocks` for use of the headings, paragraphs, preformatted and blocks;
-:doc:`referencing_files` for use of the Component-Ref and :doc:`drawing_paths` on the Canvas.
-
+* main
+    * A block component within the body.
+    * It has an optional header and a footer.
+* page
+    * This is a non-standard component, that will be output as the 
 
 Textual components
 ==================
 
-* Text
+Text is generally supported throughout the body of the file as you would expect.
+
+* b, strong
     * A text literal compenent where the text can be set to the @value attribute.
     * Supports full data binding.
 
-* Number
+* i, em
     * A litteral component that supports numeric values (@value attribute as well as number formatting (@styles:number-format)
     * Can display numbers in any of the standard floating point, currency and integral types.
 
-* Date
+* u, ins
     * A litteral component that supports date time values (@value attribute as well as date formatting (@styles:date-format)
     * Can display dates in any of the standard localized formats.
 
-* Label
+* strike, del
     * A text literal component where the text can be set to the @text attribute.
     * Supports full data binding.
     * The only difference is a more formal distinction of purpose than text.
 
-* PageNumber
+* ins
     * A textual component that displays the current output page number where the component is placed.
     * Supports the use of page section counting and total document page count.
 
-* PageOf
+* page
     * A textual compenent that displays the page number of a referenced component.
     * Supports the use of page section counting and total document page count.
+    * Supports the for attribute to get the page number of another component.
 
-* Link
-    * A hyper link to a location within the current document, or another document, or a web resource.
-    * Content within can be styled appropriately.
-    * Document references can be based on ID or name.
-    * Page links can be First, Previous, Next, Last or numbered.
+* time
+    * A textual component that supports the display of a date or time.
+    * Can use a date-format or textual value.
 
-See :doc:`component_textelements` for more information on the standard text elememnts, and 
-:doc:`component_linking` for use of links within and out of documents.
 
 Graphical components
 ====================
 
-* Images
-    * A static or dynamic image loaded from a source, and inserted into the output document.
+* hr
+    * A static horizontal rule on the page.
+
+* img
+    * An image loaded from a source, and inserted into the output document.
     * Supports the use of full, relative or dynamic url references.
     * Supports png, jpeg and tiff file formats.
     * Supports alpha channels where available in the source.
 
-* Line, Rect, Polygon, Ellipse, Path
-    * Standard drawing components that can be used either within the flow of the content or for drawing/designs.
+* svg
+    * Standard drawing svg components that can be used for drawing/designs.
+    * Supports the viewport and sizing options.
+    * Inner content support for paths, rects, ellipses, polygons and polylines.
 
 See :doc:`drawing_images` for images and :doc:`drawing_paths` for the line, rect and path componenets.
 
 
-Data visual components
-======================
+Data components
+----------------
 
 For a general use of the data components see :doc:`document_model` and  :doc:`document_databinding`.
-And for an overview of the data sources available see :doc:`document_datasources`
 
-* ForEach
-    * Loops through each value in a data source, with an optional step, offset and count.
-    * Outputs the content within the tempate, that can be any inner content.
-* DataGrid
-    * Loops through each value in a data source.
-    * Outputs the content as a table of results, with various column types.
-    * Allows for auto population from a schema in a data source.
-    * Also supports alternating styles, fotters and headers.
-* DataList
-    * Loops through each value in a data source, with an optional step, offset and count.
-    * Outputs the content as panels, lists, or spans.
-    * Allows for auto population from a schema in a data source.
-    * Also supports output order, flow direction, and alternating styles.
-* With
-    * Takes a data value or source and applies it to the current context so it can be used in binding statements.
-    * Can have any content, and they are full components, rather than templates.
-    * Supports both xml and object values.
-* WithFieldSet
-    * Takes a data value or source and applies it to the current context so it can be used in binding statements.
-    * Supports the use of fields within the block to automatically create the content.
-    * Allows for auto population from a schema in a data source.
-    * Supports both xml and object values.
-* Choose
-    * Optionally displays a set of content based on a decision (test).
-    * Allows multiple `data:When` to be defined within the component.
-    * The first true decision will be output, and all others not rendered in the document.
-    * Allows the use of one `data:Otherwise` component as a catch all.
-* If
-    * Optionally displays a set of content based on a decision (test).
-    * If the decision is false, then no inner content will be rendered.
+* template
+    * Loops through one or more values in a source.
+    * The data-bind attribute is used to specify the content that will be used as a source.
+    * Will execute multiple times for a content within the template and the number of items binding to.
+    * If it is null, then noting will be output.
+    
 
-See :doc:`binding_model` for more information on binding to data sources in scryber.
 
-Html components
-===============
 
-* Html Section
-    * A full section that supports the inclusion for html (or markdown) content output within a document as it's own page(s).
-    * Supports the use of inline style conversion (with limitations) to scryber styles.
-    * Content can either be loaded dynamically by the component, assigned from a data source, or explicitly set from code.
-
-* Html Fragment.
-    * A block of html that can sit within a document.
-    * Supports the use of inline style conversion (with limitations) to scryber styles.
-    * Content can either be loaded dynamically by the component, assigned from a data source, or explicitly set from code.
-
-See :doc:`html_simple` for how to parse and use static and dynamic html content in scryber.
 
 

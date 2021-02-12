@@ -50,4 +50,10 @@ namespace Scryber.Html.Components
         {
         }
     }
+
+    [PDFParsableComponent("em")]
+    public class HTMLEmphasis : HTMLItalicSpan
+    {
+
+    }
 }
