@@ -49,7 +49,7 @@ Structural components
     * This is a non-standard component, that will be output as the 
 
 Textual components
-==================
+-------------------
 
 Text is generally supported throughout the body of the file as you would expect.
 
@@ -85,7 +85,7 @@ Text is generally supported throughout the body of the file as you would expect.
 
 
 Graphical components
-====================
+----------------------
 
 * hr
     * A static horizontal rule on the page.
