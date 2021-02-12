@@ -88,6 +88,11 @@ namespace Scryber
         /// </summary>
         string ElementName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the flag to indicate if the template should be a block or inline invisible
+        /// </summary>
+        bool IsBlock { get; set; }
+
         void InitTemplate(string xmlContent, System.Xml.XmlNamespaceManager namespaces);
     }
 

@@ -27,11 +27,11 @@ namespace Scryber.Html.Components
         }
 
         [PDFElement("header")]
-        [PDFTemplate()]
+        [PDFTemplate(IsBlock= true)]
         public override IPDFTemplate Header { get => base.Header; set => base.Header = value; }
 
         [PDFElement("footer")]
-        [PDFTemplate()]
+        [PDFTemplate(IsBlock = true)]
         public override IPDFTemplate Footer { get => base.Footer; set => base.Footer = value; }
 
         /// <summary>

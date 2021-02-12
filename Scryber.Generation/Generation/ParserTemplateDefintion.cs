@@ -25,6 +25,7 @@ namespace Scryber.Generation
 {
     public class ParserTemplateDefintion : ParserPropertyDefinition
     {
+        public bool RenderAsBlock { get; set; }
 
         internal ParserTemplateDefintion(string name, PropertyInfo pi)
             : base(name, string.Empty, pi, DeclaredParseType.TempateElement)

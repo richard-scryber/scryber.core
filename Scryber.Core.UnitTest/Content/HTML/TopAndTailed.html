@@ -13,6 +13,13 @@
         .spaced {
             padding: 5pt;
             border: red 1px solid;
+            margin: 10pt;
+            font-size:small;
+        }
+
+        header.spaced p{
+            font-size:large;
+            color: green;
         }
         .green{ border-color: #0F0;}
 
@@ -20,9 +27,12 @@
             page:A3Landscape;
         }
 
+        section{
+            padding:20pt;
+        }
+
         @page A3Landscape{
             size: A3 landscape;
-            padding:20pt;
         }
 
         @page{
@@ -36,24 +46,18 @@
     </header>
 
     <section id="secondSection" style="page-break-before:avoid;">
-        <header>This is the section header</header>
+        <header class="green">This is the section header</header>
         <div>This is the section content and the parent content is on page <page for="#maincontent" /></div>
         <footer>This is the section footer on page <page /> of <page property="total" /></footer>
     </section>
 
     <section id="secondSection" style="page:A3Landscape;">
-        <header>Another normal section</header>
+        <header style="border:solid 1px green">Another normal section</header>
         <div style="height:200pt">With some content</div>
         <footer>And a footer</footer>
     </section>
 
     <main id="maincontent" class="spaced" style="page-break-before:always;">
-        <footer class="spaced green">
-            <p class="spaced green">Main Footer</p>
-        </footer>
-        <header class="spaced green">
-            <p class="spaced">Main Header</p>
-        </header>
         <p class="spaced">This is the body</p>
         <script>This is some script</script>
         <iframe src="./fragments/framingfragment.html">

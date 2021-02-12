@@ -951,21 +951,23 @@ namespace Scryber.Generation
         /// <param name="prop"></param>
         private void ParseTemplateContent(object container, XmlReader reader, ParserPropertyDefinition prop)
         {
+            var temp = (ParserTemplateDefintion)prop;
 
             object gen = CreateInstance(this.Settings.TempateGeneratorType);
-
-            if (gen is Scryber.IPDFComponent)
-                (gen as IPDFComponent).ElementName = reader.Name;
-
             var defn = ParserDefintionFactory.GetClassDefinition(this.Settings.TempateGeneratorType);
-            
-            IPDFTemplateGenerator tempgen = (IPDFTemplateGenerator)gen;
 
-            //if (reader.HasAttributes)
-            //{
-            //    this.ParseAttributes(tempgen, false, reader, defn);
-            //    reader.MoveToElement();
-            //}
+            if ((gen is IPDFTemplateGenerator) == false)
+                throw new InvalidCastException("The returned type for the Settings.TemplateGeneratorType does not implement the IPDFTemplateGenerator interface");
+
+            IPDFTemplateGenerator tempgen = (IPDFTemplateGenerator)gen;
+            tempgen.ElementName = reader.Name;
+            tempgen.IsBlock = temp.RenderAsBlock;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.HasAttributes)
+            {
+                this.ParseAttributes(tempgen, false, reader, defn);
+                reader.MoveToElement();
+            }
             
             string all = reader.ReadInnerXml();
             tempgen.InitTemplate(all, new XmlNamespaceManager(reader.NameTable));

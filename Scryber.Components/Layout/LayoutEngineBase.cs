@@ -785,6 +785,8 @@ namespace Scryber.Layout
             Style prev = this.FullStyle;
             this.FullStyle = style;
 
+            
+
             //Extract the collection of child components in this container
             if (TryGetComponentChildren(invisible, out children))
             {

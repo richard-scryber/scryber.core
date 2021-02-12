@@ -285,7 +285,8 @@ namespace Scryber.Core.UnitTests.Html
             // Header content check
 
             var pgHead = body.HeaderBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            var pBlock = pgHead.Columns[0].Contents[0] as PDFLayoutBlock;
+            var header = pgHead.Columns[0].Contents[0] as PDFLayoutBlock;
+            var pBlock = header.Columns[0].Contents[0] as PDFLayoutBlock;
 
             var pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
             var pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
@@ -295,7 +296,8 @@ namespace Scryber.Core.UnitTests.Html
             // Footer content check
 
             var pgFoot = body.FooterBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            pBlock = pgFoot.Columns[0].Contents[0] as PDFLayoutBlock;
+            var footer = pgFoot.Columns[0].Contents[0] as PDFLayoutBlock;
+            pBlock = footer.Columns[0].Contents[0] as PDFLayoutBlock;
 
             pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
             pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
@@ -509,12 +511,8 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
-
                 }
-
-                
             }
-
         }
 
         [TestMethod()]

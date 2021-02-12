@@ -45,12 +45,15 @@ namespace Scryber.Data
         public string ElementName { get; set; }
 
 
-        [PDFAttribute("class", Scryber.Styles.Style.PDFStylesNamespace)]
+        [PDFAttribute("class")]
         public string StyleClass { get; set; }
 
-        [PDFAttribute("style", Scryber.Styles.Style.PDFStylesNamespace)]
+        [PDFAttribute("style")]
         [PDFElement("Style")]
         public Scryber.Styles.Style Style { get; set; }
+
+
+        public bool IsBlock { get; set; }
 
 
         public IDictionary<string,string> NamespacePrefixMappings { get; set; }
@@ -120,7 +123,11 @@ namespace Scryber.Data
                 sb.Append(dataprefix);
                 sb.Append(":");
             }
-            sb.Append("TemplateInstance ");
+
+            if (this.IsBlock)
+                sb.Append("TemplateBlockInstance ");
+            else
+                sb.Append("TemplateInstance ");
 
             
             foreach (KeyValuePair<string,string> declared in prefixNamespaces)
@@ -152,7 +159,12 @@ namespace Scryber.Data
                 sb.Append(dataprefix);
                 sb.Append(":");
             }
-            sb.Append("TemplateInstance");
+
+            if (this.IsBlock)
+                sb.Append("TemplateBlockInstance");
+            else
+                sb.Append("TemplateInstance");
+
             sb.Append(">");
             
             return sb.ToString();
@@ -219,20 +231,36 @@ namespace Scryber.Data
                 else
                     throw RecordAndRaise.NullReference(Errors.ParentDocumentMustBeTemplateParser);
 
-                if (!(comp is TemplateInstance))
-                    throw RecordAndRaise.InvalidCast(Errors.CannotConvertObjectToType, comp.GetType(), typeof(TemplateInstance));
+                if (this.IsBlock)
+                {
+                    if (!(comp is TemplateBlockInstance))
+                        throw RecordAndRaise.InvalidCast(Errors.CannotConvertObjectToType, comp.GetType(), typeof(TemplateBlockInstance));
 
-                TemplateInstance template = (TemplateInstance)comp;
+                    TemplateBlockInstance template = (TemplateBlockInstance)comp;
 
-                if (null != this.Style && (template is IPDFStyledComponent))
-                    this.Style.MergeInto((template as IPDFStyledComponent).Style);
+                    if (null != this.Style && (template is IPDFStyledComponent))
+                        this.Style.MergeInto((template as IPDFStyledComponent).Style);
 
-                template.StyleClass = this.StyleClass;
-                template.ElementName = this.ElementName;
+                    template.StyleClass = this.StyleClass;
+                    template.ElementName = this.ElementName;
+                }
+                else
+                {
+                    if (!(comp is TemplateInstance))
+                        throw RecordAndRaise.InvalidCast(Errors.CannotConvertObjectToType, comp.GetType(), typeof(TemplateInstance));
+
+                    TemplateInstance template = (TemplateInstance)comp;
+
+                    if (null != this.Style && (template is IPDFStyledComponent))
+                        this.Style.MergeInto((template as IPDFStyledComponent).Style);
+
+                    template.StyleClass = this.StyleClass;
+                    template.ElementName = this.ElementName;
+                }
 
                 List<IPDFComponent> all = new List<IPDFComponent>(1);
 
-                all.Add(template);
+                all.Add(comp);
                 return all;
             }
             

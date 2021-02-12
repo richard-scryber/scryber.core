@@ -699,6 +699,8 @@ namespace Scryber.Generation
                     else if (null != template)
                     {
                         propele = new ParserTemplateDefintion(name, pi);
+                        if (template.IsBlock)
+                            (propele as ParserTemplateDefintion).RenderAsBlock = true;
                     }
                     else if (IsKnownType(pi.PropertyType, out convert) || IsCustomParsableType(pi.PropertyType, out convert, out iscustom))
                     {

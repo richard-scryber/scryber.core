@@ -329,6 +329,12 @@ namespace Scryber
         /// </summary>
         public Type BaseContentType { get; set; }
 
+        /// <summary>
+        /// If set then the contents will be laidout as a block rather than simply flowing with content.
+        /// This allows styles and classes, but will always be on it's own
+        /// </summary>
+        public bool IsBlock { get; set; }
+
         public PDFTemplateAttribute()
             : this(null)
         { }

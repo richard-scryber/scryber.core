@@ -122,9 +122,8 @@ namespace Scryber.Core.UnitTests.Generation
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' 
                                           controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.UnitTests' ?>
                                 <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-                                              id='outerdoc' compression='Compress' auto-bind='true'>
+                                              id='outerdoc' auto-bind='true'>
                                   <Pages>
-
                                     <doc:Page id='titlepage' >
                                       <Content>
                                         <doc:Label id='mylabel' />
@@ -181,7 +180,7 @@ namespace Scryber.Core.UnitTests.Generation
                                 <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' 
                                           controller='Scryber.Core.UnitTests.Generation.SimpleDocument_Controller, Scryber.UnitTests' ?>
                                 <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
-                                              id='outerdoc' compression='Compress' auto-bind='true'>
+                                              id='outerdoc' auto-bind='true'>
                                   <Pages>
 
                                     <doc:Page id='titlepage' on-init='handlepageinit' on-loaded='handlepageload'

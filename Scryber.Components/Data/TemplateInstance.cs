@@ -49,4 +49,33 @@ namespace Scryber.Data
             
         }
     }
+
+    [PDFParsableComponent("TemplateBlockInstance")]
+    public class TemplateBlockInstance : Panel, IPDFNamingContainer
+    {
+        public TemplateBlockInstance()
+            : base(PDFObjectTypes.Template)
+        {
+        }
+
+
+        [PDFArray(typeof(Component))]
+        [PDFElement("Content")]
+        public override ComponentList Contents
+        {
+            get
+            {
+                return base.Contents;
+            }
+
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Size.FullWidth = true;
+            style.Position.PositionMode = Drawing.PositionMode.Block;
+            return style;
+        }
+    }
 }
