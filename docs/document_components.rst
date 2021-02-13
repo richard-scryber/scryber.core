@@ -56,30 +56,21 @@ Textual components
 Text is generally supported throughout the body of the file as you would expect.
 
 * b, strong
-    * A text literal compenent where the text can be set to the @value attribute.
-    * Supports full data binding.
+    * An inline compenent where inner text font will be bold by default.
 
 * i, em
-    * A litteral component that supports numeric values (@value attribute as well as number formatting (@styles:number-format)
-    * Can display numbers in any of the standard floating point, currency and integral types.
+    * An inline compenent where inner text font will be italic by default.
 
 * u, ins
-    * A litteral component that supports date time values (@value attribute as well as date formatting (@styles:date-format)
-    * Can display dates in any of the standard localized formats.
+    * An inline compenent where inner text font will be underlined by default.
 
 * strike, del
-    * A text literal component where the text can be set to the @text attribute.
-    * Supports full data binding.
-    * The only difference is a more formal distinction of purpose than text.
-
-* ins
-    * A textual component that displays the current output page number where the component is placed.
-    * Supports the use of page section counting and total document page count.
+    * An inline compenent where inner text font will be strikethrough by default.
 
 * page
-    * A textual compenent that displays the page number of a referenced component.
+    * A textual compenent that displays the current page number, page number of a referenced component.
     * Supports the use of page section counting and total document page count.
-    * Supports the for attribute to get the page number of another component.
+    * Supports the 'for' attribute to get the page number of another component.
 
 * time
     * A textual component that supports the display of a date or time.

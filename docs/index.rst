@@ -154,6 +154,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     drawing_units
     drawing_paths
     drawing_images
+    document_outline
     document_security
 
 

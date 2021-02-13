@@ -4,7 +4,7 @@
     <style>
         /* This changes the default page size to A4 landscape */
         @page {
-            size: A4 landscape;
+            size: A4 portrait;
         }
 
         /* this is an explicit style of page size as A3 */
@@ -12,15 +12,83 @@
             size: A3 landscape;
         }
 
+        .print-only{ display:none;}
+
+        table.toc{
+            font-size:12pt;
+            margin-left:30pt;
+        }
+
+        table.toc thead{
+            font-weight:bold;
+            text-decoration:underline;
+        }
+
+        table.toc a{
+            text-decoration:none;
+        }
+
+        table.toc hr{
+            display:inline;
+            margin-top:12pt;
+            stroke: gray;
+            stroke-dasharray: 2;
+        }
+
+        table.toc td{
+            border:none;
+        }
+
+        table.toc td.pg-num {
+            width:30pt;
+
+        }
+
+        @media print{
+
+            .print-only{ display: block; }
+
+            .foot{
+                border-top: solid 1pt gray;
+                padding: 10pt;
+                text-align:center;
+                font: 10pt sans-serif;
+                margin: 5pt;
+            }
+
+            
+        }
+
+
     </style>
 </head>
-<body style='border:solid 1px gray;padding:5pt;'>
+<body>
     <header>
-        <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua'>This is the header</h4>
+        <h4 style='margin: 5pt; border-bottom-width: 1pt; border-bottom-color:gray'>Page Header</h4>
     </header>
-    <h1 style='margin:5pt; border-width: 1pt; border-color: green;'>This is the content</h1>
+    <table class="toc" style="margin:20pt; width:100%;">
+        <thead>
+            <tr>
+                <td colspan="2">Table of contents</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="#section1">Section 1</a><hr class="tab-spacer" /></td>
+                <td class="pg-num"><page for="#section1" /></td>
+            </tr>
+            <tr>
+                <td><a href="#section2">Section 2</a><hr class="tab-spacer" /></td>
+                <td class="pg-num"><page for="#section2" /></td>
+            </tr>
+            <tr>
+                <td><a href="#section3">Section 1</a><hr class="tab-spacer" /></td>
+                <td class="pg-num"><page for="#section3" /></td>
+            </tr>
+        </tbody>
+    </table>
     <!-- Set a section to not break on the first page -->
-    <section style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+    <section id="section1" style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
         tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum
         mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus
@@ -28,7 +96,7 @@
         convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
     </section>
     <!-- By default this will start on a new page with A3 size -->
-    <section style="page:large; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+    <section id="section2" style="page:large; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
         In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue
         sit amet convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula
         nibh tempor sed. Fusce gravida, orci eget venenatis hendrerit, augue erat euismod magna, nec interdum
@@ -51,7 +119,7 @@
         </div>
     </section>
     <!-- Outside of the large page section will follow the default size -->
-    <div style="page-break-before:always; page: auto;">
+    <div id="section3" style="page-break-before:always; page: auto;">
         Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
         Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
         non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
@@ -63,7 +131,7 @@
         nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<br />
     </div>
     <footer>
-        <h4 style="margin:5pt; border-width: 1pt; border-color: purple;">This is the footer</h4>
+        <p class='print-only foot'> Page <page /> of <page property='total' /></p>
     </footer>
 </body>
 

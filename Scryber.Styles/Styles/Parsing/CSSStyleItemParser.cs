@@ -3185,5 +3185,32 @@ namespace Scryber.Styles.Parsing
     }
 
 
+    public class CSSStrokeDashParser : CSSStyleValueParser
+    {
+
+        public CSSStrokeDashParser()
+            : base(CSSStyleItems.StrokeDash)
+        { }
+
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            var all = new List<int>(1);
+            while (reader.ReadNextValue())
+            {
+                int parsed;
+                if (int.TryParse(reader.CurrentTextValue, out parsed))
+                    all.Add(parsed);
+            }
+
+            if (all.Count > 0)
+            {
+                style.SetValue(StyleKeys.StrokeDashKey, new PDFDash(all.ToArray(), 0));
+                return true;
+            }
+            else
+                return false;
+        }
+    }
+
 
 }

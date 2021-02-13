@@ -42,7 +42,7 @@ namespace Scryber.Components
         [PDFAttribute("column-span")]
         [PDFJSConvertor("scryber.studio.design.convertors.integer_attr", JSParams = "\"colspan\"")]
         [PDFDesignable("Column Span", Category = "General", Priority = 2,Type ="Number")]
-        public int CellColumnSpan
+        public virtual int CellColumnSpan
         {
             get
             {
