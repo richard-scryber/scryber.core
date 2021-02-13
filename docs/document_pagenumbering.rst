@@ -84,7 +84,7 @@ ID and a line leading to the page numbers on the right cell.
         </tbody>
     </table>
 
-The is a bit of css fun going on to achieve this..
+There is a bit of css fun going on to achieve this..
 
 .. code-block:: css
 

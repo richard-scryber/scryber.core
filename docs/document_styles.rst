@@ -181,7 +181,7 @@ And then the inline italic style will be applied.
 .. image:: images/helloworldpage_styled.png
 
 
-Late binding of styles
+Late adding of styles
 -----------------------
 
 Even once you have parsed or built a document, the styles can still be modified or added to.
@@ -389,7 +389,7 @@ The following CSS standard tags are supported...
 * size
     * A4, A3, Letter, etc.
     * portrait or landscape
-    
+
 * page
     * explicit name (of an @page style)
 

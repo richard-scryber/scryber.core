@@ -94,13 +94,14 @@ Graphical components
     * Supports the viewport and sizing options.
     * Inner content support for paths, rects, ellipses, polygons and polylines.
 
-See :doc:`drawing_images` for images and :doc:`drawing_paths` for the line, rect and path componenets.
+See :doc:`drawing_images` for images and :doc:`drawing_paths` for the svg componenets.
 
 
 Data components
 ----------------
 
 For a general use of the data components see :doc:`document_model` and  :doc:`document_databinding`.
+All attributes and text can be databound
 
 * template
     * Loops through one or more values in a source.

@@ -89,7 +89,7 @@ And the header and footer are shown on the second page.
 Page breaks
 -------------
 
-When using a section it will by default force a break in the pages using the before the component. 
+When using a section it will, by default, force a break in the pages using the before the component. 
 
 This can can be stopped by applying the css attribute for page-break-before='avoid' value,
 and a page break can be applied to any element using the page-break-before (or page-break-after) attribute set to 'always'.
@@ -152,6 +152,14 @@ either on the section or via styles to the standard ISO or Imperial page sizes, 
 
 The body or a section can only be 1 size of paper, but different sections (or page breaks) can be different pages and can have different sizes.
 
+An @page { ... } rule will apply to all pages in the document.
+
+To specify an explicit named page size use the name after the @page rule, and then 
+identify the rule with the page css declaration either on the tag style or in css. 
+The same priories will be applied if multiple page values are matched.
+
+To revert back to the default size use a value of auto or initial.
+
 .. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
@@ -208,3 +216,11 @@ The body or a section can only be 1 size of paper, but different sections (or pa
 
 
 .. image:: images/SectionsPageSizes.png
+
+
+Stopping overflow
+-------------------
+
+If overflowing onto a new page is not required or wantend then the 
+page-break-inside='avoid' will block any overflow or new pages.
+
