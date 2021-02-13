@@ -1,125 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <style>
-        /* This changes the default page size to A4 landscape */
-        @page {
-            size: A4 portrait;
-        }
-
-        /* this is an explicit style of page size as A3 */
-        @page large {
-            size: A3 landscape;
-        }
-
-        .print-only{ display:none;}
-
-        table.toc{
-            font-size:12pt;
-            margin-left:30pt;
-        }
-
-        table.toc thead{
-            font-weight:bold;
-            text-decoration:underline;
-        }
-
-        table.toc a{
-            text-decoration:none;
-        }
-
-        table.toc hr{
-            display:inline;
-            margin-top:12pt;
-            stroke: gray;
-            stroke-dasharray: 2;
-        }
-
-        table.toc td{
-            border:none;
-        }
-
-        table.toc td.pg-num {
-            width:30pt;
-
-        }
-
-        @media print{
-
-            .print-only{ display: block; }
-
-            .foot{
-                border-top: solid 1pt gray;
-                padding: 10pt;
-                text-align:center;
-                font: 10pt sans-serif;
-                margin: 5pt;
-            }
-
-            
-        }
-
-
-    </style>
-</head>
-<body>
+<body style="column-count:3; column-width: ">
     <header>
-        <h4 style='margin: 5pt; border-bottom-width: 1pt; border-bottom-color:gray'>Page Header</h4>
+        <h4 style='margin: 5pt; border-bottom-width: 1pt; border-bottom-color:aqua'>This is the header</h4>
     </header>
-    <table class="toc" style="margin:20pt; width:100%;">
-        <thead>
-            <tr>
-                <td colspan="2">Table of contents</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="#section1">Section 1</a><hr class="tab-spacer" /></td>
-                <td class="pg-num"><page for="#section1" /></td>
-            </tr>
-            <tr>
-                <td><a href="#section2">Section 2</a><hr class="tab-spacer" /></td>
-                <td class="pg-num"><page for="#section2" /></td>
-            </tr>
-            <tr>
-                <td><a href="#section3">Section 1</a><hr class="tab-spacer" /></td>
-                <td class="pg-num"><page for="#section3" /></td>
-            </tr>
-        </tbody>
-    </table>
+    <h1 style='margin:5pt;border-width:1pt; border-color:green'>This is the content</h1>
     <!-- Set a section to not break on the first page -->
-    <section id="section1" style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
+    <div style='margin:5pt; font-size:14pt; border-width: 1pt; border-color: navy'>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
         tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum
         mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus
         pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id
-        convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
-    </section>
-    <!-- By default this will start on a new page with A3 size -->
-    <section id="section2" style="page:large; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
-        In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue
-        sit amet convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula
-        nibh tempor sed. Fusce gravida, orci eget venenatis hendrerit, augue erat euismod magna, nec interdum
-        eros dolor sed ipsum. Sed erat erat, egestas vulputate odio ullamcorper, vulputate dapibus libero.
-        Vestibulum pharetra tincidunt nisl, facilisis cursus tortor luctus ac. Pellentesque habitant morbi
-        tristique senectus et netus et malesuada fames ac turpis egestas. In auctor quam vel nibh accumsan
-        iaculis. Duis cursus tellus nec erat aliquet, id rutrum elit maximus. Suspendisse non ultricies mi.
-        Integer efficitur sapien lectus, non laoreet tellus dictum vel.<br />
-        <!-- Introducing an inner page break that follow the same A3 size -->
-        <div style="page-break-before:always">
-            Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
-            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-            non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-            dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-            quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-            dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-            ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-            maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<br />
-        </div>
-    </section>
-    <!-- Outside of the large page section will follow the default size -->
-    <div id="section3" style="page-break-before:always; page: auto;">
+        convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<br />
+        <!-- Truncated for brevity
+        .
+        . -->
         Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
         Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
         non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
@@ -130,8 +25,10 @@
         maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
         nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<br />
     </div>
+    <h1 style="margin:5pt; border-width:1pt; border-color: green">After the content</h1>
+    
     <footer>
-        <p class='print-only foot'> Page <page /> of <page property='total' /></p>
+        <h4 style="margin: 5pt; border-width: 1pt; border-color: purple">This is the footer</h4>
     </footer>
 </body>
 
