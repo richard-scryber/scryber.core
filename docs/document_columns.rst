@@ -120,243 +120,163 @@ This will allow the headers to be full width, with the content flowing within th
         </footer>
     </body>
 
-    </html>
-    <doc:Section>
-        <Header>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-        </Header>
-        <Content>
-            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-            <doc:Div styles:column-count="3" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-            tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-            mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-            pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
-            <doc:Br/>
-            <!-- Truncated for brevity
-            .
-            . -->
-            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-            non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-            dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-            quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-            dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-            ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-            maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
-        </doc:Div>
-        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
-        </Content>
-        <Footer>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-        </Footer>
-    </doc:Section>
-
 
 .. image:: images/documentcolumns2.png
 
 
-Column and Alley Widths
-========================
+Column-width and column-gap
+----------------------------
 
-Along with changing the number of columns, scryber also supports the use of column and alley widths that can either be set on the style or
-component itself.
+Rather than specifying the number of columns, scryber also supports the standard html column-width option.
 
-Alleys are the margins between each column that defaults to 10pt, but can be specified as a single unit value, e.g. 20pt or 5mm
+This makes the width value the predominant driver, and will layout the maximum number of columns that are at least this width within the available space, so 
+that it is full width.
+
+e.g. if you have a container that is 300pts wide and a column-width of 80pt, then there will be 3 columns 
+of about 92pts wide (assuming the alley / gap is the default 10pt). Increasing the column-width to 120pt, and hte number of columns will
+reduce to 2 of around 145pts.
+
+If our page size or orinentation changes then the number of columns fitted changes.
+
+Column-gaps are the margins between each column that defaults to 10pt, but can be specified as a single unit value, e.g. 20pt or 5mm
 (see :doc:`drawing_units` for more on scryber measurements).
 
-The `column-widths` attribute (or `widths` on a style definition) takes multiple fraction values (0.0 to 1.0), for one or more columns.
-It also supports the use of the `*` character for variable width.
-If a column is not specified then it will use the remainder of the space.
+The break-before and break-after values of 'always' will cause the flow of the content to move to the next available column.
+If all the columns are used, then a new page will be created and the content continue to flow from there.
 
-If for example we have 4 columns on a container that is 430pt wide with a 10pt alley we could use any of the following for the column widths.
+Finally, the break-inside value of 'avoid' will try to keep all the inner content in one block. If it does
+not fit within the current column, then it will move to a new column (or column on a new page) and continue from there.
 
-* `0.2 0.3 0.3 0.2`
-    * The first and last column will be 1/5th of the available space (80pt)
-    * The second and third columns will be 3/10ths of the available space (120pt)
-* `0.2 0.2`
-    * The first 2 columns would be 1/5th of the available space (80pt)
-    * The last 2 colums would be calculated as the remainder divided equally (120pt)
-* `0.2 * 0.2`
-    * The first and the 3rd column would be 1/5th of the available space (80pt)
-    * The second and last columns will be 3/10ths of the available space (120pt)
-    * If the column count were to increase to 5, then the variable columns would accomodate and ultimately all be the same width
+.. code-block:: html
 
-.. warning:: It is an error to specify column widths that add up to over 1.0 (100%). An exception will be thrown.
+ <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
 
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css" >
 
+            @page {
+            size: A4 Landscape;
+            }
 
-.. code-block:: xml
-
-    <doc:Section styles:paper-orientation="Landscape" >
-        <Header>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-        </Header>
-        <Content>
-            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-            <doc:Div styles:column-count="4" styles:column-widths="0.2 * 0.2" styles:alley-width="20pt" 
-                     styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-            tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-            mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-            pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
-            <doc:Br/>
-            <!-- Truncated for brevity
-            .
-            . -->
-            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-            non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-            dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-            quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-            dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-            ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
+        </style>
+    </head>
+    <body>
+        <header>
+            <h4 style='margin: 5pt; border-bottom-width: 1pt; border-bottom-color:aqua'>This is the header</h4>
+        </header>
+        <h1 style='margin:5pt;border-width:1pt; border-color:green'>This is the content</h1>
+        <!-- Set a section to not break on the first page -->
+        <div style='column-width: 150pt; column-gap:60pt; margin:5pt; font-size: 11pt; border-width: 1pt; border-color: navy'>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
+            tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum
+            ......
+            <div style="break-before:always;" >
+                In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue sit amet
+                convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula nibh tempor sed.
+                ........
+            </div>
+            <div style="break-inside:avoid">
+                Duis et tincidunt nisi. Etiam sed augue a turpis semper cursus. Proin facilisis feugiat risus, in malesuada
+                lectus posuere eget. Nullam ultricies velit purus, vel lobortis felis commodo nec. Nam bibendum eleifend blandit.
+                Vestibulum et turpis a metus euismod euismod nec sed nulla. Aliquam iaculis, magna in posuere finibus, turpis
+                .......
+            </div>
+            <br/>
+            In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue sit amet
+            convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula nibh tempor sed.
+            Fusce gravida, orci eget venenatis hendrerit, augue erat euismod magna, nec interdum eros dolor sed ipsum.
+            .....
             maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
-        </doc:Div>
-        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
-        </Content>
-        <Footer>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-        </Footer>
-    </doc:Section>
+            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.
+        </div>
+        <h1 style="margin:5pt; border-width:1pt; border-color: green">After the content</h1>
+        
+        <footer>
+            <h4 style="margin: 5pt; border-width: 1pt; border-color: purple">This is the footer</h4>
+        </footer>
+    </body>
 
-Here we can see that we have changed the paper orientation to landscape, set the column number to 4 with widths of 0.2 * 0.2,
-and set the alley width to 20pt to give more spacing.
+    </html>
 
+Here we can see that we have changed the paper orientation to landscape, set the column width to 150pt with gap of 60pt.
 The layout engine adjusts all content automatically within the column widths.
+
+The second div will always be on a new column, and the 3rd div moves to a new column as it cannot fit.
+And the rest of the layout continues on the 3rd column until it reaches the end, and will flow onto another page.
 
 .. image:: images/documentcolumns3.png
 
 
-Balanced Columns
-=================
-
-As can be seen in the above image, scryber does not balance columns across the page (matching height).
-At the moment this is due to rendering speed, and the need to recaclulate all inner content again (and again),
-in order to match the spacing etc.
-
-.. note:: It's being looked into and may be supported in the future. Even if it's just for equally spaced columns.
+.. note:: As can be seen in the above image, scryber does not balance columns across the page (matching height). We may look to support this, but the min-height, max-height and breaks can be used to maintain the structure.
 
 Images and Shapes in columns
-==============================
+-----------------------------
 
 As with :doc:`component_sizing`, images and shapes that do not have an explicit size, take their natural width up to the size of the container.
 
 This also applies to columns. If an image is too wide for the column it will be proportionally resized to fit within the column.
-
-.. code-block:: xml
-
-    <doc:Section styles:paper-orientation="Landscape" >
-        <Header>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-        </Header>
-        <Content>
-            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-            <doc:Div styles:column-count="4" styles:column-widths="0.2 0.0 0.2" 
-                 styles:alley-width="20pt" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-          tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-          <doc:Image src="../../content/images/group.png" />
-          mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-          pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-          convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
-          <doc:Br/>
-          <!-- Truncated for brevity
-            .
-            . -->
-         <doc:Image src="../../content/images/group.png" />
-          Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-          ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-          maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-          nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
-      </doc:Div>
-        <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
-        </Content>
-        <Footer>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-        </Footer>
-    </doc:Section>
-
-With this layout the images are taking the full width available within the variable columns.
-
-.. image:: images/documentcolumns4.png
-
-Breaking columns
-=================
-
-Withing the content flow of the document, it's possible just as with page breaks to stop any layout in the current column, and move to the next
-using the `doc:ColumnBreak` ( :doc:`reference/pdf_ColumnBreak`). 
-
-When a column break appears, the heirarchy will be traversed upwards to find
-
-.. note:: When a column break appears, the heirarchy will be traversed upwards to find the next container with multiple columns. If it gets to the top, a new page will be created for the columns.
-
-See the Nested containers and columns below for an example.
+Any content can be placed in a column.
 
 Nested containers and columns
-==============================
+------------------------------
 
 Scryber fully supports nested columns whether that be at the page or multiple container level.
 Again mixed content can be used within the columns, and the content will flow as normal.
 
-.. code-block:: xml
+.. code-block:: html
 
-    <doc:Section styles:paper-orientation="Landscape" >
-        <Header>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="aqua" >This is the header</doc:H4>
-        </Header>
-        <Content>
-            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >This is the content</doc:H1>
-            <!--
-                2 columns on the outer div
-             -->
-            <doc:Div styles:column-count="2"
-                    styles:alley-width="20pt" styles:margins="5pt" styles:font-size="14pt" styles:border-width="1pt" styles:border-color="navy">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-            tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-            
-            mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-            pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
-            <!-- 
-                Inner div with 2 columns for an image and a bit of text 
-            -->
-            <doc:Div styles:column-count="2" styles:column-widths="0.4 0.6"
-                    styles:margins="5pt" styles:font-size="12pt" styles:font-italic="true" 
-                    styles:border-width="1pt" styles:border-color="red">
-                <doc:Image src="../../content/images/group.png" />
-                <!-- 
-                    Explicit column break after 
-                    the image to go on a new line
-                -->
-                <doc:ColumnBreak />
-                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-                non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-                dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-                quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-                dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-                ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-                maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.
-            </doc:Div>
-            After the inner columns. Nunc suscipit ex ligula, eget ultricies lectus euismod in. Ut vestibulum condimentum faucibus. Nulla
-            tincidunt dui eu feugiat euismod. Quisque sodales odio id augue luctus, ac viverra risus tincidunt.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pellentesque velit quis erat
-            eleifend placerat. Quisque auctor mi id efficitur malesuada. Donec eros dui, mollis et faucibus non,
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-            <!-- Truncated for brevity
-            .
-            . -->
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css" >
 
-        </doc:Div>
-            <doc:H1 styles:margins="5pt" styles:border-width="1pt" styles:border-color="green" >After the content</doc:H1>
-        </Content>
-        <Footer>
-            <doc:H4 styles:margins="5pt" styles:border-width="1pt" styles:border-color="purple" >This is the footer</doc:H4>
-        </Footer>
-    </doc:Section>
+            @page {
+            size: A4 Landscape;
+            }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <h4 style='margin: 5pt; border-bottom-width: 1pt; border-bottom-color:aqua'>This is the header</h4>
+        </header>
+        <h1 style='margin:5pt;border-width:1pt; border-color:green'>This is the content</h1>
+        <!-- Set a section to not break on the first page -->
+        <div style="column-count: 3; column-gap:20pt; font-size:12px; padding:10pt;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
+            tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum
+            .....
+            <div style="column-count:2; border:solid 1px red; padding:10pt; margin:5pt 0pt;">
+                <img src="./images/group.png" style="break-after:always;" />
+                In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue sit amet
+                convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula nibh tempor sed.
+                Fusce gravida, orci eget venenatis hendrerit, augue erat euismod magna, nec interdum eros dolor sed ipsum.
+                
+            </div>
+            Duis et tincidunt nisi. Etiam sed augue a turpis semper cursus. Proin facilisis feugiat risus, in malesuada
+            lectus posuere eget. Nullam ultricies velit purus, vel lobortis felis commodo nec. Nam bibendum eleifend blandit.
+            ......
+            elit maximus. Suspendisse non ultricies mi. Integer efficitur sapien lectus, non laoreet tellus dictum vel.
+            Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.<br />
+            <img src="./images/group.png" style="margin:5pt;" />
+            Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
+            .......
+            nunc, blandit ut sem vitae, bibendum hendrerit ipsum.
+        </div>
+        <h1 style="margin:5pt; border-width:1pt; border-color: green">After the content</h1>
+        
+        <footer>
+            <h4 style="margin: 5pt; border-width: 1pt; border-color: purple">This is the footer</h4>
+        </footer>
+    </body>
+
+    </html>
 
 
 .. image:: images/documentcolumns5.png
