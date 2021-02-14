@@ -118,7 +118,7 @@ namespace Scryber.Html
 
         public const string ColumnCount = "column-count";
         public const string ColumnGap = "column-gap";
-
+        public const string ColumnWidths = "column-width";
         public const string ColumnSpan = "column-span";
 
         public const string Left = "left";
@@ -151,6 +151,10 @@ namespace Scryber.Html
         public const string PageBreakBefore = "page-break-before";
         public const string PageSize = "size";
         public const string PageGroupName = "page";
+
+        public const string BreakInside = "break-inside";
+        public const string BreakAfter = "break-after";
+        public const string BreakBefore = "break-before";
 
         public const string PositionModeType = "position";
 

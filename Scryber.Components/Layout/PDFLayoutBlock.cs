@@ -466,73 +466,41 @@ namespace Scryber.Layout
             this.Position = position;
 
             
-            this.Columns = new PDFLayoutRegion[columns.ColumnCount];
-            if (columns.ColumnCount == 1)
+            
+            if (columns.ColumnCount == 1 && columns.ColumnWidths.IsEmpty)
             {
+                this.Columns = new PDFLayoutRegion[columns.ColumnCount];
                 avail = new PDFRect(PDFPoint.Empty, avail.Size);
                 this.Columns[0] = new PDFLayoutRegion(this, this.Owner, avail, 0, position.HAlign, position.VAlign);
             }
             else
             {
-                
-                PDFUnit totalAlley = columns.AlleyWidth * (columns.ColumnCount - 1);
-                PDFUnit totalAvailableWidth = this.AvailableBounds.Width - totalAlley;
-                PDFUnit[] widths = new PDFUnit[columns.ColumnCount];
-
-                if (columns.ColumnWidths.IsEmpty)
+                PDFUnit[] widths;
+                int count;
+                if (columns.ColumnWidths.HasExplicitWidth)
                 {
-                    PDFUnit columnWidth = totalAvailableWidth / columns.ColumnCount;
-                    for(var i = 0; i < widths.Length; i++) { widths[i] = columnWidth; }
+                    widths = columns.ColumnWidths.GetExplicitColumnWidths(avail.Width, columns.AlleyWidth, out count);
+                }
+                else if(columns.ColumnWidths.IsEmpty == false)
+                {
+                    count = columns.ColumnCount;
+                    widths = columns.ColumnWidths.GetPercentColumnWidths(avail.Width, columns.AlleyWidth, count);
+                }
+                else if(columns.ColumnCount > 1)
+                {
+                    count = columns.ColumnCount;
+                    widths = PDFColumnWidths.GetEqualColumnWidths(avail.Width, columns.AlleyWidth, count);
                 }
                 else
                 {
-                    double[] todefine = columns.ColumnWidths.Widths;
-                    int allocCount = 0;
-                   
-                    double allocated = 0;
-                    for(var i = 0; i < todefine.Length; i++)
-                    {
-                        if (i >= widths.Length)
-                            break;
-
-                        else if(todefine[i] > PDFColumnWidths.UndefinedWidth)
-                        {
-                            allocated += todefine[i];
-                            allocCount++;
-                        }
-                        
-                    }
-
-                    if(allocCount != widths.Length)
-                    {
-                        double toallocate = 1 - allocated;
-                        double remainderAlloc = toallocate / (columns.ColumnCount - allocCount);
-                        for (var i = 0; i < widths.Length; i++)
-                        {
-                            if (i >= todefine.Length) //after the end of the defined columns
-                                widths[i] = totalAvailableWidth * remainderAlloc;
-                            else if (todefine[i] == PDFColumnWidths.UndefinedWidth) //we have a non-explicit width
-                                widths[i] = totalAvailableWidth * remainderAlloc;
-                            else //this is explicit
-                                widths[i] = totalAvailableWidth * todefine[i];
-                        }
-                    }
-                    else 
-                    {
-                        //if (allocated != 1.0)
-                        //{
-                        //    //we have a bit left over to allocate
-                        //    double remainderAlloc = 1.0 - allocated;
-                        //    todefine[todefine.Length - 1] += remainderAlloc;
-                        //}
-
-                        for (var i = 0; i < widths.Length; i++)
-                            widths[i] = totalAvailableWidth * todefine[i];
-                    }
-                    
+                    count = 1;
+                    widths = new PDFUnit[] { avail.Width };
                 }
 
+                this.Columns = new PDFLayoutRegion[count];
                 this.ColumnWidths = widths;
+                this.ColumnOptions.ColumnCount = count;
+
                 PDFUnit x = 0;// position.Padding.Left;
                 PDFUnit y = 0;// position.Padding.Top;
                 PDFUnit h = this.AvailableBounds.Height;
@@ -733,6 +701,11 @@ namespace Scryber.Layout
         /// </summary>
         private void ShrinkToFit()
         {
+            if(this.ColumnOptions.ColumnCount > 0 && this.ColumnOptions.AutoFlow == true)
+            {
+                //TODO:Try and balance the columns.
+            }
+
             bool explicitWidth, explicitHeight;
             PDFSize sz = this.GetRequiredSize(out explicitHeight, out explicitWidth);
             PDFRect full = this.TotalBounds;

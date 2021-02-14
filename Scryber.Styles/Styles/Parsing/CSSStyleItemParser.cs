@@ -2197,6 +2197,34 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    public class CSSColumnWidthParser : CSSStyleAttributeParser<PDFColumnWidths>
+    {
+        public CSSColumnWidthParser()
+            : base(CSSStyleItems.ColumnWidths, StyleKeys.ColumnWidthKey)
+        {
+
+        }
+
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            string all = string.Empty;
+            while(reader.ReadNextValue())
+            {
+                if (all.Length > 0)
+                    all += " ";
+                all += reader.CurrentTextValue;
+            }
+            if (!string.IsNullOrEmpty(all))
+            {
+                PDFColumnWidths widths = PDFColumnWidths.Parse(all);
+                this.SetValue(style, widths);
+                return true;
+            }
+            else
+                return false;
+        }
+    }
+
     #region public class CSSColumnGapParser : CSSUnitStyleParser
 
     public class CSSColumnGapParser : CSSUnitStyleParser
@@ -2970,6 +2998,137 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    // column-breaks
+
+    #region public class CSSColumnBreakInsideParser : CSSStyleValueParser
+
+    public class CSSColumnBreakInsideParser : CSSStyleValueParser
+    {
+
+        public CSSColumnBreakInsideParser()
+            : base(CSSStyleItems.BreakInside)
+        {
+        }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            bool result;
+
+            if (!reader.ReadNextValue())
+                result = false;
+
+            else if (reader.CurrentTextValue == "auto")
+            {
+                onStyle.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Any);
+                result = true;
+            }
+            else if (reader.CurrentTextValue == "avoid")
+            {
+                onStyle.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
+                onStyle.SetValue(StyleKeys.OverflowActionKey, OverflowAction.None);
+                result = true;
+            }
+            else
+            {
+                result = false;
+            }
+
+
+            return result;
+
+        }
+    }
+
+    #endregion
+
+    #region public class CSSColumnBreakBeforeParser : CSSStyleValueParser
+
+    public class CSSColumnBreakBeforeParser : CSSStyleValueParser
+    {
+
+        public CSSColumnBreakBeforeParser()
+            : base(CSSStyleItems.BreakBefore)
+        {
+        }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            bool result;
+
+            if (!reader.ReadNextValue())
+                result = false;
+            else
+            {
+                switch (reader.CurrentTextValue)
+                {
+                    case ("always"):
+                    case ("left"):
+                    case ("right"):
+                        onStyle.SetValue(StyleKeys.ColumnBreakBeforeKey, true);
+                        result = true;
+                        break;
+                    case ("avoid"):
+                        onStyle.SetValue(StyleKeys.ColumnBreakBeforeKey, false);
+                        result = true;
+                        break;
+                    default:
+                        result = false;
+                        break;
+                }
+            }
+
+
+            return result;
+
+        }
+    }
+
+    #endregion
+
+    #region public class CSSColumnBreakAfterParser : CSSStyleValueParser
+
+    public class CSSColumnBreakAfterParser : CSSStyleValueParser
+    {
+
+        public CSSColumnBreakAfterParser()
+            : base(CSSStyleItems.BreakAfter)
+        {
+        }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            bool result;
+
+            if (!reader.ReadNextValue())
+                result = false;
+            else
+            {
+                switch (reader.CurrentTextValue)
+                {
+                    case ("always"):
+                    case ("left"):
+                    case ("right"):
+                        onStyle.SetValue(StyleKeys.ColumnBreakAfterKey, true);
+                        result = true;
+                        break;
+                    case ("avoid"):
+                        onStyle.SetValue(StyleKeys.ColumnBreakAfterKey, false);
+                        result = true;
+                        break;
+                    default:
+                        result = false;
+                        break;
+                }
+            }
+
+
+            return result;
+
+        }
+    }
+
+    #endregion
+
     // page-breaks
 
     #region public class CSSPageBreakInsideParser : CSSStyleValueParser
@@ -3019,7 +3178,7 @@ namespace Scryber.Styles.Parsing
     {
 
         public CSSPageBreakBeforeParser()
-            : base(CSSStyleItems.PageBreakInside)
+            : base(CSSStyleItems.PageBreakBefore)
         {
         }
 
@@ -3063,7 +3222,7 @@ namespace Scryber.Styles.Parsing
     {
 
         public CSSPageBreakAfterParser()
-            : base(CSSStyleItems.PageBreakInside)
+            : base(CSSStyleItems.PageBreakAfter)
         {
         }
 
@@ -3100,6 +3259,9 @@ namespace Scryber.Styles.Parsing
     }
 
     #endregion
+
+
+    //page-names
 
     public class CSSPageNameParser : CSSStyleValueParser
     {

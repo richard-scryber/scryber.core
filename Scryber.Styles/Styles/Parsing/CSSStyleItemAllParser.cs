@@ -126,9 +126,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.Padding, new CSSPaddingParser());
 
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
-            all.Add(CSSStyleItems.ColumnCount, new CSSColumnCountParser());
-            all.Add(CSSStyleItems.ColumnGap, new CSSColumnGapParser());
 
+            all.Add(CSSStyleItems.ColumnCount, new CSSColumnCountParser());
+            all.Add(CSSStyleItems.ColumnWidths, new CSSColumnWidthParser());
+            all.Add(CSSStyleItems.ColumnGap, new CSSColumnGapParser());
             all.Add(CSSStyleItems.ColumnSpan, new CSSColumnSpanParser());
 
             all.Add(CSSStyleItems.Left, new CSSLeftParser());
@@ -161,6 +162,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PageBreakBefore, new CSSPageBreakBeforeParser());
             all.Add(CSSStyleItems.PageSize, new CSSPageSizeParser());
             all.Add(CSSStyleItems.PageGroupName, new CSSPageNameParser());
+
+            all.Add(CSSStyleItems.BreakInside, new CSSColumnBreakInsideParser());
+            all.Add(CSSStyleItems.BreakAfter, new CSSColumnBreakAfterParser());
+            all.Add(CSSStyleItems.BreakBefore, new CSSColumnBreakBeforeParser());
 
             all.Add(CSSStyleItems.PositionModeType, new CSSPositionModeParser());
 
