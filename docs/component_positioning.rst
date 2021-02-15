@@ -2,277 +2,188 @@
 Positioning your content
 ==============================
 
-Scryber has an intelligent layout engine. By default eveything will be laid out as per the flowing layout of the document Pages and columns.
-Each component, be it block level or inline will have a position next to its siblings and move and following content along in the document.
-If the content comes to the end of the page and cannot be fitted, then if allowed, it will be moved to the next page.
+Scryber has an intelligent layout engine. By default eveything will be laid out as per the flowing layout of the document body, sections and columns.
+Each component, be it block level or inline will have a position next to its siblings and move along in the document.
+If the content comes to the end of the page and cannot be fitted then, if allowed, it will be moved to the next page.
 
 Inline Positioning
-==================
+------------------
 
 Inline components such as text and spans will continue on the current line, and if they do not fit all the contnet, then they will 
 flow onto the next line (or column or page). If the content moves, so the inline content will move with the container.
 
-Carriager returns within the content of the xml file are ignored by default, 
-as per html (see :doc:`reference/pdf_pre` if you don't want them to be.).
+Carriage returns within the content of the file are ignored by default, 
+as per html (see :doc:`document_textlayout` if you don't want them to be.).
 
 Examples of inline components are spans, labels, text literals, page numbers,
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-            <Content>
-                This is the content of the page, 
-                <doc:Span styles:fill-color="maroon" >and this will continue on the current line until it reaches the end
-                and then flow onto the next line.</doc:Span> 
-                This with then flow after the line.<doc:Br/>
-                A line break forces a new line in the content but flow in the page (#<doc:PageNumber />) will continue. 
-                <doc:Span styles:fill-color="maroon" styles:font-size="30pt" >It also supports the use of multiple font sizes</doc:Span> in multiple lines, 
-                adjusting the line height as needed.
-            </Content>
-        </doc:Page>
-    </Pages>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <body style="margin:20pt; font-size:20pt">
+        This is the content of the page,
+        <span style="color:maroon">
+            and this will continue on the current line until it reaches the end
+            and then flow onto the next line.
+        </span>
+        This with then flow after the line.<br />
+        A line break forces a new line in the content but flow in the page (#<page />) will continue.
+        <span style="color:maroon; font-size:30pt;">It also supports the use of multiple font sizes</span> in multiple lines,
+        adjusting the line height as needed.
+    </body>
+    </html>
 
-    </doc:Document>
-
-Generating this document will create the following output 
-(see :doc:`mvc_controller_full` or :doc:`gui_controller_full` to understand how to do this).
 
 .. image:: images/documentpositioninginline.png
 
-For more information on laying out textual content see :doc:`documenttextlayout`
+For more information on laying out textual content see :doc:`document_textlayout`
 
 
 Block Positioning
-=================
+------------------
 
 A block starts on a new line in the content of the page. Children will be laid out within the block (unless absolutely positioned), and
 content after the block will also begin a new line.
 
 Examples of blocks are Div's, Paragraphs, Tables, BlockQuotes, Headings, Images, and Shapes.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-        <Pages>
-        
-            <doc:Page styles:margins="20pt" styles:font-size="20pt">
-                <Content>
-                    This is the content of the page, 
-                    
-                    <doc:Div styles:fill-color="maroon" >This will always be on a new on the line, and it's content will then continue inline until it reaches the end
-                    and then flow onto the next line.</doc:Div> 
-                    
-                    After a block, this with then continue with the previous flow on the next line.<doc:Br/>
-                    A line break forces a new line in the content but flow in the page (#<doc:PageNumber />) will continue. 
-                    
-                    <doc:Div styles:fill-color="#666600" >
-                    Blocks also supports the use of inline and block content within them
-                    <doc:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, adjusting the line height as needed.</doc:Span>
-                    <doc:Div >As a separate block within the container</doc:Div>
-                    </doc:Div>
-                    
-                </Content>
-            </doc:Page>
-        </Pages>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <body style="margin:20pt; font-size:20pt">
+        This is the content of the page,
 
-    </doc:Document>
+        <div style="color:maroon">
+            This will always be on a new on the line, and it's content will then continue inline until it reaches the end
+            and then flow onto the next line.
+        </div>
+
+        After a block, this with then continue with the previous flow on the next line.<br />
+        A line break forces a new line in the content but flow in the page (#<page />) will continue.
+
+        <div style="color:#666600">
+            Blocks also support the use of inline and block content within them
+            <span style="color:#006666;font-size:30pt">in multiple lines, adjusting the line height as needed.</span>
+            <div>As a separate block within the container</div>
+        </div>
+    </body>
+    </html>
 
 .. image:: images/documentpositioningblocks.png
 
 Blocks also support the use of backgrounds, borders, margins and padding.
 They also support :doc:`document_columns`
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                  xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            This is the content of the page, 
-            
-            <doc:Div styles:fill-color="maroon" styles:margins="20pt 10pt 10pt 10pt" >This will always 
-                be on a new on the line, and it's content will then continue inline 
-                until it reaches the end and then flow onto the next line.
-            </doc:Div> 
-            
-            After a block, this with then continue with the previous flow on the next line.<doc:Br/>
-            A line break forces a new line in the content but flow in the page (#<doc:PageNumber />) will continue. 
-            
-            <doc:Div styles:fill-color="#666600" styles:bg-color="#BBBB00" styles:padding="10pt"
-                     styles:margins="10pt" styles:column-count="2">
-                Blocks also supports the use of inline and block content within them
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <body style="margin:20pt; font-size:20pt">
+        This is the content of the page,
 
-                <doc:Span styles:fill-color="#006666"  styles:font-size="30pt">in multiple lines, 
-                    adjusting the line height as needed.</doc:Span>
+        <div style="color:maroon; margin: 20pt 10pt 10pt 10pt">
+            This will always
+            be on a new on the line, and it's content will then continue inline
+            until it reaches the end and then flow onto the next line.
+        </div>
 
-                <!-- breaking onto a new column-->
-                <doc:ColumnBreak />
+        After a block, this with then continue with the previous flow on the next line.<br />
+        A line break forces a new line in the content but flow in the page (#<page />) will continue.
 
-                <doc:Div styles:fill-color="black" styles:bg-color="white" >As a separate block within the container</doc:Div>
-                And coming after the child block.
-            </doc:Div>
-            
-        </Content>
-        </doc:Page>
-    </Pages>
+        <div style="color:#666600; background-color:#BBBB00; padding:10pt;
+                    margin: 10pt; column-count: 2">
+            Blocks also supports the use of inline and block content within them
 
-    </doc:Document>
+            <span style="color:#006666; font-size:30pt;">
+                in multiple lines,
+                adjusting the line height as needed.
+            </span>
+
+            <div style="color:black; background-color:white; break-before:always;">
+                As a separate block within the container
+            </div>
+            And coming after the child block.
+        </div>
+    </body>
+    </html>
 
 .. image:: images/documentpositioningblocks2.png
 
 
-Changing the position-mode
-==========================
+Changing the display mode
+---------------------------
 
-It is posible to change the default position mode for many components on the page. A span can be a block and a div can be a span.
-Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also support the use of the the position mode.
+Scryber (currently) supports the following values for the display style mode:
 
-.. code-block:: xml
+ * block
+ * inline
+ * none
+
+It is posible to change the default display mode for many components on the page. A span can be a block and a div can be inline.
+Images and shapes (see :doc:`document_images` and :doc:`drawing_paths`) also support the use of the the display mode.
+
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                  xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-            <Content>
-                <doc:Div styles:border-color="black" styles:border-width="1pt" >
-                    The content of this div is all as a block (by default)
-                    
-                    <doc:Div styles:fill-color="maroon" >This div is positioned as a block.</doc:Div>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <body style="margin:20pt; font-size:20pt">
+        <div style="color: black; border-width: 1pt">
+            The content of this div is all as a block (by default)
 
-                    <!-- Images are by detault displayed as blocks -->
-                    <doc:Image styles:width="60pt" src="../../Content/Images/group.png" />
-                    
-                    After the content.
-                </doc:Div>
+            <div style="color: maroon">This div is positioned as a block.</div>
 
-                <doc:Div styles:border-color="black" styles:border-width="1pt" >
-                    The content of this div is set explicity to inline.
-                    
-                    <doc:Div styles:position-mode="Inline" styles:fill-color="maroon">This div is positioned as a block.</doc:Div>
+            <!-- Images are by detault displayed as blocks -->
+            <img style="width:60pt" src="./Images/group.png" />
 
-                    <!-- Image is also set to inline and will increase the line height automatically -->
-                    <doc:Image styles:position-mode="Inline" styles:width="60pt"  src="../../Content/Images/group.png" />
+            After the content.
+        </div>
 
-                    After the content.
-                </doc:Div>
-                
-            
-            </Content>
-        </doc:Page>
-    </Pages>
+        <div style="color: black; border-width: 1pt">
+            The content of this div is all as a block (by default)
 
-    </doc:Document>
+            <div style="color: maroon; display: inline">This div is positioned as a block.</div>
+
+            <!-- Images can be inline and will adjust the line height as needed -->
+            <img style="width:60pt; display:inline" src="./Images/group.png" />
+
+            After the content.
+        </div>
+
+        <!-- The display:none is also supported, and will not display the content. -->
+        <div style="color: black; border-width: 1pt; display: none;">
+            The content of this div is all as a block (by default)
+
+            <div style="color: maroon; display: inline">This div is positioned as a block.</div>
+
+            <!-- Images are by detault displayed as blocks -->
+            <img style="width:60pt; display:inline" src="./Images/group.png" />
+
+            After the content.
+        </div>
+    </body>
+    </html>
 
 
 .. image:: images/documentpositioningblocks3.png
 
 
-The full-width attribute
-========================
-
-The attribute full-width makes any block component automatically fill the available width of the region. Even if the inner content does not need it.
-It's effectivly set as 100% width.
-
-If it's set to false, the block will be as wide as needed (without going beyond the boundaries of it's own containing region).
-This applies to the page, or a column containing the block.
-
-By default Div's and Paragraphs are set to full width. BlockQuotes, Tables and Lists are not.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-
-    <Styles>
-        <!-- Using a style to repeat the border is easier -->
-        <styles:Style applied-class="bordered" >
-            <styles:Border color="black" style="Solid" width="1pt"/>
-            <styles:Padding all="5pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            <doc:Div styles:class="bordered" >
-                This div is full width<doc:Br/>
-                And will extend beyond the content.<doc:Br/>
-                To the width of its container.
-            </doc:Div>
-            <doc:Br/>
-            <doc:Div styles:class="bordered" styles:full-width="false" >
-                This div is NOT full width<doc:Br/>
-                And will only size to the content.<doc:Br/>
-            </doc:Div>
-            <doc:Br/>
-            <doc:Div styles:class="bordered" styles:full-width="false" >
-                This div is NOT full width,
-                but will  size to the content available in the container,
-                and then flow to the next line.
-            </doc:Div>
-            <doc:Br/>
-            <!-- Tables are not by default full width-->
-            <doc:Table>
-                <doc:Row>
-                    <doc:Cell styles:class="bordered">First</doc:Cell>
-                    <doc:Cell styles:class="bordered">Second</doc:Cell>
-                    <doc:Cell styles:class="bordered">Third</doc:Cell>
-                </doc:Row>
-                <doc:Row>
-                    <doc:Cell styles:class="bordered">Fourth</doc:Cell>
-                    <doc:Cell styles:class="bordered">Fifth</doc:Cell>
-                    <doc:Cell styles:class="bordered">Sixth</doc:Cell>
-                </doc:Row>
-            </doc:Table>
-            <doc:Br/>
-            <!-- But can be set to full width explicitly or in styles -->
-            <doc:Table styles:full-width="true">
-                <doc:Row>
-                    <doc:Cell styles:class="bordered">First</doc:Cell>
-                    <doc:Cell styles:class="bordered">Second</doc:Cell>
-                    <doc:Cell styles:class="bordered">Third</doc:Cell>
-                </doc:Row>
-                <doc:Row>
-                    <doc:Cell styles:class="bordered">Fourth</doc:Cell>
-                    <doc:Cell styles:class="bordered">Fifth</doc:Cell>
-                    <doc:Cell styles:class="bordered">Sixth</doc:Cell>
-                </doc:Row>
-            </doc:Table>
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
-
-.. image:: images/documentpositioningfullwidth.png
-
-For more on styles see :doc:`document_styles`
-
-Flowing around components
-=========================
-
-At the moment scryber does not support flowing content around other components.
-It is something we are looking at supporting. If you want to help, please get in touch.
 
 Relative Positioning
-====================
+-----------------------
 
 When you set the position-mode to Relative, it declares the position of that component relative to the block parent.
 The component will no longer be in the flow of any inline content, nor alter the layout of the following components.
@@ -358,7 +269,7 @@ And push any content after the block down.
 .. image:: images/documentpositioningrelative2.png
 
 Absolute Positioning
-====================
+---------------------
 
 Changing the positioning mode to Absolute makes the positioning relative to the current page being rendered.
 The component will no longer be in the flow of any content, nor alter the layout of following components.
@@ -411,7 +322,7 @@ but if a size is specified, then this will be honoured over and above the page s
 .. image:: images/documentpositioningabsolute.png
 
 Numeric Positioning
-===================
+--------------------
 
 All content positioning is from the top left corner of the page or parent. 
 This is a natural positioning mechanism for most cultures and developers. 
@@ -428,7 +339,7 @@ If no units are specified then the default is points. See :doc:`drawing_units` f
 
 
 Rendering Order
-===============
+----------------
 
 All relative or absolutely positioned content will be rendered to the output in the order it appears in the document.
 If a block is relatively positioned, it will overlay any content that preceded it, but anything coming after will be over the top.
@@ -478,13 +389,13 @@ By using this rule interesting effects can be designed.
 .. image:: images/documentpositioningover.png
 
 Position z-index
-================
+-----------------
 
 It's not currently supported, within scryber to specify a z-index on components. It may be supported in future.
 
 
 Positioned components
-======================
+----------------------
 
 There are 2 components that take advantage of the positioning within Scryber.
 

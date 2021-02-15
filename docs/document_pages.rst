@@ -221,6 +221,8 @@ To revert back to the default size use a value of auto or initial.
 Stopping overflow
 -------------------
 
-If overflowing onto a new page is not required or wantend then the 
+If overflowing onto a new page is not required or wanted then the 
 page-break-inside='avoid' will block any overflow or new pages.
+
+A section can be a single page, and never overflow.
 

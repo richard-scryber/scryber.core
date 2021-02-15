@@ -294,3 +294,76 @@ ensure the content, never grows beyond that specified value.
 
 
 .. image:: images/documentsizingminmax.png
+
+
+
+Full width blocks
+---------------------
+
+The div component automatically fills the available width of the region. Even if the inner content does not need it.
+It's effectivly set as 100% width.
+
+If an explicit width, or max-width or min-width, is applied, the block will honour these rather than stretch to full width.
+This applies to the page, or a column containing the block.
+
+By default div's and paragraphs are set to full width. blockQuotes, tables and lists are not.
+If it is needed to set the width of one of these to expand to the full avaialble space, then the 100% width is supported.
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <body style="margin:20pt; font-size:20pt">
+        <div style="border:solid 1pt black; padding: 5pt">
+            This div is full width<br />
+            And will extend beyond the content.<br />
+            To the width of its container.
+        </div>
+        <br />
+        <div style="border:solid 1pt black; padding: 5pt; max-width:300pt;">
+            This div is NOT full width<br />
+            And will only size to the content.
+        </div>
+        <br />
+        <div style="border:solid 1pt black; padding: 5pt; min-width:300pt;">
+            This div is NOT full width,
+            but will  size to the content available in the container,
+            and then flow to the next line.
+        </div>
+        <br />
+        <table>
+            <tr>
+                <td>First</td>
+                <td>Second</td>
+                <td>Third</td>
+            </tr>
+            <tr>
+                <td>Fourth</td>
+                <td>Fifth</td>
+                <td>Sixth</td>
+            </tr>
+        </table>
+        <br />
+        <!-- We set the table to 100% width so that it will expand out -->
+        <table style="width:100%">
+            <tr>
+                <td>First</td>
+                <td>Second</td>
+                <td>Third</td>
+            </tr>
+            <tr>
+                <td>Fourth</td>
+                <td>Fifth</td>
+                <td>Sixth</td>
+            </tr>
+        </table>
+    </body>
+    </html>
+
+.. image:: images/documentpositioningfullwidth.png
+
+.. note:: Only 100% is currently supported as a relative value. 50% or 5em etc. are not supported - as pages are fixed size, the required dimensions are known and scryber uses the available space.
+

@@ -3,65 +3,48 @@
           "http://www.w3.org/TR/html4/strict.dtd">
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <style type="text/css">
-
-        body {
-            margin: 20pt;
-            font-size:12pt;
-        }
-
-        .bordered {
-            border-style: solid;
-            border-width: 1pt;
-            border-color: #777;
-            background-color: #EEE;
-        }
-
-        .red {
-            border-color: #F00;
-        }
-
-        .spaced {
-            margin: 20pt;
-            margin-left: 10pt;
-            margin-right: 10pt;
-            padding: 5pt;
-        }
-
-        .sized{
-            max-height:60pt;
-            max-width:350pt;
-        }
-    </style>
-</head>
-<body class="bordered">
-    <br />
-    <b>Minimum Size, not reached</b>
-    <div class="bordered red" style="min-height:60pt; min-width:350pt">
-        This div has a red border with min size.
+<body style="margin:20pt; font-size:20pt">
+    <div style="border:solid 1pt black; padding: 5pt">
+        This div is full width<br />
+        And will extend beyond the content.<br />
+        To the width of its container.
     </div>
     <br />
-    <b>Minimum Size, width reached</b>
-    <div class="bordered red" style="min-height:60pt; min-width:350pt">
-        This div has a red border with min size, but the content will push this out beyond the minimum width.
+    <div style="border:solid 1pt black; padding: 5pt; max-width:300pt;">
+        This div is NOT full width<br />
+        And will only size to the content.
     </div>
     <br />
-    <b>Minimum Size, width reached</b>
-    <div class="bordered red" style="min-height:60pt; min-width: 350pt">
-        This div has a red border with min size, but the content will push this out beyond the minimum width to the
-        space in the container, and then flow as normal.
+    <div style="border:solid 1pt black; padding: 5pt; min-width:300pt;">
+        This div is NOT full width,
+        but will  size to the content available in the container,
+        and then flow to the next line.
     </div>
     <br />
-    <b>Maximum Size, not reached</b>
-    <div class="bordered red sized">
-        This div has a red border with max size.
-    </div>
+    <table>
+        <tr>
+            <td>First</td>
+            <td>Second</td>
+            <td>Third</td>
+        </tr>
+        <tr>
+            <td>Fourth</td>
+            <td>Fifth</td>
+            <td>Sixth</td>
+        </tr>
+    </table>
     <br />
-    <b>Maximum Size, width reached</b>
-    <div class="bordered red sized">
-        This div has a red border with max size, and the content will flow as the max-width is reached with the text.
-    </div>
-
+    <table style="width:100%">
+        <tr>
+            <td>First</td>
+            <td>Second</td>
+            <td>Third</td>
+        </tr>
+        <tr>
+            <td>Fourth</td>
+            <td>Fifth</td>
+            <td>Sixth</td>
+        </tr>
+    </table>
 </body>
 </html>
