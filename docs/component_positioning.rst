@@ -188,85 +188,85 @@ Relative Positioning
 When you set the position-mode to Relative, it declares the position of that component relative to the block parent.
 The component will no longer be in the flow of any inline content, nor alter the layout of the following components.
 
-.. code-block:: xml
+.. warning:: In HTML relative has a different meaning, scryber uses the container block offsets for relative positions and the page for absolute.
+
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-    <Styles>
-        <styles:Style applied-class="bordered">
-        <styles:Border color="black" style="Solid" width="1pt"/>
-        <styles:Padding all="5pt"/>
-        <styles:Background color="#AAAAAA" />
-        <styles:Margins top="5pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            This is the content of the page, 
-            
-            <doc:Div styles:class="bordered" >This is the content above the block.</doc:Div>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-            <doc:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
-                <doc:Span styles:position-mode="Relative" styles:bg-color="aqua" >This is relative</doc:Span>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+        <head>
+            <style type="text/css">
+                .bordered{
+                    border: solid 1pt black;
+                    padding:5pt;
+                    background-color: #AAA;
+                }
+            </style>
+        </head>
+        <body style="margin:20pt; font-size:20pt">
+            This is the content of the page,
+
+            <div class="bordered">This is the content above the block.</div>
+
+            <div class="bordered">
+                This is the flowing content within the block that will span over multiple lines
+                <span style="position:relative; background-color:aqua">This is relative</span>
                 with the content within it.
-            </doc:Div>
+            </div>
 
-            <doc:Div styles:class="bordered">
-            After a block, this will then continue with the previous flow of content.
-            </doc:Div>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
+            <div class="bordered">
+                After a block, this will then continue with the previous flow of content.
+            </div>
+        </body>
+    </html>
 
 .. image:: images/documentpositioningrelative.png
 
-By default the position will be 0,0 (top, left), but using the x and y attributes it can be altered.
-The parent block will grow to accomodate the content including any of it's relatively positioned content.
+By default the position will be 0,0, but using the top and left values it can be altered. As soon as a left or top value are specified, the 
+position:relative becomes inferred and is not needed.
+
+Any parent blocks will grow to accomodate the content including any of it's relatively positioned content.
 And push any content after the block down.
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-    <Styles>
-        <styles:Style applied-class="bordered">
-        <styles:Border color="black" style="Solid" width="1pt"/>
-        <styles:Padding all="5pt"/>
-        <styles:Background color="#AAAAAA"/>
-        <styles:Margins top="5pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            This is the content of the page, 
-            
-            <doc:Div styles:class="bordered" >This is the content above the block.</doc:Div>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-            <doc:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
-                <doc:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is relative</doc:Span>
-                with the content within it.
-            </doc:Div>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+            .bordered{
+                border: solid 1pt black;
+                padding:5pt;
+                background-color: #AAA;
+            }
+        </style>
+    </head>
+    <body style="margin:20pt; font-size:20pt">
+        This is the content of the page,
 
-            <doc:Div styles:class="bordered">
+        <div class="bordered">This is the content above the block.</div>
+
+        <div class="bordered">
+            This is the flowing content within the block that will span over multiple lines
+            <span style="position:relative; top:300pt; left:60pt; background-color:aqua">This is relative</span>
+            with the content within it.
+        </div>
+
+        <div class="bordered">
             After a block, this will then continue with the previous flow of content.
-            </doc:Div>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
+        </div>
+    </body>
+    </html>
 
 .. image:: images/documentpositioningrelative2.png
+
+.. note:: By applying a position of relative the span (which is normally inline has automatically become a block and supports the background colours etc.
 
 Absolute Positioning
 ---------------------
@@ -278,48 +278,46 @@ The parent block will NOT grow to accomodate the content.
 The content within the absolutely positioned component will be flowed within the available width and height of the page,
 but if a size is specified, then this will be honoured over and above the page size.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-    <Styles>
-        <styles:Style applied-class="bordered">
-        <styles:Border color="black" style="Solid" width="1pt"/>
-        <styles:Padding all="5pt"/>
-        <styles:Background color="#AAAAAA" />
-        <styles:Margins top="5pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            This is the content of the page
-            
-            <doc:Div styles:class="bordered" >This is the content above the block.</doc:Div>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-            <doc:Div styles:class="bordered" >This is the flowing content within the block that will span over multiple lines
-                <!-- Absolutely positioned content -->
-                <doc:Span styles:position-mode="Absolute" styles:bg-color="aqua" styles:x="300pt" styles:y="60pt" >This is absolute</doc:Span>
-                with the content within it.
-            </doc:Div>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+            .bordered{
+                border: solid 1pt black;
+                padding:5pt;
+                margin:5pt;
+                background-color: #AAAAAA;
+            }
+        </style>
+    </head>
+    <body style="margin:20pt; font-size:20pt">
+        This is the content of the page,
 
-            <doc:Div styles:class="bordered">
-                After a block, this will then continue with the previous flow of content.
-            </doc:Div>
-            
-            <!-- Absolute postitioning can be applied to any component, and size can be specified. -->
-            <doc:Image styles:position-mode="Absolute" src="../../Content/Images/group.png" styles:fill-opacity="0.7"
-                    styles:x="500pt" styles:y="150pt" styles:width="150pt" styles:height="150pt" />
-        </Content>
-        </doc:Page>
-    </Pages>
+        <div class="bordered">This is the content above the block.</div>
 
-    </doc:Document>
+        <div class="bordered">
+            This is the flowing content within the block that will span over multiple lines
+            <span style="left:300pt; top:60pt; position:absolute; background-color:aqua">
+                This is absolute
+            </span>
+            with the content within it.
+        </div>
 
+        <div class="bordered">
+            After a block, this will then continue with the previous flow of content.
+        </div>
+
+        <img src="./images/group.png" style="position:absolute; top:150pt; left:500pt; height:150pt; opacity:0.7;" />
+    </body>
+    </html>
 
 .. image:: images/documentpositioningabsolute.png
+
 
 Numeric Positioning
 --------------------
@@ -333,10 +331,11 @@ Units of position can either be specified in
 * points (1/72 of an inch) e.g `36pt`, 
 * inches e.g. `0.5in` or 
 * millimeters e.g. `12.7mm`
-
+* pixels (1/96 of an inch) e.g. `48px`
 
 If no units are specified then the default is points. See :doc:`drawing_units` for more information.
 
+.. note:: 100% is also supported for widths to allow for the full-width capability. More support for percentage widths may be added in future.
 
 Rendering Order
 ----------------
@@ -347,46 +346,48 @@ If a block is relatively positioned, it will overlay any content that preceded i
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-    <Styles>
-        <styles:Style applied-class="bordered">
-        <styles:Border color="black" style="Solid" width="1pt"/>
-        <styles:Padding all="5pt"/>
-        <styles:Background color="#AAAAAA" opacity="0.2"/>
-        <styles:Margins top="5pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="20pt">
-        <Content>
-            This is the content of the page, 
-            
-            <doc:Div styles:class="bordered" >This is the flowing content within the block that 
-                will span over multiple lines
-                <doc:Span styles:position-mode="Relative" styles:bg-color="aqua" styles:x="25pt" 
-                            styles:y="20pt" styles:padding="4pt" >This is relative positioned</doc:Span>
-                with this content over the top.
-            </doc:Div>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-            <doc:Div styles:class="bordered" styles:padding="10 60 10 10">
-                <doc:Image src="../../Content/Images/group.png" styles:position-mode="Relative" 
-                            styles:x="-40pt" styles:y="-10pt" styles:width="100pt" styles:fill-opacity="0.5" />
-                This is the content that will flow over the top with the 60 point left padding and the 
-                image set at -40, -10 relative to the container with a width of 100pt
-                and a 50% opacity.
-            </doc:Div>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+            .bordered{
+                border: solid 1pt black;
+                padding:5pt;
+                margin:5pt;
+                background-color: #EEEEEE;
+            }
+        </style>
+    </head>
+    <body style="margin:20pt; font-size:20pt">
+        This is the content of the page,
 
-        </Content>
-        </doc:Page>
-    </Pages>
+        <div class="bordered">This is the content above the block.</div>
 
-    </doc:Document>
+        <div class="bordered">
+            This is the flowing content within the block that will span over multiple lines
+            <span style="left:25pt; top:20pt; background-color:aqua; padding:4pt;">
+                This is relatively positioned
+            </span>
+            with the content within it.
+        </div>
+
+        <div class="bordered" style="padding:10pt 10pt 10pt 60pt">
+            <img src="./images/group.png"
+                style="position:relative; top:-10pt; left:-40pt; width:100pt; opacity:0.5;" />
+            This is the content that will flow over the top with the 60 point left padding and the
+            image set at -40, -10 relative to the container with a width of 100pt
+            and a 50% opacity.
+        </div>
+
+    </body>
+    </html>
 
 By using this rule interesting effects can be designed.
 
 .. image:: images/documentpositioningover.png
+
 
 Position z-index
 -----------------
@@ -394,10 +395,8 @@ Position z-index
 It's not currently supported, within scryber to specify a z-index on components. It may be supported in future.
 
 
-Positioned components
+Drawing Canvas
 ----------------------
 
-There are 2 components that take advantage of the positioning within Scryber.
-
-1. :doc:`reference/pdf_canvas` positions all direct child components in the canvas as relative, whether they have been decared as such or not.
-2. :doc:`reference/pdf_layergroup` has a collection of child Layers. These will be relatively positioned to the group.
+For complete control of drawing content, scryber supports svg. This can be used as drawing support for shapes and paths etc.
+See :doc:`drawing_paths` for more details.
