@@ -70,7 +70,7 @@ As we can overflow, a new layout page is added, and the content latout continues
 .. note:: The borders and any background will be based around the container and show on each column.
 
 Columns on containers
-=====================
+----------------------
 
 As we can see above, the headings were also part of the column layout on the page. 
 

@@ -10,56 +10,55 @@ However it is very easy to size and position (see :doc:`component_positioning`) 
 (see :doc:`drawing_units` for more on the use of measurements and dimensions).
 
 Width and Height
-================
+------------------
 
 All block components support an explicit width and / or height value. If it's width is set, then any full-width style will be ignored.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Styles>
-        <styles:Style applied-class="bordered" >
-            <styles:Border color="#777" width="1pt" style="Solid"/>
-            <styles:Background color="#EEE"/>
-            <styles:Padding all="4pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:margins="20pt" styles:font-size="18pt">
-            <Content>
-                <doc:Div styles:class="bordered" >
-                The content of this div is all as a block (by default)
-                </doc:Div>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css" >
 
-                <doc:Div styles:class="bordered" styles:width="300pt" >
-                The content of this div is set to 300pt <doc:U>wide</doc:U>, so the content will flow within this width,
-                and grow the height as needed.
-                </doc:Div>
+            .bordered {
+                border: solid 1px #777;
+                background-color: #EEE;
+                padding:4pt;
+            }
 
-                <doc:Div styles:class="bordered" styles:height="150pt" >
-                The content of this div is set to 150pt <doc:U>high</doc:U>, so the content will flow within this
-                as full width, but the height will still be 150pt.
-                </doc:Div>
+        </style>
+    </head>
+    <body>
+        <div class="bordered">
+            The content of this div is all as a block (by default)
+        </div>
 
-                <doc:Div styles:class="bordered" styles:width="300pt" styles:height="150pt" >
-                The content of this div is set to 300pt <doc:U>wide</doc:U> and 150pt <doc:U>high</doc:U>, so the content will flow within this
-                as full width, but the height will still be 150pt.
-                </doc:Div>    
-            
-            </Content>
-        </doc:Page>
-    </Pages>
+        <div class="bordered" style="width:300pt">
+            The content of this div is set to 300pt <u>wide</u>, so the content will flow within this width,
+            and grow the height as needed.
+        </div>
 
-    </doc:Document>
+        <div class="bordered" style="height:150pt">
+            The content of this div is set to 150pt <u>high</u>, so the content will flow within this
+            as full width, but the height will still be 150pt.
+        </div>
+
+        <div class="bordered" style="width:300pt; height:150pt">
+            The content of this div is set to 300pt <u>wide</u> and 150pt <u>high</u>, so the content will flow within this
+            as full width, but the height will still be 150pt.
+        </div>
+    </body>
+
+    </html>
 
 .. image:: images/documentsizing.png
 
 Images with width and height
-==============================
+-----------------------------
 
 Scryber handles the sizing of images based on the natural size of the image. If no explicit size or positioning is provided, then it will be rendered
 at the native size for the image.
@@ -71,64 +70,74 @@ If either a width **or** height is assigned, then this will be used to proportio
 
 If both a width **and** height are assigned, then they will both be used to fit the image to that space. No matter what the originals' proportions are.
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-    <Pages>
-        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
-            <Content>
-                
-                <doc:Span >An image will natually size to it's dimensions without space restriction.</doc:Span>
-                <doc:Image src="../../Content/Images/landscape.jpg" />
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-                <doc:Div styles:column-count="4" styles:margins="10 0 0 0" >
-                    <doc:B>First Column</doc:B><doc:Br/>
-                    An image will fit to it's container if no explicit size is set.
-                    <doc:Image src="../../Content/Images/landscape.jpg" />
-                    <doc:ColumnBreak/>
-                    <doc:B>Second Column</doc:B><doc:Br/>
-                    If a width is set, then the sizing will be proportional.
-                    <doc:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
-                    <doc:ColumnBreak/>
-                    <doc:B>Third Column</doc:B><doc:Br/>
-                    If a height is set, then the sizing will be proportional.
-                    <doc:Image src="../../Content/Images/landscape.jpg" styles:height="50pt" />
-                    
-                    <doc:ColumnBreak/>
-                    <doc:B>Third Column</doc:B><doc:Br/>
-                    If a width and height are set these will be used explicitly.
-                    <doc:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" styles:height="50pt" />
-                </doc:Div>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css" >
 
-                <!-- Photo by Bailey Zindel on Unsplash -->
-            </Content>
-        </doc:Page>
-    </Pages>
+            body{ padding: 20pt;}
 
-    </doc:Document>
+            .bordered { font-size:14pt; }
+
+            .columns{ column-count: 4; }
+
+            .columns div.bordered{ break-after:always; }
+
+        </style>
+    </head>
+    <body>
+        <div class="bordered" style="margin:30pt;">
+            An image will natually size to it's dimensions without space restriction.
+            <img src="./images/landscape.jpg" />
+        </div>
+        <div class="columns" style="column-count: 4">
+            <div class="bordered">
+                <b>First Column</b><br />
+                An image will fit to it's container if no explicit size is set.
+                <img src="./images/landscape.jpg" />
+            </div>
+            <div class="bordered">
+                <b>Second Column</b><br />
+                If a width is set, then the sizing will be proportional.
+                <img src="./images/landscape.jpg" style="width:100pt;" />
+            </div>
+
+            <div class="bordered" >
+                <b>Third Column</b><br />
+                If a height is set, then the sizing will be proportional.
+                <img src="./images/landscape.jpg" style="height:50pt;" />
+            </div>
+
+            <div class="bordered" >
+                <b>Fourth Column</b><br />
+                If a width and height are set these will be used explicitly.
+                <img src="./images/landscape.jpg" style="width:100pt; height:50pt;" />
+            </div>
+        </div>
+
+        <!-- Photo by Bailey Zindel on Unsplash -->
+    </body>
+
+    </html>
 
 .. image:: images/documentsizingimages.png
 
 
-Page Sizes
-==========
-
-Pages are generally sized differently to components on a page, as they use the standard ISO and Imperial page enumeration.
-But they can also be a custom size. See :doc:`document_pages` for details on how to alter the size of pages.
-
 Margins and Padding
-====================
+--------------------
 
 All block level elements support padding and margins.
 Unlike html, scryber does not count the width of the border as part of the box dimensions (on purpose).
 
 Dimensions can be set either directly on the component, or on a style applied to the components (see: :doc:`document_styles`).
 
-The `Margins` and `Padding` style have 5 properties that can be set.
+The `Margin` and `Padding` style have the 4 individual properties that can also be set.
 
-* All
 * Top
 * Right
 * Bottom
@@ -136,7 +145,7 @@ The `Margins` and `Padding` style have 5 properties that can be set.
 
 If an individual side property is set, then this will override any value set on all.
 
-The margins or padding attributes on elements can be set with 1, 2 or 4 values. If only one is provided it will be applied to each.
+The margins or padding attributes on tags can alsp be set with 1, 2 or 4 values. If only one is provided it will be applied to each.
 If 4 are provided, they will be applied to each individual value in the `top`, `right`, `bottom`, `left` (as per html padding). If 
 2 are provided the first will be applied to the top and bottom, the second to the left and right.
 
@@ -147,145 +156,66 @@ If not set then the values will be zero.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Styles>
-        
-        <styles:Style applied-type="doc:Page" >
-            <styles:Font size="12pt"/>
-            <styles:Margins all="20pt"/>
-        </styles:Style>
-        
-        <styles:Style applied-class="bordered" >
-            <styles:Border color="#777" width="1pt" style="Solid"/>
-            <styles:Background color="#EEE"/>
-        </styles:Style>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
 
-        <styles:Style applied-class="red">
-            <styles:Border color="red"/>
-        </styles:Style>
-        
-        <styles:Style applied-class="spaced" >
-            <styles:Margins all="20pt" left="10pt" right="10pt"/>
-            <styles:Padding all="5pt"/>
-        </styles:Style>
+            body {
+                margin: 20pt;
+                font-size:12pt;
+            }
 
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:class="bordered" > <!--Styles applied to the page type -->
-            <Content>
-                <doc:B>First Example</doc:B>
-                <doc:Div styles:class="bordered red" >
-                    The content of this div has a red border with no padding or margins.
-                </doc:Div>
+            .bordered {
+                border-style: solid;
+                border-width: 1pt;
+                border-color: #777;
+                background-color: #EEE;
+            }
 
-                <doc:B>Second Example</doc:B>
-                <doc:Div styles:class="bordered red spaced" >
-                    The content of this div has a red border with both margins and padding set from the style.
-                </doc:Div>
+            .red {
+                border-color: #F00;
+            }
 
-                <doc:B>Third Example</doc:B>
-                <doc:Div styles:class="bordered red spaced" styles:padding="20pt" >
-                    The content of this div has a red border with margins set from the style and padding overridden explicitly on the component.
-                </doc:Div>
+            .spaced {
+                margin: 20pt;
+                margin-left: 10pt;
+                margin-right: 10pt;
+                padding: 5pt;
+            }
+        </style>
+    </head>
+    <body class="bordered">
 
-                <doc:B>Borders are supported on images and other blocks too, and will respect the width and or height properties.</doc:B>
-                <doc:Image src="../../Content/Images/landscape.jpg" styles:class="bordered spaced" styles:width="100pt" />
-                <doc:H1 styles:class="bordered spaced">Heading with spacing.</doc:H1>
-            </Content>
-        </doc:Page>
-    </Pages>
+        <b>First Example</b>
+        <div class="bordered red">
+            The content of this div has a red border with no padding or margins.
+        </div>
 
-    </doc:Document>
+        <b>Second Example</b>
+        <div class="bordered red spaced">
+            The content of this div has a red border with both margins and padding set from the style.
+        </div>
+
+        <b>Third Example</b>
+        <div class="bordered red spaced" style='padding:20pt;'>
+            The content of this div has a red border with margins set from the style and padding overridden explicitly on the component.
+        </div>
+
+        <b>Borders are supported on images and other blocks too, and will respect the width and or height properties.</b>
+        <img src="./Images/landscape.jpg" class="bordered spaced" style="width:100pt" />
+        <h1 class="bordered spaced">Heading with spacing.</h1>
+
+    </body>
+    </html>
 
 .. image:: images/documentsizingmargins.png
 
-Clipping
-========
-
-The block level components also support the use of a clipping (with overflow action) to reduce the size of the visible area within the block
-By default, content is truncated when an explicit size is reached. It cannot overflow, because of the size, so is truncated.
-When the overflow action is set to Clip, however, all the inner content of the block will be rendered, but effectively in a window on top of the content.
-The content outside the view of the window is still there, but not visible.
-
-Along with the overflow action on a style a clipping can be applied in the same way as margins and padding.
-This will alter the 'size of the window' that content is seen through.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
-
-    <Styles>
-        
-        <styles:Style applied-type="doc:Page" >
-            <styles:Font size="12pt"/>
-            <styles:Margins all="20pt"/>
-        </styles:Style>
-        
-        <styles:Style applied-class="bordered" >
-            <styles:Border color="#777" width="1pt" style="Solid"/>
-            <styles:Background color="#EEE"/>
-        </styles:Style>
-
-        <styles:Style applied-class="red">
-            <styles:Border color="red"/>
-        </styles:Style>
-
-        <!-- Our clipping style applies 10pt all around. 
-             It's NOT the same as padding.  -->
-
-        <styles:Style applied-class="clipped" >
-            <styles:Clipping all="10pt"/>
-            <styles:Overflow action="Clip"/>
-        </styles:Style>
-
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:class="bordered" > <!--Styles applied to the page type -->
-            <Content>
-                <doc:B>Content truncated by default</doc:B>
-                <doc:Div styles:class="bordered red" styles:height="35pt" >
-                    The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit, 
-                    it will be truncated to the last word an no other content shown. So this content will not be visible, as it cannot be completely laid out.
-                </doc:Div>
-                <doc:Br/>
-                <doc:B>Content clipped, not truncated</doc:B>
-                <doc:Div styles:class="bordered red" styles:height="35pt" styles:overflow-action="Clip" >
-                    The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit,
-                    it will still be rendered on the page, but clipped to the bounds. So this content will be there, in part.
-                </doc:Div>
-
-                <doc:Br/>
-                <doc:B>Content clipped, with inset of 10pt</doc:B>
-                <doc:Div styles:class="bordered red clipped" styles:height="35pt" >
-                    The content of this div has a red border with no padding or margins, with a height set to 60pt. When the content can no longer fit,
-                    it will still be rendered on the page, but clipped to the bounds. So this content will be there, in part.
-                </doc:Div>
-
-                <doc:Br/>
-                <doc:B>Image clipped by container, with inset of 10pt</doc:B>
-                <doc:Div styles:class="bordered red clipped" styles:width="100pt" >
-                    <doc:Image src="../../Content/Images/landscape.jpg" />
-                </doc:Div>
-            </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
-
-
-.. note:: The clipping only applies to the inner content. It's effectively drawn and then clipped to shape. This means that clipping directly on images is not supported.
-
-.. image:: images/documentsizingclipping.png
-
 
 Minimum and Maximum size
-========================
+-------------------------
 
 Along with the use of width and height, scryber also supports the use of minimum height/width and maximum height/width.
 
@@ -295,87 +225,72 @@ ensure the content, never grows beyond that specified value.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                    xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Styles>
-        
-        <styles:Style applied-type="doc:Page" >
-            <styles:Font size="12pt"/>
-            <styles:Margins all="20pt"/>
-        </styles:Style>
-        
-        <styles:Style applied-class="bordered" >
-            <styles:Border color="#777" width="1pt" style="Solid"/>
-            <styles:Background color="#EEE"/>
-        </styles:Style>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
 
-        <styles:Style applied-class="red">
-            <styles:Border color="red"/>
-        </styles:Style>
+            body {
+                margin: 20pt;
+                font-size:12pt;
+            }
 
-        <styles:Style applied-class="sized" >
-            <styles:Size full-width="false" max-height="60pt" max-width="350pt"/>
-        </styles:Style>
+            .bordered {
+                border-style: solid;
+                border-width: 1pt;
+                border-color: #777;
+                background-color: #EEE;
+            }
 
-    </Styles>
-    <Pages>
-    
-        <doc:Page styles:class="bordered" > <!--Styles applied to the page type -->
-        <Content>
-            <doc:B>Minimum Size, not reached</doc:B>
-            <doc:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
-                This div has a red border with min size.
-            </doc:Div>
+            .red {
+                border-color: #F00;
+            }
 
-            <doc:Br/>
-            <doc:B>Minimum Size, width reached</doc:B>
-            <doc:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
-                This div has a red border with min size, but the content will push this out beyond the minimum width.
-            </doc:Div>
+            .spaced {
+                margin: 20pt;
+                margin-left: 10pt;
+                margin-right: 10pt;
+                padding: 5pt;
+            }
 
-            <doc:Br/>
-            <doc:B>Minimum Size, width reached</doc:B>
-            <doc:Div styles:class="bordered red" styles:full-width="false" styles:min-height="60pt" styles:min-width="350pt" >
-                This div has a red border with min size, but the content will push this out beyond the minimum width to the
-                space in the container, and then flow as normal.
-            </doc:Div>
+            .sized{
+                max-height:60pt;
+                max-width:350pt;
+            }
+        </style>
+    </head>
+    <body class="bordered">
+        <br />
+        <b>Minimum Size, not reached</b>
+        <div class="bordered red" style="min-height:60pt; min-width:350pt">
+            This div has a red border with min size.
+        </div>
+        <br />
+        <b>Minimum Size, width reached</b>
+        <div class="bordered red" style="min-height:60pt; min-width:350pt">
+            This div has a red border with min size, but the content will push this out beyond the minimum width.
+        </div>
+        <br />
+        <b>Minimum Size, width reached</b>
+        <div class="bordered red" style="min-height:60pt; min-width: 350pt">
+            This div has a red border with min size, but the content will push this out beyond the minimum width to the
+            space in the container, and then flow as normal.
+        </div>
+        <br />
+        <b>Maximum Size, not reached</b>
+        <div class="bordered red sized">
+            This div has a red border with max size.
+        </div>
+        <br />
+        <b>Maximum Size, width reached</b>
+        <div class="bordered red sized">
+            This div has a red border with max size, and the content will flow as the max-width is reached with the text.
+        </div>
 
-            <doc:Br/>
-            <doc:B>Maximum Size, not reached</doc:B>
-            <doc:Div styles:class="bordered red sized" >
-                This div has a red border with max size.
-            </doc:Div>
-
-            <doc:Br/>
-            <doc:B>Maximum Size, width reached</doc:B>
-            <doc:Div styles:class="bordered red sized" >
-                This div has a red border with max size, and the content will flow as the max-width is reached with the text.
-            </doc:Div>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
+    </body>
+    </html>
 
 
 .. image:: images/documentsizingminmax.png
-
-Sizing Grid
-=============
-
-In order to visually measure your sizes, position and content - Scryber supports the use of an overlay grid.
-This can only be set on a style, rather than inline to components. But it does have the ability for position,
-spacing and offsets.
-
-.. code-block:: xml
-
-    <styles:Style applied-type="doc:Page" >
-      <styles:Font size="12pt"/>
-      <styles:Margins all="20pt"/>
-      <styles:Overlay-Grid color="aqua" spacing="50pt" show="true"/>
-    </styles:Style>
-
-
-.. image:: images/documentsizinggrid.png

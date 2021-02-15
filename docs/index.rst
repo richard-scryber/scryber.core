@@ -145,9 +145,9 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     document_pages
     document_pagenumbering
     document_columns
-    referencing_files
     component_sizing
     component_positioning
+    referencing_files
     binding_content
     binding_model
     component_linking

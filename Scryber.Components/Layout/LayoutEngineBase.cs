@@ -754,9 +754,12 @@ namespace Scryber.Layout
                     PDFUnit height;
                     if (txtopts.Leading.HasValue)
                         height = txtopts.Leading.Value;
-                    else
+                    else if (txtopts.Font != null && txtopts.Font.FontMetrics != null)
                         height = txtopts.Font.FontMetrics.LineHeight;
-
+                    else if (txtopts.Font != null)
+                        height = txtopts.Font.Size;
+                    else
+                        height = 12;
                     PDFLayoutLine line = region.BeginNewLine();
                     line.AddRun(new PDFTextRunSpacer(PDFUnit.Zero, height, line, null));
                 }

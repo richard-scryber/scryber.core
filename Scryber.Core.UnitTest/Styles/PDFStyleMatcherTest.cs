@@ -433,7 +433,49 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(test, matcher.ToString(), "Complex conversion and back ToString did not match");
         }
 
- 
+        [TestMethod]
+        public void StyleMatcherMultiple_Test()
+        {
+            PDFStyleMatcher red = ".red";
+
+            Div div = new Div();
+            div.StyleClass = "red";
+            int priority;
+
+            bool result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+
+            div.StyleClass = "red bordered";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+
+            div.StyleClass = "bordered red";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+
+            div.StyleClass = "redish red";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+
+            div.StyleClass = "redish red bordered";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+
+            div.StyleClass = "redish reder bordered";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsFalse(result, "Should not have matched on the applied class of " + div.StyleClass);
+
+            div.StyleClass = "redred red";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+
+        }
 
     }
 }

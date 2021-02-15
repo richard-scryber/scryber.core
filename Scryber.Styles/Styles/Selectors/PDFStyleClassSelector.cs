@@ -30,36 +30,93 @@ namespace Scryber.Styles.Selectors
 
         public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state)
         {
-            var index = component.StyleClass.IndexOf(this.ClassName);
+            
+            var equals = component.StyleClass.Equals(this.ClassName);
+            if(equals)
+            {
+                if (null != this.AndClass)
+                    return AndClass.IsMatchedTo(component, state);
+                else
+                    return true;
+            }
+            else
+            {
+                int foundIndex = 0;
 
-            if (index < 0) //not found
+                do
+                {
+                    if (ContainsClassName(component.StyleClass, foundIndex, out foundIndex))
+                    {
+                        if (null != this.AndClass)
+                            return AndClass.IsMatchedTo(component, state);
+                        else
+                            return true;
+                    }
+                    else if (foundIndex > -1)
+                        foundIndex++;
+                }
+                while (foundIndex >= 0);
+
+                return false;
+            }
+
+            //We are not equal, so if we are shorted or the same length return false
+            if (component.StyleClass.Length <= this.ClassName.Length)
                 return false;
 
-            else if (component.StyleClass.Length == this.ClassName.Length) // exact match
-                ;
-            else if (index == 0) //starting
-            {
-                if (Char.IsWhiteSpace(component.StyleClass, index + this.ClassName.Length) == false)
-                    return false;
-            }
-            else if (component.StyleClass.Length == index + this.ClassName.Length) //ending
-            {
-                if (Char.IsWhiteSpace(component.StyleClass, index - 1) == false)
-                    return false;
-            }
-            else  //in the middle
-            {
-                if (Char.IsWhiteSpace(component.StyleClass, index + this.ClassName.Length) == false)
-                    return false;
+            //Now we know we are longer
 
-                if (Char.IsWhiteSpace(component.StyleClass, index - 1) == false)
-                    return false;
+            var starts = component.StyleClass.StartsWith(this.ClassName);
+            if (starts && Char.IsWhiteSpace(component.StyleClass, this.ClassName.Length))
+            {
+                if (null != this.AndClass)
+                    return AndClass.IsMatchedTo(component, state);
+                else
+                    return true;
             }
+
+            var ends = component.StyleClass.EndsWith(this.ClassName);
+            int index = component.StyleClass.Length - this.ClassName.Length;
+            if (ends && Char.IsWhiteSpace(component.StyleClass, index))
+
+            
 
             if (null != this.AndClass)
                 return this.AndClass.IsMatchedTo(component, state);
             else
                 return true;
+        }
+
+        private bool ContainsClassName(string styleClass, int startIndex, out int foundIndex)
+        {
+            foundIndex = styleClass.IndexOf(this.ClassName, startIndex);
+
+            if (foundIndex < 0) //not found
+                return false;
+
+            else if (styleClass.Length == this.ClassName.Length) // exact match
+                return true;
+
+            else if (foundIndex == 0) //starting
+            {
+                if (Char.IsWhiteSpace(styleClass, foundIndex + this.ClassName.Length) == false)
+                    return false;
+            }
+            else if (styleClass.Length == foundIndex + this.ClassName.Length) //ending
+            {
+                if (Char.IsWhiteSpace(styleClass, foundIndex - 1) == false)
+                    return false;
+            }
+            else  //in the middle
+            {
+                if (Char.IsWhiteSpace(styleClass, foundIndex + this.ClassName.Length) == false)
+                    return false;
+
+                if (Char.IsWhiteSpace(styleClass, foundIndex - 1) == false)
+                    return false;
+            }
+
+            return true;
         }
 
         public override string ToString()

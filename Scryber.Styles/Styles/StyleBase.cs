@@ -828,6 +828,10 @@ namespace Scryber.Styles
             else
                 options.PositionMode = PositionMode.Block;
 
+            StyleValue<bool> b;
+            if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
+                options.FillWidth = b.Value;
+
             StyleValue<PDFUnit> unit;
 
             // X
@@ -856,6 +860,7 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.SizeWidthKey, out unit))
             {
                 options.Width = unit.Value;
+                options.FillWidth = false;
             }
             else
                 options.Width = null;
@@ -872,6 +877,7 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.SizeMinimumWidthKey, out unit))
             {
                 options.MinimumWidth = unit.Value;
+                options.FillWidth = false;
             }
             else
                 options.MinimumWidth = null;
@@ -888,6 +894,7 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.SizeMaximumWidthKey, out unit))
             {
                 options.MaximumWidth = unit.Value;
+                options.FillWidth = false;
             }
             else
                 options.MaximumWidth = null;
@@ -900,16 +907,14 @@ namespace Scryber.Styles
             else
                 options.MaximumHeight = null;
 
-
             //viewport
+
             StyleValue<PDFRect> rect;
             if (this.TryGetValue(StyleKeys.PositionViewPort, out rect))
                 options.ViewPort = rect.Value;
 
-            StyleValue<bool> b;
-            if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
-                options.FillWidth = b.Value;
-
+            
+            //alignment
 
             StyleValue<VerticalAlignment> valign;
             if (this.TryGetValue(StyleKeys.PositionVAlignKey, out valign))
@@ -926,6 +931,8 @@ namespace Scryber.Styles
                 options.HAlign = HorizontalAlignment.Right;
             else
                 options.HAlign = Const.DefaultHorizontalAlign;
+
+            // overflow
 
             StyleValue<OverflowAction> action;
             bool hasaction;
@@ -948,6 +955,8 @@ namespace Scryber.Styles
 
             PDFThickness thickness;
 
+            //clipping
+
             if (hasaction == false || options.OverflowAction == OverflowAction.Clip)
             {
                 //If there is no explicit overflow action or the overflow action is clip
@@ -966,15 +975,21 @@ namespace Scryber.Styles
                     options.ClipInset = PDFThickness.Empty();
             }
 
+            //margins
+
             if (this.TryGetThickness(StyleKeys.MarginsItemKey.Inherited, StyleKeys.MarginsAllKey, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey, out thickness))
                 options.Margins = thickness;
             else
                 options.Margins = PDFThickness.Empty();
 
+            //padding
+
             if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey, out thickness))
                 options.Padding = thickness;
             else
                 options.Padding = PDFThickness.Empty();
+
+            //columns
 
             StyleValue<int> colcount;
             if (this.TryGetValue(StyleKeys.ColumnCountKey, out colcount) && colcount.Value > 0)
@@ -984,7 +999,7 @@ namespace Scryber.Styles
                 options.AlleyWidth = unit.Value;
 
 
-            // get transformations
+            // transformations
 
             PDFTransformationMatrix transform = null;
 
@@ -1030,15 +1045,6 @@ namespace Scryber.Styles
             }
 
             options.TransformMatrix = transform;
-            
-            //if(null != transform && this.IsValueDefined(PDFStyleKeys.TransformOriginKey))
-            //{
-            //    options.TransformationOrigin = this.GetValue(PDFStyleKeys.TransformOriginKey, TransformationOrigin.CenterMiddle);
-            //}
-            
-
-            //if (this.TryGetValue(PDFColumnsStyle.ColumnFlowKey, out b))
-            //    options.FlowColumns = b.Value;
 
             return options;
         }

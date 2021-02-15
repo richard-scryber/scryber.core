@@ -809,6 +809,11 @@ namespace Scryber.Styles.Parsing
             : base(CSSStyleItems.BorderColor, StyleKeys.BorderColorKey)
         {
         }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            return base.DoSetStyleValue(onStyle, reader);
+        }
     }
 
     public class CSSBorderLeftColorParser : CSSColorStyleParser
