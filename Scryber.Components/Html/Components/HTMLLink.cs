@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
@@ -9,11 +10,143 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("link")]
-    public class HTMLLink : Scryber.Components.Component
+    public class HTMLLink : Scryber.Components.Component, IPDFTemplate
     {
+        internal enum HTMLLinkType
+        {
+            Html,
+            CSS,
+            Other
+        }
+
+        //
+        // Inner Classes
+        //
+
+        #region internal abstract class LinkContentBase
+
+        /// <summary>
+        /// Base Content for the parsed contents of a link
+        /// </summary>
+        internal abstract class LinkContentBase
+        {
+            public string LoadedSource { get; set; }
+
+            public HTMLLinkType LinkType { get; private set; }
+
+            public LinkContentBase(HTMLLinkType type, string source)
+            {
+                this.LinkType = type;
+                this.LoadedSource = source;
+            }
+
+            public virtual void ClearContent(Component component)
+            {
+
+            }
+
+            public virtual void AddContent(Component component, PDFContextBase context)
+            {
+
+            }
+
+            public virtual IEnumerable<IPDFComponent> GetContent(IPDFComponent owner, PDFContextBase context)
+            {
+                return null;
+            }
+
+            public virtual void DataBind(PDFDataContext context)
+            {
+
+            }
+        }
+
+        #endregion
+
+        #region internal class LinkContentHtml : LinkContentBase
+
+        /// <summary>
+        /// A Link content that is HTML
+        /// </summary>
+        internal class LinkContentHtml : LinkContentBase
+        {
+            
+            private IPDFTemplate _gen = null;
+            private int _index;
+            
+            public LinkContentHtml(IPDFTemplate gen, string path) : base(HTMLLinkType.Html, path)
+            {
+                this._gen = gen;
+                this._index = 0;
+            }
+
+            public override IEnumerable<IPDFComponent> GetContent(IPDFComponent owner, PDFContextBase context)
+            {
+                if (null != this._gen)
+                    return this._gen.Instantiate(_index, owner);
+                else
+                    return null;
+            }
+
+            public override void DataBind(PDFDataContext context)
+            {
+                
+            }
+        }
+
+        #endregion
+
+        internal class LinkContentCSS : LinkContentBase
+        {
+            private StyleGroup _parsedGroup = null;
+            private StyleCollection _parsed;
+
+            public LinkContentCSS(StyleCollection styles, string path) : base(HTMLLinkType.CSS, path)
+            {
+                _parsed = styles;
+            }
+
+            public override void ClearContent(Component component)
+            {
+                var doc = component.Document;
+
+                if (this._parsedGroup != null)
+                    doc.Styles.Remove(this._parsedGroup);
+                this._parsedGroup = null;
+                this.LoadedSource = string.Empty;
+            }
+
+            public override void AddContent(Component component, PDFContextBase context)
+            {
+                var doc = component.Document;
+
+                if(null == _parsedGroup)
+                {
+                    _parsedGroup = new StyleGroup();
+                    foreach (var style in this._parsed)
+                    {
+                        _parsedGroup.Styles.Add(style);
+                    }
+
+                    doc.Styles.Add(_parsedGroup);
+                }
+            }
+
+            public override void DataBind(PDFDataContext context)
+            {
+                this._parsed.DataBind(context);
+            }
+        }
+
+
         private string _href;
         private string _relationship;
-        private StyleGroup _parsedGroup = null;
+        private LinkContentBase _content;
+
+        internal LinkContentBase InnerContent
+        {
+            get { return _content; }
+        }
 
         [PDFAttribute("href")]
         public string Href
@@ -22,41 +155,10 @@ namespace Scryber.Html.Components
             set
             {
                 this._href = value;
-                this.ClearInnerStyles();
+                this.ClearInnerContent();
                 //this.DoLoadReference();
             }
         }
-
-        #region protected PDFStyleCollection InnerItems
-
-        private StyleCollection _innerItems;
-
-        protected StyleCollection InnerItems
-        {
-            get
-            {
-                return this._innerItems;
-            }
-            set
-            {
-                this._innerItems = value;
-            }
-        }
-
-        #endregion
-
-        #region public PDFStyleCollection Styles
-
-        /// <summary>
-        /// Gets all the styles in this group
-        /// </summary>
-        
-        public StyleCollection Styles
-        {
-            get { return this.InnerItems; }
-        }
-
-        #endregion
 
 
         [PDFAttribute("rel")]
@@ -66,7 +168,7 @@ namespace Scryber.Html.Components
             set
             {
                 this._relationship = value;
-                this.ClearInnerStyles();
+                this.ClearInnerContent();
             }
         }
 
@@ -101,10 +203,10 @@ namespace Scryber.Html.Components
             }
         }
 
-        public bool IsSourceLoaded
+        public bool IsContentLoaded
         {
-            get { 
-                if (string.IsNullOrEmpty(this.LoadedSource))
+            get {
+                if (null == this._content)
                     return false;
                 else
                     return true;
@@ -129,8 +231,8 @@ namespace Scryber.Html.Components
             base.OnDataBinding(context);
 
             DoLoadReference(context);
-            if (this.IsSourceLoaded && null != this.InnerItems)
-                this.InnerItems.DataBind(context);
+            if (this.IsContentLoaded )
+                this.InnerContent.DataBind(context);
         }
 
         protected override void OnDataBound(PDFDataContext context)
@@ -144,19 +246,21 @@ namespace Scryber.Html.Components
             base.OnPreLayout(context);
 
             DoLoadReference(context);
-            if (this.IsSourceLoaded)
-                this.AddStylesToDocument(context);
+            if (this.IsContentLoaded)
+                this.InnerContent.AddContent(this.Document, context);
         }
 
-        protected void ClearInnerStyles()
+        protected void ClearInnerContent()
         {
-            this.InnerItems = null;
-            if (this._parsedGroup != null)
-                this.Document.Styles.Remove(this._parsedGroup);
-            this._parsedGroup = null;
-            this.LoadedSource = string.Empty;
+            if (null != this._content)
+            {
+                this._content.ClearContent(this.Document);
+                this._content = null;
+            }
         }
 
+        #region protected virtual void DoLoadReference(PDFContextBase context)
+        
         protected virtual void DoLoadReference(PDFContextBase context)
         {
             if (String.IsNullOrEmpty(this.Href))
@@ -169,17 +273,20 @@ namespace Scryber.Html.Components
             if (null == this.Document)
                 return;
 
-            if (this.IsSourceLoaded)
+            if (this.IsContentLoaded)
                 return;
 
-            if (this.ShouldAddStyles(context.OutputFormat) == false)
+            HTMLLinkType type;
+
+            if (this.ShouldAddContent(context.OutputFormat, out type) == false)
             {
                 if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                    context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Link " + this.UniqueID + " is not a stylesheet print reference (@rel), so ignoring");
+                    context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Link " + this.UniqueID + " is not a stylesheet or include, or print reference (@rel), so ignoring");
                 return;
             }
 
             bool isFile;
+            string content = string.Empty;
 
             var path = this.MapPath(this.Href, out isFile);
 
@@ -194,7 +301,7 @@ namespace Scryber.Html.Components
                     if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                         context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
 
-                    DoLoadRemoteReference(path, context);
+                    content = DoLoadRemoteReference(path, context);
 
                     if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                         context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
@@ -210,10 +317,8 @@ namespace Scryber.Html.Components
                     if (context.TraceLog.ShouldLog(TraceLevel.Message))
                         context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of local href file " + path + " for link " + this.UniqueID);
 
-                    this.LoadedSource = path;
-                    var css = System.IO.File.ReadAllText(path);
 
-                    this.InnerItems = this.CreateInnerStyles(css, context);
+                    content = System.IO.File.ReadAllText(path);
 
                     if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                         context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of local file " + path + " for link " + this.UniqueID);
@@ -223,46 +328,72 @@ namespace Scryber.Html.Components
                 }
             }
             else if (context.Conformance == ParserConformanceMode.Strict)
-                throw new System.IO.FileLoadException("The stylesheet with href " + this.Href + " could not be loaded from path '" + path + "'");
+                throw new System.IO.FileLoadException("The link with href " + this.Href + " could not be loaded from path '" + path + "'");
             else
-                context.TraceLog.Add(TraceLevel.Error, "HTML", "The stylesheet with href " + this.Href + " could not be loaded from path '" + path + "'");
+            {
+                context.TraceLog.Add(TraceLevel.Error, "HTML", "The link with href " + this.Href + " could not be loaded from path '" + path + "'");
+            }
 
+            switch (type)
+            {
+                case (HTMLLinkType.CSS):
+                    StyleCollection col = this.CreateInnerStyles(content, context);
+                    this._content = new LinkContentCSS(col, path);
+                    break;
+                case (HTMLLinkType.Html):
+
+                    Dictionary<string, string> ns = new Dictionary<string, string>();
+                    foreach (var map in this.Document.NamespaceDeclarations)
+                    {
+                        ns.Add(map.Prefix, map.NamespaceURI);
+                    }
+                    Scryber.Data.ParsableTemplateGenerator gen = new Data.ParsableTemplateGenerator(content, ns);
+                    this._content = new LinkContentHtml(gen, path);
+                    break;
+
+                default:
+                    if (context.Conformance == ParserConformanceMode.Strict)
+                        throw new System.IO.FileLoadException("The link with href " + this.Href + " could not be loaded from path '" + path + "' as it does not have a known rel type - stylesheet or include");
+                    else
+                        context.TraceLog.Add(TraceLevel.Error, "HTML", "The link with href " + this.Href + " could not be loaded from path '" + path + "'  as it does not have a known rel type - stylesheet or include");
+                    
+                    break;
+            }
         }
 
-        protected virtual void DoLoadRemoteReference(string path, PDFContextBase context)
+        protected virtual string DoLoadRemoteReference(string path, PDFContextBase context)
         {
             //TODO: Use the document for any client web requests.
             //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
             this.LoadedSource = path;
             var request = System.Net.HttpWebRequest.Create(path);
 
-            var result = request.GetResponse();
-            this.DoLoadReferenceResult(result, path, context);
+            using (var result = request.GetResponse())
+                return this.DoLoadReferenceResult(result, path, context);
             
         }
 
         /// <summary>
         /// Forces the completion and loading of the remote result.
         /// </summary>
-        private void DoLoadReferenceResult(System.Net.WebResponse response, string path, PDFContextBase context)
+        private string DoLoadReferenceResult(System.Net.WebResponse response, string path, PDFContextBase context)
         {
 
-            
+            string content = string.Empty;
+
             try
             {
-                
-                string css;
-                using (var content = response.GetResponseStream())
+                using (var stream = response.GetResponseStream())
                 {
-                    using (var reader = new System.IO.StreamReader(content))
+                    using (var reader = new System.IO.StreamReader(stream))
                     {
-                        css = reader.ReadToEnd();
+                        content = reader.ReadToEnd();
                     }
                 }
-                this._innerItems = this.CreateInnerStyles(css, context);
             }
             catch(Exception ex)
             {
+                content = string.Empty;
                 if (context.Conformance == ParserConformanceMode.Lax)
                 {
                     context.TraceLog.Add(TraceLevel.Error, "HTML", "Could not load link href the response from '" + path + "'", ex);
@@ -274,7 +405,12 @@ namespace Scryber.Html.Components
             {
                 response.Dispose();
             }
+
+            return content;
         }
+
+        #endregion
+
 
         protected StyleCollection CreateInnerStyles(string content, PDFContextBase context)
         {
@@ -283,45 +419,38 @@ namespace Scryber.Html.Components
             if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                 context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Parsing the css selectors from string for link " + this.UniqueID);
 
-            this.AddCssStyles(collection, content, context);
+            this.ParseCssStyles(collection, content, context);
             
             return collection;
         }
 
-        protected virtual void AddStylesToDocument(PDFContextBase context)
+        
+        private bool ShouldAddContent(OutputFormat format, out HTMLLinkType type)
         {
-            if(null != this.Styles && this.ShouldAddStyles(context.OutputFormat))
-            {
+            type = HTMLLinkType.Other;
 
-                StyleGroup grp = new StyleGroup();
-                foreach (var style in this.Styles)
-                {
-                    grp.Styles.Add(style);
-                }
-
-                this.Document.Styles.Add(grp);
-                this._parsedGroup = grp;
-
-            }
-        }
-
-        private bool ShouldAddStyles(OutputFormat format)
-        {
             //If we have a media value and it's not for this format, then we don't add them
             if (null != Media && this.Media.IsMatchedTo(format) == false)
                 return false;
-            //If we have a relationship value and it's not a stylesheet, then we don't add them
-            if (!string.IsNullOrEmpty(this.Relationship) && this.Relationship.Equals("stylesheet", StringComparison.OrdinalIgnoreCase) == false)
+
+            if (this.Visible == false)
                 return false;
 
-            if (!this.Visible)
+            if (this.Relationship.Equals("stylesheet", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(this.Relationship))
+            {
+                type = HTMLLinkType.CSS;
+                return true;
+            }
+            else if (this.Relationship.Equals("import"))
+            {
+                type = HTMLLinkType.Html;
+                return true;
+            }
+            else
                 return false;
-
-            
-            return true;
         }
 
-        protected virtual void AddCssStyles(StyleCollection collection, string content, PDFContextBase context)
+        protected virtual void ParseCssStyles(StyleCollection collection, string content, PDFContextBase context)
         {
             bool parseCss = true;
 
@@ -344,6 +473,15 @@ namespace Scryber.Html.Components
             }
         }
 
-
+        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        {
+            if (this.IsContentLoaded)
+            {
+                var comp = this.InnerContent.GetContent(owner as Component, null);
+                return comp;
+            }
+            else
+                return null;
+        }
     }
 }

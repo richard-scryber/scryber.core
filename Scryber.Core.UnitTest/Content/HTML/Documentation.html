@@ -1,37 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<?scryber append-log='true' log-level='verbose' ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
           "http://www.w3.org/TR/html4/strict.dtd">
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <style type="text/css">
-        .bordered{
-            border: solid 1pt black;
-            padding:5pt;
-            margin:5pt;
-            background-color: #EEEEEE;
-        }
-    </style>
+    <title>My multi file document</title>
+    <link rel="stylesheet" media="screen" href="./css/includeScreen.css" />
+    <link id="MyContent" rel="import" href="./fragments/coverpage.html" />
+    <link id="MyHeader" rel="import" media="print" href="./Fragments/PageHeader.html" />
+    <link rel="stylesheet" media="print" href="./css/includePrint.css" />
 </head>
 <body style="margin:20pt; font-size:20pt">
-    This is the content of the page,
+    <header>
+        <div data-content="#MyHeader" ></div>
+    </header>    
 
-    <div class="bordered">This is the content above the block.</div>
+    <section style="page-break-before:avoid; page-break-after:always;"
+             data-content="#MyContent" ></section>
 
-    <div class="bordered">
-        This is the flowing content within the block that will span over multiple lines
-        <span style="left:25pt; top:20pt; background-color:aqua; padding:4pt;">
-            This is relatively positioned
-        </span>
-        with the content within it.
-    </div>
-
-    <div class="bordered" style="padding:10pt 10pt 10pt 60pt">
-        <img src="./images/group.png"
-             style="position:relative; top:-10pt; left:-40pt; width:100pt; opacity:0.5;" />
-        This is the content that will flow over the top with the 60 point left padding and the
-        image set at -40, -10 relative to the container with a width of 100pt
-        and a 50% opacity.
+    <div>
+        <h1 class="title" >This is the second page</h1>
     </div>
 
 </body>

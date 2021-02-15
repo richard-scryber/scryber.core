@@ -62,7 +62,7 @@ namespace Scryber.Styles.Parsing
         private string RemoveComments(string contnet)
         {
             if (this.Log.ShouldLog(TraceLevel.Verbose))
-                this.Log.Add("CSS", "Removing comments from css styles");
+                this.Log.Add(TraceLevel.Verbose, "CSS", "Removing comments from css styles");
 
             int start = contnet.IndexOf("/*");
             while (start >= 0)

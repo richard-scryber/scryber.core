@@ -45,9 +45,21 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        [PDFAttribute("data-content")]
+        public string DataContent
+        {
+            get; set;
+        }
+
         public HTMLSpan()
             : base()
         {
+        }
+
+        protected override void OnDataBinding(PDFDataContext context)
+        {
+            this.AddDataContent(this.DataContent, context);
+            base.OnDataBinding(context);
         }
     }
 }

@@ -72,6 +72,12 @@ namespace Scryber.Data
             //InitTemplate(xmlcontent, namespaces);
         }
 
+        public ParsableTemplateGenerator(string xmlContent, IDictionary<string, string> namespaceMappings)
+        {
+            this.XmlContent = xmlContent;
+            this.NamespacePrefixMappings = namespaceMappings;
+        }
+
         public void InitTemplate(string xmlcontent, System.Xml.XmlNamespaceManager namespaces)
         {
             if (null == namespaces)
@@ -148,6 +154,11 @@ namespace Scryber.Data
             //sb.Append(ns);
             sb.Append("><Content>");
 
+            if(xmlcontent.StartsWith("<?xml"))
+            {
+                int substr = xmlcontent.IndexOf("?>");
+                xmlcontent = xmlcontent.Substring(substr + 2);
+            }
             //Append the actual content
             sb.Append(xmlcontent);
 

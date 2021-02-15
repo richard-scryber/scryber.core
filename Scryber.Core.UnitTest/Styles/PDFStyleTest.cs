@@ -147,7 +147,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             actual = target.CreatePostionOptions();
 
-            Assert.AreEqual(true, actual.FillWidth);
+            Assert.AreEqual(false, actual.FillWidth); //false because a width has been set
             Assert.AreEqual(HorizontalAlignment.Center, actual.HAlign);
             Assert.AreEqual(VerticalAlignment.Middle, actual.VAlign);
 

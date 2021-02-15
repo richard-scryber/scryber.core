@@ -26,6 +26,12 @@ namespace Scryber.Html.Components
             set { base.Visible = value; }
         }
 
+        [PDFAttribute("data-content")]
+        public string DataContent
+        {
+            get; set;
+        }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>
@@ -50,6 +56,16 @@ namespace Scryber.Html.Components
 
         public HTMLTemplate()
         {
+        }
+
+        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        {
+            if(null != this.DataContent)
+            {
+                return this.GetDataContent(this.DataContent, context);
+            }
+            else
+                return base.GetTemplateForBinding(context, index, count);
         }
     }
 }

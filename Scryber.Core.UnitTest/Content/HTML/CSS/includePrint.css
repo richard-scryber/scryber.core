@@ -1,2 +1,17 @@
-﻿body {
+﻿.title{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight:bold;
+    font-size:60pt;
+    margin: 20pt;
+    padding:10pt;
+    text-align:center;
+}
+
+.page-head {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: normal;
+    font-size: 14pt;
+    margin: 20pt 10pt 10pt 10pt;
+    padding: 10pt;
+    border-bottom:solid 1pt black;
 }

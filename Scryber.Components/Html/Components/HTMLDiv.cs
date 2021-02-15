@@ -19,6 +19,9 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
 
+        [PDFAttribute("data-content")]
+        public string DataContent { get; set; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>
@@ -53,6 +56,12 @@ namespace Scryber.Html.Components
         {
         }
 
-        
+
+        protected override void OnDataBinding(PDFDataContext context)
+        {
+            this.AddDataContent(this.DataContent, context);
+            base.OnDataBinding(context);
+        }
+
     }
 }
