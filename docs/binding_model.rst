@@ -1,5 +1,5 @@
 ======================================
-Passing data to your template
+Dynamic content in your template
 ======================================
 
 **This is where it get's exciting**
@@ -286,6 +286,7 @@ And for the footer, we use the IPDFTemplate that is used for all dynamic content
         }
     }
 
-As you can see, pretty much anything can be data bound and the output can be altered in any way using the combination of styles, declarative html content, data objects and code.
+As you can see, pretty much anything can be data bound and the output can be altered 
+in any way using the combination of styles, declarative html content, data objects and code.
 
 .. image:: ./images/databinding3.png
