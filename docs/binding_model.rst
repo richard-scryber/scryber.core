@@ -88,13 +88,12 @@ Scryber supports the standard object notations for properties arrays and diction
 
 As a use case, we may need some purchase details.
 
-.. image:: documentbinding2.png
+.. image:: images/documentbinding2.png
 
 .. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-            "http://www.w3.org/TR/html4/strict.dtd">
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
     <html xmlns='http://www.w3.org/1999/xhtml'>
     <head>
