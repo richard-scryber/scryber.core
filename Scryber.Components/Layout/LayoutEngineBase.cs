@@ -1077,6 +1077,13 @@ namespace Scryber.Layout
 
                 if (tomove != null)
                 {
+                    if(tomove.Parent is PDFLayoutPage)
+                    {
+                        //We are at the top, and these cannot be moved.
+                        newPage = false;
+                        return false;
+                    }
+
                     //remove the block that we have to move from it's parent and make sure it is open if it was before.
                     (tomove.Parent as PDFLayoutBlock).CurrentRegion.RemoveLastItem();
                 }

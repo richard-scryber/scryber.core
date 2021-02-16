@@ -2,339 +2,290 @@
 Passing data to your template
 ======================================
 
+**This is where it get's exciting**
+
 A document template is just that, a template.
-In your code you can add any source of information to be included.
+You can add any source of information to be included.
 
-* As an value or model for the parameters
-* Bound to a datasource - xml, sql, entity, object, json, anything else
-* As a Controller with an event method
-* Just in code
+* As a discreet value
+* As an object with properties
+* An array or dictionary
+* As a template to use.
+* To make decisions on layout
 
-And they can be used in your document with many of the data controls
+And they can be used in your document in many locations
 
-* The document itself
-* A Data Grid
-* A Data List
-* `With` a single entry
-* `ForEach` loop
+* Within the document content
+* On styles and classes
+* In templates and loops
+* Referenced content
 
-And the content supports as default both object and xpath binding. The notation for an binding on an attribute is 
-based on the { and } with a method (@ or xpath for the built in binders), a colon ':', and then finally the selector.
+The notation for an binding on an attribute or content is 
+based on the { and } with a method (@ for the built model), a colon ':', and then finally the selector.
 
-e.g. `attribute='{@:paramName}'` for objects or `attribute='{xpath:selector}'` for xml
+e.g. `attribute='{@:paramName}'` for values or `attribute='{@:paramName.property[index].value}'` for objects or even in textual content.
 
+Document parameters
+---------------------
 
+Every Document can have parameters associated with it, and these can simply be bound to the content.
+This includes style and value properties as well as text, and can be set after parsing the content.
 
-The Document parameters
-=======================
-
-Every Document can have parameters associated with it.
-These should be declared at the top of the Document, in the Params element, for clarity to other developers
-(even if the default value is empty).
-
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Params>
-        <!-- Declare a complex object parameter -->
-        <doc:Object-Param id="Model" />
-    </Params>
-    
-    <Pages>
-        <!-- Use the models 'DocTitle' property for the outline. -->
-        <doc:Page outline-title="{@:Model.DocTitle}" styles:margins="20pt">
-        <Content>
-            <!-- And use it as the text on the heading -->
-            <doc:H1 styles:class="title" text="{@:Model.DocTitle}" > </doc:H1>
-            
-            <doc:Ul>
-            <!-- now we loop through the 'Entries' property -->
-            <data:ForEach value="{@:Model.Entries}" >
-                <Template>
-                <doc:Li>
-                    <!-- and create a list item for each entry (. prefix) with the name property. -->
-                    <doc:Text value="{@:.Name}" />
-                </doc:Li>
-                </Template>
-            </data:ForEach>
-            </doc:Ul>
-            
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{@:DocTitle}</title>
+        <meta name="author" content="{@:DocAuthor}" />
+    </head>
+    <body style="margin:20pt; font-size:20pt">
+        <header>
+            <span style="{@:ThemeHeader}">{@:DocAuthor}</span>
+        </header>    
+        <div>
+            <h1 class="title" >{@:DocTitle}</h1>
+            <span>{@:DocContent}</span>
+        </div>
+
+    </body>
+    </html>
 
 And the value can be set or changed at runtime
 
 .. code-block:: csharp
 
-        var model = new { 
-            DocTitle = "Testing Document Parameters",
-            Entries = new[] {
-                    new { Name = "First", Id = "FirstID"},
-                    new { Name = "Second", Id = "SecondID" }
-                }
-        };
-
-        var pdfDoc = PDFDocument.ParseDocument(path);
-        pdfDoc.Params["Model"] = model;
-
-        pdfDoc.ProcessDocument(output);
-
-Or passed as the Model in the MVC methods
-
-.. code-block:: csharp
-
-     public IActionResult DocumentParameters()
-    {
-        var path = _env.ContentRootPath;
-        path = System.IO.Path.Combine(path,"Views", "PDF", "DocumentParameters.pdfx");
-        
-        // This could be any object dynamically built or strongly typed.
-        var model = new
+        using (var doc = Document.ParseDocument(path))
         {
-            DocTitle = "Testing Document Parameters",
-            Entries = new[] {
-                    new { Name = "First", Id = "FirstID"},
-                    new { Name = "Second", Id = "SecondID" }
-                }
-        };
+            //pass paramters as needed, supporting simple values, arrays or complex classes.
 
-        //This method always stores the passed model as the `Model` parameter
-        return this.PDF(path, model);
-    }
+            using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
+            {
+                doc.Params["DocTitle"] = "Binding Title";
+                doc.Params["DocAuthor"] = "Binding Name";
+                doc.Params["ThemeHeader"] = "background-color:#EEE;padding:5pt";
+                doc.Params["DocContent"] = "This is the content of the document";
+
+                doc.SaveAsPDF(stream);
+            }
+
+        }
 
 
 And this will be used in the output.
 
-.. image:: images/documentparameterssimple.png
-
-See :doc:`document_parameters` for full details. 
+.. image:: images/documentbinding1.png
 
 
-The Datasources
-===============
+Using objects
+--------------
 
-Putting the document more in control of the data it uses, is supported from the available DataSources and Commands that sit in the `Data` element of the document.
+Simple values work well, but with complex entries it will start to get extremely complex.
+Scryber supports the standard object notations for properties arrays and dictionaries to help divide up the binding.
 
-This element should contain all the datasources required by the document.
-They can be an XML file, or XML Http request, a SQL database call, an object call, or a json request
+As a use case, we may need some purchase details.
 
-e.g. This document has an xml content reference from a remote source (in this case a local host controller method). 
-That returns the following content..
+.. image:: documentbinding2.png
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <DataSources title="Testing Xml Datasources">
-        <Entries>
-            <Entry Name="First Xml" Id="FirstID" />
-            <Entry Name="Second Xml" Id="SecondID" />
-        </Entries>
-    </DataSources>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{@:Content.Title}</title>
+        <meta name="author" content="{@:DocAuthor}" />
+        <style>
+            .header-details{ column-count:3; font-size:10pt; vertical-align:middle;}
+            .header-column { break-after:always; text-align: center;}
+            .header-column.logo { text-align: left; height: 40pt; max-width: 120pt;}
+
+            .item{ border:solid 0.5px gray; }
+
+            .list{ width:100%; font-size:12pt;}
+
+            .item.vat, .item.price, .item.qty, .item.value{ width:60pt; text-align:right; }
+            .total, .list thead { font-weight:bold;}
+
+            .total.empty{ border:none; }
+
+        </style>
+    </head>
+    <body style="font-size:20pt">
+        <!-- Page header with theme logo and content -->
+        <header>
+            <div class="header-details" style="{@:Theme.Header}">
+                <img class="header-column logo" src="{@:Theme.Logo}" />
+                <div class="header-column title" >{@:Content.Title}</div>
+                <div class="header-column author" >{@:Content.Author}</div>
+            </div>
+        </header>    
+        <div style="margin:20px">
+            <h1 class="title" >{@:Content.Title}</h1>
+            <!-- A table of contents using the same theme for static headers -->
+            <table class="list" >
+                <thead>
+                    <tr style="{@:Theme.Header}">
+                        <td>Item</td>
+                        <td class="item price">Price</td>
+                        <td class="item qty">Qty</td>
+                        <td class="item value">Total</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- and a template for the table rows looping over each of the items -->
+                    <template data-bind="{@:Model.Items}">
+                        <tr>
+                            <!-- each one is bound with a . prefix for the current item -->
+                            <td class="item name">
+                                <span>{@:.Item}</span>
+                            </td>
+                            <td class="item price" >
+                                <span>{@:.Price}</span>
+                            </td>
+                            <td class="item qty" >
+                                <span>{@:.Quantity}</span>
+                            </td>
+                            <td class="item value" >
+                                <span>{@:.Value}</span>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tfoot>
+                    <!-- Footer rows for the titles -->
+                    <tr>
+                        <td class="total empty" style="border:none;"></td>
+                        <td><span>Tax:</span></td>
+                        <td class="total vat" style="width:60pt; text-align:right;">
+                            <span>{@:Model.Tax.Rate}</span>
+                        </td>
+                        <td class="total vat" style="width:60pt; text-align:right;">
+                            <span>{@:Model.Tax.Value}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="total empty" style="border:none;" ></td>
+                        <td class="total grand" style="width:60pt; text-align:right;">
+                            <span>{@:Model.Total.Value}</span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div id='footnote' style="padding-left:40pt; font-size: 14pt;">
+            <span>Kind regards</span><br/>
+            <i>{@:Content.Author}</i>
+        </div>
+    </body>
+    </html>
 
 And with that we can bind the source into the document
 
 .. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-        <Data>
-            <!-- This is a data source declared witin the document, that pulls the xml from the feed -->
-            <data:XMLDataSource id="XmlSource" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
-        </Data>
-        <Pages>
+    using (var doc = Document.ParseDocument(path))
+    {
+        //pass paramters as needed, supporting simple values, arrays or complex classes.
+
+        using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
+        {
+            doc.Params["Theme"] = new {
+                            Header = "background-color:#666; color: white;padding:5pt",
+                            Logo = "./images/ScyberLogo2_alpha_small.png"
+            };
+
+            doc.Params["Content"] = new {
+                Title = "Purchase List",
+                Author = "The Scryber Team"
+            };
+
+            doc.Params["Model"] = new
+            {
+                Items = new[] {
+                        new { Item = "First Item", Quantity = "4", Price = "€50.00", Value = "€200.00" },
+                        new { Item = "Second Item", Quantity = "2", Price = "€25.00", Value = "€50.00" },
+                        new { Item = "Third Item", Quantity = "3", Price = "€100.00", Value = "€300.00" }
+                    },
+                Tax = new { Rate = "20%", Value = "€110.00" },
+                Total = new { Value = "€660.00" }
+            };
             
-            <doc:Page styles:margins="20pt">
-            <Content>
-                <!-- Use the `data:With` component to specify a source and path within the xml as a starting point. -->
-                <data:With datasource-id="XmlSource" select="//DataSources" >
 
-                <!-- And use it as the text on the heading -->
-                <doc:H1 styles:class="title" text="{xpath:@title}" > </doc:H1>
-                
-                <doc:Ul>
-                    <!-- now we loop through the 'Entries' property -->
-                    <data:ForEach value="{xpath:Entries/Entry}" >
-                    <Template>
-                        <doc:Li>
-                        <!-- and create a list item for each entry (. prefix) with the name property. -->
-                        <doc:Text value="{xpath:@Name}" />
-                        </doc:Li>
-                    </Template>
-                    </data:ForEach>
-                </doc:Ul>
-                </data:With>
-                
-            </Content>
-            </doc:Page>
-        </Pages>
+            doc.SaveAsPDF(stream);
+        }
 
-    </doc:Document>
+    }
 
-With the result of the output showing the content.
+Injecting content
+------------------
 
-.. image:: images/documentxmlbindingsimple.png
-
-
-We could have specified the source on the `data:ForEach`, and alternatively we could have used a Json DataSource to return an object binding.
-See :doc:`document_databinding` for more details.
-
-
-The Document Controller
-=======================
-
-The most complex, but utlimately most adaptable is specifying a controller class on your template
-
-The document file or referenced files have Controllers associated with them to handle events and properties.
-This gives complete control back to your code during the lifecycle of the document.
-
-It is based on providing a type on the scryber processing instruction 
-
-.. code-block:: xml
-
-    <?scryber controller='Full.Type.Name, Assembly.Name' ?>
-    
-.. note:: More details of the scryber processing instruction can be found in the :doc:document_structure document.
-
-A full document file example is below.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <?scryber controller='Scryber.Core.Samples.Web.Controllers.DocumentControllerInstance, Scryber.Core.Samples.Web' ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd"
-                on-loaded="LoadDocument" >
-    <Pages>
-
-        <doc:Page styles:margins="20pt">
-        <Content>
-            
-            <!-- This will automatically be set on the controller instance property -->
-            <doc:H1 id="Title" > </doc:H1>
-            
-            <doc:Ul>
-                <!-- now we call the BindForEach method to set the data value -->
-                <data:ForEach on-databinding="BindingForEach" >
-                <Template>
-                    <!-- and finally we use the item data bound to set the
-                        content of the list item for each entry -->
-                    <doc:Li on-databound="BoundListItem"></doc:Li>
-                </Template>
-                </data:ForEach>
-            </doc:Ul>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
-
-The document has declared:
-
-* The on-loaded event for LoadDocument.
-* It has a heading with ID of Title. 
-* A ForEach with a databinding handler
-* And a List item inside the template which has binding mapped to another handler.
-
-In our controller we declare explicitly our outlets (properties) and actions (methods).
+If it is needed to inject some dynamic content within the document then it is easy to look up elements and then add the content either as html or as code.
+Let's say the ask was to add an optional foot note to our Purchase list for the high demand items, and also a custom footer to the pages. 
+We can do this in our code, without changing the template.
 
 .. code-block:: csharp
 
-    namespace Scryber.Core.Samples.Web.Controllers
-    {
-        public class DocumentControllerInstance
+        if (IsHighDemandItem())
         {
-            /// <summary>
-            /// The Heading will be set on a controller instance from the parser
-            /// </summary>
-            [PDFOutlet()]
-            public PDFHead1 Title
+            //Add the content to the footnote
+
+            var div = doc.FindAComponentById("footnote") as Div;
+
+            //Lets do this via conversion of dynamic xhtml into a component
+            //Still needs to be valid XHTML
+            var footnoteContent = "<div xmlns='http://www.w3.org/1999/xhtml'><span>Warmest regards from all the scryber team</span><br/>" +
+                "<i>" + System.Environment.UserName + "</i><br/><br/>" +
+                "<b>Your order is for a high demand item. Please allow 6 weeks for delivery</b></div>";
+
+            var content = doc.ParseTemplate(doc, new System.IO.StringReader(footnoteContent)) as Component;
+
+            //Remove the old content, as we want to
+            div.Contents.Clear();
+            div.Contents.Add(content);
+        }
+
+The string content is parsed, so needs to be xhtml, but then simply added to an existing div with a matching ID.
+
+And for the footer, we use the IPDFTemplate that is used for all dynamic content building - Headers, Footers, HTMLTemplates, etc.
+
+.. code-block:: csharp
+
+    //Add the custom footer 
+    doc.Pages[0].Footer = new CustomFooter(); 
+
+
+    /// <summary>
+    /// Implements the IPDFTemplate for a custom footer.
+    /// </summary>
+    public class CustomFooter : IPDFTemplate
+    {
+        /// <summary>
+        /// Returns the object content (may be called multiple times).
+        /// </summary>
+        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        {
+            //Wrap it all in a div so we can set the style
+
+            Div div = new Div() { StyleClass = "footer", FontSize = 10,
+                                    Padding = new PDFThickness(10),
+                                    HorizontalAlignment = HorizontalAlignment.Center };
+
+            div.Contents.AddRange(new Component[]
             {
-                get;set;
-            }
+                new TextLiteral("Page Number "),
+                new PageNumberLabel() { DisplayFormat = "{0} of {1}"}
+            });
 
-            /// <summary>
-            /// Parameterless constructor
-            /// </summary>
-            public DocumentControllerInstance()
-            {
-            }
-
-
-            [PDFAction()]
-            public void LoadDocument(object sender, PDFLoadEventArgs args)
-            {
-                //Document loaded, so set the title text
-                this.Title.Text = "Test Controller Title";
-            }
-
-            //Just some sample data.
-            string[] data = new[] { "First", "Second", "Third" };
-
-            /// <summary>
-            /// Happens just before the ForEach is DataBound, so that we can assign the data value, and that will be used.
-            /// </summary>
-            [PDFAction()]
-            public void BindingForEach(object sender, PDFDataBindEventArgs args)
-            {
-                //Dynamically set the data on the ForEach component - so it will loop through
-                var forEach = (Data.PDFForEach)sender;
-                forEach.Value = data;
-            }
-
-            /// <summary>
-            /// Happens 3 times for each of the list items created in the template from the data source.
-            /// </summary>
-            [PDFAction()]
-            public void BoundListItem(object sender, PDFDataBindEventArgs args)
-            {
-                var listItem = (PDFListItem)sender;
-                var index = args.Context.CurrentIndex;
-                var text = data[index];
-                //Create a new text literal and add it to the listitem
-                PDFTextLiteral literal = new PDFTextLiteral(text);
-                listItem.Contents.Add(literal);
-            }
+            return new IPDFComponent[] { div };
         }
     }
 
-Generating the file is exaclty the same process but the parser will discover the controller class, apply the outlets and actions, and then execute.
-The result should come out with the content dynamically assigned.
+As you can see, pretty much anything can be data bound and the output can be altered in any way using the combination of styles, declarative html content, data objects and code.
 
-.. code-block:: csharp
-
-    public IActionResult DocumentController()
-    {
-        var path = _rootPath;
-        path = System.IO.Path.Combine(path, "Views", "PDF", "DocumentController.pdfx");
-
-        return this.PDF(path);
-    }
-
-.. image:: images/documentcontrollerssimple.png
-
-
-For more information on controllers and the event model see :doc:`document_controllers` and :doc:`document_lifecycle`
-
-
-Which should I use?
-===================
-
-All 3 methods of generating dynamic content within your template have their own benefits, and they are not mutually exclusive.
-
-* The simplest is using parameters but the model can become too complex. 
-    * :doc:`document_parameters`
-* Moving the model to one or more data sources can be a quick solution as complexity increases 
-    * :doc:`document_databinding`
-* Adding a controller gives complete 'control' for complex business logic. 
-    * :doc:`document_controllers`
+.. image:: ./images/databinding3.png
