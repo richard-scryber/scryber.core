@@ -1,7 +1,9 @@
 ﻿using System;
 namespace Scryber.Html.Components
 {
-    public class HTMLNav
+
+    [PDFParsableComponent("nav")]
+    public class HTMLNav : HTMLDiv
     {
         public HTMLNav()
         {

@@ -74,7 +74,7 @@ namespace Scryber
                 //Draw the border
                 StyleValue<LineType> lstyle;
 
-                if (this.AnnotationStyle != null && this.AnnotationStyle.TryGetValue(StyleKeys.BorderStyleKey, out lstyle) && lstyle != null && lstyle.Value != LineType.None)
+                /* if (this.AnnotationStyle != null && this.AnnotationStyle.TryGetValue(StyleKeys.BorderStyleKey, out lstyle) && lstyle != null && lstyle.Value != LineType.None)
                 {
                     PDFUnit corner = this.AnnotationStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
                     PDFUnit width = this.AnnotationStyle.GetValue(StyleKeys.BorderWidthKey, (PDFUnit)1);
@@ -101,12 +101,13 @@ namespace Scryber
 
                 }
                 else
-                {
+                {   */
+
                     writer.BeginDictionaryEntry("Border");
                     //writer.WriteArrayRealEntries(1.0, 1.0, 1.0);
                     writer.WriteArrayRealEntries(0.0, 0.0, 0.0);
                     writer.EndDictionaryEntry();
-                }
+                //}
 
                 if (null != this.Action)
                 {

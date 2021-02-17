@@ -225,6 +225,7 @@ Injecting content
 ------------------
 
 If it is needed to inject some dynamic content within the document then it is easy to look up elements and then add the content either as html or as code.
+
 Let's say the ask was to add an optional foot note to our Purchase list for the high demand items, and also a custom footer to the pages. 
 We can do this in our code, without changing the template.
 
@@ -288,4 +289,6 @@ And for the footer, we use the IPDFTemplate that is used for all dynamic content
 As you can see, pretty much anything can be data bound and the output can be altered 
 in any way using the combination of styles, declarative html content, data objects and code.
 
-.. image:: ./images/databinding3.png
+As expected this will flow with the layout of the document and maybe even onto another page.
+
+.. image:: ./images/documentbinding3.png

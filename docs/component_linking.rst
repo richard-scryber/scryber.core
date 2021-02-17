@@ -6,23 +6,23 @@ Within a document, it's easy to add a link to another component, another page,
 another document, or remote web link.
 
 
-The Link Component
-==================
+The Anchor Component
+----------------------
 
-A `doc:Link` is an invisible component, although styles will be applied to content within it.
-There are 4 properties that determine what happens when the content within the link is clicked.
+An `a`nchor tag is an invisible component (although styles will be applied to content within it) that allows linking to other components.
+The href attribute supports 3 types of content.
 
-* action - This defines the primary type of link action to perform, each section below describes each type of action.
-* file - If set, then the link is an action for a different document or Url. Effectively like the href of an anchor tag in html.
-* destination - If set then this is the location within the current or other file to show. Like the #name on a Url
-* destination-fit - If set, it defines the fit type for the link (full page, width, height, or bounds).
+* Named Action - These are the standard links to and from pages (see below).
+* #id - If set, then the link is an action for a different document or Url. Effectively like the href of an anchor tag in html.
+* url - If set then this is the location within the current or other file to show. Like the #name on a Url
 
-The content within a link can be anything, including images; text; canvas(es) and more. There can also be more than one component within the link.
+The content within a link can be anything, including images; text; svg components and more. 
+There can also be more than one component within the link.
 
-Page Navigation Link
+Page Named Action
 =====================
 
-The simplest link type is navigational. The possible actions are as follows:
+The simplest link type is navigational. The possible actions are (case insensitive) as follows:
 
 * FirstPage
 * PrevPage
@@ -32,72 +32,73 @@ The simplest link type is navigational. The possible actions are as follows:
 These are self-evident in their purpose, and no other attributes need defining.
 It does not matter what page they are put on, they will perform the action if possible.
 
+.. code-block:: html
+
+    <a href='nextpage' >Next Page Link</a>
+
+
+For example we can create a navigation header.
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Params>
-        <doc:String-Param id="search" value="https://www.google.com" />
-    </Params>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Navigation Links</title>
+        <meta name="author" content="Scryber" />
+        <style type="text/css">
+            /* Or Header Style with 4 columns */
+            .header{
+                background-color: #EEE;
+                column-count:4;
+                text-align:center;
+            }
+            /* Our Link button style */
+            .header a{
+                display:block;
+                border: solid 1pt #DDD;
+                border-radius: 4pt;
+                padding:6pt;
+                margin:6pt;
+                break-after:always;
+                text-decoration:none;
+                color: #333;
+                font-size:10pt;
+                
+            }
+            /* And our divs */
+            div {
+                margin: 20pt 0 0 20pt;
+            }
+            div.break{
+                page-break-after:always;
+            }
 
-    <Styles>
+        </style>
+    </head>
+    <body style="font-size:20pt;">
+        <header>
+            <!-- navigation on the header -->
+            <nav class="header">
+                <a id="first" href="FirstPage">First Page</a>
+                <a id="prev" href="PrevPage">Prev Page</a>
+                <a id="next" href="NextPage">Next Page</a>
+                <a id="last" href="LastPage">Last Page</a>
+            </nav>
+        </header>
+        <!-- Each on it's own page -->
+        <div class="break">First</div>
+        <div class="break">Second</div>
+        <div class="break">Third</div>
+        <div class="break">Fourth</div>
+        <div>Fifth</div>
+    </body>
+    </html>
 
-        <styles:Style applied-class="nav" >
-        <styles:Background color="navy"/>
-        <styles:Font size="10pt" bold="true"/>
-        <styles:Position h-align="Center"/>
-        <styles:Fill color="#CCC"/>
-        <styles:Padding all="10pt"/>
-        <styles:Margins bottom="10pt"/>
-        <styles:Columns count="5"/>
-        </styles:Style>
-        
-    </Styles>
-    <Pages>
-
-        <doc:PageGroup>
-        <Header>
-            <!-- Shared header across all pages with 5 columns -->
-            <doc:Div styles:class="nav" >
-                <doc:Link action="FirstPage" >&lt;&lt; First Page</doc:Link>
-                <doc:ColumnBreak/>
-                <doc:Link action="PrevPage">&lt; Previous Page</doc:Link>
-                <doc:ColumnBreak/>
-                <doc:PageNumber />
-                <doc:ColumnBreak/>
-                <doc:Link action="NextPage" > Next Page &gt;</doc:Link>
-                <doc:ColumnBreak/>
-                <doc:Link action="LastPage">Last Page &gt;&gt;</doc:Link>
-            </doc:Div>
-        </Header>
-        <Pages>
-            <!-- Title page and 3 following pages -->
-            <doc:Page >
-            <Content>Title Page</Content>
-            </doc:Page>
-
-            <doc:Section>
-            <Content>
-                Content 1
-                <doc:PageBreak/>
-                Content 2
-                <doc:PageBreak/>
-                Content 3
-            </Content>
-            </doc:Section>
-        </Pages>
-        </doc:PageGroup>
-
-    
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/documentLinksNavigation.png
+.. image:: images/documentLinksNav.png
 
 .. note:: Some of the browser pdf readers do not support the naviagional links. Readers do.
 

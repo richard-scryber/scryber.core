@@ -75,7 +75,23 @@ namespace Scryber.Html.Components
 
         protected override LinkAction ResolveActionType(string dest, string file)
         {
-            if (!string.IsNullOrEmpty(file) && file.StartsWith("#"))
+            LinkAction result;
+            if(Enum.TryParse<LinkAction>(file, true, out result))
+            {
+                switch (result)
+                {
+                    case (LinkAction.FirstPage):
+                    case (LinkAction.LastPage):
+                    case (LinkAction.NextPage):
+                    case (LinkAction.PrevPage):
+                        this.Action = result;
+                        return result;
+                    default:
+                        return LinkAction.Undefined;
+                }
+
+            }
+            else if (!string.IsNullOrEmpty(file) && file.StartsWith("#"))
             {
                 this.Destination = file;
                 return LinkAction.Destination;

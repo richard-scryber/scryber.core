@@ -24,7 +24,7 @@ using Scryber.Styles;
 namespace Scryber.Components
 {
     [PDFParsableComponent("Link")]
-    public class Link : VisualComponent, IPDFInvisibleContainer
+    public class Link : SpanBase
     {
 
         public const string LinkAnnotationChildEntries = "LinkChildren";
@@ -44,45 +44,22 @@ namespace Scryber.Components
 
         #region public PDFVisualComponentList Contents {get;}
 
-        private PDFVisualComponentList _content;
+        
 
         /// <summary>
         /// Gets the content collection of page Components in this panel
         /// </summary>
-        [PDFArray(typeof(VisualComponent))]
+        [PDFArray(typeof(Component))]
         [PDFElement("")]
-        public virtual PDFVisualComponentList Contents
+        public override ComponentList Contents
         {
             get
             {
-                if (null == _content)
-                {
-                    _content = new PDFVisualComponentList(this.InnerContent);
-                }
-                return _content;
+                return base.Contents;
             }
         }
 
-        /// <summary>
-        /// support for legacy xml files - will be removed in subsequent releases. Do not use
-        /// </summary>
-        [Obsolete("This property is provided to support legacy schema link elements in the XML definition files. Use the Contents property in your code",true)]
-        [System.ComponentModel.Browsable(false)]
-        [System.ComponentModel.Bindable(false)]
-
-        [PDFArray(typeof(VisualComponent))]
-        [PDFElement("Contents")]
-        public PDFVisualComponentList X_Legacy_Contents
-        {
-            get
-            {
-                PDFTraceLog log = this.Document.TraceLog;
-                if (null != log)
-                    log.Add(TraceLevel.Error, "PDFLink", "Use of legacy Content element in the xml definition file. Check your files for pdf:Link with a Content child element - this will not be supported in later versions");
-
-                return Contents;
-            }
-        }
+        
 
         #endregion
 
@@ -276,7 +253,7 @@ namespace Scryber.Components
             List<object> entries = new List<object>();
             Layout.PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
 
-            FillActionAnnotations(context, style, action, entries, pg, this.Contents.InnerList);
+            FillActionAnnotations(context, style, action, entries, pg, this.Contents);
             return entries.ToArray();
         }
 
@@ -393,15 +370,5 @@ namespace Scryber.Components
 
         }
 
-
-
-        //#region IPDFViewPortComponent Members
-
-        //public IPDFLayoutEngine GetEngine(Scryber.Styles.PDFStyleStack styles, IPDFLayoutEngine parent, PDFTraceLog log)
-        //{
-        //    return new Support.ContainerLayoutEngine(this, styles, parent, log);
-        //}
-
-        //#endregion
     }
 }

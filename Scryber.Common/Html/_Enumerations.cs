@@ -62,6 +62,7 @@ namespace Scryber.Html
         public const string BorderWidth = "border-width";
         public const string BorderStyle = "border-style";
         public const string BorderColor = "border-color";
+        public const string BorderRadius = "border-radius";
 
         public const string BorderTop = "border-top";
         public const string BorderLeft = "border-left";

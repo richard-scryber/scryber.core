@@ -916,6 +916,16 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    #region public class CSSBorderRadiusParser : CSSUnitStyleParser
+
+    public class CSSBorderRadiusParser : CSSUnitStyleParser
+    {
+        public CSSBorderRadiusParser(): base(CSSStyleItems.BorderRadius, StyleKeys.BorderCornerRadiusKey)
+        { }
+    }
+
+    #endregion
+
     //Border Sides
 
     public class CSSBorderSideParser : CSSStyleValueParser

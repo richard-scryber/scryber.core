@@ -6,82 +6,51 @@
 <head>
     <title>{@:Content.Title}</title>
     <meta name="author" content="{@:DocAuthor}" />
-    <style>
-        .header-details{ column-count:3; font-size:10pt; vertical-align:middle;}
-        .header-column { break-after:always; text-align: center;}
-        .header-column.logo { text-align: left; height: 40pt; max-width: 120pt;}
-
-        .item{ border:solid 0.5px gray; }
-
-        .list{ width:100%; font-size:12pt;}
-
-        .item.vat, .item.price, .item.qty, .item.value{ width:60pt; text-align:right; }
-        .total, .list thead { font-weight:bold;}
-
-        .total.empty{ border:none; }
+    <style type="text/css">
+        /* Or Header Style with 4 columns */
+        .header{
+            background-color: #EEE;
+            column-count:4;
+            text-align:center;
+        }
+        /* Our Link button style */
+        .header a{
+            display:block;
+            border: solid 1pt #DDD;
+            border-radius: 4pt;
+            padding:6pt;
+            margin:6pt;
+            break-after:always;
+            text-decoration:none;
+            color: #333;
+            font-size:10pt;
+            
+        }
+        /* And our divs */
+        div {
+            margin: 20pt 0 0 20pt;
+        }
+        div.break{
+            page-break-after:always;
+        }
 
     </style>
 </head>
-<body style="font-size:20pt">
+<body style="font-size:20pt;">
     <header>
-        <div class="header-details" style="{@:Theme.Header}">
-            <img class="header-column logo" src="{@:Theme.Logo}" />
-            <div class="header-column title" >{@:Content.Title}</div>
-            <div class="header-column author" >{@:Content.Author}</div>
-        </div>
-    </header>    
-    <div style="margin:20px">
-        <h1 class="title" >{@:Content.Title}</h1>
-        <table class="list" >
-            <thead>
-                <tr style="{@:Theme.Header}">
-                    <td>Item</td>
-                    <td class="item price">Price</td>
-                    <td class="item qty">Qty</td>
-                    <td class="item value">Total</td>
-                </tr>
-            </thead>
-            <tbody>
-                <template data-bind="{@:Model.Items}">
-                    <tr>
-                        <td class="item name">
-                            <span>{@:.Item}</span>
-                        </td>
-                        <td class="item price" >
-                            <span>{@:.Price}</span>
-                        </td>
-                        <td class="item qty" >
-                            <span>{@:.Quantity}</span>
-                        </td>
-                        <td class="item value" >
-                            <span>{@:.Value}</span>
-                        </td>
-                    </tr>
-                </template>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class="total empty" style="border:none;"></td>
-                    <td><span>Tax:</span></td>
-                    <td class="total vat" style="width:60pt; text-align:right;">
-                        <span>{@:Model.Tax.Rate}</span>
-                    </td>
-                    <td class="total vat" style="width:60pt; text-align:right;">
-                        <span>{@:Model.Tax.Value}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="total empty" style="border:none;" ></td>
-                    <td class="total grand" style="width:60pt; text-align:right;">
-                        <span>{@:Model.Total.Value}</span>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-    <div id="footnote" style="padding-left:40pt; font-size: 14pt;">
-        <span>Kind regards</span><br/>
-        <i>{@:Content.Author}</i>
-    </div>
+        <!-- navigation on the header -->
+        <nav class="header">
+            <a id="first" href="FirstPage">First Page</a>
+            <a id="prev" href="PrevPage">Prev Page</a>
+            <a id="next" href="NextPage">Next Page</a>
+            <a id="last" href="LastPage">Last Page</a>
+        </nav>
+    </header>
+    <!-- Each on it's own page -->
+    <div class="break">First</div>
+    <div class="break">Second</div>
+    <div class="break">Third</div>
+    <div class="break">Fourth</div>
+    <div>Fifth</div>
 </body>
 </html>

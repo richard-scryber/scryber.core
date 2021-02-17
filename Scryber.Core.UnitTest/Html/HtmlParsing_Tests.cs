@@ -790,87 +790,18 @@ namespace Scryber.Core.UnitTests.Html
             {
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
 
-                
+                doc.LayoutComplete += Doc_LayoutComplete;
                 using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
                 {
-                    //We should probably start wrapping this in a service now.
-
-                    doc.Params["Theme"] = new {
-                                    Header = "background-color:#666; color: white;padding:5pt",
-                                    Logo = "./images/ScyberLogo2_alpha_small.png"
-                    };
-
-                    doc.Params["Content"] = new {
-                        Title = "Purchase List",
-                        Author = "The Scryber Team"
-                    };
-
-                    doc.Params["Model"] = new
-                    {
-                        Items = new[] {
-                                new { Item = "First Item", Quantity = "4", Price = "€50.00", Value = "€200.00" },
-                                new { Item = "Second Item", Quantity = "2", Price = "€25.00", Value = "€50.00" },
-                                new { Item = "Third Item", Quantity = "3", Price = "€100.00", Value = "€300.00" }
-                            },
-                        Tax = new { Rate = "20%", Value = "€110.00" },
-                        Total = new { Value = "€660.00" }
-                    };
-
-                    if (IsHighDemandItem())
-                    {
-                        //Add the content to the footnote
-
-                        var div = doc.FindAComponentById("footnote") as Div;
-
-                        //Lets do this via conversion of dynamic xhtml into a component
-                        //Still needs to be valid XHTML
-                        var footnoteContent = "<div xmlns='http://www.w3.org/1999/xhtml'><span>Warmest regards from all the scryber team</span><br/>" +
-                            "<i>" + System.Environment.UserName + "</i><br/><br/>" +
-                            "<b>Your order is for a high demand item. Please allow 6 weeks for delivery</b></div>";
-
-                        var content = doc.ParseTemplate(doc, new System.IO.StringReader(footnoteContent)) as Component;
-
-                        //Remove the old content, as we want to
-                        div.Contents.Clear();
-                        div.Contents.Add(content);
-                    }
-
-                    //Add the custom footer 
-                    doc.Pages[0].Footer = new CustomFooter(); 
-
                     doc.SaveAsPDF(stream); 
                 }
             }
         }
 
-        private bool IsHighDemandItem()
+        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
         {
-            //Just going to return true here
-            return true;
-        }
-
-        /// <summary>
-        /// Implements the IPDFTemplate so it can be used where ever templates are.
-        /// (Headers, Footers, Templates etc)
-        /// </summary>
-        public class CustomFooter : IPDFTemplate
-        {
-            public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
-            {
-                //Wrap it all in a div so we can set the style
-
-                Div div = new Div() { StyleClass = "footer", FontSize = 10,
-                                      Padding = new PDFThickness(10),
-                                      HorizontalAlignment = HorizontalAlignment.Center };
-
-                div.Contents.AddRange(new Component[]
-                {
-                    new TextLiteral("Page Number "),
-                    new PageNumberLabel() { DisplayFormat = "{0} of {1}"}
-                });
-
-                return new IPDFComponent[] { div };
-            }
+            var layout = args.Context.DocumentLayout;
+            var header = layout.AllPages[0].ContentBlock;
         }
 
         [TestMethod()]
