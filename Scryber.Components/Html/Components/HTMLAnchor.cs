@@ -17,6 +17,12 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
 
+        [PDFAttribute("target")]
+        public string Target
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -47,6 +53,8 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        [PDFAttribute("data-fit-to")]
+        public override OutlineFit DestinationFit { get => base.DestinationFit; set => base.DestinationFit = value; }
 
         [PDFAttribute("href")]
         public override string File { get => base.File; set => base.File = value; }
@@ -75,6 +83,12 @@ namespace Scryber.Html.Components
 
         protected override LinkAction ResolveActionType(string dest, string file)
         {
+            if(!string.IsNullOrEmpty(this.Target))
+            {
+                if (this.Target == "_blank")
+                    this.NewWindow = true;
+            }
+
             LinkAction result;
             if(Enum.TryParse<LinkAction>(file, true, out result))
             {

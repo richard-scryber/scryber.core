@@ -34,23 +34,40 @@
             page-break-after:always;
         }
 
+        
     </style>
 </head>
 <body style="font-size:20pt;">
     <header>
         <!-- navigation on the header -->
         <nav class="header">
-            <a id="first" href="FirstPage">First Page</a>
-            <a id="prev" href="PrevPage">Prev Page</a>
-            <a id="next" href="NextPage">Next Page</a>
-            <a id="last" href="LastPage">Last Page</a>
+            <a href="FirstPage">First Page</a>
+            <a href="PrevPage">Prev Page</a>
+            <a href="NextPage">Next Page</a>
+            <a href="LastPage">Last Page</a>
         </nav>
     </header>
     <!-- Each on it's own page -->
-    <div class="break">First</div>
-    <div class="break">Second</div>
-    <div class="break">Third</div>
-    <div class="break">Fourth</div>
+    <div id="first" class="break">
+        First <br />
+        <a href="#second" >Link to the Second page</a>
+        <br />
+        <a href="#fourth" style="text-decoration:none; color:gray;" >Link to the Fourth page</a>
+    </div>
+    <div id="second" class="break">Second
+
+    <!-- A web link to the google home page -->
+    <a href="https://www.google.com" target="_blank" >Google</a><br/>
+
+    <!-- a link to a local pdf that will open in a new readr tab or window -->
+    <a alt="Document Link" href="ReadMeSample.pdf" target="_blank" >
+        <img src="./images/group.png" style="width:30pt; display:inline" />Document Link</a>
+    </div>
+    <div id="third" class="break">Third</div>
+    <div id="fourth" class="break">
+        Fourth <br />
+        <a href="#first" >Link to the first page</a>
+    </div>
     <div>Fifth</div>
 </body>
 </html>

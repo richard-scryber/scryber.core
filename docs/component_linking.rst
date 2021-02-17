@@ -83,10 +83,10 @@ For example we can create a navigation header.
         <header>
             <!-- navigation on the header -->
             <nav class="header">
-                <a id="first" href="FirstPage">First Page</a>
-                <a id="prev" href="PrevPage">Prev Page</a>
-                <a id="next" href="NextPage">Next Page</a>
-                <a id="last" href="LastPage">Last Page</a>
+                <a href="FirstPage">First Page</a>
+                <a href="PrevPage">Prev Page</a>
+                <a href="NextPage">Next Page</a>
+                <a href="LastPage">Last Page</a>
             </nav>
         </header>
         <!-- Each on it's own page -->
@@ -104,199 +104,53 @@ For example we can create a navigation header.
 
 
 Linking within documents
-===========================
+------------------------
 
-When navigating around the documment, scryber supports the direct linking to a specific page or component using the `destination` attribute.
-When using ID's as the destination reference, prefix with a #. Otherwise any desinations will be treated as a name.
+When navigating around the documment, scryber supports the direct linking to a specific page or component 
+using the id being referenced attribute. Prefix with a # to identify the tag .
 
-It is also possible to assign a destination-fit value, to indicate how the page or component should be presented on the reader window when navigated to.
-The supported values are
+By default anchor links will be underlined and in blue. But can be styled as needed.
 
-* FullPage - the entire page will be visible.
-* PageWidth - the whole width of the page will be shown, and the destination visible within that window.
-* PageHeight - the whole height of the page will be shown, and the destination visible within that window.
-* BoundingBox - the bounding box of the component referenced will fill the window as fully as possible.
-
-The below example is quite complex, but shows how to build a basic table of contents. It could also be databound.
-
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
  
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+    <div id="first" class="break">
+        First <br />
+        <a href="#second" >Link to the Second page</a>
+        <br />
+        <a href="#fourth" style="text-decoration:none; color:gray;" >Link to the Fourth page</a>
+    </div>
+    <div id="second" class="break">Second</div>
+    <div id="third" class="break">Third</div>
+    <div id="fourth" class="break">
+        Fourth <br />
+        <a href="#first" >Link to the first page</a>
+    </div>
+    <div>Fifth</div>
+
+.. image:: images/documentLinksIDs.png
 
 
-    <Styles>
-
-        <styles:Style applied-type="doc:Link" >
-            <styles:Font bold="true"/>
-            <styles:Fill color="navy"/>
-        </styles:Style>
-
-        <styles:Style applied-class="tab-fill" >
-            <styles:Stroke dash="Sparse-Dot"/>
-            <styles:Position mode="Inline" />
-            <!-- hack to push the line down to the baseline -->
-            <styles:Padding top="12pt"/>
-        </styles:Style>
-
-        <styles:Style applied-type="doc:Cell">
-            <styles:Border style="None"/>
-            <styles:Padding left="0" right="0"/>
-        </styles:Style>
-
-        <styles:Style applied-class="pg-num" >
-            <styles:Position h-align="Left" />
-            <styles:Padding left="0"/>
-        </styles:Style>
-    </Styles>
-    
-        <Pages>
-            <doc:Page styles:padding="20pt" styles:font-size="12pt" >
-            <Content>
-                <doc:H1 styles:margins="0 0 30pt 0">Title Page</doc:H1>
-                
-                <doc:Table styles:full-width="true">
-                    <!-- Just a header cell spanning both columns -->
-                    <doc:Header-Row styles:class="toc-head" >
-                        <doc:Header-Cell styles:column-span="2" >
-                        Table of Contents
-                        </doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <!-- First content page by ID -->
-                    <doc:Row>
-                        <doc:Cell>
-                            First Page
-                            <doc:Line styles:class="tab-fill" ></doc:Line>
-                        </doc:Cell>
-                        <doc:Cell styles:width="50pt">
-                            <doc:Link destination="#Page1" >
-                                <doc:PageOf component="#Page1" />
-                            </doc:Link>
-                        </doc:Cell>
-                    </doc:Row>
-
-                    <!-- Second content page by name (full width) -->
-                    <doc:Row>
-                        <doc:Cell>
-                            Second Page
-                            <doc:Line styles:class="tab-fill" ></doc:Line>
-                        </doc:Cell>
-                        <doc:Cell>
-                            <doc:Link destination="SecondPage" destination-fit="FullPage" >
-                                <doc:PageOf component="SecondPage" />
-                            </doc:Link>
-                        </doc:Cell>
-                    </doc:Row>
-
-                    <!-- Adding a link directly to a component within the page
-                        that will navigate to fill the screen -->
-                    <doc:Row>
-                        <doc:Cell>
-                            Specific Content
-                            <doc:Line styles:class="tab-fill" ></doc:Line>
-                        </doc:Cell>
-                        <doc:Cell>
-                            <doc:Link destination="#Div3" destination-fit="BoundingBox" >
-                                <doc:PageOf component="#Div3" />
-                            </doc:Link>
-                        </doc:Cell>
-                    </doc:Row>
-                
-                </doc:Table>
-                
-            </Content>
-            </doc:Page>
-
-            <!-- Reset the page numbering index -->
-            <doc:Section styles:page-number-start-index="1">
-            <Content>
-                <doc:Span id="Page1"  >Content on page 1</doc:Span>
-                <doc:PageBreak/>
-                
-                <doc:Span id="Page2" name="SecondPage" >Content on page 2</doc:Span>
-                <doc:PageBreak/>
-                
-                <!-- A small div relatively positioned on the page-->
-                Content 3
-                <doc:Div id="Div3" styles:width="100" styles:height="100" styles:x="100" styles:y="100"
-                        styles:bg-color="black" styles:fill-color="white" styles:font-size="10pt"
-                        styles:padding="20pt">
-                    Small Content on the page
-                </doc:Div>
-            </Content>
-            </doc:Section>
-    
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/documentLinksDestination.png
-
-.. note:: Some of the browser pdf readers do not support the naviagional links. Reader applications generally do.
 
 
 External Links to Urls
-======================
+-----------------------
 
-Using the file attribute a remote link can be made to any url.
+Using the href attribute a remote link can be made to any url or local document.
+Links can also contain images or any other content, and can use the target='_blank' to open in a new tab.
 
 .. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
+     <!-- A web link to the google home page -->
+    <a href="https://www.google.com" target="_blank" >Google</a><br/>
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Params>
-        <doc:String-Param id="url2" value="https://www.google.com" />
-    </Params>
-
-    <Styles>
-        
-        <styles:Style applied-type="doc:Link" >
-            <styles:Text decoration="Underline"/>
-            <styles:Fill color="navy"/>
-        </styles:Style>
-        
-        <styles:Style applied-type="doc:Image" >
-            <styles:Border color="navy"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins all="10pt"/>
-            <styles:Size width="100pt"/>
-        </styles:Style>
-        
-    </Styles>
+    <!-- a link to a local pdf that will open in a new readr tab or window -->
+    <a alt="Document Link" href="ReadMeSample.pdf" target="_blank" >
+        <img src="./images/group.png" style="width:30pt; display:inline" />Document Link</a>
     
-    <Pages>
-        
-        <doc:Page styles:margins="20pt" styles:font-size="12pt">
-        <Content>
-            
-            <!-- Explicit url on the file attribute, with an action of Uri -->
-            <doc:Link action="Uri" file="http://localhost:5000/Home" >
-                <doc:Image src="../../Content/Images/Toroid32.png" />
-                Link to local host
-            </doc:Link>
-            
-            <doc:Br/>
-            <doc:Br/>
-            
-            <!-- the action will attempt to be dermined if not defined -->
-            <doc:Link file="{@:url2}" >
-                <doc:Image src="../../Content/Images/Toroid32.png" />
-                Link bound to parameter
-            </doc:Link>
-        </Content>
-        </doc:Page>
-
-    </Pages>
-    
-    </doc:Document>
-
 
 .. image:: images/documentLinksUrls.png
 
+
+.. note:: Some of the browser pdf readers do not support the full navigaional links capabilities (or allow them). Reader applications generally do.

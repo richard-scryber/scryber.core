@@ -416,7 +416,16 @@ namespace Scryber.Generation
 
             if (value.IndexOf(' ') > -1)
                 value = value.Replace(' ', ',');
-            return Enum.Parse(requiredType, value, true);
+            object result;
+            if (Enum.TryParse(requiredType, value, out result))
+                return result;
+            else if (settings.ConformanceMode == ParserConformanceMode.Lax)
+            {
+                settings.TraceLog.Add(TraceLevel.Error, "Parser", "Could not convert the value of " + value + " to a " + requiredType.Name);
+                return DBNull.Value;
+            }
+            else
+                throw new ArgumentException("Could not convert the value of " + value + " to a " + requiredType.Name, "value");
         }
 
         #endregion

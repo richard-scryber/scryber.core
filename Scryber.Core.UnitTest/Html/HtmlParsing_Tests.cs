@@ -777,20 +777,12 @@ namespace Scryber.Core.UnitTests.Html
 
 
 
-            using (var doc = Document.ParseDocument(path))
-            {
-                using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
+            
 
             using (var doc = Document.ParseDocument(path))
             {
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
 
-                doc.LayoutComplete += Doc_LayoutComplete;
                 using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
                 {
                     doc.SaveAsPDF(stream); 
@@ -798,11 +790,7 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
-        {
-            var layout = args.Context.DocumentLayout;
-            var header = layout.AllPages[0].ContentBlock;
-        }
+        
 
         [TestMethod()]
         public void BodyWithLongContent()

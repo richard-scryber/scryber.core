@@ -120,7 +120,7 @@ namespace Scryber.Components
         /// Gets or sets the fit for the destination (only for local links)
         /// </summary>
         [PDFAttribute("destination-fit")]
-        public OutlineFit DestinationFit
+        public virtual OutlineFit DestinationFit
         {
             get { return _destfit; }
             set { _destfit = value; }
@@ -141,7 +141,6 @@ namespace Scryber.Components
 
         #endregion
 
-        //TODO: Support the alternate text if possible
 
         #region public string AlternateText {get;set;}
 
