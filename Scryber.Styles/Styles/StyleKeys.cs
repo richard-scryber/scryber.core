@@ -155,8 +155,6 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<PDFUnit> PositionXKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xpos", PositionItemKey);
         public static readonly PDFStyleKey<PDFUnit> PositionYKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ypos", PositionItemKey);
         public static readonly PDFStyleKey<PositionMode> PositionModeKey = StyleKey.InternalCreateStyleValueKey<PositionMode>((PDFObjectType)"mode", PositionItemKey);
-        public static readonly PDFStyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((PDFObjectType)"vlgn", PositionItemKey);
-        public static readonly PDFStyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"hlgn", PositionItemKey);
         public static readonly PDFStyleKey<PDFRect> PositionViewPort = StyleKey.InternalCreateStyleValueKey<PDFRect>((PDFObjectType)"vwpt", PositionItemKey);
 
         //Size
@@ -194,6 +192,9 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<Scryber.Text.WordWrap> TextWordWrapKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.WordWrap>((PDFObjectType)"wrap", TextItemKey);
         public static readonly PDFStyleKey<Scryber.Text.TextDecoration> TextDecorationKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecoration>((PDFObjectType)"decr", TextItemKey);
         public static readonly PDFStyleKey<bool> TextPositionFromBaseline = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"tbse", TextItemKey);
+        public static readonly PDFStyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((PDFObjectType)"vlgn", TextItemKey);
+        public static readonly PDFStyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"hlgn", TextItemKey);
+
         //List
         public static readonly StyleKey ListItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleList, NOT_INHERITED);
         public static readonly PDFStyleKey<ListNumberingGroupStyle> ListNumberStyleKey = StyleKey.InternalCreateStyleValueKey<ListNumberingGroupStyle>((PDFObjectType)"styl", ListItemKey);

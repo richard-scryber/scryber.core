@@ -4,41 +4,40 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>Fonts decorations</title>
+    <title>Document Text H Align</title>
     <meta name="author" content="Scryber Team" />
     <style type="text/css">
 
         .std-font {
-            font-size: 20pt;
+            font-size: 14pt;
             background-color: #AAA;
             padding: 4pt;
             margin-bottom: 10pt;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
         }
-
-        .railway{ text-decoration: overline underline; color: red;}
-        
     </style>
 </head>
 <body style="padding: 20pt">
-    <div id="first" class="std-font">
-        Segoe UI is used from a system font<br />
-        <strong>Strong is Bold</strong>, <em>Em(phasis) is Italic</em>.
-        <ins>Ins(ert) is underlined</ins> and <del>del(eted) is strike through.</del>
+    <div class="std-font" style="white-space: nowrap">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce pulvinar elit leo, sit amet egestas neque porttitor nec.
+        Nunc pellentesque turpis ac pellentesque scelerisque.
+
+        Etiam at nibh mattis, pulvinar velit eget, consequat ligula.
     </div>
 
-    <div id="first" class="std-font">
-        The decorations can be combined by multiple tags<br />
-        Such as <b><em><u>Bold italic underlined</u></em></b>
-        or by the style <span class="railway" >over and under lined.</span>
+    <div class="std-font" style="white-space: nowrap">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce pulvinar elit leo, sit amet egestas neque porttitor nec.<br />
+        Nunc pellentesque turpis ac pellentesque scelerisque.<br />
+
+        Etiam at nibh mattis, pulvinar velit eget, consequat ligula.<br />
     </div>
 
-    <div class="std-font" style="font-weight:bold; text-decoration: underline;" >
-        The decoration will flow down into child tags.
-        <div style="margin:0 30pt 0 30pt; font-size:12pt">And any inner content can
-            <span style="font-weight:normal; text-decoration: overline;">override the settings</span>
-            as needed.
-        </div>
+    <div class="std-font" style="white-space:pre; overflow-x:hidden;">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce pulvinar elit leo, sit amet egestas neque porttitor nec.
+    Nunc pellentesque turpis ac pellentesque scelerisque.
+
+    Etiam at nibh mattis, pulvinar velit eget, consequat ligula.
     </div>
+
 </body>
 </html>

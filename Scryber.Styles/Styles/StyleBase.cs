@@ -957,23 +957,18 @@ namespace Scryber.Styles
 
             //clipping
 
-            if (hasaction == false || options.OverflowAction == OverflowAction.Clip)
+            if (this.TryGetThickness(StyleKeys.ClipItemKey.Inherited, StyleKeys.ClipAllKey, StyleKeys.ClipTopKey, StyleKeys.ClipLeftKey, StyleKeys.ClipBottomKey, StyleKeys.ClipRightKey, out thickness))
             {
-                //If there is no explicit overflow action or the overflow action is clip
-                //Then let's check the clipping rect. If set then we should store the thichness (and set the action to Clip if not already done so).
+                options.ClipInset = thickness;
 
-                if (this.TryGetThickness(StyleKeys.ClipItemKey.Inherited, StyleKeys.ClipAllKey, StyleKeys.ClipTopKey, StyleKeys.ClipLeftKey, StyleKeys.ClipBottomKey, StyleKeys.ClipRightKey, out thickness))
-                {
-                    options.ClipInset = thickness;
-
-                    //If the overflow action has not been set, but we have a clipping value, 
-                    //then we need to set the action to Clip.
-                    if (!hasaction)
-                        options.OverflowAction = OverflowAction.Clip;
-                }
-                else
-                    options.ClipInset = PDFThickness.Empty();
+                //If the overflow action has not been set, but we have a clipping value, 
+                //then we need to set the action to Clip.
+                if (!hasaction)
+                    options.OverflowAction = OverflowAction.Clip;
             }
+            else
+                options.ClipInset = PDFThickness.Empty();
+            
 
             //margins
 

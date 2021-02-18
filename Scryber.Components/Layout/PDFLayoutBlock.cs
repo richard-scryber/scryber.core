@@ -1073,6 +1073,12 @@ namespace Scryber.Layout
                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
                     this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
                 }
+                else if(this.Position.ClipInset.IsEmpty == false)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect + " as we have a non-zero clipping rect");
+                    this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                }
 
                 //Get the background brush
                 PDFBrush background = this.FullStyle.CreateBackgroundBrush();

@@ -172,7 +172,6 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Params["title"] = "Hello World";
-
                 using (var stream = DocStreams.GetOutputStream("HelloWorld.pdf"))
                 {
                     doc.SaveAsPDF(stream);

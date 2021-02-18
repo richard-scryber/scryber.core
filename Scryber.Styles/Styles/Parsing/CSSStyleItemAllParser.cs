@@ -151,6 +151,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.WordSpacing, new CSSWordSpacingParser());
 
             all.Add(CSSStyleItems.WhiteSpace, new CSSWhiteSpaceParser());
+            all.Add(CSSStyleItems.OverflowX, new CSSOverflowXParser());
+            all.Add(CSSStyleItems.OverflowY, new CSSOverflowYParser());
 
             all.Add(CSSStyleItems.Display, new CSSDisplayParser());
             all.Add(CSSStyleItems.Overflow, new CSSOverflowActionParser());

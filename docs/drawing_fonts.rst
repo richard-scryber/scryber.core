@@ -154,6 +154,21 @@ font is changed, then all children will use the new font.
 
 .. note:: .woff or woff files are not currently supported, but these can be easily converted to their ttf components online. They may be supported in future.
 
+Specifying the font in code
+----------------------------
+
+If it is needed to set the actual font in code then internally the PDFFontSelector class can be used.
+It has a constructor that takes the name of the font, and an overload that can be used to chain multiple selectors together.
+
+If the language supports it, then ther is also an explict cast available to convert to a PDFFontSelector.
+
+.. code-block:: csharp
+
+        page.Style.Font.FontFamily = new PDFFontSelector("sans-serif");
+        page.FontFamily = new PDFFontSelector("Arial", new PDFFontSelector("sans-serif"));
+        page.FontFamily = (PDFFontSelector)"Arial, sans-serif";
+
+
 Font face loading
 ------------------
 
@@ -329,159 +344,64 @@ Scryber does not (currently) support the text-decoration-color or text-decoratio
 
 
 
-
-Line Leading
--------------
+Line height (leading)
+----------------------
 
 The leading is the height of the lines including ascenders and descenders. 
 The default is set by the font (usually about 120% of the font size), but can be manually adjusted as needed.
 
 Inline components will ignore the block level style for leading.
+The value must be a unit value rather than a relative percent.
 
-The leading value is a unit value rather than a relative percent.
 
-
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Line Height</title>
+        <meta name="author" content="Scryber Team" />
+        <style type="text/css">
 
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-        <styles:Background color="#AAA"/>
-        <styles:Padding all="4pt"/>
-        <styles:Margins bottom="10pt" />
-        </styles:Style>
+            .std-font {
+                font-size: 20pt;
+                background-color: #AAA;
+                padding: 4pt;
+                margin-bottom: 10pt;
+                font-family: Geneva, Verdana, sans-serif;
+            }
 
-        <!-- Alter the default bold component -->
-        <styles:Style applied-type="doc:B">
-        <styles:Font size="25pt" italic="true"/>
-        </styles:Style>
+            .big{
+                font-size: 40pt;
+            }
 
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-            <doc:Div styles:column-count="3" styles:font-size="10pt">
+            .high{
+                line-height: 50pt;
+            }
 
-                <doc:Div styles:class="std-font" >
-                    Segoe UI in 10pt font size with the default
-                    leading used on each line of the paragraph. So the text looks well spaced and consistent.
-                </doc:Div>
-                <doc:ColumnBreak/>
-                
-                <doc:Div styles:class="std-font" styles:text-leading="20pt">
-                    Segoe UI in 10pt font size with the leading increased to 20pt
-                    on each line of the paragraph. So the text is more spaced out.
-                </doc:Div>
-                <doc:ColumnBreak/>
-                <doc:Div styles:class="std-font"  styles:text-leading="7pt">
-                    Segoe UI in 10pt font size with the leading reduced to 8pt
-                    on each line of the paragraph. It is not an error for the letters to collide.
-                </doc:Div>
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div id="first" class="std-font">
+            Lines will follow the standard line height<br/>
+            Set by the font for general reading.<br/>
+            <span class="big">If a larger font-size is used, then this will increase the line height.</span>
+            Rolling back to the default size on any following new lines.
+        </div>
 
-            </doc:Div>
+        <div class="std-font high" >An explicit line height can be used to increase (or decrease) the
+        leading. <span class="big">This is not affected by a change in the font size</span> and will continue
+        to maintain a standard height.</div>
 
-            <doc:Div styles:class="std-font"  styles:text-leading="17pt">
-                Even using various 
-                <doc:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</doc:Span>
-                will not affect the fixed size of the leading, 
-                but may impact the <doc:B>baselines of the content</doc:B>.
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+        <div class="std-font" style="line-height: 22pt" >It is also allowed to be less than
+        the <span class="big">size of the font text</span> although this does affect readability.</div>
+    </body>
+    </html>
 
 .. image:: images/drawingfontsLeading.png
-
-Character and Word Spacing
---------------------------
-
-With scryber the character and word spacing is supported at the style definition level (not on the component attributes). 
-They are less frequently used, but can help in adjusting fonts that are too narrow at a particular size, or for graphical effect.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
-
-        <!-- Alter the default bold component -->
-        <styles:Style applied-type="doc:B">
-            <styles:Font size="20pt" italic="true"/>
-            <!-- Adding character and word spacing too -->
-            <styles:Text char-spacing="5pt" word-spacing="10pt"/>
-        </styles:Style>
-
-        <styles:Style applied-class="narrow" >
-            <styles:Text char-spacing="-0.5pt"/>
-        </styles:Style>
-
-        <styles:Style applied-class="wide" >
-            <styles:Text char-spacing="1.5pt" leading="15pt"/>
-        </styles:Style>
-
-        <styles:Style applied-class="wide-word" >
-            <styles:Text char-spacing="0" word-spacing="8pt" />
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-            <doc:Div styles:column-count="3" styles:font-size="10pt">
-                <doc:Div styles:class="std-font narrow" >
-                    Segoe UI in 10pt font size with the default
-                    leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
-                </doc:Div>
-                <doc:ColumnBreak/>
-                <doc:Div styles:class="std-font wide">
-                    Segoe UI in 10pt font size with the leading increased to 15pt
-                    on each line of the paragraph. The character spacing is also
-                    set to an extra 1.5 points.
-                </doc:Div>
-                <doc:ColumnBreak/>
-                <doc:Div styles:class="std-font wide-word" >
-                    Segoe UI in 10pt font size with the leading and character space normal, but the word
-                    spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
-                </doc:Div>
-            </doc:Div>
-
-            <doc:Div styles:class="std-font wide" styles:text-leading="35pt" >
-                Even using various 
-                <doc:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</doc:Span>
-                will maintain the character and 
-                word spacing that <doc:B>has been applied.</doc:B>
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-
-.. image:: images/drawingfontsSpacing.png
 
 
 Multi-byte Characters
@@ -495,55 +415,60 @@ Scryber supports multi-byte characters, anywhere in the document. Whether that i
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Line Height</title>
+        <meta name="author" content="Scryber Team" />
+        <style type="text/css">
 
-        <styles:Style applied-class="wide" >
-            <styles:Text char-spacing="5pt"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font to a chinese traditional. -->
-        <doc:Page styles:padding="10" styles:font-family="Microsoft JhengHei UI" >
-        <Content>
-            <doc:Div styles:column-count="3" styles:font-size="14pt" styles:height="150pt">
+            .std-font {
+                font-size: 20pt;
+                background-color: #AAA;
+                padding: 4pt;
+                margin-bottom: 10pt;
+                font-family: 'Microsoft JhengHei UI', sans-serif;
+            }
+
+            .big{
+                font-size: 40pt;
+            }
+
+            .high{
+                line-height: 50pt;
+            }
+
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div class="std-font">
             記第功際被治年待中所正向持。害供雪指載載道表職渉彩明文界早琶。本要逆使健貿市執多格紙録指璧。
             高規要来広北的夜競語進文務配界重報史。松強約協交均刊後旅昼毎民御年必荒人稿線塁。
             代細募問毒会順債著用育探重早価時職。
             生出型掲事険市映女員雑誌賞盆山注医王放北。真催英落業投提協金策結状士社更観。
-            好角野成集顧演委事被対断陣前考武。<doc:Br/>
-            <doc:Br/>
-            <doc:Span styles:font-bold="true">
-            意能自至診発億間誕作業丹製橋内。大起阪企昌重週向入村着体首産優深男米。三外高本墨度投右未掲玲予伏望着。
-            経鈴向表田週健会断縄駅夜長。受稿照主著運国果暮治待困。極面五遺間方天質聞査違武梨整許削武祉。
-            合第面歳多料夜産選禁連聞旅可章勝策高十近。車氏意技済覇対思数祭町検開面玲術道給提座。
-            泉南追夜育挙性成卵要本物似界知減塾奈傷。</doc:Span>
-            </doc:Div>
-            <!-- mixed character sets, with leading and spacing -->
-            <doc:Div styles:class="wide" styles:text-leading="35pt" >
+            好角野成集顧演委事被対断陣前考武。<br />
+            <br />
+            <span>
+                意能自至診発億間誕作業丹製橋内。大起阪企昌重週向入村着体首産優深男米。三外高本墨度投右未掲玲予伏望着。
+                経鈴向表田週健会断縄駅夜長。受稿照主著運国果暮治待困。極面五遺間方天質聞査違武梨整許削武祉。
+                合第面歳多料夜産選禁連聞旅可章勝策高十近。車氏意技済覇対思数祭町検開面玲術道給提座。
+                泉南追夜育挙性成卵要本物似界知減塾奈傷。
+            </span>
+        </div>
+        <!-- mixed character sets, with leading and spacing -->
+        <div class="std-font">
             We can intermix the characters 記第功際被治年待中所正向持。害供雪指載載道表職渉彩明文界早琶。本要逆使健貿市執多格紙録指璧。
             高規要来広北的夜競語進文務配界重報史。松強約協交均刊後旅昼毎民御年必荒人稿線塁。
-            <doc:Span styles:font-family="Segoe UI"  >代細募問毒会順債著用育探重早価時職。
-            But the font must contain the glyphs.</doc:Span> 
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
+            <span style='font-family:"Segoe UI";'>
+                代細募問毒会順債著用育探重早価時職。
+                But the font must contain the glyphs.
+            </span>
+        </div>
+    </body>
+    </html>
     
-    </doc:Document>
-
-
 .. image:: images/drawingfontsUnicode.png
 
 

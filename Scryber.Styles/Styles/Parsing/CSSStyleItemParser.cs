@@ -2798,6 +2798,76 @@ namespace Scryber.Styles.Parsing
 
     // white-space
 
+    public class CSSOverflowXParser : CSSStyleValueParser
+    {
+        public CSSOverflowXParser() : base(CSSStyleItems.OverflowX)
+        {
+
+        }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            if (reader.ReadNextValue())
+            {
+                var val = reader.CurrentTextValue;
+
+                switch (val)
+                {
+                    case ("hidden"):
+                        onStyle.SetValue(StyleKeys.ClipLeftKey, (PDFUnit)0.1);
+                        onStyle.SetValue(StyleKeys.ClipRightKey, (PDFUnit)0.1);
+                        return true;
+                    case ("auto"):
+                    case ("initial"):
+                    case ("visible"):
+                        onStyle.RemoveValue(StyleKeys.ClipLeftKey);
+                        onStyle.RemoveValue(StyleKeys.ClipRightKey);
+                        return true;
+                    default:
+                        break;
+                }
+            }
+
+            return false;
+            
+        }
+    }
+
+    public class CSSOverflowYParser : CSSStyleValueParser
+    {
+        public CSSOverflowYParser() : base(CSSStyleItems.OverflowX)
+        {
+
+        }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            if (reader.ReadNextValue())
+            {
+                var val = reader.CurrentTextValue;
+
+                switch (val)
+                {
+                    case ("hidden"):
+                        onStyle.SetValue(StyleKeys.ClipTopKey, (PDFUnit)0.1);
+                        onStyle.SetValue(StyleKeys.ClipBottomKey, (PDFUnit)0.1);
+                        return true;
+                    case ("auto"):
+                    case ("initial"):
+                    case ("visible"):
+                        onStyle.RemoveValue(StyleKeys.ClipTopKey);
+                        onStyle.RemoveValue(StyleKeys.ClipBottomKey);
+                        return true;
+                    default:
+                        break;
+                }
+            }
+
+            return false;
+
+        }
+    }
+
     #region public class CSSWhiteSpaceParser : CSSStyleValueParser
 
     public class CSSWhiteSpaceParser : CSSStyleValueParser

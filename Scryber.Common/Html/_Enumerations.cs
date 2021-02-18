@@ -144,6 +144,8 @@ namespace Scryber.Html
         public const string WordSpacing = "word-spacing";
 
         public const string WhiteSpace = "white-space";
+        public const string OverflowX = "overflow-x";
+        public const string OverflowY = "overflow-y";
 
         public const string ListStyleType = "list-style-type";
         public const string ListStyle = "list-style";
