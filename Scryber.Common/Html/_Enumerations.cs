@@ -139,6 +139,7 @@ namespace Scryber.Html
         public const string Overflow = "overflow";
 
         public const string TextDecoration = "text-decoration";
+        public const string TextDecorationLine = "text-decoration-line";
         public const string LetterSpacing = "letter-spacing";
         public const string WordSpacing = "word-spacing";
 

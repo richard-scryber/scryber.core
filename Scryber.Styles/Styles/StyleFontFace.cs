@@ -164,14 +164,18 @@ namespace Scryber.Styles
             {
                 PDFFontDefinition definition;
 
-                if(this.TryGetFont(doc, context, out definition))
+                if (this.TryGetFont(doc, context, out definition))
                 {
                     string name = PDFFont.GetFullName(this.FontFamily.FamilyName, this.FontBold, this.FontItalic);
                     //PDFFontResource resource = PDFFontResource.Load(definition, name);
-                    
+
                     doc.EnsureResource(PDFFontResource.FontDefnResourceType, name, definition);
                 }
+                else
+                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "The font for " + this.Source.ToString() + " with name " + this.FontFamily + " could not be loaded");
             }
+            else
+                context.TraceLog.Add(TraceLevel.Warning, "CSS", "No font-family or src was specified for the @font-face rule.");
         }
 
         public override string ToString()

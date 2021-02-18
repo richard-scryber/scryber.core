@@ -14,13 +14,13 @@ The href attribute supports 3 types of content.
 
 * Named Action - These are the standard links to and from pages (see below).
 * #id - If set, then the link is an action for a different document or Url. Effectively like the href of an anchor tag in html.
-* url - If set then this is the location within the current or other file to show. Like the #name on a Url
+* url - A relative or remote link to a document or webpage.
 
 The content within a link can be anything, including images; text; svg components and more. 
 There can also be more than one component within the link.
 
 Page Named Action
-=====================
+------------------
 
 The simplest link type is navigational. The possible actions are (case insensitive) as follows:
 
@@ -100,14 +100,13 @@ For example we can create a navigation header.
 
 .. image:: images/documentLinksNav.png
 
-.. note:: Some of the browser pdf readers do not support the naviagional links. Readers do.
 
 
 Linking within documents
 ------------------------
 
 When navigating around the documment, scryber supports the direct linking to a specific page or component 
-using the id being referenced attribute. Prefix with a # to identify the tag .
+using the id being referenced attribute. Prefix with a # to identify it is an element witin the document.
 
 By default anchor links will be underlined and in blue. But can be styled as needed.
 
@@ -137,7 +136,7 @@ By default anchor links will be underlined and in blue. But can be styled as nee
 External Links to Urls
 -----------------------
 
-Using the href attribute a remote link can be made to any url or local document.
+Using the href attribute a remote link can be made to any url or local document. If it's not one of the other type it will be assumed to be a link.
 Links can also contain images or any other content, and can use the target='_blank' to open in a new tab.
 
 .. code-block:: xml

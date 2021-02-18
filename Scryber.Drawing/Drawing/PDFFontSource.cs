@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Scryber.Drawing
 {
@@ -47,6 +48,30 @@ namespace Scryber.Drawing
             this._format = format;
         }
 
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            this.ToString(sb);
+            return sb.ToString();
+        }
+
+        protected virtual void ToString(StringBuilder sb)
+        {
+            if (this.Type == FontSourceType.Local)
+                sb.Append("local(");
+            else
+                sb.Append("url(");
+            sb.Append(this.Source);
+            sb.Append(") format(");
+            sb.Append(this.Format.ToString().ToLower());
+            sb.Append(")");
+            if (null != this.Next)
+            {
+                sb.Append(", ");
+                this.Next.ToString(sb);
+            }
+        }
 
         public static bool TryParse(string value, out PDFFontSource parsed)
         {

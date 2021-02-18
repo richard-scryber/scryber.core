@@ -9,6 +9,7 @@ using Scryber.Html;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Windows.Markup;
+using Scryber.Text;
 
 namespace Scryber.Styles.Parsing
 {
@@ -2529,21 +2530,29 @@ namespace Scryber.Styles.Parsing
         {
             bool result = true;
             Text.TextDecoration decor;
-            if (reader.ReadNextValue() && TryGetDecorationEnum(reader.CurrentTextValue, out decor))
-                this.SetValue(onStyle, decor);
-            else
-                result = false;
+            TextDecoration final = TextDecoration.None;
 
+            while (reader.ReadNextValue() && TryGetOneDecoration(reader.CurrentTextValue, out decor))
+            {
+                final |= decor;
+                result = true;
+            }
+
+            if (result)
+                onStyle.SetValue(StyleKeys.TextDecorationKey, final);
+            
             return result;
         }
 
         public static bool IsDecorationEnum(string value)
         {
             Text.TextDecoration decor;
-            return TryGetDecorationEnum(value, out decor);
+            return TryGetOneDecoration(value, out decor);
         }
 
-        public static bool TryGetDecorationEnum(string value, out Text.TextDecoration decoration)
+        
+
+        private static bool TryGetOneDecoration(string value, out TextDecoration decoration)
         {
             switch (value.ToLower())
             {

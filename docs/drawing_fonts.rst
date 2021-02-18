@@ -2,70 +2,76 @@
 Document fonts and text styles
 ======================================
 
-Fonts are by detault automatically loaded at startup, and can be referenced by name.
+PDF supports standard fonts. Scryber also supports the standard names of 'sans-serif', 'serif', 'monospace'.
+
+Fonts available in the current operating system that the application has access to, can also be used. 
+They are referenced by their postscript name.
+
+Fonts can also be dynamically included with the @font-face rule.
+
+Scryber supports the use of the font fallback in styles.
+
+..  note:: scryber currently only supports True type &tm; and Open Type fonts - ttf (otf) and ttc (otc)
 
 Built in fonts
-==============
+----------------
 
-There are a number (14 to be precise) of built in fonts with PDF readers that can be used in documents. These are as follows
+The standard built in fonts with PDF readers that can be used in documents. These are as follows
 
-* Helvetica - Regular, Bold, Italic and Bold Italic.
-* Times - Regular, Bold, Italic and Bold Italic.
-* Courier - Regular, Bold, Italic and Bold Italic.
-* Zapf Dingbats - Regular
-* Symbol - Regular
+* sans-serif / Helvetica - Regular, Bold, Italic and Bold Italic.
+* serif / Times - Regular, Bold, Italic and Bold Italic.
+* monospace / Courier - Regular, Bold, Italic and Bold Italic.
 
-It is safe to assume that these fonts exist and can be used.
+If used, then if the font is available it will be embedded, as is best practice.
 
-.. code-block:: xml
+
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Styles>
-        
-        <!-- Add a style to font divs -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Font size="20pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{@:Content.Title}</title>
+        <meta name="author" content="{@:DocAuthor}" />
+        <style type="text/css">
+            
+            .std-font{
+                font-size: 20pt;
+                background-color:#AAA;
+                padding: 4pt;
+                margin-bottom:10pt;
+            }
 
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="10" >
-        <Content>
-            <doc:Div styles:class="std-font" styles:font-family="Helvetica" >
-                <doc:Span>Helvetica is the default font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Times" >
-                <doc:Span>Times is a standard font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Courier" >
-                <doc:Span>Courier is a standard font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Zapf Dingbats" >
-                <doc:Span>Dingbats is a standard font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Symbol" >
-                <doc:Span>Symbol is a standard font.</doc:Span>
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div id="first" class="std-font" style="font-family:sans-serif">
+            Helvetica is the default (sans-serif) font.<br/>
+            Helvetica <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> are available.
+        </div>
+
+        <div id="first" class="std-font" style="font-family:serif">
+            Times is the serif font.<br />
+            Times <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> are available.
+        </div>
+
+        <div id="first" class="std-font" style="font-family:monospace">
+            Courier is the monospaced font.<br />
+            Courier <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> are available.
+        </div>
+
+
+    </body>
+    </html>
 
 .. image:: images/drawingfontsStandard.png
 
 
 
 Using different fonts
-=====================
+----------------------
 
 Along with the standard fonts, scryber supports the systems fonts (the fonts in the Environment.SpecialFolder.Fonts).
 It does not support postscript font files but does support.
@@ -79,260 +85,256 @@ Rather than the file name of the ttf or ttc file.
 
 .. image:: images/drawingFontsSelect.png
 
-The following uses 4 different ttf fonts installed on the machine generating the document.
+The following uses 3 different ttf fonts installed on the machine generating the document.
+But using the standard css font fallback if a font does not exist it can fall back to one of the known fonts 
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>System Font Files</title>
+        <meta name="author" content="Scryber Team" />
+        <style type="text/css">
+            
+            .std-font{
+                font-size: 20pt;
+                background-color:#AAA;
+                padding: 4pt;
+                margin-bottom:10pt;
+            }
 
-    <Styles>
-        
-        <!-- Add a style to font divs -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Font size="20pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
+            .sans {
+                font-family: 'Segoe UI', sans-serif;
+            }
 
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="10" >
-        <Content>
-        
-            <doc:Div styles:class="std-font" styles:font-family="Arial" >
-                <doc:Span>Arial is a system installed font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Segoe UI" >
-                <doc:Span>Segoe UI is a system installed font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Impact" >
-                <doc:Span>Impact is a system installed font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Comic Sans MS" >
-                <doc:Span>Comic Sans is a system installed font.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Wingdings" >
-                <doc:Span>Wingdings is a system installed font.</doc:Span>
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+            .serif{
+                font-family: Optima, Times, Times New Roman, serif;
+            }
+
+            .avenir{
+                font-family:'Avenir Next Condensed', sans-serif;
+            }
+
+            .none {
+                font-family: 'Made Up Font', monospace;
+            }
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div id="first" class="std-font sans">
+            Segoe UI is used from a font style from the system fonts.<br />
+            Segoe UI <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> are also available.
+        </div>
+
+        <div id="first" class="std-font serif">
+            Optima is used from a font style from the system fonts.<br />
+            Optima <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> are available.
+        </div>
+
+        <div id="first" class="std-font avenir">
+            Avenir Next Condensed is used from a font style from the system fonts.<br />
+            Avenir Next Condensed <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> are available.
+        </div>
+
+        <div id="first" class="std-font none">
+            Fonts that are not avialable can use the fallback method.<br />
+            They should also apply to <b>Bold</b>, <i>Italic</i>, and <span style="font-weight:bold; font-style:italic">Bold Italic</span> styles.
+        </div>
+    </body>
+    </html>
 
 .. image:: images/drawingfontsSystem.png
 
 As the font is set to inherit, all child text components will use the specified font of the parent. If the
 font is changed, then all children will use the new font.
 
-.. note:: .woff files are not currently supported, but these can be easily converted to their ttf components online. They may be supported in future.
+.. note:: .woff or woff files are not currently supported, but these can be easily converted to their ttf components online. They may be supported in future.
 
-Font styles
-===========
+Font face loading
+------------------
 
-Along with the font family scryber supports the use of 'Bold', 'Italic' and 'Bold Italic' within the font to change the style.
+Along with the standard and system installed fonts, scryber supports the importing and declaration of
+custom fonts from specific files.
 
-The use of the <doc:B></doc:B> and <doc:I></doc:I> components also applies the Bold and Italic flags based on the style. They can be applied 
-individually or nested, but they cannot be mixed inconsistently (breaking the rules of XML).
+These can either be relative to the current file, or an absolute url.
 
-.. code-block:: xml
+This is also a good way of specifying various weights, as scryber (currently) only supports the bold variant. It is on our list of todo's.
+
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-        <styles:Font size="20pt" />
-        <styles:Background color="#AAA"/>
-        <styles:Padding all="4pt"/>
-        <styles:Margins bottom="10pt" />
-        </styles:Style>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Fonts loaded directly</title>
+        <meta name="author" content="Scryber Team" />
+        <!-- 
+            link to google fonts API's.
+          -->
+        <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Inline+Display:wght@500;800&amp;display=swap" rel="stylesheet" />
+        <style type="text/css">
 
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-        
-            <doc:Div styles:class="std-font" >
-                <doc:Span>Regular Segoe UI.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" 
-                        styles:font-bold="true" >
-                <doc:Span>Segoe UI has a bold variant.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font"
-                        styles:font-italic="true" >
-                <doc:Span>Segoe UI is also available in italic.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-italic="true" >
-                <doc:B>This is Segoe UI within a Bold span, with italic on the div.</doc:B>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
-                <doc:Span>This is the light variant of the font <doc:I>with Italic inside</doc:I> the span.</doc:Span>
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+            /* Open light font file on the local drive */
+
+            @font-face {
+                src: url(../../Resources/OpenSans-Light.ttf) format('truetype');
+                font-family: 'Open Light';
+            }
+
+            /* Long Cang is downloaded from google but is cached locally */
+
+            @font-face {
+                font-family: 'Long Cang';
+                font-style: normal;
+                font-weight: 400;
+                src: url(https://fonts.gstatic.com/s/longcang/v5/LYjAdGP8kkgoTec8zkRgrQ.ttf) format('truetype');
+            }
+
+            .std-font {
+                font-size: 20pt;
+                background-color: #AAA;
+                padding: 4pt;
+                margin-bottom: 10pt;
+            }
+
+            /* Setting the classes to the fonts above */
+
+            .sans {
+                font-family: 'Open Light', monospace;
+            }
+
+            .grafitti {
+                font-family: 'Long Cang', serif;
+            }
+
+            .broad {
+                font-family: 'Big Shoulders Inline Display', sans-serif;
+            }
+            
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div id="first" class="std-font sans">
+            Open Sans Light is used from a font face declaration.<br />
+            As we did not define <b>Bold</b>, <i>Italic</i>, or <span style="font-weight:bold; font-style:italic">Bold Italic</span> they are <u>not</u> available and will fallback.
+        </div>
+
+        <div id="first" class="std-font grafitti">
+            Long Kang is downloaded from the google fonts api.<br />
+            No variations are idetnfied for the <b>bold</b> or <i>italic</i> are available.
+        </div>
+
+        <div id="first" class="std-font broad">
+            Big shoulders is used from a css file imported from the google fonts.<br />
+            It does have a <b>Bold</b> variation, but not <i>Italic</i>.
+        </div>
+
+    </body>
+    </html>
 
 
 .. image:: images/drawingfontsStyles.png
 
-.. warning:: If the bold or italic variants are not available as a font, by default, an exception will be raised.
-    e.g. There is no bold variant of 'Segoe UI Light' as you might understand. Font fallback below can help with this.
+
+.. warning:: The link for the font css from google is not XHTML compliant. The & parameter separator should be escaped to &amp; and the link tag closed '/>'
 
 
-Text Decoration
-===============
+Text styles and decoration
+---------------------------
 
-Along with the bold and italic variants, scryber also supports the following text-decoration flags.
+Along with the bold and italic variants, scryber also supports underlines, strikethrough and overline text rendering features.
+As with HTML these are default styles, and can be altered as needed.
 
+* Bold
+    * <b></b>
+    * <strong></strong>
+    * css {font-weight:bold;}
+* italic
+    * <i></i>
+    * <em></em>
+    * css {font-style:italic;}
 * Underline
+    * <u></u>
+    * <ins></ins>
+    * css { text-decoration:underline;}
 * StrikeThrough
+    * <strike></strike>
+    * <del></del>
+    * css { text-decoration: line-through; }
 * Overline
+    * css { text-decoration: overline; }
 
-And these can be combined within the attribute, and will flow across lines.
 
-Underline also has a convenience component <doc:U></doc:U> (which will also clear any strikethrough or overline).
+As with css text-decoration values can be combined e.g. 'line-through underline' , and the decorations will flow across lines.
 
-.. code-block:: xml
+Scryber does not (currently) support the text-decoration-color or text-decoration-style.
+
+
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Fonts decorations</title>
+        <meta name="author" content="Scryber Team" />
+        <style type="text/css">
 
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Font size="20pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
+            .std-font {
+                font-size: 20pt;
+                background-color: #AAA;
+                padding: 4pt;
+                margin-bottom: 10pt;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
 
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-        
-        <doc:Div styles:class="std-font" styles:text-decoration="Underline" >
-            <doc:Span>Underlined Segoe UI.</doc:Span>
-        </doc:Div>
-        
-        <doc:Div styles:class="std-font" 
-                    styles:font-bold="true" styles:text-decoration="Underline Overline" >
-            <doc:Span>Segoe UI as a bold variant with underline and overline.</doc:Span>
-        </doc:Div>
-        
-        <doc:Div styles:class="std-font"
-                    styles:font-italic="true" >
-            <doc:Span>
-            <doc:U>Underlined Segoe UI</doc:U> in italic, 
-            <doc:Span styles:text-decoration="StrikeThrough">Can be struck through</doc:Span>.</doc:Span>
-        </doc:Div>
-        
-        <doc:Div styles:class="std-font"
-                    styles:font-italic="true" >
-            <doc:U>This is Segoe UI with underlining, that will flow across multiple lines, but an 
-            <doc:Span styles:text-decoration="StrikeThrough">inner span with struck through will remove the parent underlining</doc:Span> which will be
-            restored after the span.
-            </doc:U>
-        </doc:Div>
-        
-        
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+            .railway{ text-decoration: overline underline; color: red;}
+            
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div id="first" class="std-font">
+            Segoe UI is used from a system font<br />
+            <strong>Strong is Bold</strong>, <em>Em(phasis) is Italic</em>.
+            <ins>Ins(ert) is underlined</ins> and <del>del(eted) is strike through.</del>
+        </div>
+
+        <div id="first" class="std-font">
+            The decorations can be combined by multiple tags<br />
+            Such as <b><em><u>Bold italic underlined</u></em></b>
+            or by the style <span class="railway" >over and under lined.</span>
+        </div>
+
+        <div class="std-font" style="font-weight:bold; text-decoration: underline;" >
+            The decoration will flow down into child tags.
+            <div style="margin:0 30pt 0 30pt; font-size:12pt">And any inner content can
+                <span style="font-weight:normal; text-decoration: overline;">override the settings</span>
+                as needed.
+            </div>
+        </div>
+    </body>
+    </html>
 
 
 .. image:: images/drawingfontsDecoration.png
 
 
 
-Font Sizes
-==========
-
-Scryber can use any font-size needed. This can either be set on a block or within an inline component.
-The layout engine will attempt to keep line heights consistent, baselines level, along with decorations and styles.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Font size="20pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
-
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-        
-            <doc:Div styles:class="std-font" styles:text-decoration="Underline" >
-                <doc:Span styles:font-size="10pt">Underlined Segoe UI in 10pt.</doc:Span>
-            </doc:Div>
-
-            <doc:Div styles:class="std-font" styles:text-decoration="Underline" >
-                <doc:Span styles:font-size="30pt">Underlined Segoe UI in 30pt.</doc:Span>
-            </doc:Div>
-            
-            <doc:Div styles:class="std-font" 
-                        styles:font-bold="true" >
-                <doc:Span>Segoe UI as a<doc:Span styles:font-size="30pt">
-                bold variant with
-                <doc:Span styles:font-size="50pt" styles:text-decoration="Underline">various</doc:Span>
-                </doc:Span>sizes.</doc:Span>
-            </doc:Div>
-
-
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/drawingfontsSizes.png
-
-
 
 Line Leading
-============
+-------------
 
 The leading is the height of the lines including ascenders and descenders. 
-The default is set by the font (usually about 120% of the font size), but can be manually adjustsed as needed.
+The default is set by the font (usually about 120% of the font size), but can be manually adjusted as needed.
 
 Inline components will ignore the block level style for leading.
 
@@ -402,7 +404,7 @@ The leading value is a unit value rather than a relative percent.
 .. image:: images/drawingfontsLeading.png
 
 Character and Word Spacing
-==========================
+--------------------------
 
 With scryber the character and word spacing is supported at the style definition level (not on the component attributes). 
 They are less frequently used, but can help in adjusting fonts that are too narrow at a particular size, or for graphical effect.
@@ -483,7 +485,7 @@ They are less frequently used, but can help in adjusting fonts that are too narr
 
 
 Multi-byte Characters
-=====================
+----------------------
 
 Scryber supports multi-byte characters, anywhere in the document. Whether that is only a couple of characters, or whole paragraphs.
 
@@ -549,212 +551,10 @@ Scryber supports multi-byte characters, anywhere in the document. Whether that i
           size of the pdf file. The example above came in at 23Mb without any images. Beware!
 
 Right to Left
-=============
+---------------
 
 Scryber doesn't currently support Right to left (or vertical) typography. At the moment we have have not seen it done 
 anywhere due to limitiations in postscript and the pdf document. But we will keep trying.
-
-Font Configuration Options
-===========================
-
-
-Missing Font Fallback
----------------------
-
-As mentioned in `Font Styles`_ if a font (or style variant) is not available, then the default action is to raise an error.
-
-This behaviour can be changed with the :doc:`scryber_configuration`. 
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Font size="20pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
-
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-        
-            <doc:Div styles:class="std-font" >
-                <doc:Span>Regular Segoe UI.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" 
-                        styles:font-bold="true" >
-                <doc:Span>Segoe UI has a bold variant.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font"
-                        styles:font-italic="true" >
-                <doc:Span>Segoe UI is also available in italic.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font"
-                        styles:font-italic="true" >
-                <doc:B>This is Segoe UI within a Bold span, with italic on the div.</doc:B>
-            </doc:Div>
-            <!-- This would fail as there is no bold version of Segoe UI Light -->
-            <doc:Div styles:class="std-font" styles:font-family="Segoe UI Light" >
-                <doc:Span styles:font-bold="true">This is the light variant of the font <doc:I>with Italic inside</doc:I> the span.</doc:Span>
-            </doc:Div>
-
-            <doc:Div styles:font-family="DoesNotExist" >
-                This is with an unknown font name.
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-The document above would fail due to the request for bold of a light font variant, and also a font family that cannot be resolved.
-
-However if we apply our configuration options for the fonts we can maintain a fall back position using the `FontSubstitution` flag.
-
-.. code-block:: json
-
-    {
-        "Scryber": {
-            "Imaging": {
-            "AllowMissingImages": "True"
-            },
-            "Fonts": {
-                "UseSystemFonts": "True",
-                "FontSubstitution": "True"
-                
-            }
-        }
-    }
-
-Now when we render the document the Bold option (and also Bold Italic) will default back to the regular style. And a font that does not exist
-will be rendered with the Courier built in font.
-
-.. image:: images/drawingFontsFallback.png
-
-.. note:: This is a good setting for production systems, and leaving dev / qa for the default setting.
-
-
-Font Folders
-------------
-
-By default the scryber engine will use system fonts registered on the OS. Any of the true type (open type) fonts
-within this folder can be used for outputting content.
-
-Setting the UseSystemFonts flag to false will stop this behaviour and only use either the default font folder,
-or the explicit fonts. 
-If you are not sure if your fonts will be there, set this up and make them explicit.
-
-By specifiying a default directory for your fonts you can add them to your deployments and standardise the output.
-
-Explicit Fonts
---------------
-
-With explicit fonts, you can specify any name and style for a font file and use it directly. If there are custom fonts
-users will never have on their system, they do not need to be installed at the OS level, but are accessible to the application or site.
-
-Changing the default font
--------------------------
-
-As we can see from the options below, it is also possible to set a different font as the default used by documents.
-This can be any of the System fonts, Other fonts from the font folder, or explicitly registered fonts can be the default.
-And also changed direclty within the application.
-
-Custom Font Output
-==================
-
-Expanding the scryber configuration options
-
-.. code-block:: json
-
-    "Fonts": {
-      "UseSystemFonts": "True",
-      "FontSubstitution": "True",
-      "DefaultDirectory": "Content/Fonts/Std",
-      "DefaultFont": "Avenir Next Condensed",
-      "Register": [
-        {
-          "Family": "DIN",
-          "Style": "Bold",
-          "File": "Content\\Fonts\\Title\\DIN Alternate Bold.ttf"
-        },
-        {
-          "Family": "Avenir Next Condensed Ultra Light",
-          "Style": "Italic",
-          "File": "Content\\Fonts\\Std\\AvenirNextCondensed-UltraLightItalic-12.ttf"
-        }
-      ]
-    }
-
-Here there is an explicit directory, that can be deployed with the site containing the fonts, and one of these is set to the default font
-to be used on all documents when an explicit font is not set.
-
-We then have another that is in the named directory. 
-
-And finally an explict version for the Ultra light Italic, that was not being recognised.
-
-.. image:: images/drawingFontsCustomSoln.png
-    :width: 300
-
-If we generate the document below now we can see the output with the included fonts.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Font size="20pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
-
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="10" >
-        <Content>
-        
-            <doc:Div styles:class="std-font" >
-                <doc:Span>The new detault font is now updated and used when nothing is set, supporting 
-                the <doc:B>bold version as well</doc:B></doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="DIN" >
-                <doc:Span>This is using the custom named font explicitly loaded.</doc:Span>
-            </doc:Div>
-            <doc:Div styles:class="std-font" styles:font-family="Avenir Next Condensed Ultra Light" >
-                <doc:Span>This is the ultra light version <doc:I> and italic, 
-                that was a bit of an issue loading.</doc:I></doc:Span>
-            </doc:Div>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/drawingFontsCustom.png
-
-It's now possible to have complete control of the fonts available to the application from the :doc:`scryber_configuration`
-
 
 
 

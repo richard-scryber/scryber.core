@@ -4,70 +4,41 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>{@:Content.Title}</title>
-    <meta name="author" content="{@:DocAuthor}" />
+    <title>Fonts decorations</title>
+    <meta name="author" content="Scryber Team" />
     <style type="text/css">
-        /* Or Header Style with 4 columns */
-        .header{
-            background-color: #EEE;
-            column-count:4;
-            text-align:center;
-        }
-        /* Our Link button style */
-        .header a{
-            display:block;
-            border: solid 1pt #DDD;
-            border-radius: 4pt;
-            padding:6pt;
-            margin:6pt;
-            break-after:always;
-            text-decoration:none;
-            color: #333;
-            font-size:10pt;
-            
-        }
-        /* And our divs */
-        div {
-            margin: 20pt 0 0 20pt;
-        }
-        div.break{
-            page-break-after:always;
+
+        .std-font {
+            font-size: 20pt;
+            background-color: #AAA;
+            padding: 4pt;
+            margin-bottom: 10pt;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        .railway{ text-decoration: overline underline; color: red;}
         
     </style>
 </head>
-<body style="font-size:20pt;">
-    <header>
-        <!-- navigation on the header -->
-        <nav class="header">
-            <a href="FirstPage">First Page</a>
-            <a href="PrevPage">Prev Page</a>
-            <a href="NextPage">Next Page</a>
-            <a href="LastPage">Last Page</a>
-        </nav>
-    </header>
-    <!-- Each on it's own page -->
-    <div id="first" class="break">
-        First <br />
-        <a href="#second" >Link to the Second page</a>
-        <br />
-        <a href="#fourth" style="text-decoration:none; color:gray;" >Link to the Fourth page</a>
+<body style="padding: 20pt">
+    <div id="first" class="std-font">
+        Segoe UI is used from a system font<br />
+        <strong>Strong is Bold</strong>, <em>Em(phasis) is Italic</em>.
+        <ins>Ins(ert) is underlined</ins> and <del>del(eted) is strike through.</del>
     </div>
-    <div id="second" class="break">Second
 
-    <!-- A web link to the google home page -->
-    <a href="https://www.google.com" target="_blank" >Google</a><br/>
+    <div id="first" class="std-font">
+        The decorations can be combined by multiple tags<br />
+        Such as <b><em><u>Bold italic underlined</u></em></b>
+        or by the style <span class="railway" >over and under lined.</span>
+    </div>
 
-    <!-- a link to a local pdf that will open in a new readr tab or window -->
-    <a alt="Document Link" href="ReadMeSample.pdf" target="_blank" >
-        <img src="./images/group.png" style="width:30pt; display:inline" />Document Link</a>
+    <div class="std-font" style="font-weight:bold; text-decoration: underline;" >
+        The decoration will flow down into child tags.
+        <div style="margin:0 30pt 0 30pt; font-size:12pt">And any inner content can
+            <span style="font-weight:normal; text-decoration: overline;">override the settings</span>
+            as needed.
+        </div>
     </div>
-    <div id="third" class="break">Third</div>
-    <div id="fourth" class="break">
-        Fourth <br />
-        <a href="#first" >Link to the first page</a>
-    </div>
-    <div>Fifth</div>
 </body>
 </html>
