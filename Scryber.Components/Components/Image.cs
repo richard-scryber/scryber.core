@@ -55,7 +55,7 @@ namespace Scryber.Components
         [PDFAttribute("img-data")]
         [PDFElement("Data")]
         [PDFDesignable("Image Data", Category = "General", Priority = 3, Type = "Binary")]
-        public PDFImageData Data
+        public virtual PDFImageData Data
         {
             get { return _data; }
             set

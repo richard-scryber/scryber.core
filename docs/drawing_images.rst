@@ -9,42 +9,83 @@ Scryber supports most standard image types, including the following.
 * PNG  - 8, 24 and 32 bit alpha, RGB.
 * JPEG - 24 bit RGB.
 
-Adding an image to the output is as simple as putting an `<doc:Image src='[path]' />` in the template.
+Adding an image to the output is as simple as putting an `<img src='[path]' />` in the template.
 If the image has an alpha channel this will automatically be applied to the image.
 
 Image Source Paths.
-=============================
+---------------------
 
 The source for an image path can be referenced relative to the current file being parsed.
 
-e.g. ../../Content/images/filename.ext
+e.g. ../../Content/images/Toroid32.tiff
 
 Or it can be the full url or full file path to the image.
 
 e.g. http://localhost:5000/images/Toroid32.tiff
 
 
-.. note:: If the image component is declared on a file referenced from the document, then the image path should still be relative to the file where the image component is declared. Not the top level document. 
+.. note:: If the image component is declared on a file referenced from the document, 
+          then the image path should still be relative to the file where the image component is declared. Not the top level document. 
 
 Explicit image data
-===================
+-------------------
 
 Data can be set on the image explicitly when loaded, using the Scryber.Drawing.PDFImageData class.
 This class has a range of static methods to load the images from existing bitmaps, local files or streams.
 
-And the image data can then be assigned to an image component directly, or via an object parameter
+And the image data can then be assigned to an image component directly.
+
+.. code-block:: csharp
+
+    using (var stream = GetMyImageData())
+    {
+        var img = doc.FindAComponentById("myImage") as Image;
+        if (null != img)
+            img.Data = PDFImageData.LoadImageFromStream("IdentifyingKeyForImage", mybitmapstream);
+    }
+
+    //Other overloads
+
+    //PDFImageData.LoadImageFromBitmap();
+    //PDFImageData.LoadImageFromLocalFile();
+    //PDFImageData.LoadImageFromURI();
+
+Binding Image data
+-------------------
+
+Binding to parameter data is also supported in the img tag using the data-img attribute.
+
+.. code-block:: html
+
+    <img alt='Data bound image' data-img='{@:model.imagedata}' >
+
+And this can be loaded and set in the usual way.
+
+.. code-block:: csharp
+
+    using (var stream = GetMyImageData())
+    {
+        var model = new {
+            imageData = PDFImageData.LoadImageFromStream("IdentifyingKeyForImage", mybitmapstream)
+        };
+        doc.Params["model"] = model;
+    }
+
 
 Image Sizing
-============
+--------------
 
 Without an explicit size the images will be rendered at the natural size, if it fits in the container. 
 
-If it does not fit in the container it will be reduced in size to fit. 
-See :doc:`component_sizing` for more about sizing images with widths and heights.
+If it does not fit in the container it will be reduced in size proportionally to fit. 
+Setting a height or width will also constrain the image proportionally. If both are set then the image will use these and it
+may no longer be proportional.
+
+See :doc:`component_sizing` and :doc:`document_columns` for more about sizing images with widths and heights.
 
 
-Rendering Images
-=================
+Pulling it together
+--------------------
 
 Once the path or data are set, it's just a case of rendering the document in the normal way.
 
@@ -52,114 +93,88 @@ Once the path or data are set, it's just a case of rendering the document in the
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Params>
-        <!-- Parameters for the path and binary data -->
-        <doc:String-Param value="../../Content/Images/Toroid24.jpg" id="toroidPath" />
-        <doc:Object-Param id="toroidBin"/>
-    </Params>
-    <Styles>
-        
-        <!-- Add a style to images
-             with a background and border -->
-        <styles:Style applied-type="doc:Image" >
-        <styles:Border color="#666" style="Solid" width="2pt" />
-        <styles:Background color="#AAA"/>
-        <styles:Padding all="4pt"/>
-        <styles:Margins bottom="4pt" top="4pt"/>
-        </styles:Style>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-        <!-- Div wrapper style -->
-        <styles:Style applied-class="img-wrap">
-        <styles:Columns count="3" alley-width="5pt"/>
-        <styles:Font size="12pt"/>
-        <styles:Position h-align="Center"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="40 10 20 10" >
-        <Content>
-        
-        <doc:Div styles:class="img-wrap" >
-            
-            <doc:Span> PNG 24bit Image with no transparency</doc:Span>
-            <doc:Image src="../../Content/Images/Toroid24.png" />
-            <doc:ColumnBreak/>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
 
-            <doc:Span> PNG 32bit Image with alpha channel</doc:Span>
-            <doc:Image src="../../Content/Images/Toroid32.png" />
+            img.toroid{
+                border: solid 2pt #666;
+                background-color:#AAA;
+                padding: 4pt;
+                margin: 10pt 0;
+                break-after:always;
+            }
 
-        </doc:Div>
+            div.wrap {
+                column-count:3;
+                font-size:12pt;
+                text-align:center;
+            }
 
-        <doc:Div styles:class="img-wrap">
+        </style>
+    </head>
+    <body style="padding:20pt;">
+        <div class="wrap">
+            <span>PNG 24bit Image with no transparency</span>
+            <img class="toroid" src="./images/Toroid24.png" alt="24 bit PNG file" />
 
-            <doc:Span> TIFF 24bit Image no transparency from url</doc:Span>
-            <doc:Image src="http://localhost:5000/images/Toroid24.tiff" />
-            <doc:ColumnBreak/>
-            
-            <doc:Span> TIFF 32bit Image with alpha from assigned path</doc:Span>
-            <doc:Image id="tiff32" />
+            <span>PNG 32bit Image with transpart background</span>
+            <img class="toroid" src="./images/Toroid32.png" alt="32 bit PNG file" />
+        </div>
 
-        </doc:Div>
+        <div class="wrap">
+            <span>TIFF 24bit Image with no transparency from url</span>
+            <img class="toroid"
+                src="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/Toroid24.tiff"
+                alt="24 bit Tiff file" />
 
-        <doc:Div styles:class="img-wrap" >
+            <span>TIFF 32bit Image with transparent background</span>
+            <img id="tiff32" class="toroid" alt="32 bit TIFF file" />
+        </div>
 
-            <doc:Span> JPEG Image with the source set from a parameter</doc:Span>
-            <doc:Image src="{@:toroidPath}" />
-            <doc:ColumnBreak/>
+        <div class="wrap">
+            <span>JPEG 24bit Image with source path from model</span>
+            <img class="toroid" src="{@:model.jpgSrc}" alt="24 bit JPEG file" />
 
-            <doc:Span> JPEG Image with data set from object parameter</doc:Span>
-            <doc:Image img-data="{@:toroidBin}" />
-            
-        </doc:Div>
-        
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+            <span>JPEG 24bit Image with image data from model</span>
+            <img class="toroid" data-img="{@:model.jpgData}" alt="32 bit JPEG file" />
+        </div>
+
+    </body>
+    </html>
 
 
 .. code-block:: csharp
 
-        public IActionResult ImageDocument()
-        {
-            // get the execution root, and path to the document.
-            var root = _env.ContentRootPath;
-            var path = System.IO.Path.Combine(root, "Views", "PDF", "DrawingImages.pdfx");
-            path = System.IO.Path.GetFullPath(path);
+        var path = System.Environment.CurrentDirectory;
+        var docPath = System.IO.Path.Combine(path, "../../../Content/HTML/documentation.html");
 
-            using(var doc = PDFDocument.ParseDocument(path))
+        using (var doc = Document.ParseDocument(docPath))
+        {
+            //pass paramters as needed, supporting simple values, arrays or complex classes.
+            var img = doc.FindAComponentById("tiff32") as Image;
+
+            if(null != img)
+                img.Source = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.tiff");
+
+            var jpgSrc = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid24.jpg");
+            var jpgData = PDFImageData.LoadImageFromLocalFile(jpgSrc);
+
+            var model = new
             {
-                var images = System.IO.Path.Combine(root, "Content", "Images");
-                
-                //Set the source path directly on the image
-                (doc.FindAComponentById("tiff32") as PDFImage).Source = System.IO.Path.Combine(images, "Toroid32.tiff");
+                jpgSrc = jpgSrc,
+                jpgData = jpgData
+            };
 
-                //Set the source parameter to be used by an image
-                doc.Params["toroidPath"] = System.IO.Path.Combine(images, "Toroid24.jpg");
+            doc.Params["model"] = model;
 
-                //Set the Image Data on a parameter from another bitmap or file
-                var bmp = LoadImageBitmap();
-                var data = PDFImageData.LoadImageFromBitmap("DynamicJpeg", bmp, false);
-                
-                doc.Params["toroidBin"] = data;
-
-                return this.PDF(doc);
+            using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
+            {
+                doc.SaveAsPDF(stream); 
             }
-        }
-
-        private System.Drawing.Bitmap LoadImageBitmap()
-        {
-            //Example method that just returns an image from a file
-
-            var path = _env.ContentRootPath;
-            path = System.IO.Path.Combine(path, "Content", "Images", "Toroid24.jpg");
-
-            return System.Drawing.Bitmap.FromFile(path) as System.Drawing.Bitmap;
         }
 
 
@@ -167,369 +182,42 @@ Once the path or data are set, it's just a case of rendering the document in the
 
 
 Not found Images
-================
+-----------------
 
-If a path is set on an image but not resolved then by default scryber will raise an exception.
+If a path is set on an image but not resolved then scryber will simply treat the flow as normal. 
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Image" >
-            <styles:Border color="#666" style="Solid" width="2pt" />
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="4pt" top="4pt"/>
-        </styles:Style>
-
-        <!-- Div wrapper style -->
-        <styles:Style applied-class="img-wrap">
-            <styles:Columns count="3" alley-width="5pt"/>
-            <styles:Font size="12pt"/>
-            <styles:Position h-align="Center"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="40 10 20 10" >
-        <Content>
-        
-        <doc:Div styles:class="img-wrap" >
-            <!-- This will raise an exception -->
-            <doc:Span> Image that does not exist</doc:Span>
-            <doc:Image src="../../Content/Images/NotFound.png" />
-            
-
-            <doc:Span> PNG 32bit Image with alpha channel</doc:Span>
-            <doc:Image src="../../Content/Images/Toroid32.png" />
-
-        </doc:Div>
-
-
-        </Content>
-        </doc:Page>
-    </Pages>
     
-    </doc:Document>
+.. code-block:: html
+
+    <div class="wrap">
+        <span>Replacing with a non-existant image.</span>
+        <img class="toroid" src="DoesnotExist.png" alt="24 bit PNG file" />
+
+        <span>PNG 32bit Image with transpart background</span>
+        <img class="toroid" src="./images/Toroid32.png" alt="32 bit PNG file" />
+    </div>
 
 .. image:: images/documentimagesnotfound.png
 
 
-This is the safest behaviour, but if this is not the desired behaviour, then there are a couople of options that
+There will however, if we switch them on, be an error in the **always useful** logs
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <?scryber append-log='true' ?>
+
+.. image:: images/documentimagesnotfound_log.png
+
+
+Enforcing not found exceptions
+------------------------------
+
+
+This is the safest behaviour, but if this is not the desired behaviour, then there are a couple of options that
 change the behaviour to allow missing images.
 
-* On the image itself, if you know it may not be found, simply set the attribute allow-missing-images to true.
-* Change the behaviour of scryber as a whole to allow missing images using the configuration options. See :doc:`scryber_configuration`
+* On the image itself, if you know it may not be found, simply set the attribute data-allow-missing-images to false.
+* Change the behaviour of scryber as a whole to disallow missing images using the configuration options. See :doc:`scryber_configuration`
 
-If the configuration is set to allow missing images, the attribute will override and cause an exception if set to false.
 The attribute also supports binding, but is not styles based.
-
-Images as backgrounds
-=====================
-
-Images are also supported on the backgrounds of block level components (see :doc:`component_positioning`),
-and of fills for shapes, text, etc.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        <!-- Div style -->
-        <styles:Style applied-class="img-wrap">
-            <styles:Columns count="3" alley-width="5pt"/>
-            <styles:Font size="12pt"/>
-            <styles:Position h-align="Center"/>
-            <!-- Set a backgrouns image for the div relative to the document -->
-            <styles:Background img-src="../../Content/Images/Landscape.jpg"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="40 10 20 10" >
-        <Content>
-            <!-- Minimum height, so we can see the pattern -->
-            <doc:Div styles:class="img-wrap" styles:min-height="260pt" >
-                <doc:Span> Background image with default settings on the div</doc:Span>
-            </doc:Div>
-        
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/drawingImagesBackgrounds.png
-
-The background has been drawn with the image repeating from the top left corner at its natural size, 
-clipped to the boundary of the container.
-
-Along with specifying the image background, there are various other options for how the pattern is laid out
-that will change the defaults of how the image repeats. Only the background repeat is available on the
-component itself, the other 
-
-* The Repeat - 'repeat' or 'styles:bg-repeat' on the component.
-    * None - The background will only be shown once.
-    * RepeatX - The background will only repeat in the X (horizontal) direction.
-    * RepeatY - The background will only repeat in the Y (vertical) direction.
-    * Both - The default value, where the image repeats both X and Y directions.
-    * Fill - The image will only be shown once, but fill the available container size **(also overrides any of the following size options)**.
-* The size of the image of the rendered image.
-    * x-size - Determines the vertical height of the rendered background image in units.
-    * y-size - Determines the vertical height of the rendered background image in units.
-* The starting position of the pattern.
-    * x-pos - Determines the horizontal offset of the rendered background image in units.
-    * y-pos - Determines the vertical  offset of the rendered background image in units.
-* The pattern repeat step.
-    * x-step - Sets the horizontal offset between repeating patterns, which can be more or less than the size of the rendered image.
-    * y-step - Sets the vertical offset between repeating patterns, which can be more or less than the size of the rendered image.
-
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        <!-- Div style -->
-        <styles:Style applied-class="img-wrap">
-        <styles:Font size="20pt" bold="true"/>
-        <styles:Position h-align="Center"/>
-        <styles:Border color="fuchsia"/>
-        <!-- x-size (or y-size) alone will keep the natural proportions of the image -->
-        <styles:Background img-src="../../Content/Images/Landscape.jpg" x-size="60pt" />
-        </styles:Style>
-
-        <styles:Style applied-class="bg-pos">
-        <styles:Margins top="5pt"/>
-        <!-- aplying a specific stating position and step -->
-        <styles:Background x-pos="30pt" y-pos="-15pt" x-step="70pt" y-step="60pt" />
-        <styles:Size min-height="100pt"/>
-        </styles:Style>
-
-        <styles:Style applied-type="doc:Span">
-        <styles:Fill color="fuchsia"/>
-        </styles:Style>
-    </Styles>
-    <Pages> 
-        
-        <doc:Page styles:padding="40 10 20 10" >
-        <Content>
-
-        <doc:Div styles:class="img-wrap" styles:min-height="160pt" >
-            <doc:Span> Background image x-size only</doc:Span>
-        </doc:Div>
-        
-        <doc:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatX" >
-            <doc:Span> Background image with X repeat only</doc:Span>
-        </doc:Div>
-
-        <doc:Div styles:class="img-wrap bg-pos" styles:bg-repeat="RepeatY" >
-            <doc:Span> Background image with Y repeat only</doc:Span>
-        </doc:Div>
-
-        <doc:Div styles:class="img-wrap bg-pos" styles:bg-repeat="Fill" >
-            <doc:Span> Background image with Fill, overriding other settings</doc:Span>
-        </doc:Div>
-            
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/documentimagesbgsize.png
-
-Images as fills
-===============
-
-An image can also be used as the fill for text or shapes. It has the same properties and options as 
-the background. But will be trimmed around the shape of the component it is filling.
-
-The background and fill are also independent, so can be used together for multiple patterns 
-as in the rectangle in the example below.
-
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        <!-- Div style -->
-        <styles:Style applied-class="img-wrap">
-            <styles:Font size="40pt" bold="true"/>
-            <styles:Position h-align="Center"/>
-            <styles:Border color="fuchsia"/>
-            <!-- x-size (or y-size) alone will keep the natural proportions of the image -->
-            <styles:Fill img-src="../../Content/Images/Landscape.jpg" x-size="60pt" />
-        </styles:Style>
-
-        <styles:Style applied-class="fill-pos">
-            <styles:Margins top="5pt"/>
-            <!-- aplying a specific stating position and step -->
-            <styles:Fill x-pos="30pt" y-pos="-15pt" x-step="70pt" y-step="60pt" />
-            <styles:Size min-height="100pt"/>
-        </styles:Style>
-
-        
-    </Styles>
-    <Pages>
-
-        <doc:Page styles:padding="40 10 20 10" >
-        <Content>
-
-            <doc:Div styles:class="img-wrap" styles:min-height="100pt" >
-                <doc:Span> Filled image x-size only</doc:Span>
-            </doc:Div>
-
-            <doc:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatX" >
-                <doc:Span> Filled image with X repeat only</doc:Span>
-            </doc:Div>
-
-            <doc:Div styles:class="img-wrap fill-pos" styles:fill-repeat="RepeatY" >
-                <doc:Span> Filled image with Y repeat only</doc:Span>
-            </doc:Div>
-
-            <doc:Div styles:class="img-wrap fill-pos" styles:fill-repeat="Fill" >
-            <!-- Fill repeat doesn't work at the moment. We are loking at it.-->
-                <doc:Span> Filled image with Fill, overriding other settings</doc:Span>
-            </doc:Div>
-
-            <!-- A shape with a fill and background image -->
-            <doc:Rect styles:position-mode="Absolute" styles:class="img-wrap"
-                        styles:bg-image="../../Content/Images/group.png" styles:padding="20"
-                        styles:x="360" styles:y="300" styles:width="120" styles:height="120pt" ></doc:Rect>
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
-
-.. image:: images/documentimagesfills.png
-
-
-.. note:: The Fill repeat option on the shape or text fill does not currently work. Use the sizing options (for the moment) to replicate the Fill repeat pattern.
-
-
-
-Dynamic Images
-==============
-
-Sometimes it's not possible to reference an image file, or practical to reference image data in parameters.
-There could be a standard source of image data, that you want to use, not directly supported by scryber.
-
-In this case, the best option is to use dynamic image factories. 
-
-With an image factory in the configuration options, any class supporting the IPDFImageDataFactory interface can return a 
-dynamic image to the scryber layout engine.
-
-.. code-block:: c#
-
-    using System;
-    using Scryber.Drawing;
-    using System.Drawing;
-
-    namespace Scryber.Mocks
-    {
-        //Must implement the IPDFImageDataFactory interface
-
-        public class MockImageFactory : IPDFImageDataFactory
-        {
-                
-            public bool ShouldCache { get { return false; } }
-
-            public PDFImageData LoadImageData(IPDFDocument document, IPDFComponent owner, string path)
-            {
-                
-                try
-                {
-                    var uri = new Uri(path);
-                    var param = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
-                    var name = System.IO.Path.GetFileNameWithoutExtension(param);
-
-                    // Standard System.Drawing routines to draw a bitmap with the name on.
-                    // Could load an image from remote source, use doc parameters, whatever is needed
-
-                    Bitmap bmp = new Bitmap(300, 100);
-                    using (Graphics graphics = Graphics.FromImage(bmp))
-                    {
-                        graphics.FillRectangle(new SolidBrush(Color.LightBlue), new Rectangle(0, 0, 300, 100));
-                        graphics.DrawString(name, new Font("Times", 12), new SolidBrush(Color.Blue), PointF.Empty);
-                        graphics.Flush();
-                    }
-                    
-                    PDFImageData data = PDFImageData.LoadImageFromBitmap(path, bmp, false);
-                    return data;
-                }
-                catch(Exception ex)
-                {
-                    throw new ArgumentException("The image creation failed", ex);
-                }
-            }
-        }
-    }
-
-
-For the app settings specify the Factory with a regular expression match on the path 
-(in this case '[anything].dynamic', and then specify the type and assembly where the class is defined.
-
-See :doc:`scryber_configuration` for more details on changing the configuration options.
-
-.. code-block:: json
-
-    {
-        "Scryber": {
-            "Imaging": {
-            "AllowMissingImages": "True",
-            "ImageCacheDuration": 60,
-            "Factories": [
-                {
-                "Match": ".*\\.dynamic",
-                "FactoryType": "Scryber.Mocks.MockImageFactory",
-                "FactoryAssembly": "Scryber.UnitTests"
-                }
-            ]
-            }
-        }
-    }
-
-And then in your template simply specify the image matching the pattern, to invoke the Image Data Factory.
-
-.. code-block:: xml
-
-    <?xml version='1.0' encoding='utf-8' ?>
-    <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-                xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
-                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
-    <Pages>
-
-        <doc:Page styles:margins='20pt'>
-        <Content>
-            <doc:Span>This is before the image</doc:Span>
-
-            <!-- A dynamic image that will be generated on the fly -->
-            <doc:Image id='LoadedImage' src='This+is+an+image.dynamic' />
-
-            <doc:Span>This is after the image</doc:Span>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
-
-
-.. image:: images/documentimagesdynamic.png
-
-
-.. note:: Only one instance of the image factory will be created, and it MUST have a parameterless constructor.

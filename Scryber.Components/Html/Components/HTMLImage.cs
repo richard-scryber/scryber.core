@@ -17,6 +17,12 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
 
+        [PDFAttribute("data-img")]
+        public override PDFImageData Data { get => base.Data; set => base.Data = value; }
+
+        [PDFAttribute("data-allow-missing-images")]
+        public override bool AllowMissingImages { get => base.AllowMissingImages; set => base.AllowMissingImages = value; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>

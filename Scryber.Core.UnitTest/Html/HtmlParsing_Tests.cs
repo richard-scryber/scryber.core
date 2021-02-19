@@ -171,7 +171,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.Params["title"] = "Hello World";
+                
                 using (var stream = DocStreams.GetOutputStream("HelloWorld.pdf"))
                 {
                     doc.SaveAsPDF(stream);
@@ -774,14 +774,26 @@ namespace Scryber.Core.UnitTests.Html
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/documentation.html");
 
-
-
-            
-
             using (var doc = Document.ParseDocument(path))
             {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
                 
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+                var img = doc.FindAComponentById("tiff32") as Image;
+
+                if(null != img)
+                    img.Source = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.tiff");
+
+                var jpgSrc = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid24.jpg");
+                var jpgData = PDFImageData.LoadImageFromLocalFile(jpgSrc);
+
+                var model = new
+                {
+                    jpgSrc = jpgSrc,
+                    jpgData = jpgData
+                };
+
+                doc.Params["model"] = model;
+
                 using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
                 {
                     doc.SaveAsPDF(stream); 

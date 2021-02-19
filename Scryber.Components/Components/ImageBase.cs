@@ -45,7 +45,7 @@ namespace Scryber.Components
         private bool _hasExplicitCompress = false;
 
         [PDFAttribute("compress")]
-        public bool Compress
+        public virtual bool Compress
         {
             get { return _compress; }
             set
@@ -58,14 +58,14 @@ namespace Scryber.Components
         
 
         [PDFAttribute("min-scale")]
-        public double MinimumScaleReduction
+        public virtual double MinimumScaleReduction
         {
             get;
             set;
         }
 
         [PDFAttribute("allow-missing-images")]
-        public bool AllowMissingImages
+        public virtual bool AllowMissingImages
         {
             get;
             set;

@@ -1,30 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<?scryber append-log='true' ?>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
           "http://www.w3.org/TR/html4/strict.dtd">
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <style type="text/css">
-        body{ 
-              background-color: aqua;
+
+        img.toroid{
+            border: solid 2pt #666;
+            background-color:#AAA;
+            padding: 4pt;
+            margin: 10pt 0;
+            break-after:always;
         }
 
-        .positioned {
-            position: absolute;
-            top: 30mm;
-            left: 40mm;
-            width: 100mm;
-            padding:20pt 0.25in 4mm 20pt;
-            background-color: #AAAAFF;
+        div.wrap {
+            column-count:3;
+            font-size:12pt;
+            text-align:center;
         }
 
     </style>
 </head>
-<body>
-    <div class="positioned">
-        20pt padding all around at 10pt, 20pt with a width of 100mm.
+<body style="padding:20pt;">
+    <div class="wrap">
+        <span>Replacing with a non-existant image.</span>
+        <img class="toroid" data-allow-missing-images="false" src="DoesnotExist.png" alt="24 bit PNG file" />
+
+        <span>PNG 32bit Image with transpart background</span>
+        <img class="toroid" src="./images/Toroid32.png" alt="32 bit PNG file" />
     </div>
 
-    
+    <div class="wrap">
+        <span>TIFF 24bit Image with no transparency from url</span>
+        <img class="toroid"
+             src="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/Toroid24.tiff"
+             alt="24 bit Tiff file" />
+
+        <span>TIFF 32bit Image with transparent background</span>
+        <img id="tiff32" class="toroid" alt="32 bit TIFF file" />
+    </div>
+
+    <div class="wrap">
+        <span>JPEG 24bit Image with source path from model</span>
+        <img class="toroid"
+             src="{@:model.jpgSrc}"
+             alt="24 bit JPEG file" />
+
+        <span>JPEG 24bit Image with image data from model</span>
+        <img class="toroid" data-img="{@:model.jpgData}" alt="32 bit JPEG file" />
+    </div>
+
 </body>
 </html>
