@@ -77,7 +77,7 @@ namespace Scryber.Components
 
     [PDFParsableComponent("B")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_bold")]
-    public class PDFBoldSpan : SpanBase
+    public class BoldSpan : SpanBase
     {
         [PDFElement()]
         [PDFArray(typeof(Component))]
@@ -89,7 +89,7 @@ namespace Scryber.Components
             }
         }
 
-        public PDFBoldSpan()
+        public BoldSpan()
             : base()
         {
         }
@@ -106,7 +106,7 @@ namespace Scryber.Components
 
     [PDFParsableComponent("I")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_italic")]
-    public class PDFItalicSpan : SpanBase
+    public class ItalicSpan : SpanBase
     {
         [PDFElement()]
         [PDFArray(typeof(Component))]
@@ -118,7 +118,7 @@ namespace Scryber.Components
             }
         }
 
-        public PDFItalicSpan()
+        public ItalicSpan()
             : base()
         {
         }
@@ -133,7 +133,7 @@ namespace Scryber.Components
 
     [PDFParsableComponent("U")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_underline")]
-    public class PDFUnderlinedSpan : SpanBase
+    public class UnderlinedSpan : SpanBase
     {
         [PDFElement()]
         [PDFArray(typeof(Component))]
@@ -145,7 +145,7 @@ namespace Scryber.Components
             }
         }
 
-        public PDFUnderlinedSpan()
+        public UnderlinedSpan()
             : base()
         {
         }

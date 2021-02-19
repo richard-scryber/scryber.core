@@ -5,37 +5,24 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <style type="text/css">
-        body{ padding-top: 40pt;
-              font-size:20pt;
+        body{ 
               background-color: aqua;
         }
-        .floating {
+
+        .positioned {
             position: absolute;
-            top: 80pt;
-            left: 230pt;
-            background-color: rgba(255, 0, 255, 0.5);
-            padding:10pt;
-            /* Adding the border */
-            border: dashed 3pt rgba(127,0, 0, 0.7);
-            margin-right:10pt;
-
-            /* Adding a fill */
-            color: #FFFFFF;
-
-            /* Adding a stroke */
-            stroke: #000;
-            stroke-width: 1pt;
+            top: 30mm;
+            left: 40mm;
+            width: 100mm;
+            padding:20pt 0.25in 4mm 20pt;
+            background-color: #AAAAFF;
         }
+
     </style>
 </head>
 <body>
-    <div style="background-color:lightpink; padding:20pt;
-                border-top: solid 3pt #C77; border-bottom: solid #C77 3pt;
-                color:aqua; fill-opacity: 0.7; font-weight:bold;">
-        Light pink full opacity background.
-    </div>
-    <div class="floating">
-        This is the content in a semi-opaque fuschia background ontop of the page.
+    <div class="positioned">
+        20pt padding all around at 10pt, 20pt with a width of 100mm.
     </div>
 
     

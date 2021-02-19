@@ -1,12 +1,14 @@
 ========================================
-Drawing units and measures
+Units and measures
 ========================================
 
 Within scryber all drawing and positioning is based from the top left of the page. Scryber allows the definition of a dimension 
 based on a number of positioning and sizing structures. All based around the **Unit** of measure.
 
-In all the examples so far we have used pt (points) as the unit of measure, but scryber also supports the use of millimeters (mm) and inches (in)
-as postfix units.
+In all the examples so far we have used pt (points) as the unit of measure, but scryber also supports the use of millimeters (mm), inches (in)
+and also pixels (px) as postfix units. A pixel is translated to 1/96 th of an inch for printing.
+
+.. note:: Scryber does not support the use of relative dimensions: em, rem, vh etc. The only exception is the use of 100% on widths.
 
 * PDFUnit
     * This is the base single dimension value.
@@ -20,14 +22,12 @@ as postfix units.
 * PDFSize
     * This is a width and height dimension with 2 PDFUnits.
     * Units can be mixed and matched within a size, but are generally only used internally for calculation
-    * e.g. `72pt 1in` is a 1.0 inch wide and high 
-    * see :doc:`reference/drawing_size` for more information.
+    * e.g. `72pt 1in` is a 1.0 inch wide and high
 
 * PDFPoint
     * This represents a location on a page or container with an x and y component.
     * Again units can be mixed and matched within a point, but are generally only used internally for calculation
     * e.g. `72pt 1in` is 1 inch in from the left of the container and 1 inch down.
-    * see :doc:`reference/drawing_point` for more information.
 
 * PDFThickness
     * A thickness represent 4 dimensions around a square.
@@ -45,59 +45,48 @@ as postfix units.
 
 
 Units use in templates
-======================
+-----------------------
 
 When using units in xml templates its easy just to provide the values.
 For example the following will add an absolutely positioned Div on a page with some thickness padding textual content
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        
-        <!-- Catch all style-->
-        <styles:Style >
-        <styles:Font family="Arial" size="10pt"/>
-        </styles:Style>
-        
-        <!-- Values set on the styles class-->
-        <styles:Style applied-class="positioned" >
-        <styles:Padding top="10pt" left="20pt" bottom="4mm" right="0.25in"/>
-        <styles:Position mode="Absolute" x="30mm" y="40mm"/>
-        <styles:Size width="100mm" />
-        <styles:Background color="#AAAAFF"/>
-        </styles:Style>
-        
-    </Styles>
-    <Pages>
-        <doc:Page >
-        <Content>
-        
-        <!-- Explict values on the component -->
-        <doc:Div styles:position-mode="Absolute" styles:padding="20pt" styles:x="120mm" styles:y="40mm" styles:width="100pt" styles:bg-color="#FFAAAA" >
-            20pt padding all around at 120mm, 40mm with a width of 100pt.
-        </doc:Div>
-        
-        <!-- Or values in the style. -->
-        <doc:Div styles:class="positioned" >
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+            body{ 
+                background-color: aqua;
+            }
+
+            .positioned {
+                position: absolute;
+                top: 30mm;
+                left: 40mm;
+                width: 100mm;
+                padding:20pt 0.25in 4mm 20pt;
+                background-color: #AAAAFF;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="positioned">
             20pt padding all around at 10pt, 20pt with a width of 100mm.
-        </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+        </div>
+    </body>
+    </html>
 
 
 .. image:: images/drawingunits1.png
 
 
 Units in code
-=============
+--------------
 
 The same could have be achieved in code using the Unit and Thickness constructors.
 
@@ -123,3 +112,20 @@ All the dimensions have a range of constructors, casting and parsing options as 
 
     var rect2 = PDFRect.Parse("12pr 10pt 100pt 2in"); //And all support parsing too.
 
+
+One Hundred Percent
+---------------------
+
+The special value of 100% for width applies true to the underlying FullWidth style value.
+
+By default div's have a FullWidth of true, so they will be 100% wide, but tables, lists etc do not. 
+By specifying a width of 100% on these, they will use all the available space.
+
+See :doc:`component_positioning` for more information.
+
+
+Overiding relative units
+-------------------------
+
+Finally: If there is an existing template or file being used, then overriding any relative styles can be done using the @media print rule - so
+it will only be used by scryber (or when the document is printed anyway).

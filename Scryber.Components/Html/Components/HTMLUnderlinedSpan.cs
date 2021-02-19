@@ -8,7 +8,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("u")]
-    public class HTMLUnderlinedSpan : Scryber.Components.PDFUnderlinedSpan
+    public class HTMLUnderlinedSpan : Scryber.Components.UnderlinedSpan
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

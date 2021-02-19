@@ -40,13 +40,17 @@ The colour also supports definition with explicit Hex, RGB or Grayscale values.
     * Can only be applied to the css colors in the standard rgba(255,0,0,0.5)
 
 
-.. code-block:: csharp
+.. code-block:: html
 
     <div style='background-color:#FF0000'>Red Content</div>
 
 .. code-block:: csharp
 
     var div = new Scryber.Components.Div(){ BackgroundColor = new Scryber.Drawing.PDFColor(1,0,0) };
+
+.. code-block:: html
+
+    <div style='background-color:rgba(255,0,0,0.5)'> 50% transparent red Content</div>
 
 
 The use of transparency (opacity) is not part of the colour structure, but most drawing operations

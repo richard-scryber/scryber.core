@@ -8,7 +8,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("b")]
-    public class HTMLBoldSpan : Scryber.Components.PDFBoldSpan
+    public class HTMLBoldSpan : Scryber.Components.BoldSpan
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
