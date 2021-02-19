@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Windows.Markup;
 using Scryber.Text;
+using System.Security.Cryptography;
 
 namespace Scryber.Styles.Parsing
 {
@@ -96,7 +97,7 @@ namespace Scryber.Styles.Parsing
 
         protected bool IsColor(string part)
         {
-            return part[0] == '#' || CSSColors.Names2Colors.ContainsKey(part) || part.StartsWith("rgb(", StringComparison.OrdinalIgnoreCase);
+            return part[0] == '#' || CSSColors.Names2Colors.ContainsKey(part) || part.StartsWith("rgb(", StringComparison.OrdinalIgnoreCase) || part.StartsWith("rgba(", StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -138,10 +139,11 @@ namespace Scryber.Styles.Parsing
         /// <param name="part"></param>
         /// <param name="color"></param>
         /// <returns></returns>
-        public static bool ParseCSSColor(string part, out PDFColor color)
+        public static bool ParseCSSColor(string part, out PDFColor color, out double? opacity)
         {
             bool result = false;
             color = null;
+            opacity = null;
             if (string.IsNullOrEmpty(part) == false)
             {
                 string hexValue;
@@ -154,6 +156,8 @@ namespace Scryber.Styles.Parsing
 
                 else if (part.StartsWith("rgb(", StringComparison.InvariantCultureIgnoreCase))
                     result = PDFColor.TryParse(part, out color);
+                else if (part.StartsWith("rgba(", StringComparison.InvariantCultureIgnoreCase))
+                    result = PDFColor.TryParseRGBA(part, out color, out opacity);
             }
             return result;
         }
@@ -543,11 +547,18 @@ namespace Scryber.Styles.Parsing
     /// </summary>
     public class CSSColorStyleParser : CSSStyleAttributeParser<PDFColor>
     {
-        
-        public CSSColorStyleParser(string styleItemKey, PDFStyleKey<PDFColor> pdfAttr)
+        private PDFStyleKey<double> _opacity;
+
+        public PDFStyleKey<double> OpacityStyleKey
+        {
+            get { return _opacity; }
+            protected set { _opacity = value; }
+        }
+
+        public CSSColorStyleParser(string styleItemKey, PDFStyleKey<PDFColor> pdfAttr, PDFStyleKey<double> opacity)
             : base(styleItemKey, pdfAttr)
         {
-           
+            _opacity = opacity;
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
@@ -555,14 +566,20 @@ namespace Scryber.Styles.Parsing
             bool result = false;
             PDFColor color;
             
-            if(reader.ReadNextValue() && ParseCSSColor(reader.CurrentTextValue, out color))
+            if(reader.ReadNextValue() && ParseCSSColor(reader.CurrentTextValue, out color, out double? opacity))
             {
                 onStyle.SetValue(this.StyleAttribute, color);
+
+                if (opacity.HasValue && null != this._opacity)
+                    onStyle.SetValue(this._opacity, opacity.Value);
+
                 result = true;
             }
             
             return result;
         }
+
+        
     }
 
     #endregion
@@ -691,8 +708,8 @@ namespace Scryber.Styles.Parsing
     /// </summary>
     public class CSSBorderStyleParser : CSSEnumStyleParser<LineType>
     {
-        public static readonly PDFDash DottedDashPattern = new PDFDash(new int[] { 1 }, 0);
-        public static readonly PDFDash DashedDashPattern = new PDFDash(new int[] { 4 }, 0);
+        public static readonly PDFDash DottedDashPattern = new PDFDash(new int[] { 2 }, 0);
+        public static readonly PDFDash DashedDashPattern = new PDFDash(new int[] { 8 }, 0);
 
         private PDFStyleKey<PDFDash> _dash;
 
@@ -807,21 +824,18 @@ namespace Scryber.Styles.Parsing
     {
 
         public CSSBorderColorParser()
-            : base(CSSStyleItems.BorderColor, StyleKeys.BorderColorKey)
+            : base(CSSStyleItems.BorderColor, StyleKeys.BorderColorKey, StyleKeys.BorderOpacityKey)
         {
         }
 
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            return base.DoSetStyleValue(onStyle, reader);
-        }
+        
     }
 
     public class CSSBorderLeftColorParser : CSSColorStyleParser
     {
 
         public CSSBorderLeftColorParser()
-            : base(CSSStyleItems.BorderLeftColor, StyleKeys.BorderLeftColorKey)
+            : base(CSSStyleItems.BorderLeftColor, StyleKeys.BorderLeftColorKey, null)
         {
         }
     }
@@ -830,7 +844,7 @@ namespace Scryber.Styles.Parsing
     {
 
         public CSSBorderTopColorParser()
-            : base(CSSStyleItems.BorderTopColor, StyleKeys.BorderTopColorKey)
+            : base(CSSStyleItems.BorderTopColor, StyleKeys.BorderTopColorKey, null)
         {
         }
     }
@@ -839,7 +853,7 @@ namespace Scryber.Styles.Parsing
     {
 
         public CSSBorderBottomColorParser()
-            : base(CSSStyleItems.BorderBottomColor, StyleKeys.BorderBottomColorKey)
+            : base(CSSStyleItems.BorderBottomColor, StyleKeys.BorderBottomColorKey, null)
         {
         }
     }
@@ -848,7 +862,7 @@ namespace Scryber.Styles.Parsing
     {
 
         public CSSBorderRightColorParser()
-            : base(CSSStyleItems.BorderRightColor, StyleKeys.BorderRightColorKey)
+            : base(CSSStyleItems.BorderRightColor, StyleKeys.BorderRightColorKey, null)
         {
         }
     }
@@ -891,8 +905,14 @@ namespace Scryber.Styles.Parsing
                 else if (IsColor(reader.CurrentTextValue))
                 {
                     PDFColor color;
-                    if (ParseCSSColor(reader.CurrentTextValue, out color))
+                    double? opacity;
+                    if (ParseCSSColor(reader.CurrentTextValue, out color, out opacity))
+                    {
                         onStyle.Border.Color = color;
+
+                        if (opacity.HasValue)
+                            onStyle.Border.Opacity = opacity.Value;
+                    }
                     else
                         failed++;
                 }
@@ -932,6 +952,7 @@ namespace Scryber.Styles.Parsing
     public class CSSBorderSideParser : CSSStyleValueParser
     {
         private PDFStyleKey<PDFUnit> _width;
+
         private PDFStyleKey<PDFColor> _color;
         private PDFStyleKey<LineType> _style;
         private PDFStyleKey<PDFDash> _dash;
@@ -966,8 +987,12 @@ namespace Scryber.Styles.Parsing
                 else if (IsColor(reader.CurrentTextValue))
                 {
                     PDFColor color;
-                    if (ParseCSSColor(reader.CurrentTextValue, out color))
+                    double? opacity;
+                    if (ParseCSSColor(reader.CurrentTextValue, out color, out opacity))
+                    {
                         style.SetValue(_color, color);
+                        //TODO: Set the opacity of the border side.
+                    }
                     else
                         failed++;
                 }
@@ -1051,10 +1076,13 @@ namespace Scryber.Styles.Parsing
                 if (IsColor(reader.CurrentTextValue))
                 {
                     PDFColor color;
-                    if (ParseCSSColor(reader.CurrentTextValue, out color))
+                    double? opacity;
+                    if (ParseCSSColor(reader.CurrentTextValue, out color, out opacity))
                     {
                         onStyle.Background.Color = color;
                         onStyle.Background.FillStyle = Drawing.FillType.Solid;
+                        if (opacity.HasValue)
+                            onStyle.Background.Opacity = opacity.Value;
                     }
                     else
                         failed++;
@@ -1096,20 +1124,15 @@ namespace Scryber.Styles.Parsing
     public class CSSBackgroundColorParser : CSSColorStyleParser
     {
         public CSSBackgroundColorParser()
-            : base(CSSStyleItems.BackgroundColor, StyleKeys.BgColorKey)
+            : base(CSSStyleItems.BackgroundColor, StyleKeys.BgColorKey, StyleKeys.BgOpacityKey)
         {
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            bool result = base.DoSetStyleValue(onStyle, reader);
-
-            //We need to set the fill style to solid if we have a color.
-            //if (result)
-            //    onStyle.SetValue(StyleKeys.BgStyleKey, Drawing.FillType.Solid);
-
-            return result;
+            return base.DoSetStyleValue(onStyle, reader);
         }
+
     }
 
     #endregion
@@ -2174,12 +2197,12 @@ namespace Scryber.Styles.Parsing
     public class CSSFillColourParser : CSSColorStyleParser
     {
         public CSSFillColourParser()
-            : this(CSSStyleItems.FillColor, StyleKeys.FillColorKey)
+            : this(CSSStyleItems.FillColor, StyleKeys.FillColorKey, StyleKeys.FillOpacityKey)
         {
         }
 
-        public CSSFillColourParser(string css, PDFStyleKey<PDFColor> key)
-            : base(css, key)
+        public CSSFillColourParser(string css, PDFStyleKey<PDFColor> key, PDFStyleKey<double> opacity)
+            : base(css, key, opacity)
         { }
 
     }
@@ -3434,7 +3457,7 @@ namespace Scryber.Styles.Parsing
     public class CSSStrokeColorParser : CSSColorStyleParser
     {
         public CSSStrokeColorParser()
-            : base(CSSStyleItems.StrokeColor, StyleKeys.StrokeColorKey)
+            : base(CSSStyleItems.StrokeColor, StyleKeys.StrokeColorKey, StyleKeys.StrokeOpacityKey)
         {
 
         }

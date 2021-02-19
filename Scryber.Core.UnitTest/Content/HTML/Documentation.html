@@ -4,49 +4,40 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>Document Text H Align</title>
-    <meta name="author" content="Scryber Team" />
     <style type="text/css">
-
-        .std-font {
-            font-size: 14pt;
-            background-color: #AAA;
-            padding: 4pt;
-            margin-bottom: 10pt;
-            font-family: 'Segoe UI', sans-serif;
+        body{ padding-top: 40pt;
+              font-size:20pt;
+              background-color: aqua;
         }
+        .floating {
+            position: absolute;
+            top: 80pt;
+            left: 230pt;
+            background-color: rgba(255, 0, 255, 0.5);
+            padding:10pt;
+            /* Adding the border */
+            border: dashed 3pt rgba(127,0, 0, 0.7);
+            margin-right:10pt;
 
-        .narrow{ letter-spacing:-0.5pt;}
+            /* Adding a fill */
+            color: #FFFFFF;
 
-        .wide{ letter-spacing:1.5pt; line-height:15pt; }
-
-        .wide-word{ letter-spacing: 0; word-spacing: 10pt; }
-
+            /* Adding a stroke */
+            stroke: #000;
+            stroke-width: 1pt;
+        }
     </style>
 </head>
-<body style="padding: 20pt">
-    <div style="column-count:3;font-size:10pt">
-        <div class="std-font narrow" style="break-after:always">
-            Segoe UI in 10pt font size with the default
-            leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
-        </div>
-        <div class="std-font wide" style="break-after:always">
-            Segoe UI in 10pt font size with the leading increased to 15pt
-            on each line of the paragraph. The character spacing is also
-            set to an extra 1.5 points.
-        </div>
-        <div class="std-font wide-word">
-            Segoe UI in 10pt font size with the leading and character space normal, but the word
-            spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
-        </div>
+<body>
+    <div style="background-color:lightpink; padding:20pt;
+                border-top: solid 3pt #C77; border-bottom: solid #C77 3pt;
+                color:aqua; fill-opacity: 0.7; font-weight:bold;">
+        Light pink full opacity background.
+    </div>
+    <div class="floating">
+        This is the content in a semi-opaque fuschia background ontop of the page.
     </div>
 
-    <div class="std-font wide" style="line-height:30pt;" >
-        Even using various
-        <span style="font-size:30pt; font-family:Optima, serif;">font sizes and families</span>
-        will maintain the character and
-        word spacing that <b>has been applied.</b>
-    </div>
-
+    
 </body>
 </html>

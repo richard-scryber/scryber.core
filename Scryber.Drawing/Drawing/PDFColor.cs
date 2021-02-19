@@ -356,8 +356,67 @@ namespace Scryber.Drawing
 
         #endregion
 
+        /// <summary>
+        /// Creates a new PDFColor from the provided string  rgb(Red,Green,Blue) or g(Gray) or #GG or #RGB or #RRGGBB
+        /// </summary>
+        /// <param name="value">The string to parse</param>
+        /// <returns>A new instance of the PDF Color</returns>
+        public static bool TryParseRGBA(string value, out PDFColor color, out double? opacity)
+        {
+            color = null;
+            opacity = null;
 
-        
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            if (value.StartsWith("rgba(", StringComparison.InvariantCultureIgnoreCase))
+            {
+                string s = value.Trim().Substring(0, value.IndexOf("(")).ToUpper();
+                value = value.Substring(s.Length + 1);
+                int close = value.IndexOf(")");
+                if (close < 0 || close >= value.Length)
+                    return false;
+
+                value = value.Substring(0, close);//remove closing bracket
+                
+
+                string[] vals = value.Split(',');
+                int[] rgbs = new int[3];
+                int parsed;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i < vals.Length)
+                    {
+                        if (!int.TryParse(vals[i], out parsed) || parsed > 255 || parsed < 0)
+                            return false;
+
+                        rgbs[i] = parsed;
+                    }
+                    else
+                    {
+                        rgbs[i] = 0;
+                    }
+                }
+                if(vals.Length >= 4)
+                {
+                    double op;
+                    if (double.TryParse(vals[3], out op) && op >= 0.0 && op <= 1.0)
+                    {
+                        opacity = op;
+                    }
+                    else
+                        return false;
+                }
+                color = new PDFColor(ColorSpace.RGB, System.Drawing.Color.FromArgb(rgbs[0], rgbs[1], rgbs[2]));
+                return true;
+
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
         private static float GetPDFColorComponent(byte p)
         {
             return GetPDFColorComponent(Convert.ToSingle(p));

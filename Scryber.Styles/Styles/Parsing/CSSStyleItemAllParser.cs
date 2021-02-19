@@ -178,7 +178,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.StrokeDash, new CSSStrokeDashParser());
 
             all.Add(CSSStyleItems.FillOpacity, new CSSFillOpacityParser());
-            all.Add("fill", new CSSFillColourParser("fill", StyleKeys.FillColorKey));
+            all.Add("fill", new CSSFillColourParser("fill", StyleKeys.FillColorKey, StyleKeys.FillOpacityKey));
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }
