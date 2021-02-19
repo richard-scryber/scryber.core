@@ -39,8 +39,9 @@ namespace Scryber.Drawing.Imaging
             this.BitsPerColor = ImageFormatParser.GetImageBitDepth(jpeg.PixelFormat) / this.ColorsPerSample;
             this.Data = ImageFormatParser.GetRawBytesFromImage(jpeg);
             this.Filters = new IStreamFilter[] { new PDFJpegStreamFilter() };
-            this.HorizontalResolution = (int)Math.Round(jpeg.HorizontalResolution, 0);
-            this.VerticalResolution = (int)Math.Round(jpeg.VerticalResolution, 0);
+
+            this.HorizontalResolution = jpeg.HorizontalResolution > 10 ? (int)Math.Round(jpeg.HorizontalResolution, 0) : 96;
+            this.VerticalResolution =  jpeg.VerticalResolution > 10 ? (int)Math.Round(jpeg.VerticalResolution, 0) : 96;
 
         }
 

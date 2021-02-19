@@ -162,7 +162,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 
 
 .. toctree::
-    :caption: In depth capabilities
+    :caption: Extended capabilities
     :maxdepth: 1
     :hidden:
 

@@ -1178,32 +1178,41 @@ namespace Scryber.Styles.Parsing
 
             if (reader.ReadNextValue())
             {
-                h = reader.CurrentTextValue;
-
-                if (reader.ReadNextValue())
-                    v = reader.CurrentTextValue;
-                else
-                    v = h;
-
-                bool set = false;
-
-                if (PDFUnit.TryParse(h, out uh))
+                if (reader.CurrentTextValue.ToLower() == "cover")
                 {
-                    style.Background.PatternXSize = uh;
-                    set = true;
+                    style.Background.PatternRepeat = PatternRepeat.Fill;
+                    return true;
                 }
+                
                 else
-                    set = false;
-
-                if (PDFUnit.TryParse(v, out uv))
                 {
-                    style.Background.PatternYSize = uv;
-                    set = true;
-                }
-                else
-                    set = false;
+                    h = reader.CurrentTextValue;
 
-                return set;
+                    if (reader.ReadNextValue())
+                        v = reader.CurrentTextValue;
+                    else
+                        v = h;
+
+                    bool set = false;
+
+                    if (PDFUnit.TryParse(h, out uh))
+                    {
+                        style.Background.PatternXSize = uh;
+                        set = true;
+                    }
+                    else
+                        set = false;
+
+                    if (PDFUnit.TryParse(v, out uv))
+                    {
+                        style.Background.PatternYSize = uv;
+                        set = true;
+                    }
+                    else
+                        set = false;
+
+                    return set;
+                }
             }
             else
                 return false;

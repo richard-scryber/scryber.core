@@ -8,37 +8,36 @@ and of fills for shapes, text, etc.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-        <!-- Div style -->
-        <styles:Style applied-class="img-wrap">
-            <styles:Columns count="3" alley-width="5pt"/>
-            <styles:Font size="12pt"/>
-            <styles:Position h-align="Center"/>
-            <!-- Set a backgrouns image for the div relative to the document -->
-            <styles:Background img-src="../../Content/Images/Landscape.jpg"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:padding="40 10 20 10" >
-        <Content>
-            <!-- Minimum height, so we can see the pattern -->
-            <doc:Div styles:class="img-wrap" styles:min-height="260pt" >
-                <doc:Span> Background image with default settings on the div</doc:Span>
-            </doc:Div>
-        
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+
+            div.bg {
+                background-image: url("./images/landscape.jpg");
+                min-height: 260px;
+                text-align:center;
+                font-family: sans-serif;
+                font-size:larger;
+                font-weight:bold;
+                padding-top:10pt;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt;">
+        <div class="bg" style="">
+            <span>Background image with the default settings</span>
+        </div>
+
+    </body>
+    </html>
 
 .. image:: images/drawingImagesBackgrounds.png
 
-The background has been drawn with the image repeating from the top left corner at its natural size, 
+The background has been drawn with the image repeating from the top left corner at its natural size (or default 96ppi), 
 clipped to the boundary of the container.
 
 Along with specifying the image background, there are various other options for how the pattern is laid out
