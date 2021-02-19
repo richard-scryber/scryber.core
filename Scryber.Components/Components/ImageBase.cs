@@ -105,18 +105,10 @@ namespace Scryber.Components
                 }
                 catch (PDFMissingImageException ex)
                 {
-                    if (this.AllowMissingImages)
+                    if (this.AllowMissingImages && this.Document.RenderOptions.AllowMissingImages)
                     {
                         context.TraceLog.Add(TraceLevel.Error, "Image", "Missing Image replaced: " + ex.Message);
-                        PDFImageData data = this.Document.GetNotFoundLogo(this.UniqueID);
-                        if (null == data)
-                            this.Visible = false;
-                        else
-                        {
-                            string name = this.Document.GetIncrementID(PDFObjectTypes.ImageXObject);
-                            this.XObject = PDFImageXObject.Load(data, name);
-                            this.Document.SharedResources.Add(this.XObject);
-                        }
+                        this.Visible = false;
                     }
                     else
                         throw;

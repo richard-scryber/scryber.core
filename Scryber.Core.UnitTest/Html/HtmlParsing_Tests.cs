@@ -794,6 +794,8 @@ namespace Scryber.Core.UnitTests.Html
 
                 doc.Params["model"] = model;
 
+                doc.RenderOptions.AllowMissingImages = false;
+
                 using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
                 {
                     doc.SaveAsPDF(stream); 

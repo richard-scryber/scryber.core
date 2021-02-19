@@ -2272,7 +2272,7 @@ namespace Scryber.Components
 
                 if (this.RenderOptions.AllowMissingImages)
                 {
-                    data = GetNotFoundLogo(path);
+                    data = null;
                 }
                 else
                     throw;

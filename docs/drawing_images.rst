@@ -218,6 +218,15 @@ This is the safest behaviour, but if this is not the desired behaviour, then the
 change the behaviour to allow missing images.
 
 * On the image itself, if you know it may not be found, simply set the attribute data-allow-missing-images to false.
+* On the document as a whole with the AllowMissingImages property.
 * Change the behaviour of scryber as a whole to disallow missing images using the configuration options. See :doc:`scryber_configuration`
 
-The attribute also supports binding, but is not styles based.
+.. code-block:: html
+
+    <img class="toroid" data-allow-missing-images="false" src="DoesnotExist.png" alt="24 bit PNG file" />
+
+.. code-block:: csharp
+
+    doc.RenderOptions.AllowMissingImages = false;
+
+If either are set to false an exception will be raised (i.e. it is not possible to disallow images at the document level, but allow on some images).
