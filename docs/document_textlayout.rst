@@ -1,5 +1,5 @@
 ================================
-Textual Layout - td
+Textual Layout
 ================================
 
 Text Horizontal Alignment
@@ -71,7 +71,7 @@ The value is inherited so that child components will be aligned in the same way,
     </html>
 
 
-.. image:: images/documentTextHAlign.png
+.. image:: images/documentTextHalign.png
 
 
 Text Vertical Alignment
@@ -136,7 +136,7 @@ The vertical alignment in text is also based on the container, and supports the 
     </html>
 
 
-.. image:: images/documentTextVAlign.png
+.. image:: images/documentTextValign.png
 
 
 Differences to HTML rendering
@@ -219,73 +219,59 @@ They are less frequently used, but can help in adjusting fonts that are too narr
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>Document Character spacing</title>
+        <meta name="author" content="Scryber Team" />
+        <style type="text/css">
 
-    <Styles>
-        
-        <!-- Add a style to images -->
-        <styles:Style applied-type="doc:Div" applied-class="std-font" >
-            <styles:Background color="#AAA"/>
-            <styles:Padding all="4pt"/>
-            <styles:Margins bottom="10pt" />
-        </styles:Style>
+            .std-font {
+                font-size: 14pt;
+                background-color: #AAA;
+                padding: 4pt;
+                margin-bottom: 10pt;
+                font-family: 'Segoe UI', sans-serif;
+            }
 
-        <!-- Alter the default bold component -->
-        <styles:Style applied-type="doc:B">
-            <styles:Font size="20pt" italic="true"/>
-            <!-- Adding character and word spacing too -->
-            <styles:Text char-spacing="5pt" word-spacing="10pt"/>
-        </styles:Style>
+            .narrow{ letter-spacing:-0.5pt;}
 
-        <styles:Style applied-class="narrow" >
-            <styles:Text char-spacing="-0.5pt"/>
-        </styles:Style>
+            .wide{ letter-spacing:1.5pt; line-height:15pt; }
 
-        <styles:Style applied-class="wide" >
-            <styles:Text char-spacing="1.5pt" leading="15pt"/>
-        </styles:Style>
+            .wide-word{ letter-spacing: 0; word-spacing: 10pt; }
 
-        <styles:Style applied-class="wide-word" >
-            <styles:Text char-spacing="0" word-spacing="8pt" />
-        </styles:Style>
-    </Styles>
-    <Pages>
-        
-        <!-- Setting the font on the page, rather than at each level. -->
-        <doc:Page styles:padding="10" styles:font-family="Segoe UI" >
-        <Content>
-            <doc:Div styles:column-count="3" styles:font-size="10pt">
-                <doc:Div styles:class="std-font narrow" >
-                    Segoe UI in 10pt font size with the default
-                    leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
-                </doc:Div>
-                <doc:ColumnBreak/>
-                <doc:Div styles:class="std-font wide">
-                    Segoe UI in 10pt font size with the leading increased to 15pt
-                    on each line of the paragraph. The character spacing is also
-                    set to an extra 1.5 points.
-                </doc:Div>
-                <doc:ColumnBreak/>
-                <doc:Div styles:class="std-font wide-word" >
-                    Segoe UI in 10pt font size with the leading and character space normal, but the word
-                    spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
-                </doc:Div>
-            </doc:Div>
+        </style>
+    </head>
+    <body style="padding: 20pt">
+        <div style="column-count:3;font-size:10pt">
+            <div class="std-font narrow" style="break-after:always">
+                Segoe UI in 10pt font size with the default
+                leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
+            </div>
+            <div class="std-font wide" style="break-after:always">
+                Segoe UI in 10pt font size with the leading increased to 15pt
+                on each line of the paragraph. The character spacing is also
+                set to an extra 1.5 points.
+            </div>
+            <div class="std-font wide-word">
+                Segoe UI in 10pt font size with the leading and character space normal, but the word
+                spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
+            </div>
+        </div>
 
-            <doc:Div styles:class="std-font wide" styles:text-leading="35pt" >
-                Even using various 
-                <doc:Span styles:font-size="30" styles:font-family="Comic Sans MS">font sizes and families</doc:Span>
-                will maintain the character and 
-                word spacing that <doc:B>has been applied.</doc:B>
-            </doc:Div>
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
+        <div class="std-font wide" style="line-height:30pt;" >
+            Even using various
+            <span style="font-size:30pt; font-family:Optima, serif;">font sizes and families</span>
+            will maintain the character and
+            word spacing that <b>has been applied.</b>
+        </div>
+
+    </body>
+    </html>
 
 
 .. image:: images/drawingfontsSpacing.png
+
+.. note:: There is a known issue with the baseline adjust on multiple font sizes that has crept in, and will hopefilly be resolved in the next release.

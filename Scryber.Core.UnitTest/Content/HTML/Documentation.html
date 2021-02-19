@@ -13,30 +13,39 @@
             background-color: #AAA;
             padding: 4pt;
             margin-bottom: 10pt;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', sans-serif;
         }
+
+        .narrow{ letter-spacing:-0.5pt;}
+
+        .wide{ letter-spacing:1.5pt; line-height:15pt; }
+
+        .wide-word{ letter-spacing: 0; word-spacing: 10pt; }
+
     </style>
 </head>
 <body style="padding: 20pt">
-    <div class="std-font" style="white-space: nowrap">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce pulvinar elit leo, sit amet egestas neque porttitor nec.
-        Nunc pellentesque turpis ac pellentesque scelerisque.
-
-        Etiam at nibh mattis, pulvinar velit eget, consequat ligula.
+    <div style="column-count:3;font-size:10pt">
+        <div class="std-font narrow" style="break-after:always">
+            Segoe UI in 10pt font size with the default
+            leading used on each line of the paragraph. But the character spacing is reduced by 0.5 points.
+        </div>
+        <div class="std-font wide" style="break-after:always">
+            Segoe UI in 10pt font size with the leading increased to 15pt
+            on each line of the paragraph. The character spacing is also
+            set to an extra 1.5 points.
+        </div>
+        <div class="std-font wide-word">
+            Segoe UI in 10pt font size with the leading and character space normal, but the word
+            spacing increased by 5 points. It should continue to flow nicely onto multiple lines.
+        </div>
     </div>
 
-    <div class="std-font" style="white-space: nowrap">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce pulvinar elit leo, sit amet egestas neque porttitor nec.<br />
-        Nunc pellentesque turpis ac pellentesque scelerisque.<br />
-
-        Etiam at nibh mattis, pulvinar velit eget, consequat ligula.<br />
-    </div>
-
-    <div class="std-font" style="white-space:pre; overflow-x:hidden;">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce pulvinar elit leo, sit amet egestas neque porttitor nec.
-    Nunc pellentesque turpis ac pellentesque scelerisque.
-
-    Etiam at nibh mattis, pulvinar velit eget, consequat ligula.
+    <div class="std-font wide" style="line-height:30pt;" >
+        Even using various
+        <span style="font-size:30pt; font-family:Optima, serif;">font sizes and families</span>
+        will maintain the character and
+        word spacing that <b>has been applied.</b>
     </div>
 
 </body>
