@@ -1271,6 +1271,30 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    #region public class CSSBackgroundPositionXParser : CSSThicknessValueParser
+
+    public class CSSBackgroundPositionXParser : CSSThicknessValueParser
+    {
+        public CSSBackgroundPositionXParser()
+            : base(CSSStyleItems.BackgroundPositionX, StyleKeys.BgXPosKey)
+        {
+        }
+    }
+
+    #endregion
+
+    #region public class CSSBackgroundPositionYParser : CSSThicknessValueParser
+
+    public class CSSBackgroundPositionYParser : CSSThicknessValueParser
+    {
+        public CSSBackgroundPositionYParser()
+            : base(CSSStyleItems.BackgroundPositionY, StyleKeys.BgYPosKey)
+        {
+        }
+    }
+
+    #endregion
+
     #region public class CSSBackgroundRepeatParser : CSSEnumStyleParser<PatternRepeat>
 
     /// <summary>
