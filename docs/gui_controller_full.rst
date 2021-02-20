@@ -90,7 +90,7 @@ Next change the 'Main' method to your class to load the template and generate th
 
             
             //Load the template and output to the directory
-            var doc = PDFDocument.ParseDocument(path);
+            var doc = Document.ParseDocument(path);
             doc.ProcessDocument(output, System.IO.FileMode.OpenOrCreate);
 
             //Notify completion
