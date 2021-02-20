@@ -19,6 +19,7 @@ and of fills for shapes, text, etc.
                 background-image: url("./images/landscape.jpg");
                 min-height: 260px;
                 text-align:center;
+                color:white;
                 font-family: sans-serif;
                 font-size:larger;
                 font-weight:bold;
@@ -51,6 +52,7 @@ component itself, the other
     * Both - The default value, where the image repeats both X and Y directions.
     * Fill - The image will only be shown once, but fill the available container size **(also overrides any of the following size options)**.
 * The size of the image of the rendered image.
+    * cover - The background image will fill the available space completely. Clipping to the width or height, so it is shown.
     * x-size - Determines the vertical height of the rendered background image in units.
     * y-size - Determines the vertical height of the rendered background image in units.
 * The starting position of the pattern.
