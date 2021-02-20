@@ -1,52 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML >
 
-<html xmlns='http://www.w3.org/1999/xhtml'>
+<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
-    <style type="text/css">
-
-        div.bg {
-            background-image: url("./images/landscape.jpg");
-            min-height: 260px;
-            text-align: center;
-            font-family: sans-serif;
-            font-size: larger;
-            font-weight: bold;
-            padding-top: 10pt;
-            border: solid 1px #333;
-            /* consistent size across all */
-            background-size: 60pt 60pt;
-        }
-    </style>
 </head>
 <body style="padding:20pt;">
-
-
-    <div style="column-count:2; margin-bottom: 10pt; color:white;">
-        <div class="bg" style="background-repeat:repeat; background-position: 20pt 40pt; break-after:always;">
-            <span>Background image with the default repeat at 20,40</span>
-        </div>
-        <!-- Single value should be applied to both x and y -->
-        <div class="bg" style="background-repeat:repeat-x; background-position: 20pt">
-            <span>Background image with repeat horizontal at 20,20</span>
-        </div>
+    <p>The svg content is below</p>
+    <div class="canvas">
+        <svg xmlns="http://www.w3.org/2000/svg" style="border:solid 1px black" >
+            <rect x="0pt" y="0pt" width="100pt" height="80pt" fill="lime" ></rect>
+            <g id="eye" stroke="black" stroke-width="2pt" >
+                <ellipse cx="50pt" cy="40pt" rx="40pt" ry="20pt" fill="white"></ellipse>
+                <circle cx="50pt" cy="40pt" r="20pt" fill="#66F"></circle>
+                <circle cx="50pt" cy="40pt" r="10pt" fill="black"></circle>
+                <line x1="10" x2="90" y1="40" y2="40" />
+                <line x1="50" x2="50" y1="20" y2="60" />
+            </g>
+        </svg>
     </div>
-
-    <div style="column-count:2; color:#333;">
-        <div class="bg"
-             style="background-repeat: repeat-y;
-                    background-position-x: 20pt;
-                    background-position-x: 40pt;
-                    break-after: always;">
-            <span>Background image with repeat vertical at 20,40</span>
-        </div>
-
-        <div class="bg" style="background-repeat:no-repeat;
-             background-position: 150pt 100pt; background-color:aquamarine">
-            <span>Background image with no repeating at 150,100 and background color</span>
-        </div>
-
-    </div>
+    <p>And after the svg content</p>
 </body>
 </html>

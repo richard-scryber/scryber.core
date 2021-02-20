@@ -1,8 +1,8 @@
 ======================================
-Drawing paths and shapes
+Drawing with SVG
 ======================================
 
-Scryber includes a full drawing capability.
+Scryber includes the drawing capability with a subset of SVG capabilities.
 
 * Lines
 * Recangles
@@ -10,148 +10,138 @@ Scryber includes a full drawing capability.
 * Polygons
 * Bezier Curves
 * Groups
+* Text
+* Use and definitions
+* ViewPorts
 
-The drawing components can be either just inline in a document content, or placed directly in a canvas for ease of layout, and compnentization.
+The drawing components should all be within a namespace qualified svg element, or prefixed svg at the document root.
 
-Drawing Lines
-=============
 
-By default a line will simply extend as a horizontal line block across the available space. Single point width with a black stroke color.
-This can be changed using either explicit, or applied style information, with color; width; padding etc.
-A width will restrict (or expand) the size horizontally.
-If a height is added alone, then it will become a vertical line.
-Apply both and it's diagonal, and can also be positioned inline as part of the flowing content.
+Drawing SVG content
+--------------------
 
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML >
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
+    <html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <style type="text/css">
 
-        <styles:Style applied-type="doc:Div" >
-            <styles:Padding all="10pt"/>
-            <styles:Margins bottom="10pt" />
-            <styles:Background color="#AAA"/>
-        </styles:Style>
-    
-        <!-- Values set on the styles class-->
-        <styles:Style applied-class="red" >
-            <styles:Padding top="5pt" bottom="5pt" />
-            <styles:Stroke color="red" width="3pt"/>
-        </styles:Style>
-        
-    </Styles>
-    <Pages>
-        
-        <doc:Page styles:margins="20pt" >
-        <Content>
+            svg{
+                font-family:sans-serif;
+                font-size:12pt;
+            }
 
-            <doc:Div >
-                This is some content
-                <doc:Line />
-                After the line.
-            </doc:Div>
+            .colored {
+                fill: blue;
+            }
 
-            <doc:Div >
-                This is some content
-                <doc:Line styles:class="red" />
-                After the line.
-            </doc:Div>
-
-            <doc:Div >
-                This is some content
-                <doc:Line styles:class="red" styles:width="40pt" />
-                After the line.
-            </doc:Div>
-            
-            <doc:Div >
-                This is some content
-                <doc:Line styles:class="red" styles:height="40pt" />
-                After the line.
-            </doc:Div>
-
-            <doc:Div >
-                This is some content
-                <doc:Line styles:class="red" styles:position-mode="Inline" styles:height="40pt" styles:width="40pt" />
-                After the line.
-            </doc:Div>
-        
-        </Content>
-        </doc:Page>
-    </Pages>
-    
-    </doc:Document>
-
-.. image:: images/drawingPathsLines.png
+        </style>
+    </head>
+    <body style="padding:20pt;">
+        <p>The svg content is below</p>
+        <!-- Adding an svg rect and some text to the page -->
+        <svg xmlns="http://www.w3.org/2000/svg" >
+            <rect class="colored" width="100pt" height="100pt" >
+            </rect>
+            <text x="20" y="50" fill="white" >I'm SVG</text>
+        </svg>
+        <p>And after the svg content</p>
+    </body>
+    </html>
 
 
-Drawing other shapes
-=====================
+.. image:: images/drawingPathSVG.png
 
-Rectangles, elipses and polygons are all standard shapes supported by scryber. 
-Generally, as closed shapes you will want to provide a width and a height to them, 
-so they do **not** fill all the available space, which they will do if not set (both 
-horizontally and vertically.
 
-.. code-block:: xml
+As can be seen, the svg content is as a block and renders within the flow of the content.
+The rect(angle) picks up the styles from the css and the font flows down from the svg container.
+
+With scryber it is possible to use svg elements directly in the document by delcaring a prefixed namespace at the top. And the example below will render the same.
+(See :doc:`namespaces_and_assemblies` for more information on how namespaces are used)
+
+
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML >
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-        <Styles>
+    <!-- Declare the naespace here -->
+    <html xmlns='http://www.w3.org/1999/xhtml'
+        xmlns:svg="http://www.w3.org/2000/svg" >
+    <head>
+        <style type="text/css">
 
-            <styles:Style applied-type="doc:Div" >
-                <styles:Padding all="10pt"/>
-                <styles:Margins bottom="10pt" />
-                <styles:Background color="#AAA"/>
-            </styles:Style>
-        
-            <!-- Values set on the styles class-->
-            <styles:Style applied-class="red" >
-                <styles:Padding top="5pt" bottom="5pt" />
-                <styles:Stroke color="red" width="3pt"/>
-            </styles:Style>
+            .canvas {
+                font-family: sans-serif;
+                font-size: 12pt;
+            }
+            .colored {
+                fill: blue;
+            }
 
-            <styles:Style applied-class="small" >
-                <styles:Size width="40pt" height="40pt"/>
-                <styles:Fill color="lime"/>
-            </styles:Style>
+        </style>
+    </head>
+    <body style="padding:20pt;">
+        <p>The svg content is below</p>
+        <div class="canvas">
+            <!-- And prefix our elements here (in a div) -->
+            <svg:rect class="colored" width="100pt" height="100pt" >
+            </svg:rect>
+            <svg:text x="20" y="50" fill="#EEF" >I'm SVG</svg:text>
+        </div>
+        <p>And after the svg content</p>
+    </body>
+    </html>
 
-            <styles:Style applied-class="inline" >
-                <styles:Position mode="Inline"/>
-                <styles:Padding all="5pt"/>
-            </styles:Style>
-            
-        </Styles>
-        <Pages>
-            
-            <doc:Page styles:margins="20pt" >
-            <Content>
-                <doc:Div >
-                    This is some content<doc:Br/>
-                    
-                    <doc:Rect styles:class="red small inline" />
-                    <doc:Ellipse styles:class="red small inline" ></doc:Ellipse>
-                    <doc:Poly styles:class="red small inline" styles:vertex-count="3" />
-                    <doc:Poly styles:class="red small inline" styles:vertex-count="5" styles:vertex-step="2" />
-                    <doc:Poly styles:class="red small inline" styles:vertex-count="10" styles:vertex-step="3" />
+.. note:: depending on the purpose, this might be advantageous. But not make any html parsers happy unless wrapped in an svg:svg element.
 
-                    <doc:Br/>After the line.
-                </doc:Div>
-
-            </Content>
-            </doc:Page>
-        </Pages>
-    
-    </doc:Document>
+All examples below will follow the standard <svg xmlns='' > convention.
 
 
-.. image:: images/drawingPathsShapes.png
+Supported shapes
+-----------------
+
+Scryber supports the standard shapes for rectangles, elipses, circles and lines. 
+Generally, as closed shapes they will have a black fill and no stroke.
+
+A group group (g) can contain multiple shapes and paths, and alter the style of inner content,
+e.g. applying a constitent stroke.
+
+Without a width or height the svg element in scryber with size to the inner content, but it is good practice to specify values.
+
+Scryber also supports the use of styles on the svg element itself.
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML >
+
+    <html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+    </head>
+    <body style="padding:20pt;">
+        <p>The svg content is below</p>
+
+        <svg xmlns="http://www.w3.org/2000/svg" style="border:solid 1px black" >
+            <rect x="0pt" y="0pt" width="100pt" height="80pt" fill="lime" ></rect>
+            <g id="eye" stroke="black" stroke-width="2pt" >
+                <ellipse cx="50pt" cy="40pt" rx="40pt" ry="20pt" fill="white"></ellipse>
+                <circle cx="50pt" cy="40pt" r="20pt" fill="#66F"></circle>
+                <circle cx="50pt" cy="40pt" r="10pt" fill="black"></circle>
+                <line x1="10" x2="90" y1="40" y2="40" />
+                <line x1="50" x2="50" y1="20" y2="60" />
+            </g>
+        </svg>
+
+        <p>And after the svg content</p>
+    </body>
+    </html>
+
+
+.. image:: images/drawingPathsSVGShapes.png
 
 
 Polygon vertices
@@ -174,7 +164,7 @@ The stroke style mitre limit (0 - 1) defines the angle at which the Projecting o
 
 
 Specifying a location
-=====================
+-----------------------
 
 Shapes obey the same rules as other block level components when it comes to positioning (see :doc:`component_positioning`)
 
@@ -249,7 +239,7 @@ Applying a position mode of absolute will take the shape completely out of the f
 .. image:: images/drawingPathsPositioned.png
 
 Drawing paths
-=============
+--------------
 
 Scryber supports the use of bezier paths for the creation of the complex curves and shapes.
 The format of the drawing data (d) is exacly the same as the **svg** drawing operations.
@@ -336,7 +326,7 @@ There are many other examples of the use of svg paths, that can be mapped direct
 .. image:: images/drawingPathsBezier.png
 
 Fills and Repeats
-=================
+------------------
 
 All closed shapes support the use of Solid or Repeating image fills.
 See :doc:`drawing_images` for more.
