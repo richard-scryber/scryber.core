@@ -218,7 +218,7 @@ Here we are:
 * A complex style for a page header, with a colour and single background image, that will be repeated across any page.
 * And a page footer table with full width and associated style on the inner cells, that will again be repeated.
 
-The css style could just have easily come from another referenced stylesheet.
+The css style could just have easily come from another referenced stylesheet. Do not forget to encode the & character as &amp;
 
 .. code-block:: html
 
@@ -241,7 +241,7 @@ The css style could just have easily come from another referenced stylesheet.
                 p.header {
                     color: #AAA;
                     background-color: #333;
-                    background-image: url('../html/images/ScyberLogo2_alpha_small.png');
+                    background-image: url('https://avatars.githubusercontent.com/u/65354830?s=64&amp;v=4');
                     background-repeat: no-repeat;
                     background-position: 10pt 10pt;
                     background-size: 20pt 20pt;
@@ -280,7 +280,7 @@ The css style could just have easily come from another referenced stylesheet.
                 <!-- footers in a table with style -->
                 <table class="foot" style="width:100%">
                     <tr>
-                        <td>{@:author}</td>
+                        <td>{@:model.author}</td>
                         <td>Hello World Sample</td>
                     </tr>
                 </table>
@@ -288,7 +288,17 @@ The css style could just have easily come from another referenced stylesheet.
         </body>
     </html>
 
+Make some minor changes to our model.
 
+.. code-block:: csharp
+
+    using Scryber.Components;
+    var model = new
+    {
+         author = "Scryber Engine",   
+         titlestyle = "color:#ff6347 font-family:'Fraunces'", //style data
+    ...
+    
 The output from this is much more pleasing. Especially that Fruances font :-)
 
 .. image:: images/HelloWorldWithStyle.png
