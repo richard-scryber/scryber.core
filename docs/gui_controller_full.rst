@@ -90,8 +90,8 @@ Next change the 'Main' method to your class to load the template and generate th
 
             
             //Load the template and output to the directory
-            var doc = PDFDocument.ParseDocument(path);
-            doc.ProcessDocument(output, System.IO.FileMode.OpenOrCreate);
+            var doc = Document.ParseDocument(path);
+            doc.SaveAsPDF(output, System.IO.FileMode.OpenOrCreate);
 
             //Notify completion
             System.Console.WriteLine("PDF File generated at " + output);
@@ -157,12 +157,12 @@ on the PDF extension method.
 
         var output = System.IO.Path.Combine(tempDirectory, "HelloWorld.pdf");
 
-        var doc = PDFDocument.ParseDocument(path);
+        var doc = Document.ParseDocument(path);
 
         //Assign the data model to a parameter
         doc.Params["model"] = GetHelloWorldData();
 
-        doc.ProcessDocument(output, System.IO.FileMode.OpenOrCreate);
+        doc.SaveAsPDF(output, System.IO.FileMode.OpenOrCreate);
 
         //Notify completion
         System.Console.WriteLine("PDF File generated at " + output);
