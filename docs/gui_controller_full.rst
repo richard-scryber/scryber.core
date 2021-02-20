@@ -157,7 +157,7 @@ on the PDF extension method.
 
         var output = System.IO.Path.Combine(tempDirectory, "HelloWorld.pdf");
 
-        var doc = PDFDocument.ParseDocument(path);
+        var doc = Document.ParseDocument(path);
 
         //Assign the data model to a parameter
         doc.Params["model"] = GetHelloWorldData();
