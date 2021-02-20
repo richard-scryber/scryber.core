@@ -2,7 +2,7 @@ GNU Lesser General Public License
 =================================
 
 _Version 3, 29 June 2007_  
-_Copyright © 2007 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
+_Copyright Â© 2007 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
 
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.
@@ -14,29 +14,29 @@ License, supplemented by the additional permissions listed below.
 
 ### 0. Additional Definitions
 
-As used herein, “this License” refers to version 3 of the GNU Lesser
-General Public License, and the “GNU GPL” refers to version 3 of the GNU
+As used herein, â€œthis Licenseâ€ refers to version 3 of the GNU Lesser
+General Public License, and the â€œGNU GPLâ€ refers to version 3 of the GNU
 General Public License.
 
-“The Library” refers to a covered work governed by this License,
+â€œThe Libraryâ€ refers to a covered work governed by this License,
 other than an Application or a Combined Work as defined below.
 
-An “Application” is any work that makes use of an interface provided
+An â€œApplicationâ€ is any work that makes use of an interface provided
 by the Library, but which is not otherwise based on the Library.
 Defining a subclass of a class defined by the Library is deemed a mode
 of using an interface provided by the Library.
 
-A “Combined Work” is a work produced by combining or linking an
+A â€œCombined Workâ€ is a work produced by combining or linking an
 Application with the Library.  The particular version of the Library
-with which the Combined Work was made is also called the “Linked
-Version”.
+with which the Combined Work was made is also called the â€œLinked
+Versionâ€.
 
-The “Minimal Corresponding Source” for a Combined Work means the
+The â€œMinimal Corresponding Sourceâ€ for a Combined Work means the
 Corresponding Source for the Combined Work, excluding any source code
 for portions of the Combined Work that, considered in isolation, are
 based on the Application, and not on the Linked Version.
 
-The “Corresponding Application Code” for a Combined Work means the
+The â€œCorresponding Application Codeâ€ for a Combined Work means the
 object code and/or source code for the Application, including any data
 and utility programs needed for reproducing the Combined Work from the
 Application, but excluding the System Libraries of the Combined Work.
@@ -54,10 +54,12 @@ that uses the facility (other than as an argument passed when the
 facility is invoked), then you may convey a copy of the modified
 version:
 
+
 * **a)** under this License, provided that you make a good faith effort to
 ensure that, in the event an Application does not supply the
 function or data, the facility still operates, and performs
 whatever part of its purpose remains meaningful, or
+
 
 * **b)** under the GNU GPL, with none of the additional permissions of
 this License applicable to that copy.
@@ -148,7 +150,7 @@ differ in detail to address new problems or concerns.
 
 Each version is given a distinguishing version number. If the
 Library as you received it specifies that a certain numbered version
-of the GNU Lesser General Public License “or any later version”
+of the GNU Lesser General Public License â€œor any later versionâ€
 applies to it, you have the option of following the terms and
 conditions either of that published version or of any later version
 published by the Free Software Foundation. If the Library as you
