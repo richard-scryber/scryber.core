@@ -42,19 +42,122 @@ The background has been drawn with the image repeating from the top left corner 
 clipped to the boundary of the container.
 
 Along with specifying the image background, there are various other options for how the pattern is laid out
-that will change the defaults of how the image repeats. Only the background repeat is available on the
-component itself, the other 
+that will change the defaults of how the image repeats.
 
-* The Repeat - 'repeat' or 'styles:bg-repeat' on the component.
-    * None - The background will only be shown once.
-    * RepeatX - The background will only repeat in the X (horizontal) direction.
-    * RepeatY - The background will only repeat in the Y (vertical) direction.
-    * Both - The default value, where the image repeats both X and Y directions.
-    * Fill - The image will only be shown once, but fill the available container size **(also overrides any of the following size options)**.
-* The size of the image of the rendered image.
-    * cover - The background image will fill the available space completely. Clipping to the width or height, so it is shown.
-    * x-size - Determines the vertical height of the rendered background image in units.
-    * y-size - Determines the vertical height of the rendered background image in units.
+Background Size
+-----------------
+
+The background size option can either be a specific size, or 'cover' which will cover the entire container as a single image.
+
+(Scryber does not currently support 'contain' but it's on our roadmap).
+
+.. code-blcok:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+
+            div.bg {
+                background-image: url("./images/landscape.jpg");
+                min-height: 260px;
+                text-align:center;
+                color:#333;
+                font-family: sans-serif;
+                font-size:larger;
+                font-weight:bold;
+                padding-top:10pt;
+                border:solid 1px #333;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt;">
+
+        <div class="bg" style="background-size: 40pt 40pt; color:white;">
+            <span>Background image with explicit size</span>
+        </div>
+        <br/>
+        <div class="bg" style="background-size:cover">
+            <span>Background image with cover</span>
+        </div>
+
+    </body>
+    </html>
+
+.. image:: images/drawingImagesBackgroundSize.png
+
+Background Repeat
+-------------------
+
+The options for the background repeating are: 
+
+ * repeat - The default value, where the image repeats both X and Y directions.
+ * repeat-x - The background will only repeat in the X (horizontal) direction.
+ * repeat-y - The background will only repeat in the Y (vertical) direction.
+ * none - The background will only be shown once.
+
+These can be applied with a size, but will not affect anything if the size is cover.
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+
+            div.bg {
+                background-image: url("./images/landscape.jpg");
+                min-height: 260px;
+                text-align:center;
+                font-family: sans-serif;
+                font-size:larger;
+                font-weight:bold;
+                padding-top:10pt;
+                border:solid 1px #333;
+                /* consistent size across all */
+                background-size: 60pt 60pt;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt;">
+
+
+        <div style="column-count:2; margin-bottom: 10pt; color:white;">
+            <div class="bg" style="background-repeat:repeat; break-after:always;">
+                <span>Background image with the default repeat</span>
+            </div>
+            <div class="bg" style="background-repeat:repeat-x">
+                <span>Background image with repeat horizontal</span>
+            </div>
+        </div>
+
+        <div style="column-count:2; color:#333;">
+            <div class="bg" style="background-repeat:repeat-y; break-after:always;">
+                <span>Background image with repeat vertical</span>
+            </div>
+
+            <div class="bg" style="background-repeat:no-repeat">
+                <span>Background image with no repeating</span>
+            </div>
+
+        </div>
+    </body>
+    </html>
+
+
+.. image:: images/drawingImagesBackgroundRepeat.png
+
+Other positioning options
+---------------------------
+
 * The starting position of the pattern.
     * x-pos - Determines the horizontal offset of the rendered background image in units.
     * y-pos - Determines the vertical  offset of the rendered background image in units.
