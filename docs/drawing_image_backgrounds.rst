@@ -51,7 +51,7 @@ The background size option can either be a specific size, or 'cover' which will 
 
 (Scryber does not currently support 'contain' but it's on our roadmap).
 
-.. code-blcok:: html
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
