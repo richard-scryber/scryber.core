@@ -10,15 +10,27 @@
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
     <meta scheme="" content="" />
     <title>This is a body with headers and footers</title>
+    <link rel="stylesheet" media="screen" href="./css/include.css" />
+    <link rel="stylesheet" media="print" href="./css/includePrint.css" />
     <style>
-        .container{ border: solid 1px black; padding:4px;}
-        .gray{ background-color: #333; color:white; padding:4pt; }
+        .container {
+            border: solid 1px black;
+            padding: 4px;
+        }
+
+        .gray {
+            background-color: #333;
+            color: white;
+            padding: 4pt;
+        }
     </style>
 </head>
 <body title="Outer">
-    <header><p>This is the header</p></header>
+    <header>
+        <embed src="./fragments/pageheader.html" />
+    </header>
     <!-- The rest of the content should go into the body -->
-    <p class='highlight' style="margin-top:0px">Below is the frame</p>
+    <p style="margin-top:0px; padding:10pt">Below is the frame</p>
     <div class="container" >
         <iframe src="./fragments/framingfragment.html" />
     </div>

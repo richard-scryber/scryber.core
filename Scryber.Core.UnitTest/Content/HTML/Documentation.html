@@ -1,23 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE HTML >
+<?scryber append-log='true' log-level='verbose' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
 
-<html xmlns='http://www.w3.org/1999/xhtml' >
+<html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
+    <title>My multi file document</title>
+    <!-- Stylesheet links -->
+    <link rel="stylesheet" media="screen" href="./css/includeScreen.css" />
+    <link rel="stylesheet" media="print" href="./css/includePrint.css" />
 </head>
-<body style="padding:20pt;">
-    <p>The svg content is below</p>
-    <div class="canvas">
-        <svg xmlns="http://www.w3.org/2000/svg" style="border:solid 1px black" >
-            <rect x="0pt" y="0pt" width="100pt" height="80pt" fill="lime" ></rect>
-            <g id="eye" stroke="black" stroke-width="2pt" >
-                <ellipse cx="50pt" cy="40pt" rx="40pt" ry="20pt" fill="white"></ellipse>
-                <circle cx="50pt" cy="40pt" r="20pt" fill="#66F"></circle>
-                <circle cx="50pt" cy="40pt" r="10pt" fill="black"></circle>
-                <line x1="10" x2="90" y1="40" y2="40" />
-                <line x1="50" x2="50" y1="20" y2="60" />
-            </g>
-        </svg>
+<body style="margin:20pt; font-size:20pt">
+    <header>
+        <embed src="./fragments/pageheader.html" />
+    </header>    
+
+    <section style="page-break-before:avoid; page-break-after:always;">
+        <embed src="./fragments/coverpage.html" />
+    </section>
+
+    <div>
+        <h1 class="title" >This is the second page</h1>
     </div>
-    <p>And after the svg content</p>
+
 </body>
 </html>

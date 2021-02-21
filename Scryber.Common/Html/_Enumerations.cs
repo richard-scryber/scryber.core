@@ -118,6 +118,7 @@ namespace Scryber.Html
 
         public const string Opacity = "opacity";
         public const string FillOpacity = "fill-opacity";
+        public const string Fill = "fill";
 
         public const string ColumnCount = "column-count";
         public const string ColumnGap = "column-gap";

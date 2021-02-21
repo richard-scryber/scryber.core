@@ -21,8 +21,6 @@ As an example we can split a single document into 4 files.
 Here we will take the top level document and reference a stylesheet, a page header component and a cover page.
 
 
-
-
 DocumentRefs.html
 -----------------
 
@@ -41,18 +39,15 @@ At the top level is the Document - `DocumentRefs.html`
         <!-- Stylesheet links -->
         <link rel="stylesheet" media="screen" href="./css/includeScreen.css" />
         <link rel="stylesheet" media="print" href="./css/includePrint.css" />
-        <!-- import links -->
-        <link id="MyContent" rel="import" href="./fragments/coverpage.html" />
-        <link id="MyHeader" rel="import" media="print" href="./Fragments/PageHeader.html" />
-        
     </head>
     <body style="margin:20pt; font-size:20pt">
         <header>
-            <div data-content="#MyHeader" ></div>
+            <embed src="./fragments/pageheader.html" />
         </header>    
 
-        <section style="page-break-before:avoid; page-break-after:always;"
-                data-content="#MyContent" ></section>
+        <section style="page-break-before:avoid; page-break-after:always;">
+            <embed src="./fragments/coverpage.html">
+        </section>
 
         <div>
             <h1 class="title" >This is the second page</h1>
@@ -64,13 +59,14 @@ At the top level is the Document - `DocumentRefs.html`
 This contains a reference to `includeScreen.css` and `includePrint.css` in the `css` folder.
 As the first link is specified as for screen only it will not be loaded, and only the includePrint.css will be loaded.
 
-A reference to a `PageHeader.html` in the `Fragments` folder for a standard document header,
+
+An embedded reference to a `PageHeader.html` in the `Fragments` folder for a standard document header,
 and a reference to a `CoverPage.html` in the `Fragments` folder for the cover page content.
 
 The path references are relative to the current document (but could be absolute urls)
 
 includePrint.css
-=================
+-----------------
 
 This is the content of the `includePrint.css`
 
@@ -149,31 +145,22 @@ The styles are used across all content even referenced files, and the layout flo
 Circular references
 -------------------
 
-Scryber will not stop circular references. i.e. files that reference either themselves, or other files that reference back to the original.
-It could create an infinie parsing loop. 
+Scryber will not allow circular references. i.e. files that reference either themselves, or other files that reference back to the original
+as it could create an infinie parsing loop. 
 
-Whilst a link can be referenced from multiple places in multiple documents, each time it will be loaded as new content.
+Whilst a file can be embedded from multiple places in multiple documents, each time it will be loaded as new content.
 Once loaded changes to one instance will not affect any other instances loaded from that file.
 
-Data-content suppport
-----------------------
-
-The following tags support the use of data-content to load imported content
-
- * div
- * span
- * section
-
-It's not difficult to add, but seems to work best with these.
 
 iFrame support
 ----------------
 
-Along with the link import scryber supports the use of iFrames with a src.
+Along with the embed option, scryber supports the use of iFrames with a src.
 
 .. code-block:: html
 
     <iframe src='Fragments/PageHeader.html' />
 
-The frame is not isolated, or independent of the main document. So gives the wrong usage impression - but is supported.
+The frame is not isolated, or independent of the main document, and styles will be transferred down into the content of the frame.
+This gives the wrong usage impression - but is supported as a tag element.
 
