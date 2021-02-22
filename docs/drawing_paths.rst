@@ -496,7 +496,7 @@ It is also possible to load an svg file directly into the document with an embed
 
 And the referenced SVG file is ./Fragments/MyDrawing.svg
 
-.. code-block:: svg
+.. code-block:: xml
 
     <svg xmlns="http://www.w3.org/2000/svg" width="500" height="400">
 
