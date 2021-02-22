@@ -10,7 +10,6 @@ In Scryber the title attribute is converted to display as the outline of the doc
 Nested content will be under any parent title.
 
 
-
 Simple Outline
 ----------------
 

@@ -1,38 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
 
-<html xmlns='http://www.w3.org/1999/xhtml' >
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml' title="Root">
 <head>
-    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
-    <style>
-
-        body {
-            font: 12pt 'Roboto';
-            padding: 20pt;
-        }
-
-        .small {
-            font: italic 13px 'Roboto';
-        }
-
-        .heavy {
-            font: bold 30px 'Roboto';
-        }
-
-        .red {
-            font: italic 40px 'Roboto';
-            fill: red;
-        }
-
-    </style>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    <title>{@:title}</title>
+    <meta name="print-restrictions" content="allow-printing allow-annotations" />
+    <meta name="print-encryption" content="128bit" />
 </head>
-<body title="Top Level" style="padding:20pt;">
-    <div>
-        <h1 title="Heading" >This is a heading</h1>
-    </div>
-
-    <section title="Page 2" >
-        <h1 title="Heading 2" >This is the heading on the second page.</h1>
-    </section>
+<body class="grey" title="Outer">
+    <p class='highlight' title="Inner"
+       style="margin:20pt; border-bottom:solid 1px red; padding:4px; margin-top:20pt; font-family:sans-serif;  ">
+    This pdf should only allow forms and printing, not copying or modifying without the owner password.</p>
+    <p>{@:title}</p>
 </body>
 </html>
