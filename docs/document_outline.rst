@@ -46,5 +46,5 @@ Simple Outline
 When output the reader application or browser can show the content of the outline.
 Selecting any of the bookmark items should navigate directly to the page the content is on.
 
-.. image:: images/documentoutline.png
+.. image:: images/documentOutline.png
 
