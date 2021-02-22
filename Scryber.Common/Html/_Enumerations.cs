@@ -169,6 +169,8 @@ namespace Scryber.Html
         public const string StrokeOpacity = "stroke-opacity";
         public const string StrokeWidth = "stroke-width";
         public const string StrokeDash = "stroke-dasharray";
+        public const string StrokeLineCap = "stroke-linecap";
+        public const string StrokeLineJoin = "stroke-linejoin";
 
     }
 

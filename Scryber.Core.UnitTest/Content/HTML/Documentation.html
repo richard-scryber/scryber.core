@@ -1,27 +1,91 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?scryber append-log='true' log-level='verbose' ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>My multi file document</title>
-    <!-- Stylesheet links -->
-    <link rel="stylesheet" media="screen" href="./css/includeScreen.css" />
-    <link rel="stylesheet" media="print" href="./css/includePrint.css" />
+
 </head>
-<body style="margin:20pt; font-size:20pt">
-    <header>
-        <embed src="./fragments/pageheader.html" />
-    </header>    
+<body style="padding:20pt;">
+    <p>The svg content is below</p>
+    <div style="text-align:center;">
+        <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <path id="smiley" fill="yellow" stroke="black" stroke-width="8pt" stroke-linecap="round" stroke-linejoin="round"
+                      d="M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60" />
+            </defs>
+            <!-- meet horizontal align -->
+            <svg id="smileyWrapper" x="0" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                 preserveAspectRatio="xMidYMid">
+                <use href="#smiley" />
+            </svg>
 
-    <section style="page-break-before:avoid; page-break-after:always;">
-        <embed src="./fragments/coverpage.html" />
-    </section>
+            <svg id="smileyWrapper" x="55" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#55FF55;"
+                 preserveAspectRatio="xMinYMid">
+                <use href="#smiley" />
+            </svg>
 
-    <div>
-        <h1 class="title" >This is the second page</h1>
+            <svg id="smileyWrapper" x="110" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#FF5555;"
+                 preserveAspectRatio="xMaxYMid">
+                <use href="#smiley" />
+            </svg>
+
+            <!-- scale horizontal align -->
+            <svg id="smileyWrapper" x="0" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                 preserveAspectRatio="xMidYMin slice">
+                <use href="#smiley" />
+            </svg>
+
+            <svg id="smileyWrapper" x="55" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#55FF55;"
+                 preserveAspectRatio="xMidYMid slice">
+                <use href="#smiley" />
+            </svg>
+
+
+            <svg id="smileyWrapper" x="110" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#FF5555;"
+                 preserveAspectRatio="xMidYMax slice">
+                <use href="#smiley" />
+            </svg>
+
+            <!-- meet vertical align -->
+            <svg id="smileyWrapper" x="165" width="25pt" height="55pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                 preserveAspectRatio="xMidYMin">
+                <use href="#smiley" />
+            </svg>
+
+            <svg x="195" width="25pt" height="55pt" style="background-color:#55FF55;" viewBox="0 0 100 100"
+                 preserveAspectRatio="xMidYMid meet">
+                <use href="#smiley" />
+            </svg>
+
+            <svg x="225" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
+                 preserveAspectRatio="xMidYMax meet">
+                <use href="#smiley" />
+            </svg>
+
+            <!-- scale vertical align -->
+            <svg id="smileyWrapper" x="255" width="25pt" height="55pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                 preserveAspectRatio="xMinYMax slice">
+                <use href="#smiley" />
+            </svg>
+
+            <svg x="285" width="25pt" height="55pt" style="background-color:#55FF55;" viewBox="0 0 100 100"
+                 preserveAspectRatio="xMidYMax slice">
+                <use href="#smiley" />
+            </svg>
+
+            <svg x="315" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
+                 preserveAspectRatio="xMaxYMax slice">
+                <use href="#smiley" />
+            </svg>
+
+            <svg x="0" y="60" width="340pt" height="155pt" style="background-color:#555555;" viewBox="0 0 100 100"
+                 preserveAspectRatio="none">
+                <use href="#smiley" />
+            </svg>
+
+
+        </svg>
     </div>
-
+    <p>And after the svg content</p>
 </body>
 </html>

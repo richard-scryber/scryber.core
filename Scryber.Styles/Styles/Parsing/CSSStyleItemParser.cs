@@ -3578,4 +3578,75 @@ namespace Scryber.Styles.Parsing
     }
 
 
+    public class CSSStrokeLineCapParser : CSSStyleValueParser
+    {
+        public CSSStrokeLineCapParser(): base(CSSStyleItems.StrokeLineCap)
+        { }
+
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            var key = StyleKeys.StrokeEndingKey;
+            bool result = false;
+            if (reader.ReadNextValue())
+            {
+                var val = reader.CurrentTextValue.ToLower();
+                switch (val)
+                {
+                    case ("butt"):
+                        style.SetValue(key, LineCaps.Butt);
+                        result = true;
+                        break;
+                    case ("round"):
+                        style.SetValue(key, LineCaps.Round);
+                        result = true;
+                        break;
+                    case ("square"):
+                        style.SetValue(key, LineCaps.Square);
+                        result = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public class CSSStrokeLineJoinParser : CSSStyleValueParser
+    {
+        public CSSStrokeLineJoinParser() : base(CSSStyleItems.StrokeLineCap)
+        { }
+
+        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
+        {
+            var key = StyleKeys.StrokeJoinKey;
+            var result = false;
+            if (reader.ReadNextValue())
+            {
+                var val = reader.CurrentTextValue.ToLower();
+                switch (val)
+                {
+                    case ("bevel"):
+                        style.SetValue(key, LineJoin.Bevel);
+                        result = true;
+                        break;
+                    case ("round"):
+                        style.SetValue(key, LineJoin.Round);
+                        result = true;
+                        break;
+                    case ("mitre"):
+                        style.SetValue(key, LineJoin.Mitre);
+                        result = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+    }
+
+
 }

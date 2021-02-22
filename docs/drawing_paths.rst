@@ -60,6 +60,7 @@ Drawing SVG content
 
 As can be seen, the svg content is as a block and renders within the flow of the content.
 The rect(angle) picks up the styles from the css and the font flows down from the svg container.
+The use of svg a an inline, or inline-block may be supported in the future.
 
 With scryber it is possible to use svg elements directly in the document by delcaring a prefixed namespace at the top. And the example below will render the same.
 (See :doc:`namespaces_and_assemblies` for more information on how namespaces are used)
@@ -202,8 +203,8 @@ A polyline is rendered using secific x,y points from the top left of the contain
 
 A polygon automatically closes the path.
 
-Scryber does not currently support the use of patterns as fills e.g. fill='url(#mypattern)', 
-but does support images as fills, and backgrounds e.g. fill='url(./path/toimage.png)'
+Scryber does not currently support the use of patterns or gradients as fills e.g. fill='url(#mypattern)', 
+but does support images as fills, and backgrounds e.g. fill='url(./path/toimage.png)'. We will look at this for future releases.
 
 
 Drawing paths
@@ -240,16 +241,12 @@ The format of the drawing data (d) is exacly the same as the **svg** drawing ope
                 stroke-opacity: 0.5;
             }
 
-            .inline-icon{
-                display:inline;
-            }
-
         </style>
     </head>
     <body style="padding:20pt;">
         <p>The svg content is below</p>
         <div style="text-align:center;">
-            <svg id="ClockIcon" width="100" height="100" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <svg id="ClockIcon" top="0" left="0" width="100" height="100" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fill="blue" d="M11.088,2.542c0.063-0.146,0.103-0.306,0.103-0.476c0-0.657-0.534-1.19-1.19-1.19c-0.657,0-1.19,
                 0.533-1.19,1.19c0,0.17,0.038,0.33,0.102,0.476c-4.085,0.535-7.243,
                 4.021-7.243,8.252c0,4.601,3.73,8.332,8.332,8.332c4.601,0,
@@ -261,171 +258,147 @@ The format of the drawing data (d) is exacly the same as the **svg** drawing ope
                 9.26c0.002-0.018,0.011-0.034,0.011-0.053V5.24c0-0.219-0.177-0.396-0.396-0.396c-0.22,
                 0-0.397,0.177-0.397,0.396v3.967c0,0.019,0.008,0.035,0.011,0.053c-0.689,0.173-1.201,0.792-1.201,1.534c0,0.324,0.098,0.625,0.264,0.875c-0.079,0.014-0.155,0.043-0.216,0.104l-2.244,2.244c-0.155,0.154-0.155,0.406,0,0.561s0.406,0.154,0.561,0l2.244-2.242c0.061-0.062,0.091-0.139,0.104-0.217c0.251,0.166,0.551,0.264,0.875,0.264c0.876,0,1.587-0.711,1.587-1.587C11.587,10.052,11.075,9.433,10.386,9.26z M10,11.586c-0.438,0-0.793-0.354-0.793-0.792c0-0.438,0.355-0.792,0.793-0.792c0.438,0,0.793,0.355,0.793,0.792C10.793,11.232,10.438,11.586,10,11.586z"></path>
             </svg>
+            <!-- Icon from dribble -->
         </div>
         <p>And after the svg content</p>
     </body>
     </html>
 
+The viewbox defines the area visible and will scale the content of the svg appropriately to the required width and height.
+
+.. image:: ./images/drawingPathsSVGPathClock.png
 
 Line options
 -------------
 
-The stroke style also supports the ending and join options for Butt, Round and Projecting, that will alter the way lines and vertices are rendered.
-The stroke style mitre limit (0 - 1) defines the angle at which the Projecting or Round will convert to a Butt ending. So the shape does not extend too far.
+The stroke style also supports the standed ending and join options for paths, that will alter the way lines and vertices are rendered.
 
 
-Specifying a location
+.. code-block:: xml
+
+    <path id="smiley" fill="yellow" stroke="black" stroke-width="8pt" stroke-linecap="round" stroke-linejoin="round"
+                  d="M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60" />
+
+
+
+Definitions and use
 -----------------------
 
-Shapes obey the same rules as other block level components when it comes to positioning (see :doc:`component_positioning`)
+Scryber supports the definition of shapes and reuse within the content.
+This can either be directly, or within another viewbox for scaling and position.
 
-The location (x and y) of a shape will automatically change the position mode to relative.
-Applying a position mode of absolute will take the shape completely out of the flow of the document.
+The preserveAspectRatio is the standard svg enumeration that allows the content position in the viewbox to be defined on the outer container.
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
-
-        <styles:Style applied-type="doc:Div" >
-            <styles:Padding all="10pt"/>
-            <styles:Margins bottom="10pt" />
-            <styles:Background color="#AAA"/>
-        </styles:Style>
-
-        <!-- Values set on the styles class-->
-        <styles:Style applied-class="red" >
-            <styles:Padding top="5pt" bottom="5pt" />
-            <styles:Stroke color="red" width="3pt"/>
-        </styles:Style>
-
-        <styles:Style applied-class="small" >
-            <styles:Size width="40pt" height="40pt"/>
-            <styles:Fill color="lime"/>
-        </styles:Style>
-
-        <!-- A relative position-->
-        <styles:Style applied-class="relative" >
-            <styles:Position mode="Relative" x="200pt" y="80pt"/>
-        </styles:Style>
-
-        <!-- An absolute position -->
-        <styles:Style applied-class="absolute" >
-            <styles:Position mode="Absolute" x="400pt" y="160pt"/>
-        </styles:Style>
-
-    </Styles>
-    <Pages>
-
-        <doc:Page styles:margins="20pt" >
-        <Content>
-            <doc:Div styles:bg-color="#AAA" >
-                This is some content<doc:Br/>
-
-                <!-- relatively positioned shapes -->
-                <doc:Rect styles:class="red small relative" />
-                <doc:Ellipse styles:class="red small relative" 
-                            styles:x="220pt" styles:fill-opacity="0.5" ></doc:Ellipse>
-                
-                <!-- absolutely positioned shapes -->
-                <doc:Poly styles:class="small absolute" 
-                            styles:vertex-count="5" styles:vertex-step="2" />
-                <doc:Poly styles:class="small absolute" styles:x="440pt"
-                            styles:vertex-count="10" styles:vertex-step="3" />
-
-                <doc:Br/>After the line.
-            </doc:Div>
-
-        </Content>
-        </doc:Page>
-    </Pages>
-
-    </doc:Document>
-
-
-.. image:: images/drawingPathsPositioned.png
-
-
-
-See below for using the path data.
-
-Canvases
-========
-
-A canvas is a panel that has an overflow set to clip and will place all components automatically in relatively positioned mode.
-As such without an x or y location they will all appear at the top left.
-
-It makes it ideal as a drawing surface.
-
-The example below was mapped directly from the W3 Schools Svg paths 2 sample.
-`https://www.w3schools.com/graphics/tryit.asp?filename=trysvg_path2`_
-
-There are many other examples of the use of svg paths, that can be mapped directly to paths.
-
-.. note:: Yes we are! We support html import and are actively looking at brining in svg.
-
-.. code-block:: xml
+.. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML>
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd" >
-    <Styles>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
 
-        <styles:Style applied-type="doc:Div" >
-            <styles:Padding all="10pt"/>
-            <styles:Margins bottom="10pt" />
-            <styles:Background color="#AAA"/>
-        </styles:Style>
+    </head>
+    <body style="padding:20pt;">
+        <p>The svg content is below</p>
+        <div style="text-align:center;">
+            <svg xmlns="http://www.w3.org/2000/svg">
 
-    </Styles>
-    <Pages>
+                <!-- define our smiley approx 100 x 100 units -->
+                <defs>
+                    <path id="smiley" fill="yellow" stroke="black" stroke-width="8pt" stroke-linecap="round" stroke-linejoin="round"
+                        d="M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60" />
+                </defs>
 
-        <doc:Page styles:margins="20pt" >
-        <Content>
-            <doc:Div styles:bg-color="#AAA" >
-                This is some content<doc:Br/>
+                <!-- use it in the middle so it is scaled to be fully visible -->
+                <svg id="smileyWrapper" x="0" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                    preserveAspectRatio="xMidYMid">
+                    <use href="#smiley" />
+                </svg>
 
-                <!-- relatively positioned shapes -->
-                <doc:Canvas styles:width="450" styles:height="400" styles:border-color="black" styles:bg-color="white">
+                <!-- on the left side fully visible -->
+                <svg id="smileyWrapper" x="55" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#55FF55;"
+                    preserveAspectRatio="xMinYMid">
+                    <use href="#smiley" />
+                </svg>
 
-                    <doc:Path d="M 100 350 l 150 -300" styles:stroke-color="red" styles:stroke-width="3" ></doc:Path>
-                    <doc:Path d="M 250 50 l 150 300" styles:stroke-color="red" styles:stroke-width="3" ></doc:Path>
+                <!-- on the right side fully visible -->
+                <svg id="smileyWrapper" x="110" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#FF5555;"
+                    preserveAspectRatio="xMaxYMid">
+                    <use href="#smiley" />
+                </svg>
 
-                    <doc:Path d="M 175 200 l 150 0" styles:stroke-color="green" styles:stroke-width="3" ></doc:Path>
+                <!-- slice will make the contents fill the box rather than fit -->
 
-                    <doc:Path d="M 100 350 q 150 -300 300 0" styles:stroke-color="black" styles:fill-style="None" styles:stroke-width="3" ></doc:Path>
+                <!-- top middle -->
+                <svg id="smileyWrapper" x="0" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                    preserveAspectRatio="xMidYMin slice">
+                    <use href="#smiley" />
+                </svg>
 
-                    <doc:Ellipse styles:x="97" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black" />
-                    <doc:Ellipse styles:x="247" styles:y="47" styles:width="6" styles:height="6" styles:fill-color="black"  />
-                    <doc:Ellipse styles:x="397" styles:y="347" styles:width="6" styles:height="6" styles:fill-color="black"  />
+                <!-- middle middle -->
+                <svg id="smileyWrapper" x="55" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#55FF55;"
+                    preserveAspectRatio="xMidYMid slice">
+                    <use href="#smiley" />
+                </svg>
 
-                    <doc:Label text="A" styles:x="75" styles:y="350" styles:font-bold="true" styles:font-size="30" />
-                    <doc:Label text="B" styles:x="240" styles:y="15" styles:font-bold="true" styles:font-size="30" />
-                    <doc:Label text="C" styles:x="400" styles:y="350" styles:font-bold="true" styles:font-size="30" />
-                </doc:Canvas>
-                After the canvas.
-            </doc:Div>
+                <!-- bottom middle -->
+                <svg id="smileyWrapper" x="110" y="30" width="50pt" height="25pt" viewBox="0 0 100 100" style="background-color:#FF5555;"
+                    preserveAspectRatio="xMidYMax slice">
+                    <use href="#smiley" />
+                </svg>
 
-        </Content>
-        </doc:Page>
-    </Pages>
+                <!-- meet vertical align -->
 
-    </doc:Document>
+                <svg id="smileyWrapper" x="165" width="25pt" height="55pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                    preserveAspectRatio="xMidYMin">
+                    <use href="#smiley" />
+                </svg>
 
+                <svg x="195" width="25pt" height="55pt" style="background-color:#55FF55;" viewBox="0 0 100 100"
+                    preserveAspectRatio="xMidYMid meet">
+                    <use href="#smiley" />
+                </svg>
 
-.. image:: images/drawingPathsBezier.png
+                <svg x="225" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
+                    preserveAspectRatio="xMidYMax meet">
+                    <use href="#smiley" />
+                </svg>
 
-Fills and Repeats
-------------------
+                <!-- scale vertical align -->
 
-All closed shapes support the use of Solid or Repeating image fills.
-See :doc:`drawing_images` for more.
+                <svg id="smileyWrapper" x="255" width="25pt" height="55pt" viewBox="0 0 100 100" style="background-color:#5555FF;"
+                    preserveAspectRatio="xMinYMax slice">
+                    <use href="#smiley" />
+                </svg>
+
+                <svg x="285" width="25pt" height="55pt" style="background-color:#55FF55;" viewBox="0 0 100 100"
+                    preserveAspectRatio="xMidYMax slice">
+                    <use href="#smiley" />
+                </svg>
+
+                <svg x="315" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
+                    preserveAspectRatio="xMaxYMax slice">
+                    <use href="#smiley" />
+                </svg>
+
+                <!-- Finally just fill the box -->
+
+                <svg x="0" y="60" width="340pt" height="155pt" style="background-color:#555555;" viewBox="0 0 100 100"
+                    preserveAspectRatio="none">
+                    <use href="#smiley" />
+                </svg>
+
+            </svg>
+        </div>
+        <p>And after the svg content</p>
+    </body>
+    </html>
+
+.. image:: ./images/drawingPathsSVGPathSmiley.png
+
+SVG Text
+---------
+
 
 
 Referencing drawings

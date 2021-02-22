@@ -4,14 +4,12 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.0.4</PackageVersion>
+    <PackageVersion>5.0.5-beta</PackageVersion>
     <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
 
-Scryber is an advanced PDF generation engine based around XHTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
-
-This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.</Description>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -20,13 +18,29 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.4
+    <PackageReleaseNotes>5.0.5
+
+Multiple enhancements including
+
+Embed and iFrame support
+Support for border-left, border-right, etc
+Support for encryption and restrictions
+Classes and styles on templates are supported.
+Added em, strong, strike, del, ins elements
+Html column width and break inside
+CSS and HTML Logging
+Fixed application of multiple styles with the same word inside
+Allow missing images on the document is now supported.
+Contain fill style for background images.
+
+5.0.4
 
 Public release of the dotnet 5 engine, supporting google fonts, full css files, svg and html5
 
 5.0.3-beta
 
 Working with support for @page css directives for the whole document and section page sizes. Support for <page />
+
 
 
 
@@ -99,7 +113,7 @@ Increased support for HTML parsing using DTD entities and xhtml namespace, along
       Linked to the Scryber.Core of the same version.
       v1.0.0.5
       Updated for of the Core library with atomatic inclusion of the http namespace references, and also added the model extension methods</PackageReleaseNotes>
-    <Summary>The MVC extensions for the Scryber PDF creation engine</Summary>
+    <Summary>The MVC extensions for the Scryber PDF creation engine - easy, dynamic, flowing PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
     <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet 5</PackageTags>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
@@ -113,8 +127,8 @@ Increased support for HTML parsing using DTD entities and xhtml namespace, along
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scryber.Core" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
+    <PackageReference Include="Scryber.Core" Version="5.0.5-beta" />
   </ItemGroup>
       
   <ItemGroup>
