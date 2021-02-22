@@ -53,11 +53,11 @@ And the image data can then be assigned to an image component directly.
 Binding Image data
 -------------------
 
-Binding to parameter data is also supported in the img tag using the data-img attribute.
+Binding to parameter data is also supported in the img tag using the img-data attribute.
 
 .. code-block:: html
 
-    <img alt='Data bound image' data-img='{@:model.imagedata}' >
+    <img alt='Data bound image' img-data='{@:model.imagedata}' >
 
 And this can be loaded and set in the usual way.
 
@@ -140,7 +140,7 @@ Once the path or data are set, it's just a case of rendering the document in the
             <img class="toroid" src="{@:model.jpgSrc}" alt="24 bit JPEG file" />
 
             <span>JPEG 24bit Image with image data from model</span>
-            <img class="toroid" data-img="{@:model.jpgData}" alt="32 bit JPEG file" />
+            <img class="toroid" img-data="{@:model.jpgData}" alt="32 bit JPEG file" />
         </div>
 
     </body>
