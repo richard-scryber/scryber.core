@@ -256,9 +256,9 @@ namespace Scryber.Drawing
                     if (i < vals.Length)
                     {
                         int parsed;
-                        if(!int.TryParse(vals[i], out parsed) || parsed > 255 || parsed < 0)
+                        if (!int.TryParse(vals[i], out parsed) || parsed > 255 || parsed < 0)
                             return false;
-                        
+
                         rgbs[i] = parsed;
                     }
                     else
@@ -327,7 +327,7 @@ namespace Scryber.Drawing
                 }
                 else
                     return false;
-                
+
                 byte ab, rb, gb, bb;
 
                 if (!byte.TryParse(a, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out ab))
@@ -345,6 +345,11 @@ namespace Scryber.Drawing
             }
             else if (value.Equals("inherit", StringComparison.CurrentCultureIgnoreCase))
                 return false;
+            else if (value.Equals("none", StringComparison.CurrentCultureIgnoreCase))
+            {
+                color = PDFColors.Transparent;
+                return true;
+            }
             else
             {
                 if (PDFColors.TryGetColorFromName(value, out color))

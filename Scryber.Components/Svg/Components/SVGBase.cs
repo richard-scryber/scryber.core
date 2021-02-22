@@ -100,6 +100,25 @@ namespace Scryber.Svg.Components
             set => base.FillColor = value;
         }
 
+        [PDFAttribute("font-family")]
+        public override PDFFontSelector FontFamily
+        {
+            get => base.FontFamily;
+            set => base.FontFamily = value;
+        }
+
+        [PDFAttribute("font-size")]
+        public override PDFUnit FontSize
+        {
+            get => base.FontSize;
+            set => base.FontSize = value;
+        }
+
+        
+
+        // font
+
+
         public SVGBase(PDFObjectType type)
             : base(type)
         {

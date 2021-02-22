@@ -964,7 +964,7 @@ namespace Scryber.Components
         [PDFAttribute("font-family", Const.PDFStylesNamespace)]
         [PDFDesignable("Family", Category = "Font", Priority = 1, Type = "Select")]
         [PDFJSConvertor("scryber.studio.design.convertors.string_css", JSParams = "\"font-family\"")]
-        public PDFFontSelector FontFamily
+        public virtual PDFFontSelector FontFamily
         {
             get
             {
@@ -993,7 +993,7 @@ namespace Scryber.Components
         [PDFAttribute("font-size", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams ="\"font-size\"")]
         [PDFDesignable("Size", Category = "Font", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit FontSize
+        public virtual PDFUnit FontSize
         {
             get
             {
@@ -1019,7 +1019,7 @@ namespace Scryber.Components
         [PDFAttribute("font-bold", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.bold_css", JSParams = "\"font-weight\"")]
         [PDFDesignable("Bold", Category = "Font", Priority = 2, Type = "Boolean")]
-        public bool FontBold
+        public virtual bool FontBold
         {
             get
             {
@@ -1045,7 +1045,7 @@ namespace Scryber.Components
         [PDFAttribute("font-italic", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.italic_css", JSParams = "\"font-style\"")]
         [PDFDesignable("Italic", Category = "Font", Priority = 2, Type = "Boolean")]
-        public bool FontItalic
+        public virtual bool FontItalic
         {
             get
             {
@@ -1072,7 +1072,7 @@ namespace Scryber.Components
         [PDFAttribute("h-align", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.halign_css")]
         [PDFDesignable("H. Align", Category = "Layout", Priority = 1, Type = "Select")]
-        public HorizontalAlignment HorizontalAlignment
+        public virtual HorizontalAlignment HorizontalAlignment
         {
             get
             {
@@ -1098,7 +1098,7 @@ namespace Scryber.Components
         [PDFAttribute("v-align", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.valign_css")]
         [PDFDesignable("V. Align", Category = "Layout", Priority = 1, Type = "Select")]
-        public VerticalAlignment VerticalAlignment
+        public virtual VerticalAlignment VerticalAlignment
         {
             get
             {
@@ -1292,7 +1292,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("text-decoration", Const.PDFStylesNamespace)]
         [PDFDesignable("Decoration", Category = "Text", Priority = 1, Type = "MultiSelect")]
-        public Scryber.Text.TextDecoration TextDecoration
+        public virtual Scryber.Text.TextDecoration TextDecoration
         {
             get
             {

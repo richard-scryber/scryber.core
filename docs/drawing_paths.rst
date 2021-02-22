@@ -399,7 +399,131 @@ The preserveAspectRatio is the standard svg enumeration that allows the content 
 SVG Text
 ---------
 
+Scryber supports the use of the SVG Text and text spans for rendering characters within the drawing.
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML>
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
+        <style>
+
+            body {
+                font: 12pt 'Roboto';
+                padding: 20pt;
+            }
+
+            .small {
+                font: italic 13px 'Roboto';
+            }
+
+            .heavy {
+                font: bold 30px 'Roboto';
+            }
+
+            .red {
+                font: italic 40px 'Roboto';
+                fill: red;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt;">
+        <p>The svg content is below</p>
+        <div style="text-align:center;">
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <text x="20" y="35" class="small">My</text>
+                <text x="35" y="35" class="heavy">cat</text>
+                <text x="55" y="60" class="small">is</text>
+                <text x="60" y="60" class="red">Grumpy!</text>
+            </svg>
+        </div>
+        <p>And after the svg content</p>
+    </body>
+    </html>
+
+Here we are linking to and using the Roboto font from the google api's.
+
+.. image:: ./images/drawingPathsSVGText.png
 
 
 Referencing drawings
 --------------------
+
+It is also possible to load an svg file directly into the document with an embed option.
+
+.. code-block:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE HTML>
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
+        <style>
+
+            body {
+                font: 12pt 'Roboto';
+                padding: 20pt;
+            }
+
+            .small {
+                font: italic 13px 'Roboto';
+            }
+
+            .heavy {
+                font: bold 30px 'Roboto';
+            }
+
+            .red {
+                font: italic 40px 'Roboto';
+                fill: red;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt;">
+        <p>The svg content is below</p>
+        <div style="text-align:center;">
+            <embed src="./Fragments/MyDrawing.svg" />
+        </div>
+        <p>And after the svg content</p>
+    </body>
+    </html>
+
+And the referenced SVG file is ./Fragments/MyDrawing.svg
+
+.. code-block:: svg
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="500" height="400">
+
+        <path id="lineAB" d="M 100 350 l 150 -300" stroke="red" stroke-width="3" fill="none" />
+        <path id="lineBC" d="M 250 50 l 150 300" stroke="red" stroke-width="3" fill="none" />
+        <path d="M 175 200 l 150 0" stroke="green" stroke-width="3" fill="none" />
+        <path d="M 100 350 q 150 -300 300 0" stroke="blue" stroke-width="5" fill="none" />
+        <!-- Mark relevant points -->
+        <g stroke="black" stroke-width="3" fill="black">
+            <circle id="pointA" cx="100" cy="350" r="3" />
+            <circle id="pointB" cx="250" cy="50" r="3" />
+            <circle id="pointC" cx="400" cy="350" r="3" />
+        </g>
+        <!-- Label the points -->
+        <g font-size="30" font-family="sans-serif" fill="black" stroke="none" >
+            <text x="70" y="350" >A</text>
+            <text x="220" y="60" >B</text>
+            <text x="410" y="350" >C</text>
+        </g>
+    </svg>
+
+.. image:: ./images/drawingPathsSVGPathReference.png
+
+
+Attributes Supported
+----------------------
+
+Only a few of the full capabilities and attributes of SVG are supported. 
+More are supported using the style='' css attribute settings, and we will be adding more in future.
+
