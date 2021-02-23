@@ -12,6 +12,9 @@ using Scryber.Styles.Parsing;
 
 using Scryber.Layout;
 using System.Xml.Schema;
+using System.Xml.Linq;
+using System.IO;
+using Scryber.Generation;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -773,37 +776,73 @@ namespace Scryber.Core.UnitTests.Html
         {
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/documentation.html");
+            Document doc;
 
-            using (var doc = Document.ParseDocument(path))
+            using (doc = Document.ParseDocument(path))
             {
-                
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                var img = doc.FindAComponentById("tiff32") as Image;
-
-                if(null != img)
-                    img.Source = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.tiff");
-
-                var jpgSrc = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid24.jpg");
-                var jpgData = PDFImageData.LoadImageFromLocalFile(jpgSrc);
-
-                var model = new
-                {
-                    jpgSrc = jpgSrc,
-                    jpgData = jpgData
-                };
-
-                doc.Params["model"] = model;
-
-                doc.RenderOptions.AllowMissingImages = false;
-
                 using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
                 {
-                    doc.SaveAsPDF(stream); 
+                    doc.SaveAsPDF(stream);
                 }
+            }
+
+            doc = new Document();
+            doc.Info.Title = "Coded Document";
+
+            var style = new StyleDefn(".grey");
+            style.Background.Color = (PDFColor)"gray";
+            doc.Styles.Add(style);
+
+            var pg = new Page();
+            pg.StyleClass = "grey";
+            pg.OutlineTitle = "Page 1";
+
+            var para = new Paragraph();
+            para.Contents.Add(new TextLiteral("Hello World From scryber"));
+
+            pg.Contents.Add(para);
+            doc.Pages.Add(pg);
+
+            XNamespace html = "http://www.w3.org/1999/xhtml";
+            XElement root = new XElement(html + "html",
+                new XElement(html + "head",
+                    new XElement(html + "title", "XElememt Document"),
+                    new XElement(html + "style", ". grey { background-color: gray;}")
+                ),
+                new XElement(html + "body",
+                    new XAttribute("class", "grey"),
+                    new XAttribute("title", "Page 1"),
+                        new XElement(html + "p",
+                        new XAttribute("title", "Inner"),
+                        new XText("Hello World from Scryber"))
+                    )
+                );
+
+
+            string basePath = string.Empty;
+            doc = Document.ParseDocument(root.CreateReader(), basePath, ParseSourceType.DynamicContent);
+
+            var content = "<p xmlns='http://www.w3.org/1999/xhtml' >" +
+                "This <b>Is my content</b>" +
+                "</p>";
+
+            using (var reader = new StringReader(content))
+            {
+                var comp = doc.ParseTemplate(doc, reader) as Component;
+                (doc.Pages[0] as Page).Contents.Add(comp);
+            }
+
+            using (var reader = new StringReader(content))
+            {
+                Document.Parse("", reader, ParseSourceType.DynamicContent, new PDFReferenceResolver(this.ResolveReference));
             }
         }
 
-        
+        private IPDFComponent ResolveReference(string filename, string xpath, PDFGeneratorSettings settings)
+        {
+            Stream content = GetMyContentForPath(filename);
+            return Document.Parse(filename, content, ParseSourceType.DynamicContent, settings.Resolver);
+        }
 
         [TestMethod()]
         public void BodyWithLongContent()

@@ -76,8 +76,8 @@ There are 2 passwords used
 * owner - to unlock the restrictions and allow all actions.
 * user - to allow opening of the document.
 
-They can both be the same, if needed and are set on the Document.PasswordProvider property, or through 
-a custom implementation of the the IPDFSecurePasswordProvider
+They can both be the same, if wanted, and are set on the Document.PasswordProvider property, through the
+implementation of an IPDFSecurePasswordProvider
 
 The quickest set up is to use the DocumentPasswordProvider in Scryber.Secure.
 This can be initialized with one or two strings, or secure strings.
