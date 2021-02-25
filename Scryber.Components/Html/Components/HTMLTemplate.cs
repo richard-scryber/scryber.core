@@ -26,6 +26,9 @@ namespace Scryber.Html.Components
             set { base.Visible = value; }
         }
 
+        [PDFAttribute("data-cache-styles")]
+        public override bool CacheStyles { get => base.CacheStyles; set => base.CacheStyles = value; }
+
         [PDFAttribute("data-content")]
         public string DataContent
         {
@@ -53,6 +56,20 @@ namespace Scryber.Html.Components
                     this.Visible = false;
             }
         }
+
+        #region public string DataStyleIdentifier
+
+        /// <summary>
+        /// Gets the identifer for the style of this component that can uniquely identify any set of style attributes across a document
+        /// </summary>
+        [PDFAttribute("data-style-identifier")]
+        public override string DataStyleIdentifier
+        {
+            get { return base.DataStyleIdentifier; }
+            set { base.DataStyleIdentifier = value; }
+        }
+
+        #endregion
 
         public HTMLTemplate()
         {

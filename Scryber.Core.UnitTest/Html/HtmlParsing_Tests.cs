@@ -832,17 +832,10 @@ namespace Scryber.Core.UnitTests.Html
                 (doc.Pages[0] as Page).Contents.Add(comp);
             }
 
-            using (var reader = new StringReader(content))
-            {
-                Document.Parse("", reader, ParseSourceType.DynamicContent, new PDFReferenceResolver(this.ResolveReference));
-            }
+            
         }
 
-        private IPDFComponent ResolveReference(string filename, string xpath, PDFGeneratorSettings settings)
-        {
-            Stream content = GetMyContentForPath(filename);
-            return Document.Parse(filename, content, ParseSourceType.DynamicContent, settings.Resolver);
-        }
+        
 
         [TestMethod()]
         public void BodyWithLongContent()
@@ -962,6 +955,64 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+        }
+
+        
+
+        [TestMethod]
+        public void LargeFileTest()
+        {
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/LargeFile.html");
+
+            var data = new
+            {
+                Items = GetListItems(10)
+            };
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Params["model"] = data;
+                using (var stream = DocStreams.GetOutputStream("LargeFile.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            data = new
+            {
+                Items = GetListItems(10000)
+            };
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Params["model"] = data;
+                using (var stream = DocStreams.GetOutputStream("LargeFile.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        private class ListItem
+        {
+            public string Key { get; set; }
+            public int Value { get; set; }
+            public string Row { get; set; }
+        }
+
+        private static ListItem[] GetListItems(int count)
+        {
+            var mocks = new ListItem[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                ListItem m = new ListItem() { Key = "Item " + i.ToString(), Value = i, Row = (i % 2 == 1) ? "odd" : "even" };
+                mocks[i] = m;
+            }
+
+            return mocks;
         }
     }
 }

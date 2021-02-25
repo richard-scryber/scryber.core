@@ -96,6 +96,13 @@ namespace Scryber.Data
             set { _template = value; }
         }
 
+        [PDFAttribute("cache-styles")]
+        public virtual bool CacheStyles
+        {
+            get;
+            set;
+        }
+
         public bool HasTemplate
         {
             get { return null != this.Template; }
@@ -136,11 +143,17 @@ namespace Scryber.Data
             _start = 0;
             _count = int.MaxValue;
             _step = 1;
+            CacheStyles = true;
         }
 
 
         protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
+            if(this.Template is IPDFDataTemplateGenerator)
+            {
+                ((IPDFDataTemplateGenerator)this.Template).DataStyleStem = this.DataStyleIdentifier;
+                ((IPDFDataTemplateGenerator)this.Template).UseDataStyleIdentifier = this.CacheStyles;
+            }
             return this.Template;
         }
 

@@ -233,7 +233,7 @@ namespace Scryber
     /// </summary>
     public interface IPDFDataStyledComponent
     {
-        string DataStyleIdentifier { get; }
+        string DataStyleIdentifier { get; set; }
     }
 
     #endregion

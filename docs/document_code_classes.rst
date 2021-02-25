@@ -12,16 +12,14 @@ Base Component Classes
 
 The base classes form the foundation of the functionality for each of the main concrete classes. It's much easier to create your own funtionality using one of these classes.
 
-* Component: PDFObject - Implements the IPDFComponent interface along with IPDFBindable and 
-* ContainerComponent: Component - Holds child instances. Implements the 'InnerContent' collection as a protected property and the IPDFContainer.Contents implementation. Also passes the lifecycle methods to children.
-* VisualComponent: ContainerComponent - Extends a container to be styled with the IPDFStyledComponent interface and a lot of properties for individual styles.
-    * Panel: VisualComponent - Base class for the standard container componnents (Div, Span, etc) that implements the IPDFViewPortComponent interface to do the laying out of content.
-        * HeadingBase : Panel - Base class for the headings (H1 to H6).
-        * SpanBase: Panel - Base class for the inline components.
-    * PageBase : VisualComponent - Base class for all page types.
-    * ImageBase : VisualComponent - Base class for all the image types.
-    * TextBase : VisualComponent - Base class for the textual components and implements the IPDFTextComponent interface.
-    * ShapeComponent: VisualComponent - Base class for drawing components, implementing the IPDFGraphicPathComponent interface.
+* Component - Implements the IPDFComponent interface along with IPDFBindable and 
+* ContainerComponent - Holds child instances. Implements the 'InnerContent' collection as a protected property and the IPDFContainer.Contents implementation. Also passes the lifecycle methods to children.
+* VisualComponent - Extends a container to be styled with the IPDFStyledComponent interface and a lot of properties for individual styles.
+    * Panel - Base class for the standard container componnents (Div, Span, etc) that implements the IPDFViewPortComponent interface to do the laying out of content.
+    * PageBase - Base class for all page types.
+    * ImageBase - Base class for all the image types.
+    * TextBase - Base class for the textual components and implements the IPDFTextComponent interface.
+    * ShapeComponent - Base class for drawing components, implementing the IPDFGraphicPathComponent interface.
 
 All components inheriting from VisualComponent have a virtual method for GetBaseStyle() which returns the default style for that component before anything is applied.
 

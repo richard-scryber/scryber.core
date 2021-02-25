@@ -16,6 +16,19 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
+        #region public string DataStyleIdentifier
+
+        /// <summary>
+        /// Gets the identifer for the style of this component that can uniquely identify any set of style attributes across a document
+        /// </summary>
+        [PDFAttribute("data-style-identifier")]
+        public override string DataStyleIdentifier
+        {
+            get { return base.DataStyleIdentifier; }
+            set { base.DataStyleIdentifier = value; }
+        }
+
+        #endregion
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'

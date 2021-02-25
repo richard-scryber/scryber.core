@@ -1604,7 +1604,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("style-identifier",Const.PDFDataNamespace)]
         [PDFDesignable("Style Cache Key", Ignore = true)]
-        public string DataStyleIdentifier
+        public virtual string DataStyleIdentifier
         {
             get;
             set;

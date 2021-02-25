@@ -24,7 +24,7 @@ using Scryber.Components;
 
 namespace Scryber.Data
 {
-    public class ParsableTemplateGenerator : IPDFTemplate, IPDFTemplateGenerator
+    public class ParsableTemplateGenerator : IPDFTemplate, IPDFTemplateGenerator, IPDFDataTemplateGenerator
     {
         
         private string _toparse;
@@ -43,6 +43,17 @@ namespace Scryber.Data
         /// Gets or sets the name of the element that was parsed.
         /// </summary>
         public string ElementName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the prefix stem for the DataStyleIdentifier
+        /// </summary>
+        public string DataStyleStem { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the flag that indicates if the template should be generated with a style identifier.
+        /// Default is true, as this improves speed and caches the full style - in cases where there is an issue
+        /// </summary>
+        public bool UseDataStyleIdentifier { get; set; }
 
 
         [PDFAttribute("class")]
@@ -269,6 +280,16 @@ namespace Scryber.Data
                     template.ElementName = this.ElementName;
                 }
 
+                if(comp is Component && owner is Component && this.UseDataStyleIdentifier)
+                {
+                    var stem = this.DataStyleStem;
+                    if (string.IsNullOrEmpty(stem))
+                        stem = ((Component)owner).UniqueID;
+
+                    DataStyleIdentifierVisitor visitor = new DataStyleIdentifierVisitor(stem, 1);
+                    visitor.PushToComponents(comp as Component);
+                }
+
                 List<IPDFComponent> all = new List<IPDFComponent>(1);
 
                 all.Add(comp);
@@ -297,6 +318,61 @@ namespace Scryber.Data
                 return null;
         }
 
+
+        private class DataStyleIdentifierVisitor
+        {
+
+            private string _stem { get; set; }
+            private int _nextIndex;
+            private StringBuilder _buffer;
+
+            public DataStyleIdentifierVisitor(string stem, int nextIndex)
+            {
+                if (string.IsNullOrEmpty(stem))
+                    throw new ArgumentNullException("stem");
+
+                this._stem = stem;
+                this._nextIndex = nextIndex;
+                this._buffer = new StringBuilder(this._stem.Length + 3);
+            }
+
+            public void PushToComponents(Component component)
+            {
+                var next = this.NextIdentifier();
+                if (component is IPDFDataStyledComponent)
+                    (component as IPDFDataStyledComponent).DataStyleIdentifier = next;
+
+                if(component is IPDFDataTemplateGenerator)
+                {
+                    var dt = component as IPDFDataTemplateGenerator;
+                    if (string.IsNullOrEmpty(dt.DataStyleStem))
+                        dt.DataStyleStem = next;
+                }
+
+                if((component is IPDFContainerComponent) && (component as IPDFContainerComponent).HasContent)
+                {
+                    var container = (IPDFContainerComponent)component;
+
+                    foreach (var comp in container.Content)
+                    {
+                        if (comp is Component)
+                            this.PushToComponents(comp as Component);
+                    }
+                }
+
+            }
+
+            protected virtual string NextIdentifier()
+            {
+                this._buffer.Clear();
+                this._buffer.Append(this._stem);
+                this._buffer.Append("_");
+                this._buffer.Append(this._nextIndex);
+                this._nextIndex++;
+
+                return this._buffer.ToString();
+            }
+        }
         
     }
 }

@@ -96,6 +96,22 @@ namespace Scryber
         void InitTemplate(string xmlContent, System.Xml.XmlNamespaceManager namespaces);
     }
 
+
+    #region public interface IPDFDataTemplate
+
+    /// <summary>
+    /// Interface for a class that is a template generator with a prefix
+    /// data style identifier that will be applied to each item in the template.
+    /// </summary>
+    public interface IPDFDataTemplateGenerator : IPDFTemplateGenerator
+    {
+        public string DataStyleStem { get; set; }
+
+        public bool UseDataStyleIdentifier { get; set; }
+    }
+
+    #endregion
+
     /// <summary>
     /// Interface for a text literal component that will be used by the parse when it encounters general textual content
     /// </summary>

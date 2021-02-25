@@ -622,7 +622,7 @@ namespace Scryber.Components
         #region public string DataStyleIdentifier {get;set;}
 
         [PDFAttribute("style-identifier", Const.PDFDataNamespace)]
-        public string DataStyleIdentifier
+        public virtual string DataStyleIdentifier
         {
             get;
             set;
