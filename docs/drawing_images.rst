@@ -180,6 +180,7 @@ Once the path or data are set, it's just a case of rendering the document in the
 
 .. image:: images/documentimagesformat.png
 
+.. note:: Pre v5.0.5 of the package, the imgate data attribute was img-data. This will continue to work, but is considered obselete and the preferred attribute is data-img.
 
 Not found Images
 -----------------
