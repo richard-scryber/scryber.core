@@ -15,6 +15,7 @@ using System.Xml.Schema;
 using System.Xml.Linq;
 using System.IO;
 using Scryber.Generation;
+using Scryber.Svg.Components;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -786,52 +787,6 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
-            doc = new Document();
-            doc.Info.Title = "Coded Document";
-
-            var style = new StyleDefn(".grey");
-            style.Background.Color = (PDFColor)"gray";
-            doc.Styles.Add(style);
-
-            var pg = new Page();
-            pg.StyleClass = "grey";
-            pg.OutlineTitle = "Page 1";
-
-            var para = new Paragraph();
-            para.Contents.Add(new TextLiteral("Hello World From scryber"));
-
-            pg.Contents.Add(para);
-            doc.Pages.Add(pg);
-
-            XNamespace html = "http://www.w3.org/1999/xhtml";
-            XElement root = new XElement(html + "html",
-                new XElement(html + "head",
-                    new XElement(html + "title", "XElememt Document"),
-                    new XElement(html + "style", ". grey { background-color: gray;}")
-                ),
-                new XElement(html + "body",
-                    new XAttribute("class", "grey"),
-                    new XAttribute("title", "Page 1"),
-                        new XElement(html + "p",
-                        new XAttribute("title", "Inner"),
-                        new XText("Hello World from Scryber"))
-                    )
-                );
-
-
-            string basePath = string.Empty;
-            doc = Document.ParseDocument(root.CreateReader(), basePath, ParseSourceType.DynamicContent);
-
-            var content = "<p xmlns='http://www.w3.org/1999/xhtml' >" +
-                "This <b>Is my content</b>" +
-                "</p>";
-
-            using (var reader = new StringReader(content))
-            {
-                var comp = doc.ParseTemplate(doc, reader) as Component;
-                (doc.Pages[0] as Page).Contents.Add(comp);
-            }
-
             
         }
 
@@ -957,10 +912,57 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        
+
+        [TestMethod()]
+        public void BasePath()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.png";
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/' />
+                                <link rel='stylesheet' href='CSS/Include.css' media='print' />
+                              </head>
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content</p>
+                                <img id='myToroid' src='./Images/Toroid24.png' style='width:100pt' />
+                                <embed id='myDrawing' src='../HTML/Fragments/MyDrawing.svg' />
+                               </body>
+                        </html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.RenderOptions.AllowMissingImages = false; //Will error if the image is not found
+
+
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/", doc.LoadedSource, "Loaded Source is not correct");
+                
+                using (var stream = DocStreams.GetOutputStream("DynamicBasePath.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
+                Assert.AreEqual(1, doc.Styles.Count, "Remote styles were not loaded");
+                Assert.IsInstanceOfType(doc.Styles[0], typeof(StyleGroup), "The remote styles is not a group");
+
+                var img = doc.FindAComponentById("myToroid") as Image;
+                Assert.IsNotNull(img.XObject,"The image was not loaded from the remote source");
+
+                var embed = doc.FindAComponentById("myDrawing") as SVGCanvas;
+                Assert.IsNotNull(embed);
+                Assert.AreNotEqual(0, embed.Contents.Count, "SVG drawing was not loaded from the source");
+                
+            }
+        }
+
+
 
         [TestMethod]
         public void LargeFileTest()
+
         {
 
             var path = System.Environment.CurrentDirectory;

@@ -670,6 +670,8 @@ namespace Scryber.Generation
                             bindOnly = attr.BindingOnly;
                     }
                     ParserAttributeDefinition ad = new ParserAttributeDefinition(name, ns, pi, convert, iscustom, bindOnly);
+                    CheckIsLoadedSource(ad, pi);
+
                     defn.Attributes.Add(ad);
                 }
 
@@ -713,6 +715,8 @@ namespace Scryber.Generation
                         propele = new ParserComplexElementDefiniton(name, ns, pi);
                     }
 
+                    CheckIsLoadedSource(propele, pi);
+
                     if (isdefault)
                     {
                         if (null != defn.DefaultElement)
@@ -727,6 +731,13 @@ namespace Scryber.Generation
         }
 
         #endregion
+
+        private static void CheckIsLoadedSource(ParserPropertyDefinition prop, PropertyInfo pi)
+        {
+            var attr = GetCustomAttribute<PDFLoadedSourceAttribute>(pi, true);
+            if (null != attr && attr.IsLoadedSource)
+                prop.IsParserSourceValue = true;
+        }
 
         #region private static bool IsReservedName(string attrName)
 

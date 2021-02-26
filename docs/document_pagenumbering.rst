@@ -44,7 +44,7 @@ The page tag also supports the property attribute for displying the 'total' numb
 .. code-block:: html
 
     <footer>
-        <p class='print-only foot'> Page <page /> of <page propery='total' /></p>
+        <p class='print-only foot'> Page <page /> of <page property='total' /></p>
     </footer>
 
 .. image:: images/PageNumbers1of2.png

@@ -2563,12 +2563,28 @@ namespace Scryber.Components
 
         public static IPDFComponent Parse(string fullpath, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
         {
-            using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
             {
-                IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
-                if (comp is IPDFRemoteComponent)
-                    ((IPDFRemoteComponent)comp).LoadedSource = fullpath;
-                return comp;
+                using (var client = new System.Net.WebClient())
+                {
+                    using (var stream = client.OpenRead(fullpath))
+                    {
+                        IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
+                        if (comp is IPDFRemoteComponent)
+                            ((IPDFRemoteComponent)comp).LoadedSource = fullpath;
+                        return comp;
+                    }
+                }
+            }
+            else
+            {
+                using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                {
+                    IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
+                    if (comp is IPDFRemoteComponent)
+                        ((IPDFRemoteComponent)comp).LoadedSource = fullpath;
+                    return comp;
+                }
             }
         }
 

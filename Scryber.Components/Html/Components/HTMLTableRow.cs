@@ -16,6 +16,7 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
+
         #region public string DataStyleIdentifier
 
         /// <summary>

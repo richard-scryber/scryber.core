@@ -160,6 +160,27 @@ namespace Scryber
 
     #endregion
 
+    #region public class PDFLoadedSource Attribute
+
+    /// <summary>
+    /// Flag identifier for a property that sets the value of the source for any
+    /// relative references to the LoadedSource path.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    public class PDFLoadedSourceAttribute : Attribute
+    {
+
+        private bool _loaded = true;
+
+        /// <summary>
+        /// If true (default), then the properites value this attribute is assigned to, will be set as the basepath for the parser to load from
+        /// </summary>
+        public bool IsLoadedSource { get { return _loaded; } set { _loaded = value; } }
+
+    }
+
+    #endregion
+
     #region PDFAttribute Attribute
 
     /// <summary>

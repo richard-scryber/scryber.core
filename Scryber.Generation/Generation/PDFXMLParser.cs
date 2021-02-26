@@ -110,6 +110,15 @@ namespace Scryber.Generation
 
         #endregion
 
+        #region public string LoadedSourcePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path to local and remote sources.
+        /// </summary>
+        public string LoadedSourcePath { get; set; }
+
+        #endregion
+
         #region internal ParserControllerDefinition ControllerDefinition {get; private set;}
 
         /// <summary>
@@ -341,7 +350,12 @@ namespace Scryber.Generation
             if (parsed is IPDFRemoteComponent)
             {
                 IPDFRemoteComponent comp = parsed as IPDFRemoteComponent;
-                comp.LoadedSource = source;
+
+                if (!string.IsNullOrEmpty(source))
+                    comp.LoadedSource = source;
+                else if (!string.IsNullOrEmpty(this.LoadedSourcePath))
+                    comp.LoadedSource = this.LoadedSourcePath;
+
                 comp.LoadType = loadtype;
 
                 foreach (string key in this.PrefixedNamespaces.Keys)
@@ -595,7 +609,12 @@ namespace Scryber.Generation
                         actualValue = attr.GetValue(reader, this.Settings);
 
                         if (actualValue != DBNull.Value) //DBNull is a special value to signify nothing (but not null)
+                        {
                             this.SetValue(container, actualValue, attr);
+
+                            if (attr.IsParserSourceValue)
+                                this.LoadedSourcePath = actualValue.ToString();
+                        }
                     }
 
                     //Special case for setting a property on the controller if declared.
@@ -1136,6 +1155,9 @@ namespace Scryber.Generation
             object parsed = null;
             bool mylog = this.Settings.LogParserOutput;
 
+            if (!string.IsNullOrEmpty(this.LoadedSourcePath))
+                path = this.CombinePath(this.LoadedSourcePath, path);
+
             try
             {
                 parsed = this.Settings.Resolver(path, select, this.Settings);
@@ -1168,6 +1190,20 @@ namespace Scryber.Generation
             this.Settings.LogParserOutput = mylog;
 
             return parsed;
+        }
+
+        private string CombinePath(string basePath, string localPath)
+        {
+            if (Uri.IsWellFormedUriString(localPath, UriKind.Absolute))
+                return localPath;
+            else if (Uri.IsWellFormedUriString(basePath, UriKind.Absolute) && Uri.IsWellFormedUriString(localPath, UriKind.Relative))
+                return basePath + localPath;
+            
+            else if (System.IO.Path.IsPathRooted(localPath))
+                return localPath;
+            else
+                return System.IO.Path.Combine(basePath, localPath);
+
         }
 
         #endregion

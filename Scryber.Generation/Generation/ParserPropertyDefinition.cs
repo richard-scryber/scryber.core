@@ -80,6 +80,11 @@ namespace Scryber.Generation
             get { return false; }
         }
 
+        /// <summary>
+        /// If true then this properties value (if set) will be assigned as the base path for loading content.
+        /// </summary>
+        public bool IsParserSourceValue { get; set; }
+
         public object GetValue(System.Xml.XmlReader reader, PDFGeneratorSettings settings)
         {
             try

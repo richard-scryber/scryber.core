@@ -24,6 +24,17 @@ namespace Scryber.Html.Components
             }
         }
 
+        private HTMLHeadBase _base;
+
+        [PDFElement("base")]
+        public HTMLHeadBase BasePath
+        {
+            get { return _base; }
+            set { _base = value;
+                this.UpdateDocumentBase();
+            }
+        }
+
         [PDFArray(typeof(Component))]
         [PDFElement("")]
         public ComponentList Contents
@@ -35,13 +46,21 @@ namespace Scryber.Html.Components
         protected internal override void RegisterParent(Component parent)
         {
             base.RegisterParent(parent);
-            //UpdateDocumentInfo(parent);
+            UpdateDocumentInfo(parent);
         }
 
         protected override void OnDataBound(PDFDataContext context)
         {
             this.UpdateDocumentInfo(this.Parent);
             base.OnDataBound(context);
+        }
+
+        private void UpdateDocumentBase()
+        {
+            if(this.Parent is Document)
+            {
+                string path = string.Empty;
+            }
         }
 
         private void UpdateDocumentInfo(Component parent)
@@ -62,6 +81,13 @@ namespace Scryber.Html.Components
                         doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document title to " + this.Title);
 
                     doc.Info.Title = this.Title;
+                }
+
+                if(null != this.BasePath && !string.IsNullOrEmpty(this.BasePath.Href))
+                {
+                    if (logVerbose)
+                        doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document LoadedSource to the base path " + this.BasePath.Href);
+                    doc.LoadedSource = this.BasePath.Href;
                 }
 
                 foreach (var item in this.Contents)
@@ -248,5 +274,24 @@ namespace Scryber.Html.Components
         }
 
         
+    }
+
+
+    /// <summary>
+    /// Simple class to store the base for the document
+    /// </summary>
+    public class HTMLHeadBase
+    {
+        /// <summary>
+        /// Gets or sets the base path for the document
+        /// </summary>
+        [PDFAttribute("href")]
+        [PDFLoadedSource()]
+        public string Href { get; set; }
+
+        public HTMLHeadBase()
+        {
+
+        }
     }
 }

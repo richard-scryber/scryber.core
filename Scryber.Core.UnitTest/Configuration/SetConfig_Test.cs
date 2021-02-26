@@ -345,64 +345,6 @@ namespace Scryber.Core.UnitTests.Configuration
         }
 
 
-        [TestMethod()]
-        public void DynamicImage_Test()
-        {
-            ConfigClassInitialize();
-
-            var pdfx = @"<?xml version='1.0' encoding='utf-8' ?>
-<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-              xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
-              xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
-  <Pages>
-
-    <doc:Page styles:margins='20pt'>
-      <Content>
-        <doc:Span>This is before the image</doc:Span>
-        <doc:Image id='LoadedImage' src='This+is+an+image.dynamic' />
-        <doc:Span>This is after the image</doc:Span>
-      </Content>
-    </doc:Page>
-  </Pages>
-
-</doc:Document>";
-
-            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
-            Assert.IsNotNull(service, "The scryber config service is null");
-
-            var imgsvc = service.ImagingOptions;
-
-            Assert.IsNotNull(imgsvc, "The imaging options are null");
-
-            Assert.AreEqual(1, imgsvc.Factories.Length);
-
-            var factory = imgsvc.Factories[0];
-
-            Assert.AreEqual(".*\\.dynamic", factory.Match, "Config not loaded for this test");
-            Document doc;
-
-            using (var reader = new System.IO.StringReader(pdfx))
-            {
-                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-                
-                using (var stream = DocStreams.GetOutputStream("DynamicImage.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-
-                    //Check that the image was loaded and used.
-                    var img = doc.FindAComponentById("LoadedImage") as Image;
-                    Assert.IsNotNull(img.XObject, "No Dynamic image was loaded as an XObject");
-                    var key = img.XObject.ResourceKey;
-                    var expected = "/This+is+an+image.dynamic";
-                    Assert.IsTrue(key.EndsWith(expected), "The key '" + key + "' does not end with '" + expected + "'");
-                    //Assert.IsTrue(doc.SharedResources.GetResource(Resources.PDFImageXObject.XObjectResourceType, img.Source))
-                }
-            }
-
-            ConfigClassCleanup();
-        }
-
-
 
 
     }

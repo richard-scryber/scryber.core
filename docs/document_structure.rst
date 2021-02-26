@@ -88,6 +88,7 @@ In the html header. the following tags are supports as direct mappings to the PD
 
     <head>
         <title>My Document</title>
+        <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/' />
         <meta name='author' content='Richard Hewitson' />
         <meta name='description' content='This is the subject' />
         <meta name='keywords' content='Scryber; Document Info; Properties' />
@@ -97,6 +98,8 @@ In the html header. the following tags are supports as direct mappings to the PD
 
 
 .. image:: images/documentproperties.png
+
+The base path will set the root path to any relative resources in the rest of the document.
 
 The header also supports the <link> and <style> elements discussed below, although these are happily supported elsewhere too.
 It is only the meta and title elements that need to be in the html head.
