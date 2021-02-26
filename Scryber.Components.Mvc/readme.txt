@@ -4,38 +4,15 @@
 
 Scryber is an advanced PDF generation tool that allows
 complete definition of a dynamic PDF document based
-on XML (and code) including cascading styles,
+on HTML (and code) including cascading styles,
 databinding and component separation in referenced files.
 
-This framework is built entirely in .NETCore and is
+This framework is built entirely in .NETCore 5 and is
 open source under the LGPL licence so you can link to
 it in commercial applications.
 
 
-
-Thanks for using.
-
-We are still checking and working everything out.
-But it's looking good.
-
----------------------------------
-Upgrading from previous versions
----------------------------------
-
-If you are upgrading from pre-version 1.1.0 please note.
-We have taken the opportunity in these early days to remove 
-the PDF prefix from the Scryber.Components classes
-
-PDFDocument is now Document
-PDFPage is now Page
-etc.
-
-It's been needed for a while, but now is a good time.
-
-ProcessDocument has changed to SaveToPDF - again much needed.
-
-Many other changes have been made, see
-
+Thanks for using it.
 
 ---------------
 Getting Started
@@ -54,26 +31,20 @@ Scryber.Core
 For GUI or Console applications, use the base Scryber.Core
 package so the web based references are not needed.
 
+https://www.nuget.org/packages/Scryber.Core/
 
------------
-Xml Schemas
------------
 
-The xml schemas for the templates can be downloaded fron
-the git hub source here.
+-------------
+Contributing
+-------------
 
-https://github.com/richard-scryber/scryber.core/tree/master/Scryber.Core.Schemas
+Always happy to get contributions, suggestions, and definitly bugs.
+If there's something you want it to do, then - I'd hope scryber can be made to do it.
 
----------------------------
-Mac (or Linux) - Read this.
----------------------------
+Simply reach out on git
 
-Scryber needs the GDIPlus capabilies of dotnet.
-By default these are not installed.
+https://github.com/richard-scryber/scryber.core
 
-There is an article here for using homebrew to
-install these.
 
-https://scrybercore.readthedocs.io/en/latest/libgdiplus.html
 
 

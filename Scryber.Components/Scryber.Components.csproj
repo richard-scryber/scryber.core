@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.0.5-beta</PackageVersion>
+    <PackageVersion>5.0.5</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
@@ -17,9 +17,11 @@
 
 Multiple enhancements including
 
-Embed and iFrame support
+Embed and iFrame support.
+Binding speed improvements for longer documents.
 Support for border-left, border-right, etc
 Support for encryption and restrictions
+Support for base href in template files.
 Classes and styles on templates are supported.
 Added em, strong, strike, del, ins elements
 Html column width and break inside
@@ -28,67 +30,7 @@ Fixed application of multiple styles with the same word inside
 Allow missing images on the document is now supported.
 Contain fill style for background images.
 
-5.0.4
-
-Added SVG Support, and local font urls
-
-5.0.3
-
-Public release with most of the issue ironed out (just let us know if not). Along with @font-face, absolute, relative and display css.
-
-5.0.3-beta
-
-Working with support for @page css directives for the whole document and section page sizes. Support for <page />
-
-
-
-
-
-
- tags with property or for attributes. Fix for anchor links with internal and external href.
-
-5.0.3-alpha
-
-Added support for HTML binding with the template tag and data-bind attribute. Along with fixes for single character css values and other minor updates.
-
-5.0.1-alpha
-
-Increased support for the HTML parsing with entities and DTD, along with the upgrade to dotnet 5
-
-1.0.1-alpha
-
-Significant updates to the Components namespace (removing the PDF prefix); support for the match='' style attribute; prioritizing style application based on selectors and complexity; direct parsing of XHTML; and support for styles based page breaking. With updated unit tests
-
-1.0.0.25
------------------
-Updated and improved HTML and Markdown handling.
-
-1.0.0.24
--------------------
-Package for release to Nuget Public
-Updated for the allow missing images option and fixed height and width for 0 resolution
-Added the xsd files to the root of the components project
-Added a readme.txt file
-Added column-widths to the components and styles, with support for varable widths.
-Page numbering falls back to the page number format set on the page if not explicitly set.
-Removed the Page number prefix instead only supprting the page number display format
-Updated to add the static cache provider service
-Added the template property to the Placeholder, and support for updating templates to parameters
-Stronger typing on the parameters and object parameter, and support for XML pararmeters as XPath or XNode values.
-Passing any controller to the template generation so that it can be used to bind to events in templates.
-Updated the data components for ForEach, With, If, Choose:When to be able to use xpath and object binding expressions on the value property.
-Updated the PDFUser Component to use Params not Items
-Updated the bindings and Params. Autobind on the document defaults to true.
-Added the binding expressions as default in the parsing options
-Fixed the query string overrides on the item native values
-PDFDocument fix for remote references.
-
-
-1.0.0.5
-
-Fixes for path mapping on Mac / Unix / Windows when loading reference paths. Updated for the schema references and scrybersettings.json in the Scryber.Core.Schemas package
-
-Added the default namespaces to the ParsingOptions, and updated version to match MVC and OpenType</PackageReleaseNotes>
+See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
     <Summary>The scryber engine for easy, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 5;</PackageTags>
     <Title>Scryber</Title>
