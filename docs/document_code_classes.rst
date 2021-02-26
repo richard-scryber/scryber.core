@@ -122,6 +122,7 @@ When parsing content from HTML the document component graph will be constructed 
 
     namespace Scryber.Html.Components {
 
+        [PDFParsableComponent("div")]
         public class HTMLDiv : Scryber.Components.Div
         {
 
@@ -223,15 +224,15 @@ The flow for creating a full style for a component is linear.
 Despite the number of steps, the build of styles is usually not an issue, compared to extracting font files, image binary data or encrypting streams.
 However for some documents with a large number or containers e.g. a very long table with many rows it can become the limiting factor as well as memory intensive.
 
-If this is the case then there are usually a lot of containers that have the very same style.
-By setting the component.DataStyleIdentifier property, or in data-style-identifier in the template.
-All components for the same identifier will use the same full style.
+The template element automatically caches the style for each of the inner contents, rather than building every time. This can speed the generation, but if it causeing issues
+can be switched off using the data-cache-styles=false attribute. This will force the styles to be built each and every time.
 
 .. code-block:: html
 
-    <templalate data-bind='{@:Model.Items}' >
-        <tr data-style-identifier='boundrow'>
-            <td class='desc-cell' data-style-identifier='boundcellDesc' >{@:.Description}</td>
+    <templalate data-bind='{@:Model.Items}' data-cache-styles='false' >
+        <tr>
+            <td class='desc-cell' >{@:.Description}</td>
+            <!-- can be applied individually so that they are cached -->
             <td class='val-cell' data-style-identifier='boundcellValue' >{@:.Value}</td>
         </tr>
     </template>
