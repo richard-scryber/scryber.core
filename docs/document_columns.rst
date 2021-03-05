@@ -7,7 +7,7 @@ It also supports the same with columns, at the page and container level.
 
 
 Specifying columns on Pages
-===========================
+----------------------------
 
 All block level components (see :doc:`component_positioning`) support the use of columns.
 
@@ -75,7 +75,7 @@ Columns on containers
 As we can see above, the headings were also part of the column layout on the page. 
 
 Scryber supports the use of columns on containers too. So our layout can be improved if we remove the columns from the page,
-and set them on the `doc:Div` itself.
+and set them on the `div` itself.
 
 This will allow the headers to be full width, with the content flowing within the columns of the container.
 
@@ -133,12 +133,12 @@ This makes the width value the predominant driver, and will layout the maximum n
 that it is full width.
 
 e.g. if you have a container that is 300pts wide and a column-width of 80pt, then there will be 3 columns 
-of about 92pts wide (assuming the alley / gap is the default 10pt). Increasing the column-width to 120pt, and hte number of columns will
+of about 92pts wide (assuming the alley / gap is the default 10pt). Increasing the column-width to 120pt, and the number of columns will
 reduce to 2 of around 145pts.
 
-If our page size or orinentation changes then the number of columns fitted changes.
+If our page size or orientation changes then the number of columns fitted changes.
 
-Column-gaps are the margins between each column that defaults to 10pt, but can be specified as a single unit value, e.g. 20pt or 5mm
+Column-gaps are the margins, or alleys, between each column. The default is 10pt, but it can be specified as a single unit value, e.g. 20pt or 5mm
 (see :doc:`drawing_units` for more on scryber measurements).
 
 The break-before and break-after values of 'always' will cause the flow of the content to move to the next available column.

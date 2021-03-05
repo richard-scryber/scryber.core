@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Html
             var two = col[1] as StyleDefn;
 
             Assert.AreEqual("body.grey div", two.Match.ToString());
-            Assert.AreEqual(2, two.ValueCount);
+            Assert.AreEqual(10, two.ValueCount); //All, Top, Left, Bottom and Right are all set for Margins and Padding
             // 96 pixels per inch, 72 points per inch
             Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, PDFUnit.Zero).PointsValue); 
             Assert.AreEqual(11.25, two.GetValue(StyleKeys.MarginsAllKey, PDFUnit.Zero).PointsValue);
@@ -99,7 +99,7 @@ namespace Scryber.Core.UnitTests.Html
             var three = col[2] as StyleDefn;
 
             Assert.AreEqual("body.grey div.reverse", three.Match.ToString());
-            Assert.AreEqual(2, one.ValueCount);
+            Assert.AreEqual(2, one.ValueCount); 
             Assert.AreEqual((PDFColor)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
             Assert.AreEqual((PDFColor)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
@@ -190,7 +190,7 @@ body.grey div.reverse{
 
             //Fourth and Fifth are normal
             Assert.IsInstanceOfType(col[3], typeof(StyleDefn));
-            Assert.AreEqual(2, col[3].ValueCount);
+            Assert.AreEqual(10, col[3].ValueCount); //All, Top, Left, Bottom and Right are all set for Margins and Padding
             Assert.AreEqual("body.grey div", (col[3] as StyleDefn).Match.ToString());
 
             Assert.IsInstanceOfType(col[4], typeof(StyleDefn));
@@ -258,7 +258,7 @@ body.grey div.reverse{
 
             //Fourth and Fifth are normal
             Assert.IsInstanceOfType(col[3], typeof(StyleDefn));
-            Assert.AreEqual(2, col[3].ValueCount);
+            Assert.AreEqual(10, col[3].ValueCount); //All, Top, Left, Bottom and Right are all set for Margins and Padding
             Assert.AreEqual("body.grey div", (col[3] as StyleDefn).Match.ToString());
 
             Assert.IsInstanceOfType(col[4], typeof(StyleDefn));

@@ -38,6 +38,7 @@ Example with logging
 ---------------------
 
 .. code-block:: html
+
     <?scryber append-log='true' log-level='Messages' parser-log='true' ?>
     <!DOCTYPE HTML >
     <html xmlns='http://www.w3.org/1999/xhtml' >

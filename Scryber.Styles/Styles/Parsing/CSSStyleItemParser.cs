@@ -2014,6 +2014,11 @@ namespace Scryber.Styles.Parsing
             if (count == 1)
             {
                 onStyle.SetValue(_all, all[0]);
+                onStyle.SetValue(_top, all[0]);
+                onStyle.SetValue(_bottom, all[0]);
+
+                onStyle.SetValue(_left, all[0]);
+                onStyle.SetValue(_right, all[0]);
                 result = true;
             }
             else if(count == 2)

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -71,10 +72,11 @@ namespace Scryber.Binding
                         if (this._property.PropertyType == typeof(string))
                             value = value.ToString();
 
-                        else if(this.IsParsable(out parse) && (value is string))
+                        else if (this.IsParsable(out parse) && ((value is string) || (value is IConvertible)))
                         {
-                            value = parse.Invoke(null, new object[] { value as string });
+                            value = parse.Invoke(null, new object[] { value.ToString() });
                         }
+                        
                         this._property.SetValue(sender, value, null);
                     }
                     else if (args.Context.ShouldLogVerbose)
@@ -279,6 +281,14 @@ namespace Scryber.Binding
                         return found;
                     else
                         return null; //As we are dynamic, let's be generous and not throw an error.
+                }
+                else if(parent is ICustomTypeDescriptor)
+                {
+                    var prop = (parent as ICustomTypeDescriptor).GetProperties()[this.PropertyName];
+                    if (null != prop)
+                        return prop.GetValue(parent);
+                    else
+                        throw new ArgumentOutOfRangeException(this.PropertyName);
                 }
                 else
                     throw new ArgumentOutOfRangeException(this.PropertyName);

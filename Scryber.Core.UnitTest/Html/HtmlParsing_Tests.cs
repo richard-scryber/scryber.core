@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using System.IO;
 using Scryber.Generation;
 using Scryber.Svg.Components;
+using System.Runtime.Serialization;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -344,6 +345,100 @@ namespace Scryber.Core.UnitTests.Html
 
         }
 
+        [TestMethod()]
+        public void BodyWithJsonBinding()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithBinding.html");
+            var modeljson = "{\r\n" +
+                "\"headerText\" : \"Bound Header\"," +
+                "\"footerText\" : \"Bound Footer\"," +
+                "\"content\" : \"This is the bound content text\"," +
+                "\"bodyStyle\" : \"background-color:red; color:#FFF; padding: 20pt\"," +
+                "\"bodyClass\" : \"top\"" +
+                "}";
+
+            dynamic model = Newtonsoft.Json.JsonConvert.DeserializeObject(modeljson);
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodyWithJsonBinding.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.AutoBind = true;
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+            }
+
+            var body = _layoutcontext.DocumentLayout.AllPages[0];
+            Assert.IsNotNull(body.HeaderBlock);
+            Assert.IsNotNull(body.FooterBlock);
+
+            // Header content check
+
+            var pgHead = body.HeaderBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var header = pgHead.Columns[0].Contents[0] as PDFLayoutBlock;
+            var pBlock = header.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            var pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            var pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
+
+            Assert.AreEqual(pRun.Characters, model.headerText.ToString());
+
+            // Footer content check
+
+            var pgFoot = body.FooterBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var footer = pgFoot.Columns[0].Contents[0] as PDFLayoutBlock;
+            pBlock = footer.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
+
+            Assert.AreEqual(pRun.Characters, model.footerText.ToString());
+
+            //First page check
+            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
+
+            Assert.AreEqual(pRun.Characters, "Bound value of ");
+
+            pRun = pLine.Runs[4] as PDFTextRunCharacter;
+
+            Assert.AreEqual(pRun.Characters, model.content.ToString());
+
+            var bgColor = pBlock.FullStyle.Background.Color;
+            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+
+            var color = pBlock.FullStyle.Fill.Color;
+            Assert.AreEqual("rgb (255,255,255)", color.ToString());
+
+            //Second page check
+
+
+            body = _layoutcontext.DocumentLayout.AllPages[1];
+            Assert.IsNotNull(body);
+
+            pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
+
+            Assert.AreEqual("This is the content on the next page ", pRun.Characters);
+
+            bgColor = pBlock.FullStyle.Background.Color;
+            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+
+            color = pBlock.FullStyle.Fill.Color;
+            Assert.AreEqual("rgb (255,255,255)", color.ToString());
+
+        }
+
 
         [TestMethod()]
         public void LocalAndRemoteImages()
@@ -417,6 +512,63 @@ namespace Scryber.Core.UnitTests.Html
                 var table = doc.FindAComponentById("grid") as TableGrid;
                 Assert.IsNotNull(table);
                 Assert.AreEqual(2 + model.Items.Length, table.Rows.Count);
+            }
+
+        }
+
+        [TestMethod()]
+        public void BodyTemplatingWithJson()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodytemplating.html");
+
+            StringBuilder content = new StringBuilder();
+
+            
+            int total = 0;
+            int count = 100;
+            for (var i = 0; i < count; i++)
+            {
+                var val = i + 1;
+                if (i > 0)
+                    content.Append(",");
+
+                content.Append("{ \"Name\": \"Name " + val.ToString() + "\", \"Cost\": \"£" + val.ToString() + ".00\" }\r\n");
+
+                total += val;
+            }
+
+            var modelJson = "{\r\n" +
+                "\"Items\" : [" + content.ToString() +
+                "],\r\n" +
+                "\"Total\" : {\r\n" +
+                    "\"Name\" : \"Total\",\r\n" +
+                    "\"Cost\" : \"£" + total + ".00\"\r\n" +
+                    "}\r\n" +
+                "}";
+
+            var model = Newtonsoft.Json.JsonConvert.DeserializeObject(modelJson);
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodytemplatingWithJson.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+                var pg = doc.Pages[0] as Section;
+                Assert.IsNotNull(pg.Header);
+                Assert.IsNotNull(pg.Footer);
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0];
+                Assert.IsNotNull(body.HeaderBlock);
+                Assert.IsNotNull(body.FooterBlock);
+
+                var table = doc.FindAComponentById("grid") as TableGrid;
+                Assert.IsNotNull(table);
+                Assert.AreEqual(2 + count, table.Rows.Count);
             }
 
         }

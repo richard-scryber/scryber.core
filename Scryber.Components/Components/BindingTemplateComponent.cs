@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.ComponentModel;
 
 namespace Scryber.Components
 {
@@ -167,7 +168,7 @@ namespace Scryber.Components
             int added = 0;
             IEnumerator enumerator = null;
             
-            if (data is IEnumerable)
+            if (CanEnumerate(data))
             {
                 if (context.ShouldLogDebug)
                     context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template", "Starting to bind enumerable data into container " + this.ID);
@@ -239,6 +240,23 @@ namespace Scryber.Components
 
             context.CurrentIndex = prevcount;
             
+        }
+
+        protected bool CanEnumerate(object value)
+        {
+            if (value is IEnumerable)
+            {
+
+                if (value is ICustomTypeDescriptor)
+                    return false; // Should not enumerate over these
+                else if (value is string)
+                    return false; // Should not enumerate over strings
+                else
+                    return true;
+
+            }
+            else
+                return false;
         }
 
         /// <summary>
