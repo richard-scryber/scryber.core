@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.0.5</PackageVersion>
+    <PackageVersion>5.0.5.1</PackageVersion>
     <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
@@ -20,7 +20,11 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.5
+    <PackageReleaseNotes>5.0.5.1
+
+Minor enhancement for supporting parsed JSON as a parameter model, and margin an padding fix for a single value applied to all.
+
+5.0.5
 
 Multiple enhancements including
 
@@ -53,7 +57,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="5.0.5" />
+    <PackageReference Include="Scryber.Core" Version="5.0.5.1" />
   </ItemGroup>
       
   <ItemGroup>
