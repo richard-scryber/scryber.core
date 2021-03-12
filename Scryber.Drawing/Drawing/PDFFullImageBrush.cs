@@ -125,6 +125,18 @@ namespace Scryber.Drawing
 
                 //Create the image
                 imagex = g.Container.Document.GetResource(Scryber.Resources.PDFResource.XObjectResourceType, fullpath, true) as PDFImageXObject;
+
+                if(null == imagex)
+                {
+                    if (g.Context.Conformance == ParserConformanceMode.Lax)
+                    {
+                        g.Context.TraceLog.Add(TraceLevel.Error, "Drawing", "Could not set up the image brush as the graphic image was not found or returned for : " + fullpath);
+                        return;
+                    }
+                    else
+                        throw new PDFRenderException("Could not set up the image brush as the graphic image was not found or returned for : " + fullpath);
+                }
+
                 //The container of a pattern is the document as this is the scope
                 PDFImageTilingPattern tile = new PDFImageTilingPattern(g.Container.Document, resourcekey, imagex);
                 tile.Container = g.Container;

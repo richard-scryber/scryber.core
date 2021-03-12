@@ -821,43 +821,6 @@ namespace Scryber.Core.UnitTests.Html
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
-                    /*
-                    Assert.AreEqual(1, doc.Styles.Count);
-                    Assert.IsInstanceOfType(doc.Styles[0], typeof(StyleGroup));
-                    var grp = doc.Styles[0] as StyleGroup;
-
-                    Assert.AreEqual(2, grp.Styles.Count);
-                    Assert.IsInstanceOfType(grp.Styles[0], typeof(StyleFontFace));
-
-                    ff = grp.Styles[0] as StyleFontFace;
-
-                    Assert.AreEqual("Open Sans", ff.FontFamily.FamilyName);
-                    Assert.IsFalse(ff.FontItalic);
-                    Assert.IsTrue(ff.FontBold);
-                    Assert.IsNotNull(ff.Source);
-
-                    var sel = ff.Source;
-                    Assert.AreEqual(FontSourceType.Local, sel.Type);
-                    Assert.AreEqual("Open Sans", sel.Source);
-                    Assert.AreEqual(FontSourceFormat.Default, sel.Format);
-
-                    Assert.IsNotNull(sel.Next);
-                    sel = sel.Next;
-
-                    Assert.AreEqual(FontSourceType.Url, sel.Type);
-                    Assert.AreEqual("https://fonts.gstatic.com/s/opensans/v18/mem8YaGs126MiZpBA-U1Ug.ttf", sel.Source);
-                    Assert.AreEqual(FontSourceFormat.TrueType, sel.Format);
-
-
-                    Assert.IsNotNull(sel.Next);
-                    sel = sel.Next;
-
-                    Assert.AreEqual(FontSourceType.Url, sel.Type);
-                    Assert.AreEqual("https://github.com/google/fonts/blob/master/apache/opensans/OpenSans-Bold.woff", sel.Source);
-                    Assert.AreEqual(FontSourceFormat.WOFF, sel.Format);
-
-                    Assert.IsNull(sel.Next);
-                    */
                 }
 
             }
@@ -1110,7 +1073,57 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod()]
+        public void InvalidBackgroundImage()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/InvalidBackgroundImage.html");
+            bool error = false;
+            try
+            {
+                using (var doc = Document.ParseDocument(path))
+                {
+                    doc.ConformanceMode = ParserConformanceMode.Strict;
+                    using (var stream = DocStreams.GetOutputStream("InvalidBackgroundImage.pdf"))
+                    {
+                        doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                        doc.SaveAsPDF(stream);
+                    }
+                }
 
+            }
+            catch(Exception ex)
+            {
+                error = true;
+            }
+
+            Assert.IsTrue(error, "An error was not raised when a background image was not available in Strict mode");
+
+
+            error = true;
+            try
+            {
+                using (var doc = Document.ParseDocument(path))
+                {
+                    using (var stream = DocStreams.GetOutputStream("InvalidBackgroundImage.pdf"))
+                    {
+                        //Set the conformance to lax
+                        doc.ConformanceMode = ParserConformanceMode.Lax;
+
+                        doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                        doc.SaveAsPDF(stream);
+                    }
+                }
+                error = false;
+
+            }
+            catch (Exception ex)
+            {
+                error = true;
+            }
+
+            Assert.IsFalse(error, "An error was raised when a background image was not available in Lax mode");
+        }
 
         [TestMethod]
         public void LargeFileTest()
