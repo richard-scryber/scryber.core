@@ -142,6 +142,7 @@ on the PDF extension method.
             {
                 titlestyle = "color:#ff6347", //style data
                 title = "Hello from scryber", //simple content
+                author = "Joe the Mack",
                 items = new[]                 //or even complex object data
                 {
                     new { name = "First item" },
@@ -232,14 +233,14 @@ The css style could just have easily come from another referenced stylesheet.
 
             <style>
                 body {
-                    font-family: 'Roboto', sans-serif;
+                    font-family: 'Fraunces', sans-serif;
                     font-size: 14pt;
                 }
 
                 p.header {
                     color: #AAA;
                     background-color: #333;
-                    background-image: url('../html/images/ScyberLogo2_alpha_small.png');
+                    background-image: url('./html/images/ScyberLogo2_alpha_small.png');
                     background-repeat: no-repeat;
                     background-position: 10pt 10pt;
                     background-size: 20pt 20pt;
@@ -255,6 +256,8 @@ The css style could just have easily come from another referenced stylesheet.
                     margin-bottom: 10pt;
                 }
             </style>
+            <!-- Setting the base url for the references so they load the style sheet background image from git -->
+            <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/' />
         </head>
         <body>
             <header>
@@ -278,7 +281,7 @@ The css style could just have easily come from another referenced stylesheet.
                 <!-- footers in a table with style -->
                 <table class="foot" style="width:100%">
                     <tr>
-                        <td>{@:author}</td>
+                        <td>{@:model.author}</td>
                         <td>Hello World Sample</td>
                     </tr>
                 </table>
@@ -321,7 +324,7 @@ be using our page for.
             size: A4 landscape;
         }
 
-        /* But can use specific sizes for sections
+        /* But can use specific sizes for sections */
         @page portrait {
             size: A4 portrait;
         }
@@ -332,11 +335,13 @@ be using our page for.
 And we can add a link to this in our html file. The media attribute is optional, as our css has it, but we 
 know browsers will not load the file if it's marked for print.
 
+This will also be loaded from the base path set in the file.
+
 .. code-block:: html
 
         </style>
-        <link type='stylesheet'
-            href='./CSS/HelloPrint.css' 
+        <link rel='stylesheet'
+            href='./HTML/CSS/HelloPrint.css' 
             media='print' />
     </head>
 
@@ -347,7 +352,7 @@ In our footer we can add the current page number (of total pages) and an author 
     <footer>
         <table class="foot" style="width:100%">
             <tr>
-                <td>{@:author}</td>
+                <td>{@:model.author}</td>
 
                 <!-- the page tag is made up, and has a property attribute
                     (open to suggestions on better syntax)  -->

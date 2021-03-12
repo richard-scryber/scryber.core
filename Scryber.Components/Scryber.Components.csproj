@@ -54,6 +54,7 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <RepositoryType>Git</RepositoryType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
+    <Configurations>Release;Debug</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
