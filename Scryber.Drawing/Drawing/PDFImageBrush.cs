@@ -124,7 +124,7 @@ namespace Scryber.Drawing
 
 
 
-        public override void SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
         {
             Scryber.Resources.PDFImageXObject imagex;
 
@@ -139,6 +139,19 @@ namespace Scryber.Drawing
 
                 //Create the image
                 imagex = g.Container.Document.GetResource(Scryber.Resources.PDFResource.XObjectResourceType, fullpath, true) as PDFImageXObject;
+
+                if (null == imagex)
+                {
+                    if (g.Context.Conformance == ParserConformanceMode.Lax)
+                    {
+                        g.Context.TraceLog.Add(TraceLevel.Error, "Drawing", "Could not set up the image brush as the graphic image was not found or returned for : " + fullpath);
+                        return false;
+                    }
+                    else
+                        throw new PDFRenderException("Could not set up the image brush as the graphic image was not found or returned for : " + fullpath);
+                }
+
+
                 //The container of a pattern is the document as this is the scope
                 PDFImageTilingPattern tile = new PDFImageTilingPattern(g.Container.Document, resourcekey, imagex);
                 tile.Container = g.Container;
@@ -175,17 +188,20 @@ namespace Scryber.Drawing
                 tile.Step = step;
 
                 PDFPoint start = new PDFPoint(bounds.X + this.XPostion, bounds.Y + this.YPostion);
-                
+
                 if (g.Origin == DrawingOrigin.TopLeft)
                 {
-                    start.Y = g.ContainerSize.Height - start.Y; 
+                    start.Y = g.ContainerSize.Height - start.Y;
                 }
                 tile.Start = start;
 
                 PDFName name = g.Container.Register(tile);
 
                 g.SetFillPattern(name);
+                return true;
             }
+            else
+                return false;
         }
 
         private PDFSize CalculateAppropriateImageSize(PDFImageData imgdata)

@@ -77,11 +77,16 @@ namespace Scryber.Drawing
             this._op = opacity;
         }
 
-        public override void SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
         {
             g.SetFillOpacity(this.Opacity);
-            if(this.Color != null && this.Color.IsEmpty == false)
+            if (this.Color != null && this.Color.IsEmpty == false)
+            {
                 g.SetFillColor(this.Color);
+                return true;
+            }
+            else
+                return false;
         }
 
         public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
@@ -104,8 +109,9 @@ namespace Scryber.Drawing
             get { return FillType.None; }
         }
 
-        public override void SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
         {
+            return false;
         }
 
         public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)

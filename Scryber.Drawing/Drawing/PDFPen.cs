@@ -114,7 +114,7 @@ namespace Scryber.Drawing
             this.ClearAll();
         }
 
-        public override void SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             if (this.IsSet(SetValues.Caps))
                 graphics.RenderLineCap(this.LineCaps);
@@ -126,6 +126,8 @@ namespace Scryber.Drawing
                 graphics.RenderLineWidth(this.Width);
             if (this.Opacity.Value > 0.0)
                 graphics.SetStrokeOpacity(this.Opacity);
+
+            return true;
         }
 
         public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
@@ -165,8 +167,9 @@ namespace Scryber.Drawing
         {
         }
 
-        public override void SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
         {
+            return false;
         }
 
         public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
@@ -209,11 +212,12 @@ namespace Scryber.Drawing
             this.Color = color;
         }
 
-        public override void SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
-            base.SetUpGraphics(graphics, bounds);
+            bool result = base.SetUpGraphics(graphics, bounds);
             if (this.IsSet(SetValues.Color))
                 graphics.SetStrokeColor(Color);
+            return result;
         }
     }
 
@@ -254,11 +258,12 @@ namespace Scryber.Drawing
             this.Dash = dash;
         }
 
-        public override void SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
-            base.SetUpGraphics(graphics, bounds);
+            bool result = base.SetUpGraphics(graphics, bounds);
             if (this.IsSet(SetValues.Dash))
                 graphics.RenderLineDash(this.Dash);
+            return result;
         }
 
     }

@@ -200,9 +200,10 @@ namespace Scryber.Drawing
         // graphics adapters
         //
 
-        public override void SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             graphics.SetTransformationMatrix(this, true, true);
+            return true;
         }
 
         public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)

@@ -24,7 +24,7 @@ namespace Scryber.Drawing
 {
     public abstract class PDFGraphicsAdapter
     {
-        public abstract void SetUpGraphics(PDFGraphics graphics, PDFRect bounds);
+        public abstract bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds);
 
         public abstract void ReleaseGraphics(PDFGraphics g, PDFRect bounds);
     }

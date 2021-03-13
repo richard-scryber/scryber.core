@@ -429,9 +429,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public override void SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             graphics.SetCurrentFont(this);
+            return true;
         }
 
         public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
