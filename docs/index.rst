@@ -27,10 +27,10 @@ Start with a template. **The namespace declaration is important.**
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
         <head>
-            <title>{@:title}</title>
+            <title>{@:model}</title>
         </head>
         <body>
-            <div style='padding:10px'>{@:title}.</div>
+            <div style='padding:10px'>{@:model}.</div>
         </body>
     </html>
 
@@ -63,12 +63,14 @@ And then generate your template in a view.
             //parsing the document creates a complete object graph from the content
             using(var doc = Document.ParseDocument(path))
             {
-                doc.Params["title"] = "Hello World";
+                doc.Params["model"] = "Hello World";
                 return this.PDF(doc); //convenience extension method to return the result.
             }
         }
 
     }
+
+    `Try it out <https://scryberonline-tryitout-dev.azurewebsites.net/TryIt/?sample=SCRY.SAMP.HelloWorld>`_
 
 
 .. image:: images/HelloWorldIndex.png
