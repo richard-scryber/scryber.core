@@ -595,10 +595,25 @@ namespace Scryber.Drawing
                 img = InitImageData(path, bmp, compress);
                 return img;
             }
-
         }
 
+        public static PDFImageData LoadImageFromUriData(string src, IPDFDocument document, IPDFComponent owner)
+        {
+            if (null == document) throw new ArgumentNullException("document");
+            if (null == owner) throw new ArgumentNullException("owner");
 
+            var dataUri = ParseDataURI(src);
+
+            if (dataUri.encoding != "base64") throw new ArgumentException("src", $"unsupported encoding {dataUri.encoding}; expected base64");
+            if (dataUri.mediaType != "image/png") throw new ArgumentException("src", $"unsupported encoding {dataUri.mediaType}; expected image/png");
+
+            var binary = Convert.FromBase64String(dataUri.data);
+
+            using (var ms = new System.IO.MemoryStream(binary))
+            {
+                return PDFImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
+            }
+        }
 
         /// <summary>
         /// Creates a new PDFImageData instance from the specified bitmap.
@@ -735,5 +750,30 @@ namespace Scryber.Drawing
 
         }
 
+        #region Parse URI data from inline src data:[<MIME-type>][;charset=<encoding>][;base64],<data>
+
+        /**
+         * Parse a data uri and return a record 
+         * @param uri 
+         */
+        internal record UriData { public string mediaType; public string parameters; public string encoding; public string data; }
+        
+        private static readonly string regex = @"^data:([-\w]+\/[-+\w.]+)?((?:;?[\w]+=[-\w]+)*);(base64)?,(.*)";
+
+        private static UriData ParseDataURI(string uri)
+        {
+
+            var match = System.Text.RegularExpressions.Regex.Match(uri, regex);
+
+            return new UriData
+            {
+                mediaType = match.Groups[1]?.Value,
+                parameters = match.Groups[2]?.Value,
+                encoding = match.Groups[3]?.Value,
+                data = match.Groups[4]?.Value
+            };
+        }
+
+        #endregion
     }
 }

@@ -17,6 +17,7 @@ using System.IO;
 using Scryber.Generation;
 using Scryber.Svg.Components;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -49,7 +50,25 @@ namespace Scryber.Core.UnitTests.Html
             _layoutcontext = args.Context;
         }
 
+        [TestMethod]
+        public void DataImageFactory_Test()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' ><body style='padding:20pt;' >
+                    <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' alt='Red dot' />
+                    </body></html>";
 
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("DataImage.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+        }
 
         [TestMethod()]
         public void SimpleDocumentParsing()
