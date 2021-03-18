@@ -1190,7 +1190,7 @@ namespace Scryber.Components
                 PDFImageData data = this.LoadImageData(owner, src);
                 if (null != data)
                 {
-                    return RegisterXObjectResource(owner, data) as PDFImageXObject;
+                    return RegisterXObjectResource(src, owner, data) as PDFImageXObject;
                 }
                 else
                     return null;
@@ -1226,7 +1226,7 @@ namespace Scryber.Components
                 return found;
 
             if (type == PDFResource.XObjectResourceType)
-                return this.RegisterXObjectResource(owner, resource);
+                return this.RegisterXObjectResource(fullname, owner, resource);
 
             else if (type == PDFResource.FontDefnResourceType)
                 return this.RegisterFontResource(fullname, owner, resource);
@@ -1246,7 +1246,7 @@ namespace Scryber.Components
 
         #region protected PDFImageXObject RegisterImageResource(string fullname, Component owner, object resource)
 
-        protected PDFResource RegisterXObjectResource(Component owner, object resource)
+        protected PDFResource RegisterXObjectResource(string fullname, Component owner, object resource)
         {
             if(resource is PDFImageData)
             {
@@ -2238,6 +2238,10 @@ namespace Scryber.Components
                     }
                     else
                     {
+                        var exists = this.SharedResources.GetResource(PDFImageXObject.XObjectResourceType, src) as PDFImageXObject;
+                        if (exists != null)
+                            return exists.ImageData;
+
                         if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), key, out cached))
                         {
                             IPDFDataProvider prov;
