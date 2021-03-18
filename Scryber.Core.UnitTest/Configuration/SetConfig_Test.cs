@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Scryber.Components;
+using Scryber.Drawing;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Scryber.Core.UnitTests.Configuration
 {
@@ -344,8 +348,122 @@ namespace Scryber.Core.UnitTests.Configuration
             ConfigClassCleanup();
         }
 
+        
+        [TestMethod]
+        public void DataImageFactory_Test()
+        {
+            //Can add in the settings.json, or manually here.
+            
+
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' ><body style='padding:20pt;' >
+<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' alt='Red dot' />
+</body></html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    EnsureDataImageFactory(doc);
+
+                    using (var stream = DocStreams.GetOutputStream("DataImage.pdf"))
+                    {
+
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+
+        }
+
+        public void EnsureDataImageFactory(Document doc)
+        {
+            var factories = doc.ImageFactories;
+
+            if (factories.Count == 0 || factories.FirstOrDefault(f => { return f.Name == "DataImages"; }) == null)
+            {
+                var dataImg = new Options.PDFImageFactory("DataImages", new Regex("data:"), new DataBase64ImageFactory());
+                factories.Add(dataImg);
+            }
+        }
 
 
+        public Options.ImageDataFactoryOption[] EnsureDataImageFactory()
+        {
+            var services = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            var orig = services.ImagingOptions.Factories;
 
+            var factories = null == orig ? new List<Options.ImageDataFactoryOption>() : new List<Options.ImageDataFactoryOption>(orig);
+
+            if(factories.Count == 0 || factories.FirstOrDefault(f=> { return f.Name == "DataImages"; } ) == null)
+            {
+                var assm = typeof(DataBase64ImageFactory).Assembly.FullName;
+                var type = typeof(DataBase64ImageFactory).FullName;
+                var path = "data:";
+
+                factories.Add(new Options.ImageDataFactoryOption()
+                {
+                    FactoryAssembly = assm,
+                    FactoryType = type,
+                    Match = path,
+                    Name = "DataImages"
+                });
+                services.ImagingOptions.Factories = factories.ToArray();
+
+            }
+            return orig;
+        }
+
+
+        public class DataBase64ImageFactory : IPDFImageDataFactory
+        {
+            public bool ShouldCache { get { return false; } }
+
+            /// <summary>
+            /// Loads an image from a base 64 data image
+            /// </summary>
+            /// <param name="document"></param>
+            /// <param name="owner"></param>
+            /// <param name="path"></param>
+            /// <returns></returns>
+            public Scryber.Drawing.PDFImageData LoadImageData(IPDFDocument document, IPDFComponent owner, string path)
+            {
+                path = GetBase64FromPath(path);
+
+                var binary = Convert.FromBase64String(path);
+
+                using (var ms = new System.IO.MemoryStream(binary))
+                {
+                    return PDFImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
+                }
+            }
+
+            /// <summary>
+            /// Strips the front from the image path and returns the base64 string
+            /// </summary>
+            /// <param name="path"></param>
+            /// <returns></returns>
+            private static string GetBase64FromPath(string path)
+            {
+                path = path.Trim();
+                var index = path.IndexOf("data:image/png;");
+
+                if (index <0)
+                    throw new NotSupportedException("This image factory only supports data png images");
+
+                //could handle different types of image not just png
+                path = path.Substring(index + "data:image/png;".Length);
+
+                if (!path.StartsWith("base64,"))
+                    throw new NotSupportedException("This image factory only supports base64 encoded data images");
+
+                path = path.Substring("base64,".Length);
+                path = path.TrimStart();
+
+                //TODO: remove any carriage returns etc.
+
+                return path;
+            }
+        }
     }
 }

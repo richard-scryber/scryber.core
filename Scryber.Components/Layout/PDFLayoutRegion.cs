@@ -29,6 +29,7 @@ using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber.Styles.Parsing;
 
 namespace Scryber.Layout
 {
@@ -291,6 +292,8 @@ namespace Scryber.Layout
         }
 
         #endregion
+
+        private PDFFloatAddition Floats;
 
         //
         // ctor(s)
@@ -561,13 +564,30 @@ namespace Scryber.Layout
         /// Gets the current available width for a line
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFUnit GetAvailableWidth()
+        protected PDFUnit GetAvailableWidth()
+        {
+            return GetAvailableWidth(this.UsedSize.Height);
+        }
+
+        protected virtual PDFUnit GetAvailableWidth(PDFUnit yoffset)
         {
             PDFUnit avail = this.UnusedBounds.Width;
+
+            if (null != this.Floats)
+                avail = this.Floats.ApplyWidths(avail, yoffset);
             return avail;
         }
 
         #endregion
+
+        public virtual PDFUnit GetXInset(PDFUnit yoffset)
+        {
+            PDFUnit x = PDFUnit.Zero;
+            if (null != this.Floats)
+                x = this.Floats.ApplyXInset(x, yoffset);
+
+            return x;
+        }
 
         #region protected virtual void AssertLastItemIsClosed()
 
@@ -584,6 +604,26 @@ namespace Scryber.Layout
         }
 
         #endregion
+
+        public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
+        {
+            var line = this.CurrentItem as PDFLayoutLine;
+
+            if (mode == FloatMode.Left)
+            {
+                this.Floats = new PDFFloatLeftAddition(inset, height, offsetY, this.Floats);
+                if (null != line)
+                    line.AddRun(new PDFTextRunSpacer(inset, 1, line, null));
+                
+            }
+            else if(mode == FloatMode.Right)
+            {
+                this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
+
+                if (null != line)
+                    line.SetMaxWidth(line.FullWidth - inset);
+            }
+        }
 
 
         //
@@ -649,7 +689,8 @@ namespace Scryber.Layout
                 ///Individually calculate each lines horizontal offset
                 if (applyAlignments && h != HorizontalAlignment.Left)
                 {
-                    PDFUnit space = this.TotalBounds.Width - item.Width;
+                    PDFUnit width = this.GetAvailableWidth(yoffset);
+                    PDFUnit space = width - item.Width;
 
                     if(h == HorizontalAlignment.Justified)
                     {
@@ -659,7 +700,7 @@ namespace Scryber.Layout
                             if (logdebug)
                                 context.TraceLog.Add(TraceLevel.Debug, PDFLayoutItem.LOG_CATEGORY, "Justifying the textual content of the line " + line.LineIndex);
 
-                            bool didjustify = line.JustifyContent(this.TotalBounds.Width, item.Width, space, false, cache, ref options);
+                            bool didjustify = line.JustifyContent(width, item.Width, space, false, cache, ref options);
 
                             if (!didjustify && lastwasapplied && null != options && !(options.WordSpacing.HasValue || options.CharacterSpacing.HasValue))
                                 line.ResetJustifySpacing(options);

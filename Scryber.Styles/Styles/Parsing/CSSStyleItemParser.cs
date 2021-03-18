@@ -2422,6 +2422,13 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
+    public class CSSPositionFloatParser : CSSEnumStyleParser<FloatMode>
+    {
+
+        public CSSPositionFloatParser(): base(CSSStyleItems.Float, StyleKeys.PositionFloat)
+        { }
+    }
+
     // size
 
     #region public class CSSWidthParser : CSSUnitStyleParser

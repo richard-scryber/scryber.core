@@ -156,6 +156,7 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<PDFUnit> PositionYKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ypos", PositionItemKey);
         public static readonly PDFStyleKey<PositionMode> PositionModeKey = StyleKey.InternalCreateStyleValueKey<PositionMode>((PDFObjectType)"mode", PositionItemKey);
         public static readonly PDFStyleKey<PDFRect> PositionViewPort = StyleKey.InternalCreateStyleValueKey<PDFRect>((PDFObjectType)"vwpt", PositionItemKey);
+        public static readonly PDFStyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((PDFObjectType)"flot", PositionItemKey);
 
         //Size
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleSize, NOT_INHERITED);

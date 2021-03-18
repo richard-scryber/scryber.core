@@ -306,7 +306,6 @@ be using our page for.
 
 .. code-block:: css
 
-    /* HelloPrint.css */
 
     @media print {
 
@@ -331,19 +330,6 @@ be using our page for.
 
     }
 
-
-And we can add a link to this in our html file. The media attribute is optional, as our css has it, but we 
-know browsers will not load the file if it's marked for print.
-
-This will also be loaded from the base path set in the file.
-
-.. code-block:: html
-
-        </style>
-        <link rel='stylesheet'
-            href='./HTML/CSS/HelloPrint.css' 
-            media='print' />
-    </head>
 
 In our footer we can add the current page number (of total pages) and an author property directly
 

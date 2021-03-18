@@ -35,6 +35,12 @@ namespace Scryber
         /// </summary>
         public PositionMode PositionMode { get; set; }
 
+        /// <summary>
+        /// Gets or set the float mode for this component
+        /// </summary>
+        public FloatMode FloatMode { get; set; }
+
+
         private Visibility _vis;
         /// <summary>
         /// Gets or sets the visibility of this content

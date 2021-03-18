@@ -971,6 +971,46 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        public void FloatLeft()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatLeft.html");
+
+
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+
+                using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
+                {
+
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
+        public void FloatMixed()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatMixed.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+
+                using (var stream = DocStreams.GetOutputStream("FloatMixed.pdf"))
+                {
+
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
         public void RestrictedHtml()
         {
             var path = System.Environment.CurrentDirectory;

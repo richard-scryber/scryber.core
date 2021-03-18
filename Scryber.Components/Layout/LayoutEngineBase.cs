@@ -443,6 +443,9 @@ namespace Scryber.Layout
 
                 else if (options.PositionMode == PositionMode.Relative)
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
+
+                else if (options.FloatMode != FloatMode.None)
+                    positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
             }
 
 
@@ -499,9 +502,56 @@ namespace Scryber.Layout
                 {
                     ApplyRelativeTransformations(positioned, options);
                 }
+                else if(options.FloatMode != FloatMode.None)
+                {
+                    ApplyFloat(positioned, options);
+                }
                 
             }
 
+        }
+
+        protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
+        {
+            if (null == pos)
+                throw new ArgumentNullException("pos");
+
+            if (null == positioned)
+                throw new ArgumentNullException("positioned");
+
+            if (pos.FloatMode == FloatMode.None)
+                throw new ArgumentOutOfRangeException("pos.FloatMode", "Can not be None");
+
+            PDFLayoutBlock relBlock = positioned.Contents[0] as PDFLayoutBlock;
+            if (null == relBlock)
+            {
+                if (this.Context.Conformance == ParserConformanceMode.Strict)
+                    throw new InvalidOperationException(Errors.CanOnlyTransformBlockComponents);
+                else
+                {
+                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, Errors.CanOnlyTransformBlockComponents);
+                    return;
+                }
+            }
+            PDFUnit inset = PDFUnit.Zero;
+            PDFUnit height = positioned.Height;
+            PDFUnit offset = pos.Y.Value;
+
+            if(pos.FloatMode == FloatMode.Left)
+            {
+                inset = relBlock.Width;
+            }
+            else if(pos.FloatMode == FloatMode.Right)
+            {
+                var bounds = positioned.TotalBounds;
+                bounds.X = positioned.Parent.Width - relBlock.Width;
+                positioned.TotalBounds = bounds;
+
+                inset = relBlock.Width;
+            }
+            var container = positioned.Parent as PDFLayoutBlock;
+            container.CurrentRegion.AddFloatingInset(pos.FloatMode, inset, offset, height);
+            
         }
 
         /// <summary>
@@ -613,6 +663,17 @@ namespace Scryber.Layout
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full);
             return abs;
+        }
+
+
+        protected virtual PDFLayoutRegion BeginNewFloatingRegionForChild(PDFPositionOptions pos, IPDFComponent comp, Style full)
+        {
+            PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
+            PDFLayoutBlock last = page.LastOpenBlock();
+            PDFUnit offsetY = last.Height;
+            pos.Y = offsetY;
+            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full);
+            return floating;
         }
 
         #endregion

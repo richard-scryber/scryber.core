@@ -127,6 +127,7 @@ namespace Scryber.Html
 
         public const string Left = "left";
         public const string Top = "top";
+        public const string Float = "float";
 
         public const string Width = "width";
         public const string Height = "height";

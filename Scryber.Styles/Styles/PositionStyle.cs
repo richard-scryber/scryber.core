@@ -204,6 +204,32 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public FloatMode Float {get;set;}
+
+        [PDFAttribute("float")]
+        public FloatMode Float
+        {
+            get
+            {
+                FloatMode f;
+                if (this.TryGetValue(StyleKeys.PositionFloat, out f))
+                    return f;
+                else
+                    return FloatMode.None;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionFloat, value);
+            }
+        }
+
+        public void RemoveFloat()
+        {
+            this.RemoveValue(StyleKeys.PositionFloat);
+        }
+
+        #endregion
+
 
         // obselete legacy properties - moved to Size
 

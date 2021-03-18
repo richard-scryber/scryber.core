@@ -209,6 +209,24 @@ namespace Scryber.Drawing
         //TODO:Float - Appears at the current position with content flowing around it
     }
 
+    public enum FloatMode
+    {
+        /// <summary>
+        /// Default value of not floating
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Will float content to the left side of the container
+        /// </summary>
+        Left,
+
+        /// <summary>
+        /// Will float content to the right side of the container
+        /// </summary>
+        Right
+    }
+
     public enum OverflowAction
     {
         /// <summary>

@@ -993,6 +993,14 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.ColumnAlleyKey, out unit))
                 options.AlleyWidth = unit.Value;
 
+            // float
+
+            StyleValue<FloatMode> floatm;
+            if (this.TryGetValue(StyleKeys.PositionFloat, out floatm))
+            {
+                options.FloatMode = floatm.Value;
+                options.FillWidth = false;
+            }
 
             // transformations
 

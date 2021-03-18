@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Components;
+using Scryber.Drawing;
 
 namespace Scryber.Layout
 {
@@ -51,9 +52,11 @@ namespace Scryber.Layout
             get { return Drawing.PDFUnit.Zero; }
         }
 
+        private PDFUnit _width = PDFUnit.Zero;
+
         public override Drawing.PDFUnit Width
         {
-            get { return Drawing.PDFUnit.Zero; }
+            get { return _width; }
         }
 
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.PDFUnit xoffset, Drawing.PDFUnit yoffset)

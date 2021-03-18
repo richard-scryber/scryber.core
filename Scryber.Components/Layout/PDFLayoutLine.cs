@@ -156,6 +156,12 @@ namespace Scryber.Layout
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the offset of this line in it's container
+        /// </summary>
+        public PDFUnit OffsetX { get; set; }
+
+
         #region public HorizontalAlignment HAlignment {get;set;}
 
         /// <summary>

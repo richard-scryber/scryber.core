@@ -304,6 +304,13 @@ namespace Scryber.Layout
 
         #endregion
 
+
+        public PDFFloatAddition Floats
+        {
+            get;
+            set;
+        }
+
         #region public int BlockRepeatIndex { get; set; }
 
         /// <summary>
@@ -559,6 +566,18 @@ namespace Scryber.Layout
         }
 
         #endregion
+
+        public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
+        {
+            if (mode == FloatMode.Left)
+            {
+                this.Floats = new PDFFloatLeftAddition(inset, height, offsetY, this.Floats);
+            }
+            else if (mode == FloatMode.Right)
+            {
+                this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
+            }
+        }
 
         #region public override bool MoveToNextRegion(PDFUnit requiredHeight, PDFLayoutContext context)
 
