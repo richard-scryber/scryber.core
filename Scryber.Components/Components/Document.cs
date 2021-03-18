@@ -1181,16 +1181,16 @@ namespace Scryber.Components
 
         #endregion
 
-        #region private PDFImageXObject CreateImageResource(string fullpath)
+        #region private PDFImageXObject CreateImageResource(string src)
 
-        private PDFImageXObject CreateImageResource(string fullpath, Component owner)
+        private PDFImageXObject CreateImageResource(string src, Component owner)
         {
-            using (this.PerformanceMonitor.Record(PerformanceMonitorType.Image_Load, fullpath))
+            using (this.PerformanceMonitor.Record(PerformanceMonitorType.Image_Load, src))
             {
-                PDFImageData data = this.LoadImageData(owner, fullpath);
+                PDFImageData data = this.LoadImageData(owner, src);
                 if (null != data)
                 {
-                    return RegisterXObjectResource(fullpath, owner, data) as PDFImageXObject;
+                    return RegisterXObjectResource(owner, data) as PDFImageXObject;
                 }
                 else
                     return null;
@@ -1226,7 +1226,7 @@ namespace Scryber.Components
                 return found;
 
             if (type == PDFResource.XObjectResourceType)
-                return this.RegisterXObjectResource(fullname, owner, resource);
+                return this.RegisterXObjectResource(owner, resource);
 
             else if (type == PDFResource.FontDefnResourceType)
                 return this.RegisterFontResource(fullname, owner, resource);
@@ -1246,7 +1246,7 @@ namespace Scryber.Components
 
         #region protected PDFImageXObject RegisterImageResource(string fullname, Component owner, object resource)
 
-        protected PDFResource RegisterXObjectResource(string fullname, Component owner, object resource)
+        protected PDFResource RegisterXObjectResource(Component owner, object resource)
         {
             if(resource is PDFImageData)
             {
@@ -2194,10 +2194,10 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="source">The full path or absolute location of the image data file</param>
         /// <returns></returns>
-        public PDFImageData LoadImageData(IPDFComponent owner, string path)
+        public PDFImageData LoadImageData(IPDFComponent owner, string src)
         {
             PDFImageData data;
-            string key = path;
+            string key = src;
             bool compress = false;
             if (owner is IPDFOptimizeComponent)
                 compress = ((IPDFOptimizeComponent)owner).Compress;
@@ -2206,63 +2206,72 @@ namespace Scryber.Components
                 object cached;
                 IPDFImageDataFactory factory;
 
-                if (string.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(src))
                     throw new ArgumentNullException("path");
 
-                path = owner.MapPath(path);
+                src = owner.MapPath(src);
 
-                if (this.ImageFactories.TryGetMatch(path, out factory))
+                if (this.ImageFactories.TryGetMatch(src, out factory))
                 {
-                    data = LoadImageDataFromFactory(owner, factory, path);
+                    data = LoadImageDataFromFactory(owner, factory, src);
                 }
                 else
                 {
                     bool isfile;
+                    bool isInlineData = false;
 
-                    if (System.Uri.IsWellFormedUriString(path, UriKind.Absolute))
+                    if (System.Uri.IsWellFormedUriString(src, UriKind.Absolute))
                     {
                         isfile = false;
+                        isInlineData = "data" == (new System.Uri(src)).Scheme;
                     }
-                    else if (System.IO.Path.IsPathRooted(path))
+                    else if (System.IO.Path.IsPathRooted(src))
                     {
                         isfile = true;
                     }
                     else
                         throw RecordAndRaise.Argument(Errors.CannotLoadFileWithRelativePath);
 
-                    if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), key, out cached))
+                    if (isInlineData)
                     {
-                        IPDFDataProvider prov;
-                        if (isfile)
-                            data = PDFImageData.LoadImageFromLocalFile(path, owner);
-
-                        else if (this.DataProviders.TryGetDomainProvider("", path, out prov))
-                        {
-                            object returned = prov.GetResponse(prov.ProviderKey + "Image", path, null);
-                            if (returned is PDFImageData)
-                                data = (PDFImageData)returned;
-                            else if (returned is byte[])
-                            {
-                                byte[] imgdata = (byte[])returned;
-                                data = PDFImageData.InitImageData(path, imgdata, compress);
-                            }
-                            else
-                                data = null;
-                        }
-                        else
-                        {
-                            
-                            data = PDFImageData.LoadImageFromURI(path, owner);
-                        }
-
-                        if (null != data)
-                        {
-                            DateTime expires = this.GetImageCacheExpires();
-                            this.CacheProvider.AddToCache(PDFObjectTypes.ImageData.ToString(), key, data, expires);
-                        }
+                        data = PDFImageData.LoadImageFromUriData(src, this, owner);
                     }
                     else
-                        data = (PDFImageData)cached;
+                    {
+                        if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), key, out cached))
+                        {
+                            IPDFDataProvider prov;
+                            if (isfile)
+                                data = PDFImageData.LoadImageFromLocalFile(src, owner);
+
+                            else if (this.DataProviders.TryGetDomainProvider("", src, out prov))
+                            {
+                                object returned = prov.GetResponse(prov.ProviderKey + "Image", src, null);
+                                if (returned is PDFImageData)
+                                    data = (PDFImageData)returned;
+                                else if (returned is byte[])
+                                {
+                                    byte[] imgdata = (byte[])returned;
+                                    data = PDFImageData.InitImageData(src, imgdata, compress);
+                                }
+                                else
+                                    data = null;
+                            }
+                            else
+                            {
+
+                                data = PDFImageData.LoadImageFromURI(src, owner);
+                            }
+
+                            if (null != data)
+                            {
+                                DateTime expires = this.GetImageCacheExpires();
+                                this.CacheProvider.AddToCache(PDFObjectTypes.ImageData.ToString(), key, data, expires);
+                            }
+                        }
+                        else
+                            data = (PDFImageData)cached;
+                    }
                 }
             }
             catch (Exception ex)
