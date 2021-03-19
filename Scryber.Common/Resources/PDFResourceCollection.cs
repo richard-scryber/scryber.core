@@ -17,12 +17,13 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Scryber.Resources
 {
-    public class PDFResourceCollection
+    public class PDFResourceCollection : IEnumerable<PDFResource>
     {
         
 
@@ -39,6 +40,17 @@ namespace Scryber.Resources
         {
             get { return _items; }
         }
+
+        public int Count
+        {
+            get { return this._items.Count; }
+        }
+
+        public PDFResource this[int index]
+        {
+            get { return this.Items[index]; }
+        }
+
 
         public PDFResourceCollection(IPDFComponent owner) 
         {
@@ -60,38 +72,6 @@ namespace Scryber.Resources
         }
 
         
-
-        //public PDFImageXObject GetImage(string path)
-        //{
-        //    foreach (PDFResource resx in this.Items)
-        //    {
-        //        if (resx.Type == PDFObjectTypes.ImageXObject)
-        //        {
-        //            PDFImageXObject xobj = resx as PDFImageXObject;
-        //            if (string.Equals(xobj.Source, path, StringComparison.OrdinalIgnoreCase))
-        //                return xobj;
-        //        }
-        //    }
-        //    return null;
-
-        //}
-
-        //public PDFFontResource GetFont(Scryber.Drawing.PDFFont font)
-        //{
-        //    foreach (PDFResource resx in this.Items)
-        //    {
-        //        if (resx.Type == PDFObjectTypes.FontResource)
-        //        {
-        //            PDFFontResource f = (PDFFontResource)resx;
-        //            if (font != null && f.Equals(font))
-        //                return f;
-                    
-        //        }
-        //    }
-        //    return null;
-        //}
-
-        
         public PDFResource Add(PDFResource resource)
         {
             foreach (PDFResource resx in this.Items)
@@ -104,6 +84,16 @@ namespace Scryber.Resources
             }
             this.Items.Add(resource);
             return resource;
+        }
+
+        public IEnumerator<PDFResource> GetEnumerator()
+        {
+            return this.Items.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

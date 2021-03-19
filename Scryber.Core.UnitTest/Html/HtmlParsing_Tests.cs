@@ -18,6 +18,7 @@ using Scryber.Generation;
 using Scryber.Svg.Components;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using Scryber.Resources;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -64,6 +65,48 @@ namespace Scryber.Core.UnitTests.Html
                     using (var stream = DocStreams.GetOutputStream("DataImage.pdf"))
                     {
                         doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                    }
+
+                }
+            }
+        }
+
+        [TestMethod]
+        public void DataImageAsBackgroundTest()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head><style>
+    .bgimg{
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==');
+        margin: 20pt;
+    }
+</style></head>
+<body style='padding:20pt;' >
+                    <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' alt='Red dot' />
+    <p class='bgimg' style='width:140pt; height:100pt'>Content</p>
+</body></html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("DataImage.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+
+                        Assert.AreEqual(3, doc.SharedResources.Count); //Third is the font.
+
+                        //As we have 2 data images we do not check for equality
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+
+                        var two = doc.SharedResources[1];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
                     }
 
                 }
@@ -203,6 +246,39 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod()]
+        public void MultipleImageReferences()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/MultipleImageReferences.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+
+                using (var stream = DocStreams.GetOutputStream("MultipleImageReferences.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.AreEqual(2, doc.SharedResources.Count); //Second is the font.
+
+                //Ensure we have one image and it's group.png
+
+                PDFImageXObject one = null;
+
+                if (doc.SharedResources[0] is PDFImageXObject)
+                    one = doc.SharedResources[0] as PDFImageXObject;
+                else if (doc.SharedResources[1] is PDFImageXObject)
+                    one = doc.SharedResources[1] as PDFImageXObject;
+                                
+                Assert.IsNotNull(one);
+                var data = one.ImageData;
+                Assert.IsNotNull(data);
+                Assert.IsTrue(data.SourcePath.EndsWith("group.png", StringComparison.OrdinalIgnoreCase));
+                
+            }
+        }
+
 
         [TestMethod()]
         public void RemoteCssFileLoading()
@@ -334,7 +410,7 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.AreEqual(pRun.Characters, "Bound value of ");
 
-            pRun = pLine.Runs[4] as PDFTextRunCharacter;
+            pRun = pLine.Runs[5] as PDFTextRunCharacter;
 
             Assert.AreEqual(pRun.Characters, model.content);
 
@@ -428,7 +504,7 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.AreEqual(pRun.Characters, "Bound value of ");
 
-            pRun = pLine.Runs[4] as PDFTextRunCharacter;
+            pRun = pLine.Runs[5] as PDFTextRunCharacter;
 
             Assert.AreEqual(pRun.Characters, model.content.ToString());
 

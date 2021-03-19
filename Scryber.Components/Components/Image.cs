@@ -103,9 +103,6 @@ namespace Scryber.Components
 
                 try
                 {
-                    //Commented so the document checks the factories, and if not found calls back to this component to map the path after.
-                    //if (System.Uri.IsWellFormedUriString(fullpath, UriKind.Relative))
-                    //    fullpath = this.MapPath(fullpath);
                     xobj = this.Document.GetImageResource(fullpath, this, true);
                 }
                 catch (Exception ex)
@@ -116,7 +113,7 @@ namespace Scryber.Components
                 if(null == xobj)
                 {
 
-                    PDFImageData data = null;
+                    PDFImageXObject data = null;
                     try
                     {
                         data = this.Document.LoadImageData(this, fullpath);
@@ -128,10 +125,8 @@ namespace Scryber.Components
 
                     if (null != data)
                     {
-                        string name = this.Document.GetIncrementID(PDFObjectTypes.ImageXObject);
-                        xobj = PDFImageXObject.Load(data, name);
-
-                        this.Document.SharedResources.Add(xobj);
+                        this.Document.SharedResources.Add(data);
+                        xobj = data;
                     }
                     else
                         throw new PDFMissingImageException(string.Format(Errors.CouldNotLoadImageFromPath, this.Source));

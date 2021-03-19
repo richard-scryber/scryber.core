@@ -1187,7 +1187,7 @@ namespace Scryber.Components
         {
             using (this.PerformanceMonitor.Record(PerformanceMonitorType.Image_Load, src))
             {
-                PDFImageData data = this.LoadImageData(owner, src);
+                PDFImageXObject data = this.LoadImageData(owner, src);
                 if (null != data)
                 {
                     return RegisterXObjectResource(src, owner, data) as PDFImageXObject;
@@ -1255,6 +1255,7 @@ namespace Scryber.Components
                 PDFImageXObject img = PDFImageXObject.Load(data, id);
                 resource = img;
             }
+
             if (resource is PDFImageXObject)
             {
                 PDFImageXObject xobj = resource as PDFImageXObject;
@@ -2194,7 +2195,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="source">The full path or absolute location of the image data file</param>
         /// <returns></returns>
-        public PDFImageData LoadImageData(IPDFComponent owner, string src)
+        public PDFImageXObject LoadImageData(IPDFComponent owner, string src)
         {
             PDFImageData data;
             string key = src;
@@ -2214,11 +2215,12 @@ namespace Scryber.Components
                 if (this.ImageFactories.TryGetMatch(src, out factory))
                 {
                     data = LoadImageDataFromFactory(owner, factory, src);
+                    key = GetIncrementID(PDFObjectTypes.ImageXObject);
                 }
                 else
                 {
                     bool isfile;
-                    bool isInlineData = false;
+                    bool isInlineData;
 
                     if (System.Uri.IsWellFormedUriString(src, UriKind.Absolute))
                     {
@@ -2228,6 +2230,7 @@ namespace Scryber.Components
                     else if (System.IO.Path.IsPathRooted(src))
                     {
                         isfile = true;
+                        isInlineData = false;
                     }
                     else
                         throw RecordAndRaise.Argument(Errors.CannotLoadFileWithRelativePath);
@@ -2235,14 +2238,15 @@ namespace Scryber.Components
                     if (isInlineData)
                     {
                         data = PDFImageData.LoadImageFromUriData(src, this, owner);
+                        key = GetIncrementID(PDFObjectTypes.ImageXObject); ;
                     }
                     else
                     {
                         var exists = this.SharedResources.GetResource(PDFImageXObject.XObjectResourceType, src) as PDFImageXObject;
                         if (exists != null)
-                            return exists.ImageData;
+                            return exists;
 
-                        if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), key, out cached))
+                        if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), src, out cached))
                         {
                             IPDFDataProvider prov;
                             if (isfile)
@@ -2269,6 +2273,7 @@ namespace Scryber.Components
 
                             if (null != data)
                             {
+                                key = GetIncrementID(PDFObjectTypes.ImageXObject);
                                 DateTime expires = this.GetImageCacheExpires();
                                 this.CacheProvider.AddToCache(PDFObjectTypes.ImageData.ToString(), key, data, expires);
                             }
@@ -2291,8 +2296,13 @@ namespace Scryber.Components
                     throw;
             }
 
-
-            return data;
+            if (null != data)
+            {
+                PDFImageXObject xobj = PDFImageXObject.Load(data, key);
+                return xobj;
+            }
+            else
+                return null;
         }
 
         private PDFImageData LoadImageDataFromFactory(IPDFComponent owner, IPDFImageDataFactory factory, string path)

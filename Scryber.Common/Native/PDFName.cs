@@ -119,7 +119,7 @@ namespace Scryber.Native
             if (string.IsNullOrEmpty(namevalue))
                 throw new ArgumentNullException("namevalue");
             if (namevalue.IndexOfAny(InvalidNameChars) > -1)
-                throw new ArgumentException(CommonErrors.InvalidPDFName, namevalue);
+                throw new ArgumentException(string.Format(CommonErrors.InvalidPDFName, namevalue), "namevalue");
 
         }
 
