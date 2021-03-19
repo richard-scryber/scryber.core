@@ -13,23 +13,21 @@ With a styles based template layout it is easy to create good looking,
 flowing documents with dynamic content from you applications or sites.
 
 
-## HTML First
+## scryber supports:
 
-The latest version of scryber makes a significant switch to an XHTML first approach.
-If you know HTML you can create documents.
+- standard [html body, tables, lists, divs and spans](https://scrybercore.readthedocs.io/en/latest/document_components.html) and many newer html5 [tags](https://scrybercore.readthedocs.io/en/latest/document_components.html)
+- flowing and flexible layout with multiple [pages in css sizes](https://scrybercore.readthedocs.io/en/latest/document_pages.html), along with page [headers, footers and breaks](https://scrybercore.readthedocs.io/en/latest/document_pages.html), and [page numbering](https://scrybercore.readthedocs.io/en/latest/document_pagenumbering.html)
+- cascading styles: linked, embedded or inline using [css syntax and priority](https://scrybercore.readthedocs.io/en/latest/document_styles.html).
+- databinding for [dynamic content](https://scrybercore.readthedocs.io/en/latest/binding_model.html) on simple and complex objects with [repeating templates](https://scrybercore.readthedocs.io/en/latest/binding_model.html#using-objects).
+- [embedding](https://scrybercore.readthedocs.io/en/latest/document_references.html) of external content,
+- [sizing](https://scrybercore.readthedocs.io/en/latest/component_sizing.html) and [positioning](https://scrybercore.readthedocs.io/en/latest/component_positioning.html) of elements inline, block, relative or absolute.
+- [images](https://scrybercore.readthedocs.io/en/latest/drawing_images.html) and colours with text and shape [fills, backgrounds](https://scrybercore.readthedocs.io/en/latest/drawing_image_backgrounds.html) and borders.
+- [multiple fonts](https://scrybercore.readthedocs.io/en/latest/drawing_fonts.html), including google fonts, supporting text [alignment; spacing; leading; decoration](https://scrybercore.readthedocs.io/en/latest/document_textlayout.html) and breaking.
+- SVG graphics support for [drawing and paths](https://scrybercore.readthedocs.io/en/latest/drawing_paths.html) and text.
+- Password [security and restrictions](https://scrybercore.readthedocs.io/en/latest/document_security.html) on pdf files.
+- [Full code](https://scrybercore.readthedocs.io/en/latest/document_code_vs_xml.html) support either as a whole document, or partial content, along with the html/css templates.
 
-scryber supports:
-
-- standard html body, tables, lists, divs and spans and many newer html5 tags
-- flowing and flexible layout with multiple pages in css sizes, along with page headers, footers and breaks.
-- cascading styles: linked, embedded or inline using css syntax and priority.
-- databinding for dynamic content on simple and complex objects with repeating templates.
-- iframe imports of external content,
-- sizing and positioning of elements inline, block, relative or absolute.
-- images and colours with text and shape fills backgrounds and borders.
-- multiple fonts, including google fonts, supporting text alignment; spacing; leading; decoration and breaking.
-
-If you have used the previous pdfx files, the older templates should continue to work. But we will be concentrating on html, css and svg going forwards.
+If you have used the previous pdfx files, the older templates should continue to work, but we are concentrating on html, css and svg going forwards.
 
 
 ## Getting Started
