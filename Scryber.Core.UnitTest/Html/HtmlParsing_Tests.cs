@@ -1076,6 +1076,8 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                //doc.RenderOptions.StringOutput = OutputStringType.Text;
 
                 using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
                 {

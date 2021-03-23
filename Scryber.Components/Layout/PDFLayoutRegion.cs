@@ -30,6 +30,7 @@ using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
 using Scryber.Styles.Parsing;
+using System.Reflection;
 
 namespace Scryber.Layout
 {
@@ -417,8 +418,8 @@ namespace Scryber.Layout
             PDFUnit width = this.GetAvailableWidth();
 
             PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, this.VAlignment, this.Contents.Count);
-            line.OffsetY = this.UsedSize.Height;
-            
+            line.SetOffset(line.OffsetX, this.UsedSize.Height);
+
             this.Contents.Add(line);
 
             return line;
@@ -502,10 +503,9 @@ namespace Scryber.Layout
             if (null == line)
                 throw new ArgumentNullException("line");
             this._contents.Add(line);
-            line.OffsetY = this.Height;
+            line.SetOffset(line.OffsetX, this.Height);
             line.SetParent(this);
             line.LineIndex = this.Contents.Count - 1;
-            //TODO:Validate this is true
 
             if(line.IsClosed)
                 this.AddToSize(line);
@@ -580,11 +580,11 @@ namespace Scryber.Layout
 
         #endregion
 
-        public virtual PDFUnit GetXInset(PDFUnit yoffset)
+        public virtual PDFUnit GetXInset(PDFUnit yoffset, PDFUnit height)
         {
             PDFUnit x = PDFUnit.Zero;
             if (null != this.Floats)
-                x = this.Floats.ApplyXInset(x, yoffset);
+                x = this.Floats.ApplyXInset(x, yoffset, height);
 
             return x;
         }
@@ -608,20 +608,16 @@ namespace Scryber.Layout
         public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
         {
             var line = this.CurrentItem as PDFLayoutLine;
+            if (null != line)
+                line.SetMaxWidth(line.FullWidth - inset);
 
             if (mode == FloatMode.Left)
             {
                 this.Floats = new PDFFloatLeftAddition(inset, height, offsetY, this.Floats);
-                if (null != line)
-                    line.AddRun(new PDFTextRunSpacer(inset, 1, line, null));
-                
             }
             else if(mode == FloatMode.Right)
             {
                 this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
-
-                if (null != line)
-                    line.SetMaxWidth(line.FullWidth - inset);
             }
         }
 
@@ -636,7 +632,7 @@ namespace Scryber.Layout
         /// Overrides the default behaviour to push any arrangements for the child item of this region
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit origXoffset, PDFUnit origYoffset)
         {
             bool logdebug = context.ShouldLogDebug;
             if (logdebug)
@@ -658,6 +654,8 @@ namespace Scryber.Layout
             }
 
             bool applyAlignments = this.ShouldApplyAlignment();
+            PDFUnit yoffset = origYoffset;
+
             if (applyAlignments)
             {
                 VerticalAlignment v = this.VAlignment;
@@ -681,10 +679,20 @@ namespace Scryber.Layout
             PDFTextRenderOptions options = (this.Parent as PDFLayoutBlock).FullStyle.CreateTextOptions();
             List<PDFTextRunCharacter> cache = new List<PDFTextRunCharacter>();
             bool lastwasapplied = false;
+            PDFUnit lastXInset = 0;
 
             foreach (PDFLayoutItem item in this.Contents)
             {
-                PDFUnit itemXOffset = xoffset;
+                PDFUnit actYOffset = yoffset + item.OffsetY;
+             
+                PDFUnit xInset = this.GetXInset(actYOffset, item.Height);
+                PDFUnit itemXOffset = origXoffset;
+
+                if (xInset != 0) //We have floating left item(s)
+                {
+                    itemXOffset += xInset;
+                }
+               
 
                 ///Individually calculate each lines horizontal offset
                 if (applyAlignments && h != HorizontalAlignment.Left)

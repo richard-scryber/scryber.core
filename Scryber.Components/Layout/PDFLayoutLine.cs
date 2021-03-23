@@ -149,17 +149,20 @@ namespace Scryber.Layout
 
         #region public PDFUnit OffsetY { get; set; }
 
+        private PDFUnit _xoffset;
+        private PDFUnit _yoffset;
+
         /// <summary>
         /// Gets or sets the offset of this line in it's container
         /// </summary>
-        public PDFUnit OffsetY { get; set; }
+        public override PDFUnit OffsetY { get { return _yoffset; } }
 
         #endregion
 
         /// <summary>
         /// Gets or sets the offset of this line in it's container
         /// </summary>
-        public PDFUnit OffsetX { get; set; }
+        public override PDFUnit OffsetX { get { return _xoffset; } }
 
 
         #region public HorizontalAlignment HAlignment {get;set;}
@@ -408,6 +411,12 @@ namespace Scryber.Layout
                 this.FullWidth = width;
         }
 
+        public virtual void SetOffset(PDFUnit x, PDFUnit y)
+        {
+            this._xoffset = x;
+            this._yoffset = y;
+        }
+
         /// <summary>
         /// Overrides the default behaviour to enumerate over the line contents
         /// </summary>
@@ -637,6 +646,7 @@ namespace Scryber.Layout
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             bool first = true;
+            
             foreach (PDFLayoutRun run in this.Runs)
             {
 
@@ -658,6 +668,7 @@ namespace Scryber.Layout
                 first = false;
                 
             }
+            
             return base.DoOutputToPDF(context, writer);
         }
     }

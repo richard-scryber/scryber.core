@@ -93,6 +93,16 @@ namespace Scryber.Layout
 
         #endregion
 
+        /// <summary>
+        /// Gets the Y Offset from the parent of this item
+        /// </summary>
+        public virtual PDFUnit OffsetY { get { return PDFUnit.Zero; } }
+
+        /// <summary>
+        /// Gets the X Offset from the parent of this item
+        /// </summary>
+        public virtual PDFUnit OffsetX { get { return PDFUnit.Zero; } }
+
         //
         // ctor(s)
         //

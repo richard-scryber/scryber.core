@@ -103,66 +103,72 @@ e.g.
 
     <style>
 
-        /* This style will be applied at the document level specifying
-             the base level font, size and color for text. Because These
-             cascade down, then it will be inherited by components in the document. */
+    /* This style will be applied at the document level specifying
+    the base level font, size and color for text. Because These
+    cascade down, then it will be inherited by components in the document. */
 
-        html{
-            font-family="Gill Sans", sans-serif;
-            font-size=14pt;
-            color=#333
-        }
+   html {
+       font-family: "Gill Sans", sans-serif;
+       font-size: 14pt;
+       color: #333;
+   }
 
-        /* This style will be applied to all top level headings 
-             specifying the font size and some spacing */
+   /* This style will be applied to the body tag for the first (set of) pages. */
 
-        h1 {
-            font-weight=bold;
-            font-size=30pt;
-            margin-top=20pt;
-            padding:5pt;
-        }
+   body {
+       margin: 10px;
+   }
 
-        /* This style will be applied to all top level headings with a class of 'warning'
-             and give a background colour of red on white text.  */
+   /* This style will be applied to all top level headings
+    specifying the font size and some spacing */
 
-        .warning {
-            background-color: #FF0000;
-            color=#FFFFFF;
-        }
+   h1 {
+       font-weight: bold;
+       font-size: 30pt;
+       margin-top: 20pt;
+       padding: 5pt;
+   }
 
-        /* This style will be applied to all components with a class of 'border'
-             and give a background colour of red with white text */
+   /* This style will be applied to all top level headings with a class of 'warning'
+    and give a background colour of red on white text.  */
 
-        .border{
-            border-color:#7777;
-            border-width=1pt;
-            border-style=Solid;
-            color=#444;
-        }
+   .warning {
+       background-color: #FF0000;
+       color: #FFFFFF;
+   }
 
-        /* This style will be applied to all H1 Headings with a class of 'border'
-             and give a border colour of red with white text. It has a higher precedence than either h1 or .border */
+   /* This style will be applied to all components with a class of 'border'
+    and give a background colour of red with white text */
 
-        h1.border {
-            border-color: #550000;
-            color:#550000
-        }
+   .border {
+       border-color: #777;
+       border-width: 1pt;
+       border-style: Solid;
+       color: #444;
+   }
 
-        /* This style will only be applied to a component with ID 'FirstHead'
-             and give a font size of 48pt */
+   /* This style will be applied to all H1 Headings with a class of 'border'
+    and give a border colour of red with white text. It has a higher precedence than either h1 or .border */
 
-        #FirstHead {
-            font-size:48pt;
-        }
+   h1.border {
+       border-color: #550000;
+       color: white;
+   }
 
-    </Styles>
+   /* This style will only be applied to a component with ID 'FirstHead'
+    and give a font size of 48pt */
+
+   #FirstHead {
+       font-size: 36pt;
+       font-weight: 400;
+   }
+
+    </style>
 
 
 .. note:: Currently scryber does not support the concept of pseudo-classes such as :hover or :first as css e.g. div.class:first. Nor does it support !important. It may be supported in the future.
 
 The same styles can also be applied in the code of the document styles
-
 
 
 Applying Multiple Styles
@@ -214,24 +220,44 @@ Data binding Styles
 --------------------
 
 The process of data-binding (see: :doc:`document_lifecycle`, and :doc:`document_databinding`) can 
-apply values to styles on tags.
+apply values to styles and classes on tags.
 
 e.g.
 
 .. code-block:: html
 
+    <style>
+
+    html {
+        font-family: "Gill Sans", sans-serif;
+        font-size: 14pt;
+        color: #333;
+    }
+
+    body {
+        margin: 10px;
+    }
+
+    /* this style will be applied as the bound class in the model */
+
+    .border {
+        border-color: #777;
+        border-width: 1pt;
+        border-style: Solid;
+        color: #444;
+    }
+
+    </style>
     <body>
+        <!-- apply a theme.headclass and explicit styles -->
+        <div class='{@:model.theme.headclass}' style="{@:model.theme.bg}" >
 
-        <!-- This style will be applied at the document level specifying
-             the base level font, size and color for text. Because These
-             cascade down, then it will be inherited by components in the document. -->
+            <!-- dynamic styles for the title and number -->
+            <span style="{@:model.theme.title}" >This is the title</span><br/>
+            <span style="{@:model.theme.number}" >1</span>
+        </div>
 
-        <div style="{@:theme-bg}" >
-            <span style="{@:theme-title}" >This is the title</span>
-            <span style="{@:theme-number} >1</span>
-        </styles:Style>
-
-    </Styles>
+    </body>
 
 Here the theme div and spans will pick up the default theme values.
 Were the code can provide new style colours and fonts for output.
@@ -239,14 +265,19 @@ Were the code can provide new style colours and fonts for output.
 .. code-block:: csharp
 
     var doc = PDFDocument.ParseDocument(path);
-    doc.Params["theme-bg"] = "background-color:#FFA;padding:20pt;border:solid 1px red;"
-    doc.Params["theme-title"] = "font-family:
-    doc.Params["theme-title-font"] = "Gill Sans";
+    doc.Params["model"] = new {
+       theme = new {
+           headclass="border",
+           bg = "background-color:#FFA;padding:20pt;border:solid 1px red;",
+           title = "font-family:\"Times New Roman\", Times, serif;",
+           number = "font-style: italic"
+        }
+    };
 
     return this.PDF(doc);
 
-As per object databinding, you can even provide a specific class for binding or user dot notation to access inner properties.
-
+    
+.. image:: images/helloworldpage_stylebound.png
 
 Order and Precedence
 ---------------------
@@ -401,4 +432,5 @@ The following at-rules are supported
 * @media - including or excluding css based on print.
 * @font-face - using explicit font files and names.
 * @page - specifying page sizes for sections and breaks.
+
 

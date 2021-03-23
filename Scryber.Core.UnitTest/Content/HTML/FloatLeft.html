@@ -1,19 +1,28 @@
-﻿<?scryber append-log=true ?>
+﻿<?scryber append-log=false ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <style>
+
+        body{
+            font-size:12pt;
+            line-height:10pt;
+        }
+
         div {
-            float: left;
-            padding: 15px;
+            margin:10pt;
         }
 
         .div1 {
+            float: left;
             background: red;
+            width: 100pt;
+            height:60pt;
         }
 
         .div2 {
             background: yellow;
+            float: right;
         }
 
         .div3 {
@@ -25,8 +34,29 @@
 
     <h2>Float Next To Each Other</h2>
 
-    <p>In this example, the three divs will float next to each other.</p>
+    <p style="margin-bottom:20pt;">In this example, the three divs will float next to each other.</p>
+        <!--<div class="div1">Div 1</div>-->
 
-    <div class="div1">Div 1</div> This is the content after the div that should flow around the relative floating block
+    <div class="div1"></div><div>This is the content after the div that should flow around the relative floating block
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
+    eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
+    Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
+    Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.</div>
+    <!--Cras commodo orci vitae sapien rutrum tincidunt et quis erat. Sed vitae porta libero. Pellentesque ultrices
+    tellus nec quam aliquet aliquet.
+    Mauris pharetra, elit at porttitor pulvinar, metus eros cursus tellus, vel fringilla lorem metus vel urna.
+    Aliquam tortor ligula, egestas et libero non, finibus efficitur orci. Maecenas nec ullamcorper sapien.
+    Morbi eget libero felis. Donec id nisl ac neque condimentum ultricies. Aliquam erat volutpat. Nulla rhoncus
+    efficitur orci, nec ultrices dolor sagittis semper. Integer mollis aliquam hendrerit. Aenean condimentum iaculis
+    diam, vel vulputate enim accumsan eu. Proin eu quam placerat, pellentesque nibh sit amet, cursus elit.
+    Fusce sed tellus non nisi malesuada ultrices.
+    Integer venenatis, ipsum facilisis dictum sodales, ligula massa pharetra quam, non mollis ligula sem eu libero.
+    Pellentesque et eleifend enim, in aliquam est.
+    Aliquam mi felis, cursus non iaculis nec, luctus eu nibh. Nunc pharetra pulvinar tellus et consectetur.
+    Integer fermentum arcu ac tortor vehicula feugiat. Morbi pulvinar ac tellus eu imperdiet.
+    In nulla orci, pharetra a auctor vel, mollis ac libero. Mauris vitae tortor viverra, mollis eros sed,
+    aliquam nulla. Curabitur sollicitudin molestie quam, quis fermentum ipsum ultricies nec.
+    Sed sed elit id libero condimentum sollicitudin. Nam sagittis ultricies dolor, eu vulputate quam
+    tempus vitae. Nulla viverra lobortis imperdiet. Aenean viverra feugiat aliquam.-->
 </body>
 </html>
