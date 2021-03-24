@@ -26,21 +26,40 @@ If a page has a header or footer the available space for the content will be red
 .. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <html xmlns='http://www.w3.org/1999/xhtml' >
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style>
+
+        header, footer{
+                padding: 10pt;
+                background-color: #333;
+                color: #EEE;
+                border-bottom: 1px solid black;
+                border-top: 1px solid black;
+        }
+        
+        h1{
+            padding: 20pt;
+        }
+
+        </style>
+    </head>
     <body>
         <header>
-            <h4 style="margins:5pt; border-width:1pt; border-color:aqua" >This is the header</h4>
+            <h4>This is the header</h4>
         </header>
-        <h1 style='margins:5pt; border-width=1pt; border-color:green;" >This is the content</h1>
+        <h1>This is the content</h1>
         <footer>
-            <h4 styles="margins:5pt; border-width:1pt; border-color:purple" >This is the footer</h4>
+            <h4>This is the footer</h4>
         </footer>
 
     </body>
-    
+
     </html>
 
 .. image:: images/documentpages1.png
+
+.. note:: Any styles set on the body will be applied to the header and footer as well. e.g. padding or margins.
 
 Flowing Pages
 ---------------
@@ -49,37 +68,60 @@ If the size of the content is more than can fit on a page it will overflow onto 
 .. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <html xmlns='http://www.w3.org/1999/xhtml' >
-        <body>
-            <header>
-                <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua' >This is the header</h4>
-            </header>
-            <h1 style='margins: 5pt; border-width: 1pt; border-color: green;' >This is the content</h1>
-            <div styles="margins:5pt; font-size: 14pt; border-width: 1pt; border-color: navy">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-                tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-                mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-                pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-                convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.<doc:Br/>
-                <doc:Br/>
-                <!-- Truncated for brevity 
-                .
-                . -->
-                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-                non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-                dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-                quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-                dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-                ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-                maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
-            </div>
-            <footer>
-                <h4 styles="margin:5pt; border-width: 1pt; border-color: purple;" >This is the footer</h4>
-            </footer>
-        </body>
-    
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style>
+
+        header, footer {
+            padding: 10pt;
+            background-color: #333;
+            color: #EEE;
+            border-bottom: 1px solid black;
+            border-top: 1px solid black;
+        }
+
+        body h1, body div {
+            margin: 20pt;
+        }
+        
+        body div.content {
+            font-size:12pt;
+            padding: 4pt;
+            border: solid 1px silver;
+        }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <h4>This is the header</h4>
+        </header>
+        <h1>This is the content</h1>
+        <div class='content'>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas scelerisque porttitor urna. 
+        Duis pellentesque sem tempus magna faucibus, quis lobortis magna aliquam. Nullam eu risus 
+        facilisis sapien fermentum condimentum. Pellentesque ut placerat diam, sed suscipit nibh. 
+        Integer dictum dolor vel finibus imperdiet. Orci varius natoque penatibus et magnis dis 
+        parturient montes, nascetur ridiculus mus. Integer congue turpis at varius porttitor. 
+        <!-- Truncated for brevity -->
+        nec faucibus ipsum bibendum sed. Nunc tristique risus eu quam porttitor blandit.
+        In erat mauris, imperdiet a venenatis eu, tempus a nunc.
+        <br/>
+        Nullam et erat vel nisl suscipit volutpat id vitae massa. Nunc volutpat feugiat iaculis. 
+        Mauris sit amet eleifend augue. Nulla imperdiet eu mauris nec consequat. Donec a urna blandit, 
+        porttitor libero vel, rutrum diam. Fusce scelerisque diam eu rutrum vestibulum. 
+        Vivamus a quam in nisi euismod laoreet. Morbi mauris augue, lobortis id volutpat in, 
+        venenatis ut ex. Donec euismod risus eros, dapibus tincidunt dolor varius id. 
+        </div>
+        <footer>
+            <h4>This is the footer</h4>
+        </footer>
+
+    </body>
+
     </html>
+
+
 
 Here we can see that the content flows naturally onto the next page, including the padding and borders.
 And the header and footer are shown on the second page.
@@ -89,12 +131,13 @@ And the header and footer are shown on the second page.
 Page breaks
 -------------
 
-When using a section it will, by default, force a break in the pages using the before the component. 
+When using a <section> it will, by default, force a break in the pages using the before the component, so that it flows
+nicely onto a new page and begins the new content from there. (the default style is page-break-before:always)
 
-This can can be stopped by applying the css attribute for page-break-before='avoid' value,
-and a page break can be applied to any element using the page-break-before (or page-break-after) attribute set to 'always'.
+This behaviour can can be stopped by applying the css attribute for 'page-break-before:avoid' value,
+and a page break can also be applied to any element using the style 'page-break-before:always' (or 'page-break-after:always').
 
-Margins, padding and depth should be preserved during the page break.
+Margins, padding, boarder and depth should be preserved during the page break.
 
 .. code-block:: html
 
