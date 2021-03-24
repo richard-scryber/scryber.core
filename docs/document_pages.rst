@@ -143,39 +143,68 @@ will try and layout the content appropriately for breaks inside nested elements.
 .. code-block:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
-    <html xmlns='http://www.w3.org/1999/xhtml' >
-        <body style='border:solid 1px gray;padding:5pt;'>
-            <header>
-                <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua' >This is the header</h4>
-            </header>
-            <h1 style='margin: 5pt; border-width: 1pt; border-color: green;' >This is the content</h1>
-            <!-- Set a section to not break on the first page -->
-            <section style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a, 
-                tincidunt magna. Mauris efficitur nisl lorem, vitae semper nulla convallis id. Nam dignissim rutrum 
-                mollis. Fusce imperdiet fringilla augue non venenatis. Mauris dictum velit augue, ut iaculis risus 
-                pulvinar vitae. Aliquam id pretium sem. Pellentesque vel tellus risus. Etiam dolor neque, auctor id 
-                convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
-            </section>
-            <!-- By default this will start on a new page -->
-            <section style="margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
-                <!-- Truncated for brevity 
-                .
-                . -->
-                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-                non ullamcorper nulla blandit sed. Nulla eget gravida turpis, et vestibulum nunc. Nulla mollis
-                dui eu ipsum dapibus, vel efficitur lectus aliquam. Nullam efficitur, dui a maximus ullamcorper,
-                quam nisi imperdiet sapien, ac venenatis diam lectus a metus. Fusce in lorem viverra, suscipit
-                dui et, laoreet metus. Quisque maximus libero sed libero semper porttitor. Ut tincidunt venenatis
-                ligula at viverra. Phasellus bibendum egestas nibh ac consequat. Phasellus quis ante eu leo tempor
-                maximus efficitur quis velit. Phasellus et ante eget ex feugiat finibus ullamcorper ut nisl. Sed mi
-                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.<doc:Br/>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style type="text/css">
+
+            header, footer {
+            padding: 10pt;
+            background-color: #333;
+            color: #EEE;
+            border-bottom: 1px solid black;
+            border-top: 1px solid black;
+            }
+
+            body .content {
+            margin: 20pt;
+            font-size:12pt;
+            padding: 4pt;
+            border: solid 1px silver;
+            }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <h4>This is the header</h4>
+        </header>
+        <h1>This is the content</h1>
+
+        <!-- section that does not force a new page (so that it stays on the first page -->
+        <section class='content' style="page-break-before:avoid">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas scelerisque porttitor urna.
+            <!-- Truncated for brevity -->
+            Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+            Praesent mollis tempor enim.<br />
+
+        </section>
+
+        <!-- This will be default appear on a new page -->
+        <section class='content'>
+            Nullam et erat vel nisl suscipit volutpat id vitae massa. Nunc volutpat feugiat iaculis.
+            Mauris sit amet eleifend augue. Nulla imperdiet eu mauris nec consequat. Donec a urna blandit,
+            <!-- Truncated for brevity -->
+            sagittis dignissim volutpat. Integer efficitur euismod lectus at varius. Vestibulum euismod massa mauris.
+            Mauris laoreet urna est, et tristique velit lobortis eu.
+        </section>
+
+        <!-- Any tag can force a new page within the document flow, and it does not have to be at the
+            root level. Borders and spacing will be preserved as much as possible -->
+        <div class="content">
+            The inner content will be on a new page.
+            <div class='content' style="page-break-before:always;">
+                Phasellus luctus dapibus nisi, et pulvinar neque ultrices vitae. Pellentesque quis purus felis.
+                <!-- Truncated for brevity -->
+                venenatis ut ex. Donec euismod risus eros, dapibus tincidunt dolor varius id.
             </div>
-            <footer>
-                <h4 styles="margin:5pt; border-width: 1pt; border-color: purple;" >This is the footer</h4>
-            </footer>
-        </body>
-    
+            After the content.
+        </div>
+        <footer>
+            <h4>This is the footer</h4>
+        </footer>
+
+    </body>
+
     </html>
 
 .. image:: images/SectionsOverflow.png
