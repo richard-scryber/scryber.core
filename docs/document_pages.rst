@@ -137,7 +137,8 @@ nicely onto a new page and begins the new content from there. (the default style
 This behaviour can can be stopped by applying the css attribute for 'page-break-before:avoid' value,
 and a page break can also be applied to any element using the style 'page-break-before:always' (or 'page-break-after:always').
 
-Margins, padding, boarder and depth should be preserved during the page break.
+Margins, padding, boarder and depth should be preserved during the page break, and the engine 
+will try and layout the content appropriately for breaks inside nested elements.
 
 .. code-block:: html
 
