@@ -1,18 +1,16 @@
 ﻿-----------------------------------------------------
----------         Scryber.Core.Mvc          ---------
+---------            Scryber.Core           ---------
 -----------------------------------------------------
 
 Scryber is an advanced PDF generation tool that allows
 complete definition of a dynamic PDF document based
-on HTML (and code) including cascading styles,
-databinding and component separation in referenced files.
+on HTML, code, cascading stylesheets,
+databinding and templates in referenced files.
 
 This framework is built entirely in .NETCore 5 and is
 open source under the LGPL licence so you can link to
 it in commercial applications.
 
-
-Thanks for using it.
 
 ---------------
 Getting Started
@@ -22,6 +20,7 @@ There's an article here about creating your first
 document on 'read the docs' here.
 
 https://scrybercore.readthedocs.io/en/latest/
+
 
 
 ------------

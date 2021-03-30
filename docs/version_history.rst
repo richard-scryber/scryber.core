@@ -5,8 +5,27 @@ Version History
 The following change log is for developers upgrading from previous versions,
 or looking for new features
 
+Version 5.0.6
+--------------
+
+Released 30th March 2021
+
+A catch up and fix release for the library, while we are building the docker images and playground.
+
+**Minor enhancements and bug fixes**
+
+* Support for parsed JSON objects in binding - along with std types and dynamic objects. (See: :doc:`binding_model`)
+* Css 'margin:value' is applied to all margins even if explicit left, right etc. has been previously applied. (See: :doc:`document_styles`)
+* Conformance is now carried through to templates, so errors are not indavertantly raised inside the template. (See: :doc:`extending_logging`)
+* Missing background images will not raise an error. (See: :doc:`drawing_images`)
+* Support for data images (src='data:image/..') within content - thanks Dan Rusu!
+* Images are not duplicated within the output for the same source.
+
+
 Version 5.0.5
 --------------
+
+Released 28th February 2021
 
 **Big Hitters**
 

@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.0.5.3-beta</PackageVersion>
+    <PackageVersion>5.0.6</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
@@ -13,9 +13,17 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.5.3-beta
+    <PackageReleaseNotes>5.0.6
 
-Minor update for using parsed JSON in binding and applying all margins to left, right, top and bottom plus support for conformance on templates and background images
+The April release is a bit of a catch up and fix with updates for:
+
+Supporting parsed JSON objects in binding - along with std types and dynamic objects.
+margin:value is applied to all margins even if explicit left, right etc. has been previously applied.
+Conformance is now carried through to templates, so errors are not indavertantly raised inside the template.
+Missing background images will not raise an error.
+Support for data images (src='data:image/..') within content - thanks Dan Rusu!
+Images are not duplicated within the output for the same source.
+
 
 5.0.5
 
