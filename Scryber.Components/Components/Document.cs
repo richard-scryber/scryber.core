@@ -30,6 +30,8 @@ using Scryber.Layout;
 using Scryber.Options;
 using System.Runtime.CompilerServices;
 using Scryber.Secure;
+using System.Text.RegularExpressions;
+using Scryber.OpenType.SubTables;
 
 namespace Scryber.Components
 {
@@ -169,7 +171,7 @@ namespace Scryber.Components
                         _currdirectory = System.IO.Path.GetDirectoryName(this.LoadedSource);
                     else
                         throw new NotSupportedException("Document Loaded Source has not been set");
-                        //_currdirectory = Scryber.Utilities.PathHelper.GetRootDirectory(this.LoadType);
+                    //_currdirectory = Scryber.Utilities.PathHelper.GetRootDirectory(this.LoadType);
                 }
                 return _currdirectory;
             }
@@ -1081,11 +1083,11 @@ namespace Scryber.Components
         /// <returns>A PDFFontResource that will be included in the document (or null if it is not loaded and should not be created)</returns>
         public virtual PDFFontResource GetFontResource(PDFFont font, bool create, bool throwOnNotFound = true)
         {
-            
+
 
             string type = PDFResource.FontDefnResourceType;
             var sel = font.Selector;
-            
+
             while (null != sel)
             {
                 var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontStyle);
@@ -1099,7 +1101,7 @@ namespace Scryber.Components
             }
 
             //not found so we should create
-            if(create)
+            if (create)
             {
                 sel = font.Selector;
                 while (null != sel)
@@ -1239,7 +1241,7 @@ namespace Scryber.Components
             }
             else
                 throw new InvalidCastException("The resource type could not be determined, or is is not a PDFResourceType");
-             
+
         }
 
         #endregion
@@ -1248,7 +1250,7 @@ namespace Scryber.Components
 
         protected PDFResource RegisterXObjectResource(string fullname, Component owner, object resource)
         {
-            if(resource is PDFImageData)
+            if (resource is PDFImageData)
             {
                 PDFImageData data = resource as PDFImageData;
                 string id = this.GetIncrementID(PDFObjectTypes.ImageXObject);
@@ -1320,7 +1322,7 @@ namespace Scryber.Components
         // document processing
         //
 
-        
+
         #region public void SaveAsPDF(System.IO.Stream stream, bool bind) + 1 overload
 
 
@@ -1830,7 +1832,7 @@ namespace Scryber.Components
                 default:
                     break;
             }
-            
+
         }
 
 
@@ -2003,7 +2005,7 @@ namespace Scryber.Components
         /// <returns></returns>
         protected virtual PDFObjectRef DoOutputToPDF(PDFLayoutDocument layout, PDFRenderContext context, PDFWriter writer)
         {
-            
+
             if (layout.DocumentComponent != this)
                 throw new PDFException(Errors.TryingToOutputADifferentDocumentLayout);
 
@@ -2024,7 +2026,7 @@ namespace Scryber.Components
 
             root = layout.OutputToPDF(context, writer);
 
-            
+
 
             this.RegisterPostRender(context);
 
@@ -2210,6 +2212,7 @@ namespace Scryber.Components
                 if (string.IsNullOrEmpty(src))
                     throw new ArgumentNullException("path");
 
+                src = RemoveReturns(src);
                 src = owner.MapPath(src);
 
                 if (this.ImageFactories.TryGetMatch(src, out factory))
@@ -2303,6 +2306,31 @@ namespace Scryber.Components
             }
             else
                 return null;
+        }
+
+
+        //private static readonly Regex whiteSpace = new Regex(@"\s+");
+        private StringBuilder _buffer = new StringBuilder(0);
+        private static char[] _replace = new char[] { '\r','\n' };
+
+        private string RemoveReturns(string data)
+        {
+            _buffer.Clear();
+
+            var index = data.IndexOf('\n');
+            if (index > 0)
+            {
+                var lines = data.Split('\n');
+                foreach (var line in lines)
+                {
+                    var trimmed = line.Trim();
+                    _buffer.Append(trimmed);
+                }
+
+                return _buffer.ToString();
+            }
+            else
+                return data;
         }
 
         private PDFImageData LoadImageDataFromFactory(IPDFComponent owner, IPDFImageDataFactory factory, string path)

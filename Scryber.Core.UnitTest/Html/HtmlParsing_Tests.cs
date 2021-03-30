@@ -95,7 +95,47 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
-                    using (var stream = DocStreams.GetOutputStream("DataImage.pdf"))
+                    using (var stream = DocStreams.GetOutputStream("DataImageAsBackground.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+
+                        Assert.AreEqual(3, doc.SharedResources.Count); //Third is the font.
+
+                        //As we have 2 data images we do not check for equality
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+
+                        var two = doc.SharedResources[1];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                    }
+
+                }
+            }
+        }
+
+        [TestMethod]
+        public void DataImageWithWhiteSpaceTest()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head><style>
+    .bgimg{
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P
+                                                     4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==');
+        margin: 20pt;
+    }
+</style></head>
+<body style='padding:20pt;' >
+                    <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAF
+                                    CAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHx
+                                    gljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' alt='Red dot' />
+    <p class='bgimg' style='width:140pt; height:100pt'>Content</p>
+</body></html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("DataImageWithWhitespace.pdf"))
                     {
                         doc.SaveAsPDF(stream);
 

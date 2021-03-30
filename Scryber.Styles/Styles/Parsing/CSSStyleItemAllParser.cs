@@ -136,7 +136,7 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.Left, new CSSLeftParser());
             all.Add(CSSStyleItems.Top, new CSSTopParser());
-            all.Add(CSSStyleItems.Float, new CSSPositionFloatParser());
+            //all.Add(CSSStyleItems.Float, new CSSPositionFloatParser());
 
             all.Add(CSSStyleItems.Width, new CSSWidthParser());
             all.Add(CSSStyleItems.Height, new CSSHeightParser());

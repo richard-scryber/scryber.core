@@ -19,7 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using Scryber.Native;
 
 namespace Scryber.Drawing
@@ -757,13 +759,16 @@ namespace Scryber.Drawing
          * @param uri 
          */
         internal record UriData { public string mediaType; public string parameters; public string encoding; public string data; }
+
+        private static readonly Regex splitter = new Regex(@"^data:([-\w]+\/[-+\w.]+)?((?:;?[\w]+=[-\w]+)*);(base64)?,(.*)");
+
         
-        private static readonly string regex = @"^data:([-\w]+\/[-+\w.]+)?((?:;?[\w]+=[-\w]+)*);(base64)?,(.*)";
+
 
         private static UriData ParseDataURI(string uri)
         {
 
-            var match = System.Text.RegularExpressions.Regex.Match(uri, regex);
+            var match = splitter.Match(uri);
 
             return new UriData
             {
@@ -773,6 +778,8 @@ namespace Scryber.Drawing
                 data = match.Groups[4]?.Value
             };
         }
+
+        
 
         #endregion
     }
