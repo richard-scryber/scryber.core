@@ -90,7 +90,7 @@ Next add a new Controller Method to your class for retrieve and generate
     public IActionResult HelloWorld()
     {
         var path = _env.ContentRootPath;
-        path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.pdfx");
+        path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.html");
 
         using(var doc = Document.ParseDocument(path))
             return this.PDF(doc);
@@ -171,7 +171,7 @@ on the PDF extension method.
     }
 
 
-The general syntax for referring paramters in a template is
+The general syntax for referring paramters in a template is {@:   }
 
 {@:**parameter[.property]**}
 
@@ -301,7 +301,7 @@ Page Breaks and sizes
 Scryber's flexible layout engine supports the use of the @media and @page css at-rules to be able to explicitly style
 content just for document output, and also set page sizes and orientiations.
 
-If we add a new css styles file to our site we can alter the layout easily and know it will not affect anything else we might
+If we add a new css styles to our html file explicitly for print, we can alter the layout easily and know it will not affect anything else we might
 be using our page for.
 
 .. code-block:: css
