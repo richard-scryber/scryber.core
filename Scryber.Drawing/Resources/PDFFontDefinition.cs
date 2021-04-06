@@ -24,6 +24,7 @@ using System.Xml.Serialization;
 using Scryber.Drawing;
 using Scryber.Native;
 using Scryber.OpenType;
+using Scryber.OpenType.SubTables;
 
 namespace Scryber.Resources
 {
@@ -553,7 +554,8 @@ namespace Scryber.Resources
         private OpenType.SubTables.CMapEncoding AssertGetTTFEncoding()
         {
             var enc = this.TTFEncoding;
-            if (null == enc)
+            var offset = this.TTFFile.Tables.CMap.GetOffsetTable(enc);
+            if (null == offset)
                 throw new PDFRenderException("The font " + this.FullName + " does not have a character mapping table that can be used for string measurement");
             return enc;
         }
@@ -1586,7 +1588,7 @@ namespace Scryber.Resources
 
         internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, int spaceWidthFU, TTFFile file = null)
         {
-            return InitStdType1WinAnsi(name, basetype, basetype, false, false, spaceWidthFU);
+            return InitStdType1WinAnsi(name, basetype, basetype, false, false, spaceWidthFU, file);
         }
 
         internal static PDFFontDefinition InitStdSymbolType1WinAnsi(string name, string basetype, int spaceWidthFU, TTFFile file = null)
@@ -1602,6 +1604,7 @@ namespace Scryber.Resources
             f.SpaceWidthFontUnits = 577;
             f.FontUnitsPerEm = 2048;
             f.TTFFile = file;
+            f.TTFEncoding = GetOptimumCMapEncoding(file);
             f.IsStandard = true;
 
             return f;
@@ -1609,7 +1612,7 @@ namespace Scryber.Resources
 
         internal static PDFFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, bool bold, bool italic, int spaceWidthFU, TTFFile file = null)
         {
-            return InitStdType1WinAnsi(name, basetype, family, family, bold, italic, spaceWidthFU);
+            return InitStdType1WinAnsi(name, basetype, family, family, bold, italic, spaceWidthFU, file);
         }
 
         /// <summary>
@@ -1637,6 +1640,7 @@ namespace Scryber.Resources
             f.FontUnitsPerEm = 2048;
             f.SpaceWidthFontUnits = spaceWidthFU;
             f.TTFFile = file;
+            f.TTFEncoding = GetOptimumCMapEncoding(file);
             f.IsStandard = true;
             return f;
 
@@ -1645,6 +1649,40 @@ namespace Scryber.Resources
 
 #endregion
 
+
+        private static CMapEncoding GetOptimumCMapEncoding(TTFFile file)
+        {
+            var maps = file.Tables.CMap;
+            if (null == maps || maps.NumberOfTables == 0)
+                throw new Scryber.PDFException("The truetype file does not have any character mapping tables that can be read");
+
+            var first = CMapEncoding.UnicodeDefault;
+            var second = CMapEncoding.Unicode_20;
+            var third = CMapEncoding.WindowsUnicode;
+            var fourth = CMapEncoding.MacRoman;
+            var found = new CMAPRecord[4];
+
+            foreach (var map in maps.Records)
+            {
+                if (map.Encoding.Equals(first))
+                    found[0] = map;
+                else if (map.Encoding.Equals(second))
+                    found[1] = map;
+                else if (map.Encoding.Equals(third))
+                    found[2] = map;
+                else if (map.Encoding.Equals(fourth))
+                    found[3] = map;
+            }
+
+            foreach (var map in found)
+            {
+                if (null != map)
+                    return map.Encoding;
+            }
+
+            throw new Scryber.PDFException("The truetype file does not have any character mapping tables that can be used." +
+                " Mappings supported are Unicode Unicode, Unicode Unicode_20, Windows Unicode and Mac Roman");
+        }
 
     }
 

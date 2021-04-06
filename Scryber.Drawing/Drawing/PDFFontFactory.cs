@@ -796,14 +796,16 @@ namespace Scryber.Drawing
             FamilyReferenceBag genericBag = new FamilyReferenceBag(generic);
 
             FamilyReference found;
-            if (_customfamilies.TryGetFamily("Helvetica", out found) || _customfamilies.TryGetFamily("Arial", out found)
+            /* if (_customfamilies.TryGetFamily("Helvetica", out found) || _customfamilies.TryGetFamily("Arial", out found)
                 || _systemfamilies.TryGetFamily("Helvetica", out found) || _systemfamilies.TryGetFamily("Arial", out found)
                 || _systemfamilies.TryGetFamily("System Font", out found))
             {
                 genericBag.AddFontFamily("Sans-Serif", found);
                 genericBag.AddFontFamily("Helvetica", found);
             }
-            else if (_staticfamilies.TryGetFamily("Helvetica", out found))
+            else */
+
+            if (_staticfamilies.TryGetFamily("Helvetica", out found))
             {
                 genericBag.AddFontFamily("Sans-Serif", found);
                 genericBag.AddFontFamily("Helvetica", found);
@@ -811,14 +813,16 @@ namespace Scryber.Drawing
             else
                 throw new ConfigurationErrorsException("Could not find or load the standard font family for Helvetica");
 
-            if (_customfamilies.TryGetFamily("Times New Roman",out found) || _customfamilies.TryGetFamily("Times", out found)
+            /*if (_customfamilies.TryGetFamily("Times New Roman",out found) || _customfamilies.TryGetFamily("Times", out found)
                 || _systemfamilies.TryGetFamily("Times New Roman", out found) || _systemfamilies.TryGetFamily("Times", out found)
                 || _systemfamilies.TryGetFamily(".New York", out found))
             {
                 genericBag.AddFontFamily("Serif", found);
                 genericBag.AddFontFamily("Times", found);
             }
-            else if (_staticfamilies.TryGetFamily("Times", out found) || _staticfamilies.TryGetFamily("Times New Roman", out found))
+            else */
+
+            if (_staticfamilies.TryGetFamily("Times", out found) || _staticfamilies.TryGetFamily("Times New Roman", out found))
             {
                 genericBag.AddFontFamily("Serif", found);
                 genericBag.AddFontFamily("Times", found);
@@ -826,13 +830,15 @@ namespace Scryber.Drawing
             else
                 throw new ConfigurationErrorsException("Could not find or load the standard font family for Times");
 
-            if (_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found)
+            /* if (_customfamilies.TryGetFamily("Courier", out found) || _customfamilies.TryGetFamily("Courier New", out found)
                 || _systemfamilies.TryGetFamily("Courier", out found) || _systemfamilies.TryGetFamily("Courier New", out found))
             {
                 genericBag.AddFontFamily("Monospace", found);
                 genericBag.AddFontFamily("Courier", found);
             }
-            else if (_staticfamilies.TryGetFamily("Courier", out found))
+            else */
+
+            if (_staticfamilies.TryGetFamily("Courier", out found))
             {
                 genericBag.AddFontFamily("Monospace", found);
                 genericBag.AddFontFamily("Courier", found);
@@ -845,23 +851,27 @@ namespace Scryber.Drawing
                 genericBag.AddFontFamily("Cursive", found);
             }
 
-            if(_customfamilies.TryGetFamily("Zapf Dingbats", out found) || _systemfamilies.TryGetFamily("Zapf Dingbats", out found)
+            /*if(_customfamilies.TryGetFamily("Zapf Dingbats", out found) || _systemfamilies.TryGetFamily("Zapf Dingbats", out found)
                || _customfamilies.TryGetFamily("Webdings", out found) || _systemfamilies.TryGetFamily("Webdings", out found))
             {
                 genericBag.AddFontFamily("Zapf Dingbats", found);
             }
-            else if (_staticfamilies.TryGetFamily("Zapf Dingbats", out found))
+            else*/
+
+            if (_staticfamilies.TryGetFamily("Zapf Dingbats", out found))
             {
                 genericBag.AddFontFamily("Zapf Dingbats", found);
             }
             else
                 throw new ConfigurationErrorsException("Could not find or load the standard font family for Zaph Dingbats");
 
-            if (_customfamilies.TryGetFamily("Symbol", out found) || _systemfamilies.TryGetFamily("Symbol", out found))
+            /* if (_customfamilies.TryGetFamily("Symbol", out found) || _systemfamilies.TryGetFamily("Symbol", out found))
             {
                 genericBag.AddFontFamily("Symbol", found);
             }
-            else if (_staticfamilies.TryGetFamily("Symbol", out found))
+            else */
+
+            if (_staticfamilies.TryGetFamily("Symbol", out found))
             {
                 genericBag.AddFontFamily("Symbol", found);
             }
