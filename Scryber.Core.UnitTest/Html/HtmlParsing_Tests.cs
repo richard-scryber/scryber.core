@@ -450,7 +450,7 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.AreEqual(pRun.Characters, "Bound value of ");
 
-            pRun = pLine.Runs[5] as PDFTextRunCharacter;
+            pRun = pLine.Runs[4] as PDFTextRunCharacter;
 
             Assert.AreEqual(pRun.Characters, model.content);
 
@@ -544,7 +544,7 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.AreEqual(pRun.Characters, "Bound value of ");
 
-            pRun = pLine.Runs[5] as PDFTextRunCharacter;
+            pRun = pLine.Runs[4] as PDFTextRunCharacter;
 
             Assert.AreEqual(pRun.Characters, model.content.ToString());
 
@@ -1208,7 +1208,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BasePath()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.png";
+            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.png";
 
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
@@ -1357,6 +1357,42 @@ namespace Scryber.Core.UnitTests.Html
             }
 
             return mocks;
+        }
+
+
+
+        [TestMethod]
+        public void PageNumberingTest()
+
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                              <title>Page Numbering</title>
+                            </head>
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >Page <page/> of <page property='Total' />.</p>
+                               </body>
+                        </html>";
+
+            var data = new
+            {
+                Items = GetListItems(10)
+            };
+            using (var sr = new System.IO.StringReader(src))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    doc.Params["model"] = data;
+                    using (var stream = DocStreams.GetOutputStream("PageNumbers.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+
+            
         }
     }
 }

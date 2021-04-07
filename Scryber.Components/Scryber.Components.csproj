@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.0.6.1-beta</PackageVersion>
+    <PackageVersion>5.0.6.2-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2020</Copyright>
     <License>LICENSE.md</License>
@@ -13,9 +13,9 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.6.1-beta
+    <PackageReleaseNotes>5.0.6.2-beta
 
-Fixes an issue with some TTF fonts on Windows (specifically azure) to look for the bast character mapping table.
+Fixes an issue with some TTF fonts on Windows (specifically azure) to look for the bast character mapping table, and multi-span text not flowing well due to some changes to try and get float working.
 
 5.0.6
 

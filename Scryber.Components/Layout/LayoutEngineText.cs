@@ -366,14 +366,13 @@ namespace Scryber.Layout
             else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.PositionMode != PositionMode.Inline || started))
             {
                 inset += this.TextRenderOptions.FirstLineInset.Value;
-            }
 
-            if (inset > 0)
-            {
-                PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null);
-                line.AddRun(spacer);
+                if (inset > 0)
+                {
+                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null);
+                    line.AddRun(spacer);
+                }
             }
-            
 
             PDFTextRunBegin begin = new PDFTextRunBegin(this.TextRenderOptions, this.CurrentLine, this.TextComponent);
             begin.LineInset = inset;
