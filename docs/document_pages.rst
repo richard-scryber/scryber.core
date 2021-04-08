@@ -238,51 +238,91 @@ To revert back to the default size use a value of auto or initial.
     <?xml version="1.0" encoding="utf-8" ?>
     <html xmlns='http://www.w3.org/1999/xhtml'>
     <head>
-        <style>
-            /* This changes the default page size to A4 landscape */
-            @page {
-                size: A4 landscape;
+        <style type="text/css">
+
+            header, footer {
+            padding: 10pt;
+            background-color: #333;
+            color: #EEE;
+            border-bottom: 1px solid black;
+            border-top: 1px solid black;
             }
 
-            /* this is an explicit style of page size as A3 */
-            @page large {
-                size: A3 landscape;
+            body .content {
+            margin: 20pt;
+            font-size:12pt;
+            padding: 4pt;
+            border: solid 1px silver;
+            }
+
+            .small-page{
+            page: initial;
+            }
+
+            .big-page{
+            page: landscape;
+            }
+
+            /* This will be the default initial size */
+            @page {
+            size: A4 landscape;
+            }
+
+            /* any new pages with the page:landscape will
+            use this size */
+
+            @page landscape {
+            size: A3 landscape;
             }
 
         </style>
     </head>
-    <body style='border:solid 1px gray;padding:5pt;'>
+    <body>
         <header>
-            <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua'>This is the header</h4>
+            <h4>This is the header</h4>
         </header>
-        <h1 style='margin:5pt; border-width: 1pt; border-color: green;'>This is the content</h1>
-        <!-- Set a section to not break on the first page -->
-        <section style="page-break-before: avoid; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
-            .....
+        <h1>This is the content</h1>
+
+        <!-- section that does not force a new page (so that it stays on the first page -->
+        <section class='content' style="page-break-before:avoid">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas scelerisque porttitor urna.
+            Duis pellentesque sem tempus magna faucibus, quis lobortis magna aliquam. Nullam eu risus
+
+            <!-- Truncated for brevity -->
+
+            Praesent mollis tempor enim.
         </section>
-        <!-- By default this will start on a new page with A3 size -->
-        <section style="page:large; margin:5pt; font-size: 14pt; border-width: 1pt; border-color: navy;">
-            In ac diam sapien. Morbi viverra ante non lectus venenatis posuere. Curabitur porttitor viverra augue
-            sit amet convallis. Duis hendrerit suscipit vestibulum. Fusce fringilla convallis eros, in vehicula
-            .....
-            Integer efficitur sapien lectus, non laoreet tellus dictum vel.<br />
-            <!-- Introducing an inner page break that follow the same A3 size -->
-            <div style="page-break-before:always">
-                Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
-                Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-                .....
+
+        <!-- This will be on the A3 landscape page -->
+        <section class='content big-page'>
+            Nullam et erat vel nisl suscipit volutpat id vitae massa. Nunc volutpat feugiat iaculis.
+            Mauris sit amet eleifend augue. Nulla imperdiet eu mauris nec consequat. Donec a urna blandit,
+
+            <!-- Truncated for brevity -->
+
+            Mauris laoreet urna est, et tristique velit lobortis eu.
+        </section>
+
+        <!-- The inner div of small-page will revert the size back to the default (initial) size  -->
+        <div class="content">
+        
+            The inner content will be on a new page.
+
+            <div class='content small-page' style="page-break-before:always;">
+                Phasellus luctus dapibus nisi, et pulvinar neque ultrices vitae. Pellentesque quis purus felis.
+                Aliquam feugiat efficitur sem quis placerat. Quisque viverra magna vitae elit eleifend, a porttitor
+                enim vulputate. Quisque elit metus, aliquam eget purus at, blandit gravida diam.
+
+                <!-- Truncated for brevity -->
+
+                venenatis ut ex. Donec euismod risus eros, dapibus tincidunt dolor varius id.
             </div>
-        </section>
-        <!-- Outside of the large page section use page: auto to revert to the default size -->
-        <div style="page-break-before:always; page: auto;">
-            Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
-            Phasellus ultrices congue semper. Praesent ultrices orci ipsum. Maecenas suscipit tellus elit,
-            .....
+            After the content.
         </div>
         <footer>
-            <h4 style="margin:5pt; border-width: 1pt; border-color: purple;">This is the footer</h4>
+            <h4>This is the footer</h4>
         </footer>
+
     </body>
 
     </html>

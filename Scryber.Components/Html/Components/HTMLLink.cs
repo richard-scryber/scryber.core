@@ -278,7 +278,7 @@ namespace Scryber.Html.Components
 
             HTMLLinkType type;
 
-            if (this.ShouldAddContent(context.OutputFormat, out type) == false)
+            if (this.ShouldAddContent(context.OutputFormat, context, out type) == false)
             {
                 if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                     context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Link " + this.UniqueID + " is not a stylesheet or include, or print reference (@rel), so ignoring");
@@ -425,7 +425,7 @@ namespace Scryber.Html.Components
         }
 
         
-        private bool ShouldAddContent(OutputFormat format, out HTMLLinkType type)
+        private bool ShouldAddContent(OutputFormat format, PDFContextBase context, out HTMLLinkType type)
         {
             type = HTMLLinkType.Other;
 
@@ -435,6 +435,16 @@ namespace Scryber.Html.Components
 
             if (this.Visible == false)
                 return false;
+            if(string.IsNullOrEmpty(this.Relationship))
+            {
+                if (context.Conformance == ParserConformanceMode.Lax)
+                {
+                    context.TraceLog.Add(TraceLevel.Error, "HTML", "The 'rel'ationship attribute is required on a html 'link' tag.");
+                    return false;
+                }
+                else
+                    throw new PDFParserException("The 'rel'ationship attribute is required on a html 'link' tag.");
+            }    
 
             if (this.Relationship.Equals("stylesheet", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(this.Relationship))
             {
