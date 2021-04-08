@@ -125,7 +125,6 @@ The page tag also supports the property attribute for displying the 'total' numb
 The page for
 -------------
 
-
 Conversly to the current page number, it is also possible to get the page number of another element.
 By using the 'for' attribute.
 
@@ -134,65 +133,115 @@ ID and a line leading to the page numbers on the right cell.
 
 .. code-block:: html
 
-    <table class="toc" style="margin:20pt; width:100%;">
-        <thead>
+    <?xml version="1.0" encoding="utf-8" ?>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>My Document</title>
+        <style type="text/css">
+
+            p, h1 {
+            padding: 10pt;
+            }
+
+            .print-only{
+            display:none;
+            }
+
+            @media print{
+
+                .print-only{ display: block; }
+
+                .foot{
+                border-top: solid 1pt gray;
+                text-align:center;
+                font: 10pt sans-serif;
+                margin: 5pt;
+                }
+
+                .break{
+                page-break-before:always;
+                }
+
+            /* Table of Contents Styling */
+
+                table.toc{
+                font-size:12pt;
+                margin-left:30pt;
+                }
+
+                table.toc thead{
+                font-weight:bold;
+                text-decoration:underline;
+                }
+
+                /*  Remove the underline from a hyperlink */
+
+                table.toc a{
+                text-decoration:none;
+                }
+
+                /*  a horizontal rule, inline dashed with a
+                    margin to push down to the baseline */
+
+                table.toc hr{
+                display:inline;
+                margin-top:12pt;
+                stroke: gray;
+                stroke-dasharray: 2;
+                }
+
+                /* remove the default borders from the cells */
+
+                table.toc td{
+                border:none;
+                }
+
+                /* Explicit width on the last cell */
+
+                table.toc td.pg-num {
+                width:30pt;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <p>This is the header</p>
+        </header>
+        <h1 id='First'>Table of Contents</h1>
+        <table class="toc" style="margin:20pt; width:100%;">
             <tr>
-                <td colspan="2">Table of contents</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="#section1">Section 1</a><hr class="tab-spacer" /></td>
-                <td class="pg-num"><page for="#section1" /></td>
+                <td><a href="#Second">Section 1</a><hr class="tab-spacer" /></td>
+                <td class="pg-num"><page for="#Second" /></td>
             </tr>
             <tr>
-                <td><a href="#section2">Section 2</a><hr class="tab-spacer" /></td>
-                <td class="pg-num"><page for="#section2" /></td>
+                <td><a href="#Third">Section 2</a><hr class="tab-spacer" /></td>
+                <td class="pg-num"><page for="#Third" /></td>
             </tr>
             <tr>
-                <td><a href="#section3">Section 1</a><hr class="tab-spacer" /></td>
-                <td class="pg-num"><page for="#section3" /></td>
+                <td><a href="#Fourth">Section 3</a><hr class="tab-spacer" /></td>
+                <td class="pg-num"><page for="#Fourth" /></td>
             </tr>
-        </tbody>
-    </table>
+        </table>
+        <h1 id='Second' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+        <h1 id='Third' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+        <h1 id='Fourth' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+        <footer>
+            <p class='print-only foot'> The Current Page is <page /> of <page property='total' /></p>
+        </footer>
 
-There is a bit of css fun going on to achieve this..
+    </body>
 
-.. code-block:: css
+    </html>
 
 
-        table.toc{
-            font-size:12pt;
-            margin-left:30pt;
-        }
-
-        table.toc thead{
-            font-weight:bold;
-            text-decoration:underline;
-        }
-
-        table.toc a{
-            text-decoration:none;
-        }
-
-        table.toc hr{
-            display:inline;
-            margin-top:12pt;
-            stroke: gray;
-            stroke-dasharray: 2;
-        }
-
-        table.toc td{
-            border:none;
-        }
-
-        table.toc td.pg-num {
-            width:30pt;
-        }
-
-But the output is quite pleasing. And you could use databinding to achieve this.
+But the output is quite pleasing. And you could use also databinding to achieve this (:doc:`binding_model`).
 
 .. image:: images/PageTableOfContents.png
 
 
+For more information on anchor links see :doc:`component_linking`
 
+.. note:: The page index of a component can be forward as in this case, as well as backward looking, 
+          but will always be the very first page the component is laid out at, even if it overflows onto another page.
