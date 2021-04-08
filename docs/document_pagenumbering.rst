@@ -9,45 +9,117 @@ The scryber engine will understand and output the current page number
 
 Current Page Numbers
 ---------------------
+
+The <page/> tag can be placed anywhere within the text of a document, and will render in the current style. Although it does also support the 
+inline style options from as with any other span.
+
 .. code-block:: html
 
-    <footer>
-        <p class='print-only foot'> The Current Page is <page /></p>
-    </footer>
+    <?xml version="1.0" encoding="utf-8" ?>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>My Document</title>
+        <style>
 
-We can add our explicit styles to this, so the content of the footer will not be shown by browsers
-But will display nicely on the document.
+            p, h1 {
+                padding: 10pt;
+            }
 
-.. code-block:: css
+            .print-only{
+                display:none;
+            }
 
-    .print-only{ display:none;}
+            @media print{
 
-    @media print{
+                .print-only{ display: block; }
 
-        .print-only{ display: block; }
+                .foot{
+                    border-top: solid 1pt gray;
+                    text-align:center;
+                    font: 10pt sans-serif;
+                    margin: 5pt;
+                }
+            }
 
-        .foot{
-            border-top: solid 1pt gray;
-            padding: 10pt;
-            text-align:center;
-            font: 10pt sans-serif;
-            margin: 5pt;
-        }
-    }
+        </style>
+    </head>
+    <body>
+        <header>
+            <p>This is the header</p>
+        </header>
+
+        <!-- Page number within the content -->
+        <h1>This is the content on page <page /></h1>
+
+        <footer>
+            <!-- a page number using the current font style in a footer -->
+            <p class='print-only foot'> The Current Page is <page /></p>
+        </footer>
+
+    </body>
+
+    </html>
 
 And our page footer will display as expected.
 
 .. image:: images/PageNumbers1.png
 
-The page tag also supports the property attribute for displying the 'total' number of pages, and also the current 'section' or 'sectiontotal' page count.
+The page tag also supports the property attribute for displying the 'total' number of pages, and it also the current 'section' or 'sectiontotal' page count.
 
 .. code-block:: html
 
-    <footer>
-        <p class='print-only foot'> Page <page /> of <page property='total' /></p>
-    </footer>
+    <?xml version="1.0" encoding="utf-8" ?>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>My Document</title>
+        <style>
+
+            p, h1 {
+            padding: 10pt;
+            }
+
+            .print-only{
+            display:none;
+            }
+
+            @media print{
+
+                .print-only{ display: block; }
+
+                .foot{
+                border-top: solid 1pt gray;
+                text-align:center;
+                font: 10pt sans-serif;
+                margin: 5pt;
+                }
+
+                .break{
+                page-break-before:always;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <p>This is the header</p>
+        </header>
+        <h1 id='First'>This is the content on page <page /> of <page property='total' /></h1>
+        <h1 id='Second' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+        <h1 id='Third' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+        <h1 id='Fourth' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+        <footer>
+            <p class='print-only foot'> The Current Page is <page /> of <page property='total' /></p>
+        </footer>
+
+    </body>
+
+    </html>
+
+
 
 .. image:: images/PageNumbers1of2.png
+
 
 
 The page for
