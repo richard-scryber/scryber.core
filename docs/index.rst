@@ -82,8 +82,9 @@ Hello World Plus
 Check out :doc:`mvc_controller_full` for a full MVC example with styles and binding, or :doc:`gui_controller_full` for a full gui application example (with styles and binding)
 
 
+=========
 Features
---------
+=========
 
 
 Easy, and intuitive structure
@@ -92,6 +93,7 @@ Easy, and intuitive structure
 Whether you are using xhtml templates or directly in code, scryber
 is quick and easy to build complex documents from your designs and data using standard xhtml.
 
+:doc:`document_structure`
 
 Intelligent flowing layout engine
 ----------------------------------
@@ -99,16 +101,30 @@ Intelligent flowing layout engine
 In scryber, content can either be laid out explicitly, or jut flowing with the the page.
 Change the page size, or insert content and everything will adjust around it.
 
+:doc:`document_pages`
+
 Cascading Styles 
 -----------------
 
 With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
 or nested selectors.
 
+:doc:`document_styles`
+
 Drawing and Typographic support
 --------------------------------
 
 Scryber supports inclusion of Images, Fonts (inc. Google fonts) and SVG components for drawing graphics and icons.
+
+:doc:`drawing_fonts`, :doc:`drawing_images` and :doc:`drawing_paths`
+
+Standard HTML tags
+------------------
+
+Use divs, spans, tables, lists, headers, footers, links, images and many other standard tags to support your document building
+or page conversion.
+
+:doc:`document_components`, :doc:`component_linking` or :doc:`drawing_images`
 
 Binding to your data
 ---------------------
@@ -116,6 +132,8 @@ Binding to your data
 With a simple binding notation it's easy to add references to your data structures and pass information
 and complex data to your document from SQL, JSON, Entity Model and more.
 Or get the document to look up and bind the data for you.
+
+:doc:`binding_model`
 
 Extensible Framework
 -----------------------
@@ -127,6 +145,8 @@ Secure and Encrypted
 -----------------------
 
 Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encryption of documents using owner and user passwords.
+
+:doc:`document_security`
 
 .. toctree::
     :maxdepth: 1
