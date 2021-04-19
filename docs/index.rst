@@ -71,7 +71,7 @@ And then generate your template in a view.
     }
 
 
-`Try it out here... <https://scryberonline-tryitout.azurewebsites.net/TryIt/?sample=SCRY.SAMP.HelloWorld>`_
+`Try it out here... <https://www.scryber.studio/TryIt/Samples/SCRY.SAMP.HelloWorld>`_
 
 
 .. image:: images/HelloWorldIndex.png
