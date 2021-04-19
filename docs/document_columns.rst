@@ -123,6 +123,79 @@ This will allow the headers to be full width, with the content flowing within th
 
 .. image:: images/documentcolumns2.png
 
+Column breaks and keeping content together
+------------------------------------------
+
+Just as with pages, columns support both breaking before and after along with the flowing layout.
+
+Using the 'break-before: always' style a new column (or page if we are already on the last columns) will be moved to
+for the layout of content. Using 'break-after: always' will force the following content onto a new column or page.
+
+If there is a block of content that should stay together, the the 'break-inside: avoid' style will attempt to keep all the inner
+content (blocks, images, text etc), on a single page.
+
+.. code-block:: html
+
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+
+    <body>
+        <header>
+            <h4 style='margin: 5pt; border-width: 1pt; border-color:aqua'>This is the header</h4>
+        </header>
+
+        <h1 style='margin:5pt;border-width:1pt; border-color:green'>This is the content</h1>
+
+        <!-- 3 columns with inner block content -->
+    
+        <div style='column-count:3; margin:5pt; font-size:14pt; border-width: 1pt; border-color: navy'>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis orci mollis, finibus eros a,
+            <!-- Truncated for brevity -->
+            convallis hendrerit, tincidunt at sem. Integer finibus congue turpis eu feugiat. Nullam non ultrices enim.
+            <br />
+            <br />
+            <!-- This will always be on a new column -->
+            <div style="break-before: always;">
+                Sed commodo metus id erat accumsan, quis feugiat augue vestibulum. Praesent porta sit amet erat a hendrerit.
+                <!-- Truncated for brevity -->
+                Quisque tincidunt nec quam sollicitudin consequat.
+            </div>
+            <div>
+                Donec mattis eros non nibh mattis, in volutpat mi pretium. Donec mattis iaculis neque a accumsan. 
+                <!-- Truncated for brevity -->
+                vitae sem bibendum laoreet.
+            </div>
+
+            <div style="break-inside: avoid" >
+                Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam viverra laoreet 
+                <!-- Truncated for brevity -->
+                Nulla viverra sagittis leo.
+            </div>
+            
+            <!-- this content will be kept together and then a column break will be put after it. -->
+            <div style="break-inside: avoid; break-after: always" >
+                Maecenas vitae vehicula mauris. Aenean egestas et neque sit amet pulvinar.
+                <!-- Truncated for brevity -->
+                nunc, blandit ut sem vitae, bibendum hendrerit ipsum.
+            </div>
+            <br />
+            <br/>
+            <div style="break-inside: avoid;" >
+            Phasellus congue commodo elit, ac tincidunt ex placerat vitae. Lorem ipsum dolor sit amet, consectetur adipiscing 
+            <!-- Truncated for brevity -->
+            Ut sagittis sed mi nec tempus. Pellentesque et consectetur lorem, eget sagittis nibh. Cras vehicula ligula est. 
+            Nulla viverra sagittis leo.
+        </div>
+        </div>
+        <h1 style="margin:5pt; border-width:1pt; border-color: green">After the content</h1>
+
+        <footer>
+            <h4 style="margin: 5pt; border-width: 1pt; border-color: purple">This is the footer</h4>
+        </footer>
+    </body>
+
+    </html>
+
+.. image:: images/documentcolumns6.png
 
 Column-width and column-gap
 ----------------------------

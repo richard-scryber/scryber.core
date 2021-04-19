@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.0.6.1-beta</PackageVersion>
+    <PackageVersion>5.0.6.3</PackageVersion>
     <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
@@ -20,9 +20,9 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.6.1-beta
+    <PackageReleaseNotes>5.0.6.3
 
-A fix for font character mappings on Windows 
+A fix for font character mappings on Windows and laying out mutliple spans on a single line
 
 5.0.6
 
@@ -68,7 +68,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="5.0.6.1-beta" />
+    <PackageReference Include="Scryber.Core" Version="5.0.6.3" />
   </ItemGroup>
       
   <ItemGroup>
