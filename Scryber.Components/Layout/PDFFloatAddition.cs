@@ -10,21 +10,21 @@ namespace Scryber.Layout
     /// </summary>
     public abstract class PDFFloatAddition
     {
-        public PDFUnit Inset, Height, Offset;
+        public PDFUnit XInset, Height, YOffset;
         public PDFFloatAddition Prev;
 
-        public PDFFloatAddition(PDFUnit inset, PDFUnit height, PDFUnit offset, PDFFloatAddition prev)
+        public PDFFloatAddition(PDFUnit xinset, PDFUnit height, PDFUnit yoffset, PDFFloatAddition prev)
         {
-            this.Inset = inset;
+            this.XInset = xinset;
             this.Height = height;
-            this.Offset = offset;
+            this.YOffset = yoffset;
             this.Prev = prev;
         }
 
         public virtual PDFUnit ApplyWidths(PDFUnit available, PDFUnit yoffset, PDFUnit height)
         {
-            if ((yoffset + height) > this.Offset && yoffset < (this.Offset + this.Height))
-                available -= this.Inset;
+            if ((yoffset + height) > this.YOffset && yoffset < (this.YOffset + this.Height))
+                available -= this.XInset;
 
             if (null != this.Prev)
                 available = this.Prev.ApplyWidths(available, yoffset, height);
@@ -50,8 +50,8 @@ namespace Scryber.Layout
 
         public override PDFUnit ApplyXInset(PDFUnit x, PDFUnit yoffset, PDFUnit height)
         {
-            if ((yoffset + height) > this.Offset && yoffset < (this.Offset + this.Height))
-                x += this.Inset;
+            if ((yoffset + height) > this.YOffset && yoffset < (this.YOffset + this.Height))
+                x += this.XInset;
             return base.ApplyXInset(x, yoffset, height);
         }
     }
