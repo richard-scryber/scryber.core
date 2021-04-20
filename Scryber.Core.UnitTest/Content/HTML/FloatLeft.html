@@ -7,7 +7,7 @@
         body{
             font-size:12pt;
             font-family:sans-serif;
-            text-align:right;
+            text-align:justify;
         }
 
         div.floating {
@@ -16,10 +16,10 @@
             margin:10pt;
         }
 
-        .div1 {
-            float: left;
+        div.div1 {
+            float: right;
             background: red;
-            width: 60pt;
+            width: 160pt;
             height:55pt;
         }
 
@@ -41,8 +41,8 @@
     <p style="margin-bottom:20pt;">In this example, the three divs will float next to each other.</p>
     <div class="div1">Div 1</div>-->
         <div id="wrapper" style="border:solid 1px red; line-height:15pt;">
-            This is the content after the div that should flow around the relative <div id="float" class="floating div1">Div 1</div>floating block that is in the div
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
+            This is the content after the div that should flow around the relative floating block that is in the div
+            Lorem ipsum dolor sit amet, <div id="float" class="floating div1">Div 1</div>consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
             eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
             Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
             Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.

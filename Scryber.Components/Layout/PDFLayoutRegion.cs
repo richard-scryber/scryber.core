@@ -697,7 +697,7 @@ namespace Scryber.Layout
                 ///Individually calculate each lines horizontal offset
                 if (applyAlignments && h != HorizontalAlignment.Left)
                 {
-                    PDFUnit width = this.GetAvailableWidth(yoffset, item.Height);
+                    PDFUnit width = this.GetAvailableWidth(actYOffset, item.Height);
                     PDFUnit space = width - item.Width;
 
                     if(h == HorizontalAlignment.Justified)
