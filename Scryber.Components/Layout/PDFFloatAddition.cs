@@ -23,7 +23,7 @@ namespace Scryber.Layout
 
         public virtual PDFUnit ApplyWidths(PDFUnit available, PDFUnit yoffset, PDFUnit height)
         {
-            if ((yoffset + height) >= this.Offset && yoffset < (this.Offset + this.Height))
+            if ((yoffset + height) > this.Offset && yoffset < (this.Offset + this.Height))
                 available -= this.Inset;
 
             if (null != this.Prev)
