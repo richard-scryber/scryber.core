@@ -569,7 +569,7 @@ namespace Scryber.Layout
             return GetAvailableWidth(this.UsedSize.Height, 0);
         }
 
-        protected virtual PDFUnit GetAvailableWidth(PDFUnit yoffset, PDFUnit height)
+        public virtual PDFUnit GetAvailableWidth(PDFUnit yoffset, PDFUnit height)
         {
             PDFUnit avail = this.UnusedBounds.Width;
 

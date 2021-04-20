@@ -536,16 +536,22 @@ namespace Scryber.Layout
             PDFUnit inset = PDFUnit.Zero;
             PDFUnit height = positioned.Height;
             PDFUnit offset = pos.Y.Value;
+            var bounds = positioned.TotalBounds;
+            var container = positioned.GetParentBlock();
 
-            if(pos.FloatMode == FloatMode.Left)
+            if (pos.FloatMode == FloatMode.Left)
             {
                 inset = relBlock.Width;
+                
+                var floatLeft = container.CurrentRegion.GetXInset(offset, 0);
+
+                if (floatLeft > 0)
+                    bounds.X += floatLeft;
+
                 if(pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
-                    var bounds = positioned.TotalBounds;
                     bounds.X += pos.Margins.Left;
-                    
                     bounds.Y += pos.Margins.Top;
 
                     positioned.TotalBounds = bounds;
@@ -553,8 +559,9 @@ namespace Scryber.Layout
             }
             else if(pos.FloatMode == FloatMode.Right)
             {
-                var bounds = positioned.TotalBounds;
-                bounds.X = positioned.GetParentBlock().AvailableBounds.Width - relBlock.Width;
+                var x = container.CurrentRegion.GetXInset(offset, 0);
+                x += container.CurrentRegion.GetAvailableWidth(offset, 0);
+                bounds.X = x - relBlock.Width;
                 inset = relBlock.Width;
 
                 if (pos.Margins.IsEmpty == false)
@@ -563,14 +570,10 @@ namespace Scryber.Layout
                     bounds.X += pos.Margins.Left;
                     bounds.Y += pos.Margins.Top;
                 }
-
-                positioned.TotalBounds = bounds;
-
-
             }
+            positioned.TotalBounds = bounds;
 
-
-            var container = positioned.Parent as PDFLayoutBlock;
+            
             container.CurrentRegion.AddFloatingInset(pos.FloatMode, inset, offset, height);
             
         }
