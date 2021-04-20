@@ -566,15 +566,15 @@ namespace Scryber.Layout
         /// <returns></returns>
         protected PDFUnit GetAvailableWidth()
         {
-            return GetAvailableWidth(this.UsedSize.Height);
+            return GetAvailableWidth(this.UsedSize.Height, 0);
         }
 
-        protected virtual PDFUnit GetAvailableWidth(PDFUnit yoffset)
+        protected virtual PDFUnit GetAvailableWidth(PDFUnit yoffset, PDFUnit height)
         {
             PDFUnit avail = this.UnusedBounds.Width;
 
             if (null != this.Floats)
-                avail = this.Floats.ApplyWidths(avail, yoffset);
+                avail = this.Floats.ApplyWidths(avail, yoffset, height);
             return avail;
         }
 
@@ -697,7 +697,7 @@ namespace Scryber.Layout
                 ///Individually calculate each lines horizontal offset
                 if (applyAlignments && h != HorizontalAlignment.Left)
                 {
-                    PDFUnit width = this.GetAvailableWidth(yoffset);
+                    PDFUnit width = this.GetAvailableWidth(yoffset, item.Height);
                     PDFUnit space = width - item.Width;
 
                     if(h == HorizontalAlignment.Justified)

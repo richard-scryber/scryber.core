@@ -6,20 +6,21 @@
 
         body{
             font-size:12pt;
-            line-height:15pt;
+            font-family:sans-serif;
+            text-align:right;
         }
 
-        div {
-            margin-right:10pt;
+        div.floating {
             text-align:center;
             vertical-align:middle;
+            margin:10pt;
         }
 
         .div1 {
             float: left;
             background: red;
-            width: 100pt;
-            height:60pt;
+            width: 60pt;
+            height:55pt;
         }
 
         .div2 {
@@ -32,24 +33,26 @@
         }
     </style>
 </head>
-<body style="padding:20px;">
+<body style="padding:20pt;border:solid 1px green;">
 
-    <h2>Float Next To Each Other</h2>
+    <div id="global" style="border:solid 1px blue;">
+        <!--<h2 style="font-style:normal;">Float Next To Each Other</h2>
 
     <p style="margin-bottom:20pt;">In this example, the three divs will float next to each other.</p>
-    <!--<div class="div1">Div 1</div>-->
+    <div class="div1">Div 1</div>-->
+        <div id="wrapper" style="border:solid 1px red; line-height:15pt;">
+            This is the content after the div that should flow around the relative <div id="float" class="floating div1">Div 1</div>floating block that is in the div
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
+            eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
+            Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
+            Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.
 
-    <div class="div1" >Div 1</div>This is the content after the div that should flow around the relative floating block
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
-    eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
-    Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
-    Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.
-
-    <div class="div1" >Div 2</div>This is the content after the div that should flow around the relative floating block
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
-    eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
-    Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
-    Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.
-
+            This is the content after the div that should flow around the relative floating block
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
+            eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
+            Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
+            Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.
+        </div>
+    </div>
 </body>
 </html>

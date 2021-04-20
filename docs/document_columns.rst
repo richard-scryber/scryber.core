@@ -214,11 +214,6 @@ If our page size or orientation changes then the number of columns fitted change
 Column-gaps are the margins, or alleys, between each column. The default is 10pt, but it can be specified as a single unit value, e.g. 20pt or 5mm
 (see :doc:`drawing_units` for more on scryber measurements).
 
-The break-before and break-after values of 'always' will cause the flow of the content to move to the next available column.
-If all the columns are used, then a new page will be created and the content continue to flow from there.
-
-Finally, the break-inside value of 'avoid' will try to keep all the inner content in one block. If it does
-not fit within the current column, then it will move to a new column (or column on a new page) and continue from there.
 
 .. code-block:: html
 

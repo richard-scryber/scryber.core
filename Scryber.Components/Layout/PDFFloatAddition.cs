@@ -21,13 +21,13 @@ namespace Scryber.Layout
             this.Prev = prev;
         }
 
-        public virtual PDFUnit ApplyWidths(PDFUnit available, PDFUnit yoffset)
+        public virtual PDFUnit ApplyWidths(PDFUnit available, PDFUnit yoffset, PDFUnit height)
         {
-            if (yoffset > this.Offset && yoffset < (this.Offset + this.Height))
+            if ((yoffset + height) >= this.Offset && yoffset < (this.Offset + this.Height))
                 available -= this.Inset;
 
             if (null != this.Prev)
-                available = this.Prev.ApplyWidths(available, yoffset);
+                available = this.Prev.ApplyWidths(available, yoffset, height);
 
             return available;
         }
@@ -50,7 +50,7 @@ namespace Scryber.Layout
 
         public override PDFUnit ApplyXInset(PDFUnit x, PDFUnit yoffset, PDFUnit height)
         {
-            if ((yoffset + height) >= this.Offset && yoffset < (this.Offset + this.Height))
+            if ((yoffset + height) > this.Offset && yoffset < (this.Offset + this.Height))
                 x += this.Inset;
             return base.ApplyXInset(x, yoffset, height);
         }

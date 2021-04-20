@@ -540,15 +540,36 @@ namespace Scryber.Layout
             if(pos.FloatMode == FloatMode.Left)
             {
                 inset = relBlock.Width;
+                if(pos.Margins.IsEmpty == false)
+                {
+                    height += pos.Margins.Top + pos.Margins.Bottom;
+                    var bounds = positioned.TotalBounds;
+                    bounds.X += pos.Margins.Left;
+                    
+                    bounds.Y += pos.Margins.Top;
+
+                    positioned.TotalBounds = bounds;
+                }
             }
             else if(pos.FloatMode == FloatMode.Right)
             {
                 var bounds = positioned.TotalBounds;
-                bounds.X = positioned.Parent.Width - relBlock.Width;
+                bounds.X = positioned.GetParentBlock().AvailableBounds.Width - relBlock.Width;
+                inset = relBlock.Width;
+
+                if (pos.Margins.IsEmpty == false)
+                {
+                    height += pos.Margins.Top + pos.Margins.Bottom;
+                    bounds.X += pos.Margins.Left;
+                    bounds.Y += pos.Margins.Top;
+                }
+
                 positioned.TotalBounds = bounds;
 
-                inset = relBlock.Width;
+
             }
+
+
             var container = positioned.Parent as PDFLayoutBlock;
             container.CurrentRegion.AddFloatingInset(pos.FloatMode, inset, offset, height);
             
@@ -671,6 +692,17 @@ namespace Scryber.Layout
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFUnit offsetY = last.Height;
+
+            //close any current line, as we want to be on a new one.
+            PDFLayoutRegion currRegion = last.CurrentRegion;
+            if (currRegion != null)
+            {
+                //offsetY += currRegion.Height;
+                //if (currRegion.HasOpenItem)
+                    //currRegion.CloseCurrentItem();
+                //    offsetY += currRegion.CurrentItem.Height;
+            }
+            
             pos.Y = offsetY;
             PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full);
             return floating;
@@ -1686,30 +1718,7 @@ namespace Scryber.Layout
 
         #endregion
 
-        //#region protected int GetBlockColumnCount(ref PDFUnit alleywidth)
-
-        ///// <summary>
-        ///// Gets the number of columns and also the alley width for this block
-        ///// </summary>
-        ///// <param name="alleywidth"></param>
-        ///// <returns></returns>
-        //protected PDFColumnOptions GetBlockColumnOptions()
-        //{
-        //    int count = this.FullStyle.GetValue(PDFStyleKeys.ColumnCountKey, 1);
-        //    PDFUnit alleywidth = this.FullStyle.GetValue(PDFStyleKeys.ColumnAlleyKey, PDFColumnsStyle.DefaultAlleyWidth);
-        //    PDFColumnWidths widths = this.FullStyle.GetValue(PDFStyleKeys.ColumnWidthKey, PDFColumnWidths.Empty);
-        //    bool autoflow = this.FullStyle.GetValue(PDFStyleKeys.ColumnFlowKey, true);
-        //    PDFColumnOptions options = new PDFColumnOptions()
-        //    {
-        //        AlleyWidth = alleywidth,
-        //        ColumnWidths = widths,
-        //        ColumnCount = count,
-        //        AutoFlow = autoflow
-        //    };
-        //    return options;
-        //}
-
-        //#endregion
+        
 
 
         //

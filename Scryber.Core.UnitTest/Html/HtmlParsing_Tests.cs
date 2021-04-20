@@ -1121,6 +1121,11 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
                 {
+                    var grid = doc.Pages[0].Style.OverlayGrid;
+                    grid.GridOpacity = 0.5;
+                    grid.GridColor = PDFColors.Aqua;
+                    grid.GridSpacing = 10;
+                    grid.ShowGrid = true;
 
                     doc.SaveAsPDF(stream);
                 }
