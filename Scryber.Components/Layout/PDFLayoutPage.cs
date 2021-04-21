@@ -197,6 +197,15 @@ namespace Scryber.Layout
 
         #endregion
 
+        #region public PDFFloatAddition Floats { get; set; }
+
+        /// <summary>
+        /// Gets all the floating block offsets in the page (rather than on a per block capture)
+        /// </summary>
+        public PDFFloatAddition Floats { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Gets to PDFObjectRef for this page.
         /// </summary>

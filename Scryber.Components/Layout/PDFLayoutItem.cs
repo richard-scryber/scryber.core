@@ -263,6 +263,19 @@ namespace Scryber.Layout
 
         #endregion
 
+        protected virtual PDFLayoutPage GetLayoutPage()
+        {
+            if (this is PDFLayoutPage)
+                return this as PDFLayoutPage;
+            else if (null == this.Parent)
+                return null;
+
+            else if (this.Parent is PDFLayoutPage)
+                return this.Parent as PDFLayoutPage;
+            else
+                return this.Parent.GetLayoutPage();
+        }
+
         #region protected int GetColumnIndex()
 
         /// <summary>

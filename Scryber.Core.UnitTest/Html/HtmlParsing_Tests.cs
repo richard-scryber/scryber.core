@@ -1116,19 +1116,42 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
-                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
                 //doc.RenderOptions.StringOutput = OutputStringType.Text;
 
                 using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
                 {
-                    var grid = doc.Pages[0].Style.OverlayGrid;
-                    grid.GridOpacity = 0.5;
-                    grid.GridColor = PDFColors.Aqua;
-                    grid.GridSpacing = 10;
-                    grid.ShowGrid = true;
+                    //var grid = doc.Pages[0].Style.OverlayGrid;
+                    //grid.GridOpacity = 0.5;
+                    //grid.GridColor = PDFColors.Aqua;
+                    //grid.GridSpacing = 10;
+                    //grid.ShowGrid = true;
 
                     doc.SaveAsPDF(stream);
                 }
+
+
+
+            }
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //pass paramters as needed, supporting simple values, arrays or complex classes.
+                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+                //doc.RenderOptions.StringOutput = OutputStringType.Text;
+
+                using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
+                {
+                    //var grid = doc.Pages[0].Style.OverlayGrid;
+                    //grid.GridOpacity = 0.5;
+                    //grid.GridColor = PDFColors.Aqua;
+                    //grid.GridSpacing = 10;
+                    //grid.ShowGrid = true;
+
+                    doc.SaveAsPDF(stream);
+                }
+
+
 
             }
         }

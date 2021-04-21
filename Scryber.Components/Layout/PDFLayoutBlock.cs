@@ -307,9 +307,10 @@ namespace Scryber.Layout
 
         public PDFFloatAddition Floats
         {
-            get;
-            set;
+            get { return this.GetLayoutPage().Floats; }
+            set { this.GetLayoutPage().Floats = value; }
         }
+
 
         #region public int BlockRepeatIndex { get; set; }
 
