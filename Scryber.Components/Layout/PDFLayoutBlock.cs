@@ -231,6 +231,13 @@ namespace Scryber.Layout
 
         #endregion
 
+
+        /// <summary>
+        /// Gets or sets the position of this block on the page
+        /// </summary>
+        public PDFPoint PagePosition { get; set; }
+
+
         #region  protected bool IsContainer { get; set; }
 
         /// <summary>
@@ -304,13 +311,18 @@ namespace Scryber.Layout
 
         #endregion
 
+        #region public PDFFloatAddition Floats {get;set;}
 
+        /// <summary>
+        /// Gets or sets the linked list of any floating additions to the block.
+        /// </summary>
         public PDFFloatAddition Floats
         {
-            get { return this.GetLayoutPage().Floats; }
-            set { this.GetLayoutPage().Floats = value; }
+            get;
+            set;
         }
 
+        #endregion
 
         #region public int BlockRepeatIndex { get; set; }
 
@@ -388,6 +400,11 @@ namespace Scryber.Layout
         //
         // methods
         //
+
+        public PDFUnit GetPageYOffset()
+        {
+            return PDFUnit.Zero;
+        }
 
         #region protected override bool DoClose(ref string msg)
 
@@ -763,11 +780,15 @@ namespace Scryber.Layout
             {
                 foreach (PDFLayoutPositionedRegion reg in this.PositionedRegions)
                 {
-                    if (reg.PositionMode == PositionMode.Relative)
+                    if (reg.PositionMode == PositionMode.Relative || reg.PositionOptions.FloatMode != FloatMode.None)
                     {
                         PDFRect content = reg.TotalBounds;
                         PDFSize bottomright = new PDFSize(content.X + content.Width, content.Y + content.Height);
-                        
+                        if (reg.PositionOptions.Margins.IsEmpty == false)
+                        {
+                            bottomright.Width += reg.PositionOptions.Margins.Right;
+                            bottomright.Height += reg.PositionOptions.Margins.Bottom;
+                        }
                         if (full.Width < bottomright.Width)
                             full.Width = bottomright.Width;
                         if (full.Height < bottomright.Height)

@@ -538,12 +538,12 @@ namespace Scryber.Layout
             PDFUnit offset = pos.Y.Value;
             var bounds = positioned.TotalBounds;
             var container = positioned.GetParentBlock();
-
+            var pageOffset = container.GetPageYOffset();
             if (pos.FloatMode == FloatMode.Left)
             {
                 inset = relBlock.Width;
                 
-                var floatLeft = container.CurrentRegion.GetXInset(offset, 0);
+                var floatLeft = container.CurrentRegion.GetXInset(container.PagePosition.Y + offset, 0);
 
                 if (floatLeft > 0)
                     bounds.X += floatLeft;

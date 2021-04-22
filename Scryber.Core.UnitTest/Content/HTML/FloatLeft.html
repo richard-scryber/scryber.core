@@ -7,7 +7,7 @@
         body{
             font-size:12pt;
             font-family:sans-serif;
-            text-align:right;
+            text-align:left;
         }
 
         div.floating {
@@ -40,22 +40,23 @@
 
     <p style="margin-bottom:20pt;">In this example, the three divs will float next to each other.</p>
     <div class="div1">Div 1</div>-->
-        <div id="wrapper" style="border:solid 1px red; line-height:15pt;">
+        <div id="wrapper" style="border:solid 1px red;">
             This is the content after the div that should flow around the relative floating block that is in the div
             Lorem ipsum dolor sit amet, <div id="float" class="floating div1">Div 1</div>
             consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
-            eu aliquet ullamcorper. Suspendisse ac
+            eu aliquet ullamcorper.
+            <span style="font-style:italic">Suspendisse ac
             sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
             Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
             Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.
-
-            This is the content after the div that should flow around the relative floating block
+</span>
+            This is the content after the div that should flow around the relative floating block<div id="float" class="floating div2">Div 2</div>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
             eu aliquet ullamcorper. Suspendisse ac sem in risus feugiat sodales. Duis pharetra enim quis vulputate aliquet.
             Sed turpis libero, rhoncus at fringilla et, lobortis at nulla. Cras placerat lectus consequat gravida venenatis.
-            Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a <div id="float" class="floating div2">Div 2</div>sed mi.
+            Morbi ac urna id sem sodales posuere eget id quam. Pellentesque eget sem nec ligula cursus aliquam a sed mi.
         </div>
-        <div id="wrapper" style="border:solid 1px red; line-height:15pt;">
+        <div id="wrapper2" style="border:solid 1px red; line-height:15pt;">
             This is the content after the div that should flow around the relative floating block that is in the div
             Lorem ipsum dolor sit amet, <div id="float" class="floating div1">Div 1</div>
             consectetur adipiscing elit. Sed viverra eu turpis sed faucibus. Nullam tempor metus
