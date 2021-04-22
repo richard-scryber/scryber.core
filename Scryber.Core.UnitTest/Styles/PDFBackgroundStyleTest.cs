@@ -35,35 +35,7 @@ namespace Scryber.Core.UnitTests.Styles
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+        
 
 
         /// <summary>
@@ -142,6 +114,68 @@ namespace Scryber.Core.UnitTests.Styles
             imgactual = (PDFImageBrush)target.CreateBrush();
             Assert.AreEqual(imgactual.YStep, Style.NoYRepeatStepSize);
             Assert.AreEqual(imgactual.XStep, Style.NoXRepeatStepSize);
+        }
+
+        [TestMethod]
+        [TestCategory("Style Values")]
+        public void Background_LinearGradientBrushTest()
+        {
+            var style = new StyleDefn();
+            style.Background.ImageSource = "linear-gradient(red, green)";
+
+            var target = style.CreateBackgroundBrush();
+
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(PDFGradientLinearBrush));
+            PDFGradientLinearBrush gradient = (PDFGradientLinearBrush)target;
+
+            Assert.AreEqual(2, gradient.Colors.Length);
+            Assert.AreEqual(false, gradient.Repeating);
+            Assert.AreEqual(FillType.Pattern, gradient.FillStyle);
+
+            style = new StyleDefn();
+            style.Background.ImageSource = "repeating-linear-gradient(red 10%, green 15%, yellow 25%)";
+
+            target = style.CreateBackgroundBrush();
+
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(PDFGradientLinearBrush));
+            gradient = (PDFGradientLinearBrush)target;
+
+            Assert.AreEqual(3, gradient.Colors.Length);
+            Assert.AreEqual(true, gradient.Repeating);
+            Assert.AreEqual(FillType.Pattern, gradient.FillStyle);
+        }
+
+        [TestMethod]
+        [TestCategory("Style Values")]
+        public void Background_RadialGradientBrushTest()
+        {
+            var style = new StyleDefn();
+            style.Background.ImageSource = "radial-gradient(red, green)";
+
+            var target = style.CreateBackgroundBrush();
+
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(PDFGradientRadialBrush));
+            PDFGradientRadialBrush gradient = (PDFGradientRadialBrush)target;
+
+            Assert.AreEqual(2, gradient.Colors.Length);
+            Assert.AreEqual(false, gradient.Repeating);
+            Assert.AreEqual(FillType.Pattern, gradient.FillStyle);
+
+            style = new StyleDefn();
+            style.Background.ImageSource = "repeating-radial-gradient(circle, red 10%, green 15%, yellow 25%)";
+
+            target = style.CreateBackgroundBrush();
+
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(PDFGradientRadialBrush));
+            gradient = (PDFGradientRadialBrush)target;
+            Assert.AreEqual(RadialShape.Circle, gradient.Shape);
+            Assert.AreEqual(3, gradient.Colors.Length);
+            Assert.AreEqual(true, gradient.Repeating);
+            Assert.AreEqual(FillType.Pattern, gradient.FillStyle);
         }
 
         /// <summary>

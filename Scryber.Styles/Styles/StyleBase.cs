@@ -1696,62 +1696,89 @@ namespace Scryber.Styles
             }
 
             //If we have an image source and we are set to use an image fill style (or it has not been specified)
-            if ((this).TryGetValue(StyleKeys.BgImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value) && (fillstyle == null || fillstyle.Value == Drawing.FillType.Image))
+            if ((this).TryGetValue(StyleKeys.BgImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value))
             {
-                PatternRepeat repeat = PatternRepeat.RepeatBoth;
-                StyleValue<PatternRepeat> repeatValue;
-
-                if ((this).TryGetValue(StyleKeys.BgRepeatKey, out repeatValue))
-                    repeat = repeatValue.Value;
-
-                if (repeat == PatternRepeat.Fill)
+                PDFGradientDescriptor found;
+                if(this.IsGradientImageSrc(imgsrc.Value, out found))
                 {
-                    PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value);
-                    if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
-                        full.Opacity = opacity.Value;
-
-                    if (null != brush)
-                        full.UnderBrush = brush;
-
-                    brush = full;
-
+                    if (found.GradientType == GradientType.Linear)
+                        brush = new PDFGradientLinearBrush((PDFLinearGradientDescriptor)found);
+                    else if (found.GradientType == GradientType.Radial)
+                        brush = new PDFGradientRadialBrush((PDFRadialGradientDescriptor)found);
+                    else
+                        brush = null;
                 }
-                else
+                else if ((fillstyle == null || fillstyle.Value == Drawing.FillType.Image))
                 {
-                    PDFImageBrush img = new PDFImageBrush(imgsrc.Value);
-                    StyleValue<PDFUnit> unitValue;
+                    PatternRepeat repeat = PatternRepeat.RepeatBoth;
+                    StyleValue<PatternRepeat> repeatValue;
 
-                    if (repeat == PatternRepeat.RepeatX || repeat == PatternRepeat.RepeatBoth)
-                        img.XStep = (this).TryGetValue(StyleKeys.BgXStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                    if ((this).TryGetValue(StyleKeys.BgRepeatKey, out repeatValue))
+                        repeat = repeatValue.Value;
+
+                    if (repeat == PatternRepeat.Fill)
+                    {
+                        PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value);
+                        if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
+                            full.Opacity = opacity.Value;
+
+                        if (null != brush)
+                            full.UnderBrush = brush;
+
+                        brush = full;
+
+                    }
                     else
-                        img.XStep = NoXRepeatStepSize;
+                    {
+                        PDFImageBrush img = new PDFImageBrush(imgsrc.Value);
+                        StyleValue<PDFUnit> unitValue;
 
-                    if (repeat == PatternRepeat.RepeatY || repeat == PatternRepeat.RepeatBoth)
-                        img.YStep = (this).TryGetValue(StyleKeys.BgYStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
-                    else
-                        img.YStep = NoYRepeatStepSize;
+                        if (repeat == PatternRepeat.RepeatX || repeat == PatternRepeat.RepeatBoth)
+                            img.XStep = (this).TryGetValue(StyleKeys.BgXStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                        else
+                            img.XStep = NoXRepeatStepSize;
 
-                    img.XPostion = (this).TryGetValue(StyleKeys.BgXPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
-                    img.YPostion = (this).TryGetValue(StyleKeys.BgYPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
+                        if (repeat == PatternRepeat.RepeatY || repeat == PatternRepeat.RepeatBoth)
+                            img.YStep = (this).TryGetValue(StyleKeys.BgYStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                        else
+                            img.YStep = NoYRepeatStepSize;
 
-                    if ((this).TryGetValue(StyleKeys.BgXSizeKey, out unitValue))
-                        img.XSize = unitValue.Value;
+                        img.XPostion = (this).TryGetValue(StyleKeys.BgXPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
+                        img.YPostion = (this).TryGetValue(StyleKeys.BgYPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
 
-                    if ((this).TryGetValue(StyleKeys.BgYSizeKey, out unitValue))
-                        img.YSize = unitValue.Value;
+                        if ((this).TryGetValue(StyleKeys.BgXSizeKey, out unitValue))
+                            img.XSize = unitValue.Value;
 
-                    if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
-                        img.Opacity = opacity.Value;
+                        if ((this).TryGetValue(StyleKeys.BgYSizeKey, out unitValue))
+                            img.YSize = unitValue.Value;
 
-                    if (null != brush)
-                        img.UnderBrush = brush;
+                        if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
+                            img.Opacity = opacity.Value;
 
-                    brush = img;
+                        if (null != brush)
+                            img.UnderBrush = brush;
+
+                        brush = img;
+                    }
                 }
+                
                 
             }
 
             return brush;
+        }
+
+        protected virtual bool IsGradientImageSrc(string value, out PDFGradientDescriptor descriptor)
+        {
+            if (!string.IsNullOrEmpty(value) && value.IndexOf("(") > 0 && PDFGradientDescriptor.TryParse(value, out descriptor))
+            {
+                return true;
+            }
+            else
+            {
+                descriptor = null;
+                return false;
+            }
         }
 
         #endregion

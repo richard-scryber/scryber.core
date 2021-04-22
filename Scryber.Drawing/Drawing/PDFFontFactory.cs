@@ -1064,101 +1064,107 @@ namespace Scryber.Drawing
             PrivateFontCollection priv = new PrivateFontCollection();
             FamilyReferenceBag bag = new FamilyReferenceBag(priv);
 
-            var assm = typeof(PDFFontFactory).Assembly;
-            TTFRef ttrRef;
-            byte[] bin;
-            FontReference fRef;
-            TTFFile file;
-            //Courier
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNew.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fcour", "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFU, file); ;
-            
-
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBold.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBo", "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFU, file);
-
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewBoldItalic.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBoOb", "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFU, file);
-
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Courier.CourierNewItalic.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourOb", "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFU, file);
-
-
-            //Helvetica
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.Helvetica.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fhel", "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFU, file);
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBold.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelBl", "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFU, file);
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelObBl", "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFU, file);
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Helvetica.HelveticaOblique.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelOb", "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFU, file);
-
-
-            //Symbol
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Symbol.Symbol.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Symbol", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFU, file);
-
-
-            //Times
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRoman.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Ftimes", "Times-Roman", "Times", false, false, TimesSpaceWidthFU, file);
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRomanBold.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBo", "Times-Bold", "Times", true, false, TimesSpaceWidthFU, file);
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRomanBoldItalic.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBoIt", "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFU, file);
-
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Times.timesNewRomanItalic.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesIt", "Times-Italic", "Times", false, true, TimesSpaceWidthFU, file);
+            try
+            {
+                var assm = typeof(PDFFontFactory).Assembly;
+                TTFRef ttrRef;
+                byte[] bin;
+                FontReference fRef;
+                TTFFile file;
+                //Courier
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNew.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fcour", "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFU, file); ;
 
 
 
-            //Zapf
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNewBold.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBo", "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFU, file);
 
-            bin = GetFontBinary(assm, "Scryber.Drawing.Text._FontResources.Zaph.ZapfDingbats.ttf", out ttrRef);
-            fRef = bag.AddFontResource("Zapf Dingbats", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
-            file = new TTFFile(bin, ttrRef.HeadOffset);
-            fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFU, file);
-            fRef.Definition.Family = "Zapf Dingbats";
-            fRef.Definition.WindowsName = "WingDings";
 
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNewBoldItalic.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBoOb", "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFU, file);
+
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNewItalic.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourOb", "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFU, file);
+
+
+                //Helvetica
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.Helvetica.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fhel", "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFU, file);
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.HelveticaBold.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelBl", "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFU, file);
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelObBl", "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFU, file);
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.HelveticaOblique.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelOb", "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFU, file);
+
+
+                //Symbol
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Symbol.Symbol.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Symbol", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFU, file);
+
+
+                //Times
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRoman.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Ftimes", "Times-Roman", "Times", false, false, TimesSpaceWidthFU, file);
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRomanBold.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBo", "Times-Bold", "Times", true, false, TimesSpaceWidthFU, file);
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRomanBoldItalic.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBoIt", "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFU, file);
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRomanItalic.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesIt", "Times-Italic", "Times", false, true, TimesSpaceWidthFU, file);
+
+
+
+                //Zapf
+
+                bin = GetFontBinary(assm, "Scryber.Text._FontResources.Zaph.ZapfDingbats.ttf", out ttrRef);
+                fRef = bag.AddFontResource("Zapf Dingbats", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                file = new TTFFile(bin, ttrRef.HeadOffset);
+                fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFU, file);
+                fRef.Definition.Family = "Zapf Dingbats";
+                fRef.Definition.WindowsName = "WingDings";
+            }
+            catch(Exception ex)
+            {
+                throw new PDFLayoutException("The static resource fonts could not be loaded from the Scryber.Drawing assembly, please check the dll structure", ex);
+            }
 
             return bag;
         }
@@ -1169,7 +1175,14 @@ namespace Scryber.Drawing
 
         private static byte[] GetFontBinary(Assembly assembly, string rsrc, out TTFRef fontRef)
         {
+            if (null == assembly)
+                throw new ArgumentNullException("assembly", "The assembly for loading the resource was null");
+
             var stream = assembly.GetManifestResourceStream(rsrc);
+
+            if (null == stream)
+                throw new PDFException("The resource font in assembly " + assembly.FullName + " could not be found");
+
             byte[] data;
 
             using (var ms = new MemoryStream())
