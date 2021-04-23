@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -25,7 +27,7 @@ namespace Scryber.Drawing
         }
 
 
-
+        public abstract PDFGradientFunction GetGradientFunction();
 
         public static PDFGradientDescriptor Parse(string value)
         {
@@ -146,6 +148,85 @@ namespace Scryber.Drawing
         public PDFLinearGradientDescriptor() : base(GradientType.Linear)
         { }
 
+
+        public override PDFGradientFunction GetGradientFunction()
+        {
+            if (this.Repeating)
+            {
+                List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
+
+                double total = 0.0;
+                while (total < 1.0)
+                {
+                    double curr = 0.0;
+                    for (int i = 1; i < this.Colors.Length; i++)
+                    {
+                        var col = this.Colors[i];
+                        curr = col.Distance.HasValue ? total + (col.Distance.Value / 100) : total;
+                        bounds.Add(new PDFGradientFunctionBoundary(curr));
+                    }
+                    total = curr;
+                }
+                List<PDFGradientLinearFunction2> functions = new List<PDFGradientLinearFunction2>();
+
+                var col0Index = 0;
+                var col1Index = 1;
+                for (int i = 0; i < bounds.Count; i++)
+                {
+                    var color0 = this.Colors[col0Index].Color;
+                    var color1 = this.Colors[col1Index].Color;
+
+                    var func = new PDFGradientLinearFunction2(color0, color1);
+                    functions.Add(func);
+
+                    col0Index++;
+                    col1Index++;
+
+                    if(col1Index >= this.Colors.Length)
+                    {
+                        col0Index = 0;
+                        col1Index = 1;
+                    }
+                    //if (col0Index >= this.Colors.Length)
+                    //    col0Index = 0;
+                    //else if (col1Index >= this.Colors.Length)
+                    //    col1Index = 0;
+                }
+
+                bounds.RemoveAt(bounds.Count - 1);
+
+                while (bounds[bounds.Count - 1].Bounds > 1)
+                {
+                    bounds.RemoveAt(bounds.Count - 1);
+                    functions.RemoveAt(functions.Count - 1);
+                }
+
+                return new PDFGradientFunction3(functions.ToArray(), bounds.ToArray());
+            }
+            else if (this.Colors.Length == 2)
+            {
+                return new PDFGradientLinearFunction2(this.Colors[0].Color, this.Colors[1].Color);
+            }
+            else
+            {
+                List<PDFGradientLinearFunction2> functions = new List<PDFGradientLinearFunction2>();
+                List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
+                double boundsValue = 1.0 / (this.Colors.Length - 1);
+
+                for (int i = 1; i < this.Colors.Length; i++)
+                {
+                    functions.Add(new PDFGradientLinearFunction2(this.Colors[i - 1].Color, this.Colors[i].Color));
+
+                    if (i < this.Colors.Length - 1)
+                    {
+                        bounds.Add(new PDFGradientFunctionBoundary(boundsValue * i));
+                    }
+                }
+
+                return new PDFGradientFunction3(functions.ToArray(), bounds.ToArray());
+            }
+        }
+
         private static Regex _splitter = new Regex(",(?![^\\(]*\\))");
 
         /// <summary>
@@ -204,6 +285,8 @@ namespace Scryber.Drawing
             return true;
         }
 
+        
+
     }
 
     public class PDFRadialGradientDescriptor : PDFGradientDescriptor
@@ -223,6 +306,11 @@ namespace Scryber.Drawing
         public PDFRadialGradientDescriptor() : base(GradientType.Radial)
         {
 
+        }
+
+        public override PDFGradientFunction GetGradientFunction()
+        {
+            throw new NotImplementedException();
         }
 
         public static bool TryParseRadial(string value, out PDFRadialGradientDescriptor radial)

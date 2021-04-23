@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Windows.Markup;
 using Scryber.Text;
 using System.Security.Cryptography;
+using System.Drawing.Printing;
 
 namespace Scryber.Styles.Parsing
 {
@@ -591,10 +592,12 @@ namespace Scryber.Styles.Parsing
     /// </summary>
     public class CSSUrlStyleParser : CSSStyleAttributeParser<string>
     {
-        
-        public CSSUrlStyleParser(string styleItemKey, PDFStyleKey<string> pdfAttr)
+        private bool _allowGradients;
+
+        public CSSUrlStyleParser(string styleItemKey, PDFStyleKey<string> pdfAttr, bool allowGradients = true)
             : base(styleItemKey, pdfAttr)
         {
+            _allowGradients = allowGradients;
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
@@ -604,13 +607,30 @@ namespace Scryber.Styles.Parsing
 
             if (reader.ReadNextValue())
             {
-                if (ParseCSSUrl(reader.CurrentTextValue, out attrvalue))
+                if (IsGradient(reader.CurrentTextValue, out attrvalue) || ParseCSSUrl(reader.CurrentTextValue, out attrvalue))
                 {
                     onStyle.SetValue(this.StyleAttribute, attrvalue);
                     result = true;
                 }
             }
             return result;
+        }
+
+        protected virtual bool IsGradient(string value, out string finalValue)
+        {
+            if(!string.IsNullOrEmpty(value))
+            {
+                if(value.StartsWith("linear-gradient(")
+                    || value.StartsWith("repeating-linear-gradient(")
+                    || value.StartsWith("radial-gradient(")
+                    || value.StartsWith("repeating-radial-gradient("))
+                {
+                    finalValue = value;
+                    return true;
+                }
+            }
+            finalValue = null;
+            return false;
         }
     }
 

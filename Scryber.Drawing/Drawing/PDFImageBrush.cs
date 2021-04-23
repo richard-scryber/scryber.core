@@ -63,6 +63,7 @@ namespace Scryber.Drawing
         }
 
         private PDFUnit _xpos;
+
         /// <summary>
         /// Gets or sets the horizontal offset at which the pattern starts.
         /// The default 0 will use the left as the starting point
@@ -74,6 +75,7 @@ namespace Scryber.Drawing
         }
 
         private PDFUnit _ypos;
+
         /// <summary>
         /// Gets or sets the vertical offset at which the pattern starts.
         /// The default 0 will use the top as the starting point
@@ -85,6 +87,7 @@ namespace Scryber.Drawing
         }
 
         private PDFUnit _xstep;
+
         /// <summary>
         /// Gets or sets the horizontal repeat step that the pattern will move to render each pattern
         /// The default 0 will use the native dimensions of the image as the offset
@@ -96,6 +99,7 @@ namespace Scryber.Drawing
         }
 
         private PDFUnit _ystep;
+
         /// <summary>
         /// Gets or sets the horizontal repeat step that the pattern will move to render each pattern. 
         /// The default 0 will use the native dimensions of the image as the offset

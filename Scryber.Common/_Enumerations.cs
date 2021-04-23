@@ -247,6 +247,17 @@ namespace Scryber
         ConstantFast = 3
     }
 
+    public enum ShadingType
+    {
+        Function = 1,
+        Axial = 2,
+        Radial = 3,
+        FreeForm = 4,
+        Lattice = 5,
+        Coons = 6,
+        Tensor = 7
+    }
+
     /// <summary>
     /// Defines the method the document was loaded
     /// </summary>
