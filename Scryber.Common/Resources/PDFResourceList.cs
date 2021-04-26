@@ -37,38 +37,8 @@ namespace Scryber.Resources
 
         #endregion
 
-        #region Inner Classes
 
-        private class InnerTypedList : System.Collections.ObjectModel.KeyedCollection<string, PDFResourceItemList>
-        {
-            protected override string GetKeyForItem(PDFResourceItemList item)
-            {
-                return item.Type;
-            }
-
-        }
-
-        private class PDFResourceItemList : System.Collections.ObjectModel.KeyedCollection<PDFName, PDFResource>
-        {
-            private string _type;
-            public string Type
-            {
-                get { return _type; }
-            }
-
-            public PDFResourceItemList(string type)
-            {
-                this._type = type;
-            }
-            protected override PDFName GetKeyForItem(PDFResource item)
-            {
-                return item.Name;
-            }
-        }
-
-        #endregion
-
-        private InnerTypedList types = new InnerTypedList();
+        private PDFResourceTypedList types = new PDFResourceTypedList();
         private IPDFResourceContainer _container;
         private bool _includeProcSet;
 
@@ -76,6 +46,8 @@ namespace Scryber.Resources
         {
             get { return _container; }
         }
+
+        public PDFResourceTypedList Types { get { return this.types; } }
 
         public PDFResourceList(IPDFResourceContainer container, bool includeProcSet = true)
         {
@@ -141,5 +113,33 @@ namespace Scryber.Resources
         }
 
         
+    }
+
+
+    public class PDFResourceTypedList : System.Collections.ObjectModel.KeyedCollection<string, PDFResourceItemList>
+    {
+        protected override string GetKeyForItem(PDFResourceItemList item)
+        {
+            return item.Type;
+        }
+
+    }
+
+    public class PDFResourceItemList : System.Collections.ObjectModel.KeyedCollection<PDFName, PDFResource>
+    {
+        private string _type;
+        public string Type
+        {
+            get { return _type; }
+        }
+
+        public PDFResourceItemList(string type)
+        {
+            this._type = type;
+        }
+        protected override PDFName GetKeyForItem(PDFResource item)
+        {
+            return item.Name;
+        }
     }
 }

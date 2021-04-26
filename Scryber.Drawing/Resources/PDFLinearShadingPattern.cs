@@ -5,13 +5,29 @@ using Scryber.Native;
 
 namespace Scryber.Resources
 {
+    /// <summary>
+    /// Defines a resource shading pattern for a linear gradient
+    /// </summary>
     public class PDFLinearShadingPattern : PDFShadingPattern
     {
         private PDFLinearGradientDescriptor _descriptor;
 
-
+        /// <summary>
+        /// Gets the descriptior for the linear gradient
+        /// </summary>
+        public PDFLinearGradientDescriptor Descriptor
+        {
+            get { return _descriptor; }
+        }
         
-
+        /// <summary>
+        /// Creates a new Linear gradient shading pattern with the specified key and gradient descriptor that will be renedered
+        /// in the page bounds.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="key"></param>
+        /// <param name="descriptor">The gradient descriptor</param>
+        /// <param name="bounds">The bounds of the gradient on the page (rather than component level)</param>
         public PDFLinearShadingPattern(IPDFComponent owner, string key, PDFLinearGradientDescriptor descriptor, PDFRect bounds)
             : base(owner, key, bounds)
         {

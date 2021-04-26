@@ -1401,24 +1401,13 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        private PDFLayoutDocument _layout;
+
         [TestMethod]
         public void LinearGradientTest()
         {
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/LinearGradients.html");
-
-            
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradient.txt"))
-                    {
-                        doc.SaveAsPDF(stream);
-                    }
-
-                }
-            }
 
             using (var sr = new System.IO.StreamReader(path))
             {
@@ -1426,13 +1415,106 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     using (var stream = DocStreams.GetOutputStream("LinearGradient.pdf"))
                     {
+                        doc.LayoutComplete += LinearGradient_LayoutComplete;
                         doc.SaveAsPDF(stream);
                     }
 
+                    var rg = new PDFColor[] { PDFColors.Red, PDFColors.Green };
+                    var rgby = new PDFColor[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
+                    var ryg = new PDFColor[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
+
+                    Assert.IsNotNull(_layout);
+                    var pg = _layout.AllPages[0];
+
+                    var resources = pg.Resources;
+                    Assert.AreEqual(2, resources.Types.Count);
+
+                    var patterns = resources.Types["Pattern"];
+                    Assert.IsNotNull(patterns);
+                    Assert.AreEqual(9, patterns.Count);
+
+                    
+                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom);
+                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left);
+                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left);
+                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left);
+                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top);
+                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right);
+                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, (double)GradientAngle.Right);
+                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom_Right);
+                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom, true);
                 }
             }
 
-            Assert.Inconclusive("Need to write the assertions for this");
+            
+        }
+
+        private static void ValidateLinearGradient(PDFLinearShadingPattern one, PDFColor[] cols, double angle, bool repeating = false)
+        {
+            Assert.IsTrue(one.PatternType == PatternType.ShadingPattern);
+            Assert.IsTrue(one.Registered);
+            Assert.IsNotNull(one.Descriptor);
+            Assert.AreEqual(cols.Length, one.Descriptor.Colors.Length);
+            Assert.AreEqual(angle, one.Descriptor.Angle);
+            Assert.AreEqual(repeating, one.Descriptor.Repeating, "Repeating flag does not match");
+            Assert.AreEqual(GradientType.Linear, one.Descriptor.GradientType);
+            for (int i = 0; i < cols.Length; i++)
+            {
+                Assert.AreEqual(cols[i], one.Descriptor.Colors[i].Color, "Color '" + i + "' does not match '" + cols[i].ToString() + "'");
+            }
+        }
+
+        private void LinearGradient_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            _layout = args.Context.DocumentLayout;
+        }
+
+
+
+        [TestMethod]
+        public void RadialGradientTest()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/RadialGradients.html");
+
+            using (var sr = new System.IO.StreamReader(path))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("RadialGradient.pdf"))
+                    {
+                        doc.LayoutComplete += LinearGradient_LayoutComplete;
+                        doc.SaveAsPDF(stream);
+                    }
+
+                    var rg = new PDFColor[] { PDFColors.Red, PDFColors.Green };
+                    var rgby = new PDFColor[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
+                    var ryg = new PDFColor[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
+
+                    Assert.IsNotNull(_layout);
+                    var pg = _layout.AllPages[0];
+
+                    var resources = pg.Resources;
+                    Assert.AreEqual(2, resources.Types.Count);
+
+                    var patterns = resources.Types["Pattern"];
+                    Assert.IsNotNull(patterns);
+                    Assert.AreEqual(9, patterns.Count);
+
+
+                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom);
+                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left);
+                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left);
+                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left);
+                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top);
+                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right);
+                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, (double)GradientAngle.Right);
+                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom_Right);
+                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom, true);
+                }
+            }
+
+
         }
     }
 }
