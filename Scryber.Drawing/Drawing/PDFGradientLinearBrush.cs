@@ -6,7 +6,7 @@ namespace Scryber.Drawing
 {
     public class PDFGradientLinearBrush : PDFGradientBrush
     {
-        private PDFLinearGradientDescriptor _descriptor;
+        private PDFGradientLinearDescriptor _descriptor;
 
         public double Angle
         {
@@ -14,7 +14,7 @@ namespace Scryber.Drawing
         }
 
         
-        public PDFGradientLinearBrush(PDFLinearGradientDescriptor descriptor) : base(descriptor)
+        public PDFGradientLinearBrush(PDFGradientLinearDescriptor descriptor) : base(descriptor)
         {
             this._descriptor = descriptor;
         }
@@ -46,22 +46,6 @@ namespace Scryber.Drawing
             }
         }
 
-        private PDFRect ConvertToPageRect(PDFGraphics graphics, PDFRect bounds)
-        {
-            PDFRect pgRect = PDFRect.Empty;
-
-            pgRect.X = new PDFUnit(graphics.GetXPosition(bounds.X).Value);
-            pgRect.Y = new PDFUnit(graphics.GetYPosition(bounds.Y).Value);
-            pgRect.Width = new PDFUnit(graphics.GetXOffset(bounds.Width).Value);
-            pgRect.Height = new PDFUnit(graphics.GetYOffset(bounds.Height).Value);
-
-            return pgRect;
-        }
-
-        public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, PDFLinearGradientDescriptor descriptor, PDFRect bounds)
-        {
-            PDFLinearShadingPattern pattern = new PDFLinearShadingPattern(g.Container.Document, key, descriptor, bounds);
-            return pattern;
-        }
+        
     }
 }

@@ -10,12 +10,12 @@ namespace Scryber.Resources
     /// </summary>
     public class PDFLinearShadingPattern : PDFShadingPattern
     {
-        private PDFLinearGradientDescriptor _descriptor;
+        private PDFGradientLinearDescriptor _descriptor;
 
         /// <summary>
         /// Gets the descriptior for the linear gradient
         /// </summary>
-        public PDFLinearGradientDescriptor Descriptor
+        public PDFGradientLinearDescriptor Descriptor
         {
             get { return _descriptor; }
         }
@@ -28,7 +28,7 @@ namespace Scryber.Resources
         /// <param name="key"></param>
         /// <param name="descriptor">The gradient descriptor</param>
         /// <param name="bounds">The bounds of the gradient on the page (rather than component level)</param>
-        public PDFLinearShadingPattern(IPDFComponent owner, string key, PDFLinearGradientDescriptor descriptor, PDFRect bounds)
+        public PDFLinearShadingPattern(IPDFComponent owner, string key, PDFGradientLinearDescriptor descriptor, PDFRect bounds)
             : base(owner, key, bounds)
         {
             this._descriptor = descriptor;
@@ -91,97 +91,11 @@ namespace Scryber.Resources
                 writer.EndDictionaryEntry();
             }
 
-            /* 
-             if (this._descriptor.Colors.Length == 2)
-                this.WriteColorFunction2(this._descriptor.Colors[0].Color, this._descriptor.Colors[1].Color, 0, 1, writer);
-             else
-                this.WriteColorFunction3(this._descriptor.Colors, writer);
-
-               writer.EndDictionaryEntry();
-            */
-
             writer.EndDictionary();//shading
             return null;
         }
 
-        protected virtual void WriteColorFunction3(PDFGradientColor[] colors, PDFWriter writer)
-        {
-            writer.BeginDictionary();
-            writer.WriteDictionaryNumberEntry("FunctionType", 3);
-
-            writer.BeginDictionaryEntry("Domain");
-            writer.WriteArrayRealEntries(0.0, 1.0);
-            writer.EndDictionaryEntry();
-
-            int entries = (colors.Length - 1);
-            double bounds = 1.0 / (double)entries;
-
-            //The bounds is the function extents of the functions
-            writer.BeginDictionaryEntry("Bounds");
-            writer.BeginArray();
-            for (int i = 1; i < entries; i++)
-            {
-                writer.BeginArrayEntry();
-                writer.WriteRealS(bounds);
-                writer.EndArrayEntry();
-                bounds += bounds;
-            }
-            writer.EndArray();
-            writer.EndDictionaryEntry();
-
-            //Write the array of function 2 (Axial aka Linear between 2 colours)
-            
-            writer.BeginDictionaryEntry("Functions");
-            writer.BeginArray();
-            //Start the for loop at 1 and use the previous colour as the first
-            for (int i = 1; i < colors.Length; i++)
-            {
-                writer.BeginArrayEntry();
-                this.WriteColorFunction2(colors[i - 1].Color, colors[i].Color, 0, 1, writer);
-                writer.EndArrayEntry();
-            }
-
-            writer.EndArray();
-            writer.EndDictionaryEntry();
-
-            //Write the encodes for each of the functions 0 1 in a single array
-            writer.BeginDictionaryEntry("Encode");
-            writer.BeginArray();
-
-            for (int i = 1; i < colors.Length; i++)
-            {
-                //Don't create an array each time, simply use the encoding
-                writer.WriteArrayNumberEntries(false, 0, 1);
-            }
-
-            writer.EndArray();
-
-            writer.EndDictionaryEntry();
-            writer.EndDictionary();
-
-
-        }
-
-        protected virtual void WriteColorFunction2(PDFColor color1, PDFColor color2, double domainStart, double domainEnd, PDFWriter writer)
-        {
-            writer.BeginDictionary();
-            writer.WriteDictionaryNumberEntry("FunctionType", 2);
-
-            writer.BeginDictionaryEntry("Domain");
-            writer.WriteArrayRealEntries(domainStart, domainEnd);
-            writer.EndDictionaryEntry();
-
-            writer.BeginDictionaryEntry("C0");
-            writer.WriteArrayRealEntries(color1.Red.Value, color1.Green.Value, color1.Blue.Value);
-            writer.EndDictionaryEntry();
-
-            writer.BeginDictionaryEntry("C1");
-            writer.WriteArrayRealEntries(color2.Red.Value, color2.Green.Value, color2.Blue.Value);
-            writer.EndDictionaryEntry();
-
-            writer.WriteDictionaryNumberEntry("N", 1);
-            writer.EndDictionary(); //function
-        }
+        
 
         protected virtual double[] GetCoords(PDFPoint offset, PDFSize size, double angle)
         {
@@ -192,6 +106,8 @@ namespace Scryber.Resources
             all[1] = offset.Y.PointsValue;
             all[2] = offset.X.PointsValue;
             all[3] = offset.Y.PointsValue;
+
+            //TODO: Change this to support any angle with sin, cos and tan
 
             if(angle < 45) // Top
             {
@@ -233,39 +149,7 @@ namespace Scryber.Resources
             {
                 all[3] += size.Height.PointsValue;
             }
-            switch (angle)
-            {
-                case (0):
-                case (360): //to top
-                    
-                    break;
-                case (45): //to top right
-                    
-                    break;
-                case (90): // to right
-                    
-                    break;
-                case (135): // to bottom right
-                    
-                    break;
-                case (180): // to bottom (default)
-                    
-                    break;
-                case (225): // to bottom left
-                    
-                    break;
-                case (270): // to left
-                    
-                    break;
-                case (315): // to top left
-                    
-                    break;
-                default:
-                    //TODO: Support differing angles
-                    
-                    break;
-            }
-
+            
             return all;
         }
     }

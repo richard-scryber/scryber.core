@@ -1702,9 +1702,9 @@ namespace Scryber.Styles
                 if(this.IsGradientImageSrc(imgsrc.Value, out found))
                 {
                     if (found.GradientType == GradientType.Linear)
-                        brush = new PDFGradientLinearBrush((PDFLinearGradientDescriptor)found);
+                        brush = new PDFGradientLinearBrush((PDFGradientLinearDescriptor)found);
                     else if (found.GradientType == GradientType.Radial)
-                        brush = new PDFGradientRadialBrush((PDFRadialGradientDescriptor)found);
+                        brush = new PDFGradientRadialBrush((PDFGradientRadialDescriptor)found);
                     else
                         brush = null;
                 }

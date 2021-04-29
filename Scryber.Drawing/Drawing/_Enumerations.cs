@@ -332,5 +332,49 @@ namespace Scryber.Drawing
         Origin
     }
 
-    
+    /// <summary>
+    /// Defines a type of supported gradient
+    /// </summary>
+    public enum GradientType
+    {
+        Linear,
+        Radial
+    }
+
+    /// <summary>
+    /// Pre-defined enumeration of the linear gradient angles
+    /// </summary>
+    public enum GradientAngle
+    {
+        Top = 0,
+        Left = 270,
+        Bottom = 180,
+        Right = 90,
+        Top_Left = 315,
+        Top_Right = 45,
+        Bottom_Left = 225,
+        Bottom_Right = 135
+    }
+
+    /// <summary>
+    /// Predefined enumeration of the supported radial gradient shapes
+    /// </summary>
+    public enum RadialShape
+    {
+        Ellipse,
+        Circle
+    }
+
+    /// <summary>
+    /// Predefined enumeration of the supported sides of a radial gradient
+    /// </summary>
+    public enum RadialSize
+    {
+        None,
+        ClosestSide,
+        FarthestSide,
+        ClosestCorner,
+        FarthestCorner
+    }
+
 }

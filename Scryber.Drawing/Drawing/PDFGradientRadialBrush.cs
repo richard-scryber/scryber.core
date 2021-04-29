@@ -5,14 +5,14 @@ namespace Scryber.Drawing
 {
     public class PDFGradientRadialBrush : PDFGradientBrush
     {
-        private PDFRadialGradientDescriptor _descriptor;
+        private PDFGradientRadialDescriptor _descriptor;
 
         public RadialShape Shape
         {
             get { return _descriptor.Shape; }
         }
 
-        public PDFGradientRadialBrush(PDFRadialGradientDescriptor descriptor)
+        public PDFGradientRadialBrush(PDFGradientRadialDescriptor descriptor)
             : base(descriptor)
         {
             _descriptor = descriptor;
@@ -25,7 +25,22 @@ namespace Scryber.Drawing
 
         public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
-            return false;
+            var doc = graphics.Container.Document;
+            var id = doc.GetIncrementID(PDFObjectTypes.Pattern);
+
+            bounds = ConvertToPageRect(graphics, bounds);
+
+            var linear = this.GetRadialShadingPattern(graphics, id, this._descriptor, bounds);
+            if (null != linear)
+            {
+                var name = graphics.Container.Register(linear);
+                graphics.SetFillPattern(name);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
