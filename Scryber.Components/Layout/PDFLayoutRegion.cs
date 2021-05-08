@@ -566,7 +566,7 @@ namespace Scryber.Layout
         /// <returns></returns>
         protected PDFUnit GetAvailableWidth()
         {
-            return GetAvailableWidth(this.UsedSize.Height, 0);
+            return GetAvailableWidth(this.UsedSize.Height, 1.0);
         }
 
         public virtual PDFUnit GetAvailableWidth(PDFUnit yoffset, PDFUnit height)
@@ -608,7 +608,9 @@ namespace Scryber.Layout
         public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
         {
             var line = this.CurrentItem as PDFLayoutLine;
-            if (null != line)
+
+            //If we have a current line and the float is on this line
+            if (null != line && line.OffsetY >= offsetY)
                 line.SetMaxWidth(line.FullWidth - inset);
 
             if (mode == FloatMode.Left)

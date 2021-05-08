@@ -63,7 +63,7 @@ namespace Scryber.Drawing
         /// Buids and returns a gradient function that will render the stops and colors for this linear gradient
         /// </summary>
         /// <returns></returns>
-        public virtual PDFGradientFunction GetGradientFunction()
+        public virtual PDFGradientFunction GetGradientFunction(PDFPoint offset, PDFSize size)
         {
             if (this.Repeating)
             {

@@ -504,11 +504,22 @@ namespace Scryber.Layout
                 }
                 else if(options.FloatMode != FloatMode.None)
                 {
+                    positioned = EnsurePositionedOnPage(positioned, options);
                     ApplyFloat(positioned, options);
                 }
                 
             }
 
+        }
+
+        protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
+        {
+            var currPg = this.Context.DocumentLayout.CurrentPage;
+            var lastPage = lastPositioned.GetLayoutPage();
+            if (lastPage == currPg)
+                return lastPositioned;
+            else
+                return lastPositioned; //TODO:Resolve the rolling over of content onto a new page for the float left.
         }
 
         protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
@@ -522,17 +533,16 @@ namespace Scryber.Layout
             if (pos.FloatMode == FloatMode.None)
                 throw new ArgumentOutOfRangeException("pos.FloatMode", "Can not be None");
 
-            PDFLayoutBlock relBlock = positioned.Contents[0] as PDFLayoutBlock;
-            if (null == relBlock)
+            if(positioned.Contents.Count == 0)
             {
-                if (this.Context.Conformance == ParserConformanceMode.Strict)
-                    throw new InvalidOperationException(Errors.CanOnlyTransformBlockComponents);
-                else
-                {
-                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, Errors.CanOnlyTransformBlockComponents);
-                    return;
-                }
+                this.Context.TraceLog.Add(TraceLevel.Warning, "Float Layout", "Block has moved to a new page and cannot find a parent that is valid. Float detail is lost");
+                return;
             }
+            PDFUnit floatWidth;
+            bool applyMargins;
+            if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out applyMargins))
+                return;
+            
             PDFUnit inset = PDFUnit.Zero;
             PDFUnit height = positioned.Height;
             PDFUnit offset = pos.Y.Value;
@@ -541,14 +551,14 @@ namespace Scryber.Layout
             var pageOffset = container.GetPageYOffset();
             if (pos.FloatMode == FloatMode.Left)
             {
-                inset = relBlock.Width;
+                inset = (pos.X ?? PDFUnit.Zero) + floatWidth;
                 
-                var floatLeft = container.CurrentRegion.GetXInset(container.PagePosition.Y + offset, 0);
+                var floatLeft = container.CurrentRegion.GetXInset(offset, height);
 
-                if (floatLeft > 0)
-                    bounds.X += floatLeft;
+                //if (floatLeft > 0)
+                //   bounds.X += floatLeft;
 
-                if(pos.Margins.IsEmpty == false)
+                if(applyMargins && pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
                     bounds.X += pos.Margins.Left;
@@ -559,12 +569,12 @@ namespace Scryber.Layout
             }
             else if(pos.FloatMode == FloatMode.Right)
             {
-                var x = container.CurrentRegion.GetXInset(offset, 0);
-                x += container.CurrentRegion.GetAvailableWidth(offset, 0);
-                bounds.X = x - relBlock.Width;
-                inset = relBlock.Width;
+                var x = container.CurrentRegion.GetXInset(offset, height);
+                x += container.CurrentRegion.GetAvailableWidth(offset, height);
+                bounds.X = x - floatWidth;
+                inset = floatWidth;
 
-                if (pos.Margins.IsEmpty == false)
+                if (applyMargins && pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
                     bounds.X += pos.Margins.Left;
@@ -576,6 +586,43 @@ namespace Scryber.Layout
             
             container.CurrentRegion.AddFloatingInset(pos.FloatMode, inset, offset, height);
             
+        }
+
+        private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out PDFUnit width, out bool applyMargins)
+        {
+            applyMargins = true;
+            var first = positioned.Contents[0];
+            if(first is PDFLayoutBlock)
+            {
+                width =  (first as PDFLayoutBlock).Width;
+                return width > 0;
+            }
+            else if(first is PDFLayoutLine && positioned.Owner is ImageBase)
+            {
+                var line = (first as PDFLayoutLine);
+                if (line.Runs.Count == 0)
+                {
+                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, "Could not get the width of the positioned region, it has probably moved onto a new page");
+                    width = -1;
+                    return false;
+                }
+                var run = line.Runs[0];
+                width = run.Width;
+                //HACK:The run size for images includes the margins, so do not apply to floats 
+                applyMargins = false;
+                return width > 0;
+            }
+            else
+            {
+                if (this.Context.Conformance == ParserConformanceMode.Strict)
+                    throw new InvalidOperationException(Errors.CanOnlyTransformBlockComponents);
+                else
+                {
+                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, Errors.CanOnlyTransformBlockComponents);
+                    width = -1;
+                    return false;
+                }
+            }
         }
 
         /// <summary>
@@ -695,17 +742,29 @@ namespace Scryber.Layout
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFUnit offsetY = last.Height;
-
-            //close any current line, as we want to be on a new one.
-            PDFLayoutRegion currRegion = last.CurrentRegion;
-            if (currRegion != null)
+            var region = last.CurrentRegion;
+            if (null != region)
             {
-                //offsetY += currRegion.Height;
-                //if (currRegion.HasOpenItem)
-                    //currRegion.CloseCurrentItem();
-                //    offsetY += currRegion.CurrentItem.Height;
+                //Check if we have an open line with existing content on it.
+                //If so, then we move down a line for the layout block.
+                //Otherwise just reduce the width of the current line by block width
+                if (region.CurrentItem != null && region.CurrentItem is PDFLayoutLine)
+                {
+                    var line = (region.CurrentItem as PDFLayoutLine);
+                    if (line.Runs.Count > 0)
+                        offsetY += region.CurrentItem.Height;
+                    else
+                        line.SetMaxWidth(line.AvailableWidth - pos.Width ?? PDFUnit.Zero);
+
+                }
+                //there could be another float left, so make sure we inset to match this.
+                if (pos.FloatMode == FloatMode.Left)
+                {
+                    var x = region.GetXInset(offsetY, pos.Height ?? (PDFUnit)1);
+                    if (x > 0)
+                        pos.X = x;
+                }
             }
-            
             pos.Y = offsetY;
             PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full);
             return floating;

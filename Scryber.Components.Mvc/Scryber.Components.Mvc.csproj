@@ -68,7 +68,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="5.0.6.3" />
+    <PackageReference Include="Scryber.Core" Version="5.0.7-alpha" />
   </ItemGroup>
       
   <ItemGroup>

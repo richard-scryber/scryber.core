@@ -45,6 +45,19 @@ namespace Scryber.Html.Components
             }
         }
 
+        [PDFAttribute("align")]
+        public FloatMode Align
+        {
+            get
+            {
+                return this.Style.Position.Float;
+            }
+            set
+            {
+                this.Style.Position.Float = value;
+            }
+        }
+
         [PDFAttribute("title")]
         public override string OutlineTitle
         {
@@ -58,7 +71,7 @@ namespace Scryber.Html.Components
             get => base.Width;
             set => base.Width = value;
         }
-
+        
         [PDFAttribute("height")]
         public override PDFUnit Height
         {

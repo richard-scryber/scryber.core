@@ -25,7 +25,17 @@ namespace Scryber.Drawing
 
         }
 
-        
+        public override PDFGradientFunction GetGradientFunction(PDFPoint offset, PDFSize size)
+        {
+            if(this.Repeating)
+            {
+                if (this.Size == RadialSize.None || this.Size == RadialSize.FarthestCorner)
+                    return base.GetGradientFunction(offset, size);
+                
+            }
+
+            return base.GetGradientFunction(offset, size);
+        }
 
         public static bool TryParseRadial(string value, out PDFGradientRadialDescriptor radial)
         {
@@ -81,7 +91,7 @@ namespace Scryber.Drawing
                 colorStopIndex = 1;
             }
 
-            //TODO: Support explicit radii e.g. 150px 40px at ....
+            //TODO: Support relative radii positions e.g. 10% 40% at ....
 
 
             if(all[0].StartsWith("at"))

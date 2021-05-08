@@ -61,7 +61,7 @@ namespace Scryber.Resources
 
             PDFSize graphicsSize = new PDFSize(size.Width + offset.X, size.Height + offset.Y);
             var coords = GetCoords(offset, size, _descriptor.Size, _descriptor.XCentre, _descriptor.YCentre);
-            var func = this._descriptor.GetGradientFunction();
+            var func = this._descriptor.GetGradientFunction(offset, size);
 
             writer.BeginDictionaryEntry("Shading");
             writer.BeginDictionary();

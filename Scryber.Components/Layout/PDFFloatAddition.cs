@@ -10,7 +10,7 @@ namespace Scryber.Layout
     /// </summary>
     public abstract class PDFFloatAddition
     {
-        public PDFUnit XInset, Height, YOffset;
+        public PDFUnit XInset, Height, YOffset, XOffset;
         public PDFFloatAddition Prev;
 
         public PDFFloatAddition(PDFUnit xinset, PDFUnit height, PDFUnit yoffset, PDFFloatAddition prev)
@@ -48,18 +48,25 @@ namespace Scryber.Layout
         {
         }
 
+        public override PDFUnit ApplyWidths(PDFUnit available, PDFUnit yoffset, PDFUnit height)
+        {
+            var inset = this.ApplyXInset(0.0, yoffset, height);
+            available -= inset;
+            return available;
+        }
+
         public override PDFUnit ApplyXInset(PDFUnit x, PDFUnit yoffset, PDFUnit height)
         {
             if ((yoffset + height) > this.YOffset && yoffset < (this.YOffset + this.Height))
-                x += this.XInset;
+                x = PDFUnit.Max(this.XInset, x);
             return base.ApplyXInset(x, yoffset, height);
         }
     }
 
     public class PDFFloatRightAddition : PDFFloatAddition
     {
-        public PDFFloatRightAddition(PDFUnit inset, PDFUnit height, PDFUnit offset, PDFFloatAddition prev)
-            : base(inset, height, offset, prev)
+        public PDFFloatRightAddition(PDFUnit inset, PDFUnit height, PDFUnit yoffset, PDFFloatAddition prev)
+            : base(inset, height, yoffset, prev)
         {
         }
     }

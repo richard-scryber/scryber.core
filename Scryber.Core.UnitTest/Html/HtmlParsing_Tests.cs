@@ -1111,22 +1111,29 @@ namespace Scryber.Core.UnitTests.Html
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatLeft.html");
 
+            using (var doc = Document.ParseDocument(path))
+            {
+                var style = doc.Pages[0].Style;
+                style.OverlayGrid.ShowGrid = true;
+                style.OverlayGrid.GridSpacing = 10;
+                using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
+        }
 
+        [TestMethod()]
+        public void FloatRight()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatRight.html");
 
             using (var doc = Document.ParseDocument(path))
             {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
-                //doc.RenderOptions.StringOutput = OutputStringType.Text;
 
-                using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
+                using (var stream = DocStreams.GetOutputStream("FloatRight.pdf"))
                 {
-                    //var grid = doc.Pages[0].Style.OverlayGrid;
-                    //grid.GridOpacity = 0.5;
-                    //grid.GridColor = PDFColors.Aqua;
-                    //grid.GridSpacing = 10;
-                    //grid.ShowGrid = true;
-
                     doc.SaveAsPDF(stream);
                 }
 
@@ -1487,6 +1494,7 @@ namespace Scryber.Core.UnitTests.Html
                         doc.SaveAsPDF(stream);
                     }
 
+                    
                     var rg = new PDFColor[] { PDFColors.Red, PDFColors.Green };
                     var rgby = new PDFColor[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
                     var ryg = new PDFColor[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };

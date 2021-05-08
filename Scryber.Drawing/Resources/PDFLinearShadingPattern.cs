@@ -83,7 +83,7 @@ namespace Scryber.Resources
 
             writer.WriteArrayRealEntries(true, coords);
 
-            var func = this._descriptor.GetGradientFunction();
+            var func = this._descriptor.GetGradientFunction(offset, size);
             if (null != func)
             {
                 writer.BeginDictionaryEntry("Function");

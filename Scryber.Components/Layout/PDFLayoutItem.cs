@@ -263,7 +263,7 @@ namespace Scryber.Layout
 
         #endregion
 
-        protected virtual PDFLayoutPage GetLayoutPage()
+        public virtual PDFLayoutPage GetLayoutPage()
         {
             if (this is PDFLayoutPage)
                 return this as PDFLayoutPage;

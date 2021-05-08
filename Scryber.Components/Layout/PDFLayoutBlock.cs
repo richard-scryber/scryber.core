@@ -585,6 +585,7 @@ namespace Scryber.Layout
 
         #endregion
 
+        /*
         public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
         {
             if (mode == FloatMode.Left)
@@ -596,6 +597,8 @@ namespace Scryber.Layout
                 this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
             }
         }
+
+        */
 
         #region public override bool MoveToNextRegion(PDFUnit requiredHeight, PDFLayoutContext context)
 

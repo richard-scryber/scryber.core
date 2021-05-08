@@ -75,5 +75,26 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod]
+        public void SVGTransform()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/SVG/SVGTransform.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                Div div;
+                if(doc.TryFindAComponentByID("mydiv", out div))
+                {
+                    div.Style.SetValue(StyleKeys.TransformRotateKey, 90);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Transform.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
+        }
+
     }
 }
