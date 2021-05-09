@@ -512,6 +512,8 @@ namespace Scryber.Layout
 
         }
 
+        
+
         protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
         {
             var currPg = this.Context.DocumentLayout.CurrentPage;
@@ -519,7 +521,12 @@ namespace Scryber.Layout
             if (lastPage == currPg)
                 return lastPositioned;
             else
+            {
+                var prevParent = lastPositioned.Parent as PDFLayoutBlock;
+
+                //More the last positioned to the currPg.LastOpenBlock().PositionedRegions
                 return lastPositioned; //TODO:Resolve the rolling over of content onto a new page for the float left.
+            }
         }
 
         protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
@@ -591,6 +598,13 @@ namespace Scryber.Layout
         private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out PDFUnit width, out bool applyMargins)
         {
             applyMargins = true;
+            if(positioned.Contents.Count == 0)
+            {
+                width = -1;
+                return false;
+            }
+
+
             var first = positioned.Contents[0];
             if(first is PDFLayoutBlock)
             {
@@ -602,9 +616,18 @@ namespace Scryber.Layout
                 var line = (first as PDFLayoutLine);
                 if (line.Runs.Count == 0)
                 {
-                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, "Could not get the width of the positioned region, it has probably moved onto a new page");
-                    width = -1;
-                    return false;
+                    //We do have a case where the first line becomes empty (with zero size)
+                    //And the image is put on the second line.
+                    if (positioned.Contents.Count > 1 && positioned.Contents[1] is PDFLayoutLine)
+                        line = positioned.Contents[1] as PDFLayoutLine;
+
+                    //Do a check again for a run
+                    if(line.Runs.Count == 0)
+                    {
+                        Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, "Could not get the width of the positioned region, it has probably moved onto a new page");
+                        width = -1;
+                        return false;
+                    }
                 }
                 var run = line.Runs[0];
                 width = run.Width;
