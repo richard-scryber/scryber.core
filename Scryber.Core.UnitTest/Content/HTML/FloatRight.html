@@ -1,62 +1,117 @@
-﻿<?scryber append-log=true ?>
+﻿<?scryber append-log=false ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <title>Float Left</title>
     <style>
 
-        body{
-            font-size:12pt;
-            font-family:sans-serif;
-            text-align:left;
+        body {
+            font-size: 10pt;
+            font-family: sans-serif;
+            text-align: right;
         }
 
         div.floating {
             text-align: center;
             vertical-align: middle;
             margin: 10pt;
-            width: 100pt;
-            height: 55pt;
+            width: 80pt;
+            height: 50pt;
         }
 
-        div.div1 {
+        .div1 {
             float: right;
             background: red;
         }
 
         .div2 {
             background: yellow;
-            float:right;
+            float: right;
         }
 
         .div3 {
             background: green;
         }
-        #global p{ margin-bottom:5px; font-weight:bold;}
+
+        #global p {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body style="padding:20pt;">
+<body style="padding:20pt">
 
     <div id="global">
-        <h2>Float Right</h2>
-
-        <p>In this example, the div will float on the right side.</p>
-        <div style="border:solid 1px red; margin-bottom:20px; text-align:right;">
-            <div class="floating div1">Div 1</div>This is the content after the div that should flow around the
-            relative floating block that should be reduced in with for the content available and then continue on.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
-            vitae facilisis ipsum tortor eu urna. Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
-            Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
-            ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
-        </div>
-        <p>In this example, the 2 divs will float next to each other on the right.</p>
-        <div style="border:solid 1px blue; margin-bottom:20px; text-align:right">
-            <div class="floating div1">Div 1</div><div class="floating div2">Div 1</div>This is the content after the div that should flow around the
-            relative floating block that should be reduced in with for the content available and then continue on.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
-            vitae facilisis ipsum tortor eu urna. Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
-            Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
-            ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
-        </div>
+    <h2>Float Right</h2>
+    <p>In this example, the div will float on the right side.</p>
+    <div style="border:solid 1px red; margin-bottom:20px;">
+        <div class="floating div1">Div 1</div>This is the content after the div that should flow around the
+        relative floating block that should be reduced in with for the content available and then continue on.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+        vitae facilisis ipsum tortor eu urna. Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+        Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+        ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
     </div>
+    <p>In this example, the div will float on the right side in the middle of the content.</p>
+    <div style="border:solid 1px red; margin-bottom:20px;">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+        vitae facilisis ipsum tortor eu urna. <div class="floating div1">Div 1</div>This is the content after the div that should flow around the
+        relative floating block.
+        Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+        Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+        ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
+    </div>
+    <p>In this example, the 2 divs will float next to each other on the right.</p>
+    <div style="border:solid 1px blue; margin-bottom:20px;">
+        <div class="floating div1">Div 1</div><div class="floating div2">Div 1</div>This is the content after the div that should flow around the
+        relative floating block that should be reduced in with for the content available and then continue on.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+        vitae facilisis ipsum tortor eu urna. Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+        Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+        ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
+    </div>
+    <p>In this example, the 2 divs will float next to each other in the middle of the content.</p>
+    <div style="border:solid 1px blue; margin-bottom:20px;">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+        vitae facilisis ipsum tortor eu urna.
+        <div class="floating div1">Div 1</div><div class="floating div2">Div 1</div>This is the content after the div that should flow around the
+        relative floating block that should be reduced in with for the content available and then continue on.
+        Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+        Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+        ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
+    </div>
+    <p>In this example, the 2 divs will float around each other in the middle of the content.</p>
+    <div style="border:solid 1px blue; margin-bottom:20px;">
+        <div class="floating div1">Div 1</div>
+        This is the content after the div that should flow around the relative floating block
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+        vitae facilisis ipsum tortor eu urna.
+        <div class="floating div2">Div 1</div>This is the content after the div that should flow around the
+        relative floating block that should be reduced in with for the content available and then continue on.
+        Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+        Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+        ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
+    </div> 
+
+    <p>In this example, there is an image a div and some mixed text.</p>
+    <div id="DivImg" style="border:solid 1px blue; page-break-inside: avoid; margin-bottom:20pt; text-align:right;">
+        <img src="./images/group.png" align="right" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;" />
+        This is the content after the div that should flow around the relative floating block
+        <img src="./images/group.png" align="right" style="margin:10pt; width: 50px; border:solid 1px red;" />
+        This is the content after the div that should flow around the
+        relative floating block that should be reduced in with for the content available and then continue on.
+        <i>
+            <b>With various styles inside</b>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+            vitae facilisis ipsum tortor eu urna.
+            Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+            Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+            ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
+        </i>
+    </div>
+    </div>
+    <footer style="border-top:solid 1px red; padding:5px;">
+        Page <page />
+    </footer>
 </body>
 </html>

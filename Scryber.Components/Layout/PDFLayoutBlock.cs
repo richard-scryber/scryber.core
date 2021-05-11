@@ -970,12 +970,13 @@ namespace Scryber.Layout
 
             int index = -(this.PositionedRegions.Count + 1); //use a negative value for the positioned items
 
-            PDFLayoutRegion created = new PDFLayoutPositionedRegion(this, comp, space, index, pos);
+            PDFLayoutPositionedRegion created = new PDFLayoutPositionedRegion(this, comp, space, index, pos);
             this.PositionedRegions.Add(created);
 
             if (addAssociatedRun)
+            {
                 beforeline.AddPositionedRun(created, comp);
-
+            }
             return created;
         }
 

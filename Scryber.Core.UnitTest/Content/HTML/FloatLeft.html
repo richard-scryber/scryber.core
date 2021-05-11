@@ -15,8 +15,8 @@
             text-align: center;
             vertical-align: middle;
             margin: 10pt;
-            width: 100pt;
-            height: 55pt;
+            width: 80pt;
+            height: 50pt;
         }
 
         .div1 {
@@ -42,7 +42,7 @@
 <body style="padding:20pt">
 
     <div id="global">
-        <!--<h2>Float Left</h2>
+        <h2>Float Left</h2>
         <p>In this example, the div will float on the left side.</p>
         <div style="border:solid 1px red; margin-bottom:20px; text-align:left;">
             <div class="floating div1">Div 1</div>This is the content after the div that should flow around the
@@ -90,13 +90,13 @@
             Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
             Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
             ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
-        </div>-->
-        <div style="border:solid 1px black; margin-bottom:10pt;height:700pt;"> Spacer</div>
+        </div>
+        
         <p>In this example, there is an image a div and some mixed text.</p>
         <!-- The actual block -->
-        <div id="DivImg" style="border:solid 1px blue; margin-bottom:20px; text-align:left">
+        <div id="DivImg" style="border:solid 1px blue; page-break-inside: avoid; margin-bottom:20px; text-align:left">
             <!-- an image -->
-            <img src="./images/group.png" align="left" style="margin:10pt; width:10pt; border:solid 1px green; padding:10pt;" />
+            <img src="./images/group.png" align="left" style="margin:10pt; width:100pt; border:solid 1px green; padding:10pt;" />
             <div class="floating div2" style="border: solid 1px green; padding: 10pt;">Div 1</div>
             This is the content after the div that should flow around the relative floating block
             This is the content after the div that should flow around the

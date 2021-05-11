@@ -372,9 +372,11 @@ namespace Scryber.Layout
 
         #endregion
 
-        public virtual PDFLayoutPositionedRegionRun AddPositionedRun(PDFLayoutRegion postioned, IPDFComponent component)
+        public virtual PDFLayoutPositionedRegionRun AddPositionedRun(PDFLayoutPositionedRegion postioned, IPDFComponent component)
         {
             PDFLayoutPositionedRegionRun run = new PDFLayoutPositionedRegionRun(postioned, this, component);
+            postioned.AssociatedRun = run;
+
             this.Runs.Add(run);
             return run;
         }

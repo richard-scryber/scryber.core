@@ -522,9 +522,19 @@ namespace Scryber.Layout
                 return lastPositioned;
             else
             {
-                var prevParent = lastPositioned.Parent as PDFLayoutBlock;
+                PDFLayoutPositionedRegion posRegion = (PDFLayoutPositionedRegion)lastPositioned;
 
+                // Chances are we moved to a new column or page
                 //More the last positioned to the currPg.LastOpenBlock().PositionedRegions
+
+                var prevParent = posRegion.Parent as PDFLayoutBlock;
+                var newParent = currPg.LastOpenBlock();
+
+                prevParent.PositionedRegions.Remove(posRegion);
+                newParent.PositionedRegions.Add(posRegion);
+
+                posRegion.SetParent(newParent);
+
                 return lastPositioned; //TODO:Resolve the rolling over of content onto a new page for the float left.
             }
         }
@@ -546,8 +556,8 @@ namespace Scryber.Layout
                 return;
             }
             PDFUnit floatWidth;
-            bool applyMargins;
-            if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out applyMargins))
+            bool isImage;
+            if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out isImage))
                 return;
             
             PDFUnit inset = PDFUnit.Zero;
@@ -564,8 +574,11 @@ namespace Scryber.Layout
 
                 //if (floatLeft > 0)
                 //   bounds.X += floatLeft;
+                if(isImage)
+                {
 
-                if(applyMargins && pos.Margins.IsEmpty == false)
+                }
+                else if(pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
                     bounds.X += pos.Margins.Left;
@@ -576,12 +589,21 @@ namespace Scryber.Layout
             }
             else if(pos.FloatMode == FloatMode.Right)
             {
-                var x = container.CurrentRegion.GetXInset(offset, height);
-                x += container.CurrentRegion.GetAvailableWidth(offset, height);
-                bounds.X = x - floatWidth;
-                inset = floatWidth;
+                var curr = container.CurrentRegion.GetXInset(offset, height);
+                var w = container.CurrentRegion.GetAvailableWidth(offset, height);
+                var avail = container.CurrentRegion.TotalBounds.Width;
 
-                if (applyMargins && pos.Margins.IsEmpty == false)
+                bounds.X = w - floatWidth;
+                inset = curr + floatWidth + (avail - w);
+
+                if(isImage)
+                {
+                    //HACK: The width of the image is being used explicitly for in positioning, so need to
+                    //adjust back to the right size.
+                    if (pos.Width.HasValue)
+                        bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
+                }
+                else if (pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
                     bounds.X += pos.Margins.Left;
@@ -595,9 +617,9 @@ namespace Scryber.Layout
             
         }
 
-        private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out PDFUnit width, out bool applyMargins)
+        private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out PDFUnit width, out bool isImage)
         {
-            applyMargins = true;
+            isImage = false;
             if(positioned.Contents.Count == 0)
             {
                 width = -1;
@@ -629,10 +651,10 @@ namespace Scryber.Layout
                         return false;
                     }
                 }
-                var run = line.Runs[0];
+                var run = line.Runs[0] as PDFLayoutComponentRun;
                 width = run.Width;
-                //HACK:The run size for images includes the margins, so do not apply to floats 
-                applyMargins = false;
+                //HACK:The run size for images includes the margins, so do not apply to floats
+                isImage = true;
                 return width > 0;
             }
             else

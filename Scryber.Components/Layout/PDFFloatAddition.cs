@@ -69,6 +69,23 @@ namespace Scryber.Layout
             : base(inset, height, yoffset, prev)
         {
         }
+
+
+        public override PDFUnit ApplyWidths(PDFUnit available, PDFUnit yoffset, PDFUnit height)
+        {
+            var full = available;
+            if ((yoffset + height) > this.YOffset && yoffset < (this.YOffset + this.Height))
+                available -= this.XInset;
+
+            if (null != this.Prev)
+            {
+                var prevAvail = this.Prev.ApplyWidths(full, yoffset, height);
+                available = PDFUnit.Min(available, prevAvail);
+            }
+            return available;
+
+            
+        }
     }
 
 }

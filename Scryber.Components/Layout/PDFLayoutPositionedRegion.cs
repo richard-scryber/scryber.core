@@ -46,6 +46,11 @@ namespace Scryber.Layout
 
         #endregion
 
+        /// <summary>
+        /// Gets or set the run associated with this positioned region
+        /// </summary>
+        public PDFLayoutPositionedRegionRun AssociatedRun { get; set; }
+
         //
         // .ctor
         //

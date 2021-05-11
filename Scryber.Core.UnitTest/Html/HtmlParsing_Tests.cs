@@ -1114,7 +1114,7 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 var style = doc.Pages[0].Style;
-                style.OverlayGrid.ShowGrid = true;
+                //style.OverlayGrid.ShowGrid = true;
                 style.OverlayGrid.GridSpacing = 10;
                 using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
                 {
@@ -1131,6 +1131,9 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
+                var style = doc.Pages[0].Style;
+                //style.OverlayGrid.ShowGrid = true;
+                style.OverlayGrid.GridSpacing = 10;
 
                 using (var stream = DocStreams.GetOutputStream("FloatRight.pdf"))
                 {
