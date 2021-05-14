@@ -1,0 +1,126 @@
+﻿<!DOCTYPE HTML>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title></title>
+    <style type="text/css">
+
+        body{
+            font-size: 14pt;
+        }
+
+        .fullroute-header {
+            width: 700px;
+            height: 87px;
+            background: #692E87 0% 0% no-repeat padding-box;
+            box-shadow: 0px 3px 6px #00000029;
+            border-radius: 10px 10px 0px 0px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        .fullroute-header-text {
+            height: 100%;
+            width: 300px;
+            padding-top:72px;
+            text-align: right;
+            letter-spacing: 0px;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        .fullroute-overview {
+            top: 40px;
+            left: 57px;
+            width: 700px;
+            height: 587px;
+            background: #692E87 0% 0% no-repeat padding-box;
+            box-shadow: 0px 3px 6px #00000029;
+            border-radius: 0px 0px 10px 10px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        .fullroute-overview-bookingref {
+            top: 10px;
+            height: 50px;
+            width: 700px;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            opacity: 1;
+            float: left;
+            background-color: yellow;
+            overflow: hidden;
+        }
+
+        .fullroute-overview-depart {
+            top: 20px;
+            height: 100%;
+            width: 300px;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            opacity: 1;
+            float: left;
+            background-color: red;
+            overflow: hidden;
+        }
+
+        .fullroute-overview-return {
+            top: 20px;
+            height: 100%;
+            width: 300px;
+            text-align: right;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            opacity: 1;
+            float: right;
+            background-color: green;
+            overflow: hidden;
+        }
+
+        @media print {
+
+
+            .fullroute-header {
+                background-color: #692E87;
+                height: 87px;
+                text-align: right;
+                border-radius: 0px;
+                width:21cm; /* page width */
+            }
+
+            .fullroute-header-text {
+                padding-top: 64px; /* this was being cut off as it extended beyond the available space */
+                border:solid 1px blue;
+            }
+
+            .fullroute-overview {
+                top: 87px;
+                width: 21cm;
+                left:0;
+            }
+
+            .fullroute-overview-bookingref{
+                top:0px;
+                width:21cm;
+                color:black;
+                page-break-inside:avoid;
+            }
+
+            .depart {
+                float: left;
+                width: 300px;
+                background-color: #692E87;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="fullroute-overview" >
+        <div class="return" style="color:white" >
+           Date: <time date-format="dd MMMM yyyy" datetime="{@:model.DateTimeValue}" />
+        </div>
+    </div>
+</body>
+</html>

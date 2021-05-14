@@ -363,7 +363,7 @@ namespace Scryber.Drawing
         {
             if (charSpacingOffset.HasValue)
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtCharSpacing, (PDFReal)charSpacingOffset.Value.PointsValue);
-            if (wordSpacingOffset.HasValue)
+            if (wordSpacingOffset.HasValue && null != this.CurrentFontResource)
             {
                 PDFFontDefinition defn = this.CurrentFontResource.Definition;
 

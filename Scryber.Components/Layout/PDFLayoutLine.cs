@@ -569,9 +569,9 @@ namespace Scryber.Layout
                         }
                         else if (cur is PDFLayoutComponentRun)
                         {
+                            PDFLayoutComponentRun comprun = (cur as PDFLayoutComponentRun);
                             if (i > 0)
                             {
-                                PDFLayoutComponentRun comprun = (cur as PDFLayoutComponentRun);
                                 PDFRect bounds = comprun.TotalBounds;
                                 bounds.X +=(_linespacingOptions.WordSpace * spaceCount) + (_linespacingOptions.CharSpace * charCount);
                                 comprun.TotalBounds = bounds;

@@ -560,7 +560,7 @@ namespace Scryber.Layout
             if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out isImage))
                 return;
             
-            PDFUnit inset = PDFUnit.Zero;
+            PDFUnit floatInset = PDFUnit.Zero;
             PDFUnit height = positioned.Height;
             PDFUnit offset = pos.Y.Value;
             var bounds = positioned.TotalBounds;
@@ -568,9 +568,8 @@ namespace Scryber.Layout
             var pageOffset = container.GetPageYOffset();
             if (pos.FloatMode == FloatMode.Left)
             {
-                inset = (pos.X ?? PDFUnit.Zero) + floatWidth;
                 
-                var floatLeft = container.CurrentRegion.GetXInset(offset, height);
+                floatInset = container.CurrentRegion.GetLeftInset(offset, height);
 
                 //if (floatLeft > 0)
                 //   bounds.X += floatLeft;
@@ -589,18 +588,18 @@ namespace Scryber.Layout
             }
             else if(pos.FloatMode == FloatMode.Right)
             {
-                var curr = container.CurrentRegion.GetXInset(offset, height);
-                var w = container.CurrentRegion.GetAvailableWidth(offset, height);
+                floatInset = container.CurrentRegion.GetRightInset(offset, height);
+                var rightAlign = container.Position.HAlign == HorizontalAlignment.Right;
                 var avail = container.CurrentRegion.TotalBounds.Width;
-
-                bounds.X = w - floatWidth;
-                inset = curr + floatWidth + (avail - w);
+                var w = avail;
+                bounds.X = avail - (floatWidth + floatInset);
+                
 
                 if(isImage)
                 {
                     //HACK: The width of the image is being used explicitly for in positioning, so need to
                     //adjust back to the right size.
-                    if (pos.Width.HasValue)
+                    if (pos.Width.HasValue && !rightAlign)
                         bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
                 }
                 else if (pos.Margins.IsEmpty == false)
@@ -612,8 +611,7 @@ namespace Scryber.Layout
             }
             positioned.TotalBounds = bounds;
 
-            
-            container.CurrentRegion.AddFloatingInset(pos.FloatMode, inset, offset, height);
+            container.CurrentRegion.AddFloatingInset(pos.FloatMode, floatWidth, floatInset, offset, height);
             
         }
 
@@ -805,7 +803,7 @@ namespace Scryber.Layout
                 //there could be another float left, so make sure we inset to match this.
                 if (pos.FloatMode == FloatMode.Left)
                 {
-                    var x = region.GetXInset(offsetY, pos.Height ?? (PDFUnit)1);
+                    var x = region.GetLeftInset(offsetY, pos.Height ?? (PDFUnit)1);
                     if (x > 0)
                         pos.X = x;
                 }

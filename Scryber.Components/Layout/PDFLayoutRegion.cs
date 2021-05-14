@@ -294,7 +294,10 @@ namespace Scryber.Layout
 
         #endregion
 
-        private PDFFloatAddition Floats;
+        /// <summary>
+        /// Gets or sets the floating blocks in this region.
+        /// </summary>
+        public PDFFloatAddition Floats { get; set; }
 
         //
         // ctor(s)
@@ -574,17 +577,26 @@ namespace Scryber.Layout
             PDFUnit avail = this.UnusedBounds.Width;
 
             if (null != this.Floats)
-                avail = this.Floats.ApplyWidths(avail, yoffset, height);
+                avail = this.Floats.ApplyWidthInset(avail, yoffset, height);
             return avail;
         }
 
         #endregion
 
-        public virtual PDFUnit GetXInset(PDFUnit yoffset, PDFUnit height)
+        public virtual PDFUnit GetLeftInset(PDFUnit yoffset, PDFUnit height)
         {
             PDFUnit x = PDFUnit.Zero;
             if (null != this.Floats)
-                x = this.Floats.ApplyXInset(x, yoffset, height);
+                x = this.Floats.GetLeftOffset(x, yoffset, height);
+
+            return x;
+        }
+
+        public virtual PDFUnit GetRightInset(PDFUnit yoffset, PDFUnit height)
+        {
+            PDFUnit x = PDFUnit.Zero;
+            if (null != this.Floats)
+                x = this.Floats.GetRightInset(x, yoffset, height);
 
             return x;
         }
@@ -605,21 +617,21 @@ namespace Scryber.Layout
 
         #endregion
 
-        public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
+        public virtual void AddFloatingInset(FloatMode mode, PDFUnit floatWidth, PDFUnit floatInset, PDFUnit offsetY, PDFUnit floatHeight)
         {
             var line = this.CurrentItem as PDFLayoutLine;
 
             //If we have a current line and the float is on this line
             if (null != line && line.OffsetY >= offsetY)
-                line.SetMaxWidth(line.FullWidth - inset);
+                line.SetMaxWidth(line.FullWidth - floatWidth);
 
             if (mode == FloatMode.Left)
             {
-                this.Floats = new PDFFloatLeftAddition(inset, height, offsetY, this.Floats);
+                this.Floats = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY, this.Floats);
             }
             else if(mode == FloatMode.Right)
             {
-                this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
+                this.Floats = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY, this.Floats);
             }
         }
 
@@ -687,7 +699,7 @@ namespace Scryber.Layout
             {
                 PDFUnit actYOffset = yoffset + item.OffsetY;
              
-                PDFUnit xInset = this.GetXInset(actYOffset, item.Height);
+                PDFUnit xInset = this.GetLeftInset(actYOffset, item.Height);
                 PDFUnit itemXOffset = origXoffset;
 
                 if (xInset != 0) //We have floating left item(s)

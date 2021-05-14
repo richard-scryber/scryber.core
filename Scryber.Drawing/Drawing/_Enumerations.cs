@@ -214,17 +214,18 @@ namespace Scryber.Drawing
         /// <summary>
         /// Default value of not floating
         /// </summary>
-        None,
+        None = 0,
 
         /// <summary>
         /// Will float content to the left side of the container
         /// </summary>
-        Left,
+        Left = 1,
 
         /// <summary>
         /// Will float content to the right side of the container
         /// </summary>
-        Right
+        Right = 2,
+
     }
 
     public enum OverflowAction
