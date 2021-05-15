@@ -787,11 +787,14 @@ namespace Scryber.Layout
                     {
                         PDFRect content = reg.TotalBounds;
                         PDFSize bottomright = new PDFSize(content.X + content.Width, content.Y + content.Height);
-                        if (reg.PositionOptions.Margins.IsEmpty == false)
+
+                        if (reg.PositionOptions.Margins.IsEmpty == false && ((reg.Owner is ImageBase) == false || reg.PositionOptions.FloatMode == FloatMode.None))
                         {
+                            //Images already have this applied when floating
                             bottomright.Width += reg.PositionOptions.Margins.Right;
                             bottomright.Height += reg.PositionOptions.Margins.Bottom;
                         }
+
                         if (full.Width < bottomright.Width)
                             full.Width = bottomright.Width;
                         if (full.Height < bottomright.Height)

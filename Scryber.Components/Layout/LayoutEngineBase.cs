@@ -566,6 +566,8 @@ namespace Scryber.Layout
             var bounds = positioned.TotalBounds;
             var container = positioned.GetParentBlock();
             var pageOffset = container.GetPageYOffset();
+            var rightAlign = container.Position.HAlign == HorizontalAlignment.Right;
+
             if (pos.FloatMode == FloatMode.Left)
             {
                 
@@ -575,7 +577,8 @@ namespace Scryber.Layout
                 //   bounds.X += floatLeft;
                 if(isImage)
                 {
-
+                    if (pos.Width.HasValue && rightAlign)
+                        bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
                 }
                 else if(pos.Margins.IsEmpty == false)
                 {
@@ -589,7 +592,7 @@ namespace Scryber.Layout
             else if(pos.FloatMode == FloatMode.Right)
             {
                 floatInset = container.CurrentRegion.GetRightInset(offset, height);
-                var rightAlign = container.Position.HAlign == HorizontalAlignment.Right;
+                
                 var avail = container.CurrentRegion.TotalBounds.Width;
                 var w = avail;
                 bounds.X = avail - (floatWidth + floatInset);
@@ -599,7 +602,7 @@ namespace Scryber.Layout
                 {
                     //HACK: The width of the image is being used explicitly for in positioning, so need to
                     //adjust back to the right size.
-                    if (pos.Width.HasValue && !rightAlign)
+                    if (pos.Width.HasValue && rightAlign)
                         bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
                 }
                 else if (pos.Margins.IsEmpty == false)
