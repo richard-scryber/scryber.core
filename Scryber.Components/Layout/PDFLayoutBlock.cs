@@ -1007,6 +1007,7 @@ namespace Scryber.Layout
 
         #region public override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
 
+        
         /// <summary>
         /// Renders this block to the PDFWriter
         /// </summary>
@@ -1142,6 +1143,8 @@ namespace Scryber.Layout
 
                 if (logdebug)
                     context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Adjusted bounds of context for block " + this.ToString() + " with offset " + context.Offset + " and space " + context.Space + ", now rendering contents");
+                
+                
 
                 //Perform the atual wrting of this blocks inner conntent
                 OutputInnerContent(context, writer);

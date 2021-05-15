@@ -1,13 +1,13 @@
-﻿<?scryber append-log=false ?>
+﻿<?scryber append-log=true ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Float Left</title>
+    <title>Float Mixed</title>
     <style>
 
         body {
             font-size: 10pt;
-            font-family: sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         div.floating {
@@ -54,7 +54,7 @@
 
     <div id="global">
         <h2>Float Mixed</h2>
-        <!--
+        
     <p>In this example, the div will float on the right side.</p>
     <div style="border:solid 1px red; margin-bottom:20px;">
         <div class="floating div1" style="margin:0px;">Div 1</div>
@@ -142,37 +142,34 @@
             ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
         </i>
     </div>
-    <p>JUSTIFY: In this example, there is an image a div and some mixed text.</p>
-    <div id="DivImg" style="border:solid 1px blue; page-break-inside: avoid; margin-bottom:20pt; text-align:justify;">
-        <img src="./images/group.png" align="right" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;" />
-        This is the content after the div that should flow around the relative floating block
-        <img src="./images/group.png" align="right" style="margin:10pt; width: 50px; border:solid 1px red;" />
+        <p>JUSTIFY: In this example, there is an image a div and some mixed text.</p>
+        <div id="DivImg" style="border:solid 1px blue; page-break-inside: avoid; margin-bottom:20pt; text-align:justify;">
+            <img src="./images/group.png" align="right" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;"
+              />This is the content after the div that should flow around the relative floating block
+            <img src="./images/group.png" align="right" style="margin:10pt; width: 50px; border:solid 1px red;" />
+            This is the content after the div that should flow around the
+            relative floating block that should be reduced in with for the content available and then continue on.
+            <i>
+                <img src="./images/group.png" align="left" style="margin:10pt; width: 100px; border:solid 1px red;" />
+                <b>With various styles inside</b>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
+                vitae facilisis ipsum tortor eu urna.
+                Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
+                Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
+                ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
+            </i>
 
-        This is the content after the div that should flow around the
-        relative floating block that should be reduced in with for the content available and then continue on.
-        <i>
-            <img src="./images/group.png" align="left" style="margin:10pt; width: 100px; border:solid 1px red;" />
-            <b>With various styles inside</b>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
-            vitae facilisis ipsum tortor eu urna.
-            Morbi laoreet velit ex. Donec lectus nibh, tincidunt a arcu eleifend, fringilla dignissim eros.
-            Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
-            ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
-        </i>
-            
 
-    </div>-->
+        </div>
 
         <p>Check we have not broken anything.</p>
         <div id="DivImg" style="border:solid 1px blue; page-break-inside: avoid; margin-bottom:20pt; text-align:left;">
-            <img src="./images/group.png" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;" />
             This is the content after the div that should flow around the relative floating block
-            <img src="./images/group.png" align="right" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;" />
             This is the content after the div that should flow around the
             relative floating block that should be reduced in with for the content available and then continue on.
             <i>
                 <b>With various styles inside </b>
-
+                <img src="./images/group.png" align="right" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;" />
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
                 vitae facilisis ipsum tortor eu urna.
                 <img src="./images/group.png" style=" width: 20px; display:inline; border:solid 1px red;" />

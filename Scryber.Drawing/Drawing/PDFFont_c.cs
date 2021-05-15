@@ -194,12 +194,15 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets the Metrics (ascent, descent etc.) associated with this this font.
         /// </summary>
-        [Obsolete("Use the font definition GetFontMetrics", false)]
         public PDFFontMetrics FontMetrics
         {
             get
             {
                 return this._cachedmetrics;
+            }
+            set
+            {
+                this._cachedmetrics = value;
             }
         }
 
