@@ -7,6 +7,8 @@ using Scryber.Components;
 using Scryber.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Net.WebSockets;
 
 namespace Scryber.Core.UnitTests.Configuration
 {
@@ -464,6 +466,11 @@ namespace Scryber.Core.UnitTests.Configuration
 
                 return path;
             }
+
         }
+
+
+        
+
     }
 }

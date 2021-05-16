@@ -53,9 +53,9 @@
 <body style="padding:20pt">
 
     <div id="global">
-        <h2>Float Mixed</h2>
+        <h2 style="text-align:center;">Float Mixed</h2>
         
-    <p>In this example, the div will float on the right side.</p>
+    <p>In this example, the div will float on both sides, no spacing.</p>
     <div style="border:solid 1px red; margin-bottom:20px;">
         <div class="floating div1" style="margin:0px;">Div 1</div>
         <div class="floating div2" style="margin:0px;">Div 2</div>This is the content after the div that should flow around the
@@ -65,7 +65,7 @@
         Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
         ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
     </div>
-    <p>In this example, the div will float on the right side in the middle of the content.</p>
+    <p>In this example, the divs will float on both sides in the middle of the content with explicit size and padding.</p>
     <div style="border:solid 1px red; margin-bottom:20px;">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
         vitae facilisis ipsum tortor eu urna. <div class="floating sized div1">Div 1</div><div class="floating sized div2">Div 2</div>
@@ -74,7 +74,7 @@
         Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
         ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
     </div>
-    <p>In this example, the 2 divs will float next to each other on the right.</p>
+    <p>In this example, the div swill float on both sides at various points in the content with explicit size and padding.</p>
     <div style="border:solid 1px blue; margin-bottom:20px;">
         <div class="floating sized div1">Div 1</div>This is the content after the div that should flow around the
         relative floating block that should be reduced in with for the content available and then continue on.
@@ -93,8 +93,8 @@
         Maecenas tristique tortor et condimentum vestibulum. Nullam quis turpis at neque ultricies feugiat sit amet sed odio. Sed accumsan porttitor risus,
         ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
     </div>
-    <p>In this example, the 2 divs will float around each other in the middle of the content.</p>
-    <div style="border:solid 1px blue; margin-bottom:20px;">
+    <p>In this example, the 2 divs will float next to each other on the right in the middle of the content, with one on the left.</p>
+    <div  style="border:solid 1px blue; margin-bottom:20px;">
         <div class="floating sized div1">Div 1</div>
         This is the content after the div that should flow around the relative floating block
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue, nisl nec sollicitudin facilisis, nulla magna facilisis tortor,
@@ -106,7 +106,7 @@
         ut convallis enim dignissim ac. Etiam id nibh id sem gravida dictum. In et venenatis erat, a finibus quam. Donec neque urna.
     </div>
 
-    <p>LEFT: In this example, there is an image a div and some mixed text.</p>
+    <p>In this example, there are 3 images, 2 align left and 1 right, with some mixed text (on a new page).</p>
     <div id="DivImg" style="border:solid 1px blue; page-break-inside: avoid; margin-bottom:20pt; text-align:left;">
         <img src="./images/group.png" align="right" style="margin:10pt; width: 100pt;  border:solid 1px green; padding:10pt;" />
         This is the content after the div that should flow around the relative floating block

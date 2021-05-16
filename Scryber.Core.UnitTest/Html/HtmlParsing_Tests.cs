@@ -1114,7 +1114,7 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 var style = doc.Pages[0].Style;
-                style.OverlayGrid.ShowGrid = true;
+                //style.OverlayGrid.ShowGrid = true;
                 style.OverlayGrid.GridSpacing = 10;
 
                 using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
@@ -1154,7 +1154,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
                 var style = doc.Pages[0].Style;
-                style.OverlayGrid.ShowGrid = true;
+                //style.OverlayGrid.ShowGrid = true;
                 style.OverlayGrid.GridSpacing = 10;
 
                 using (var stream = DocStreams.GetOutputStream("FloatMixed.pdf"))
@@ -1524,34 +1524,30 @@ namespace Scryber.Core.UnitTests.Html
         public void JeromeTest()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/JeromeTest.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/JeroemTest.html");
 
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
-                    using (var stream = DocStreams.GetOutputStream("JeromeTest.pdf"))
+                    using (var stream = DocStreams.GetOutputStream("JeroemTest.pdf"))
                     {
-                        doc.Params["model"] = new { DateTimeValue = new DateTime(2020, 10, 20) };
+                        doc.Params["model"] = new {
+                            Items = new[] {
+                                new { Type = "Plane"},
+                                new { Type = "Ship"},
+                                new { Type = "Car"}
+                            },
+                            DateTimeValue = new DateTime(2020, 10, 20) };
 
-                        doc.LayoutComplete += Gradient_LayoutComplete;
+                        
                         doc.SaveAsPDF(stream);
                     }
-
-
-                    
-
-                    //var resources = pg.Resources;
-                    //Assert.AreEqual(2, resources.Types.Count);
-
-                    //var patterns = resources.Types["Pattern"];
-                    //Assert.IsNotNull(patterns);
-                    //Assert.AreEqual(9, patterns.Count);
-
                 }
             }
 
 
         }
+        
     }
 }

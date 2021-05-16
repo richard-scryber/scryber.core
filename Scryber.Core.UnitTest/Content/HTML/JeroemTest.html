@@ -1,0 +1,24 @@
+﻿<?scryber append-log='true' controller='Scryber.Core.UnitTests.Mocks.JeroemControllerClass, Scryber.UnitTests' ?>
+<!DOCTYPE HTML>
+<html xmlns='http://www.w3.org/1999/xhtml' id="MyDocument" on-init="Initialized">
+<head>
+    <title></title>
+    <style type="text/css">
+
+        body {
+            font-size: 14pt;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="fullroute-overview">
+        <div class="return" style="color:white">
+            Date: <time date-format="dd MMMM yyyy" datetime="{@:model.DateTimeValue}" />
+        </div>
+    </div>
+    <template data-bind="{@:model.Items}" >
+        <img id="MyImage" on-databound="ImageBound" src="{@:.Type}" />
+    </template>
+</body>
+</html>
