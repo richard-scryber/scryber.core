@@ -1,4 +1,4 @@
-﻿<?scryber append-log='true' controller='Scryber.Core.UnitTests.Mocks.JeroemControllerClass, Scryber.UnitTests' ?>
+﻿<?scryber append-log='true' controller='Scryber.Core.UnitTests.Mocks.GenericControllerClass, Scryber.UnitTests' ?>
 <!DOCTYPE HTML>
 <html xmlns='http://www.w3.org/1999/xhtml' id="MyDocument" on-init="Initialized">
 <head>
@@ -9,16 +9,20 @@
             font-size: 14pt;
         }
 
+        .block{
+            display:block;
+            border:solid 1px blue;
+            padding:5pt;
+            margin-bottom: 5pt;
+            width:100%;
+        }
+
     </style>
 </head>
-<body>
-    <div class="fullroute-overview">
-        <div class="return" style="color:white">
-            Date: <time date-format="dd MMMM yyyy" datetime="{@:model.DateTimeValue}" />
-        </div>
-    </div>
-    <template data-bind="{@:model.Items}" >
-        <img id="MyImage" on-databound="ImageBound" src="{@:.Type}" />
-    </template>
+<body style="padding:20pt">
+    <p on-init="init-para" on-loaded="load-para"
+       on-databinding="bind-para" on-databound="bound-para"
+       on-prelayout="pre-layout-para" on-post-layout="post-layout-para"
+       on-prerender="pre-render-para" on-postrender="post-render-para"></p>
 </body>
 </html>
