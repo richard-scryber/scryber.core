@@ -193,5 +193,6 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     document_code_classes
     extending_logging
     namespaces_and_assemblies
+    document_controllers
     extending_scryber
     version_history

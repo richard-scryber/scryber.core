@@ -57,9 +57,10 @@ The following are the supported options on the processing instruction.
 * 'parser-log' - Controls the logging from the xml parser.
 * 'parser-culture' - specifies the global culture settings when parsing a file for interpreting dates and number formats in the content. e.g.
 * 'parser-mode' - Defines how errors will be recorded if unknown or invalid attributes values are encountered. 
+* 'controller' - Defines the controller class to be used with the document template.
 
 See :doc:`extending_logging` for a detailed explanation of the tracing and logging capabilities in scryber which is **really** useful.
-
+See :doc:`document_controllers` for a detailed explanation of the controller mechanisms.
 
 XML Namespaces
 ---------------
