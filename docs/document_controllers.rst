@@ -1,5 +1,5 @@
 ================================
-Cnntrollers for your templates
+Controllers for your templates
 ================================
 
 Sometimes it's just not quite enough to give the data and render the output.
@@ -7,7 +7,7 @@ More control is needed over altering the content.
 
 Scryber supports this through the use of code controllers, which can be attached to 
 files through the scryber processing instruction. And have properties set or methods called
-during its lifeycle.
+during the document lifeycle.
 
 
 Template with controller
@@ -135,11 +135,11 @@ All template handler attributes start with on-xxxx and are available on all elem
     2. **on-load** - Will be called once all the document has be parsed and has the heirarchy in place, but not databound.
     3. **on-databind** - Will be called on each component in turn before any databinding statements are executed. e.g. {@:MyValue} will still be unset.
     4. **on-itemdatabound** - Will be called by a template each time a new item is databound in the content, passing the item that has been created as well as the context.
-    4. **on-databound** - Will be called on each component in turn after any databinding statements have been executed and their values set.
-    5. **on-prelayout** - Will be the last chance to inject any content into the document graph before it is converted to an explicit page layout.
-    6. **on-postlayout** - Will be called with the actual content measured and laid out into eplicit pages, blocks, regions, lines and runs.
-    7. **on-prerender** - Will be called before the layout is output to a stream with the right structure.
-    8. **on-postrender** - Will be called after everything is done and rendered.
+    5. **on-databound** - Will be called on each component in turn after any databinding statements have been executed and their values set.
+    6. **on-prelayout** - Will be the last chance to inject any content into the document graph before it is converted to an explicit page layout.
+    7. **on-postlayout** - Will be called with the actual content measured and laid out into eplicit pages, blocks, regions, lines and runs.
+    8. **on-prerender** - Will be called before the layout is output to a stream with the right structure.
+    9. **on-postrender** - Will be called after everything is done and rendered.
 
 Some of the most opportune times to capture events are
 
@@ -293,8 +293,55 @@ We can see the output in the page up to the point of layout and the messages in 
 Dependency Injection
 --------------------
 
+The controller must have a parameterless constructor, but if access to other 
+instances and services is needed, they can be passed to the document and then used on the controller.
 
-Events in a <template>
+.. code-block:: csharp
+
+    //document parsing
+
+    var doc = Document.ParseTemplate("path.html");
+    doc.Params["DataService"] = GetDataService();
+
+    doc.SaveAsPDF("Path.pdf");
+
+
+.. code-block:: csharp
+
+    [PDFAction("load-doc")]
+    public void DocumentLoaded(object sender, PDFLoadEventArgs args)
+    {
+        PDFDocument doc = (PDFDocument)args.Document;
+        this.DataService = (MyDataService)doc.Params["DataService"];
+
+        //Do what ever else is needed.
+    }
+
+Events inside a <template>
 -----------------------
 
+The **on-item-databound** event will be called each and every time a template creates and binds the inner content.
+Any events registered within the template, on components, will be raised for each and every component.
 
+
+.. code-block:: html
+
+    <?scryber controller='ControllerNamespace.MyController, MyAssembly' ?>
+    <html xmlns='http://www.w3.org/1999/xhtml' id='MyDocument' >
+    <head>
+        <title>HTML Document</title>
+        <style>
+            .grey{ background-color: grey; }
+        </style>
+    </head>
+
+    <body class="grey" title="Page 1">
+        
+        <!-- The template item binding event will be bound for each of the items -->
+        <template data-bind='{@:AllItems}' on-item-databound='template-item-bound" >
+
+            <!-- The image will be bound for each of the items -->
+            <img on-databound='image-item-bound' src='{@:ContentImageName}' />
+        </div>
+    </body>
+    </html>
