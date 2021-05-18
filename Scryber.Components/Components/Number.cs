@@ -50,7 +50,7 @@ namespace Scryber.Components
         /// Gets or sets the format to use to convert the number value to a string
         /// </summary>
         [PDFAttribute("number-format", Const.PDFStylesNamespace)]
-        public string NumberFormat
+        public virtual string NumberFormat
         {
             get
             {

@@ -398,11 +398,19 @@ namespace Scryber.Core.UnitTests.Html
                 footerText = "Bound Footer",
                 content = "This is the bound content text",
                 bodyStyle = "background-color:red; color:#FFF; padding: 20pt",
-                bodyClass = "top"
+                bodyClass = "top",
+                number = (Decimal)10.1,
+                items = new []
+                {
+                    new { Name = "First" },
+                    new { Name = "Second"},
+                    new { Name = "Third" }
+                }
             };
 
             using (var doc = Document.ParseDocument(path))
             {
+                doc.ConformanceMode = ParserConformanceMode.Strict;
                 using (var stream = DocStreams.GetOutputStream("bodyWithBinding.pdf"))
                 {
                     doc.Params["model"] = model;
@@ -470,7 +478,26 @@ namespace Scryber.Core.UnitTests.Html
             pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
             pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
 
-            Assert.AreEqual("This is the content on the next page ", pRun.Characters);
+            Assert.AreEqual("This is the content on the next page with number ", pRun.Characters);
+
+            //TextEnd at 2
+            //TextBegin at 3
+
+            var pnum = pLine.Runs[4] as PDFTextRunCharacter;
+            Assert.AreEqual("£10.10", pnum.Characters);
+
+            //TextEnd at 5
+            //TextBegin at 6
+
+            var intern = pLine.Runs[7] as PDFTextRunCharacter;
+            Assert.AreEqual(" and name ", intern.Characters);
+
+            //TextEnd at 8
+            //Inline span begin at 9
+            //TextBegin at 10
+
+            var lbl = pLine.Runs[11] as PDFTextRunCharacter;
+            Assert.AreEqual("Second", lbl.Characters);
 
             bgColor = pBlock.FullStyle.Background.Color;
             Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
@@ -1525,22 +1552,23 @@ namespace Scryber.Core.UnitTests.Html
         {
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/JeroemTest.html");
+            var model = new
+            {
+                Items = new[] {
+                                new { Type = "Plane"},
+                                new { Type = "Ship"},
+                                new { Type = "Car"}
+                            },
+                DateTimeValue = new DateTime(2020, 10, 20)
+            };
 
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
-                    using (var stream = DocStreams.GetOutputStream("JeroemTest.pdf"))
+                    doc.Params["model"] = model;
+                    using (var stream = DocStreams.GetOutputStream("JeroemTest2.pdf"))
                     {
-                        doc.Params["model"] = new {
-                            Items = new[] {
-                                new { Type = "Plane"},
-                                new { Type = "Ship"},
-                                new { Type = "Car"}
-                            },
-                            DateTimeValue = new DateTime(2020, 10, 20) };
-
-                        
                         doc.SaveAsPDF(stream);
                     }
                 }

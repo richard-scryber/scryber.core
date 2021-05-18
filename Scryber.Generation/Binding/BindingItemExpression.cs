@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -69,12 +70,17 @@ namespace Scryber.Binding
                         if (args.Context.ShouldLogVerbose)
                             args.Context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the item binding expression '" + this.Expression + "' to value '" + value.ToString() + "'");
                         MethodInfo parse;
+
                         if (this._property.PropertyType == typeof(string))
                             value = value.ToString();
 
                         else if (this.IsParsable(out parse) && ((value is string) || (value is IConvertible)))
                         {
                             value = parse.Invoke(null, new object[] { value.ToString() });
+                        }
+                        else if(value is IConvertible)
+                        {
+                            value = (value as IConvertible).ToType(this.Property.PropertyType, null);
                         }
                         
                         this._property.SetValue(sender, value, null);
@@ -307,11 +313,16 @@ namespace Scryber.Binding
 
             protected override object DoGetMyValue(object parent, PDFDataContext context)
             {
-                System.Reflection.PropertyInfo pi = parent.GetType().GetProperty("Item", new Type[] { typeof(int) });
-                if (null == pi)
-                    throw new ArgumentOutOfRangeException("Item[int]");
+                if (parent is IList)
+                    return (parent as IList)[IndexValue];
+                else
+                {
+                    System.Reflection.PropertyInfo pi = parent.GetType().GetProperty("Item", new Type[] { typeof(int) });
+                    if (null == pi)
+                        throw new ArgumentOutOfRangeException("Item[int]");
 
-                return pi.GetValue(parent, new object[] {IndexValue});
+                    return pi.GetValue(parent, new object[] { IndexValue });
+                }
             }
         }
 

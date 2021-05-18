@@ -46,8 +46,19 @@
     <div class="pg-break-after"></div>
 
     <p class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
-        This is the content on the next page
+        This is the content on the next page with number <num value="{@:model.number}" number-format="£#0.00" /> and name <label data-content="{@:model.items[1].Name}">{@:model.items[0].Name}</label>
     </p>
+    <table>
+        <tr>
+            <td>{@:model.items[0].Name}</td>
+        </tr>
+        <tr>
+            <td>{@:model.items[1].Name}</td>
+        </tr>
+        <tr>
+            <td>{@:model.items[2].Name}</td>
+        </tr>
+    </table>
     <footer>
         <p class="grey">{@:model.footerText}</p>
     </footer>

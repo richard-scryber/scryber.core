@@ -52,9 +52,11 @@ namespace Scryber.Components
 
         protected override void OnPreLayout(PDFLayoutContext context)
         {
-            this.Contents.Clear();
-            this.Contents.Add(new TextLiteral(this.Text));
-
+            if (!string.IsNullOrEmpty(this.Text))
+            {
+                this.Contents.Clear();
+                this.Contents.Add(new TextLiteral(this.Text));
+            }
             base.OnPreLayout(context);
         }
     }

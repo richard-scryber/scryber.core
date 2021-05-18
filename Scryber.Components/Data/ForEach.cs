@@ -36,7 +36,7 @@ namespace Scryber.Data
         /// </summary>
         [PDFAttribute("start-index")]
         [PDFDesignable("Start Index", Priority = 3, Category ="Data", Type ="Number")]
-        public int StartIndex
+        public virtual int StartIndex
         {
             get { return _start; }
             set { _start = value; }
@@ -47,7 +47,7 @@ namespace Scryber.Data
         /// </summary>
         [PDFAttribute("count")]
         [PDFDesignable("Max. Count", Priority = 3, Category = "Data", Type = "Number")]
-        public int MaxCount
+        public virtual int MaxCount
         {
             get { return _count; }
             set { _count = value; }
@@ -58,7 +58,7 @@ namespace Scryber.Data
         /// </summary>
         [PDFAttribute("step")]
         [PDFDesignable("Step", Priority = 3, Category = "Data", Type = "Number")]
-        public int Step
+        public virtual int Step
         {
             get { return _step; }
             set { _step = value; }
@@ -143,7 +143,7 @@ namespace Scryber.Data
             _start = 0;
             _count = int.MaxValue;
             _step = 1;
-            CacheStyles = true;
+            CacheStyles = false;
         }
 
 

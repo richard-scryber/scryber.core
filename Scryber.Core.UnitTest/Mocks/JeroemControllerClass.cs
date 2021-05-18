@@ -68,6 +68,46 @@ namespace Scryber.Core.UnitTests.Mocks
         {
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Rendered the paragraph");
         }
+
+        
+
+        [PDFAction("template-item-bound")]
+        public void TemplateItemBound(object sender, PDFTemplateItemDataBoundArgs args)
+        {
+            var template = sender as HTMLTemplate;
+
+            //This is the wrapper component
+            var component = args.Item as Component;
+
+            var context = args.Context;
+
+            var index = args.Context.CurrentIndex;
+
+            //Add a class for every other item.
+            if (index % 2 == 0)
+                component.StyleClass = (component.StyleClass == null) ? "alternate" : (component.StyleClass + " alternate");
+
+            index++;
+        }
+
+        [PDFAction("row-bound")]
+        public void TemplateItemCellBound(object sender, PDFDataBindEventArgs args)
+        {
+            //This is the wrapper component
+            var row = sender as TableCell;
+
+            var context = args.Context;
+
+            var index = args.Context.CurrentIndex;
+
+            //Add a class for every other item.
+
+            if (index % 2 == 0)
+                row.Style.Background.Color = (Scryber.Drawing.PDFColor)"#DDD";// = (row.StyleClass == null) ? "alternate" : (row.StyleClass + " alternate");
+
+        }
+
+        
     }
 
     public class JeroemControllerClass
