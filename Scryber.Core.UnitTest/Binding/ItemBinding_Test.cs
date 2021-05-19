@@ -605,7 +605,7 @@ namespace Scryber.Core.UnitTests.Binding
                         <Pages>
                             <doc:Section>
                                 <Content>
-                                    <doc:Label id='MyTitle' styles:font-bold='{@:obj.BoldTitle}' text='{@:obj.Title}' styles:font-size='{@:obj.Size}' styles:bg-color='{@:obj.Background}' ></doc:Label>
+                                    <doc:Label id='MyTitle' styles:font-bold='{@:obj.BoldTitle}' text='{@:obj.Title}' styles:font-size='{@:obj.SizeField}' styles:bg-color='{@:obj.Background}' ></doc:Label>
                                 </Content>
                             </doc:Section>
                         </Pages>
@@ -633,7 +633,7 @@ namespace Scryber.Core.UnitTests.Binding
                 //Check that the color matches
                 Assert.AreEqual(param.Background, first.BackgroundColor, "Background colours do not match");
 
-                Assert.AreEqual(param.Size, first.FontSize);
+                Assert.AreEqual(param.SizeField, first.FontSize);
 
 
             }

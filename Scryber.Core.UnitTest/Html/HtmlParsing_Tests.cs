@@ -591,7 +591,7 @@ namespace Scryber.Core.UnitTests.Html
             pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
             pRun = pLine.Runs[1] as PDFTextRunCharacter; // First is static text
 
-            Assert.AreEqual("This is the content on the next page ", pRun.Characters);
+            Assert.AreEqual("This is the content on the next page with number ", pRun.Characters);
 
             bgColor = pBlock.FullStyle.Background.Color;
             Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background

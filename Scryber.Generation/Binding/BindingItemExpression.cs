@@ -266,38 +266,87 @@ namespace Scryber.Binding
 
         private class ParserItemPropertyExpression : ParserItemExpression
         {
-            public string PropertyName { get; private set; }
+            public string PropertyOrFieldName { get; private set; }
+
+            private MemberInfo _lastReflected;
 
             public ParserItemPropertyExpression(string name)
             {
-                this.PropertyName = name;
+                this.PropertyOrFieldName = name;
             }
 
             protected override object DoGetMyValue(object parent, PDFDataContext context)
             {
-                System.Reflection.PropertyInfo pi = parent.GetType().GetProperty(this.PropertyName);
+                var type = parent.GetType();
 
-                if (null != pi)
+                PropertyInfo pi = null;
+                FieldInfo fi = null;
+
+                if (this.TryGetProperty(type, out pi))
                     return pi.GetValue(parent, null);
+
+                else if (this.TryGetField(type, out fi))
+                    return fi.GetValue(parent);
+
                 else if (parent is System.Dynamic.ExpandoObject)
                 {
                     object found;
                     IDictionary<string, object> expando = parent as System.Dynamic.ExpandoObject;
-                    if (expando.TryGetValue(this.PropertyName, out found))
+                    if (expando.TryGetValue(this.PropertyOrFieldName, out found))
                         return found;
                     else
                         return null; //As we are dynamic, let's be generous and not throw an error.
                 }
-                else if(parent is ICustomTypeDescriptor)
+                else if (parent is ICustomTypeDescriptor)
                 {
-                    var prop = (parent as ICustomTypeDescriptor).GetProperties()[this.PropertyName];
+                    var prop = (parent as ICustomTypeDescriptor).GetProperties()[this.PropertyOrFieldName];
                     if (null != prop)
                         return prop.GetValue(parent);
                     else
-                        throw new ArgumentOutOfRangeException(this.PropertyName);
+                        throw new ArgumentOutOfRangeException(this.PropertyOrFieldName);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(this.PropertyName);
+                    throw new ArgumentOutOfRangeException(this.PropertyOrFieldName);
+            }
+
+            private bool TryGetProperty(Type fortype, out PropertyInfo found)
+            {
+                if(null != _lastReflected && _lastReflected.DeclaringType == fortype)
+                {
+                    found = (PropertyInfo)this._lastReflected;
+                    return true;
+                }
+                else
+                {
+                    found = fortype.GetProperty(this.PropertyOrFieldName);
+                    if(null == found)
+                        return false;
+                    else
+                    {
+                        _lastReflected = found;
+                        return true;
+                    }
+                }
+            }
+
+            private bool TryGetField(Type fortype, out FieldInfo found)
+            {
+                if (null != _lastReflected && _lastReflected.DeclaringType == fortype)
+                {
+                    found = (FieldInfo)this._lastReflected;
+                    return true;
+                }
+                else
+                {
+                    found = fortype.GetField(this.PropertyOrFieldName);
+                    if (null == found)
+                        return false;
+                    else
+                    {
+                        _lastReflected = found;
+                        return true;
+                    }
+                }
             }
         }
 
