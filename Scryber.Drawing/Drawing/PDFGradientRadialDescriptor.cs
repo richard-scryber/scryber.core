@@ -30,8 +30,9 @@ namespace Scryber.Drawing
             if(this.Repeating)
             {
                 if (this.Size == RadialSize.None || this.Size == RadialSize.FarthestCorner)
+                {
                     return base.GetGradientFunction(offset, size);
-                
+                }
             }
 
             return base.GetGradientFunction(offset, size);
