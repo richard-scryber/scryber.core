@@ -252,6 +252,40 @@ namespace Scryber.Components
 
         #endregion
 
+        #region  public PDFComponent FindAComponent(string id) + 1 overload
+
+        public override Component FindAComponentById(string id)
+        {
+            Component found;
+
+            if (this.ID.Equals(id))
+                return this;
+            else if (this.FindAComponentById(this.InnerContent, Name, out found))
+                return found;
+            else
+                return null;
+        }
+
+        
+
+        #endregion
+
+        #region  public PDFComponent FindAComponentByName(string name) + 1 overload
+
+        public override Component FindAComponentByName(string name)
+        {
+            Component found;
+            if (string.Equals(this.Name, name))
+                return this;
+            else if(this.HasContent && this.FindAComponentByName(this.InnerContent, name, out found))
+                return found;
+            else
+                return base.FindAComponentByName(name);
+        }
+
+        
+
+        #endregion
 
         #region internal protected override void RegisterParent(PDFComponent parent) + UnregisterParent(PDFComponent parent)
 

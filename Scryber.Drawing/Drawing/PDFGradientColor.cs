@@ -6,7 +6,7 @@ namespace Scryber.Drawing
     /// </summary>
     public class PDFGradientColor
     {
-        [Obsolete("PDF does not support opacity in gradients but retaining incase we can make it work", false)]
+        //[Obsolete("PDF does not support opacity in gradients but retaining incase we can make it work", false)]
         public double? Opacity { get; set; }
 
         /// <summary>
@@ -20,7 +20,10 @@ namespace Scryber.Drawing
         /// </summary>
         public PDFColor Color { get; set; }
 
+        public PDFGradientColor(PDFColor color) : this(color, null, null)
+        {
 
+        }
 
         public PDFGradientColor(PDFColor color, double? distance, double? opacity)
         {

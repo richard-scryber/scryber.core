@@ -2416,7 +2416,7 @@ namespace Scryber.Components
 
         #region  public PDFComponent FindAComponent(string id) + 1 overload
 
-        public Component FindAComponentById(string id)
+        public override Component FindAComponentById(string id)
         {
             Component ele = null;
             if (this.ID.Equals(id))
@@ -2429,34 +2429,13 @@ namespace Scryber.Components
                 return null;
         }
 
-        private bool FindAComponentById(ComponentList list, string id, out Component found)
-        {
-            if (list != null)
-            {
-                foreach (Component ele in list)
-                {
-                    if (ele.ID.Equals(id))
-                    {
-                        found = ele;
-                        return true;
-                    }
-                    else if (ele is IPDFContainerComponent)
-                    {
-                        IPDFContainerComponent container = ele as IPDFContainerComponent;
-                        if (container.HasContent && this.FindAComponentById(container.Content, id, out found))
-                            return true;
-                    }
-                }
-            }
-            found = null;
-            return false;
-        }
+        
 
         #endregion
 
         #region  public PDFComponent FindAComponentByName(string name) + 1 overload
 
-        public Component FindAComponentByName(string name)
+        public override Component FindAComponentByName(string name)
         {
             Component value;
             if(this._namedictionary.TryGetValue(name, out value))
@@ -2467,32 +2446,12 @@ namespace Scryber.Components
                 return this;
             else if (this.FindAComponentByName(this.Pages.InnerList, name, out ele))
                 return ele;
+            else if (this.FindAComponentByName(this.DataSources.InnerList, name, out ele))
+                return ele;
             else
                 return null;
         }
 
-        private bool FindAComponentByName(ComponentList list, string name, out Component found)
-        {
-            if (list != null)
-            {
-                foreach (Component ele in list)
-                {
-                    if (string.Equals(name, ele.Name))
-                    {
-                        found = ele;
-                        return true;
-                    }
-                    else if (ele is IPDFContainerComponent)
-                    {
-                        IPDFContainerComponent container = ele as IPDFContainerComponent;
-                        if (container.HasContent && this.FindAComponentByName(container.Content, name, out found))
-                            return true;
-                    }
-                }
-            }
-            found = null;
-            return false;
-        }
 
         #endregion
 

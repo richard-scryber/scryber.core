@@ -1492,7 +1492,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsTrue(one.PatternType == PatternType.ShadingPattern);
             Assert.IsTrue(one.Registered);
             Assert.IsNotNull(one.Descriptor);
-            Assert.AreEqual(cols.Length, one.Descriptor.Colors.Length);
+            Assert.AreEqual(cols.Length, one.Descriptor.Colors.Count);
             Assert.AreEqual(angle, one.Descriptor.Angle);
             Assert.AreEqual(repeating, one.Descriptor.Repeating, "Repeating flag does not match");
             Assert.AreEqual(GradientType.Linear, one.Descriptor.GradientType);

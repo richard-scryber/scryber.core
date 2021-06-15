@@ -969,6 +969,77 @@ namespace Scryber.Components
 
         #endregion
 
+        #region  public PDFComponent FindAComponent(string id) + 1 overload
+
+        public virtual Component FindAComponentById(string id)
+        {
+            if (this.ID.Equals(id))
+                return this;
+            else
+                return null;
+        }
+
+        protected bool FindAComponentById(ComponentList list, string id, out Component found)
+        {
+            if (list != null)
+            {
+                foreach (Component ele in list)
+                {
+                    if (ele.ID.Equals(id))
+                    {
+                        found = ele;
+                        return true;
+                    }
+                    else if (ele is IPDFContainerComponent)
+                    {
+                        IPDFContainerComponent container = ele as IPDFContainerComponent;
+                        if (container.HasContent && this.FindAComponentById(container.Content, id, out found))
+                            return true;
+                    }
+                }
+            }
+            found = null;
+            return false;
+        }
+
+        #endregion
+
+        #region  public PDFComponent FindAComponentByName(string name) + 1 overload
+
+        public virtual Component FindAComponentByName(string name)
+        {
+            
+            if (string.Equals(this.Name, name))
+                return this;
+            else
+                return null;
+        }
+
+        protected bool FindAComponentByName(ComponentList list, string name, out Component found)
+        {
+            if (list != null)
+            {
+                foreach (Component ele in list)
+                {
+                    if (string.Equals(name, ele.Name))
+                    {
+                        found = ele;
+                        return true;
+                    }
+                    else if (ele is IPDFContainerComponent)
+                    {
+                        IPDFContainerComponent container = ele as IPDFContainerComponent;
+                        if (container.HasContent && this.FindAComponentByName(container.Content, name, out found))
+                            return true;
+                    }
+                }
+            }
+            found = null;
+            return false;
+        }
+
+        #endregion
+
         #region public void RegisterLayoutArtefacts(PDFRegistrationContext context) + CloseLayoutArtefacts()
 
         /// <summary>

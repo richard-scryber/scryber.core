@@ -21,7 +21,7 @@ namespace Scryber.Drawing
 
         public PDFGradientColor[] Colors
         {
-            get { return this.Descriptor.Colors; }
+            get { return this.Descriptor.Colors.ToArray(); }
         }
 
         public bool Repeating

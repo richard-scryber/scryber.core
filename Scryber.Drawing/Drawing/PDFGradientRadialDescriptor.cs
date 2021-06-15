@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
+using Scryber.Resources;
+using Newtonsoft.Json.Serialization;
 
 namespace Scryber.Drawing
 {
@@ -10,7 +12,6 @@ namespace Scryber.Drawing
 
         public RadialShape Shape { get; set; }
 
-       
         public RadialSize Size { get; set; }
 
         public PDFUnit? XCentre { get; set; }
@@ -20,21 +21,67 @@ namespace Scryber.Drawing
 
         private static Regex _splitter = new Regex(",(?![^\\(]*\\))");
 
-        public PDFGradientRadialDescriptor() : base(GradientType.Radial)
-        {
+        public PDFGradientRadialDescriptor() : this(RadialShape.Circle, RadialSize.FarthestCorner)
+        { }
 
+        public PDFGradientRadialDescriptor(RadialShape shape, RadialSize size) : base(GradientType.Radial)
+        {
+            Shape = shape;
+            Size = size;
         }
 
-        public override PDFGradientFunction GetGradientFunction(PDFPoint offset, PDFSize size)
+        
+
+        /// <summary>
+        /// Override so that the radial pattern extends beyond the set size to the farthest corner.
+        /// With the repeat at the distances
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        protected override List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(PDFPoint offset, PDFSize size)
         {
-            if(this.Repeating)
+            var items = base.GetRepeatingBoundaries(offset, size);
+            if (this.Size != RadialSize.None && this.Size != RadialSize.FarthestCorner)
             {
-                if (this.Size == RadialSize.None || this.Size == RadialSize.FarthestCorner)
-                    return base.GetGradientFunction(offset, size);
-                
+                var height = Math.Abs(size.Height.PointsValue);
+                var width = size.Width.PointsValue;
+
+                //calculate the centre and radii for the names side and farthest corner
+                var newItems = new List<PDFGradientFunctionBoundary>(items.Count);
+                PDFPoint centre = PDFRadialShadingPattern.CacluateRadialCentre(this.XCentre, this.YCentre, height, width);
+                var radiusActual = Math.Abs(PDFRadialShadingPattern.CalculateRadiusForSize(this.Size, height, width, centre.X.PointsValue, centre.Y.PointsValue));
+                var radiusRequired = Math.Abs(PDFRadialShadingPattern.CalculateRadiusForSize(RadialSize.FarthestCorner, height, width, centre.X.PointsValue, centre.Y.PointsValue));
+
+                //all our boundaries will be adjusted for the factor so we extend out.
+                var factor = radiusActual / radiusRequired;
+
+                var start = 0.0;
+                var boundary = 0.0;
+                var index = 0;
+
+                while(boundary < 1)
+                {
+                    var one = items[index];
+                    boundary = (one.Bounds * factor) + start;
+                    one = new PDFGradientFunctionBoundary(boundary);
+                    newItems.Add(one);
+
+                    index++;
+
+                    if(index >= items.Count)
+                    {
+                        index = 0;
+                        start = boundary;
+                        boundary = 0.0;
+                    }
+                }
+
+                this.Size = RadialSize.FarthestCorner;
+                items = newItems;
             }
 
-            return base.GetGradientFunction(offset, size);
+            return items;
         }
 
         public static bool TryParseRadial(string value, out PDFGradientRadialDescriptor radial)
@@ -44,8 +91,8 @@ namespace Scryber.Drawing
             if (all.Length == 0)
                 return false;
 
-            RadialShape shape = RadialShape.Ellipse;
-            RadialSize size = RadialSize.None;
+            RadialShape shape = RadialShape.Circle;
+            RadialSize size = RadialSize.FarthestCorner;
             PDFUnit? xpos = null;
             PDFUnit? ypos = null;
 
@@ -60,9 +107,11 @@ namespace Scryber.Drawing
             }
             else if (all[0].StartsWith("ellipse"))
             {
-                shape = RadialShape.Ellipse;
-                all[0] = all[0].Substring("ellipse".Length).TrimStart();
-                colorStopIndex = 1;
+                radial = null;
+                return false;
+                //shape = RadialShape.Ellipse;
+                //all[0] = all[0].Substring("ellipse".Length).TrimStart();
+                //colorStopIndex = 1;
             }
 
             if (all[0].StartsWith("closest-side"))
@@ -132,6 +181,7 @@ namespace Scryber.Drawing
                             break;
                     }
                 }
+                colorStopIndex = 1;
             }
 
             PDFGradientColor[] colors = new PDFGradientColor[all.Length - colorStopIndex];
@@ -145,7 +195,7 @@ namespace Scryber.Drawing
                     return false;
             }
 
-            radial = new PDFGradientRadialDescriptor() { Repeating = false, Shape = shape, Size = size, XCentre = xpos, YCentre = ypos, Colors = colors };
+            radial = new PDFGradientRadialDescriptor() { Repeating = false, Shape = shape, Size = size, XCentre = xpos, YCentre = ypos, Colors = new List<PDFGradientColor>(colors) };
             return true;
         }
     }

@@ -60,8 +60,9 @@ namespace Scryber.Resources
             PDFSize size = this.Size;
 
             PDFSize graphicsSize = new PDFSize(size.Width + offset.X, size.Height + offset.Y);
-            var coords = GetCoords(offset, size, _descriptor.Size, _descriptor.XCentre, _descriptor.YCentre);
             var func = this._descriptor.GetGradientFunction(offset, size);
+            var coords = GetCoords(offset, size, _descriptor.Size, _descriptor.XCentre, _descriptor.YCentre);
+            
 
             writer.BeginDictionaryEntry("Shading");
             writer.BeginDictionary();
@@ -82,6 +83,7 @@ namespace Scryber.Resources
 
             writer.BeginDictionaryEntry("Extend");
             writer.BeginArray();
+
             writer.BeginArrayEntry();
             writer.WriteBooleanS(true);
             writer.EndArrayEntry();
@@ -114,76 +116,87 @@ namespace Scryber.Resources
             var height = Math.Abs(size.Height.PointsValue);
             var width = size.Width.PointsValue;
 
-            //default centre and radii
+            //Get the centre and the radius
+            PDFPoint c = CacluateRadialCentre(centreX, centreY, height, width);
+            double radius = CalculateRadiusForSize(radiusSize, height, width, c.X.PointsValue, c.Y.PointsValue);
+
+            if (radius <= 0)
+                radius = 0.01;
+
+            //apply the centres based on the page location
+            all[0] = c.X.PointsValue + offset.X.PointsValue;
+            all[1] = offset.Y.PointsValue - c.Y.PointsValue;
+            all[2] = 0.0;
+            all[3] = c.X.PointsValue + offset.X.PointsValue;
+            all[4] = offset.Y.PointsValue - c.Y.PointsValue;
+            all[5] = radius;
+
+
+
+            return all;
+        }
+
+        public static PDFPoint CacluateRadialCentre(PDFUnit? centreX, PDFUnit? centreY, double height, double width)
+        {
             var rX = width / 2;
             var rY = height / 2;
-
-            var cX = rX;
-            var cY = rY;
+            PDFPoint c = new PDFPoint(rX, rY);
 
             //calculate any explicit centres from the bbox origin of the rectangle.
-            if(centreX.HasValue)
+            if (centreX.HasValue)
             {
                 if (centreX.Value == PDFUnit.Zero)
-                    cX = 0.0;
+                    c.X = 0.0;
                 else if (centreX.Value.PointsValue == double.MaxValue)
-                    cX = width;
+                    c.X = width;
                 else
-                    cX = centreX.Value.PointsValue;
+                    c.X = centreX.Value.PointsValue;
             }
 
-            if(centreY.HasValue)
+            if (centreY.HasValue)
             {
                 if (centreY.Value == PDFUnit.Zero)
-                    cY = 0.0;
+                    c.Y = 0.0;
                 else if (centreX.Value.PointsValue == double.MaxValue)
-                    cY = height;
+                    c.Y = height;
                 else
-                    cY = centreY.Value.PointsValue;
+                    c.Y = centreY.Value.PointsValue;
             }
 
+            return c;
+        }
+
+        public static double CalculateRadiusForSize(RadialSize radiusSize, double height, double width, double centreX, double centreY)
+        {
             double minx, miny, maxX, maxY, radius;
 
             switch (radiusSize)
             {
                 case (RadialSize.ClosestCorner):
-                    minx = Math.Min(cX, width - cX);
-                    miny = Math.Min(cY, height - cY);
+                    minx = Math.Min(centreX, width - centreX);
+                    miny = Math.Min(centreY, height - centreY);
                     radius = Math.Sqrt((minx * minx) + (miny * miny));
                     break;
                 case (RadialSize.FarthestCorner):
-                    maxX = Math.Max(cX, width - cX);
-                    maxY = Math.Max(cY, height - cY);
+                    maxX = Math.Max(centreX, width - centreX);
+                    maxY = Math.Max(centreY, height - centreY);
                     radius = Math.Sqrt((maxX * maxX) + (maxY * maxY));
                     break;
                 case (RadialSize.ClosestSide):
-                    minx = Math.Min(cX, width - cX);
-                    miny = Math.Min(cY, height - cY);
+                    minx = Math.Min(centreX, width - centreX);
+                    miny = Math.Min(centreY, height - centreY);
                     radius = Math.Min(minx, miny);
                     break;
                 case (RadialSize.FarthestSide):
                 case (RadialSize.None):
                 default:
-                    maxX = Math.Max(cX, width - cX);
-                    maxY = Math.Max(cY, height - cY);
+                    maxX = Math.Max(centreX, width - centreX);
+                    maxY = Math.Max(centreY, height - centreY);
                     radius = Math.Max(maxX, maxY);
                     break;
             }
 
-            if (radius <= 0)
-                radius = 0.01;
-            
-            //apply the centres based on the page location
-            all[0] = cX + offset.X.PointsValue;
-            all[1] = offset.Y.PointsValue - cY;
-            all[2] = 0.0;
-            all[3] = cX + offset.X.PointsValue;
-            all[4] = offset.Y.PointsValue - cY;
-            all[5] = radius;
-
-            
-
-            return all;
+            return radius;
         }
     }
 }

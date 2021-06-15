@@ -1,3 +1,5 @@
 {
-    "restructuredtext.confPath": "${workspaceFolder}/docs"
+    "restructuredtext.confPath": "${workspaceFolder}/docs",
+    "restructuredtext.preview.sphinx.disabled": true,
+    "restructuredtext.linter.disabled": true
 }

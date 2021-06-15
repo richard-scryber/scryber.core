@@ -77,7 +77,7 @@ namespace Scryber.Drawing
                     return false;
             }
 
-            linear = new PDFGradientLinearDescriptor() { Angle = angle, Colors = colors };
+            linear = new PDFGradientLinearDescriptor() { Angle = angle, Colors = new List<PDFGradientColor>(colors) };
             return true;
         }
 

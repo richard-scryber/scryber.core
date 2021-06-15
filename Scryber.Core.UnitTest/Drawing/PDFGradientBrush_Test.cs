@@ -4,6 +4,7 @@ using System;
 using Scryber.Native;
 using Scryber;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace Scryber.Core.UnitTests.Drawing
 {
@@ -68,7 +69,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             var linear = desc as PDFGradientLinearDescriptor;
             Assert.AreEqual(180, linear.Angle, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(2, linear.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(2, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
@@ -92,7 +93,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             linear = desc as PDFGradientLinearDescriptor;
             Assert.AreEqual(0, linear.Angle, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(2, linear.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(2, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
@@ -117,7 +118,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             linear = desc as PDFGradientLinearDescriptor;
             Assert.AreEqual(25, linear.Angle, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(3, linear.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(3, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
@@ -147,7 +148,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             linear = desc as PDFGradientLinearDescriptor;
             Assert.AreEqual(180, linear.Angle, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(3, linear.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(3, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsTrue(linear.Repeating, "The linear gradient was not set to repeat for " + value);
 
             //First red
@@ -178,13 +179,13 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFGradientDescriptor desc = null;
 
             var result = PDFGradientDescriptor.TryParse(value, out desc);
-            Assert.IsTrue(result, "The linear gradient " + value + " failed to be parsed");
-            Assert.IsNotNull(desc, "Null returned for linear gradient " + value);
+            Assert.IsTrue(result, "The radial gradient " + value + " failed to be parsed");
+            Assert.IsNotNull(desc, "Null returned for radial gradient " + value);
             Assert.IsInstanceOfType(desc, typeof(PDFGradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
 
             var radial = desc as PDFGradientRadialDescriptor;
-            Assert.AreEqual(RadialShape.Ellipse, radial.Shape, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(2, radial.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(RadialShape.Circle, radial.Shape, "Shape for value " + value + " was not correct");
+            Assert.AreEqual(2, radial.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(radial.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
@@ -208,7 +209,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             radial = desc as PDFGradientRadialDescriptor;
             Assert.AreEqual(RadialShape.Circle, radial.Shape, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(3, radial.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(3, radial.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(radial.Repeating, "The radial gradient was set to repeat for " + value);
 
             //First red
@@ -236,8 +237,8 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsInstanceOfType(desc, typeof(PDFGradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
 
             radial = desc as PDFGradientRadialDescriptor;
-            Assert.AreEqual(RadialShape.Ellipse, radial.Shape, "Shape for value " + value + " was not correct");
-            Assert.AreEqual(2, radial.Colors.Length, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(RadialShape.Circle, radial.Shape, "Shape for value " + value + " was not correct");
+            Assert.AreEqual(2, radial.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsTrue(radial.Repeating, "The radial gradient was not set to repeat for " + value);
 
             //First red
@@ -264,10 +265,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFLinearBrushConstructor_Test()
         {
             PDFGradientLinearDescriptor descriptor = new PDFGradientLinearDescriptor();
-            descriptor.Colors = new PDFGradientColor[]
+            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
                 new PDFGradientColor(PDFColors.Red, null, null)
-            };
+            });
 
             PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
             PDFColor color = PDFColors.Red;
@@ -291,10 +292,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFGradientLinearDescriptor descriptor = new PDFGradientLinearDescriptor();
             descriptor.Angle = (double)GradientAngle.Bottom_Left;
             descriptor.Repeating = true;
-            descriptor.Colors = new PDFGradientColor[]
+            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
                 new PDFGradientColor(PDFColors.Red, null, null)
-            };
+            });
 
             PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
             PDFColor color = PDFColors.Red;
@@ -318,10 +319,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFRadialBrushConstructor_Test()
         {
             PDFGradientRadialDescriptor descriptor = new PDFGradientRadialDescriptor();
-            descriptor.Colors = new PDFGradientColor[]
+            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
                 new PDFGradientColor(PDFColors.Red, null, null)
-            };
+            });
 
             PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
             PDFColor color = PDFColors.Red;
@@ -331,7 +332,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.AreEqual(GradientType.Radial, target.GradientType);
             Assert.AreEqual(false, target.Repeating); //Default
-            Assert.AreEqual(RadialShape.Ellipse, target.Shape); //Default
+            Assert.AreEqual(RadialShape.Circle, target.Shape); //Default
             Assert.AreEqual(color, target.Colors[0].Color); 
             Assert.AreEqual(opacity, target.Colors[0].Opacity);
             Assert.AreEqual(distance, target.Colors[0].Distance);
@@ -347,10 +348,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFGradientRadialDescriptor descriptor = new PDFGradientRadialDescriptor();
             descriptor.Repeating = true;
             descriptor.Shape = RadialShape.Circle;
-            descriptor.Colors = new PDFGradientColor[]
+            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
                 new PDFGradientColor(PDFColors.Red, null, null)
-            };
+            });
 
             PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
             PDFColor color = PDFColors.Red;

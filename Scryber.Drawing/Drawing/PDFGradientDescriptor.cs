@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Permissions;
 using System.Text.RegularExpressions;
 
 namespace Scryber.Drawing
@@ -24,13 +26,22 @@ namespace Scryber.Drawing
 
         #region public PDFGradientColor[] Colors
 
+        private List<PDFGradientColor> _colors;
         /// <summary>
         /// Gets or sets the array of GradientColours in this gradient
         /// </summary>
-        public PDFGradientColor[] Colors
+        public List<PDFGradientColor> Colors
         {
-            get;
-            set;
+            get
+            {
+                if (null == _colors)
+                    _colors = new List<PDFGradientColor>(2);
+                return _colors;
+            }
+            set
+            {
+                this._colors = value;
+            }
         }
 
         #endregion
@@ -65,44 +76,28 @@ namespace Scryber.Drawing
         /// <returns></returns>
         public virtual PDFGradientFunction GetGradientFunction(PDFPoint offset, PDFSize size)
         {
+
+            //if our first value is offset from the start put one in of
+            //the same colour at 0 offset
+
+            if (this.Colors.Count > 1 && this.Colors[0].Distance.HasValue && this.Colors[0].Distance.Value > 0.0)
+                this.Colors.Insert(0, new PDFGradientColor(this.Colors[0].Color, 0.0, this.Colors[0].Opacity));
+
+            //if our last colour does not have a distance then put it at 100.
+            if (this.Colors.Count > 1 && this.Colors[this.Colors.Count - 1].Distance.HasValue == false)
+            {
+                if (this.GradientType == GradientType.Radial && this.Repeating)
+                    this.Colors.Add(new PDFGradientColor(this.Colors[this.Colors.Count - 1].Color, 100, null));
+                else
+                    this.Colors[this.Colors.Count - 1].Distance = 100;
+            }
+
             if (this.Repeating)
             {
-                List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
+                List<PDFGradientFunctionBoundary> bounds = GetRepeatingBoundaries(offset, size);
+                List<PDFGradientFunction2> functions = GetRepeatingFunctionsForBounds(bounds);
 
-                double total = 0.0;
-                while (total < 1.0)
-                {
-                    double curr = 0.0;
-                    for (int i = 1; i < this.Colors.Length; i++)
-                    {
-                        var col = this.Colors[i];
-                        curr = col.Distance.HasValue ? total + (col.Distance.Value / 100) : total;
-                        bounds.Add(new PDFGradientFunctionBoundary(curr));
-                    }
-                    total = curr;
-                }
-                List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
-
-                var col0Index = 0;
-                var col1Index = 1;
-                for (int i = 0; i < bounds.Count; i++)
-                {
-                    var color0 = this.Colors[col0Index].Color;
-                    var color1 = this.Colors[col1Index].Color;
-
-                    var func = new PDFGradientFunction2(color0, color1);
-                    functions.Add(func);
-
-                    col0Index++;
-                    col1Index++;
-
-                    if (col1Index >= this.Colors.Length)
-                    {
-                        col0Index = 0;
-                        col1Index = 1;
-                    }
-                }
-
+                
                 bounds.RemoveAt(bounds.Count - 1);
 
                 while (bounds[bounds.Count - 1].Bounds > 1)
@@ -113,21 +108,25 @@ namespace Scryber.Drawing
 
                 return new PDFGradientFunction3(functions.ToArray(), bounds.ToArray());
             }
-            else if (this.Colors.Length == 2)
+            else if (this.Colors.Count == 2)
             {
-                return new PDFGradientFunction2(this.Colors[0].Color, this.Colors[1].Color);
+                var c0 = this.Colors[0];
+                var c1 = this.Colors[1];
+                var domainStart = c0.Distance.HasValue ? (c0.Distance.Value / 100.0) : 0;
+                var domainEnd = c1.Distance.HasValue ? 1.0/(c1.Distance.Value / 100) : 1;
+                return new PDFGradientFunction2(c0.Color, c1.Color, domainStart, domainEnd, 1.0);
             }
             else
             {
                 List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
                 List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
-                double boundsValue = 1.0 / (this.Colors.Length - 1);
+                double boundsValue = 1.0 / (this.Colors.Count - 1);
 
-                for (int i = 1; i < this.Colors.Length; i++)
+                for (int i = 1; i < this.Colors.Count; i++)
                 {
                     functions.Add(new PDFGradientFunction2(this.Colors[i - 1].Color, this.Colors[i].Color));
 
-                    if (i < this.Colors.Length - 1)
+                    if (i < this.Colors.Count - 1)
                     {
                         bounds.Add(new PDFGradientFunctionBoundary(boundsValue * i));
                     }
@@ -137,8 +136,122 @@ namespace Scryber.Drawing
             }
         }
 
+        protected virtual List<PDFGradientFunction2> GetRepeatingFunctionsForBounds(List<PDFGradientFunctionBoundary> bounds)
+        {
+            List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
+
+            var col0Index = 0;
+            var col1Index = 1;
+
+            for (int i = 0; i < bounds.Count; i++)
+            {
+                var color0 = this.Colors[col0Index].Color;
+                var color1 = this.Colors[col1Index].Color;
+
+                var func = new PDFGradientFunction2(color0, color1);
+                functions.Add(func);
+
+                col0Index++;
+                col1Index++;
+
+                if (col1Index >= this.Colors.Count)
+                {
+                    col0Index = 0;
+                    col1Index = 1;
+                }
+            }
+
+            return functions;
+        }
+
+        /// <summary>
+        /// Gets a list of all the function boundaries for a gradient.
+        /// </summary>
+        /// <param name="offset">The offset of the shape in the page</param>
+        /// <param name="size">The size of the shape in the page</param>
+        /// <returns>A list of function boundaries</returns>
+        protected virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(PDFPoint offset, PDFSize size)
+        {
+            List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
+
+            double total = 0.0;
+            
+            this.PreFillColorDistances();
+
+            
+            while (total < 1.0)
+            {
+                double curr = 0.0;
+                for (int i = 1; i < this.Colors.Count; i++)
+                {
+                    var col = this.Colors[i];
+                    if (col.Distance.HasValue)
+                        curr = total + (col.Distance.Value / 100);
+                    else if (total == 0.0 && curr == 0.0)
+                        curr = total + (1.0 / this.Colors.Count);
+                    else
+                        curr = total; //Hard break
+                    
+                    bounds.Add(new PDFGradientFunctionBoundary(curr));
+                }
+                total = curr;
+            }
+
+            return bounds;
+        }
+
         #endregion
 
+        protected virtual void PreFillColorDistances()
+        {
+            int lastValue = -1;
+            List<PDFGradientColor> spacers = new List<PDFGradientColor>();
+
+            //Loop through each of the colors and either add it to the spacers if there is no difference
+            //or 
+            for(var i = 0; i < this.Colors.Count; i++)
+            {
+                var col = this.Colors[i];
+                if (col.Distance.HasValue)
+                {
+                    if (spacers.Count > 0)
+                    {
+                        ApplySplitDistanceToSpacers(lastValue, spacers, col);
+                    }
+                    lastValue = i;
+                }
+                else
+                    spacers.Add(col);
+            }
+
+            if(spacers.Count > 0)
+            {
+                ApplySplitDistanceToSpacers(lastValue, spacers, this.Colors[this.Colors.Count -1]);
+            }
+        }
+
+        /// <summary>
+        /// Applies a distance value equally to all the entries in the spacers list from the first color with distance at last index to the col provided
+        /// </summary>
+        /// <param name="lastValue">the index of the previous last color with a vlaue (or -1 for none)</param>
+        /// <param name="spacers">All the spacer colors to add values to</param>
+        /// <param name="col">The ultimate color to reach - it must have a distance value</param>
+        private void ApplySplitDistanceToSpacers(int lastValue, List<PDFGradientColor> spacers, PDFGradientColor col)
+        {
+            double min = 0.0;
+            if (lastValue >= 0) //first time
+                min = this.Colors[lastValue].Distance.Value;
+
+            double max = col.Distance.Value;
+            double split = (max - min) / spacers.Count;
+
+            for (var j = 0; j < spacers.Count; j++)
+            {
+                spacers[j].Distance = min + split;
+                min += split;
+            }
+            spacers.Clear();
+        }
 
         //
         // static parse methods
