@@ -5,15 +5,15 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.0.7-alpha</PackageVersion>
+    <PackageVersion>5.0.7</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
-    <Copyright>Richard Hewitson 2020</Copyright>
+    <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.7-alpha
+    <PackageReleaseNotes>5.0.7
 
 Adding support for the float left and right within blocks along with css linear and radial gradients
 

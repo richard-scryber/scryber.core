@@ -1554,6 +1554,7 @@ namespace Scryber.Core.UnitTests.Html
             path = System.IO.Path.Combine(path, "../../../Content/HTML/JeroemTest.html");
             var model = new
             {
+                repeat = true,
                 Items = new[] {
                                 new { Type = "Plane"},
                                 new { Type = "Ship"},

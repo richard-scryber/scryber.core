@@ -37,7 +37,7 @@ namespace Scryber.Data
         /// Gets or sets the test binding expression for the if entry
         /// </summary>
         [PDFAttribute("test", BindingOnly = true)]
-        public bool Test
+        public virtual bool Test
         {
             get { return _test; }
             set

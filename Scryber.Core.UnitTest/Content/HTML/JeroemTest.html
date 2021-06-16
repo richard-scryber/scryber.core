@@ -27,16 +27,25 @@
 <body style="padding:20pt">
     <p on-init="init-para" on-loaded="load-para"
        on-databinding="bind-para" on-databound="bound-para"
-       on-prelayout="pre-layout-para" on-post-layout="post-layout-para"
+       on-prelayout="pre-layout-para" on-postlayout="post-layout-para"
        on-prerender="pre-render-para" on-postrender="post-render-para"></p>
+    <if data-test='{@:model.repeat}' >
+        <table style="border:solid 1px gray; width:100%">
+            <template data-bind="{@:model.Items}" >
+                <tr on-databound="row-bound" >
+                    <td>{@:.Type}</td>
+                    <td>{@:.Type}</td>
+                </tr>
+            </template>
+        </table>
+    </if>
+    <choose>
+        <when data-test="">
 
-    <table style="border:solid 1px gray; width:100%">
-        <template data-bind="{@:model.Items}" >
-            <tr on-databound="row-bound" >
-                <td>{@:.Type}</td>
-                <td>{@:.Type}</td>
-            </tr>
-        </template>
-    </table>
+        </when>
+        <otherwise>
+
+        </otherwise>
+    </choose>
 </body>
 </html>
