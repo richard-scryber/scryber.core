@@ -1,0 +1,3 @@
+[submodule "Scryber.Core.Expressions"]
+	path = Scryber.Core.Expressions
+	url = https://github.com/richard-scryber/expressive.git

@@ -52,6 +52,10 @@ namespace Scryber.Options
                                                      FactoryType = "Scryber.Binding.BindingItemExpressionFactory",
                                                      FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
+            Bindings.Add(new BindingPrefixOption() { Prefix = "calc",
+                                                     FactoryType = "Scryber.Binding.BindingCalcExpressionFactory",
+                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            });
             Bindings.Add(new BindingPrefixOption(){ Prefix = "xpath",
                                                     FactoryType = "Scryber.Binding.BindingXPathExpressionFactory",
                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
