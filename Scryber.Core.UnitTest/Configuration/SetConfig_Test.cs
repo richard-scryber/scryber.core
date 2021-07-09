@@ -113,7 +113,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             Assert.IsNotNull(parsing.Bindings, "Binding prefixes are null");
 
-            expectedLength = 4;
+            expectedLength = 5; //updated to 5 to support the new 'calc' expressions
             string expectedPrefix = "custom";
 
             expectedAssm = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe";

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Scryber.Binding;
 using Newtonsoft.Json.Serialization;
 using Expressive;
+using System.Runtime.Serialization;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -264,13 +265,13 @@ namespace Scryber.Core.UnitTests.Binding
                         <?scryber parser-mode='strict' append-log='true' ?>
                         <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
-                                <title></title>
+                                <title>{{model.title}}</title>
                                 <style>
-                                    .even{ background-color: var(--bg,#FF0000)}} }
+                                    .even{ background-color: #FF0000; }
                                 </style>
                             </head>
 
-                            <body id='mainbody' class='strong' style='padding:{{model.padding}}' >
+                            <body id='mainbody' class='strong' style='padding:{{model.padding}}; color: {{model.color}}' >
                                 <p id='myPara' style='border: solid 1px blue; padding: 5px;' >This is a paragraph of content</p>
                                 <table id='myTable' style='width:100%;font-size:14pt' >
                                     <template data-bind='{@:model.items}' >
@@ -305,10 +306,37 @@ namespace Scryber.Core.UnitTests.Binding
                 {
                     doc.SaveAsPDF(stream);
                 }
+
+                //Assertions
+
+                //Bound title
                 Assert.AreEqual("Document title", doc.Info.Title, "Title is not correct");
 
+                //body color
                 var body = doc.FindAComponentById("mainbody") as IPDFStyledComponent;
                 Assert.AreEqual((PDFColor)"#330033", body.Style.Fill.Color, "Body color was not correct");
+
+                //table binding
+                var table = doc.FindAComponentById("myTable") as TableGrid;
+                var rowCount = table.Rows.Count;
+                Assert.AreEqual(3, rowCount, "Nuumber of rows was wrong");
+
+
+                for (int i = 0; i < rowCount; i++)
+                {
+                    //Table row class
+                    var row = table.Rows[i];
+                    if (i % 2 == 0)
+                        Assert.AreEqual("bound-item even", row.StyleClass, "Style class is not correct for the row");
+                    else
+                        Assert.AreEqual("bound-item odd", row.StyleClass, "Style class is not correct for the row");
+
+                    var cell = row.Cells[0];
+                    var content = cell.Contents[0] as TextLiteral;
+
+                    Assert.AreEqual((1 + i).ToString(), content.Text, "Text Literal for 1 +.index does not match");
+                }
+
             }
 
             using (var sr = new System.IO.StringReader(src))
@@ -331,10 +359,7 @@ namespace Scryber.Core.UnitTests.Binding
                 {
                     doc.SaveAsPDF(stream);
                 }
-                //Assert.AreEqual("Document title", doc.Info.Title, "Title is not correct");
-
-                //var body = doc.FindAComponentById("mainbody") as IPDFStyledComponent;
-                //Assert.AreEqual((PDFColor)"#330033", body.Style.Fill.Color, "Body color was not correct");
+                
             }
 
         }
