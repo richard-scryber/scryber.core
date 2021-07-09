@@ -175,6 +175,19 @@ namespace Scryber
             }
         }
 
+        public bool TryGetValue(string key, out object value)
+        {
+            value = this.BaseGet(key);
+            if (null == value)
+                return false;
+
+            if (value is IKeyValueProvider provider)
+                value = provider.GetNativeValue(key, OwnerComponent);
+
+            return null != value;
+
+        }
+
         public PDFItemCollection Clone()
         {
             PDFItemCollection instance = this.MemberwiseClone() as PDFItemCollection;

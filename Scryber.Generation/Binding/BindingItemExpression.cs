@@ -31,16 +31,17 @@ namespace Scryber.Binding
     /// It will evaluate it's known expression and set the result to it's known property on the sender of the event (instance that raised the databind event)
     /// </summary>
     /// <remarks>Use the static Create method to instantiate an instance of this class</remarks>
-    public class BindingItemExpression
+    public class BindingItemExpression : BindingExpressionBase
     {
         private const string CurrentDataContextName = "{current}";
 
         private string _expr;
+
         private System.Reflection.PropertyInfo _property;
+
         private ParserItemExpression _path;
-        private bool? _parsable;
-        private MethodInfo _parseMethod;
-        private static Type[] _parseParams = new Type[] { typeof(string) };
+        
+        
 
         public string Expression
         {
@@ -65,40 +66,23 @@ namespace Scryber.Binding
                 try
                 {
                     object value = this._path.GetValue(args.Context.Items, args.Context);
-                    if (null != value)
-                    {
-                        if (args.Context.ShouldLogVerbose)
-                            args.Context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "Setting property '" + this.Property.Name + "' with the item binding expression '" + this.Expression + "' to value '" + value.ToString() + "'");
-                        MethodInfo parse;
 
-                        if (this._property.PropertyType == typeof(string))
-                            value = value.ToString();
-
-                        else if (this.IsParsable(out parse) && ((value is string) || (value is IConvertible)))
-                        {
-                            value = parse.Invoke(null, new object[] { value.ToString() });
-                        }
-                        else if(value is IConvertible)
-                        {
-                            value = (value as IConvertible).ToType(this.Property.PropertyType, null);
-                        }
-                        
-                        this._property.SetValue(sender, value, null);
-                    }
-                    else if (args.Context.ShouldLogVerbose)
-                        args.Context.TraceLog.Add(TraceLevel.Verbose, "Item Binding", "NULL value returned for expression '" + this.Expression + "' so not setting property '" + this.Property.Name + "'");
+                    this.SetPropertyValue(sender, value, this.Expression, this.Property, args.Context);
+                    
                 }
-                catch(Exception ex)
+                catch (PDFDataException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
                 {
                     string id;
-                    if (sender is IPDFComponent)
+                    if (sender is IPDFComponent component)
                         id = ((IPDFComponent)sender).ID;
                     else
-                        id = "";
+                        id = "UNKNOWN";
 
-                    string message = "Cannot bind the values for '" + sender.ToString() + "'";
-                    if (sender is IPDFComponent)
-                        message += " with id " + ((IPDFComponent)sender).ID;
+                    string message = "Cannot bind the values for '" + sender.ToString() + "' with id " + id;
 
                     if (args.Context.Conformance == ParserConformanceMode.Lax)
                         args.Context.TraceLog.Add(TraceLevel.Error, "Data Binding", message, ex);
@@ -210,226 +194,5 @@ namespace Scryber.Binding
         }
 
         
-
-        private bool IsParsable(out MethodInfo found)
-        {
-            if(!_parsable.HasValue)
-            {
-                _parsable = false;
-                var type = this._property.PropertyType;
-                var attr = type.GetCustomAttribute(typeof(PDFParsableValueAttribute), true);
-                if (attr != null)
-                {
-                    var meth = type.GetMethod("Parse", _parseParams);
-                    if (null == meth)
-                        throw new InvalidOperationException("The class " + type.FullName + " declares the PDFParsableComponentAttribute, but does not appear to have a Parse(string) static method");
-                    _parseMethod = meth;
-                    _parsable = true;
-                }
-            }
-
-            found = _parseMethod;
-            return _parsable.Value;
-        }
-
-        //Item Expressions inner classes
-
-        private abstract class ParserItemExpression
-        {
-            public ParserItemExpression Next { get; set; }
-            
-            public void AppendExpression(ParserItemExpression expr)
-            {
-                if (null == this.Next)
-                    this.Next = expr;
-                else
-                    this.Next.AppendExpression(expr);
-            }
-
-            public object GetValue(object parent, PDFDataContext context)
-            {
-                if (null == parent)
-                    return null;
-
-                object value = DoGetMyValue(parent, context);
-                if (null != Next)
-                    value = Next.GetValue(value, context);
-                return value;
-            }
-
-            protected abstract object DoGetMyValue(object parent, PDFDataContext context);
-
-            
-
-            
-        }
-
-        private class ParserItemPropertyExpression : ParserItemExpression
-        {
-            public string PropertyOrFieldName { get; private set; }
-
-            private MemberInfo _lastReflected;
-
-            public ParserItemPropertyExpression(string name)
-            {
-                this.PropertyOrFieldName = name;
-            }
-
-            protected override object DoGetMyValue(object parent, PDFDataContext context)
-            {
-                var type = parent.GetType();
-
-                PropertyInfo pi = null;
-                FieldInfo fi = null;
-
-                if (this.TryGetProperty(type, out pi))
-                    return pi.GetValue(parent, null);
-
-                else if (this.TryGetField(type, out fi))
-                    return fi.GetValue(parent);
-
-                else if (parent is System.Dynamic.ExpandoObject)
-                {
-                    object found;
-                    IDictionary<string, object> expando = parent as System.Dynamic.ExpandoObject;
-                    if (expando.TryGetValue(this.PropertyOrFieldName, out found))
-                        return found;
-                    else
-                        return null; //As we are dynamic, let's be generous and not throw an error.
-                }
-                else if (parent is ICustomTypeDescriptor)
-                {
-                    var prop = (parent as ICustomTypeDescriptor).GetProperties()[this.PropertyOrFieldName];
-                    if (null != prop)
-                        return prop.GetValue(parent);
-                    else
-                        throw new ArgumentOutOfRangeException(this.PropertyOrFieldName);
-                }
-                else
-                    throw new ArgumentOutOfRangeException(this.PropertyOrFieldName);
-            }
-
-            private bool TryGetProperty(Type fortype, out PropertyInfo found)
-            {
-                if(null != _lastReflected && _lastReflected.DeclaringType == fortype)
-                {
-                    found = (PropertyInfo)this._lastReflected;
-                    return true;
-                }
-                else
-                {
-                    found = fortype.GetProperty(this.PropertyOrFieldName);
-                    if(null == found)
-                        return false;
-                    else
-                    {
-                        _lastReflected = found;
-                        return true;
-                    }
-                }
-            }
-
-            private bool TryGetField(Type fortype, out FieldInfo found)
-            {
-                if (null != _lastReflected && _lastReflected.DeclaringType == fortype)
-                {
-                    found = (FieldInfo)this._lastReflected;
-                    return true;
-                }
-                else
-                {
-                    found = fortype.GetField(this.PropertyOrFieldName);
-                    if (null == found)
-                        return false;
-                    else
-                    {
-                        _lastReflected = found;
-                        return true;
-                    }
-                }
-            }
-        }
-
-        private class ParserItemIndexorExpression : ParserItemExpression
-        {
-            
-            public int IndexValue { get; private set; }
-
-            public ParserItemIndexorExpression(int index)
-            {
-                this.IndexValue = index;
-            }
-
-            protected override object DoGetMyValue(object parent, PDFDataContext context)
-            {
-                if (parent is IList)
-                    return (parent as IList)[IndexValue];
-                else
-                {
-                    System.Reflection.PropertyInfo pi = parent.GetType().GetProperty("Item", new Type[] { typeof(int) });
-                    if (null == pi)
-                        throw new ArgumentOutOfRangeException("Item[int]");
-
-                    return pi.GetValue(parent, new object[] { IndexValue });
-                }
-            }
-        }
-
-        private class ParserItemKeyedExpression : ParserItemExpression
-        {
-            public string KeyValue { get; private set; }
-
-            public ParserItemKeyedExpression(string key)
-            {
-                this.KeyValue = key;
-            }
-
-            protected override object DoGetMyValue(object parent, PDFDataContext context)
-            {
-                System.Reflection.PropertyInfo pi = parent.GetType().GetProperty("Item", new Type[] { typeof(string) });
-                if (null != pi)
-                    return pi.GetValue(parent, new object[] { KeyValue });
-                else if (parent is IDictionary<string, object>)
-                {
-                    object found;
-                    IDictionary<string, object> dict = parent as IDictionary<string, object>;
-                    if (dict.TryGetValue(KeyValue, out found))
-                        return found;
-                    else
-                        return null;
-                }
-                else
-                    throw new ArgumentOutOfRangeException("Item[string]","Object does not support indexing with a string value or the the dictionary<string,object> interface");
-
-                
-            }
-        }
-
-        private class ParserItemTopExpression : ParserItemExpression
-        {
-            public string ItemName { get; private set; }
-
-            public ParserItemTopExpression(string item)
-            {
-                this.ItemName = item;
-            }
-
-            protected override object DoGetMyValue(object parent, PDFDataContext context)
-            {
-                if (this.ItemName == CurrentDataContextName)
-                {
-                    if (context.DataStack.HasData)
-                        return context.DataStack.Current;
-                    else
-                        return null;
-                }
-                else
-                {
-                    PDFItemCollection items = (PDFItemCollection)parent;
-                    return items[this.ItemName];
-                }
-            }
-            
-        }
     }
 }

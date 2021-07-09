@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Scryber.Binding;
 
@@ -56,12 +57,20 @@ namespace Scryber.Generation
         public const string BindingStartChar = "{";
         public const string BindingEndChar = "}";
         public const string BindingKeySeparator = ":";
-        private const string BindingStartEscape = "{{";
+        private const string BindingDoubleSeparator = "{{";
+        private const string BindingDoubleEnd = "}}";
+        private const string BindingTrippleEscape = "{{{";
+
 
         private const string ItemBindingKey = "item";
         private const string QueryStringBindingKey = "qs";
         private const string XPathBindingKey = "xpath";
-        private static System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"{\w+\:[\w\.\[\]]+}|{@\:[\w\.\[\]]+}");
+        private const string HandlebarsExpressionBindingKey = "calc";
+        private const int HandlebarsExpressionInset = 2; // for {{
+        private const int HandlebarsExpressionLength = 4; // for {{ and }}
+
+        private static System.Text.RegularExpressions.Regex bindingMatcher = new System.Text.RegularExpressions.Regex(@"{\w+\:[\w\.\[\]]+}|{@\:[\w\.\[\]]+}|{{(.*?)}}");
+        private static System.Text.RegularExpressions.Regex handlebarsMatcher = new System.Text.RegularExpressions.Regex(@"{{(.*?)}}");
 
 
         private static object _configlock = new object();
@@ -123,7 +132,8 @@ namespace Scryber.Generation
                 return false;
             }
 
-            var match = regex.Match(value);
+
+            var match = bindingMatcher.Match(value);
             if(match == null || match.Success == false)
             {
                 parts = null;
@@ -149,7 +159,8 @@ namespace Scryber.Generation
                     factColl.Add(null);
                 }
                 sub = match.Value;
-                if(IsBindingExpression(ref sub, out fact))
+
+                if(TryGetBindingExpression(ref sub, out fact))
                 {
                     partColl.Add(sub);
                     factColl.Add(fact);
@@ -176,7 +187,6 @@ namespace Scryber.Generation
             return found;
         }
 
-        #region internal static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings)
 
         /// <summary>
         /// Returns true if the value provided is an expression that matches the pattern required for a binding expression.
@@ -190,6 +200,97 @@ namespace Scryber.Generation
         public static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings = null)
         {
             bindingfactory = null;
+
+            if(!value.Contains(BindingStartChar))
+            {
+                return false;
+            }
+            else if(value.StartsWith(BindingStartChar) && value.EndsWith(BindingEndChar))
+            {
+                return TryGetBindingExpression(ref value, out bindingfactory, settings);
+            }
+            else if(value.Contains(BindingDoubleSeparator))
+            {
+                var match = handlebarsMatcher.Match(value);
+                if (match == null || match.Success == false)
+                {
+                    return false;
+                }
+
+                if (null == _configFactories)
+                    _configFactories = InitFactories();
+
+                if (!_configFactories.TryGetValue(HandlebarsExpressionBindingKey, out bindingfactory))
+                {
+                    if (null != settings)
+                        settings.TraceLog.Add(TraceLevel.Error, "Binding", "Handlebars expression factorys has not been initialized with the key " + HandlebarsExpressionBindingKey);
+                    return false;
+                }
+
+                var pos = 0;
+                StringBuilder sb = new StringBuilder();
+                
+                var quoteChar = "\"";
+
+                while (match != null && match.Success)
+                {
+                    if (sb.Length > 0)
+                        sb.Append(", ");
+                    else
+                        sb.Append("concat(");
+
+                    string sub;
+                    
+                    if (match.Index > pos)
+                    {
+                        sub = value.Substring(pos, match.Index - pos);
+                        sb.Append(quoteChar);
+                        sb.Append(sub);
+                        sb.Append(quoteChar);
+                        sb.Append(", ");
+                    }
+                    sub = match.Value;
+                    sb.Append(sub.Substring(HandlebarsExpressionInset, sub.Length - HandlebarsExpressionLength));
+
+                    pos = match.Index + match.Value.Length;
+
+                    match = match.NextMatch();
+                }
+
+                if (pos < value.Length)
+                {
+                    sb.Append(", ");
+                    sb.Append(quoteChar);
+                    sb.Append(value.Substring(pos));
+                    sb.Append(quoteChar);
+                }
+
+                sb.Append(")");
+                value = sb.ToString();
+                return true;
+                
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        #region internal static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings)
+
+        /// <summary>
+        /// Returns true if the value provided is an expression that matches the pattern required for a binding expression.
+        /// If it does value will be modified to be just the content of that expression and the bindingFactory will be set to the 
+        /// factory that handles these expression types.
+        /// </summary>
+        /// <param name="value">The string to check if it is a binding expression. If it does match, then it will be modifed </param>
+        /// <param name="bindingfactory"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public static bool TryGetBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings = null)
+        {
+            bindingfactory = null;
             if (string.IsNullOrEmpty(value) || value.Length < 4)
             {
                 return false;
@@ -198,10 +299,31 @@ namespace Scryber.Generation
             {
                 return false;
             }
-            else if (value.StartsWith(BindingStartEscape))
+            else if (value.StartsWith(BindingDoubleSeparator))
             {
-                value = BindingStartChar + value.Substring(BindingStartEscape.Length);
-                return false;
+                if (value.StartsWith(BindingTrippleEscape) || !value.EndsWith(BindingDoubleEnd))
+                {
+                    value = BindingStartChar + value.Substring(BindingTrippleEscape.Length);
+                    return false;
+                }
+                else // We have a handlebars expression {{...}}
+                {
+                    if (null == _configFactories)
+                        _configFactories = InitFactories();
+
+                    if(_configFactories.TryGetValue(HandlebarsExpressionBindingKey, out bindingfactory))
+                    {
+                        value = value.Substring(HandlebarsExpressionInset, value.Length - HandlebarsExpressionLength);
+                        return true;
+                    }
+                    else
+                    {
+                        if (null != settings)
+                            settings.TraceLog.Add(TraceLevel.Error, "Binding", "Handlebars expression factorys has not been initialized with the key " + HandlebarsExpressionBindingKey);
+                        return false;
+                    }
+                }
+
             }
             else
             {
