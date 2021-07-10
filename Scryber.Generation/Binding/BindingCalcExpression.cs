@@ -42,9 +42,25 @@ namespace Scryber.Binding
             value = null;
             bool result = false;
 
+            object prevData = null;
+            int prevIndex = -1;
+            bool hasData = false;
+
             try
             {
-                this.Expression.ExpressionContext.CurrentDataContext = context.DataStack.HasData ? context.DataStack.Current : null;
+                // If we have a current data context, then we store the last value and
+                // Update to the current value
+
+                if (context.DataStack.HasData)
+                {
+                    prevData = this.Expression.ExpressionContext.CurrentDataContext;
+                    prevIndex = this.Expression.ExpressionContext.CurrentDataIndex;
+                    hasData = true;
+
+                    this.Expression.ExpressionContext.CurrentDataContext = context.DataStack.Current;
+                    this.Expression.ExpressionContext.CurrentDataIndex = context.CurrentIndex;
+                }
+
                 value = this.Expression.Evaluate(provider);
                 result = true;
             }
@@ -64,6 +80,16 @@ namespace Scryber.Binding
                 else
                     throw new Scryber.PDFBindException(message, ex);
             }
+            finally
+            {
+                //try and restore the previous values.
+                if(hasData && null != this.Expression && null != this.Expression.ExpressionContext)
+                {
+                    this.Expression.ExpressionContext.CurrentDataIndex = prevIndex;
+                    this.Expression.ExpressionContext.CurrentDataContext = prevData;
+                }
+            }
+
             return result;
         }
     }

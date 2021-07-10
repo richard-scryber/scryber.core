@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace Scryber.Binding
 {
@@ -7,6 +9,12 @@ namespace Scryber.Binding
     {
 
         public string BindingKey { get { return "{"; } }
+
+        private Dictionary<string, string> _replacements = new Dictionary<string, string>()
+        {
+            {"&apos;", "'" },
+            {"&amp;", "&" }
+        };
 
         
         public Expressive.ExpressiveOptions Options { get; set; }
@@ -40,7 +48,21 @@ namespace Scryber.Binding
 
         public virtual BindingCalcExpression CreateExpression(string value, PropertyInfo forProperty)
         {
+            if (!string.IsNullOrEmpty(value) && value.IndexOf('&') > -1)
+                value = CleanXmlString(value);
+
             return new BindingCalcExpression(value, forProperty, this.Options);
+        }
+
+        private string CleanXmlString(string value)
+        {
+            StringBuilder buffer = new StringBuilder(value);
+            foreach (var kvp in _replacements)
+            {
+                buffer.Replace(kvp.Key, kvp.Value);
+            }
+
+            return buffer.ToString();
         }
     }
 }

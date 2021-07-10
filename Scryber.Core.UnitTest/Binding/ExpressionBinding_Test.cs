@@ -9,6 +9,7 @@ using Scryber.Binding;
 using Newtonsoft.Json.Serialization;
 using Expressive;
 using System.Runtime.Serialization;
+using System.Xml.Schema;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -339,101 +340,193 @@ namespace Scryber.Core.UnitTests.Binding
 
             }
 
-            using (var sr = new System.IO.StringReader(src))
-            {
-                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-                doc.Params["model"] = new
-                {
-                    title = "Document title",
-                    color = "#330033",
-                    padding = "20pt",
-                    items = new[]
-                    {
-                        new {name = "First Item", index = 0},
-                        new {name = "Second Item", index = 1},
-                        new {name = "Third Item", index = 2},
-                    }
-                };
-
-                using (var stream = DocStreams.GetOutputStream("BindCalcExpressionRepeat.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-                
-            }
+            
 
         }
 
 
         [TestMethod()]
         [TestCategory("Binding")]
-        public void BindDynamicObject()
+        public void BindCalcAllFunctions()
         {
+            var model = new
+            {
+                number = 20.7,
+                boolean = true,
+                array = new[] { 10.0, 11.0, 12.0 },
+                str = "#330033",
+                bg = "#AAA",
+                padding = "20pt",
+                items = new[]
+                    {
+                        new {name = "First Item", index = 0},
+                        new {name = "Second Item", index = 1},
+                        new {name = "Third Item", index = 2},
+                    }
+            };
+            var functions = new[]
+            {
+                new {grp = "Conversion", name = "Date", function = "date('30 June 2021 11:00:00')", result = "06/30/2021 11:00:00"},
+                new {grp = "Conversion", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
+                new {grp = "Conversion", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
+                new {grp = "Conversion", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
+                new {grp = "Conversion", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
+                new {grp = "Conversion", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
 
-            //var src = @"<?xml version='1.0' encoding='utf-8' ?>
-            //            <doc:Document xmlns:doc = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-            //                        xmlns:styles = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
-            //                        xmlns:data = 'http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
-            //                         >
-            //            <Params>
-            //                <doc:Object-Param id='dynamic' ></doc:Object-Param>
-            //            </Params>
+                new {grp = "Date Add", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "07/10/2021 11:00:00"},
+                new {grp = "Date Add", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "06/30/2021 21:00:00"},
+                new {grp = "Date Add", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "06/30/2021 11:00:02"},
+                new {grp = "Date Add", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "06/30/2021 11:40:00"},
+                new {grp = "Date Add", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "08/30/2021 11:00:00"},
+                new {grp = "Date Add", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "06/30/2021 11:01:40"},
+                new {grp = "Date Add", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "06/30/3021 11:00:00"},
 
-            //            <Styles>
+                new {grp = "Date Of", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
+                new {grp = "Date Of", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
+                new {grp = "Date Of", name = "MillisecondOf", function = "MillisecondOf(date('30 June 2021 11:40:10.345'))", result = "345"},
+                new {grp = "Date Of", name = "MinuteOf", function = "MinuteOf(date('30 June 2021 11:40:10.345'))", result = "40"},
+                new {grp = "Date Of", name = "MonthOf", function = "MonthOf(date('30 June 2021 11:40:10.345'))", result = "6"},
+                new {grp = "Date Of", name = "SecondOf", function = "SecondOf(date('30 June 2021 11:40:10.345'))", result = "10"},
+                new {grp = "Date Of", name = "YearOf", function = "YearOf(date('30 June 2021 11:40:10.345'))", result = "2021"},
 
-            //            <styles:Style applied-class='blue'>
-            //                <styles:Background color='{@:dynamic.Color}' />
-            //            </styles:Style>
-    
-            //            </Styles>
+                new {grp = "Date Between", name = "DaysBetween", function = "DaysBetween(date('11 June 2021 11:40:10.345'),#30 June 2021 11:40:10.345#)", result = "19"},
+                new {grp = "Date Between", name = "HoursBetween", function = "HoursBetween(date('30 June 2021 01:40:10.345'),#30 June 2021 11:40:10.345#)", result = "10"},
+                new {grp = "Date Between", name = "MillisecondsBetween", function = "MillisecondsBetween(date('30 June 2021 11:40:10.100'),#30 June 2021 11:40:10.345#)", result = "245"},
+                new {grp = "Date Between", name = "MinutesBetween", function = "MinutesBetween(date('30 June 2021 11:40:10.345'),#30 June 2021 11:13:10.345#)", result = "-27"},
+                new {grp = "Date Between", name = "SecondsBetween", function = "SecondsBetween(date('30 June 2021 11:40:10.345'),#30 June 2021 11:41:56.345#)", result = "106"},
 
-            //            <Pages>
-    
-            //            <doc:Section>
-            //                <Content>
+                new {grp = "Logical", name = "If", function = "If(model.boolean == true,24,'none')", result = "24"},
+                new {grp = "Logical", name = "If", function = "If(!model.boolean,24,'none')", result = "none"},
+                new {grp = "Logical", name = "In", function = "In(12.2,10.0,11.1,12.2)", result = "True"},
+                new {grp = "Logical", name = "In", function = "In(12,10.0,11.1,12.2)", result = "False"},
 
-            //                    <data:ForEach value='{@:dynamic.List}' >
-            //                        <Template>
-            //                            <doc:Label id='{@:.Id}' text='{@:.Name}' ></doc:Label>
-            //                            <doc:Br/>
-            //                        </Template>
-            //                    </data:ForEach>
+                new {grp = "Mathematical", name = "Abs", function = "abs(-12) + abs(model.number)", result = "32.7"},
+                new {grp = "Mathematical", name = "Truncate", function = "truncate(Pi())", result = "3"},
+                new {grp = "Mathematical", name = "Truncate", function = "truncate(9.99999)", result = "9"},
+                new {grp = "Mathematical", name = "Round", function = "round(Log10(30),3)", result = Math.Round(Math.Log10(30),3).ToString("#0.000")},
+                new {grp = "Mathematical", name = "Sign", function = "sign(30)", result = "1"},
+                new {grp = "Mathematical", name = "Sign", function = "sign(-300)", result = "-1"},
+                new {grp = "Mathematical", name = "Sign", function = "sign(0)", result = "0"},
+                new {grp = "Mathematical", name = "ACos", function = "round(ACos(-0.5),3)", result = "2.094"},
+                new {grp = "Mathematical", name = "ASin", function = "round(ASin(-0.5),3)", result = "-0.524"},
+                new {grp = "Mathematical", name = "ATan", function = "round(ATan(2.0),3)", result = "1.107"},
+                new {grp = "Mathematical", name = "Ceiling", function = "Ceiling(3.2)", result = "4"},
+                new {grp = "Mathematical", name = "Floor", function = "Floor(3.2)", result = "3"},
+                new {grp = "Mathematical", name = "ACos", function = "round(Cos(2.094),1)", result = "-0.5"},
+                new {grp = "Mathematical", name = "ASin", function = "round(Sin(-0.524),1)", result = "-0.5"},
+                new {grp = "Mathematical", name = "ATan", function = "round(Tan(1.107),1)", result = "2"},
+                new {grp = "Mathematical", name = "E", function = "round(E(),3)", result = "2.718"},
+                new {grp = "Mathematical", name = "Pi", function = "round(Pi(),3)", result = "3.142"},
+                new {grp = "Mathematical", name = "Exp", function = "round(exp(3),3)", result = Math.Exp(3).ToString("#0.000")},
+                new {grp = "Mathematical", name = "Log10", function = "round(Log10(30),3)", result = Math.Log10(30).ToString("#0.000")},
+                new {grp = "Mathematical", name = "Log (base 5)", function = "round(Log(30,5),3)", result = Math.Log(30,5).ToString("#0.000")},
+                new {grp = "Mathematical", name = "Pow", function = "pow(3,2)", result = Math.Pow(3,2).ToString()},
+                new {grp = "Mathematical", name = "Random (between 2 and 30)", function = "random(2,30)", result = (string)null},
+                new {grp = "Mathematical", name = "Random (between 2.4d and 2.6d)", function = "random(2.4, 2.6)", result = (string)null},
 
-            //                </Content>
-            //            </doc:Section>
 
-            //            </Pages>
-            //        </doc:Document>";
-
-            //using (var reader = new System.IO.StringReader(src))
-            //{
-            //    var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-            //    doc.Params["dynamic"] = new
-            //    {
-            //        Color = Scryber.Drawing.PDFColors.Aqua,
-            //        List = new[] {
-            //            new { Name = "First", Id = "FirstID"},
-            //            new { Name = "Second", Id = "SecondID" }
-            //        }
-            //    };
+                new {grp = "Aggregate and Statistical", name = "Count", function = "count(12, 13, 14)", result = "3"},
+                new {grp = "Aggregate and Statistical", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
+                new {grp = "Aggregate and Statistical", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
+                new {grp = "Aggregate and Statistical", name = "Max", function = "Max(model.array,13,14)", result = "14"},
+                new {grp = "Aggregate and Statistical", name = "Min", function = "Min(model.array,13,14)", result = "10"},
+                new {grp = "Aggregate and Statistical", name = "Average", function = "Average(model.array,13,1)", result = "9.4"},
+                new {grp = "Aggregate and Statistical", name = "Mean", function = "Mean(model.array,13,1)", result = "9.4"},
+                new {grp = "Aggregate and Statistical", name = "Mode", function = "Mode(model.array,13,1)", result = "10"},
+                new {grp = "Aggregate and Statistical", name = "Median", function = "Median(model.array,13,1)", result = "11"},
 
 
-            //    doc.InitializeAndLoad();
-            //    doc.DataBind();
+                new {grp = "String", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
+                new {grp = "String", name = "Concat (with types)", function = "concat('numbers:',9, model.array)", result = "numbers:9101112"},
+                new {grp = "String", name = "Join (with types)", function = "join(', ', 9, model.array, 13)", result = "9, 10, 11, 12, 13"},
+                new {grp = "String", name = "Contains", function = "contains('a string','str')", result = "True"},
+                new {grp = "String", name = "Contains", function = "contains('a string','l')", result = "False"},
+                new {grp = "String", name = "StartsWith", function = "startsWith('a string','a ')", result = "True"},
+                new {grp = "String", name = "StartsWith", function = "startsWith('a string','s')", result = "False"},
+                new {grp = "String", name = "EndsWith", function = "endsWith('a string','ing')", result = "True"},
+                new {grp = "String", name = "EndsWith", function = "endsWith('a string','int')", result = "False"},
+                new {grp = "String", name = "EndsWith (+ If)", function = "if(endsWith('a string','ing'),'Yes','No')", result = "Yes"},
 
-            //    //For the ForEach template with an object source.
-            //    var first = doc.FindAComponentById("FirstID") as Label;
-            //    Assert.IsNotNull(first, "Could not find the first label");
-            //    Assert.AreEqual("First", first.Text, "The first label does not have the correct Name value");
+                new {grp = "String", name = "IndexOf", function = "indexOf('a string','ing')", result = "5"},
+                new {grp = "String", name = "IndexOf", function = "indexOf('a string','int')", result = "-1"},
 
-            //    var second = doc.FindAComponentById("SecondID") as Label;
-            //    Assert.IsNotNull(second, "Could not find the second label");
-            //    Assert.AreEqual("Second", second.Text, "The second label does not have the correct Name value");
+                //new {grp = "String", name = "Length", function = "length('a string')", result = "8"},
+                new {grp = "String", name = "Length", function = "length(model.items[0].name)", result = "First Item".Length.ToString()},
+            };
 
-            //    var style = doc.Styles[0] as Scryber.Styles.Style;
-            //    Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background color is not assigned");
-            //    Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color, "The background colors do not match");
-            //}
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression Functions</title>
+                                <style>
+                                    .even{ background-color: #FF0000; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression functions and operators</h2>
+                                <table id='myTable' style='width:100%;font-size:10pt' >";
+            var group = "";
+            foreach (var fn in functions)
+            {
+
+                if(fn.grp != group)
+                {
+                    src += @"<tr><td colspan='3' ><strong>" + fn.grp + "</strong></td></tr>";
+                    group = fn.grp;
+                }
+                var insert = @"  <tr class='bound-item' >
+                                    <td style='width:120pt'>" + fn.name + @"</td>
+                                    <td>" + fn.function + @"</td>
+                                    <td>{{" + fn.function + @"}}</td>
+                                 </tr>";
+                src += insert;
+            }
+
+            src += @"           </table>
+                            </body>
+                        </html>";
+
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("BindCalcAllFunctions.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                //table binding
+                var table = doc.FindAComponentById("myTable") as TableGrid;
+                
+
+                int grpIndex = 0;
+                group = "";
+
+                for (int i = 0; i < functions.Length; i++)
+                {
+                    var fn = functions[i];
+
+                    if(fn.grp != group)
+                    {
+                        group = fn.grp;
+                        grpIndex++;
+                    }
+
+                    if (fn.result == null)
+                        continue;
+
+                    //Table row class
+                    var row = table.Rows[i + grpIndex];
+                    var cell = row.Cells[2];
+                    var content = cell.Contents[0] as TextLiteral;
+
+                    Assert.AreEqual(fn.result, content.Text, "Text Literal for " + fn.function + " does not match");
+                }
+            }
 
 
         }
