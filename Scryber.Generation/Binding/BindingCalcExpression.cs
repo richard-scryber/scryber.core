@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Expressive;
-using Expressive.Expressions;
-using Expressive.Operators;
+using Scryber.Expressive;
+using Scryber.Expressive.Expressions;
+using Scryber.Expressive.Operators;
 
 namespace Scryber.Binding
 {

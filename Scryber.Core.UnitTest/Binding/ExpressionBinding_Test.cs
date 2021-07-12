@@ -7,7 +7,7 @@ using Scryber.Core.UnitTests.Mocks;
 using System.Collections.Generic;
 using Scryber.Binding;
 using Newtonsoft.Json.Serialization;
-using Expressive;
+using Scryber.Expressive;
 using System.Runtime.Serialization;
 using System.Xml.Schema;
 
@@ -30,21 +30,21 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindSingleExpression()
         {
             var str = "10 + 2";
-            var expression = new Expressive.Expression(str);
+            var expression = new Expression(str);
             var value = expression.Evaluate<double>();
 
             Assert.AreEqual(12.0, value);
 
             str = "10 / 2";
 
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>();
 
             Assert.AreEqual(5.0, value);
 
             str = "10 + (2 /4)";
 
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>();
 
             Assert.AreEqual(10.5, value);
@@ -60,21 +60,21 @@ namespace Scryber.Core.UnitTests.Binding
             vars.Add("val2", 4);
 
             var str = "10 + val1";
-            var expression = new Expressive.Expression(str);
+            var expression = new Expression(str);
             var value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(12.0, value);
 
             str = "10 / val1";
 
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(5.0, value);
 
             str = "10 + (val1 / val2)";
 
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(10.5, value);
@@ -89,27 +89,27 @@ namespace Scryber.Core.UnitTests.Binding
             vars.Add("val2", 4);
 
             var str = "val1.num";
-            var expression = new Expressive.Expression(str);
+            var expression = new Expression(str);
             var value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(2.0, value);
 
             str = "10 + val1.num";
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(12.0, value);
 
             str = "10 / val1.num";
 
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(5.0, value);
 
             str = "10 + (val1.num / val2)";
 
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             
             value = expression.Evaluate<double>(vars);
 
@@ -178,20 +178,20 @@ namespace Scryber.Core.UnitTests.Binding
             vars.Add("array1", new int[] { 1, 2, 3, 4 });
 
             var str = "Max(10, val1.num)";
-            var expression = new Expressive.Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
+            var expression = new Expression(str, ExpressiveOptions.IgnoreCaseForParsing);
             var value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(10.0, value, str + " did not evaluate correctly");
 
             str = "Min(10,val1.num,val2)";
-            expression = new Expressive.Expression(str);
+            expression = new Expression(str);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(2.0, value, str + " did not evaluate correctly");
 
 
             str = "median(10,val2, val1.num)";
-            expression = new Expressive.Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
+            expression = new Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(4, value, str + " did not evaluate correctly");
