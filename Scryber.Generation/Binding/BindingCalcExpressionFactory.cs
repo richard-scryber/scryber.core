@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using Scryber.Expressive;
@@ -21,6 +22,10 @@ namespace Scryber.Binding
 
 
         private object _lock = new object();
+
+#if DEBUG
+        private Stopwatch _stopwatch = new Stopwatch();
+#endif
 
         public Dictionary<string,Expressive.Expression> ExpressionCache { get; set; }
 
@@ -105,5 +110,6 @@ namespace Scryber.Binding
 
             return buffer.ToString();
         }
+
     }
 }

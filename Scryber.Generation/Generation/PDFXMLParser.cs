@@ -1391,30 +1391,32 @@ namespace Scryber.Generation
 
         private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, IPDFBindingExpressionFactory factory)
         {
-            if (factory.BindingStage == DocumentGenerationStage.Bound)
+            using (var recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Expression_Build, factory.BindingKey))
             {
-                if (container is IPDFBindableComponent)
-                    ((IPDFBindableComponent)container).DataBinding += factory.GetDataBindingExpression(expression, cdef.ClassType, prop.PropertyInfo);
+                if (factory.BindingStage == DocumentGenerationStage.Bound)
+                {
+                    if (container is IPDFBindableComponent)
+                        ((IPDFBindableComponent)container).DataBinding += factory.GetDataBindingExpression(expression, cdef.ClassType, prop.PropertyInfo);
+                    else
+                        throw BuildParserXMLException(reader, Errors.DatabindingIsNotSupportedOnType, cdef.ClassType);
+                }
+                else if (factory.BindingStage == DocumentGenerationStage.Initialized)
+                {
+                    if (container is IPDFComponent)
+                        ((IPDFComponent)container).Initialized += factory.GetInitBindingExpression(expression, cdef.ClassType, prop.PropertyInfo);
+                    else
+                        throw BuildParserXMLException(reader, Errors.BindingIsNotSupportedOnType, cdef.ClassType, DocumentGenerationStage.Initialized.ToString(), "IPDFComponent");
+                }
+                else if (factory.BindingStage == DocumentGenerationStage.Loaded)
+                {
+                    if (container is IPDFComponent)
+                        ((IPDFComponent)container).Loaded += factory.GetLoadBindingExpression(expression, cdef.ClassType, prop.PropertyInfo);
+                    else
+                        throw BuildParserXMLException(reader, Errors.BindingIsNotSupportedOnType, cdef.ClassType, DocumentGenerationStage.Initialized.ToString(), "IPDFComponent");
+                }
                 else
-                    throw BuildParserXMLException(reader, Errors.DatabindingIsNotSupportedOnType, cdef.ClassType);
+                    throw new NotSupportedException(factory.BindingStage.ToString());
             }
-            else if (factory.BindingStage == DocumentGenerationStage.Initialized)
-            {
-                if (container is IPDFComponent)
-                    ((IPDFComponent)container).Initialized += factory.GetInitBindingExpression(expression, cdef.ClassType, prop.PropertyInfo);
-                else
-                    throw BuildParserXMLException(reader, Errors.BindingIsNotSupportedOnType, cdef.ClassType, DocumentGenerationStage.Initialized.ToString(), "IPDFComponent");
-            }
-            else if (factory.BindingStage == DocumentGenerationStage.Loaded)
-            {
-                if (container is IPDFComponent)
-                    ((IPDFComponent)container).Loaded += factory.GetLoadBindingExpression(expression, cdef.ClassType, prop.PropertyInfo);
-                else
-                    throw BuildParserXMLException(reader, Errors.BindingIsNotSupportedOnType, cdef.ClassType, DocumentGenerationStage.Initialized.ToString(), "IPDFComponent");
-            }
-            else
-                throw new NotSupportedException(factory.BindingStage.ToString());
-            
             //if (bindingtype == BindingType.XPath)
             //{
             //    GenerateXPathBindingExpression(reader, container, cdef, prop, expression, bindingtype);

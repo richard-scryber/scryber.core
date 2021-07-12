@@ -94,14 +94,15 @@ namespace Scryber
         Content_Overflow = 9,
         Text_Layout = 10,
         Text_Measure = 11,
-        Style_Build = 12,
-        Table_Build_Process = 13,
-        Image_Load = 14,
-        Font_Load = 15,
-        Licensing_Check = 16,
-        Data_Load = 17,
-        Encrypting_Streams = 18,
-        Count = 19,
+        Expression_Build = 12,
+        Style_Build = 13,
+        Table_Build_Process = 14,
+        Image_Load = 15,
+        Font_Load = 16,
+        Licensing_Check = 17,
+        Data_Load = 18,
+        Encrypting_Streams = 19,
+        Count = 20,
     }
 
     /// <summary>

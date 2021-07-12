@@ -36,30 +36,28 @@
 <body class="grey" title="Outer">
 
     <header>
-        <p class="grey">{@:model.headerText}</p>
+        <p class="grey">{{model.headerText}}</p>
     </header>
     <!-- The rest of the content should go into the body -->
-    <p class='{@:model.bodyClass}' title="{@:model.content}" style="{@:model.bodyStyle}">
-        Bound value of {@:model.content}
+    <p class='{{model.bodyClass}}' title="{{model.content}}" style="{{model.bodyStyle}}">
+        Bound value of {{model.content}}
     </p>
 
     <div class="pg-break-after"></div>
 
-
-    <p class='{@:model.bodyClass}' style="{@:model.bodyStyle}">
-        This is the content on the next page with number <num value="{@:model.number}" number-format="£#0.00" /> and name <label data-content="{@:model.items[1].Name}">
-    {@:model.items[0].Name}
-</label>
+    <p class='{{model.bodyClass}}' style="{{model.bodyStyle}}">
+        This is the content on the next page with number <num value="{{model.number}}" number-format="£#0.00" /> and name <label data-content="{{model.items[1].Name}}">
+        {{model.items[0].Name}}</label>
     </p>
     <table style="margin:20pt">
-        <template data-bind="{@:model.items}">
+        <template data-bind="{{model.items}}">
             <tr>
-                <td>{@:.Name}</td>
+                <td>{{.Name}}</td>
             </tr>
         </template>
     </table>
     <footer>
-        <p class="grey">{@:model.footerText}</p>
+        <p class="grey">{{model.footerText}}</p>
     </footer>
 </body>
 </html>
