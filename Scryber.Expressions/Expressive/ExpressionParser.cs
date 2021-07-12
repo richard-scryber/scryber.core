@@ -76,7 +76,7 @@ namespace Scryber.Expressive
         {
             if (string.IsNullOrWhiteSpace(expression))
             {
-                throw new ScryberException("An Expression cannot be empty.");
+                throw new ExpressiveException("An Expression cannot be empty.");
             }
 
             if(null == variables)
@@ -330,7 +330,7 @@ namespace Scryber.Expressive
                 {
                     if (!isWithinFunction)
                     {
-                        throw new ScryberException("Unexpected parameter separator token '" + Context.ParameterSeparator + "' or unnrecognised outer function.");
+                        throw new ExpressiveException("Unexpected parameter separator token '" + Context.ParameterSeparator + "' or unnrecognised outer function.");
                     }
                     tokens.Dequeue();
                 }
@@ -417,7 +417,7 @@ namespace Scryber.Expressive
                     throw new MissingTokenException("Missing token, expecting ','.", ',');
                 }
                 
-                throw new ScryberException($"Unexpected token '{token.CurrentToken}' at index {token.StartIndex}");
+                throw new ExpressiveException($"Unexpected token '{token.CurrentToken}' at index {token.StartIndex}");
             }
         }
 

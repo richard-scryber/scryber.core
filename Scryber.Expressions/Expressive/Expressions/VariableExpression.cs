@@ -20,7 +20,7 @@ namespace Scryber.Expressive.Expressions
             if (variables is null ||
                 !variables.TryGetValue(this.variableName, out var variableValue))
             {
-                throw new ArgumentException("The variable '" + this.variableName + "' has not been supplied.");
+                throw new ArgumentOutOfRangeException("The variable '" + this.variableName + "' has not been supplied.");
             }
 
             // Check to see if we have to referred to another expression.

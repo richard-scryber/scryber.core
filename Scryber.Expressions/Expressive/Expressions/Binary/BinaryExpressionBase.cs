@@ -13,8 +13,8 @@ namespace Scryber.Expressive.Expressions.Binary
     {
         #region Fields
 
-        private readonly IExpression leftHandSide;
-        private readonly IExpression rightHandSide;
+        protected readonly IExpression leftHandSide;
+        protected readonly IExpression rightHandSide;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Scryber.Expressive.Expressions.Binary
         #region IExpression Members
 
         /// <inheritdoc />
-        public object Evaluate(IDictionary<string, object> variables)
+        public virtual object Evaluate(IDictionary<string, object> variables)
         {
             if (this.leftHandSide is null)
             {

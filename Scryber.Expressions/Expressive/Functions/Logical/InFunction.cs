@@ -1,4 +1,5 @@
-﻿using Scryber.Expressive.Expressions;
+﻿using System.Collections;
+using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Logical
@@ -20,16 +21,43 @@ namespace Scryber.Expressive.Functions.Logical
             // Goes through any values, and stop whe one is found
             for (var i = 1; i < parameters.Length; i++)
             {
-                if (Comparison.CompareUsingMostPreciseType(parameter, parameters[i].Evaluate(Variables), context) == 0)
+                var result = parameters[i].Evaluate(Variables);
+                if(Compare(result, parameter, context))
                 {
                     found = true;
                     break;
-                }
+                }    
             }
 
             return found;
         }
 
         #endregion
+
+        private bool Compare(object result, object compareto, Context context)
+        {
+
+            if (result is string str)
+            {
+                if (null == compareto)
+                    return str == null;
+                else
+                    return str.CompareTo(compareto.ToString()) == 0;
+            }
+            else if (result is IEnumerable resultEnum)
+            {
+                foreach (var item in resultEnum)
+                {
+                    if (Compare(item, compareto, context))
+                        return true;
+                }
+            }
+            if (Comparison.CompareUsingMostPreciseType(compareto, result, context) == 0)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
     }
 }

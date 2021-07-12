@@ -16,7 +16,7 @@ namespace Scryber.Expressive.Functions.String
 
         public override object Evaluate(IExpression[] parameters, Context context)
         {
-            this.ValidateParameterCount(parameters, 3, 3);
+            this.ValidateParameterCount(parameters, -1, 2);
 
             object value = parameters[0].Evaluate(Variables);
 
@@ -37,9 +37,17 @@ namespace Scryber.Expressive.Functions.String
             }
 
             int startIndex = (int)parameters[1].Evaluate(Variables);
-            int length = (int)parameters[2].Evaluate(Variables);
-            
-            return text?.Substring(startIndex, length);
+
+            if (parameters.Length > 2)
+            {
+                int length = (int)parameters[2].Evaluate(Variables);
+
+                return text?.Substring(startIndex, length);
+            }
+            else
+            {
+                return text?.Substring(startIndex);
+            }
         }
 
         #endregion

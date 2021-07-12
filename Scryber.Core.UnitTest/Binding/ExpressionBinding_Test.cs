@@ -364,94 +364,170 @@ namespace Scryber.Core.UnitTests.Binding
                         new {name = "Third Item", index = 2},
                     }
             };
+
             var functions = new[]
             {
-                new {grp = "Conversion", name = "Date", function = "date('30 June 2021 11:00:00')", result = "06/30/2021 11:00:00"},
-                new {grp = "Conversion", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
-                new {grp = "Conversion", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
-                new {grp = "Conversion", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
-                new {grp = "Conversion", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
-                new {grp = "Conversion", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
+                new {grp = "Binary Operators", name = "Plus (+)", function = "12 + 4", result = "16"},
+                new {grp = "Binary Operators", name = "Minus (-)", function = "12 - 4", result = "8"},
+                new {grp = "Binary Operators", name = "Multiply (*)", function = "12 * 4", result = "48"},
+                new {grp = "Binary Operators", name = "Divide (/)", function = "12 / 4", result = "3"},
+                new {grp = "Binary Operators", name = "All (+-*/)", function = "12 + 2 - 6 * 2 / 4", result = "11"},
+                new {grp = "Binary Operators", name = "All (+-*/)", function = "((12 + 2) - 6) * (2 / 4)", result = "4"},
+                new {grp = "Binary Operators", name = "Modulo (mod) ", function = "11 mod 3", result = "2"},
+                new {grp = "Binary Operators", name = "Modulo (%) ", function = "11 % 2", result = "1"},
+                new {grp = "Binary Operators", name = "Bitwise And (&amp;) ", function = "11 &amp; 7", result = "3"},
+                new {grp = "Binary Operators", name = "Bitwise Or (|) ", function = "11 | 7", result = "15"},
+                new {grp = "Binary Operators", name = "Bitwise Left (&lt;&lt;) ", function = "11 &lt;&lt; 2", result = "44"},
+                new {grp = "Binary Operators", name = "Bitwise Right (&gt;&gt;) ", function = "11 &gt;&gt; 2", result = "2"},
+                new {grp = "Binary Operators", name = "Null Coalesce ", function = "model.number ?? 4", result = "20.7"},
+                new {grp = "Binary Operators", name = "Null Coalesce ", function = "model.notset ?? 4", result = "4"},
+                new {grp = "Binary Operators", name = "Null Coalesce ", function = "notset ?? 'empty'", result = "empty"},
 
-                new {grp = "Date Add", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "07/10/2021 11:00:00"},
-                new {grp = "Date Add", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "06/30/2021 21:00:00"},
-                new {grp = "Date Add", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "06/30/2021 11:00:02"},
-                new {grp = "Date Add", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "06/30/2021 11:40:00"},
-                new {grp = "Date Add", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "08/30/2021 11:00:00"},
-                new {grp = "Date Add", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "06/30/2021 11:01:40"},
-                new {grp = "Date Add", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "06/30/3021 11:00:00"},
+                new {grp = "Relational Operators", name = "Equals", function = "model.number == 20.7", result = "True"},
+                new {grp = "Relational Operators", name = "Equals", function = "model.number == 10.7", result = "False"},
+                new {grp = "Relational Operators", name = "Equals", function = "if(model.number == 20.7,'Equal','Not Equal')", result = "Equal"},
+                new {grp = "Relational Operators", name = "Equals", function = "if(model.number == 10.7,'Equal','Not Equal')", result = "Not Equal"},
+                new {grp = "Relational Operators", name = "Equals Null", function = "if(model.number == null,'Is Null','Not Null')", result = "Not Null"},
+                new {grp = "Relational Operators", name = "Equals Null", function = "if(model.notset == null,'Is Null','Not Null')", result = "Is Null"},
 
-                new {grp = "Date Of", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
-                new {grp = "Date Of", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
-                new {grp = "Date Of", name = "MillisecondOf", function = "MillisecondOf(date('30 June 2021 11:40:10.345'))", result = "345"},
-                new {grp = "Date Of", name = "MinuteOf", function = "MinuteOf(date('30 June 2021 11:40:10.345'))", result = "40"},
-                new {grp = "Date Of", name = "MonthOf", function = "MonthOf(date('30 June 2021 11:40:10.345'))", result = "6"},
-                new {grp = "Date Of", name = "SecondOf", function = "SecondOf(date('30 June 2021 11:40:10.345'))", result = "10"},
-                new {grp = "Date Of", name = "YearOf", function = "YearOf(date('30 June 2021 11:40:10.345'))", result = "2021"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "model.number != 20.7", result = "False"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "model.number != 10.7", result = "True"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "if(model.number != 20.7,'Equal','Not Equal')", result = "Not Equal"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "if(model.number != 10.7,'Equal','Not Equal')", result = "Equal"},
+                new {grp = "Relational Operators", name = "Not Equal Null", function = "if(model.number != null,'Not Null','Is Null')", result = "Not Null"},
+                new {grp = "Relational Operators", name = "Not Equal Null", function = "if(model.notset != null,'Not Null','Is Null')", result = "Is Null"},
 
-                new {grp = "Date Between", name = "DaysBetween", function = "DaysBetween(date('11 June 2021 11:40:10.345'),#30 June 2021 11:40:10.345#)", result = "19"},
-                new {grp = "Date Between", name = "HoursBetween", function = "HoursBetween(date('30 June 2021 01:40:10.345'),#30 June 2021 11:40:10.345#)", result = "10"},
-                new {grp = "Date Between", name = "MillisecondsBetween", function = "MillisecondsBetween(date('30 June 2021 11:40:10.100'),#30 June 2021 11:40:10.345#)", result = "245"},
-                new {grp = "Date Between", name = "MinutesBetween", function = "MinutesBetween(date('30 June 2021 11:40:10.345'),#30 June 2021 11:13:10.345#)", result = "-27"},
-                new {grp = "Date Between", name = "SecondsBetween", function = "SecondsBetween(date('30 June 2021 11:40:10.345'),#30 June 2021 11:41:56.345#)", result = "106"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "model.number &lt;&gt; 20.7", result = "False"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "model.number &lt;&gt; 10.7", result = "True"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "if(model.number &lt;&gt; 20.7,'Equal','Not Equal')", result = "Not Equal"},
+                new {grp = "Relational Operators", name = "Not Equal", function = "if(model.number &lt;&gt; 10.7,'Equal','Not Equal')", result = "Equal"},
 
-                new {grp = "Logical", name = "If", function = "If(model.boolean == true,24,'none')", result = "24"},
-                new {grp = "Logical", name = "If", function = "If(!model.boolean,24,'none')", result = "none"},
-                new {grp = "Logical", name = "In", function = "In(12.2,10.0,11.1,12.2)", result = "True"},
-                new {grp = "Logical", name = "In", function = "In(12,10.0,11.1,12.2)", result = "False"},
+                new {grp = "Relational Operators", name = "Greater than", function = "model.number &gt; 21", result = "False"},
+                new {grp = "Relational Operators", name = "Greater than", function = "model.number &gt; 10", result = "True"},
+                new {grp = "Relational Operators", name = "Greater than", function = "if(model.number &gt; 21,'Greater','Less')", result = "Less"},
+                new {grp = "Relational Operators", name = "Greater than", function = "if(model.number &gt; 10,'Greater','Less')", result = "Greater"},
 
-                new {grp = "Mathematical", name = "Abs", function = "abs(-12) + abs(model.number)", result = "32.7"},
-                new {grp = "Mathematical", name = "Truncate", function = "truncate(Pi())", result = "3"},
-                new {grp = "Mathematical", name = "Truncate", function = "truncate(9.99999)", result = "9"},
-                new {grp = "Mathematical", name = "Round", function = "round(Log10(30),3)", result = Math.Round(Math.Log10(30),3).ToString("#0.000")},
-                new {grp = "Mathematical", name = "Sign", function = "sign(30)", result = "1"},
-                new {grp = "Mathematical", name = "Sign", function = "sign(-300)", result = "-1"},
-                new {grp = "Mathematical", name = "Sign", function = "sign(0)", result = "0"},
-                new {grp = "Mathematical", name = "ACos", function = "round(ACos(-0.5),3)", result = "2.094"},
-                new {grp = "Mathematical", name = "ASin", function = "round(ASin(-0.5),3)", result = "-0.524"},
-                new {grp = "Mathematical", name = "ATan", function = "round(ATan(2.0),3)", result = "1.107"},
-                new {grp = "Mathematical", name = "Ceiling", function = "Ceiling(3.2)", result = "4"},
-                new {grp = "Mathematical", name = "Floor", function = "Floor(3.2)", result = "3"},
-                new {grp = "Mathematical", name = "ACos", function = "round(Cos(2.094),1)", result = "-0.5"},
-                new {grp = "Mathematical", name = "ASin", function = "round(Sin(-0.524),1)", result = "-0.5"},
-                new {grp = "Mathematical", name = "ATan", function = "round(Tan(1.107),1)", result = "2"},
-                new {grp = "Mathematical", name = "E", function = "round(E(),3)", result = "2.718"},
-                new {grp = "Mathematical", name = "Pi", function = "round(Pi(),3)", result = "3.142"},
-                new {grp = "Mathematical", name = "Exp", function = "round(exp(3),3)", result = Math.Exp(3).ToString("#0.000")},
-                new {grp = "Mathematical", name = "Log10", function = "round(Log10(30),3)", result = Math.Log10(30).ToString("#0.000")},
-                new {grp = "Mathematical", name = "Log (base 5)", function = "round(Log(30,5),3)", result = Math.Log(30,5).ToString("#0.000")},
-                new {grp = "Mathematical", name = "Pow", function = "pow(3,2)", result = Math.Pow(3,2).ToString()},
-                new {grp = "Mathematical", name = "Random (between 2 and 30)", function = "random(2,30)", result = (string)null},
-                new {grp = "Mathematical", name = "Random (between 2.4d and 2.6d)", function = "random(2.4, 2.6)", result = (string)null},
+                new {grp = "Relational Operators", name = "Less than", function = "model.number &lt; 21", result = "True"},
+                new {grp = "Relational Operators", name = "Less than", function = "model.number &lt; 10", result = "False"},
+                new {grp = "Relational Operators", name = "Less than", function = "if(model.number &lt; 21,'Less','Greater')", result = "Less"},
+                new {grp = "Relational Operators", name = "Less than", function = "if(model.number &lt; 10,'Less','Greater')", result = "Greater"},
+
+                new {grp = "Relational Operators", name = "Greater than or Equal", function = "model.number &gt;= 21", result = "False"},
+                new {grp = "Relational Operators", name = "Greater than or Equal", function = "model.number &gt;= 20.7", result = "True"},
+                new {grp = "Relational Operators", name = "Greater than or Equal", function = "model.number &gt;= 10", result = "True"},
+                new {grp = "Relational Operators", name = "Greater than or Equal", function = "if(model.number &gt;= 21,'Greater or equal','Less')", result = "Less"},
+                new {grp = "Relational Operators", name = "Greater than or Equal", function = "if(model.number &gt;= 20.7,'Greater or equal','Less')", result = "Greater or equal"},
+                new {grp = "Relational Operators", name = "Greater than or Equal", function = "if(model.number &gt;= 10,'Greater or equal','Less')", result = "Greater or equal"},
+
+                new {grp = "Relational Operators", name = "Less than or Equal", function = "model.number &lt;= 21", result = "True"},
+                new {grp = "Relational Operators", name = "Less than or Equal", function = "model.number &lt;= 20.7", result = "True"},
+                new {grp = "Relational Operators", name = "Less than or Equal", function = "model.number &lt;= 10", result = "False"},
+                new {grp = "Relational Operators", name = "Less than or Equal", function = "if(model.number &lt;= 21,'Less or equal','Greater')", result = "Less or equal"},
+                new {grp = "Relational Operators", name = "Less than or Equal", function = "if(model.number &lt;= 20.7,'Less or equal','Greater')", result = "Less or equal"},
+                new {grp = "Relational Operators", name = "Less than or Equal", function = "if(model.number &lt;= 10,'Less or equal','Greater')", result = "Greater"},
+
+                new {grp = "Logical Operators", name = "And (&amp;&amp;)", function = "if(model.number &lt; 21 &amp;&amp; model.number &gt; 20,'Between','Outside')", result = "Between"},
+                new {grp = "Logical Operators", name = "And", function = "if(model.number &lt; 20 and model.number &gt; 10,'Between','Outside')", result = "Outside"},
+
+                new {grp = "Logical Operators", name = "Or (||)", function = "if(model.number &lt; 20 || model.number &gt; 21,'Outside','Between')", result = "Between"},
+                new {grp = "Logical Operators", name = "Or", function = "if(model.number &gt; 20 or model.number &gt; 30,'Between','Outside')", result = "Between"},
+
+                new {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number &lt; 21 &amp;&amp; model.number &gt; 20),'Outside','Between')", result = "Between"},
+                new {grp = "Logical Operators", name = "Not", function = "if(not(model.number &lt; 20 and model.number &gt; 21),'Between','Outside')", result = "Between"},
+
+                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = "06/30/2021 11:00:00"},
+                new {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
+                new {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
+                new {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
+                new {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
+                new {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
+
+                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "07/10/2021 11:00:00"},
+                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "06/30/2021 21:00:00"},
+                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "06/30/2021 11:00:02"},
+                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "06/30/2021 11:40:00"},
+                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "08/30/2021 11:00:00"},
+                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "06/30/2021 11:01:40"},
+                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "06/30/3021 11:00:00"},
+
+                new {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
+                new {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
+                new {grp = "Date Of Functions", name = "MillisecondOf", function = "MillisecondOf(date('30 June 2021 11:40:10.345'))", result = "345"},
+                new {grp = "Date Of Functions", name = "MinuteOf", function = "MinuteOf(date('30 June 2021 11:40:10.345'))", result = "40"},
+                new {grp = "Date Of Functions", name = "MonthOf", function = "MonthOf(date('30 June 2021 11:40:10.345'))", result = "6"},
+                new {grp = "Date Of Functions", name = "SecondOf", function = "SecondOf(date('30 June 2021 11:40:10.345'))", result = "10"},
+                new {grp = "Date Of Functions", name = "YearOf", function = "YearOf(date('30 June 2021 11:40:10.345'))", result = "2021"},
+
+                new {grp = "Date Between Functions", name = "DaysBetween", function = "DaysBetween(date('11 June 2021 11:40:10.345'),#30 June 2021 11:40:10.345#)", result = "19"},
+                new {grp = "Date Between Functions", name = "HoursBetween", function = "HoursBetween(date('30 June 2021 01:40:10.345'),#30 June 2021 11:40:10.345#)", result = "10"},
+                new {grp = "Date Between Functions", name = "MillisecondsBetween", function = "MillisecondsBetween(date('30 June 2021 11:40:10.100'),#30 June 2021 11:40:10.345#)", result = "245"},
+                new {grp = "Date Between Functions", name = "MinutesBetween", function = "MinutesBetween(date('30 June 2021 11:40:10.345'),#30 June 2021 11:13:10.345#)", result = "-27"},
+                new {grp = "Date Between Functions", name = "SecondsBetween", function = "SecondsBetween(date('30 June 2021 11:40:10.345'),#30 June 2021 11:41:56.345#)", result = "106"},
+
+                new {grp = "Logical Functions", name = "If", function = "If(model.boolean == true,24,'none')", result = "24"},
+                new {grp = "Logical Functions", name = "If", function = "If(!model.boolean,24,'none')", result = "none"},
+                new {grp = "Logical Functions", name = "In", function = "In(12.2,10.0,11.1,12.2)", result = "True"},
+                new {grp = "Logical Functions", name = "In", function = "In(12,10.0,11.1,12.2)", result = "False"},
+                new {grp = "Logical Functions", name = "In", function = "In(12,model.array)", result = "True"},
+
+                new {grp = "Mathematical Functions", name = "Abs", function = "abs(-12) + abs(model.number)", result = "32.7"},
+                new {grp = "Mathematical Functions", name = "Truncate", function = "truncate(Pi())", result = "3"},
+                new {grp = "Mathematical Functions", name = "Truncate", function = "truncate(9.99999)", result = "9"},
+                new {grp = "Mathematical Functions", name = "Round", function = "round(Log10(30),3)", result = Math.Round(Math.Log10(30),3).ToString("#0.000")},
+                new {grp = "Mathematical Functions", name = "Sign", function = "sign(30)", result = "1"},
+                new {grp = "Mathematical Functions", name = "Sign", function = "sign(-300)", result = "-1"},
+                new {grp = "Mathematical Functions", name = "Sign", function = "sign(0)", result = "0"},
+                new {grp = "Mathematical Functions", name = "ACos", function = "round(ACos(-0.5),3)", result = "2.094"},
+                new {grp = "Mathematical Functions", name = "ASin", function = "round(ASin(-0.5),3)", result = "-0.524"},
+                new {grp = "Mathematical Functions", name = "ATan", function = "round(ATan(2.0),3)", result = "1.107"},
+                new {grp = "Mathematical Functions", name = "Ceiling", function = "Ceiling(3.2)", result = "4"},
+                new {grp = "Mathematical Functions", name = "Floor", function = "Floor(3.2)", result = "3"},
+                new {grp = "Mathematical Functions", name = "ACos", function = "round(Cos(2.094),1)", result = "-0.5"},
+                new {grp = "Mathematical Functions", name = "ASin", function = "round(Sin(-0.524),1)", result = "-0.5"},
+                new {grp = "Mathematical Functions", name = "ATan", function = "round(Tan(1.107),1)", result = "2"},
+                new {grp = "Mathematical Functions", name = "E", function = "round(E(),3)", result = "2.718"},
+                new {grp = "Mathematical Functions", name = "Pi", function = "round(Pi(),3)", result = "3.142"},
+                new {grp = "Mathematical Functions", name = "Exp", function = "round(exp(3),3)", result = Math.Exp(3).ToString("#0.000")},
+                new {grp = "Mathematical Functions", name = "Log10", function = "round(Log10(30),3)", result = Math.Log10(30).ToString("#0.000")},
+                new {grp = "Mathematical Functions", name = "Log (base 5)", function = "round(Log(30,5),3)", result = Math.Log(30,5).ToString("#0.000")},
+                new {grp = "Mathematical Functions", name = "Pow", function = "pow(3,2)", result = Math.Pow(3,2).ToString()},
+                new {grp = "Mathematical Functions", name = "Random (between 2 and 30)", function = "random(2,30)", result = (string)null},
+                new {grp = "Mathematical Functions", name = "Random (between 2.4d and 2.6d)", function = "random(2.4, 2.6)", result = (string)null},
 
 
-                new {grp = "Aggregate and Statistical", name = "Count", function = "count(12, 13, 14)", result = "3"},
-                new {grp = "Aggregate and Statistical", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
-                new {grp = "Aggregate and Statistical", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
-                new {grp = "Aggregate and Statistical", name = "Max", function = "Max(model.array,13,14)", result = "14"},
-                new {grp = "Aggregate and Statistical", name = "Min", function = "Min(model.array,13,14)", result = "10"},
-                new {grp = "Aggregate and Statistical", name = "Average", function = "Average(model.array,13,1)", result = "9.4"},
-                new {grp = "Aggregate and Statistical", name = "Mean", function = "Mean(model.array,13,1)", result = "9.4"},
-                new {grp = "Aggregate and Statistical", name = "Mode", function = "Mode(model.array,13,1)", result = "10"},
-                new {grp = "Aggregate and Statistical", name = "Median", function = "Median(model.array,13,1)", result = "11"},
+                new {grp = "Aggregate and Statistical Functions", name = "Count", function = "count(12, 13, 14)", result = "3"},
+                new {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
+                new {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
+                new {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
+                new {grp = "Aggregate and Statistical Functions", name = "Min", function = "Min(model.array,13,14)", result = "10"},
+                new {grp = "Aggregate and Statistical Functions", name = "Average", function = "Average(model.array,13,1)", result = "9.4"},
+                new {grp = "Aggregate and Statistical Functions", name = "Mean", function = "Mean(model.array,13,1)", result = "9.4"},
+                new {grp = "Aggregate and Statistical Functions", name = "Mode", function = "Mode(model.array,13,1)", result = "10"},
+                new {grp = "Aggregate and Statistical Functions", name = "Median", function = "Median(model.array,13,1)", result = "11"},
 
 
-                new {grp = "String", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
-                new {grp = "String", name = "Concat (with types)", function = "concat('numbers:',9, model.array)", result = "numbers:9101112"},
-                new {grp = "String", name = "Join (with types)", function = "join(', ', 9, model.array, 13)", result = "9, 10, 11, 12, 13"},
-                new {grp = "String", name = "Contains", function = "contains('a string','str')", result = "True"},
-                new {grp = "String", name = "Contains", function = "contains('a string','l')", result = "False"},
-                new {grp = "String", name = "StartsWith", function = "startsWith('a string','a ')", result = "True"},
-                new {grp = "String", name = "StartsWith", function = "startsWith('a string','s')", result = "False"},
-                new {grp = "String", name = "EndsWith", function = "endsWith('a string','ing')", result = "True"},
-                new {grp = "String", name = "EndsWith", function = "endsWith('a string','int')", result = "False"},
-                new {grp = "String", name = "EndsWith (+ If)", function = "if(endsWith('a string','ing'),'Yes','No')", result = "Yes"},
-
-                new {grp = "String", name = "IndexOf", function = "indexOf('a string','ing')", result = "5"},
-                new {grp = "String", name = "IndexOf", function = "indexOf('a string','int')", result = "-1"},
-
-                //new {grp = "String", name = "Length", function = "length('a string')", result = "8"},
-                new {grp = "String", name = "Length", function = "length(model.items[0].name)", result = "First Item".Length.ToString()},
+                new {grp = "String Functions", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
+                new {grp = "String Functions", name = "Concat (with types)", function = "concat('numbers:',9, model.array)", result = "numbers:9101112"},
+                new {grp = "String Functions", name = "Join", function = "join('-', 9, 12, 13)", result = "9-12-13"},
+                new {grp = "String Functions", name = "Join (with types)", function = "join(', ', 9, model.array, 13)", result = "9, 10, 11, 12, 13"},
+                new {grp = "String Functions", name = "Contains", function = "contains('a string','str')", result = "True"},
+                new {grp = "String Functions", name = "Contains", function = "contains('a string','l')", result = "False"},
+                new {grp = "String Functions", name = "StartsWith", function = "startsWith('a string','a ')", result = "True"},
+                new {grp = "String Functions", name = "StartsWith", function = "startsWith('a string','s')", result = "False"},
+                new {grp = "String Functions", name = "EndsWith", function = "endsWith('a string','ing')", result = "True"},
+                new {grp = "String Functions", name = "EndsWith", function = "endsWith('a string','int')", result = "False"},
+                new {grp = "String Functions", name = "EndsWith (+ If)", function = "if(endsWith('a string','ing'),'Yes','No')", result = "Yes"},
+                new {grp = "String Functions", name = "IndexOf", function = "indexOf('a string','ing')", result = "5"},
+                new {grp = "String Functions", name = "IndexOf", function = "indexOf('a string','int')", result = "-1"},
+                new {grp = "String Functions", name = "Length", function = "length('a string')", result = "8"},
+                new {grp = "String Functions", name = "Length", function = "length(model.items[0].name)", result = "First Item".Length.ToString()},
+                new {grp = "String Functions", name = "PadLeft", function = "padleft(model.items[0].name, 20, '+')", result = "++++++++++First Item"},
+                new {grp = "String Functions", name = "PadRight", function = "padright(model.items[0].name, 20, '-')", result = "First Item----------"},
+                new {grp = "String Functions", name = "PadRight", function = "padleft(padright(model.items[0].name, 15, '-'),20,'+++++')", result = "+++++First Item-----"},
+                new {grp = "String Functions", name = "SubString", function = "substring(model.items[0].name, 6)", result = "Item"},
+                new {grp = "String Functions", name = "SubString", function = "substring(model.items[0].name, 6, 2)", result = "It"},
+                new {grp = "String Functions", name = "Regex", function = "regex('The quick brown fox','\\squick\\s')", result = "True"},
+                new {grp = "String Functions", name = "Regex", function = "regex('The quick brown fox','\\sjump\\s')", result = "False"},
             };
 
             var src = @"<!DOCTYPE html>
@@ -467,13 +543,14 @@ namespace Scryber.Core.UnitTests.Binding
                             <body id='mainbody' class='strong' style='padding:20pt' >
                                 <h2>Expression functions and operators</h2>
                                 <table id='myTable' style='width:100%;font-size:10pt' >";
+            
             var group = "";
             foreach (var fn in functions)
             {
 
-                if(fn.grp != group)
+                if (fn.grp != group)
                 {
-                    src += @"<tr><td colspan='3' ><strong>" + fn.grp + "</strong></td></tr>";
+                    src += @"<tr><td colspan='3' ><h3>" + fn.grp + "</h3></td></tr>";
                     group = fn.grp;
                 }
                 var insert = @"  <tr class='bound-item' >
@@ -501,7 +578,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 //table binding
                 var table = doc.FindAComponentById("myTable") as TableGrid;
-                
+
 
                 int grpIndex = 0;
                 group = "";
@@ -510,7 +587,7 @@ namespace Scryber.Core.UnitTests.Binding
                 {
                     var fn = functions[i];
 
-                    if(fn.grp != group)
+                    if (fn.grp != group)
                     {
                         group = fn.grp;
                         grpIndex++;
@@ -525,6 +602,18 @@ namespace Scryber.Core.UnitTests.Binding
                     var content = cell.Contents[0] as TextLiteral;
 
                     Assert.AreEqual(fn.result, content.Text, "Text Literal for " + fn.function + " does not match");
+                }
+            }
+
+            //Performance check for binding
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("BindCalcAllFunctions_repeat.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
                 }
             }
 

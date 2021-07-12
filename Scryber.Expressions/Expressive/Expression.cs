@@ -111,7 +111,7 @@ namespace Scryber.Expressive
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
         /// </summary>
-        /// <exception cref="Exceptions.ScryberException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
+        /// <exception cref="Exceptions.ExpressiveException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
         /// <param name="variables">The variables to be used in the evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
         public object Evaluate(IDictionary<string, object> variables = null)
@@ -124,14 +124,14 @@ namespace Scryber.Expressive
             }
             catch (Exception ex)
             {
-                throw new ScryberException(ex);
+                throw new ExpressiveException(ex);
             }
         }
 
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
         /// </summary>
-        /// <exception cref="Exceptions.ScryberException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
+        /// <exception cref="Exceptions.ExpressiveException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
         /// <param name="variables">The variables to be used in the evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
         public T Evaluate<T>(IDictionary<string, object> variables = null)
@@ -141,13 +141,13 @@ namespace Scryber.Expressive
                 object value = this.Evaluate(variables);
                 return (T)Convert.ChangeType(value, typeof(T));
             }
-            catch (ScryberException)
+            catch (ExpressiveException)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                throw new ScryberException(ex);
+                throw new ExpressiveException(ex);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Scryber.Expressive
         /// Evaluates the expression using the supplied <paramref name="variableProvider"/> and returns the result.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="variableProvider"/> is null.</exception>
-        /// <exception cref="Exceptions.ScryberException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
+        /// <exception cref="Exceptions.ExpressiveException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
         /// <param name="variableProvider">The <see cref="IVariableProvider"/> implementation to provide variable values during evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
         public object Evaluate(IVariableProvider variableProvider)
@@ -172,7 +172,7 @@ namespace Scryber.Expressive
         /// Evaluates the expression using the supplied <paramref name="variableProvider"/> and returns the result.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="variableProvider"/> is null.</exception>
-        /// <exception cref="Exceptions.ScryberException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
+        /// <exception cref="Exceptions.ExpressiveException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
         /// <param name="variableProvider">The <see cref="IVariableProvider"/> implementation to provide variable values during evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
         public T Evaluate<T>(IVariableProvider variableProvider)
@@ -186,13 +186,13 @@ namespace Scryber.Expressive
             {
                 return (T)this.Evaluate(variableProvider);
             }
-            catch (ScryberException)
+            catch (ExpressiveException)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                throw new ScryberException(ex);
+                throw new ExpressiveException(ex);
             }
         }
 
@@ -233,7 +233,7 @@ namespace Scryber.Expressive
                 {
                     result = this.Evaluate<T>(variables);
                 }
-                catch (ScryberException ex)
+                catch (ExpressiveException ex)
                 {
                     message = ex.Message;
                 }
@@ -287,14 +287,17 @@ namespace Scryber.Expressive
 
         #endregion
 
-        #region Private Methods
+        
 
-        private void CompileExpression()
+        public void CompileExpression(bool force = false)
         {
-            // Cache the expression to save us having to recompile.
-            if (!(this.compiledExpression is null) && !this.context.Options.HasFlag(ExpressiveOptions.NoCache))
+            if (!force)
             {
-                return;
+                // Cache the expression to save us having to recompile.
+                if (!(this.compiledExpression is null) && !this.context.Options.HasFlag(ExpressiveOptions.NoCache))
+                {
+                    return;
+                }
             }
 
             var variables = new List<string>();
@@ -303,6 +306,8 @@ namespace Scryber.Expressive
 
             this.referencedVariables = variables.ToArray();
         }
+
+        #region Private Methods
 
         private static IDictionary<string, object> ApplyStringComparerSettings(IDictionary<string, object> variables, IEqualityComparer<string> desiredStringComparer)
         {

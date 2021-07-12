@@ -8,14 +8,14 @@ namespace Scryber.Expressive.Exceptions
 #if NET45
     [Serializable]
 #endif
-    public sealed class ScryberException : Exception
+    public sealed class ExpressiveException : Exception
     {
-        internal ScryberException(string message) : base(message)
+        internal ExpressiveException(string message) : base(message)
         {
 
         }
 
-        internal ScryberException(Exception innerException) : base(innerException.Message, innerException)
+        internal ExpressiveException(Exception innerException) : base(innerException.Message, innerException)
         {
 
         }

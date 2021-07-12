@@ -101,12 +101,12 @@ namespace Scryber.Expressive.Expressions
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(name);
+                    throw new ArgumentNullException(name);
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException(name);
+                throw new ArgumentNullException(name);
             }
         }
 

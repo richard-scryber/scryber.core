@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Scryber.Expressive.Helpers;
+using System;
+using Scryber.Expressive.Exceptions;
 
 namespace Scryber.Expressive.Expressions.Binary.Relational
 {
@@ -12,6 +14,37 @@ namespace Scryber.Expressive.Expressions.Binary.Relational
         }
 
         #endregion
+
+        public override object Evaluate(IDictionary<string, object> variables)
+        {
+            if (this.leftHandSide is null)
+            {
+                throw new MissingParticipantException("The left hand side of the operation is missing.");
+            }
+
+            if (this.rightHandSide is null)
+            {
+                throw new MissingParticipantException("The right hand side of the operation is missing.");
+            }
+
+            object lhsResult;
+            try
+            {
+
+                // We will evaluate the left hand side but hold off on the right hand side as it may not be necessary
+                lhsResult = this.leftHandSide.Evaluate(variables);
+            }
+            catch (ArgumentNullException)
+            {
+                lhsResult = null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                lhsResult = null;
+            }
+
+            return this.EvaluateImpl(lhsResult, this.rightHandSide, variables);
+        }
 
         #region BinaryExpressionBase Members
 

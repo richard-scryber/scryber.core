@@ -18,13 +18,11 @@ namespace Scryber.Binding
         public IVariableProvider ItemValueProvider { get; set; }
 
 
-        public BindingCalcExpression(string expression, PropertyInfo property, ExpressiveOptions options)
+        public BindingCalcExpression(Expression expression, PropertyInfo property)
         {
-            this.Expression = new Expression(expression, options);
+            this.Expression = expression;
             this.BoundTo = property;
         }
-
-        
 
         public void BindComponent(object sender, PDFDataBindEventArgs args)
         {
