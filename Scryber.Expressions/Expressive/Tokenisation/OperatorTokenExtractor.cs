@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace Scryber.Expressive.Tokenisation
 {
-    internal class OperatorTokenExtractor : ITokenExtractor
+    public class OperatorTokenExtractor : ITokenExtractor
     {
         private readonly IEnumerable<string> operators;
 
+        
         public OperatorTokenExtractor(IEnumerable<string> operators)
         {
             if (operators is null)
@@ -19,10 +20,12 @@ namespace Scryber.Expressive.Tokenisation
 
         public Token ExtractToken(string expression, int currentIndex, Context context)
         {
+            
             var expressionLength = expression.Length;
 
             foreach (var possibleName in this.operators)
             {
+
                 var lookAhead = expression.Substring(currentIndex, Math.Min(possibleName.Length, expressionLength - currentIndex));
 
                 if (!string.Equals(lookAhead, possibleName, context.ParsingStringComparison) || HasContinuationCharacter(expression, possibleName, currentIndex))

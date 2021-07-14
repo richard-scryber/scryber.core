@@ -94,19 +94,21 @@ namespace Scryber.Expressive.Expressions
             }
             else if (parent is ICustomTypeDescriptor)
             {
-                var prop = (parent as ICustomTypeDescriptor).GetProperties()[name];
+                var properties = (parent as ICustomTypeDescriptor).GetProperties();
+                var prop = properties.Find(name, Context.IsCaseInsensitiveParsingEnabled);
+
                 if (null != prop)
                 {
                     return prop.GetValue(parent);
                 }
                 else
                 {
-                    throw new ArgumentNullException(name);
+                    return null;
                 }
             }
             else
             {
-                throw new ArgumentNullException(name);
+                return null;
             }
         }
 

@@ -1,4 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Runtime.InteropServices;
 
 namespace Scryber.Expressive
 { 
@@ -21,6 +25,8 @@ namespace Scryber.Expressive
         /// Gets the index where it was discovered in the text.
         /// </summary>
         public int StartIndex { get; }
+
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Token"/> class.
@@ -46,4 +52,11 @@ namespace Scryber.Expressive
             this.Length = length;
         }
     }
+
+    public class TokenList : List<Token>
+    {
+        
+    }
+
+
 }

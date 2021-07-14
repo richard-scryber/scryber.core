@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace Scryber.Expressive.Tokenisation
 {
-    internal class KeywordTokenExtractor : ITokenExtractor
+    public class KeywordTokenExtractor : ITokenExtractor
     {
+
+
         private readonly IEnumerable<string> keywords;
 
         public KeywordTokenExtractor(IEnumerable<string> keywords)
@@ -20,10 +22,12 @@ namespace Scryber.Expressive.Tokenisation
 
         public Token ExtractToken(string expression, int currentIndex, Context context)
         {
+            
             var expressionLength = expression.Length;
 
             foreach (var possibleName in this.keywords)
             {
+
                 var lookAhead = expression.Substring(currentIndex, Math.Min(possibleName.Length, expressionLength - currentIndex));
 
                 if (!string.Equals(lookAhead, possibleName, context.ParsingStringComparison) || HasContinuationCharacter(expression,possibleName, currentIndex))

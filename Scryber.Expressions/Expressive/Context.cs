@@ -53,9 +53,9 @@ namespace Scryber.Expressive
 
         internal ExpressiveOptions Options { get; }
 
-        internal CultureInfo CurrentCulture { get; }
+        public CultureInfo CurrentCulture { get; }
 
-        internal CultureInfo DecimalCurrentCulture { get; }
+        public CultureInfo DecimalCurrentCulture { get; }
 
         internal char DecimalSeparator { get; }
 
@@ -68,20 +68,20 @@ namespace Scryber.Expressive
             Options.HasFlag(ExpressiveOptions.IgnoreCase) || Options.HasFlag(ExpressiveOptions.IgnoreCaseForEquality);
 #pragma warning restore 618
 
-        internal StringComparison EqualityStringComparison => IsCaseInsensitiveEqualityEnabled
+        public StringComparison EqualityStringComparison => IsCaseInsensitiveEqualityEnabled
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
 
-        internal bool IsCaseInsensitiveParsingEnabled =>
+        public bool IsCaseInsensitiveParsingEnabled =>
 #pragma warning disable 618 // As it is our own warning this is safe enough until we actually get rid
             Options.HasFlag(ExpressiveOptions.IgnoreCase) || Options.HasFlag(ExpressiveOptions.IgnoreCaseForParsing);
 #pragma warning restore 618
 
-        internal IEqualityComparer<string> ParsingStringComparer => IsCaseInsensitiveParsingEnabled
+        public IEqualityComparer<string> ParsingStringComparer => IsCaseInsensitiveParsingEnabled
             ? StringComparer.OrdinalIgnoreCase
             : (IEqualityComparer<string>)EqualityComparer<string>.Default;
 
-        internal StringComparison ParsingStringComparison => IsCaseInsensitiveParsingEnabled
+        public StringComparison ParsingStringComparison => IsCaseInsensitiveParsingEnabled
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
 
@@ -124,15 +124,15 @@ namespace Scryber.Expressive
             // Additive
             this.RegisterOperator(new PlusOperator());
             this.RegisterOperator(new SubtractOperator());
-            // Bitwise
+            //Bitwise
             this.RegisterOperator(new BitwiseAndOperator());
             this.RegisterOperator(new BitwiseOrOperator());
             this.RegisterOperator(new BitwiseExclusiveOrOperator());
             this.RegisterOperator(new LeftShiftOperator());
             this.RegisterOperator(new RightShiftOperator());
-            // Conditional
+            //Conditional
             this.RegisterOperator(new NullCoalescingOperator());
-            // Grouping
+            //Grouping
             this.RegisterOperator(new ParenthesisCloseOperator());
             this.RegisterOperator(new ParenthesisOpenOperator());
             this.RegisterOperator(new IndexOpenOperator());
@@ -142,22 +142,23 @@ namespace Scryber.Expressive
             this.RegisterOperator(new AndOperator());
             this.RegisterOperator(new NotOperator());
             this.RegisterOperator(new OrOperator());
-            // Multiplicative
+            //Multiplicative
             this.RegisterOperator(new DivideOperator());
             this.RegisterOperator(new ModulusOperator());
             this.RegisterOperator(new MultiplyOperator());
-            // Relational
+            //Relational
             this.RegisterOperator(new EqualOperator());
             this.RegisterOperator(new GreaterThanOperator());
             this.RegisterOperator(new GreaterThanOrEqualOperator());
             this.RegisterOperator(new LessThanOperator());
             this.RegisterOperator(new LessThanOrEqualOperator());
             this.RegisterOperator(new NotEqualOperator());
-            
+
             #endregion
 
             #region Functions
             // Conversion
+            
             this.RegisterFunction(new DateFunction());
             this.RegisterFunction(new DecimalFunction());
             this.RegisterFunction(new DoubleFunction());
@@ -232,6 +233,7 @@ namespace Scryber.Expressive
             this.RegisterFunction(new ConcatFunction());
             this.RegisterFunction(new IndexOfFunction());
             this.RegisterFunction(new JoinFunction());
+            
             #endregion
         }
 

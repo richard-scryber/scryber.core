@@ -1,4 +1,5 @@
-﻿//Copyright(c) 2019 Shaun Lawrence
+﻿//#define OLD
+//Copyright(c) 2019 Shaun Lawrence
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -81,6 +82,8 @@ namespace Scryber.Expressive
         {
         }
 
+#if OLD
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="context"/>.
         /// </summary>
@@ -91,7 +94,20 @@ namespace Scryber.Expressive
         {
             
         }
+#else
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="context"/>.
+        /// </summary>
+        /// <param name="expression">The expression to be evaluated.</param>
+        /// <param name="context">The <see cref="Context"/> to use when evaluating.</param>
+        public Expression(string expression, Context context)
+            : this(expression, new ExpressionParser2(context), context)
+        {
+
+        }
+
+#endif
         public Expression(string expression, ExpressionParser parser, ExpressiveOptions options = ExpressiveOptions.None)
             : this(expression, parser, new Context(options))
         {
@@ -104,9 +120,9 @@ namespace Scryber.Expressive
             this.context = context ?? throw new ArgumentNullException(nameof(context));
             this.parser = parser ?? throw new ArgumentNullException(nameof(parser));
         }
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
@@ -285,7 +301,7 @@ namespace Scryber.Expressive
         public void UnregisterOperator(string tag) =>
             this.context.UnregisterOperator(tag);
 
-        #endregion
+#endregion
 
         
 
@@ -307,7 +323,7 @@ namespace Scryber.Expressive
             this.referencedVariables = variables.ToArray();
         }
 
-        #region Private Methods
+#region Private Methods
 
         private static IDictionary<string, object> ApplyStringComparerSettings(IDictionary<string, object> variables, IEqualityComparer<string> desiredStringComparer)
         {
@@ -324,15 +340,15 @@ namespace Scryber.Expressive
             }
         }
 
-        #endregion
+#endregion
 
-        #region object overrides
+#region object overrides
 
         public override string ToString()
         {
             return "{" + this.originalExpression + "}";
         }
 
-        #endregion
+#endregion
     }
 }

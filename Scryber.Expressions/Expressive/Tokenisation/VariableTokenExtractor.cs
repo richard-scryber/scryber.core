@@ -39,7 +39,6 @@ namespace Scryber.Expressive.Tokenisation
                     }
                 
                 }
-
                 return new Token("[" + this.buffer.ToString() + "]", currentIndex, lastIndex - currentIndex);
             }
             else

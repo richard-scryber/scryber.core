@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Scryber.Expressive.Tokenisation
 {
-    public class Tokeniser
+    public class Tokeniser : ITokeniser
     {
         #region Fields
 
@@ -25,6 +25,7 @@ namespace Scryber.Expressive.Tokenisation
 
         #region Internal Methods
 
+        
         public IList<Token> Tokenise(string expression)
         {
             if (string.IsNullOrWhiteSpace(expression))

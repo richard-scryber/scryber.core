@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using Scryber.Expressive.Tokenisation;
 using System.Reflection.Metadata;
+using System.Diagnostics;
 
 namespace Scryber.Expressive
 {
@@ -15,7 +16,7 @@ namespace Scryber.Expressive
         #region Fields
 
         private readonly Context context;
-        private readonly Tokeniser tokeniser;
+        private readonly ITokeniser tokeniser;
 
         #endregion
 
@@ -31,7 +32,7 @@ namespace Scryber.Expressive
         { }
 
 
-        public ExpressionParser(Context context, Tokeniser tokeniser)
+        public ExpressionParser(Context context, ITokeniser tokeniser)
         {
             this.context = context;
             this.tokeniser = tokeniser;
@@ -70,7 +71,8 @@ namespace Scryber.Expressive
 
         #endregion
 
-        #region Public Methods
+#region Public Methods
+
 
         public IExpression CompileExpression(string expression, IList<string> variables)
         {
@@ -83,8 +85,6 @@ namespace Scryber.Expressive
             {
                 throw new ArgumentNullException(nameof(variables));
             }
-            
-                
 
             var tokens = this.tokeniser.Tokenise(expression);
 
@@ -101,12 +101,14 @@ namespace Scryber.Expressive
                 throw new ArgumentException("There are too many ')' symbols. Expected " + openCount + " but there is " + closeCount);
             }
 
-            return this.CompileExpression(new Queue<Token>(tokens), OperatorPrecedence.Minimum, variables, false);
+            var expr = this.CompileExpression(new Queue<Token>(tokens), OperatorPrecedence.Minimum, variables, false);
+
+            return expr;
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         private IExpression CompileExpression(Queue<Token> tokens, OperatorPrecedence minimumPrecedence, IList<string> variables, bool isWithinFunction)
         {
@@ -160,6 +162,13 @@ namespace Scryber.Expressive
                     {
                         break;
                     }
+                }
+                else if(this.TryGetConstant(currentToken.CurrentToken, out var constant))
+                {
+                    CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
+
+                    tokens.Dequeue();
+                    leftHandSide = constant;
                 }
                 else if (this.context.TryGetFunction(currentToken.CurrentToken, out var function)) // or an IFunction?
                 {
@@ -270,27 +279,6 @@ namespace Scryber.Expressive
                     }
 
                 }
-                else if (string.Equals(currentToken.CurrentToken, "true", StringComparison.OrdinalIgnoreCase)) // or a boolean?
-                {
-                    CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
-
-                    tokens.Dequeue();
-                    leftHandSide = new ConstantValueExpression(true);
-                }
-                else if (string.Equals(currentToken.CurrentToken, "false", StringComparison.OrdinalIgnoreCase))
-                {
-                    CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
-
-                    tokens.Dequeue();
-                    leftHandSide = new ConstantValueExpression(false);
-                }
-                else if (string.Equals(currentToken.CurrentToken, "null", StringComparison.OrdinalIgnoreCase)) // or a null?
-                {
-                    CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
-
-                    tokens.Dequeue();
-                    leftHandSide = new ConstantValueExpression(null);
-                }
                 else if (currentToken.CurrentToken.StartsWith(Context.DateSeparator.ToString()) && currentToken.CurrentToken.EndsWith(Context.DateSeparator.ToString())) // or a date?
                 {
                     CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
@@ -348,7 +336,35 @@ namespace Scryber.Expressive
             return leftHandSide;
         }
 
-        
+        private bool TryGetConstant(string currentToken, out IExpression constant)
+        {
+            if(currentToken.Equals("true", this.context.ParsingStringComparison))
+            {
+                constant = new ConstantValueExpression(true);
+            }
+            else if(currentToken.Equals("false", this.context.ParsingStringComparison))
+            {
+                constant = new ConstantValueExpression(false);
+            }
+            else if (currentToken.Equals("null", this.context.ParsingStringComparison))
+            {
+                constant = new ConstantValueExpression(null);
+            }
+            else if (currentToken.Equals("pi", this.context.ParsingStringComparison))
+            {
+                constant = new ConstantValueExpression(Math.PI);
+            }
+            else if(currentToken.Equals("e", this.context.ParsingStringComparison))
+            {
+                constant = new ConstantValueExpression(Math.E);
+            }
+            else
+            {
+                constant = null;
+            }
+
+            return null != constant;
+        }
 
         private static string CleanString(string input)
         {
@@ -421,6 +437,6 @@ namespace Scryber.Expressive
             }
         }
 
-        #endregion
+#endregion
     }
 }
