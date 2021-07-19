@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
-    <ProjectReference Include="..\Scryber.Core.Expressions\Source\Expressive\Expressive.csproj" />
     <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" />
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Generation\Errors1.Designer.cs" />

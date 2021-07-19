@@ -55,7 +55,7 @@
     </p>
     <table style="margin:20pt">
         <template data-bind="{{model.items}}">
-            <tr class="bound-row">
+            <tr class="bound-row {{if(index() % 2 == 0,'even', 'odd')}}">
                 <td>{{.Name}}</td>
             </tr>
         </template>
