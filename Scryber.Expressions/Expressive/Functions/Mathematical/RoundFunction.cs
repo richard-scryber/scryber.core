@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class RoundFunction : FunctionBase
+    public class RoundFunction : FunctionBase
     {
         #region FunctionBase Members
 

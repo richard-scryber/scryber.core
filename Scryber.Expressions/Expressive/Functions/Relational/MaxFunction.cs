@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Scryber.Expressive.Functions.Relational
 {
-    internal class MaxFunction : FunctionBase
+    public class MaxFunction : FunctionBase
     {
         #region FunctionBase Members
 

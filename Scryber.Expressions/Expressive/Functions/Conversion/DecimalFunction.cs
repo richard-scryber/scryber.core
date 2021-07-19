@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Conversion
 {
-    internal sealed class DecimalFunction : FunctionBase
+    public class DecimalFunction : FunctionBase
     {
         #region FunctionBase Members
 

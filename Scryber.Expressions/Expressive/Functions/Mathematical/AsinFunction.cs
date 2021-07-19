@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class AsinFunction : FunctionBase
+    public class AsinFunction : FunctionBase
     {
         #region FunctionBase Members
 

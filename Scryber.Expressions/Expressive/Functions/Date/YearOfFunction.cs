@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Date
 {
-    internal sealed class YearOfFunction : FunctionBase
+    public sealed class YearOfFunction : FunctionBase
     {
         #region FunctionBase Members
 

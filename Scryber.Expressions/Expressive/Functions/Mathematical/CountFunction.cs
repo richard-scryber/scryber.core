@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class CountFunction : FunctionBase
+    public class CountFunction : FunctionBase
     {
         #region FunctionBase Members
 

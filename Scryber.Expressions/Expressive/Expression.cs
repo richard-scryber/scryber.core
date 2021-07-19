@@ -73,30 +73,6 @@ namespace Scryber.Expressive
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="options"/>.
-        /// </summary>
-        /// <param name="expression">The expression to be evaluated.</param>
-        /// <param name="options">The <see cref="ScryberOptions"/> to use when evaluating.</param>
-        public Expression(string expression, ExpressiveOptions options = ExpressiveOptions.None)
-            : this(expression, new Context(options))
-        {
-        }
-
-#if OLD
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="context"/>.
-        /// </summary>
-        /// <param name="expression">The expression to be evaluated.</param>
-        /// <param name="context">The <see cref="Context"/> to use when evaluating.</param>
-        public Expression(string expression, Context context)
-            : this(expression, new ExpressionParser(context), context)
-        {
-            
-        }
-#else
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="context"/>.
         /// </summary>
         /// <param name="expression">The expression to be evaluated.</param>
@@ -107,12 +83,6 @@ namespace Scryber.Expressive
 
         }
 
-#endif
-        public Expression(string expression, ExpressionParser parser, ExpressiveOptions options = ExpressiveOptions.None)
-            : this(expression, parser, new Context(options))
-        {
-
-        }
 
         public Expression(string expression, ExpressionParser parser, Context context)
         {
@@ -258,48 +228,7 @@ namespace Scryber.Expressive
             });
         }
 
-        /// <summary>
-        /// Registers a custom function for use in evaluating an expression.
-        /// </summary>
-        /// <param name="functionName">The name of the function (NOTE this is also the tag that will be used to extract the function from an expression).</param>
-        /// <param name="function">The method of evaluating the function.</param>
-        /// <exception cref="Exceptions.FunctionNameAlreadyRegisteredException">Thrown when the name supplied has already been registered.</exception>
-        public void RegisterFunction(string functionName, Func<IExpression[], IDictionary<string, object>, object> function) => 
-            this.context.RegisterFunction(functionName, function);
-
-        /// <summary>
-        /// Registers a custom function inheriting from <see cref="IFunction"/> for use in evaluating an expression.
-        /// </summary>
-        /// <param name="function">The <see cref="IFunction"/> implementation.</param>
-        /// <exception cref="Exceptions.FunctionNameAlreadyRegisteredException">Thrown when the name supplied has already been registered.</exception>
-        public void RegisterFunction(IFunction function) => 
-            this.context.RegisterFunction(function);
-
-        /// <summary>
-        /// Registers the supplied <paramref name="op"/> for use within compiling and evaluating an <see cref="Expression"/>.
-        /// </summary>
-        /// <param name="op">The <see cref="IOperator"/> implementation to register.</param>
-        /// <param name="force">Whether to forcefully override any existing <see cref="IOperator"/>.</param>
-        /// <remarks>
-        /// Please if you are calling this with your own <see cref="IOperator"/> implementations do seriously consider raising an issue to add it in to the general framework:
-        /// https://github.com/bijington/Scryber
-        /// </remarks>
-        public void RegisterOperator(IOperator op, bool force = false) => 
-            this.context.RegisterOperator(op, force);
-
-        /// <summary>
-        /// Removes the function from the available set of functions when evaluating. 
-        /// </summary>
-        /// <param name="functionName">The name of the function to remove.</param>
-        public void UnregisterFunction(string functionName) => 
-            this.context.UnregisterFunction(functionName);
-
-        /// <summary>
-        /// Removes the operator from the available set of operators when evaluating. 
-        /// </summary>
-        /// <param name="tag">The tag of the operator to remove.</param>
-        public void UnregisterOperator(string tag) =>
-            this.context.UnregisterOperator(tag);
+        
 
 #endregion
 

@@ -4,7 +4,7 @@ using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Logical
 {
-    internal class InFunction : FunctionBase
+    public class InFunction : FunctionBase
     {
         #region FunctionBase Members
 

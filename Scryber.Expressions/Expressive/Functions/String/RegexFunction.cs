@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Scryber.Expressive.Functions.String
 {
-    internal class RegexFunction : FunctionBase
+    public class RegexFunction : FunctionBase
     {
         #region FunctionBase Members
 

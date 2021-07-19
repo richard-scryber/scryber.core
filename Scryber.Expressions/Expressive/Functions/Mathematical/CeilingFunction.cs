@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class CeilingFunction : FunctionBase
+    public class CeilingFunction : FunctionBase
     {
         #region FunctionBase Members
 

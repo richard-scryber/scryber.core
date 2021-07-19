@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Scryber.Expressive.Functions.Relational
 {
-    internal class MinFunction : FunctionBase
+    public class MinFunction : FunctionBase
     {
         #region FunctionBase Members
 

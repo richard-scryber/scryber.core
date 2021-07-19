@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Conversion
 {
-    internal sealed class LongFunction : FunctionBase
+    public class LongFunction : FunctionBase
     {
         #region FunctionBase Members
 

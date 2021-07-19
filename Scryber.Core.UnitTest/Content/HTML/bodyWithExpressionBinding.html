@@ -16,6 +16,10 @@
             font-size:12pt;
         }
 
+        .even{
+            background-color: #666;
+        }
+
         p{
             margin-top:0px;
         }
@@ -51,7 +55,7 @@
     </p>
     <table style="margin:20pt">
         <template data-bind="{{model.items}}">
-            <tr>
+            <tr class="bound-row">
                 <td>{{.Name}}</td>
             </tr>
         </template>

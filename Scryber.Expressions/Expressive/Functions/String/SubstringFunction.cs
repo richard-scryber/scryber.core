@@ -2,7 +2,7 @@
 
 namespace Scryber.Expressive.Functions.String
 {
-    internal class SubstringFunction : FunctionBase
+    public class SubstringFunction : FunctionBase
     {
         #region FunctionBase Members
 

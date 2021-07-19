@@ -2,7 +2,7 @@
 
 namespace Scryber.Expressive.Functions.String
 {
-    internal class EndsWithFunction : FunctionBase
+    public class EndsWithFunction : FunctionBase
     {
         #region FunctionBase Members
 

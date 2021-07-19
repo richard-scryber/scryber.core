@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.String
 {
-    internal class PadRightFunction : FunctionBase
+    public class PadRightFunction : FunctionBase
     {
         #region FunctionBase Members
 

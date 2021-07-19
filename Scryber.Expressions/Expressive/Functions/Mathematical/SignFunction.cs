@@ -4,7 +4,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class SignFunction : FunctionBase
+    public class SignFunction : FunctionBase
     {
         #region FunctionBase Members
 

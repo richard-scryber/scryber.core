@@ -2,7 +2,7 @@
 
 namespace Scryber.Expressive.Functions.Conversion
 {
-    internal sealed class StringFunction : FunctionBase
+    public class StringFunction : FunctionBase
     {
         #region FunctionBase Members
 

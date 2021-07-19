@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class TanFunction : FunctionBase
+    public class TanFunction : FunctionBase
     {
         #region FunctionBase Members
 

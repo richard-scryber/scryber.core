@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class IEEERemainderFunction : FunctionBase
+    public class IEEERemainderFunction : FunctionBase
     {
         #region FunctionBase Members
 

@@ -4,7 +4,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class AbsFunction : FunctionBase
+    public class AbsFunction : FunctionBase
     {
         #region IFunction Members
 

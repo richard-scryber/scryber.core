@@ -5,7 +5,7 @@ using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Functions.String
 {
-    internal class IndexOfFunction : FunctionBase
+    public class IndexOfFunction : FunctionBase
     {
         #region FunctionBase Members
 

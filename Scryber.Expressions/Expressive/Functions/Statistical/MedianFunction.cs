@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
-    internal class MedianFunction : FunctionBase
+    public class MedianFunction : FunctionBase
     {
         #region FunctionBase Members
 

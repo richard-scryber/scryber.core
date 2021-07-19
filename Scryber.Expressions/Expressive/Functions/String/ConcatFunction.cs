@@ -5,7 +5,7 @@ using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Functions.String
 {
-    internal class ConcatFunction : FunctionBase
+    public class ConcatFunction : FunctionBase
     {
         #region FunctionBase Members
 

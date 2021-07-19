@@ -4,7 +4,7 @@ using Scryber.Expressive.Expressions.Binary.Bitwise;
 
 namespace Scryber.Expressive.Operators.Bitwise
 {
-    internal class BitwiseExclusiveOrOperator : OperatorBase
+    public class BitwiseExclusiveOrOperator : OperatorBase
     {
         #region OperatorBase Members
 

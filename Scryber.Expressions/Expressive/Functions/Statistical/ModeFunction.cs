@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
-    internal class ModeFunction : FunctionBase
+    public class ModeFunction : FunctionBase
     {
         #region FunctionBase Members
 

@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class SumFunction : FunctionBase
+    public class SumFunction : FunctionBase
     {
         #region IFunction Members
 

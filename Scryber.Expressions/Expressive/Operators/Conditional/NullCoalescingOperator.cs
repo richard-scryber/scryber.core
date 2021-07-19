@@ -4,7 +4,7 @@ using Scryber.Expressive.Expressions.Binary.Conditional;
 
 namespace Scryber.Expressive.Operators.Conditional
 {
-    internal class NullCoalescingOperator : OperatorBase
+    public class NullCoalescingOperator : OperatorBase
     {
         #region OperatorBase Members
 

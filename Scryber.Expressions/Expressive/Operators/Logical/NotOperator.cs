@@ -4,7 +4,7 @@ using Scryber.Expressive.Expressions.Unary.Logical;
 
 namespace Scryber.Expressive.Operators.Logical
 {
-    internal class NotOperator : OperatorBase
+    public class NotOperator : OperatorBase
     {
         #region IOperator Members
 

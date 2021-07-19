@@ -7,7 +7,7 @@ using Scryber.Expressive.Expressions.Unary.Additive;
 
 namespace Scryber.Expressive.Operators.Additive
 {
-    internal class SubtractOperator : OperatorBase
+    public class SubtractOperator : OperatorBase
     {
         #region IOperator Members
 

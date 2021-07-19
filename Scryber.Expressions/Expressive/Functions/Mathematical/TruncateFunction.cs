@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class TruncateFunction : FunctionBase
+    public class TruncateFunction : FunctionBase
     {
         #region FunctionBase Members
 

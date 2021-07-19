@@ -4,7 +4,7 @@ using Scryber.Expressive.Expressions.Binary.Relational;
 
 namespace Scryber.Expressive.Operators.Relational
 {
-    internal class LessThanOrEqualOperator : OperatorBase
+    public class LessThanOrEqualOperator : OperatorBase
     {
         #region OperatorBase Members
 

@@ -9,7 +9,7 @@ namespace Scryber.Expressive
     /// <summary>
     /// Represents a chunk of expression that has been identified as something compilable.
     /// </summary>
-    public sealed class Token
+    public class Token
     {
         /// <summary>
         /// Gets the text from the expression.

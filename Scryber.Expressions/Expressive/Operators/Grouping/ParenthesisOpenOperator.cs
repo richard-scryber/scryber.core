@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Scryber.Expressive.Operators.Grouping
 {
-    internal class ParenthesisOpenOperator : IOperator
+    public class ParenthesisOpenOperator : IOperator
     {
         #region IOperator Members
 

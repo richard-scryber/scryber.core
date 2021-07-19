@@ -505,6 +505,19 @@ namespace Scryber.Core.UnitTests.Html
             color = pBlock.FullStyle.Fill.Color;
             Assert.AreEqual("rgb (255,255,255)", color);
 
+            // Performance check
+            using (var doc = Document.ParseDocument(path))
+            {
+                
+                using (var stream = DocStreams.GetOutputStream("bodyWithBinding.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.AutoBind = true;
+                    doc.SaveAsPDF(stream);
+
+                }
+            }
+
         }
 
         [TestMethod()]
@@ -720,6 +733,16 @@ namespace Scryber.Core.UnitTests.Html
             color = pBlock.FullStyle.Fill.Color;
             Assert.AreEqual("rgb (255,255,255)", color);
 
+            //Performance check
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("bodyWithExpressionBinding.pdf"))
+                {
+                    doc.Params["model"] = model;
+                    doc.AutoBind = true;
+                    doc.SaveAsPDF(stream);
+                }
+            }
         }
 
 

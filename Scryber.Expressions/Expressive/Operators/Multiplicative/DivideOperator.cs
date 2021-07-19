@@ -4,7 +4,7 @@ using Scryber.Expressive.Expressions.Binary.Multiplicative;
 
 namespace Scryber.Expressive.Operators.Multiplicative
 {
-    internal class DivideOperator : OperatorBase
+    public class DivideOperator : OperatorBase
     {
         #region OperatorBase Members
 

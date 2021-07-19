@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class AcosFunction : FunctionBase
+    public class AcosFunction : FunctionBase
     {
         #region FunctionBase Members
 

@@ -11,6 +11,8 @@ using Scryber.Expressive;
 using System.Runtime.Serialization;
 using System.Xml.Schema;
 using System.Text;
+using Scryber.Expressive.Functions;
+using Scryber.Expressive.Operators;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -30,22 +32,25 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindSingleExpression()
         {
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+
             var str = "10 + 2";
-            var expression = new Expression(str);
+            var expression = new Expression(str, context);
             var value = expression.Evaluate<double>();
 
             Assert.AreEqual(12.0, value);
 
             str = "10 / 2";
 
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>();
 
             Assert.AreEqual(5.0, value);
 
             str = "10 + (2 /4)";
 
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>();
 
             Assert.AreEqual(10.5, value);
@@ -56,26 +61,30 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindUnqualifiedVariableExpression()
         {
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+
+
             Dictionary<string, object> vars = new Dictionary<string, object>();
             vars.Add("val1", 2);
             vars.Add("val2", 4);
 
             var str = "10 + val1";
-            var expression = new Expression(str);
+            var expression = new Expression(str, context);
             var value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(12.0, value);
 
             str = "10 / val1";
 
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(5.0, value);
 
             str = "10 + (val1 / val2)";
 
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(10.5, value);
@@ -85,32 +94,35 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindDeepVariableExpression()
         {
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+
             Dictionary<string, object> vars = new Dictionary<string, object>();
             vars.Add("val1", new { num = 2 });
             vars.Add("val2", 4);
 
             var str = "val1.num";
-            var expression = new Expression(str);
+            var expression = new Expression(str, context);
             var value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(2.0, value);
 
             str = "10 + val1.num";
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(12.0, value);
 
             str = "10 / val1.num";
 
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(5.0, value);
 
             str = "10 + (val1.num / val2)";
 
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             
             value = expression.Evaluate<double>(vars);
 
@@ -195,58 +207,55 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindWithFunctionExpression()
         {
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+
             Dictionary<string, object> vars = new Dictionary<string, object>();
             vars.Add("val1", new { num = 2, text = "a variable" });
             vars.Add("val2", 4);
             vars.Add("array1", new int[] { 1, 2, 3, 4 });
 
             var str = "Max(10, val1.num)";
-            var expression = new Expression(str, ExpressiveOptions.IgnoreCaseForParsing);
+            var expression = new Expression(str, context);
             var value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(10.0, value, str + " did not evaluate correctly");
 
             str = "Min(10,val1.num,val2)";
-            expression = new Expression(str);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(2.0, value, str + " did not evaluate correctly");
 
 
             str = "median(10,val2, val1.num)";
-            expression = new Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
+            expression = new Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(4, value, str + " did not evaluate correctly");
 
 
             str = "concat('a string and ', val1.text)";
-            expression = new Expressive.Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
+            expression = new Expressive.Expression(str, context);
             var strResult = expression.Evaluate<string>(vars);
 
             Assert.AreEqual("a string and a variable", strResult, str + " did not evaluate correctly");
 
 
             str = "array1[0] + array1[1]";
-            expression = new Expressive.Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
+            expression = new Expressive.Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(3.0, value, str + " did not evaluate correctly");
 
             str = "array1[0] + array1[val1.num + 1]"; //entry 0 and entry 2+1
-            expression = new Expressive.Expression(str, Expressive.ExpressiveOptions.IgnoreCaseForParsing);
+            expression = new Expressive.Expression(str, context);
             value = expression.Evaluate<double>(vars);
 
             Assert.AreEqual(5.0, value, str + " did not evaluate correctly");
         }
 
-        private Dictionary<string, string> _replacements = new Dictionary<string, string>()
-        {
-            {"&apos;", "'" },
-            {"&amp;", "&" },
-            {"&lt;", "<" },
-            {"&gt;", ">" }
-        };
+        
 
         private class FunctionTest
         {
@@ -443,9 +452,10 @@ namespace Scryber.Core.UnitTests.Binding
 
             };
 
-            
 
-            var context = new Context(ExpressiveOptions.IgnoreCaseForParsing);
+
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
 
             Dictionary<string, object> vars = new Dictionary<string, object>(context.ParsingStringComparer)
             {
@@ -466,18 +476,6 @@ namespace Scryber.Core.UnitTests.Binding
 
             }
 
-        }
-
-
-        private string CleanXmlString(string value)
-        {
-            StringBuilder buffer = new StringBuilder(value);
-            foreach (var kvp in _replacements)
-            {
-                buffer.Replace(kvp.Key, kvp.Value);
-            }
-
-            return buffer.ToString();
         }
 
 
@@ -537,11 +535,11 @@ namespace Scryber.Core.UnitTests.Binding
                             <body id='mainbody' class='strong' style='padding:{{model.padding}}; color: {{model.color}}' >
                                 <p id='myPara' style='border: solid 1px blue; padding: 5px;' >This is a paragraph of content</p>
                                 <table id='myTable' style='width:100%;font-size:14pt' >
-                                    <template data-bind='{@:model.items}' >
-                                        <tr class='bound-item {{if(.index % 2 == 0, ""even"", ""odd"")}}' >
-                                            <td style='width:20pt'>{{1 + .index}}</td>
+                                    <template data-bind='{{model.items}}' >
+                                        <tr class='bound-item {{if(.index % 2 == 0, ""even"", ""odd"")}}'  >
+                                            <td style='width:20pt'>{{1 + index()}}</td>
                                             <td style='width:70pt'>{{.name}}</td>
-                                            <td>This is the cell index {{1 + .index}} with name {{.name}}</td>
+                                            <td>This is the cell index {{1 + index()}} with name {{.name}}</td>
                                         </tr>
                                     </template>
                                 </table>
@@ -582,17 +580,17 @@ namespace Scryber.Core.UnitTests.Binding
                 //table binding
                 var table = doc.FindAComponentById("myTable") as TableGrid;
                 var rowCount = table.Rows.Count;
-                Assert.AreEqual(3, rowCount, "Nuumber of rows was wrong");
+                Assert.AreEqual(3, rowCount, "Number of rows was wrong");
 
 
                 for (int i = 0; i < rowCount; i++)
                 {
                     //Table row class
                     var row = table.Rows[i];
-                    if (i % 2 == 0)
-                        Assert.AreEqual("bound-item even", row.StyleClass, "Style class is not correct for the row");
-                    else
-                        Assert.AreEqual("bound-item odd", row.StyleClass, "Style class is not correct for the row");
+                    //if (i % 2 == 0)
+                    //    Assert.AreEqual("bound-item even", row.StyleClass, "Style class is not correct for the row");
+                    //else
+                    //    Assert.AreEqual("bound-item odd", row.StyleClass, "Style class is not correct for the row");
 
                     var cell = row.Cells[0];
                     var content = cell.Contents[0] as TextLiteral;
@@ -772,6 +770,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 new {grp = "String Functions", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
+                new {grp = "String Functions", name = "Concat (with escapes)", function = "concat('A string',' and another string', ' and escap\\'es')", result = "A string and another string and escap'es"},
                 new {grp = "String Functions", name = "Concat (with types)", function = "concat('numbers:',9, model.array)", result = "numbers:9101112"},
                 new {grp = "String Functions", name = "Join", function = "join('-', 9, 12, 13)", result = "9-12-13"},
                 new {grp = "String Functions", name = "Join (with types)", function = "join(', ', 9, model.array, 13)", result = "9, 10, 11, 12, 13"},
@@ -801,7 +800,7 @@ namespace Scryber.Core.UnitTests.Binding
                             <head>
                                 <title>Expression Functions</title>
                                 <style>
-                                    .even{ background-color: #FF0000; }
+                                    .even{ background-color: #EEE; }
                                 </style>
                             </head>
 
@@ -810,6 +809,7 @@ namespace Scryber.Core.UnitTests.Binding
                                 <table id='myTable' style='width:100%;font-size:10pt' >";
             
             var group = "";
+            int grpindex = 0;
             foreach (var fn in functions)
             {
 
@@ -817,13 +817,15 @@ namespace Scryber.Core.UnitTests.Binding
                 {
                     src += @"<tr><td colspan='3' ><h3>" + fn.grp + "</h3></td></tr>";
                     group = fn.grp;
+                    grpindex = 0;
                 }
-                var insert = @"  <tr class='bound-item' >
+                var insert = @"  <tr class='bound-item " + (grpindex % 2 == 0 ? "even" : "odd") + @"' >
                                     <td style='width:120pt'>" + fn.name + @"</td>
                                     <td>" + fn.function + @"</td>
                                     <td>{{" + fn.function + @"}}</td>
                                  </tr>";
                 src += insert;
+                grpindex++;
             }
 
             src += @"           </table>

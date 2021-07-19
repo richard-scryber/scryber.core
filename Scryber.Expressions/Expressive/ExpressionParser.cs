@@ -22,15 +22,6 @@ namespace Scryber.Expressive
 
         #region Constructors
 
-        public ExpressionParser(Context context)
-            : this(context, GetDefaultTokenExtractors(context))
-        {
-        }
-
-        public ExpressionParser(Context context, List<ITokenExtractor> tokenExtractors)
-            : this(context, new Tokeniser(context, tokenExtractors))
-        { }
-
 
         public ExpressionParser(Context context, ITokeniser tokeniser)
         {
@@ -38,36 +29,7 @@ namespace Scryber.Expressive
             this.tokeniser = tokeniser;
         }
 
-        public static List<ITokenExtractor> GetDefaultTokenExtractors(Context context)
-        {
-            if (null == context)
-            {
-                throw new NullReferenceException(nameof(context));
-            }
-            return new List<ITokenExtractor>
-                {
-                    new KeywordTokenExtractor(context.FunctionNames),
-                    new OperatorTokenExtractor(context.OperatorNames),
-                    // Variables
-                    new ParenthesisedTokenExtractor('[', ']'),
-                    new NumericTokenExtractor(),
-                    new ValueTokenExtractor("."),
-                    // Dates
-                    new ParenthesisedTokenExtractor('#'),
-                    new ValueTokenExtractor(","),
-                    new ParenthesisedTokenExtractor('"'),
-                    new ParenthesisedTokenExtractor('\''),      
-                    // TODO: Probably a better way to achieve this.
-                    new ValueTokenExtractor("true"),
-                    new ValueTokenExtractor("TRUE"),
-                    new ValueTokenExtractor("false"),
-                    new ValueTokenExtractor("FALSE"),
-                    new ValueTokenExtractor("null"),
-                    new ValueTokenExtractor("NULL"),
-                    new VariableTokenExtractor()
-                } ;
-        }
-
+        
 
         #endregion
 
@@ -218,7 +180,7 @@ namespace Scryber.Expressive
                         }
                     }
 
-                    leftHandSide = new FunctionExpression(currentToken.CurrentToken, function, expressions.ToArray());
+                    leftHandSide = new FunctionExpression(currentToken.CurrentToken, function, context, expressions.ToArray());
                 }
                 else if (currentToken.CurrentToken.IsNumeric(this.context.DecimalCurrentCulture)) // Or a number
                 {
@@ -334,6 +296,15 @@ namespace Scryber.Expressive
             }
 
             return leftHandSide;
+        }
+
+        private bool IsFollowedBy(string expression, Token token, char character)
+        {
+            var index = token.StartIndex + token.Length;
+            if (index < expression.Length && expression[index] == character)
+                return true;
+            else
+                return false;
         }
 
         private bool TryGetConstant(string currentToken, out IExpression constant)

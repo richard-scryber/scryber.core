@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Scryber.Expressive.Functions.Conversion
 {
-    internal sealed class DateFunction : FunctionBase
+    public class DateFunction : FunctionBase
     {
         #region FunctionBase Members
 

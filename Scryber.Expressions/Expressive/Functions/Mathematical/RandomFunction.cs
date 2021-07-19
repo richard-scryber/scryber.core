@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class RandomFunction : FunctionBase
+    public class RandomFunction : FunctionBase
     {
         #region FunctionBase Members
 

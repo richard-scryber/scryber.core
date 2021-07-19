@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class CosFunction : FunctionBase
+    public class CosFunction : FunctionBase
     {
         #region FunctionBase Members
 

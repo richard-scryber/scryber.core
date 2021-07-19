@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
-    internal class MeanFunction : FunctionBase
+    public class MeanFunction : FunctionBase
     {
         #region FunctionBase Members
 

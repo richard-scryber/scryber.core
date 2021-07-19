@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
-    internal class AverageFunction : FunctionBase
+    public class AverageFunction : FunctionBase
     {
         #region FunctionBase Members
 

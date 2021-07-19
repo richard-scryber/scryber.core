@@ -3,7 +3,7 @@ using System;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
-    internal class Log10Function : FunctionBase
+    public class Log10Function : FunctionBase
     {
         #region FunctionBase Members
 

@@ -3,7 +3,7 @@ using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Operators.Grouping
 {
-    internal class ParenthesisCloseOperator : OperatorBase
+    public class ParenthesisCloseOperator : OperatorBase
     {
         #region OperatorBase Members
 
