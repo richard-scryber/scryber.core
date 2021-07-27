@@ -137,9 +137,9 @@ namespace Scryber.Components
                     fullpath = this.MapPath(this.Source);
                     if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
                     {
-                        using (System.Net.WebClient wc = new System.Net.WebClient())
+                        using (System.Net.Http.HttpClient wc = new System.Net.Http.HttpClient())
                         {
-                            this._contentsAsString = wc.DownloadString(fullpath);
+                            this._contentsAsString = wc.GetStringAsync(fullpath).Result;
                         }
                     }
                     else

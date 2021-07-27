@@ -74,7 +74,8 @@ namespace Scryber.Styles.Parsing
         public bool SetStyleValue(PDFTraceLog log, Style style, CSSStyleItemReader reader)
         {
             var attr = reader.CurrentAttribute;
-            var val = reader.CurrentTextValue;
+            //var val = reader.CurrentTextValue;
+
             bool success = this.DoSetStyleValue(style, reader);
 
             if (null != log)
@@ -89,6 +90,13 @@ namespace Scryber.Styles.Parsing
                 }
             }
             return success;
+        }
+
+        
+
+        private void Style_DataBinding(object sender, PDFDataBindEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         protected abstract bool DoSetStyleValue(Style style, CSSStyleItemReader reader);

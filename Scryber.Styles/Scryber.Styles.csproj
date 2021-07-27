@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
+    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Errors1.Designer.cs" />

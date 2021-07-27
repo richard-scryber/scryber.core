@@ -34,6 +34,7 @@ using System.CodeDom.Compiler;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
+using System.Net.Http;
 
 namespace Scryber.Drawing
 {
@@ -1381,15 +1382,15 @@ namespace Scryber.Drawing
 
             if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
-                System.Net.WebClient client = null;
+                HttpClient client = null;
                 
 
                 try
                 {
                     if (context.PerformanceMonitor != null && context.PerformanceMonitor.RecordMeasurements)
                         monitor = context.PerformanceMonitor.Record(PerformanceMonitorType.Font_Load, url);
-                    client = new System.Net.WebClient();
-                    var data = client.DownloadData(url);
+                    client = new System.Net.Http.HttpClient();
+                    var data = client.GetByteArrayAsync(url).Result;
                     definition = PDFFontDefinition.LoadOpenTypeFontFile(data, family, style, 0);
                 }
                 catch (Exception ex)

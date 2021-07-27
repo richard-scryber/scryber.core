@@ -2575,9 +2575,9 @@ namespace Scryber.Components
         {
             if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
             {
-                using (var client = new System.Net.WebClient())
+                using (var client = new System.Net.Http.HttpClient())
                 {
-                    using (var stream = client.OpenRead(fullpath))
+                    using (var stream = client.GetStreamAsync(fullpath).Result)
                     {
                         IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
                         if (comp is IPDFRemoteComponent)

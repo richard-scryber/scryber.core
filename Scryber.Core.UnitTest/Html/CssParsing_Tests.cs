@@ -11,6 +11,7 @@ using Scryber.Drawing;
 using Scryber.Styles.Parsing;
 
 using Scryber.Layout;
+using System.Diagnostics;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -38,16 +39,39 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod]
+        public void CSSStringEnumerator()
+        {
+            var chars = "0123456789";
+            int index = 0;
+            var str = new StringEnumerator(chars);
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+
+            while (str.MoveNext())
+            {
+                Assert.IsFalse(str.EOS);
+                Assert.AreEqual(index, str.Offset);
+                Assert.AreEqual(chars[index], str.Current);
+                index++;
+            }
+            Assert.AreEqual(10, index);
+            Assert.AreEqual(10, str.Offset);
+            Assert.AreEqual(true, str.EOS);
+        }
+
+        
+
+
+
         private void SimpleDocumentParsing_Layout(object sender, PDFLayoutEventArgs args)
         {
             _layoutcontext = args.Context;
         }
 
-
-        [TestMethod]
-        public void CSSParserWithComments()
-        {
-            var css = @"
+        string commentedCSS = @"
             /* This is the grey body */
             body.grey
             {
@@ -68,6 +92,11 @@ namespace Scryber.Core.UnitTests.Html
                 background-color: #222;
                 color:#808080;
             }";
+
+        [TestMethod]
+        public void ParseCSSWithComments()
+        {
+            var css = commentedCSS;
 
             var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);
 
@@ -104,6 +133,33 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual((PDFColor)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
 
+
+        }
+        [TestMethod()]
+        [TestCategory("Performance")]
+        public void ParseCSSWithComments_Performance()
+        {
+            var css = commentedCSS;
+
+            int repeatCount = 1000;
+
+            Stopwatch counter = Stopwatch.StartNew();
+            for (int i = 0; i < repeatCount; i++)
+            {
+
+                var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);
+
+                StyleCollection col = new StyleCollection();
+
+                foreach (var style in cssparser)
+                {
+                    col.Add(style);
+                }
+            }
+            counter.Stop();
+
+            var elapsed = counter.Elapsed.TotalMilliseconds / repeatCount;
+            Assert.IsTrue(elapsed < 0.15, "Took too long to parse. Expected < 0.15ms per string, Actual : " + elapsed + "ms");
 
         }
 

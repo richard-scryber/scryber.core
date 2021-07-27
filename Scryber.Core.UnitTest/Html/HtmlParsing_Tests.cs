@@ -746,12 +746,13 @@ namespace Scryber.Core.UnitTests.Html
         }
 
 
+
         [TestMethod()]
         public void LocalAndRemoteImages()
         {
             var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
-            var client = new System.Net.WebClient();
-            var data = client.DownloadData(imagepath);
+            var client = new System.Net.Http.HttpClient();
+            var data = client.GetByteArrayAsync(imagepath).Result;
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/LocalAndRemoteImages.html");

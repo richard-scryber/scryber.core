@@ -8,7 +8,7 @@ namespace Scryber.Styles.Parsing
     public class CSSStyleParser : IEnumerable<StyleBase>
     {
         private List<CSSParsingError> _err;
-        private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("/\\*.*\\*/");
+        private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("/\\*.*?\\*/");
         public IEnumerable<CSSParsingError> Errors
         {
             get { return _err; }
@@ -64,18 +64,9 @@ namespace Scryber.Styles.Parsing
             if (this.Log.ShouldLog(TraceLevel.Verbose))
                 this.Log.Add(TraceLevel.Verbose, "CSS", "Removing comments from css styles");
 
-            int start = contnet.IndexOf("/*");
-            while (start >= 0)
-            {
-                int end = contnet.IndexOf("*/");
+            
+            contnet = CommentMatcher.Replace(contnet, "");
 
-                if (end <= start)
-                    return contnet;
-
-                contnet = contnet.Substring(0, start) + contnet.Substring(end + 2);
-
-                start = contnet.IndexOf("/*");
-            }
             return contnet;
         }
     }

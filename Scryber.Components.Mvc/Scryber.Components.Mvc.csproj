@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.0.6.3</PackageVersion>
+    <PackageVersion>5.1.0-beta</PackageVersion>
     <Version>1.0.1-alpha</Version>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
@@ -12,7 +12,7 @@
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing, or just code it. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
 This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
-    <Copyright>Richard Hewitson 2020</Copyright>
+    <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
@@ -20,7 +20,15 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.0.6.3
+    <PackageReleaseNotes>5.1.0-beta
+
+Added support for expressions using the handlebars syntax {{...}} 
+
+5.0.7.0 
+
+Updates for linear and circular gradients and floating components within a block.
+
+5.0.6.3
 
 A fix for font character mappings on Windows and laying out mutliple spans on a single line
 
@@ -68,9 +76,12 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="5.0.7-alpha" />
+    <PackageReference Include="Scryber.Core" Version="5.1.0-beta" />
   </ItemGroup>
       
+  <ItemGroup>
+    <None Remove="Scryber.Core" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="readme.txt" pack="true">
       <IncludeInPackage>true</IncludeInPackage>

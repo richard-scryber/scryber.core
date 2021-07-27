@@ -547,22 +547,21 @@ namespace Scryber.Drawing
 
         public static PDFImageData LoadImageFromURI(string uri, IPDFComponent owner = null)
         {
-             System.Net.WebClient wc = new System.Net.WebClient();
-             wc.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
-
-            bool compress = false;
-
-            if (owner is IPDFOptimizeComponent)
-                compress = ((IPDFOptimizeComponent)owner).Compress;
-
-            using (wc.OpenRead(uri))
+            using (System.Net.Http.HttpClient wc = new System.Net.Http.HttpClient())
             {
+                //wc. = System.Net.CredentialCache.DefaultNetworkCredentials;
+
+                bool compress = false;
+
+                if (owner is IPDFOptimizeComponent)
+                    compress = ((IPDFOptimizeComponent)owner).Compress;
+
                 PDFImageData img;
-                byte[] data = wc.DownloadData(uri);
+                byte[] data = wc.GetByteArrayAsync(uri).Result;
                 img = InitImageData(uri, data, compress);
                 return img;
+
             }
-             
         }
 
         public static PDFImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IPDFComponent owner = null)
