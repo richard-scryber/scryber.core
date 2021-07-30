@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Drawing;
+//using System.Drawing;
 using System.Drawing.Text;
 using Scryber.Resources;
 using Scryber.Configuration;
@@ -63,13 +63,13 @@ namespace Scryber.Drawing
 
             internal bool LoadedDefintion { get { return null != Definition; } }
 
-            internal FontFamily SystemFamily { get; set; }
+            //internal FontFamily SystemFamily { get; set; }
 
             internal object LoadLock { get; private set; }
             
-            internal FontReference(FontFamily family, string name, System.Drawing.FontStyle style, string path, int fileHeadOffset)
+            internal FontReference(string name, System.Drawing.FontStyle style, string path, int fileHeadOffset)
             {
-                this.SystemFamily = family;
+                //this.SystemFamily = family;
                 this.FamilyName = name;
                 this.Style = style;
                 this.FilePath = path;
@@ -77,9 +77,9 @@ namespace Scryber.Drawing
                 this.LoadLock = new object();
             }
 
-            internal FontReference(FontFamily family, string name, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal FontReference(string name, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
             {
-                this.SystemFamily = family;
+                //this.SystemFamily = family;
                 this.FamilyName = name;
                 this.Style = style;
                 this.FilePath = null;
@@ -100,13 +100,13 @@ namespace Scryber.Drawing
         {
             internal LinkedFontReference Next { get; set; }
 
-            internal LinkedFontReference(FontFamily family, string familyname, System.Drawing.FontStyle style, string path, int fileHeadOffset)
-                : base(family, familyname, style, path, fileHeadOffset)
+            internal LinkedFontReference(string familyname, System.Drawing.FontStyle style, string path, int fileHeadOffset)
+                : base(familyname, style, path, fileHeadOffset)
             {
             }
 
-            internal LinkedFontReference(FontFamily family, string familyname, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
-                : base(family, familyname, style, data, fileHeadOffset)
+            internal LinkedFontReference(string familyname, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+                : base(familyname, style, data, fileHeadOffset)
             {
             }
 
@@ -138,9 +138,11 @@ namespace Scryber.Drawing
         /// </summary>
         private class FamilyReference
         {
-            private FontFamily _sysfam;
+            //private FontFamily _sysfam;
 
             internal string FamilyName { get; private set; }
+
+            /*
             internal FontFamily SystemFamily {
                 get { return _sysfam; }
                 set
@@ -154,6 +156,8 @@ namespace Scryber.Drawing
                     }
                 }
             }
+
+            */
 
             private LinkedFontReference _first;
 
@@ -181,7 +185,7 @@ namespace Scryber.Drawing
             internal FontReference Add(System.Drawing.FontStyle style, string filepath, int fileHeadOffset)
             {
 
-                LinkedFontReference fontref = new LinkedFontReference(this.SystemFamily, this.FamilyName, style, filepath, fileHeadOffset);
+                LinkedFontReference fontref = new LinkedFontReference(this.FamilyName, style, filepath, fileHeadOffset);
                 if (null == _first)
                     _first = fontref;
                 else
@@ -192,7 +196,7 @@ namespace Scryber.Drawing
 
             internal FontReference Add(System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
             {
-                LinkedFontReference fontref = new LinkedFontReference(this.SystemFamily, this.FamilyName, style, data, fileHeadOffset);
+                LinkedFontReference fontref = new LinkedFontReference(this.FamilyName, style, data, fileHeadOffset);
                 if (null == _first)
                     _first = fontref;
                 else
@@ -229,16 +233,16 @@ namespace Scryber.Drawing
         private class FamilyReferenceBag
         {
             private Dictionary<string, FamilyReference> _families;
-            private FontCollection _collection;
+            //private FontCollection _collection;
 
             //internal FontCollection FontCollection
             //{
             //    get { return _collection; }
             //}
 
-            internal FamilyReferenceBag(FontCollection collection)
+            internal FamilyReferenceBag()
             {
-                _collection = collection;
+                //_collection = collection;
                 _families = new Dictionary<string, FamilyReference>(StringComparer.OrdinalIgnoreCase);
             }
 
@@ -415,6 +419,7 @@ namespace Scryber.Drawing
 
         #endregion
 
+        /*
         #region public static Font GetSystemFont(string family, System.Drawing.FontStyle style, float size)
 
         /// <summary>
@@ -477,6 +482,8 @@ namespace Scryber.Drawing
         }
 
         #endregion
+
+        */
 
         #region public static PDFFontDefinition GetFontDefinition(PDFFont font)
 
@@ -793,8 +800,8 @@ namespace Scryber.Drawing
         private static FamilyReferenceBag LoadGenericFamilies()
         {
             
-            PrivateFontCollection generic = new PrivateFontCollection();
-            FamilyReferenceBag genericBag = new FamilyReferenceBag(generic);
+            
+            FamilyReferenceBag genericBag = new FamilyReferenceBag();
 
             FamilyReference found;
             /* if (_customfamilies.TryGetFamily("Helvetica", out found) || _customfamilies.TryGetFamily("Arial", out found)
@@ -847,7 +854,11 @@ namespace Scryber.Drawing
             else
                 throw new ConfigurationErrorsException("Could not find or load the standard font family for Courier");
 
-            if (_customfamilies.TryGetFamily("Comic Sans MS", out found) || _systemfamilies.TryGetFamily("Comic Sans MS", out found))
+            if (null != _systemfamilies && _systemfamilies.TryGetFamily("Comic Sans MS", out found))
+            {
+                genericBag.AddFontFamily("Cursive", found);
+            }
+            else if(null != _customfamilies && _customfamilies.TryGetFamily("Comic Sans MS", out found))
             {
                 genericBag.AddFontFamily("Cursive", found);
             }
@@ -893,8 +904,8 @@ namespace Scryber.Drawing
         private static FamilyReferenceBag LoadSystemFonts()
         {
             
-            InstalledFontCollection install = new InstalledFontCollection();
-            FamilyReferenceBag bag = new FamilyReferenceBag(install);
+            //InstalledFontCollection install = new InstalledFontCollection();
+            FamilyReferenceBag bag = new FamilyReferenceBag();
             
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             //Check to see if we are allowed to use the system fonts
@@ -924,13 +935,7 @@ namespace Scryber.Drawing
                             }
                         }
                     }
-                    FontFamily[] installedfamilies = install.Families;
-                    foreach (FontFamily fam in installedfamilies)
-                    {
-                        FamilyReference famref = bag[fam.Name];
-                        if (null != famref)
-                            famref.SystemFamily = fam;
-                    }
+                    
 
                 }
                 catch (Exception ex)
@@ -952,8 +957,8 @@ namespace Scryber.Drawing
         /// <returns></returns>
         private static FamilyReferenceBag LoadCustomFamilies()
         {
-            PrivateFontCollection priv = new PrivateFontCollection();
-            FamilyReferenceBag bag = new FamilyReferenceBag(priv);
+            //PrivateFontCollection priv = new PrivateFontCollection();
+            FamilyReferenceBag bag = new FamilyReferenceBag();
 
             //Load the explicit entries first
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
@@ -978,7 +983,6 @@ namespace Scryber.Drawing
                         try
                         {
                             path = GetFullPath(path);
-                            priv.AddFontFile(path);
                         }
                         catch (Exception ex)
                         {
@@ -1017,17 +1021,6 @@ namespace Scryber.Drawing
                         {
                             if (item.IsValid)
                             {
-                                try
-                                {
-
-                                    //try and add the font file
-                                    priv.AddFontFile(item.FullPath);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new ConfigurationErrorsException(String.Format(Errors.CouldNotLoadTheFontFile, item.FullPath, ex.Message), ex);
-                                }
-
                                 //font file added  - now register the family and style against the path
                                 bag.AddFontFile(item.FamilyName, GetFontStyle(item.FontSelection, item.FontWeight), item.FullPath, item.HeadOffset);
                             }
@@ -1038,13 +1031,7 @@ namespace Scryber.Drawing
                 }
             }
 
-            FontFamily[] privatefamilies = priv.Families;
-            foreach (FontFamily fam in privatefamilies)
-            {
-                FamilyReference famref = bag[fam.Name];
-                if (null != famref)
-                    famref.SystemFamily = fam;
-            }
+            
 
 
             return bag;
@@ -1062,8 +1049,7 @@ namespace Scryber.Drawing
 
         private static FamilyReferenceBag LoadStaticFamilies()
         {
-            PrivateFontCollection priv = new PrivateFontCollection();
-            FamilyReferenceBag bag = new FamilyReferenceBag(priv);
+            FamilyReferenceBag bag = new FamilyReferenceBag();
 
             try
             {

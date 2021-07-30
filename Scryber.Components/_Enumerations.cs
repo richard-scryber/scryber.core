@@ -161,4 +161,11 @@ namespace Scryber
         Down
     }
 
+    public enum DocumentExecMode
+    {
+        Immediate,
+        Asyncronous,
+        Phased
+    }
+
 }

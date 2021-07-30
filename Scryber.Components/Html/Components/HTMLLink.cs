@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
@@ -365,33 +367,31 @@ namespace Scryber.Html.Components
         {
             //TODO: Use the document for any client web requests.
             //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
-            this.LoadedSource = path;
-            var request = System.Net.HttpWebRequest.Create(path);
-
-            using (var result = request.GetResponse())
-                return this.DoLoadReferenceResult(result, path, context);
-            
-        }
-
-        /// <summary>
-        /// Forces the completion and loading of the remote result.
-        /// </summary>
-        private string DoLoadReferenceResult(System.Net.WebResponse response, string path, PDFContextBase context)
-        {
-
-            string content = string.Empty;
+            string content;
+            HttpClient client = null;
+            bool dispose = false;
 
             try
             {
-                using (var stream = response.GetResponseStream())
+                this.LoadedSource = path;
+                client = this.GetServiceClient();
+                if (null == client)
                 {
-                    using (var reader = new System.IO.StreamReader(stream))
-                    {
-                        content = reader.ReadToEnd();
-                    }
+                    client = new HttpClient();
+                    dispose = true;
                 }
+                lock (context.Document)
+                {
+                    var task = client.GetStreamAsync(path);
+                    var awaiter = task.GetAwaiter();
+
+
+                    using (var response = task.Result)
+                        content = this.DoLoadReferenceResult(response, path, context);
+                }
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 content = string.Empty;
                 if (context.Conformance == ParserConformanceMode.Lax)
@@ -403,9 +403,46 @@ namespace Scryber.Html.Components
             }
             finally
             {
-                response.Dispose();
+                if (null != client && dispose)
+                    client.Dispose();
             }
+            return content;
+            
+        }
 
+        private HttpClient GetServiceClient()
+        {
+            var client = Scryber.ServiceProvider.GetService<HttpClient>();
+            return client;
+
+        }
+
+        /// <summary>
+        /// Forces the completion and loading of the remote result.
+        /// </summary>
+        private string DoLoadReferenceResult(System.IO.Stream stream, string path, PDFContextBase context)
+        {
+
+            string content = string.Empty;
+
+            try
+            {
+                using (var reader = new System.IO.StreamReader(stream))
+                {
+                    content = reader.ReadToEnd();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                content = string.Empty;
+                if (context.Conformance == ParserConformanceMode.Lax)
+                {
+                    context.TraceLog.Add(TraceLevel.Error, "HTML", "Could not load link href the response from '" + path + "'", ex);
+                }
+                else
+                    throw;
+            }
             return content;
         }
 

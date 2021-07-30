@@ -32,6 +32,7 @@ using System.Runtime.CompilerServices;
 using Scryber.Secure;
 using System.Text.RegularExpressions;
 using Scryber.OpenType.SubTables;
+using System.Net.Http;
 
 namespace Scryber.Components
 {
@@ -66,6 +67,25 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public event RemoteFileRequestEventHandler RemoteFileRegistered
+
+        /// <summary>
+        /// Event that is raised when a request is being made for a file or url for inclusion within the document
+        /// </summary>
+        public event RemoteFileRequestEventHandler RemoteFileRegistered;
+
+        /// <summary>
+        /// Rasises the RemoteFileRegisted event to any added handlers
+        /// </summary>
+        /// <param name="request"></param>
+        protected virtual void OnRemoteFileRequestRegistered(PDFRemoteFileRequest request)
+        {
+            if (null != RemoteFileRegistered)
+                this.RemoteFileRegistered(this, new RemoteFileRequestEventArgs(request));
+        }
+
+        #endregion 
+
         //
         // ctors
         // 
@@ -93,6 +113,7 @@ namespace Scryber.Components
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             this.ImageFactories = config.ImagingOptions.GetFactories();
             this._startTime = DateTime.Now;
+            this._requests = new PDFRemoteFileRequestSet(this);
         }
 
         #endregion
@@ -680,7 +701,52 @@ namespace Scryber.Components
 
         #endregion
 
+        //
+        // file requests
+        //
 
+        
+        private PDFRemoteFileRequestSet _requests;
+
+        public PDFRemoteFileRequestSet RemoteRequests
+        {
+            get
+            {
+                if (null == _requests)
+                    _requests = new PDFRemoteFileRequestSet(this);
+                return _requests;
+            }
+            set
+            {
+                _requests = value;
+            }
+        }
+
+        public bool HasRemoteRequests
+        {
+            get { return null != _requests && _requests.Count > 0; }
+        }
+
+        public virtual void RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IPDFComponent owner = null, object arguments = null)
+        {
+            this.RegisterRemoteFileRequest(new PDFRemoteFileRequest(filePath, callback, owner, arguments));
+        }
+
+        public virtual void RegisterRemoteFileRequest(PDFRemoteFileRequest request)
+        {
+            if (null == request)
+                throw new ArgumentNullException(nameof(request));
+
+            this.RemoteRequests.AddRequest(request);
+            this.OnRemoteFileRequestRegistered(request);
+
+            if (this.RemoteRequests.ExecMode == DocumentExecMode.Immediate && request.IsCompleted == false)
+            {
+                this.RemoteRequests.FullfillRequest(request);
+            }
+        }
+
+        
 
         //
         // IXMLParsedDocument interface (explicit implementation)
@@ -1400,6 +1466,7 @@ namespace Scryber.Components
 
 
         #endregion
+
 
         #region public void InitializeAndLoad()
 
@@ -2471,7 +2538,7 @@ namespace Scryber.Components
             IPDFComponent parsed = null;
             try
             {
-                parsed = Document.Parse(path);
+                parsed = Document.Parse(path, this.Resolver ?? new PDFReferenceChecker(string.Empty).Resolver);
             }
             catch (System.IO.FileNotFoundException ex)
             {

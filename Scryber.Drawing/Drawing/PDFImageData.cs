@@ -679,23 +679,23 @@ namespace Scryber.Drawing
             return imgdata;
         }
 
-        private static readonly System.Drawing.Imaging.ImageFormat jpegFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
-        private static readonly System.Drawing.Imaging.EncoderParameters jpegParams = new System.Drawing.Imaging.EncoderParameters();
+        //private static readonly System.Drawing.Imaging.ImageFormat jpegFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
+        //private static readonly System.Drawing.Imaging.EncoderParameters jpegParams = new System.Drawing.Imaging.EncoderParameters();
 
         private static Image ConvertToJpeg(Image bmp)
         {
-            if (bmp.RawFormat.Guid != jpegFormat.Guid)
-            {
-                System.IO.MemoryStream ms = new System.IO.MemoryStream();
-                bmp.Save(ms, jpegFormat);
-                ms.Flush();
-                ms.Position = 0;
-                bmp.Dispose(); //Dispose of this one and use the one with the stream.
-                return Image.FromStream(ms);
+            //if (bmp.RawFormat.Guid != jpegFormat.Guid)
+            //{
+            //    System.IO.MemoryStream ms = new System.IO.MemoryStream();
+            //    bmp.Save(ms, jpegFormat);
+            //    ms.Flush();
+            //    ms.Position = 0;
+            //    bmp.Dispose(); //Dispose of this one and use the one with the stream.
+            //    return Image.FromStream(ms);
 
-            }
-            else
-                return bmp;
+            //}
+            //else
+            return bmp;
         }
 
         public static PDFImageData Parse(string data)

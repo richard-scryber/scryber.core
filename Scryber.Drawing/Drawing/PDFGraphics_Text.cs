@@ -134,54 +134,6 @@ namespace Scryber.Drawing
         #endregion
 
 
-        #region protected PDFSize MeasureGraphicsString(string chars, PDFSize available, WordWrap wrapping, out int charsfitted)
-
-        /// <summary>
-        /// Measures a single line of text (no wrapping) using the built in System string measurement, and returns the size required, 
-        /// and the number of characters fitted into that line - using GDI+, slow but does not require the font file
-        /// </summary>
-        /// <param name="chars">The string that contains the characters to measure</param>
-        /// <param name="available">The avaiable space to fit the characters into</param>
-        /// <param name="wrapping">The word wrapping options</param>
-        /// <param name="charsfitted">Set to the number of characters that could be fitted in the available space</param>
-        /// <returns>The final size of the single line of text that can be fitted</returns>
-        [Obsolete("No longer using the system rendering", true)]
-        protected PDFSize MeasureGraphicsString(string chars, PDFSize available, WordWrap wrapping, out int charsfitted)
-        {
-            //PDFUnit h = options.Leading.HasValue? options.Leading.Value : options.Font.Size;
-            //PDFUnit w = chars.Length * h.PointsValue;
-            //charsfitted = chars.Length;
-            //return new PDFSize(w,h);
-
-            if(_wingraphics == null)
-                _wingraphics = this.CreateWinGraphics();
-            if (available.Width <= 1)
-            {
-                charsfitted = 0;
-                return PDFSize.Empty;
-            }
-            else
-            {
-                StringFormat format = GetStringFormatting(wrapping);
-
-                System.Drawing.SizeF size = new SizeF((float)available.Width.PointsValue, (float)available.Height.PointsValue);
-                System.Drawing.Font sysfont = null;// this.CurrentFont.GetSystemFont();
-                int linesfitted;
-                if (wrapping == WordWrap.NoWrap)
-                {
-                    size = _wingraphics.MeasureString(chars, sysfont, PointF.Empty, format);
-                    charsfitted = chars.Length;
-                }
-                else
-                    size = _wingraphics.MeasureString(chars, sysfont, size, format, out charsfitted, out linesfitted);
-
-                return new PDFSize(size.Width, size.Height);
-            }
-
-        }
-
-        #endregion
-
         /// <summary>
         /// All the character widths used
         /// </summary>
@@ -551,63 +503,6 @@ namespace Scryber.Drawing
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtMoveNextOffset, GetXOffset(offset.Width), GetYOffset(offset.Height));
             }
         }
-
-
-        
-        /// <summary>
-        /// String format to stop the wrapping of text so a single string can be measured
-        /// </summary>
-        private static readonly System.Drawing.StringFormat NoWrappingWordFormat = InitStringFormat(StringTrimming.Word);
-
-        private static readonly StringFormat NoWrappingCharacterFormant = InitStringFormat(StringTrimming.Character);
-
-        #region private static System.Drawing.StringFormat InitStringFormat(StringTrimming triming)
-
-        private static System.Drawing.StringFormat InitStringFormat(StringTrimming triming)
-        {
-
-#if USE_NON_TYPOGRAPHIC
-
-            //Shaves 20% off measure string time with less accuracy
-            StringFormat format = StringFormat.GenericDefault.Clone() as StringFormat;
-#else
-            StringFormat format = StringFormat.GenericTypographic.Clone() as StringFormat;
-#endif
-            format.Alignment = StringAlignment.Near;
-            format.FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.MeasureTrailingSpaces;
-            format.Trimming = triming;
-            return format;
-        }
-
-        #endregion
-
-        #region private static StringFormat GetStringFormatting(PDFTextRenderOptions options)
-
-        private static StringFormat GetStringFormatting(PDFTextRenderOptions options)
-        {
-            StringFormat format;
-            if (options.WrapText.HasValue && options.WrapText.Value == WordWrap.Character)
-                format = NoWrappingCharacterFormant;
-            else
-                format = NoWrappingWordFormat;
-            return format;
-        }
-
-        #endregion
-
-        #region private static StringFormat GetStringFormatting(WordWrap wrapping)
-
-        private static StringFormat GetStringFormatting(WordWrap wrapping)
-        {
-            StringFormat format;
-            if (wrapping == WordWrap.Character)
-                format = NoWrappingCharacterFormant;
-            else
-                format = NoWrappingWordFormat;
-            return format;
-        }
-
-        #endregion
 
     }
 }

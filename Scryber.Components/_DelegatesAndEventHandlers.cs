@@ -103,5 +103,20 @@ namespace Scryber
     /// <param name="registered"></param>
     public delegate void ComponentRegisteredHandler(object sender, IPDFComponent registered);
 
+
+
+    public delegate void RemoteFileRequestEventHandler(object sender, RemoteFileRequestEventArgs args);
+
+
+    public class RemoteFileRequestEventArgs : EventArgs
+    {
+        public PDFRemoteFileRequest Request { get; private set; }
+
+        public RemoteFileRequestEventArgs(PDFRemoteFileRequest request)
+        {
+            this.Request = request ?? throw new ArgumentNullException(nameof(request));
+        }
+    }
+
     
 }
