@@ -359,6 +359,50 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod()]
+        public void RemoteCssFileLoadingAsync()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
+            var src = @"<?scryber append-log='true' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <link href='" + path + @"' rel='stylesheet' />
+                            </head>
+
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content</p>
+                            </body>
+
+                        </html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoadingAsync.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    Task.Run(async () =>
+                    {
+                        await doc.SaveAsPDFAsync(stream);
+                    }).GetAwaiter().GetResult();
+                    
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((PDFColor)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+
+
+            }
+        }
+
 
         [TestMethod()]
         public void BodyAsASection()
@@ -769,6 +813,35 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
                 
+            }
+
+        }
+
+        [TestMethod()]
+        public void LocalAndRemoteImagesAsync()
+        {
+            var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var client = new System.Net.Http.HttpClient();
+            var data = client.GetByteArrayAsync(imagepath).Result;
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/LocalAndRemoteImages.html");
+
+            Assert.IsTrue(System.IO.File.Exists(path));
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("LocalAndRemoteImagesAsync.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    Task.Run(async () =>
+                    {
+                        await doc.SaveAsPDFAsync(stream);
+                    }).GetAwaiter().GetResult();
+
+                }
+
+
             }
 
         }

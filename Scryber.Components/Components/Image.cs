@@ -79,6 +79,7 @@ namespace Scryber.Components
         }
 
 
+
         protected override Resources.PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
         {
             Document doc = this.Document;

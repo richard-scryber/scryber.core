@@ -98,6 +98,8 @@ namespace Scryber.Html.Components
 
         #endregion
 
+        #region internal class LinkContentCSS : LinkContentBase
+
         internal class LinkContentCSS : LinkContentBase
         {
             private StyleGroup _parsedGroup = null;
@@ -140,10 +142,12 @@ namespace Scryber.Html.Components
             }
         }
 
+        #endregion
 
         private string _href;
         private string _relationship;
         private LinkContentBase _content;
+        private PDFRemoteFileRequest _request;
 
         internal LinkContentBase InnerContent
         {
@@ -215,6 +219,17 @@ namespace Scryber.Html.Components
             }
         }
 
+        public bool IsContentLoading
+        {
+            get
+            {
+                if (null == this._request)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
         public HTMLLink()
             : base((PDFObjectType)"htmL")
         {
@@ -233,6 +248,7 @@ namespace Scryber.Html.Components
             base.OnDataBinding(context);
 
             DoLoadReference(context);
+
             if (this.IsContentLoaded )
                 this.InnerContent.DataBind(context);
         }
@@ -248,6 +264,7 @@ namespace Scryber.Html.Components
             base.OnPreLayout(context);
 
             DoLoadReference(context);
+
             if (this.IsContentLoaded)
                 this.InnerContent.AddContent(this.Document, context);
         }
@@ -278,6 +295,9 @@ namespace Scryber.Html.Components
             if (this.IsContentLoaded)
                 return;
 
+            if (this.IsContentLoading)
+                return;
+
             HTMLLinkType type;
 
             if (this.ShouldAddContent(context.OutputFormat, context, out type) == false)
@@ -294,6 +314,37 @@ namespace Scryber.Html.Components
 
             if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                 context.TraceLog.Add(TraceLevel.Verbose, "HTML", "href for link " + this.UniqueID + " mapped to path '" + path + "'");
+
+            //Using the new remote reference loader
+
+            this._request = this.Document.RegisterRemoteFileRequest(path, (caller, args, stream) =>
+            {
+                if (args.Owner != this)
+                    return false;
+                else
+                {
+                    using (var measure = context.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, args.FilePath))
+                    {
+                        if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                            context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
+
+                        var str = DoLoadReferenceResult(stream, args.FilePath, context);
+                        this.ParseLoadedContent(type, str, args.FilePath, context);
+
+                        if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                            context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
+
+                        else if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                            context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded remote href file " + path + " for link " + this.UniqueID);
+
+                        this._request = null;
+                    }
+
+                    return this.IsContentLoaded;
+                }
+            }, this);
+
+            return;
 
             if (!isFile && Uri.IsWellFormedUriString(path, UriKind.Absolute))
             {
@@ -336,6 +387,11 @@ namespace Scryber.Html.Components
                 context.TraceLog.Add(TraceLevel.Error, "HTML", "The link with href " + this.Href + " could not be loaded from path '" + path + "'");
             }
 
+            ParseLoadedContent(type, content, path, context);
+        }
+
+        private void ParseLoadedContent(HTMLLinkType type, string content, string path, PDFContextBase context)
+        {
             switch (type)
             {
                 case (HTMLLinkType.CSS):
@@ -358,7 +414,7 @@ namespace Scryber.Html.Components
                         throw new System.IO.FileLoadException("The link with href " + this.Href + " could not be loaded from path '" + path + "' as it does not have a known rel type - stylesheet or include");
                     else
                         context.TraceLog.Add(TraceLevel.Error, "HTML", "The link with href " + this.Href + " could not be loaded from path '" + path + "'  as it does not have a known rel type - stylesheet or include");
-                    
+
                     break;
             }
         }

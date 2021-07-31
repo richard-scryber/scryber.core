@@ -727,9 +727,12 @@ namespace Scryber.Components
             get { return null != _requests && _requests.Count > 0; }
         }
 
-        public virtual void RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IPDFComponent owner = null, object arguments = null)
+        public virtual PDFRemoteFileRequest RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IPDFComponent owner = null, object arguments = null)
         {
-            this.RegisterRemoteFileRequest(new PDFRemoteFileRequest(filePath, callback, owner, arguments));
+            var request = new PDFRemoteFileRequest(filePath, callback, owner, arguments);
+            this.RegisterRemoteFileRequest(request);
+
+            return request;
         }
 
         public virtual void RegisterRemoteFileRequest(PDFRemoteFileRequest request)
@@ -2642,7 +2645,15 @@ namespace Scryber.Components
         {
             if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
             {
-                using (var client = new System.Net.Http.HttpClient())
+                var client = Scryber.ServiceProvider.GetService<HttpClient>();
+                bool disposeclient = false;
+
+                if (null == client)
+                {
+                    client = new HttpClient();
+                    disposeclient = true;
+                }
+                try
                 {
                     using (var stream = client.GetStreamAsync(fullpath).Result)
                     {
@@ -2652,6 +2663,12 @@ namespace Scryber.Components
                         return comp;
                     }
                 }
+                finally
+                {
+                    if (disposeclient)
+                        client.Dispose();
+                }
+                
             }
             else
             {
@@ -3288,7 +3305,7 @@ namespace Scryber.Components
     }
 
 
-    public static class PDFDocumentExtensions
+    public static class DocumentExtensions
     {
 
         public static bool TryFindAComponentByID<T>(this Scryber.Components.Document doc, string id, out T found) where T : Scryber.Components.Component

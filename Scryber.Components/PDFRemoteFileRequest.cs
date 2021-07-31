@@ -77,6 +77,11 @@ namespace Scryber
             }
         }
 
+        public Document Owner
+        {
+            get { return _owner; }
+        }
+
         public StringComparer Comparer
         {
             get { return this._comparer; }
@@ -135,7 +140,7 @@ namespace Scryber
         }
 
 
-        public bool AddRequest(PDFRemoteFileRequest request)
+        public virtual bool AddRequest(PDFRemoteFileRequest request)
         {
             this.Requests.Add(request ?? throw new ArgumentNullException(nameof(request)));
             return true;
@@ -152,7 +157,7 @@ namespace Scryber
                 foreach (var req in requests)
                 {
                     if (!req.IsCompleted)
-                        this.FullfillRequest(req);
+                        this.FullfillRequest(req); 
                 }
             }
         }
@@ -182,7 +187,7 @@ namespace Scryber
                     throw new InvalidOperationException("Could not complete the request for a remote file");
 
                 else if (request.IsSuccessful == false && raiseErrors)
-                    throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completted");
+                    throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completed");
             }
         }
 
@@ -271,27 +276,97 @@ namespace Scryber
 
     public class PDFRemoteFileAsyncRequestSet : PDFRemoteFileRequestSet
     {
-        private List<Task> _captured;
 
         public PDFRemoteFileAsyncRequestSet(Document owner)
             : base(StringComparer.OrdinalIgnoreCase, DocumentExecMode.Asyncronous, owner)
         {
-            _captured = new List<Task>();
         }
 
-        public async Task EnsureRequestsFullfilledAsync()
-        {
-            if(_captured.Count > 0)
-            {
-                var all = _captured.ToArray();
-                _captured.Clear();
+        
 
-                await Task.Run(() =>
-                {
-                    Task.WaitAll(_captured.ToArray());
-                });
-                this.EnsureRequestsFullfilled();
+        public async Task<int> EnsureRequestsFullfilledAsync()
+        {
+            if (this.Requests.Count > 0)
+            {
+                int completed = 0;
+                var all = this.Requests.ToArray();
                 
+                foreach (var item in all)
+                {
+                    if (item.IsCompleted == false && await FullfillRequestAsync(item, true))
+                        completed += 1;
+                }
+
+                base.EnsureRequestsFullfilled();
+
+                return completed;
+            }
+            else
+                return 0;
+        }
+
+
+        public async Task<bool> FullfillRequestAsync(PDFRemoteFileRequest request, bool raiseErrors = true)
+        {
+            if (!request.IsCompleted)
+            {
+                try
+                {
+                    if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
+                    {
+                        await this.FullfillUriRequestAsync(request);
+                    }
+                    else
+                    {
+                        this.FullfillFileRequest(request);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    request.CompleteRequest(false, ex);
+                }
+
+                if (request.IsCompleted == false)
+                    throw new InvalidOperationException("Could not complete the request for a remote file");
+
+                else if (request.IsSuccessful == false && raiseErrors)
+                    throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completed");
+            }
+            return request.IsCompleted;
+        }
+
+        /// <summary>
+        /// Creates an http client 
+        /// </summary>
+        /// <param name="urlRequest"></param>
+        /// <returns></returns>
+        protected async virtual Task<bool> FullfillUriRequestAsync(PDFRemoteFileRequest urlRequest)
+        {
+            var client = this.GetHttpClient();
+
+            using (var stream = await client.GetStreamAsync(urlRequest.FilePath))
+            {
+                var success = urlRequest.Callback(this.Owner, urlRequest, stream);
+                urlRequest.CompleteRequest(success);
+
+                return success;
+            }
+        }
+
+        /// <summary>
+        /// Creates file stream and callsback the owner of the request, then completes.
+        /// </summary>
+        /// <param name="fileRequest"></param>
+        /// <returns>The result of the callback to the owner</returns>
+        protected async virtual Task<bool> FullfillFileRequestAsync(PDFRemoteFileRequest fileRequest)
+        {
+            var content = await File.ReadAllBytesAsync(fileRequest.FilePath);
+            using (var stream = new MemoryStream(content))
+            {
+                var success = fileRequest.Callback(this.Owner, fileRequest, stream);
+                fileRequest.CompleteRequest(success);
+
+                return success;
             }
         }
 
