@@ -514,6 +514,70 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindingCalcInvalidExpressions()
+        {
+            var model = new
+            {
+                number = 20.7,
+                boolean = true,
+                array = new[] { 10.0, 11.0, 12.0 },
+                str = "#330033",
+                bg = "#AAA",
+                padding = "20pt",
+                items = new[]
+                    {
+                        new {name = "First Item", index = 0},
+                        new {name = "Second Item", index = 1},
+                        new {name = "Third Item", index = 2},
+                    }
+            };
+
+
+            var functions = new FunctionTest[]
+            {
+                new FunctionTest() {grp = "Parentheses", name = "Missing end", function = "(12 + 4", result = ""},
+                new FunctionTest() {grp = "Parentheses", name = "Missing start", function = "12 - 4)", result = ""},
+                new FunctionTest() {grp = "Parentheses", name = "Missing middle", function = "(12 * (4)", result = ""},
+                new FunctionTest() {grp = "Parentheses", name = "Open End", function = "12 / 4 (", result = ""},
+                new FunctionTest() {grp = "Parentheses", name = "Function", function = "concat(", result = ""},
+                new FunctionTest() {grp = "Functions", name = "Unknown Function", function = "unknown()", result = ""},
+                new FunctionTest() {grp = "Functions", name = "Unknown Operator ", function = "11 ; 2", result = ""},
+            };
+
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+
+            Dictionary<string, object> vars = new Dictionary<string, object>(context.ParsingStringComparer)
+            {
+                {"model", model }
+            };
+
+            foreach (var item in functions)
+            {
+                var value = item.function;
+                bool caught = false;
+                string message = "";
+                try
+                {
+                    Expression expr = new Expression(value, context);
+                    object result = expr.Evaluate(vars);
+                }
+                catch(Exception ex)
+                {
+                    message = ex.Message;
+                    caught = true;
+                }
+
+                
+                if (!caught)
+                    throw new InvalidOperationException("The function " + item.function + " did not raise an exception " + item.result);
+
+
+            }
+        }
+
         /// <summary>
         /// Test for binding style values to parameters
         /// </summary>

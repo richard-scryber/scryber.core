@@ -49,18 +49,18 @@ namespace Scryber.Expressive
             }
 
             var tokens = this.tokeniser.Tokenise(expression);
-
-            var openCount = tokens.Select(t => t.CurrentToken).Count(t => string.Equals(t, "(", StringComparison.Ordinal));
-            var closeCount = tokens.Select(t => t.CurrentToken).Count(t => string.Equals(t, ")", StringComparison.Ordinal));
+            var compare = tokens.CompareParenthese();
+            //var openCount = tokens.Select(t => t.CurrentToken).Count(t => string.Equals(t, "(", StringComparison.Ordinal));
+            //var closeCount = tokens.Select(t => t.CurrentToken).Count(t => string.Equals(t, ")", StringComparison.Ordinal));
 
             // Bail out early if there isn't a matching set of ( and ) characters.
-            if (openCount > closeCount)
+            if (compare > 0)
             {
-                throw new ArgumentException("There aren't enough ')' symbols. Expected " + openCount + " but there is only " + closeCount);
+                throw new ArgumentException("There aren't enough ')' symbols.");
             }
-            if (openCount < closeCount)
+            else if (compare < 0)
             {
-                throw new ArgumentException("There are too many ')' symbols. Expected " + openCount + " but there is " + closeCount);
+                throw new ArgumentException("There are too many ')' symbols");
             }
 
             var expr = this.CompileExpression(new Queue<Token>(tokens), OperatorPrecedence.Minimum, variables, false);
@@ -115,7 +115,7 @@ namespace Scryber.Expressive
                         {
                             rightHandSide = this.CompileExpression(tokens, precedence, variables, isWithinFunction);
                             // We are at the end of an expression so fake it up.
-                            currentToken = new Token(")", -1);
+                            currentToken = new Token(")", -1, ExpressionTokenType.Parenthese);
                         }
 
                         leftHandSide = op.BuildExpression(previousToken, new[] { leftHandSide, rightHandSide }, this.context);

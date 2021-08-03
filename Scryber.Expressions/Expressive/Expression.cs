@@ -23,6 +23,7 @@ using Scryber.Expressive.Exceptions;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Functions;
 using Scryber.Expressive.Operators;
+using Scryber.Expressive.Tokenisation;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -78,7 +79,7 @@ namespace Scryber.Expressive
         /// <param name="expression">The expression to be evaluated.</param>
         /// <param name="context">The <see cref="Context"/> to use when evaluating.</param>
         public Expression(string expression, Context context)
-            : this(expression, new ExpressionParser2(context), context)
+            : this(expression, new ExpressionParser(context, new Tokeniser(context)), context)
         {
 
         }
