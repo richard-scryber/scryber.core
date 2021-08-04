@@ -206,7 +206,7 @@ namespace Scryber.Core.UnitTests.Drawing
             ColorSpace cs = ColorSpace.RGB;
             Color c = Color.FromArgb(255, 255, 255);
             PDFColor target = new PDFColor(cs, c);
-            string expected = "rgb (255,255,255)"; 
+            string expected = "rgb(255,255,255)"; 
             string actual;
             actual = target.ToString();
             Assert.AreEqual(expected, actual);

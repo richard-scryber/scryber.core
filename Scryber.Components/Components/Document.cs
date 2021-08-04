@@ -897,13 +897,20 @@ namespace Scryber.Components
         {
             if (null == baseStyle)
                 baseStyle = new Style();
-            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
+
+            
+
+            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Root);
+
+            
+
             return baseStyle;
         }
 
         #endregion
 
         #region protected virtual PDFStyle CreateDefaultStyle()
+
 
         /// <summary>
         /// Creates the standard default style - setting page size, font + size, fill color - and returns the new PDFStyle instance.
@@ -913,13 +920,13 @@ namespace Scryber.Components
         protected virtual Style CreateDefaultStyle()
         {
             Style style = this.GetBaseStyle();
-
-
+            
             //Get the applied style and then merge it into the base style
             Style applied = this.GetAppliedStyle(this, style);
             //if (null != applied)
             //    applied.MergeInto(style);
             applied.Flatten();
+
             return applied;
         }
 

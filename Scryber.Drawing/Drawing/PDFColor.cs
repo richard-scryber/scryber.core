@@ -180,7 +180,7 @@ namespace Scryber.Drawing
         {
             System.Text.StringBuilder sb = new StringBuilder(20);
             sb.Append(this.ColorSpace.ToString().ToLower());
-            sb.Append(" (");
+            sb.Append("(");
             switch (this.ColorSpace)
             {
                 case ColorSpace.G:

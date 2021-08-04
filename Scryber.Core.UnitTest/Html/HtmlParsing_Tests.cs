@@ -507,10 +507,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(pRun.Characters, model.content);
 
             var bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+            Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             var color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color);
 
             //Second page check
 
@@ -544,10 +544,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("Second", lbl.Characters);
 
             bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+            Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color);
 
             // Performance check
             using (var doc = Document.ParseDocument(path))
@@ -633,10 +633,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(pRun.Characters, model.content.ToString());
 
             var bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+            Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             var color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color.ToString());
+            Assert.AreEqual("rgb(255,255,255)", color.ToString());
 
             //Second page check
 
@@ -651,10 +651,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("This is the content on the next page with number ", pRun.Characters);
 
             bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+            Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color.ToString());
+            Assert.AreEqual("rgb(255,255,255)", color.ToString());
 
         }
 
@@ -732,13 +732,13 @@ namespace Scryber.Core.UnitTests.Html
 
             pRun = pLine.Runs[4] as PDFTextRunCharacter;
 
-            Assert.AreEqual(pRun.Characters, model.content);
+            Assert.AreEqual(pRun.Characters, model.content + " & \"an error in quotes\"");
 
             var bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+            Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             var color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color);
 
             //Second page check
 
@@ -772,10 +772,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("Second", lbl.Characters);
 
             bgColor = pBlock.FullStyle.Background.Color;
-            Assert.AreEqual("rgb (255,0,0)", bgColor.ToString()); //Red Background
+            Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb (255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color);
 
             //Performance check
             using (var doc = Document.ParseDocument(path))

@@ -10,6 +10,10 @@
     
     <title>This is a body with headers and footers</title>
     <style type="text/css" >
+
+        :root{
+            --font-size: 20;
+        }
         .grey{
             background-color: #333;
             color: #EEE;
@@ -30,7 +34,7 @@
 
         
         .large{
-            font-size:20pt;
+            font-size: calc(var(--font-size) * 2);
         }
         
         
@@ -44,7 +48,7 @@
     </header>
     <!-- The rest of the content should go into the body -->
     <p class='{{model.bodyClass}}' title="{{model.content}}" style="{{model.bodyStyle}}">
-        Bound value of {{model.content}}
+        Bound value of {{concat(model.content,' &amp; &quot;an error in quotes&quot;')}}
     </p>
 
     <div class="pg-break-after"></div>
@@ -56,7 +60,7 @@
     <table style="margin:20pt">
         <template data-bind="{{model.items}}">
             <tr class="bound-row {{if(index() % 2 == 0,'even', 'odd')}}">
-                <td>{{.Name}}</td>
+                <td>{{model.items[index()].Name}}</td>
             </tr>
         </template>
     </table>

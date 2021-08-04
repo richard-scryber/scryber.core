@@ -1170,9 +1170,8 @@ namespace Scryber.Components
         /// <param name="applied"></param>
         protected virtual void MergeDeclaredStyles(Style applied)
         {
-            if (this is IPDFStyledComponent)
+            if (this is IPDFStyledComponent styledComponent)
             {
-                IPDFStyledComponent styledComponent = this as IPDFStyledComponent;
                 if (styledComponent.HasStyle)
                     styledComponent.Style.MergeInto(applied, Style.DirectStylePriority);
             }

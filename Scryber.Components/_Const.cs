@@ -98,6 +98,8 @@ namespace Scryber
         /// </summary>
         public const string ScryberProcessingInstructions = "scryber";
 
+        public const string RootPseudoClass = ":root";
+
         //
         // namespace constants
         //

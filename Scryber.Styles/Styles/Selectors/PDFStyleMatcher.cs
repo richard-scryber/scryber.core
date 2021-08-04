@@ -85,6 +85,13 @@ namespace Scryber.Styles.Selectors
             if (string.Equals("*", selector))
                 return new PDFStyleCatchAllMatcher();
 
+            if(string.Equals(":root", selector))
+            {
+                return new PDFStyleMatcher(new PDFStyleSelector() { AppliedState = ComponentState.Root });
+            }
+
+            StringBuilder buffer = new StringBuilder();
+
             var each = selector.Split(", ", StringSplitOptions.RemoveEmptyEntries);
             
             if (each.Length > 1)
@@ -96,7 +103,7 @@ namespace Scryber.Styles.Selectors
                     var all = one.Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
                     StylePlacement placement = StylePlacement.Any;
-                    var parsed = ParseSelectorList(all, all.Length - 1, placement);
+                    var parsed = ParseSelectorList(all, all.Length - 1, placement, buffer);
 
                     if (null == root)
                         root = new PDFStyleMatcher(parsed);
@@ -110,7 +117,7 @@ namespace Scryber.Styles.Selectors
                 var all = String.IsNullOrEmpty(selector) ? new string[] { } : selector.Split(" ", StringSplitOptions.RemoveEmptyEntries);
                 
                 StylePlacement placement = StylePlacement.Any;
-                var one = ParseSelectorList(all, all.Length - 1, placement);
+                var one = ParseSelectorList(all, all.Length - 1, placement, buffer);
 
 
                 return new PDFStyleMatcher(one);
@@ -121,18 +128,18 @@ namespace Scryber.Styles.Selectors
 
         #region public static PDFStyleMatch ParseSelectorList(string[] selector, int index, StylePlacement placement)
 
-        public static PDFStyleSelector ParseSelectorList(string[] selector, int index, StylePlacement placement)
+        public static PDFStyleSelector ParseSelectorList(string[] selector, int index, StylePlacement placement, StringBuilder buffer)
         {
             if (selector[index] == ">")
             {
                 placement = StylePlacement.DirectParent;
                 index--;
             }
-            var one = ParseSingleSelector(selector[index]);
+            var one = ParseSingleSelector(selector[index], buffer);
             one.Placement = placement;
 
             if (index > 0)
-                one.Ancestor = ParseSelectorList(selector, index-1, StylePlacement.Any);
+                one.Ancestor = ParseSelectorList(selector, index-1, StylePlacement.Any, buffer);
 
             return one;
         }
@@ -141,20 +148,29 @@ namespace Scryber.Styles.Selectors
 
         #region public static PDFStyleMatch ParseSingleSelector(string selector)
 
-        public static PDFStyleSelector ParseSingleSelector(string selector)
+        public static PDFStyleSelector ParseSingleSelector(string selector, StringBuilder buffer)
         {
             string appliedType = null;
             PDFStyleClassSelector appliedClass = null;
             string appliedId = null;
 
+            int stateIndex = -1;
+            ParsingType statePreviousType = ParsingType.Type;
+
+            ComponentState appliedState = ComponentState.Normal;
+
             ParsingType pt = ParsingType.Type; // no selector
 
-            StringBuilder sb = new StringBuilder();
-            foreach (var c in selector)
+            StringBuilder sb = buffer;
+            sb.Clear();
+
+            for(var currIndex = 0; currIndex < selector.Length; currIndex++)
             {
+                char c = selector[currIndex];
+
                 if (c == '#')
                 {
-                    if(sb.Length > 0)
+                    if (sb.Length > 0)
                     {
                         switch (pt)
                         {
@@ -171,7 +187,7 @@ namespace Scryber.Styles.Selectors
 
                                 break;
                         }
-                        sb.Clear(); 
+                        sb.Clear();
                     }
                     pt = ParsingType.Id;
                 }
@@ -199,9 +215,17 @@ namespace Scryber.Styles.Selectors
                     pt = ParsingType.Class;
                 }
                 else
+                {
+                    if (c == ':')
+                    {
+                        stateIndex = currIndex;
+                        statePreviousType = pt;
+                    }
                     sb.Append(c);
+                }
 
             }
+            //At the end of the string
             if(sb.Length > 0)
             {
                 switch (pt)
@@ -221,14 +245,25 @@ namespace Scryber.Styles.Selectors
                 }
                 sb.Clear();
             }
-            return new PDFStyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType };
+
+            if(stateIndex >= 0)
+            {
+                //TODO: Check for state
+                if(stateIndex == 0 && appliedType == ":root")
+                {
+
+                }
+            }
+
+            return new PDFStyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState };
         }
 
         private enum ParsingType
         {
             Type,
             Class,
-            Id
+            Id,
+            State
         }
 
         #endregion

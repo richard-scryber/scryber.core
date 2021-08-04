@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             StyleCollection target = new StyleCollection();
             StyleDefn defn = new StyleDefn();
-            defn.Match = "doc:Label.sea";
+            defn.Match = "Label.sea";
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
@@ -110,7 +110,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Add(defn3);
 
             Label lbl = new Label();
-            lbl.ElementName = "doc:Label";
+            lbl.ElementName = "Label";
             ComponentState state = ComponentState.Normal;
 
             Style style = new Style();

@@ -511,5 +511,55 @@ body.grey div.reverse{
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual(FontSourceFormat.EmbeddedOpenType, parsed.Format);
         }
+
+        [TestMethod()]
+        public void ParseCSSWithRoot()
+        {
+
+            var css = @"
+
+                :root{
+                    color: #00FF00;
+                }
+
+                .other{
+                    color: #0000FF
+                }";
+            Document doc = new Document();
+            PDFLoadContext context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+
+            var cssparser = new CSSStyleParser(css, context);
+
+
+            StyleCollection col = new StyleCollection();
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+
+            
+            var applied = doc.GetAppliedStyle();
+            Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
+
+
+            doc = new Document();
+            context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+
+            cssparser = new CSSStyleParser(css, context);
+
+            col = new StyleCollection();
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+
+            //This should override the root declaration
+            doc.StyleClass = "other";
+
+            applied = doc.GetAppliedStyle();
+            Assert.AreEqual("rgb(0,0,255)", applied.Fill.Color.ToString());
+        }
     }
 }
