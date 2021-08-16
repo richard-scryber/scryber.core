@@ -291,10 +291,28 @@ namespace Scryber.Styles
             int priority;
 
             if (this.IsMatchedTo(forComponent, out priority))
+            {
                 this.MergeInto(style, priority);
+                if (this.HasVariables)
+                    this.MergeVariables(style);
+            }
         }
 
         #endregion
+
+        protected virtual void MergeVariables(Style style)
+        {
+            if (null == style)
+                throw new ArgumentNullException(nameof(style));
+
+            if(this.HasVariables)
+            {
+                foreach (var item in this.Variables)
+                {
+                    style.AddVariable(item.Key, item.Value);
+                }
+            }
+        }
 
         #region protected virtual PDFStyleMatcher AssertMatcher()
 
@@ -319,6 +337,7 @@ namespace Scryber.Styles
         }
 
         #endregion
+
 
         //
         // object overrides

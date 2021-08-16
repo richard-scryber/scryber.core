@@ -94,7 +94,7 @@ namespace Scryber.Binding
 
 
 
-    internal static class PDFItemCollectionExtensions
+    public static class PDFItemCollectionExtensions
     {
 
         public static IVariableProvider ValueProvider(this PDFItemCollection items)
@@ -103,7 +103,7 @@ namespace Scryber.Binding
         }
     }
 
-    internal class PDFItemVariableProvider : IVariableProvider
+    public class PDFItemVariableProvider : IVariableProvider
     {
 
         private PDFItemCollection _items;

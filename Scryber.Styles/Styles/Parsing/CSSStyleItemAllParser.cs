@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Styles;
 using Scryber.Html;
+using System.Drawing.Printing;
 
 namespace Scryber.Styles.Parsing
 {
@@ -40,25 +41,55 @@ namespace Scryber.Styles.Parsing
             else
             {
                 if (null != parser && parser.IsLogging)
-                    parser.Log.Add(TraceLevel.Warning, "CSS", "Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
+                    parser.Context.TraceLog.Add(TraceLevel.Warning, "CSS", "Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
             }
             return false;
         }
 
-        public bool SetStyleValue(PDFTraceLog log, Style style, CSSStyleItemReader reader)
+        public bool SetStyleValue(Style style, CSSStyleItemReader reader, PDFContextBase context)
         {
             IParserStyleFactory found;
 
             if (string.IsNullOrEmpty(reader.CurrentAttribute) && reader.ReadNextAttributeName() == false)
                 return false;
 
+            string variable;
+            if(IsVariableName(reader, out variable))
+            {
+                if(style is StyleDefn defn)
+                {
+                    var id = reader.CurrentAttribute;
+                    if (reader.ReadNextValue(';', ignoreWhiteSpace: true))
+                        defn.AddVariable(id, variable, reader.CurrentTextValue);
+                }
+                else if (null != context && context.TraceLog.ShouldLog(TraceLevel.Warning))
+                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "Can only declare variables within style definitions '" + reader.CurrentAttribute + "' is not beinf set on a definition.");
+
+            }
             if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
-                return found.SetStyleValue(log, style, reader);
+                return found.SetStyleValue(style, reader, context);
             else
             {
-                if (null != log && log.ShouldLog(TraceLevel.Warning))
-                    log.Add(TraceLevel.Warning, "CSS", "Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
+                if (null != context && context.TraceLog.ShouldLog(TraceLevel.Warning))
+                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "Could not set the style value on attribute '" + reader.CurrentAttribute + "' as it is not a known style attribute.");
 
+                return false;
+            }
+        }
+
+        private const string CSSVariableIdentifier = "--";
+        private const int CSSVariableIdentifierLength = 2;
+
+        protected bool IsVariableName(CSSStyleItemReader reader, out string name)
+        {
+            if (reader.CurrentAttribute.StartsWith(CSSVariableIdentifier))
+            {
+                name = reader.CurrentAttribute.Substring(CSSVariableIdentifierLength);
+                return true;
+            }
+            else
+            {
+                name = null;
                 return false;
             }
         }

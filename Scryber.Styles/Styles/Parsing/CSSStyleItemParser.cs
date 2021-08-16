@@ -12,6 +12,7 @@ using System.Windows.Markup;
 using Scryber.Text;
 using System.Security.Cryptography;
 using System.Drawing.Printing;
+using System.Drawing.Imaging;
 
 namespace Scryber.Styles.Parsing
 {
@@ -68,39 +69,46 @@ namespace Scryber.Styles.Parsing
 
         bool IParserStyleFactory.SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
         {
-            return this.SetStyleValue(parser.Log, onComponent.Style, reader);
+            return this.SetStyleValue(onComponent.Style, reader, parser.Context);
         }
 
-        public bool SetStyleValue(PDFTraceLog log, Style style, CSSStyleItemReader reader)
+        public bool SetStyleValue(Style style, CSSStyleItemReader reader, PDFContextBase context)
         {
             var attr = reader.CurrentAttribute;
             //var val = reader.CurrentTextValue;
 
+            
             bool success = this.DoSetStyleValue(style, reader);
 
-            if (null != log)
+            if (null != context && null != context.TraceLog)
             {
-                if (success && log.ShouldLog(TraceLevel.Debug))
+                if (success && context.ShouldLogDebug)
                 {
-                    log.Add(TraceLevel.Debug, "CSS", "The css style item " + (string.IsNullOrEmpty(attr) ? "[UNKNOWN]" : attr) + " set on style " + style.ToString());
+                    context.TraceLog.Add(TraceLevel.Debug, "CSS", "The css style item " + (string.IsNullOrEmpty(attr) ? "[UNKNOWN]" : attr) + " set on style " + style.ToString());
                 }
-                else if (!success && log.ShouldLog(TraceLevel.Warning))
+                else if (!success && context.TraceLog.ShouldLog(TraceLevel.Warning))
                 {
-                    log.Add(TraceLevel.Warning, "CSS", "The css style item " + (string.IsNullOrEmpty(attr) ? "[UNKNOWN]" : attr) + " could not be set on style " + style.ToString());
+                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "The css style item " + (string.IsNullOrEmpty(attr) ? "[UNKNOWN]" : attr) + " could not be set on style " + style.ToString());
                 }
             }
             return success;
         }
 
-        
-
-        private void Style_DataBinding(object sender, PDFDataBindEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         protected abstract bool DoSetStyleValue(Style style, CSSStyleItemReader reader);
 
+
+        #region protected bool IsExpression(string part)
+
+        protected bool IsExpression(string part)
+        {
+            if (part.StartsWith("var(") || part.StartsWith("calc("))
+                return true;
+            else
+                return false;
+        }
+
+        #endregion
 
         #region protected bool IsColor(string part)
 
@@ -215,7 +223,7 @@ namespace Scryber.Styles.Parsing
             return false;
         }
 
-        protected static bool  EndsWithRelativeUnit(string part)
+        protected static bool EndsWithRelativeUnit(string part)
         {
             if (part.EndsWith("%", StringComparison.OrdinalIgnoreCase))
                 return true;
@@ -455,10 +463,22 @@ namespace Scryber.Styles.Parsing
         }
 
 
+        protected bool AttachExpressionBindingHandler(Style style, string value, StyleValueConvertor<T> convert)
+        {
+            var expr = new Scryber.Expressive.Expression(value, null);
+            var binder = new StyleBindingExpression<T>(this.StyleAttribute, expr, convert);
+            style.DataBound += binder.BindValue;
+
+            
+            return true;
+        }
+
+
         protected void SetValue(Style onStyle, T value)
         {
             onStyle.SetValue(_styleAttr, value);
         }
+
 
     }
 
@@ -470,42 +490,56 @@ namespace Scryber.Styles.Parsing
     /// Parses a value into an enumeration value for a PDFStyleItem
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class CSSEnumStyleParser<T> : CSSStyleValueParser where T : struct
+    public class CSSEnumStyleParser<T> : CSSStyleAttributeParser<T> where T : struct
     {
-        private PDFStyleKey<T> _pdfStyleAttr;
-
-        protected PDFStyleKey<T> StyleKey
-        {
-            get { return this._pdfStyleAttr; }
-            set { this._pdfStyleAttr = value; }
-        }
 
         private Type _enumType;
 
         public CSSEnumStyleParser(string styleItemKey, PDFStyleKey<T> pdfAttr)
-            : base(styleItemKey)
+            : base(styleItemKey, pdfAttr)
         {
-            if (null == pdfAttr)
-                throw new ArgumentNullException("pdfAttr");
-
-            _pdfStyleAttr = pdfAttr;
             _enumType = typeof(T);
         }
 
-        protected void SetValue(Style onStyle, T value)
-        {
-            onStyle.SetValue(_pdfStyleAttr, value);
-        }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool success = false;
             T result;
 
-            if (reader.ReadNextValue() && Enum.TryParse<T>(reader.CurrentTextValue, true, out result))
+            if (reader.ReadNextValue())
             {
-                this.SetValue(onStyle, result);
-                success = true;
+                if (IsExpression(reader.CurrentTextValue))
+                {
+                    this.AttachExpressionBindingHandler(onStyle, reader.CurrentTextValue, this.DoConvertEnum);
+                }
+                else if (Enum.TryParse<T>(reader.CurrentTextValue, true, out result))
+                {
+                    this.SetValue(onStyle, result);
+                    success = true;
+                }
+            }
+            return success;
+        }
+
+        private const bool IgnoreCase = true;
+
+        private bool DoConvertEnum(object value, PDFDataContext context, out T result)
+        {
+            bool success = true;
+            if(null == value)
+            {
+                success = false;
+                result = default;
+            }
+            if (value is T)
+                result = (T)value;
+            else if (value is string)
+                success = Enum.TryParse<T>(value as string, out result);
+            else
+            {
+                var str = (value).ToString();
+                success = Enum.TryParse<T>(str, IgnoreCase, out result);
             }
             return success;
         }
@@ -762,7 +796,7 @@ namespace Scryber.Styles.Parsing
 
             if (reader.ReadNextValue() && TryGetLineStyleFromReader(reader, out converted, out dash))
             {
-                onStyle.SetValue(this.StyleKey, converted);
+                onStyle.SetValue(this.StyleAttribute, converted);
                 if (null != dash)
                     onStyle.SetValue(DashKey, dash);
 

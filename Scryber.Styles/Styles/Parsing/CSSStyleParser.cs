@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber.Styles.Parsing
 {
@@ -27,17 +28,14 @@ namespace Scryber.Styles.Parsing
             private set;
         }
 
-        private PDFTraceLog Log;
+        private PDFTraceLog _log;
 
         public CSSStyleParser(string content, PDFContextBase context)
         {
+            this.Context = context;
             this.Content = content;
             this._err = new List<CSSParsingError>();
-            this.Context = context;
-            if (null == context)
-                this.Log = new Logging.DoNothingTraceLog(TraceRecordLevel.Off);
-            else
-                this.Log = context.TraceLog;
+            this._log = context == null ? new DoNothingTraceLog(TraceRecordLevel.Off) : context.TraceLog;
         }
 
         public IEnumerator<StyleBase> GetEnumerator()
@@ -46,7 +44,7 @@ namespace Scryber.Styles.Parsing
             content = this.RemoveComments(content);
 
             var strEnum = new StringEnumerator(content);
-            return new CSSStyleEnumerator(strEnum, this, this.Log);
+            return new CSSStyleEnumerator(strEnum, this, this.Context);
         }
 
         internal void RegisterParsingError(int offset, string selector, Exception ex)
@@ -61,8 +59,8 @@ namespace Scryber.Styles.Parsing
 
         private string RemoveComments(string contnet)
         {
-            if (this.Log.ShouldLog(TraceLevel.Verbose))
-                this.Log.Add(TraceLevel.Verbose, "CSS", "Removing comments from css styles");
+            if (this._log.ShouldLog(TraceLevel.Verbose))
+                this._log.Add(TraceLevel.Verbose, "CSS", "Removing comments from css styles");
 
             
             contnet = CommentMatcher.Replace(contnet, "");

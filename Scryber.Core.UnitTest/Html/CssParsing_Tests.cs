@@ -561,5 +561,74 @@ body.grey div.reverse{
             applied = doc.GetAppliedStyle();
             Assert.AreEqual("rgb(0,0,255)", applied.Fill.Color.ToString());
         }
+
+
+        [TestMethod()]
+        public void ParseCSSWithVariables()
+        {
+
+            var css = @"
+
+                :root{
+                    color: #00FF00;
+                    --main-color: #FF0000;
+                }
+
+                .other{
+                    color: var(--main-color);
+                }";
+
+            Document doc = new Document();
+            PDFLoadContext context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+
+            var cssparser = new CSSStyleParser(css, context);
+
+
+            StyleCollection col = new StyleCollection();
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+
+            //Check that the variable is there.
+            
+            StyleDefn defn = doc.Styles[0] as StyleDefn;
+
+            Assert.IsTrue(defn.HasVariables);
+            Assert.AreEqual(1, defn.Variables.Count);
+            Assert.AreEqual("main-color", defn.Variables["--main-color"].Name);
+            Assert.AreEqual("#FF0000", defn.Variables["--main-color"].Value);
+
+
+            var applied = doc.GetAppliedStyle();
+
+
+            Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
+
+
+            doc = new Document();
+            context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+
+            cssparser = new CSSStyleParser(css, context);
+
+            col = new StyleCollection();
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+            
+
+            
+            //This should override the root declaration
+            doc.StyleClass = "other";
+
+            doc.InitializeAndLoad();
+            doc.DataBind();
+
+            applied = doc.GetAppliedStyle();
+            Assert.AreEqual("rgb(255,0,0)", applied.Fill.Color.ToString(), "Variable '--main-color' was not applied to the document");
+        }
     }
 }

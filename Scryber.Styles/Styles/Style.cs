@@ -120,6 +120,28 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public StyleVariableSet Variables {get;} + HasVariables {get;}
+
+        private StyleVariableSet _variables;
+
+        public StyleVariableSet Variables
+        {
+            get
+            {
+                return _variables;
+            }
+        }
+
+        public bool HasVariables
+        {
+            get
+            {
+                return null != _variables && _variables.Count > 0;
+            }
+        }
+
+        #endregion
+
         // style accessort properties
 
         #region public PDFBackgroundStyle Background {get;}
@@ -1116,6 +1138,28 @@ namespace Scryber.Styles
 
 
         //
+        // variables
+        //
+
+        public bool AddVariable(string identifier, string name, string value)
+        {
+            if (null == this._variables)
+                _variables = new StyleVariableSet();
+            _variables.Add(identifier, new StyleVariable() { Name = name, Value = value });
+
+            return true;
+        }
+
+        internal void AddVariable(string identifier, StyleVariable variable)
+        {
+            if (null == this._variables)
+                _variables = new StyleVariableSet();
+
+            _variables.Add(identifier, variable ?? throw new ArgumentNullException(nameof(variable)));
+        }
+
+
+        //
         // Parsing
         //
 
@@ -1131,7 +1175,7 @@ namespace Scryber.Styles
 
                 while (reader.ReadNextAttributeName())
                 {
-                    parser.SetStyleValue(null, style, reader);
+                    parser.SetStyleValue(style, reader, null);
                 }
             }
 

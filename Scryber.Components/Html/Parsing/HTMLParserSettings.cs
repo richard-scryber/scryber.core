@@ -92,9 +92,9 @@ namespace Scryber.Html.Parsing
         }
 
         /// <summary>
-        /// Gets or sets the TraceLog for the parser
+        /// Gets or sets the Context for the parser
         /// </summary>
-        public PDFTraceLog TraceLog
+        public PDFContextBase Context
         {
             get;
             set;
@@ -103,7 +103,7 @@ namespace Scryber.Html.Parsing
         /// <summary>
         /// Gets or sets the level at which any messages sould be written
         /// </summary>
-        public TraceLevel LogLevel
+        public TraceRecordLevel LogRecordLevel
         {
             get;
             set;
@@ -154,20 +154,14 @@ namespace Scryber.Html.Parsing
         // .ctor
         //
 
-        #region public HTMLParserSettings()
-
-        public HTMLParserSettings() : this(null)
-        { }
-
-        #endregion
 
         #region public HTMLParserSettings(PDFTraceLog log)
 
         /// <summary>
         /// Creates a new default instance of the parser settings
         /// </summary>
-        public HTMLParserSettings(PDFTraceLog log)
-            : this(DefaultSkipUnknown, DefaultSkipCssClasses, DefaultSkipStyles, DefaultSkipProcessingInstructions,DefaultSkipComments,DefaultSkipDocType, DefaultSkipCData, TraceLevel.Verbose, log, new ReadOnlyList<string>(DefaultSkipOverTags), new ReadOnlyDictionary<string,char>(DefaultEscapedHTMLEntities))
+        public HTMLParserSettings(PDFContextBase context)
+            : this(DefaultSkipUnknown, DefaultSkipCssClasses, DefaultSkipStyles, DefaultSkipProcessingInstructions,DefaultSkipComments,DefaultSkipDocType, DefaultSkipCData, context, new ReadOnlyList<string>(DefaultSkipOverTags), new ReadOnlyDictionary<string,char>(DefaultEscapedHTMLEntities))
         {
         }
 
@@ -181,12 +175,14 @@ namespace Scryber.Html.Parsing
         /// <param name="skipUnknown">Flag if unknown tags should be ignored</param>
         /// <param name="skipOverTags">Any known but unusable tags that should be skipped completely (including any of their inner content)</param>
         /// <param name="escapeEntites">All the escaped entities mapping HTML entities (e.g. &amp;) to the character equivalent (e.g. &)</param>
-        private HTMLParserSettings(bool skipUnknown, bool skipCssClasses, bool skipStyles, bool skipProcessingInstructions, bool skipComments, bool skipDocType, bool skipCData, TraceLevel loglevel, PDFTraceLog log, IList<string> skipOverTags, IDictionary<string,char> escapeEntites)
+        private HTMLParserSettings(bool skipUnknown, bool skipCssClasses, bool skipStyles, bool skipProcessingInstructions, bool skipComments, bool skipDocType, bool skipCData, PDFContextBase context, IList<string> skipOverTags, IDictionary<string,char> escapeEntites)
         {
             if (null == escapeEntites)
                 throw new ArgumentNullException("escapeEntities");
             if (null == skipOverTags)
                 throw new ArgumentNullException("skipOverTags");
+            if (null == context)
+                throw new ArgumentNullException("context");
 
             this.SkipUnknownTags = skipUnknown;
             this.SkipOverTags = skipOverTags;
@@ -197,8 +193,8 @@ namespace Scryber.Html.Parsing
             this.SkipStyles = skipStyles;
             this.SkipProcessingInstructions = skipProcessingInstructions;
             this.HTMLEntityMappings = escapeEntites;
-            this.LogLevel = loglevel;
-            this.TraceLog = log;
+            this.LogRecordLevel = context.TraceLog.RecordLevel;
+            this.Context = context;
         }
 
         #endregion

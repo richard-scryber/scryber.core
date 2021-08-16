@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber.Styles.Parsing
 {
@@ -10,13 +11,20 @@ namespace Scryber.Styles.Parsing
         private StringEnumerator _str;
         private CSSStyleParser _owner;
         private StyleBase _curr;
+        private PDFContextBase _context;
         private PDFTraceLog _log;
 
-        public CSSStyleEnumerator(StringEnumerator str, CSSStyleParser owner, PDFTraceLog log)
+        public PDFContextBase Context
+        {
+            get { return this._context; }
+        }
+
+        public CSSStyleEnumerator(StringEnumerator str, CSSStyleParser owner, PDFContextBase context)
         {
             this._str = str;
             this._owner = owner;
-            this._log = log;
+            this._context = context;
+            this._log = context == null ? new DoNothingTraceLog(TraceRecordLevel.Off) : context.TraceLog;
         }
 
         public StyleBase Current
@@ -117,7 +125,7 @@ namespace Scryber.Styles.Parsing
 
                     while (reader.ReadNextAttributeName())
                     {
-                        parser.SetStyleValue(this._log, pg, reader);
+                        parser.SetStyleValue(pg, reader, this.Context);
                     }
 
 
@@ -140,7 +148,7 @@ namespace Scryber.Styles.Parsing
 
                     while (reader.ReadNextAttributeName())
                     {
-                        parser.SetStyleValue(this._log, ff, reader);
+                        parser.SetStyleValue(ff, reader, this.Context);
                     }
 
 
@@ -173,7 +181,7 @@ namespace Scryber.Styles.Parsing
 
                     while (reader.ReadNextAttributeName())
                     {
-                        parser.SetStyleValue(this._log, defn, reader);
+                        parser.SetStyleValue(defn, reader, this.Context);
                     }
 
                     //success, so we can return

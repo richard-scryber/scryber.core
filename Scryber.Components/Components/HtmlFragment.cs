@@ -133,6 +133,7 @@ namespace Scryber.Components
             {
                 if (!string.IsNullOrEmpty(this.Source))
                 {
+                    //TODO:Put this at the document level
 
                     fullpath = this.MapPath(this.Source);
                     if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
@@ -181,7 +182,7 @@ namespace Scryber.Components
 
                 try
                 {
-                    this.ParseHtmlContents(fullpath, this._contentsAsString, container, index);
+                    this.ParseHtmlContents(fullpath, this._contentsAsString, container, index, context);
                 }
                 catch (Exception ex)
                 {
@@ -237,9 +238,9 @@ namespace Scryber.Components
             throw new ArgumentNullException("This HTML Fragment does not have a parent component that is a container to add the conetents to");
         }
 
-        protected virtual void ParseHtmlContents(string source, string html, IPDFContainerComponent container, int insertIndex)
+        protected virtual void ParseHtmlContents(string source, string html, IPDFContainerComponent container, int insertIndex, PDFContextBase context)
         {
-            HTMLParserSettings settings = GetParserSettings();
+            HTMLParserSettings settings = GetParserSettings(context);
 
             if(this.Format == HtmlFormatType.Markdown)
             {
@@ -284,10 +285,9 @@ namespace Scryber.Components
             }
         }
 
-        internal virtual HTMLParserSettings GetParserSettings()
+        internal virtual HTMLParserSettings GetParserSettings(PDFContextBase context)
         {
-            HTMLParserSettings settings = new HTMLParserSettings();
-            //TODO: Apply setting values.
+            HTMLParserSettings settings = new HTMLParserSettings(context);
             return settings;
         }
 

@@ -46,12 +46,12 @@ namespace Scryber.Binding
             }
         }
 
-        private FunctionSet FactoryFunctions
+        public FunctionSet FactoryFunctions
         {
             get { return _stdFunctions; }
         }
 
-        private OperatorSet FactoryOperators
+        public OperatorSet FactoryOperators
         {
             get { return _stdOperators; }
         }

@@ -82,9 +82,9 @@ namespace Scryber.Html.Parsing
 
         #endregion
 
-        public PDFTraceLog Log
+        public PDFContextBase Context
         {
-            get { return this._settings.TraceLog; }
+            get { return this._settings.Context; }
         }
         //
         // .ctor
@@ -146,21 +146,20 @@ namespace Scryber.Html.Parsing
         /// <param name="factory"></param>
         protected virtual void Init(string text, IParserComponentFactory factory, IParserStyleFactory styles, HTMLParserSettings settings)
         {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
             if (null == factory)
                 factory = new HTMLParserComponentFactory();
 
             if (null == styles)
                 styles = new CSSStyleItemAllParser();
 
-            if (null == settings)
-                settings = new HTMLParserSettings();
-
             _text = text;
             _instanceFact = factory;
             _settings = settings;
             _styleFact = styles;
-
-            _shouldlog = null != _settings.TraceLog && _settings.TraceLog.ShouldLog(_settings.LogLevel);
+            _shouldlog = null != _settings.Context;
         }
 
         #endregion
