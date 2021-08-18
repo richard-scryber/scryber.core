@@ -14,10 +14,12 @@
     <None Remove="Expressions\" />
     <None Remove="Expressive\Exceptions\" />
     <None Remove="NuGet.Build.Packaging" />
+    <None Remove="Expressive\Functions\CSS\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Expressive\" />
     <Folder Include="Expressive\Exceptions\" />
+    <Folder Include="Expressive\Functions\CSS\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">

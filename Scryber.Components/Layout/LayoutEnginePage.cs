@@ -206,7 +206,7 @@ namespace Scryber.Layout
             
             
             StyleValue<OverflowAction> action;
-            if (this.FullStyle.TryGetValue(StyleKeys.OverflowActionKey, out action) && action.Value == OverflowAction.NewPage)
+            if (this.FullStyle.TryGetValue(StyleKeys.OverflowActionKey, out action) && action.Value(this.FullStyle) == OverflowAction.NewPage)
             {
                 PDFLayoutPage lastpage = this.DocumentLayout.CurrentPage;
                 PDFLayoutBlock open = lastpage.ContentBlock;

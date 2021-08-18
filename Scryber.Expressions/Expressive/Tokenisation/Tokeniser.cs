@@ -58,6 +58,10 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     TokeniseKeyword(expression, length);
                 }
+                else if(IsVariableName(expression, this.CurrentIndex, out length))
+                {
+                    TokeniseKeyword(expression, length);
+                }
                 else if (IsOperator(expression, this.CurrentIndex, out length))
                 {
                     TokeniseOperator(expression, length);
@@ -85,7 +89,7 @@ namespace Scryber.Expressive.Tokenisation
 
         #endregion
 
-        #region IsKeyword + TokeniseKeyword
+        #region IsKeyword + IsVariableName + TokeniseKeyword
 
         /// <summary>
         /// Checks if the characters at and following index in the expression are a keyword (a function, a constant or an expression)
@@ -116,6 +120,39 @@ namespace Scryber.Expressive.Tokenisation
             }
             length = index - start;
             return length > 0;
+        }
+
+        protected virtual bool IsVariableName(string expression, int index, out int length)
+        {
+            int start = index;
+
+            if (expression[index] == '-' && expression.Length > index + 1 && expression[index + 1] == '-')
+            {
+                index += 2;
+
+                while (index < expression.Length)
+                {
+                    if (char.IsLetterOrDigit(expression, index))
+                        index++;
+                    else if (expression[index] == '_')
+                        index++;
+                    else if (expression[index] == '-')
+                    {
+                        index++;
+                    }
+                    else
+                        break;
+                }
+
+                length = index - start;
+                return length > 0;
+            }
+            else
+            {
+                length = 0;
+                return false;
+
+            }
         }
 
         /// <summary>

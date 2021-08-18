@@ -80,7 +80,7 @@ namespace Scryber.Binding
 
         public PDFDataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, PropertyInfo forProperty)
         {
-            BindingCalcExpression expr = this.CreateExpression(expressionvalue, forProperty);
+            BindingCalcExpression expr = this.CreateBindingExpression(expressionvalue, forProperty);
             return new PDFDataBindEventHandler(expr.BindComponent);
         }
 
@@ -102,23 +102,29 @@ namespace Scryber.Binding
 
         
 
-        private Expressive.Context GetContext(ExpressiveOptions options)
+        public Expressive.Context GetContext(ExpressiveOptions options)
         {
             return new Context(options, this._stdFunctions, this._stdOperators);
         }
 
-        public virtual BindingCalcExpression CreateExpression(string value, PropertyInfo forProperty)
+        public virtual Expression CreateExpression(string value)
+        {
+            if (!string.IsNullOrEmpty(value) && value.IndexOf('&') > -1)
+                value = CleanXmlString(value);
+
+            var context = GetContext(this.Options);
+            var parser = new BindingCalcParser(context);
+            var expr = new Expression(value, parser, context);
+            expr.CompileExpression();
+
+            return expr;
+        }
+
+        public virtual BindingCalcExpression CreateBindingExpression(string value, PropertyInfo forProperty)
         {
             try
             {
-                if (!string.IsNullOrEmpty(value) && value.IndexOf('&') > -1)
-                    value = CleanXmlString(value);
-
-                var context = GetContext(this.Options);
-                var parser = new BindingCalcParser(context);
-                Expression expr = new Expression(value, parser, context);
-                expr.CompileExpression();
-
+                var expr = CreateExpression(value);
                 return new BindingCalcExpression(expr, forProperty);
             }
             catch(Exception ex)

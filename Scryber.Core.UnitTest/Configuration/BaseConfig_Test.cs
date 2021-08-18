@@ -82,14 +82,14 @@ namespace Scryber.Core.UnitTests.Configuration
             var atType = typeof(Scryber.Binding.BindingItemExpressionFactory);
             var xpathType = typeof(Scryber.Binding.BindingXPathExpressionFactory);
 
-            var bind = parsing.GetGetBindingFactoryForPrefix("item");
+            var bind = parsing.GetBindingFactoryForPrefix("item");
             Assert.AreEqual(itemType, bind.GetType(), "The binding factory for the prefix 'item' does not match");
 
 
-            bind = parsing.GetGetBindingFactoryForPrefix("@");
+            bind = parsing.GetBindingFactoryForPrefix("@");
             Assert.AreEqual(atType, bind.GetType(), "The binding factory for the prefix '@' does not match");
 
-            bind = parsing.GetGetBindingFactoryForPrefix("xpath");
+            bind = parsing.GetBindingFactoryForPrefix("xpath");
             Assert.AreEqual(xpathType, bind.GetType(), "The binding factory for the prefix 'xpath' does not match");
 
 

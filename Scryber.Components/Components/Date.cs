@@ -57,9 +57,8 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<string> style;
-                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextDateFormatKey, out style))
-                    return style.Value;
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.TextDateFormatKey, string.Empty);
                 else
                     return string.Empty;
             }

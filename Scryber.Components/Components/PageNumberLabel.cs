@@ -281,7 +281,7 @@ namespace Scryber.Components
             {
                 StyleValue<string> val;
                 if (style.TryGetValue(StyleKeys.PageNumberFormatKey, out val))
-                    format = val.Value;
+                    format = val.Value(style);
             }
 
             return format;

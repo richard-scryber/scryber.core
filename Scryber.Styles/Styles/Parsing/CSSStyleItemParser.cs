@@ -13,6 +13,7 @@ using Scryber.Text;
 using System.Security.Cryptography;
 using System.Drawing.Printing;
 using System.Drawing.Imaging;
+using Scryber.Resources;
 
 namespace Scryber.Styles.Parsing
 {
@@ -465,11 +466,13 @@ namespace Scryber.Styles.Parsing
 
         protected bool AttachExpressionBindingHandler(Style style, string value, StyleValueConvertor<T> convert)
         {
-            var expr = new Scryber.Expressive.Expression(value, null);
-            var binder = new StyleBindingExpression<T>(this.StyleAttribute, expr, convert);
-            style.DataBound += binder.BindValue;
+            StyleValueExpression<T> expression = new StyleValueExpression<T>(this._styleAttr, value, convert);
+            style.DataBinding += expression.BindValue;
 
-            
+            if (style.IsValueDefined(_styleAttr))
+                style.RemoveValue(this._styleAttr);
+
+            style.AddValue(expression);
             return true;
         }
 
@@ -493,6 +496,7 @@ namespace Scryber.Styles.Parsing
     public class CSSEnumStyleParser<T> : CSSStyleAttributeParser<T> where T : struct
     {
 
+        private const bool IgnoreCase = true;
         private Type _enumType;
 
         public CSSEnumStyleParser(string styleItemKey, PDFStyleKey<T> pdfAttr)
@@ -513,7 +517,7 @@ namespace Scryber.Styles.Parsing
                 {
                     this.AttachExpressionBindingHandler(onStyle, reader.CurrentTextValue, this.DoConvertEnum);
                 }
-                else if (Enum.TryParse<T>(reader.CurrentTextValue, true, out result))
+                else if (Enum.TryParse<T>(reader.CurrentTextValue, IgnoreCase, out result))
                 {
                     this.SetValue(onStyle, result);
                     success = true;
@@ -522,9 +526,7 @@ namespace Scryber.Styles.Parsing
             return success;
         }
 
-        private const bool IgnoreCase = true;
-
-        private bool DoConvertEnum(object value, PDFDataContext context, out T result)
+        private bool DoConvertEnum(StyleBase onStyle, object value, PDFContextBase context, out T result)
         {
             bool success = true;
             if(null == value)
@@ -571,6 +573,10 @@ namespace Scryber.Styles.Parsing
                 string value = reader.CurrentTextValue;
                 
                 PDFUnit parsed;
+                if(IsExpression(value))
+                {
+                    AttachExpressionBindingHandler(onStyle, value, this.DoConvertUnit);
+                }
                 if (ParseCSSUnit(value, out parsed))
                 {
                     onStyle.SetValue(this.StyleAttribute, parsed);
@@ -578,6 +584,11 @@ namespace Scryber.Styles.Parsing
                 }
              }
             return result;
+        }
+
+        private bool DoConvertUnit(StyleBase onStyle, object value, PDFContextBase context, out PDFUnit result)
+        {
+            throw new NotImplementedException("No binding conversion implemented");
         }
     }
 
@@ -608,21 +619,52 @@ namespace Scryber.Styles.Parsing
         {
             bool result = false;
             PDFColor color;
-            
-            if(reader.ReadNextValue() && ParseCSSColor(reader.CurrentTextValue, out color, out double? opacity))
+
+            if (reader.ReadNextValue())
             {
-                onStyle.SetValue(this.StyleAttribute, color);
+                if(IsExpression(reader.CurrentTextValue))
+                {
+                    this.AttachExpressionBindingHandler(onStyle, reader.CurrentTextValue, this.DoConvertColor);
+                }
+                else if (ParseCSSColor(reader.CurrentTextValue, out color, out double? opacity))
+                {
+                    onStyle.SetValue(this.StyleAttribute, color);
 
-                if (opacity.HasValue && null != this._opacity)
-                    onStyle.SetValue(this._opacity, opacity.Value);
+                    if (opacity.HasValue && null != this._opacity)
+                        onStyle.SetValue(this._opacity, opacity.Value);
 
-                result = true;
+                    result = true;
+                }
             }
             
             return result;
         }
 
-        
+        private bool DoConvertColor(StyleBase onStyle, object value, PDFContextBase context, out PDFColor result)
+        {
+            if(null == value)
+            {
+                result = PDFColor.Transparent;
+                return false;
+            }
+            else if(value is PDFColor)
+            {
+                result = (PDFColor)value;
+
+                return true;
+            }
+            else if(ParseCSSColor(value.ToString(), out result, out double? opacity))
+            {
+                if (opacity.HasValue && null != this._opacity)
+                    onStyle.SetValue(this._opacity, opacity.Value);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
 
     #endregion
@@ -1655,7 +1697,7 @@ namespace Scryber.Styles.Parsing
                     StyleValue<PDFUnit> fsize;
                     if (onStyle.TryGetValue(StyleKeys.FontSizeKey, out fsize))
                     {
-                        onStyle.Text.Leading = fsize.Value * proportional;
+                        onStyle.Text.Leading = fsize.Value(onStyle) * proportional;
                         return true;
                     }
                 }

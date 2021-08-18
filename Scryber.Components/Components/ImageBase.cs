@@ -213,9 +213,9 @@ namespace Scryber.Components
                 StyleValue<double> op;
                 if(full.TryGetValue(StyleKeys.FillOpacityKey, out op))
                 {
-                    if (op.Value < 1.0)
+                    if (op.Value(full) < 1.0)
                     {
-                        graphics.SetFillOpacity(op.Value);
+                        graphics.SetFillOpacity(op.Value(full));
                     }
                 }
                 PDFObjectRef imgref = img.EnsureRendered(context, writer);

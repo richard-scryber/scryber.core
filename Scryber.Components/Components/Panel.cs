@@ -66,10 +66,9 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<OverflowAction> action;
-                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.OverflowActionKey,out action))
+                if (this.HasStyle)
                 {
-                    return action.Value;
+                    return this.Style.GetValue(StyleKeys.OverflowActionKey, OverflowAction.None);
                 }
                 else
                     return Drawing.OverflowAction.None;

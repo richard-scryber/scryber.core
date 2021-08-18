@@ -151,7 +151,7 @@ namespace Scryber.Layout
 
             if (this.FullStyle.TryGetValue(StyleKeys.ListGroupKey,out grp))
             {
-                groupname = grp.Value;
+                groupname = grp.Value(this.FullStyle);
             }
             PDFListNumbering numbering = this.Component.Document.ListNumbering;
 

@@ -38,7 +38,7 @@ namespace Scryber.Styles
             this.Key = key;
         }
 
-        public abstract object GetValue();
+        public abstract object GetValue(Style forStyle);
 
 
         public PDFStyleValueBase CloneWithPriority(int priority)
@@ -59,22 +59,27 @@ namespace Scryber.Styles
     public class StyleValue<T> : PDFStyleValueBase
     {
 
-        public T Value { get; private set; }
+        private T _value;
 
         public StyleValue(PDFStyleKey<T> key, T value)
             : base(key)
         {
-            this.Value = value;
+            this._value = value;
         }
 
         public void SetValue(T value)
         {
-            this.Value = value;
+            this._value = value;
         }
 
-        public override object GetValue()
+        public virtual T Value(StyleBase forStyle)
         {
-            return Value;
+            return _value;
+        }
+
+        public override object GetValue(Style forStyle)
+        {
+            return Value(forStyle);
         }
     }
 

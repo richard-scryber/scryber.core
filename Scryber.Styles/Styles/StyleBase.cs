@@ -704,31 +704,31 @@ namespace Scryber.Styles
 
             if (lookup.TryGetValue(all, out found))
             {
-                thickness.SetAll(((StyleValue<PDFUnit>)found).Value);
+                thickness.SetAll(((StyleValue<PDFUnit>)found).Value(this));
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(top, out found))
             {
-                thickness.Top = ((StyleValue<PDFUnit>)found).Value;
+                thickness.Top = ((StyleValue<PDFUnit>)found).Value(this);
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(left, out found))
             {
-                thickness.Left = ((StyleValue<PDFUnit>)found).Value;
+                thickness.Left = ((StyleValue<PDFUnit>)found).Value(this);
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(bottom, out found))
             {
-                thickness.Bottom = ((StyleValue<PDFUnit>)found).Value;
+                thickness.Bottom = ((StyleValue<PDFUnit>)found).Value(this);
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(right, out found))
             {
-                thickness.Right = ((StyleValue<PDFUnit>)found).Value;
+                thickness.Right = ((StyleValue<PDFUnit>)found).Value(this);
                 hasvalues = true;
             }
 
@@ -788,7 +788,7 @@ namespace Scryber.Styles
                 hash = this.TryGetValue(StyleKeys.PageHeightKey, out h);
 
             if (hasw && hash)
-                return new PageSize(new PDFSize(w.Value, h.Value));
+                return new PageSize(new PDFSize(w.Value(this), h.Value(this)));
             else
             {
                 //if we don't have any explicit sizes - and we need both we use the paper size
@@ -797,12 +797,12 @@ namespace Scryber.Styles
                 StyleValue<PaperSize> szVal;
                 StyleValue<PaperOrientation> orientVal;
                 if (this.TryGetValue(StyleKeys.PagePaperSizeKey, out szVal))
-                    sz = szVal.Value;
+                    sz = szVal.Value(this);
                 else
                     sz = Scryber.Const.DefaultPaperSize;
 
                 if (this.TryGetValue(StyleKeys.PageOrientationKey, out orientVal))
-                    orient = orientVal.Value;
+                    orient = orientVal.Value(this);
                 else
                     orient = Scryber.Const.DefaultPaperOrientation;
 
@@ -824,20 +824,20 @@ namespace Scryber.Styles
             StyleValue<PositionMode> posmode;
 
             if (this.TryGetValue(StyleKeys.PositionModeKey, out posmode))
-                options.PositionMode = posmode.Value;
+                options.PositionMode = posmode.Value(this);
             else
                 options.PositionMode = PositionMode.Block;
 
             StyleValue<bool> b;
             if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
-                options.FillWidth = b.Value;
+                options.FillWidth = b.Value(this);
 
             StyleValue<PDFUnit> unit;
 
             // X
             if (this.TryGetValue(StyleKeys.PositionXKey, out unit))
             {
-                options.X = unit.Value;
+                options.X = unit.Value(this);
 
                 if (options.PositionMode != PositionMode.Absolute)
                     options.PositionMode = PositionMode.Relative;
@@ -848,7 +848,7 @@ namespace Scryber.Styles
             // Y
             if (this.TryGetValue(StyleKeys.PositionYKey, out unit))
             {
-                options.Y = unit.Value;
+                options.Y = unit.Value(this);
 
                 if (options.PositionMode != PositionMode.Absolute)
                     options.PositionMode = PositionMode.Relative;
@@ -859,7 +859,7 @@ namespace Scryber.Styles
             // Width
             if (this.TryGetValue(StyleKeys.SizeWidthKey, out unit))
             {
-                options.Width = unit.Value;
+                options.Width = unit.Value(this);
                 options.FillWidth = false;
             }
             else
@@ -868,7 +868,7 @@ namespace Scryber.Styles
             // Height
             if (this.TryGetValue(StyleKeys.SizeHeightKey, out unit))
             {
-                options.Height = unit.Value;
+                options.Height = unit.Value(this);
             }
             else
                 options.Height = null;
@@ -876,7 +876,7 @@ namespace Scryber.Styles
             // MinimumWidth
             if (this.TryGetValue(StyleKeys.SizeMinimumWidthKey, out unit))
             {
-                options.MinimumWidth = unit.Value;
+                options.MinimumWidth = unit.Value(this);
                 options.FillWidth = false;
             }
             else
@@ -885,7 +885,7 @@ namespace Scryber.Styles
             // MinimumHeight
             if (this.TryGetValue(StyleKeys.SizeMinimumHeightKey, out unit))
             {
-                options.MinimumHeight = unit.Value;
+                options.MinimumHeight = unit.Value(this);
             }
             else
                 options.MinimumHeight = null;
@@ -893,7 +893,7 @@ namespace Scryber.Styles
             // MaximumWidth
             if (this.TryGetValue(StyleKeys.SizeMaximumWidthKey, out unit))
             {
-                options.MaximumWidth = unit.Value;
+                options.MaximumWidth = unit.Value(this);
                 options.FillWidth = false;
             }
             else
@@ -902,7 +902,7 @@ namespace Scryber.Styles
             // MaximumHeight
             if (this.TryGetValue(StyleKeys.SizeMaximumHeightKey, out unit))
             {
-                options.MaximumHeight = unit.Value;
+                options.MaximumHeight = unit.Value(this);
             }
             else
                 options.MaximumHeight = null;
@@ -911,14 +911,14 @@ namespace Scryber.Styles
 
             StyleValue<PDFRect> rect;
             if (this.TryGetValue(StyleKeys.PositionViewPort, out rect))
-                options.ViewPort = rect.Value;
+                options.ViewPort = rect.Value(this);
 
             
             //alignment
 
             StyleValue<VerticalAlignment> valign;
             if (this.TryGetValue(StyleKeys.PositionVAlignKey, out valign))
-                options.VAlign = valign.Value;
+                options.VAlign = valign.Value(this);
             else
                 options.VAlign = Const.DefaultVerticalAlign;
 
@@ -926,8 +926,8 @@ namespace Scryber.Styles
             StyleValue<TextDirection> direction;
 
             if (this.TryGetValue(StyleKeys.PositionHAlignKey, out halign))
-                options.HAlign = halign.Value;
-            else if (this.TryGetValue(StyleKeys.TextDirectionKey, out direction) && direction.Value == TextDirection.RTL)
+                options.HAlign = halign.Value(this);
+            else if (this.TryGetValue(StyleKeys.TextDirectionKey, out direction) && direction.Value(this) == TextDirection.RTL)
                 options.HAlign = HorizontalAlignment.Right;
             else
                 options.HAlign = Const.DefaultHorizontalAlign;
@@ -939,7 +939,7 @@ namespace Scryber.Styles
 
             if (this.TryGetValue(StyleKeys.OverflowActionKey, out action))
             {
-                options.OverflowAction = action.Value;
+                options.OverflowAction = action.Value(this);
                 hasaction = true;
             }
             else
@@ -949,7 +949,7 @@ namespace Scryber.Styles
 
             StyleValue<OverflowSplit> split;
             if (this.TryGetValue(StyleKeys.OverflowSplitKey, out split))
-                options.OverflowSplit = split.Value;
+                options.OverflowSplit = split.Value(this);
             else
                 options.OverflowSplit = OverflowSplit.Any;
 
@@ -987,18 +987,18 @@ namespace Scryber.Styles
             //columns
 
             StyleValue<int> colcount;
-            if (this.TryGetValue(StyleKeys.ColumnCountKey, out colcount) && colcount.Value > 0)
-                options.ColumnCount = colcount.Value;
+            if (this.TryGetValue(StyleKeys.ColumnCountKey, out colcount) && colcount.Value(this) > 0)
+                options.ColumnCount = colcount.Value(this);
 
             if (this.TryGetValue(StyleKeys.ColumnAlleyKey, out unit))
-                options.AlleyWidth = unit.Value;
+                options.AlleyWidth = unit.Value(this);
 
             // float
 
             StyleValue<FloatMode> floatm;
             if (this.TryGetValue(StyleKeys.PositionFloat, out floatm))
             {
-                options.FloatMode = floatm.Value;
+                options.FloatMode = floatm.Value(this);
                 options.FillWidth = false;
             }
 
@@ -1072,9 +1072,9 @@ namespace Scryber.Styles
             PDFUnit size;
             Drawing.FontStyle style = Drawing.FontStyle.Regular;
 
-            if (this.TryGetValue(StyleKeys.FontFamilyKey, out familyVal) && (null != familyVal.Value))
+            if (this.TryGetValue(StyleKeys.FontFamilyKey, out familyVal) && (null != familyVal.Value(this)))
             {
-                family = familyVal.Value;
+                family = familyVal.Value(this);
                 hasvalues = true;
             }
             else
@@ -1082,19 +1082,19 @@ namespace Scryber.Styles
 
             if (this.TryGetValue(StyleKeys.FontSizeKey, out sizeVal))
             {
-                size = sizeVal.Value;
+                size = sizeVal.Value(this);
                 hasvalues = true;
             }
             else
                 size = new PDFUnit(Const.DefaultFontSize, PageUnits.Points);
 
-            if (this.TryGetValue(StyleKeys.FontBoldKey, out boldVal) && boldVal.Value)
+            if (this.TryGetValue(StyleKeys.FontBoldKey, out boldVal) && boldVal.Value(this))
             {
                 hasvalues = true;
                 style |= Drawing.FontStyle.Bold;
             }
 
-            if (this.TryGetValue(StyleKeys.FontItalicKey, out italicVal) && italicVal.Value)
+            if (this.TryGetValue(StyleKeys.FontItalicKey, out italicVal) && italicVal.Value(this))
             {
                 hasvalues = true;
                 style |= Drawing.FontStyle.Italic;
@@ -1133,32 +1133,32 @@ namespace Scryber.Styles
 
             if(this.TryGetValue(StyleKeys.PageNumberStyleKey,out style))
             {
-                opts.NumberStyle = style.Value;
+                opts.NumberStyle = style.Value(this);
                 hasvalues = true;
             }
             if (this.TryGetValue(StyleKeys.PageNumberGroupKey, out grp))
             {
-                opts.NumberGroup = grp.Value;
+                opts.NumberGroup = grp.Value(this);
                 hasvalues = true;
             }
             if (this.TryGetValue(StyleKeys.PageNumberStartKey, out start))
             {
-                opts.StartIndex = start.Value;
+                opts.StartIndex = start.Value(this);
                 hasvalues = true;
             }
             if (this.TryGetValue(StyleKeys.PageNumberFormatKey, out format))
             {
-                opts.Format = format.Value;
+                opts.Format = format.Value(this);
                 hasvalues = true;
             }
             if (this.TryGetValue(StyleKeys.PageNumberGroupHintKey, out grphint))
             {
-                opts.GroupCountHint = grphint.Value;
+                opts.GroupCountHint = grphint.Value(this);
                 hasvalues = true;
             }
             if (this.TryGetValue(StyleKeys.PageNumberTotalHintKey, out totalhint))
             {
-                opts.TotalCountHint = totalhint.Value;
+                opts.TotalCountHint = totalhint.Value(this);
                 hasvalues = true;
             }
             opts.HasPageNumbering = hasvalues;
@@ -1184,38 +1184,38 @@ namespace Scryber.Styles
 
             StyleValue<PDFUnit> flindent;
             if (this.TryGetValue(StyleKeys.TextFirstLineIndentKey,out flindent))
-                options.FirstLineInset = flindent.Value;
+                options.FirstLineInset = flindent.Value(this);
 
             StyleValue<PDFUnit> space;
             if (this.TryGetValue(StyleKeys.TextWordSpacingKey, out space))
-                options.WordSpacing = space.Value;
+                options.WordSpacing = space.Value(this);
 
             if (this.TryGetValue(StyleKeys.TextCharSpacingKey, out space))
-                options.CharacterSpacing = space.Value;
+                options.CharacterSpacing = space.Value(this);
 
             StyleValue<Text.WordWrap> wrap;
             if (this.TryGetValue(StyleKeys.TextWordWrapKey, out wrap))
-                options.WrapText = wrap.Value;
+                options.WrapText = wrap.Value(this);
 
             StyleValue<double> hscale;
             if (this.TryGetValue(StyleKeys.TextHorizontalScaling, out hscale))
-                options.CharacterHScale = hscale.Value;
+                options.CharacterHScale = hscale.Value(this);
 
             StyleValue<Scryber.TextDirection> dir;
             if (this.TryGetValue(StyleKeys.TextDirectionKey, out dir))
-                options.TextDirection = dir.Value;
+                options.TextDirection = dir.Value(this);
 
             StyleValue<PDFUnit> lead;
             if (this.TryGetValue(StyleKeys.TextLeadingKey, out lead))
-                options.Leading = lead.Value;
+                options.Leading = lead.Value(this);
 
             StyleValue<Text.TextDecoration> decor;
             if (this.TryGetValue(StyleKeys.TextDecorationKey, out decor))
-                options.TextDecoration = decor.Value;
+                options.TextDecoration = decor.Value(this);
 
             StyleValue<bool> frombase;
             if (this.TryGetValue(StyleKeys.TextPositionFromBaseline, out frombase))
-                options.DrawTextFromTop = !frombase.Value;
+                options.DrawTextFromTop = !frombase.Value(this);
 
             return options;
         }
@@ -1268,7 +1268,7 @@ namespace Scryber.Styles
 
             StyleValue<PDFUnit> cornerValue;
             if (this.TryGetValue(StyleKeys.BorderCornerRadiusKey, out cornerValue))
-                corner = cornerValue.Value;
+                corner = cornerValue.Value(this);
             else
                 corner = null;
 
@@ -1336,47 +1336,47 @@ namespace Scryber.Styles
             
             if (this.TryGetValue(sideLine, out styleValue))
             {
-                if (styleValue.Value == LineType.None)
+                if (styleValue.Value(this) == LineType.None)
                     return null;
 
-                line = styleValue.Value;
+                line = styleValue.Value(this);
 
                 //now either use explicits or full border values
 
                 if (this.TryGetValue(sideColor, out colValue)
                     || this.TryGetValue(StyleKeys.BorderColorKey, out colValue))
-                    col = colValue.Value;
+                    col = colValue.Value(this);
                 else
                     col = PDFColors.Black;
 
                 if (this.TryGetValue(sideWidth, out widthValue)
                     || this.TryGetValue(StyleKeys.BorderWidthKey, out widthValue))
-                    width = widthValue.Value;
+                    width = widthValue.Value(this);
                 else
                     width = 1;
 
                 if (this.TryGetValue(sideDash, out dashValue)
                     || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
-                    dash = dashValue.Value;
+                    dash = dashValue.Value(this);
                 else
                     dash = null;
             }
             else if(this.TryGetValue(sideColor, out colValue))
             {
                 //We have an explicit color, so we need a style set
-                if (!this.TryGetValue(StyleKeys.BorderStyleKey, out styleValue) || styleValue.Value == LineType.None)
+                if (!this.TryGetValue(StyleKeys.BorderStyleKey, out styleValue) || styleValue.Value(this) == LineType.None)
                     return null;
 
-                line = styleValue.Value;
-                col = colValue.Value;
+                line = styleValue.Value(this);
+                col = colValue.Value(this);
 
                 if (this.TryGetValue(sideWidth, out widthValue) || this.TryGetValue(StyleKeys.BorderWidthKey, out widthValue))
-                    width = widthValue.Value;
+                    width = widthValue.Value(this);
                 else
                     width = 1;
 
                 if (this.TryGetValue(sideDash, out dashValue) || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
-                    dash = dashValue.Value;
+                    dash = dashValue.Value(this);
                 else
                     dash = null;
 
@@ -1384,19 +1384,19 @@ namespace Scryber.Styles
             else if(this.TryGetValue(sideWidth, out widthValue))
             { 
                 //We have an explicit width, so we need a style set
-                if (!this.TryGetValue(StyleKeys.BorderStyleKey, out styleValue) || styleValue.Value == LineType.None)
+                if (!this.TryGetValue(StyleKeys.BorderStyleKey, out styleValue) || styleValue.Value(this) == LineType.None)
                     return null;
 
-                width = widthValue.Value;
-                line = styleValue.Value;
+                width = widthValue.Value(this);
+                line = styleValue.Value(this);
 
                 if (this.TryGetValue(StyleKeys.BorderColorKey, out colValue)) //We know there is no explicit side color
-                    col = colValue.Value;
+                    col = colValue.Value(this);
                 else
                     col = PDFColors.Black;
 
                 if (this.TryGetValue(sideDash, out dashValue) || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
-                    dash = dashValue.Value;
+                    dash = dashValue.Value(this);
                 else
                     dash = null;
 
@@ -1437,36 +1437,36 @@ namespace Scryber.Styles
             {
                 //We have an explict style
 
-                if (penstyle.Value == LineType.None)
+                if (penstyle.Value(this) == LineType.None)
                     return null;
 
                 //Check the color and width
 
-                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value == PDFColors.Transparent)
+                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value(this) == PDFColors.Transparent)
                     return null;
 
-                if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value <= 0)
+                if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
                 //create a pen based on the explicit style
 
-                if (penstyle.Value == LineType.Solid)
+                if (penstyle.Value(this) == LineType.Solid)
                 {
-                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value, Width = (null == width) ? 1.0 : width.Value };
+                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value(this), Width = (null == width) ? 1.0 : width.Value(this) };
                 }
-                else if (penstyle.Value == LineType.Dash)
+                else if (penstyle.Value(this) == LineType.Dash)
                 {
                     if (this.TryGetValue(StyleKeys.BorderDashKey, out dash))
-                        pen = new PDFDashPen(dash.Value)
+                        pen = new PDFDashPen(dash.Value(this))
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value,
-                            Width = (null == width) ? 1.0 : width.Value
+                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Width = (null == width) ? 1.0 : width.Value(this)
                         };
                     else // set as Dash, but there is none so use default
                         pen = new PDFDashPen(DefaultDash)
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value,
-                            Width = (null == width) ? 1.0 : width.Value
+                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Width = (null == width) ? 1.0 : width.Value(this)
                         };
                 }
                 else
@@ -1475,39 +1475,39 @@ namespace Scryber.Styles
             }
             else if (this.TryGetValue(StyleKeys.BorderDashKey, out dash))
             {
-                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value == PDFColors.Transparent)
+                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value(this) == PDFColors.Transparent)
                     return null;
-                if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value <= 0)
+                if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
-                pen = new PDFDashPen(dash.Value)
+                pen = new PDFDashPen(dash.Value(this))
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value,
-                    Width = (null == width) ? 1.0 : width.Value
+                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Width = (null == width) ? 1.0 : width.Value(this)
                 };
 
             }
             else if (this.TryGetValue(StyleKeys.BorderColorKey, out c))
             {
-                if (c.Value == PDFColors.Transparent)
+                if (c.Value(this) == PDFColors.Transparent)
                     return null;
 
-                if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value <= 0)
+                if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
 
                 pen = new PDFSolidPen()
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value,
-                    Width = (null == width) ? DefaultWidth : width.Value
+                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Width = (null == width) ? DefaultWidth : width.Value(this)
                 };
             }
             else if (this.TryGetValue(StyleKeys.BorderWidthKey, out width)) //just width set
             {
-                if (width.Value <= 0)
+                if (width.Value(this) <= 0)
                     return null;
 
-                pen = new PDFSolidPen() { Color = PDFColors.Black, Width = width.Value };
+                pen = new PDFSolidPen() { Color = PDFColors.Black, Width = width.Value(this) };
             }
 
             //TODO: Pens for border-bottom, top, left and right. Then use a CompoundPen to support this.
@@ -1533,16 +1533,16 @@ namespace Scryber.Styles
             StyleValue<double> opacity;
 
             if (this.TryGetValue(StyleKeys.BorderJoinKey, out join))
-                pen.LineJoin = join.Value;
+                pen.LineJoin = join.Value(this);
 
             if (this.TryGetValue(StyleKeys.BorderEndingKey, out caps))
-                pen.LineCaps = caps.Value;
+                pen.LineCaps = caps.Value(this);
 
             if (this.TryGetValue(StyleKeys.BorderMitreKey, out mitre))
-                pen.MitreLimit = mitre.Value;
+                pen.MitreLimit = mitre.Value(this);
 
             if (this.TryGetValue(StyleKeys.BorderOpacityKey, out opacity))
-                pen.Opacity = (Scryber.Native.PDFReal)opacity.Value;
+                pen.Opacity = (Scryber.Native.PDFReal)opacity.Value(this);
         }
 
         #region internal protected virtual PDFPen DoCreateStrokePen()
@@ -1560,36 +1560,36 @@ namespace Scryber.Styles
             {
                 //We have an explict style
 
-                if (penstyle.Value == LineType.None)
+                if (penstyle.Value(this) == LineType.None)
                     return null;
 
                 //Check the color and width
 
-                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value.IsTransparent)
+                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value(this).IsTransparent)
                     return null;
 
-                if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value <= 0)
+                if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
                 //create a pen based on the explicit style
 
-                if (penstyle.Value == LineType.Solid)
+                if (penstyle.Value(this) == LineType.Solid)
                 {
-                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value, Width = (null == width) ? 1.0 : width.Value };
+                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value(this), Width = (null == width) ? 1.0 : width.Value(this) };
                 }
-                else if (penstyle.Value == LineType.Dash)
+                else if (penstyle.Value(this) == LineType.Dash)
                 {
                     if (this.TryGetValue(StyleKeys.StrokeDashKey, out dash))
-                        pen = new PDFDashPen(dash.Value)
+                        pen = new PDFDashPen(dash.Value(this))
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value,
-                            Width = (null == width) ? 1.0 : width.Value
+                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Width = (null == width) ? 1.0 : width.Value(this)
                         };
                     else // set as Dash, but there is none so use default
                         pen = new PDFDashPen(DefaultDash)
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value,
-                            Width = (null == width) ? 1.0 : width.Value
+                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Width = (null == width) ? 1.0 : width.Value(this)
                         };
                 }
                 else
@@ -1598,39 +1598,39 @@ namespace Scryber.Styles
             }
             else if (this.TryGetValue(StyleKeys.StrokeDashKey, out dash))
             {
-                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value.IsTransparent)
+                if (this.TryGetValue(StyleKeys.StrokeColorKey, out c) && c.Value(this).IsTransparent)
                     return null;
-                if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value <= 0)
+                if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
-                pen = new PDFDashPen(dash.Value)
+                pen = new PDFDashPen(dash.Value(this))
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value,
-                    Width = (null == width) ? 1.0 : width.Value
+                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Width = (null == width) ? 1.0 : width.Value(this)
                 };
             }
             else if (this.TryGetValue(StyleKeys.StrokeColorKey, out c))
             {
-                if (c.Value.IsTransparent)
+                if (c.Value(this).IsTransparent)
                     return null;
-                if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value <= 0)
+                if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
                 pen = new PDFSolidPen()
                 {
-                    Color = c.Value,
-                    Width = (null == width) ? DefaultWidth : width.Value
+                    Color = c.Value(this),
+                    Width = (null == width) ? DefaultWidth : width.Value(this)
                 };
             }
             else if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width)) //just width set
             {
-                if (width.Value <= 0)
+                if (width.Value(this) <= 0)
                     return null;
 
                 pen = new PDFSolidPen()
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value,
-                    Width = (null == width) ? DefaultWidth : width.Value
+                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Width = (null == width) ? DefaultWidth : width.Value(this)
                 };
             }
             else //no values set
@@ -1651,16 +1651,16 @@ namespace Scryber.Styles
             StyleValue<double> opacity;
 
             if (this.TryGetValue(StyleKeys.StrokeJoinKey, out join))
-                pen.LineJoin = join.Value;
+                pen.LineJoin = join.Value(this);
 
             if (this.TryGetValue(StyleKeys.StrokeEndingKey, out caps))
-                pen.LineCaps = caps.Value;
+                pen.LineCaps = caps.Value(this);
 
             if (this.TryGetValue(StyleKeys.StrokeMitreKey, out mitre))
-                pen.MitreLimit = mitre.Value;
+                pen.MitreLimit = mitre.Value(this);
 
             if (this.TryGetValue(StyleKeys.StrokeOpacityKey, out opacity))
-                pen.Opacity = (Scryber.Native.PDFReal)opacity.Value;
+                pen.Opacity = (Scryber.Native.PDFReal)opacity.Value(this);
         }
 
         #region internal protected virtual PDFBrush DoCreateBackgroundBrush()
@@ -1678,28 +1678,28 @@ namespace Scryber.Styles
             StyleValue<PDFColor> color;
             if (this.TryGetValue(StyleKeys.BgStyleKey, out fillstyle))
             {
-                if (fillstyle.Value == Drawing.FillType.None)
+                if (fillstyle.Value(this) == Drawing.FillType.None)
                     return null;
             }
 
             PDFBrush brush = null;
 
-            if ((this).TryGetValue(StyleKeys.BgColorKey, out color) && !color.Value.IsTransparent && (fillstyle == null || fillstyle.Value == Drawing.FillType.Solid))
+            if ((this).TryGetValue(StyleKeys.BgColorKey, out color) && !color.Value(this).IsTransparent && (fillstyle == null || fillstyle.Value(this) == Drawing.FillType.Solid))
             {
-                PDFSolidBrush solid = new PDFSolidBrush(color.Value);
+                PDFSolidBrush solid = new PDFSolidBrush(color.Value(this));
 
                 //if we have an opacity set it.
                 if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
-                    solid.Opacity = opacity.Value;
+                    solid.Opacity = opacity.Value(this);
 
                 brush = solid;
             }
 
             //If we have an image source and we are set to use an image fill style (or it has not been specified)
-            if ((this).TryGetValue(StyleKeys.BgImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value))
+            if ((this).TryGetValue(StyleKeys.BgImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value(this)))
             {
                 PDFGradientDescriptor found;
-                if(this.IsGradientImageSrc(imgsrc.Value, out found))
+                if(this.IsGradientImageSrc(imgsrc.Value(this), out found))
                 {
                     if (found.GradientType == GradientType.Linear)
                         brush = new PDFGradientLinearBrush((PDFGradientLinearDescriptor)found);
@@ -1708,19 +1708,19 @@ namespace Scryber.Styles
                     else
                         brush = null;
                 }
-                else if ((fillstyle == null || fillstyle.Value == Drawing.FillType.Image))
+                else if ((fillstyle == null || fillstyle.Value(this) == Drawing.FillType.Image))
                 {
                     PatternRepeat repeat = PatternRepeat.RepeatBoth;
                     StyleValue<PatternRepeat> repeatValue;
 
                     if ((this).TryGetValue(StyleKeys.BgRepeatKey, out repeatValue))
-                        repeat = repeatValue.Value;
+                        repeat = repeatValue.Value(this);
 
                     if (repeat == PatternRepeat.Fill)
                     {
-                        PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value);
+                        PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value(this));
                         if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
-                            full.Opacity = opacity.Value;
+                            full.Opacity = opacity.Value(this);
 
                         if (null != brush)
                             full.UnderBrush = brush;
@@ -1730,30 +1730,30 @@ namespace Scryber.Styles
                     }
                     else
                     {
-                        PDFImageBrush img = new PDFImageBrush(imgsrc.Value);
+                        PDFImageBrush img = new PDFImageBrush(imgsrc.Value(this));
                         StyleValue<PDFUnit> unitValue;
 
                         if (repeat == PatternRepeat.RepeatX || repeat == PatternRepeat.RepeatBoth)
-                            img.XStep = (this).TryGetValue(StyleKeys.BgXStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                            img.XStep = (this).TryGetValue(StyleKeys.BgXStepKey, out unitValue) ? unitValue.Value(this) : RepeatNaturalSize;
                         else
                             img.XStep = NoXRepeatStepSize;
 
                         if (repeat == PatternRepeat.RepeatY || repeat == PatternRepeat.RepeatBoth)
-                            img.YStep = (this).TryGetValue(StyleKeys.BgYStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                            img.YStep = (this).TryGetValue(StyleKeys.BgYStepKey, out unitValue) ? unitValue.Value(this) : RepeatNaturalSize;
                         else
                             img.YStep = NoYRepeatStepSize;
 
-                        img.XPostion = (this).TryGetValue(StyleKeys.BgXPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
-                        img.YPostion = (this).TryGetValue(StyleKeys.BgYPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
+                        img.XPostion = (this).TryGetValue(StyleKeys.BgXPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
+                        img.YPostion = (this).TryGetValue(StyleKeys.BgYPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
 
                         if ((this).TryGetValue(StyleKeys.BgXSizeKey, out unitValue))
-                            img.XSize = unitValue.Value;
+                            img.XSize = unitValue.Value(this);
 
                         if ((this).TryGetValue(StyleKeys.BgYSizeKey, out unitValue))
-                            img.YSize = unitValue.Value;
+                            img.YSize = unitValue.Value(this);
 
                         if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
-                            img.Opacity = opacity.Value;
+                            img.Opacity = opacity.Value(this);
 
                         if (null != brush)
                             img.UnderBrush = brush;
@@ -1799,54 +1799,54 @@ namespace Scryber.Styles
 
             if (this.TryGetValue(StyleKeys.FillStyleKey, out fillstyle))
             {
-                if (fillstyle.Value == Drawing.FillType.None)
+                if (fillstyle.Value(this) == Drawing.FillType.None)
                     return null;
             }
 
             //If we have an image source and we are set to use an image fill style (or it has not been specified)
-            if ((this).TryGetValue(StyleKeys.FillImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value) && (fillstyle == null || fillstyle.Value == Drawing.FillType.Image))
+            if ((this).TryGetValue(StyleKeys.FillImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value(this)) && (fillstyle == null || fillstyle.Value(this) == Drawing.FillType.Image))
             {
                 PatternRepeat repeat = PatternRepeat.RepeatBoth;
                 StyleValue<PatternRepeat> repeatValue;
 
                 if ((this).TryGetValue(StyleKeys.FillRepeatKey, out repeatValue))
-                    repeat = repeatValue.Value;
+                    repeat = repeatValue.Value(this);
 
                 PDFBrush brush;
                 if (repeat == PatternRepeat.Fill)
                 {
-                    PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value);
+                    PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value(this));
                     if ((this).TryGetValue(StyleKeys.FillOpacityKey, out opacity))
-                        full.Opacity = opacity.Value;
+                        full.Opacity = opacity.Value(this);
 
                     brush = full;
                 }
                 else
                 {
-                    PDFImageBrush img = new PDFImageBrush(imgsrc.Value);
+                    PDFImageBrush img = new PDFImageBrush(imgsrc.Value(this));
                     StyleValue<PDFUnit> unitValue;
 
                     if (repeat == PatternRepeat.RepeatX || repeat == PatternRepeat.RepeatBoth)
-                        img.XStep = (this).TryGetValue(StyleKeys.FillXStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                        img.XStep = (this).TryGetValue(StyleKeys.FillXStepKey, out unitValue) ? unitValue.Value(this) : RepeatNaturalSize;
                     else
                         img.XStep = NoXRepeatStepSize;
 
                     if (repeat == PatternRepeat.RepeatY || repeat == PatternRepeat.RepeatBoth)
-                        img.YStep = (this).TryGetValue(StyleKeys.FillYStepKey, out unitValue) ? unitValue.Value : RepeatNaturalSize;
+                        img.YStep = (this).TryGetValue(StyleKeys.FillYStepKey, out unitValue) ? unitValue.Value(this) : RepeatNaturalSize;
                     else
                         img.YStep = NoYRepeatStepSize;
 
-                    img.XPostion = (this).TryGetValue(StyleKeys.FillXPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
-                    img.YPostion = (this).TryGetValue(StyleKeys.FillYPosKey, out unitValue) ? unitValue.Value : PDFUnit.Zero;
+                    img.XPostion = (this).TryGetValue(StyleKeys.FillXPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
+                    img.YPostion = (this).TryGetValue(StyleKeys.FillYPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
 
                     if ((this).TryGetValue(StyleKeys.FillXSizeKey, out unitValue))
-                        img.XSize = unitValue.Value;
+                        img.XSize = unitValue.Value(this);
 
                     if ((this).TryGetValue(StyleKeys.FillYSizeKey, out unitValue))
-                        img.YSize = unitValue.Value;
+                        img.YSize = unitValue.Value(this);
 
                     if ((this).TryGetValue(StyleKeys.FillOpacityKey, out opacity))
-                        img.Opacity = opacity.Value;
+                        img.Opacity = opacity.Value(this);
 
                     brush = img;
                 }
@@ -1854,13 +1854,13 @@ namespace Scryber.Styles
             }
 
             //if we have a colour and a solid style (or no style)
-            else if ((this).TryGetValue(StyleKeys.FillColorKey, out color) && !color.Value.IsTransparent && (fillstyle == null || fillstyle.Value == Drawing.FillType.Solid))
+            else if ((this).TryGetValue(StyleKeys.FillColorKey, out color) && !color.Value(this).IsTransparent && (fillstyle == null || fillstyle.Value(this) == Drawing.FillType.Solid))
             {
-                PDFSolidBrush solid = new PDFSolidBrush(color.Value);
+                PDFSolidBrush solid = new PDFSolidBrush(color.Value(this));
 
                 //if we have an opacity set it.
                 if ((this).TryGetValue(StyleKeys.FillOpacityKey, out opacity))
-                    solid.Opacity = opacity.Value;
+                    solid.Opacity = opacity.Value(this);
 
                 return solid;
             }
@@ -1916,14 +1916,14 @@ namespace Scryber.Styles
             StyleValue<bool> show;
             StyleValue<PDFColor> color;
             StyleValue<double> opacity;
-            if(this.TryGetValue(StyleKeys.OverlayShowGridKey,out show) && show.Value)
+            if(this.TryGetValue(StyleKeys.OverlayShowGridKey,out show) && show.Value(this))
             {
                 if (this.TryGetValue(StyleKeys.OverlayColorKey, out color) == false)
                     color = new StyleValue<PDFColor>(StyleKeys.OverlayColorKey, OverlayGridStyle.DefaultGridColor);
                 if (this.TryGetValue(StyleKeys.OverlayOpacityKey, out opacity) == false)
                     opacity = new StyleValue<double>(StyleKeys.OverlayOpacityKey, OverlayGridStyle.DefaultGridOpacity);
 
-                PDFPen solid = new PDFSolidPen(color.Value, OverlayGridStyle.DefaultGridPenWidth) { Opacity = opacity.Value };
+                PDFPen solid = new PDFSolidPen(color.Value(this), OverlayGridStyle.DefaultGridPenWidth) { Opacity = opacity.Value(this) };
                 return solid;
             }
             return null;
@@ -1941,7 +1941,7 @@ namespace Scryber.Styles
             if (stylebase.TryGetBaseValue(key, out exist))
             {
                 found = (StyleValue<T>)exist;
-                return found.Value;
+                return found.Value(stylebase);
             }
             else
                 return defaultValue;

@@ -54,9 +54,8 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<string> format;
-                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextNumberFormatKey, out format))
-                    return format.Value;
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.TextNumberFormatKey, string.Empty);
                 else
                     return string.Empty;
             }

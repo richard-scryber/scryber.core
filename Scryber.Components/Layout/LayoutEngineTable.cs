@@ -563,8 +563,7 @@ namespace Scryber.Layout
                 //If we are set to invisible then ingnore eveything
 
                 StyleValue<PositionMode> found;
-                if(rowfull.TryGetValue(StyleKeys.PositionModeKey, out found)
-                    && found.Value == PositionMode.Invisible)
+                if(rowfull.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
                 {
                     this.StyleStack.Pop();
                     row.Visible = false;
@@ -610,7 +609,7 @@ namespace Scryber.Layout
                     //If we are set to invisible then ingnore eveything
 
                     if (cellfull.TryGetValue(StyleKeys.PositionModeKey, out found)
-                        && found.Value == PositionMode.Invisible)
+                        && found.Value(cellfull) == PositionMode.Invisible)
                     {
                         this.StyleStack.Pop();
                         cell.Visible = false;
@@ -625,7 +624,7 @@ namespace Scryber.Layout
                     StyleValue<int> spanVal;
                     int span;
                     if (cellfull.TryGetValue(StyleKeys.TableCellColumnSpanKey, out spanVal))
-                        span = spanVal.Value;
+                        span = spanVal.Value(cellfull);
                     else
                         //Deleted the allow changes to set the cellColumnSpan value on the style
                         span = 1;
@@ -1712,7 +1711,7 @@ namespace Scryber.Layout
 
                 StyleValue<int> cellspan;
                 if (fullstyle.TryGetValue(StyleKeys.TableCellColumnSpanKey, out cellspan))
-                    _colspan = cellspan.Value;
+                    _colspan = cellspan.Value(fullstyle);
                 else
                     _colspan = 1;
             }
@@ -1916,7 +1915,7 @@ namespace Scryber.Layout
 
                 StyleValue<TableRowRepeat> repeat;
                 if (fullstyle.TryGetValue(StyleKeys.TableRowRepeatKey,out repeat))
-                    this.Repeat = repeat.Value;
+                    this.Repeat = repeat.Value(fullstyle);
                 else
                     this.Repeat = TableRowRepeat.None;
             }

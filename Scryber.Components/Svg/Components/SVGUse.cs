@@ -92,7 +92,7 @@ namespace Scryber.Svg.Components
             {
                 StyleValue<PDFUnit> x;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.PositionXKey, out x))
-                    return x.Value;
+                    return x.Value(this.Style);
                 else
                     return PDFUnit.Empty;
             }
@@ -130,7 +130,7 @@ namespace Scryber.Svg.Components
             {
                 StyleValue<PDFUnit> y;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.PositionYKey, out y))
-                    return y.Value;
+                    return y.Value(this.Style);
                 else
                     return PDFUnit.Empty;
             }
@@ -168,7 +168,7 @@ namespace Scryber.Svg.Components
             {
                 StyleValue<PDFUnit> width;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.SizeWidthKey, out width))
-                    return width.Value;
+                    return width.Value(this.Style);
                 else
                     return PDFUnit.Empty;
             }
@@ -208,7 +208,7 @@ namespace Scryber.Svg.Components
             {
                 StyleValue<PDFUnit> height;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.SizeHeightKey, out height))
-                    return height.Value;
+                    return height.Value(this.Style);
                 else
                     return PDFUnit.Empty;
             }
@@ -299,7 +299,7 @@ namespace Scryber.Svg.Components
             if(this.HasX)
             {
                 if (found.HasStyle && found.Style.TryGetValue(StyleKeys.PositionXKey, out val))
-                    found.Style.SetValue(StyleKeys.PositionXKey, val.Value + this.X);
+                    found.Style.SetValue(StyleKeys.PositionXKey, val.Value(found.Style) + this.X);
                 else
                     found.Style.SetValue(StyleKeys.PositionXKey, this.X);
             }
@@ -307,7 +307,7 @@ namespace Scryber.Svg.Components
             if (this.HasY)
             {
                 if (found.HasStyle && found.Style.TryGetValue(StyleKeys.PositionYKey, out val))
-                    found.Style.SetValue(StyleKeys.PositionYKey, val.Value + this.Y);
+                    found.Style.SetValue(StyleKeys.PositionYKey, val.Value(found.Style) + this.Y);
                 else
                     found.Style.SetValue(StyleKeys.PositionYKey, this.Y);
             }
@@ -315,7 +315,7 @@ namespace Scryber.Svg.Components
             if (this.HasWidth)
             {
                 if (found.HasStyle && found.Style.TryGetValue(StyleKeys.SizeWidthKey, out val))
-                    found.Style.SetValue(StyleKeys.SizeWidthKey, val.Value + this.Width);
+                    found.Style.SetValue(StyleKeys.SizeWidthKey, val.Value(found.Style) + this.Width);
                 else
                     found.Style.SetValue(StyleKeys.SizeWidthKey, this.Width);
             }
@@ -323,7 +323,7 @@ namespace Scryber.Svg.Components
             if (this.HasHeight)
             {
                 if (found.HasStyle && found.Style.TryGetValue(StyleKeys.SizeHeightKey, out val))
-                    found.Style.SetValue(StyleKeys.SizeHeightKey, val.Value + this.Height);
+                    found.Style.SetValue(StyleKeys.SizeHeightKey, val.Value(found.Style) + this.Height);
                 else
                     found.Style.SetValue(StyleKeys.SizeHeightKey, this.Height);
             }

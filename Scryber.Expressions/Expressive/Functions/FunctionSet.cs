@@ -8,6 +8,7 @@ using Scryber.Expressive.Functions.Mathematical;
 using Scryber.Expressive.Functions.Relational;
 using Scryber.Expressive.Functions.Statistical;
 using Scryber.Expressive.Functions.String;
+using Scryber.Expressive.Functions.CSS;
 
 namespace Scryber.Expressive.Functions
 {
@@ -138,7 +139,9 @@ namespace Scryber.Expressive.Functions
             set.RegisterFunction(new ConcatFunction());
             set.RegisterFunction(new IndexOfFunction());
             set.RegisterFunction(new JoinFunction());
-
+            //css
+            set.RegisterFunction(new VarFunction());
+            set.RegisterFunction(new CalcFunction());
             return set;
         }
     }

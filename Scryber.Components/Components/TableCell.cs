@@ -46,9 +46,8 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<int> count;
-                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TableCellColumnSpanKey, out count))
-                    return count.Value;
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.TableCellColumnSpanKey, 1);
                 else
                     return 1;
             }

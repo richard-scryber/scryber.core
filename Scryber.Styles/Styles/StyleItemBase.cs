@@ -264,7 +264,7 @@ namespace Scryber.Styles
             StyleValue<T> exist;
             if (itembase.AssertOwner().TryGetValue(key, out exist))
             {
-                found = exist.Value;
+                found = exist.Value(itembase.AssertOwner());
                 return true;
             }
             else

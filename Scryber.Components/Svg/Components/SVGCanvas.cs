@@ -129,9 +129,8 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<PDFRect> rect;
-                if (this.Style.TryGetValue(StyleKeys.PositionViewPort, out rect))
-                    return rect.Value;
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionViewPort, PDFRect.Empty);
                 else
                     return PDFRect.Empty;
             }
@@ -155,10 +154,9 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<SVGAspectRatio> aspect;
-                if (this.Style.TryGetValue(SVGAspectRatio.AspectRatioStyleKey, out aspect))
+                if (this.HasStyle)
                 {
-                    return aspect.Value;
+                    return this.Style.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
                 }
                 else
                     return SVGAspectRatio.Default;

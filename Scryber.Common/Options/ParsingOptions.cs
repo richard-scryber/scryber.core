@@ -114,7 +114,7 @@ namespace Scryber.Options
         }
 
 
-        public IPDFBindingExpressionFactory GetGetBindingFactoryForPrefix(string prefix)
+        public IPDFBindingExpressionFactory GetBindingFactoryForPrefix(string prefix)
         {
             if (string.IsNullOrEmpty(prefix) || this.Bindings == null || this.Bindings.Count == 0)
                 return null;

@@ -206,7 +206,7 @@ namespace Scryber.Layout
             this._style = fullstyle;
 
             StyleValue<PositionMode> found;
-            if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value == PositionMode.Invisible)
+            if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value(this._style) == PositionMode.Invisible)
             {
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of component '" + this.Component.UniqueID + "' as it is invisible");
@@ -364,11 +364,11 @@ namespace Scryber.Layout
             if (IsStyled(comp) && !IsText(comp))
             {
                 StyleValue<bool> br;
-                if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value)
+                if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value(full))
                 {
                     this.DoLayoutPageBreak(comp, full);
                 }
-                else if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out br) && br.Value)
+                else if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out br) && br.Value(full))
                 {
                     this.DoLayoutColumnBreak(comp, full);
                 }
@@ -383,11 +383,11 @@ namespace Scryber.Layout
             if (IsStyled(comp) && !IsText(comp))
             {
                 StyleValue<bool> br;
-                if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value)
+                if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value(full))
                 {
                     this.DoLayoutPageBreak(comp, full);
                 }
-                else if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value)
+                else if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value(full))
                 {
                     this.DoLayoutColumnBreak(comp, full);
                 }

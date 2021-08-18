@@ -292,9 +292,11 @@ namespace Scryber.Styles
 
             if (this.IsMatchedTo(forComponent, out priority))
             {
-                this.MergeInto(style, priority);
                 if (this.HasVariables)
                     this.MergeVariables(style);
+
+                this.MergeInto(style, priority);
+                
             }
         }
 

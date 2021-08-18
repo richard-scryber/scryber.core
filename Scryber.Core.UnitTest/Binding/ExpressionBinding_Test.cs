@@ -147,7 +147,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 
             var str = "Max(10, val1.num)";
-            var expression = factory.CreateExpression(str, null);
+            var expression = factory.CreateBindingExpression(str, null);
             
             var value = expression.Expression.Evaluate<double>(vars);
 
@@ -155,7 +155,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             str = "Min(10,val1.num,val2)";
 
-            expression = factory.CreateExpression(str, null);
+            expression = factory.CreateBindingExpression(str, null);
 
             value = expression.Expression.Evaluate<double>(vars);
 
@@ -163,7 +163,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             str = "median(10,val2, val1.num)";
 
-            expression = factory.CreateExpression(str, null);
+            expression = factory.CreateBindingExpression(str, null);
             
             value = expression.Expression.Evaluate<double>(vars);
 
@@ -172,7 +172,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             str = "concat('a string and ', val1.text)";
 
-            expression = factory.CreateExpression(str, null);
+            expression = factory.CreateBindingExpression(str, null);
 
             var strResult = expression.Expression.Evaluate<string>(vars);
 
@@ -189,14 +189,14 @@ namespace Scryber.Core.UnitTests.Binding
 
 
             var str = "Pi";
-            var expression = factory.CreateExpression(str, null);
+            var expression = factory.CreateBindingExpression(str, null);
 
             var value = expression.Expression.Evaluate<double>();
 
             Assert.AreEqual(Math.PI, value);
 
             str = "round(Pi, 3)";
-            expression = factory.CreateExpression(str, null);
+            expression = factory.CreateBindingExpression(str, null);
 
             value = expression.Expression.Evaluate<double>();
 

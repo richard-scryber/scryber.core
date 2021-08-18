@@ -53,8 +53,8 @@ namespace Scryber.Components
             fullstyle.TryGetValue(StyleKeys.ShapeRotationKey, out rotation);
             PDFGraphicsPath path = new PDFGraphicsPath();
             BuildElipse(path, bounds,
-                                (isclosed == null)? true : isclosed.Value, 
-                                ((rotation == null)? 0.0 : rotation.Value) + this.DefaultRotation);
+                                (isclosed == null)? true : isclosed.Value(fullstyle), 
+                                ((rotation == null)? 0.0 : rotation.Value(fullstyle)) + this.DefaultRotation);
 
             return path;
         }
