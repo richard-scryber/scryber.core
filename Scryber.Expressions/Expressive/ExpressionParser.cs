@@ -11,6 +11,9 @@ using System.Diagnostics;
 
 namespace Scryber.Expressive
 {
+    /// <summary>
+    /// Parses a single IExpression from a string value
+    /// </summary>
     public class ExpressionParser
     {
         #region Fields
@@ -22,7 +25,11 @@ namespace Scryber.Expressive
 
         #region Constructors
 
-
+        /// <summary>
+        /// Create a new instance of the ExpressionParser with the specified context and tokeniser
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="tokeniser"></param>
         public ExpressionParser(Context context, ITokeniser tokeniser)
         {
             this.context = context;

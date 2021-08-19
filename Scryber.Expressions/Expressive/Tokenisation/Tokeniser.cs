@@ -10,20 +10,95 @@ using Scryber.Expressive.Expressions.Binary.Bitwise;
 
 namespace Scryber.Expressive.Tokenisation
 {
+    /// <summary>
+    /// Converts an expression string into a list of tokens (variables, functions, separators, operators etc.)
+    /// </summary>
     public class Tokeniser : ITokeniser
     {
-        public Context Context { get; set; }
+        //
+        // properties
+        //
 
-        protected int CurrentIndex { get; set; }
+        #region public Context Context { get; }
 
-        public TokenList Root { get; set; }
+        /// <summary>
+        /// Gets the current context to tokenise an expression with
+        /// </summary>
+        public Context Context
+        {
+            get;
+            private set;
+        }
 
+        #endregion
+
+        #region public int CurrentIndex {get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the current index in the string we are tokenising
+        /// </summary>
+        public int CurrentIndex
+        {
+            get;
+            protected set;
+        }
+
+        #endregion
+
+        #region public bool IsRunning { get; }
+
+        /// <summary>
+        /// Returns true if this tokenizer is currently executing
+        /// </summary>
+        public bool IsRunning
+        {
+            get { return this.CurrentIndex > 0; }
+        }
+
+        #endregion
+
+        #region public TokenList Root {get;}
+
+        /// <summary>
+        /// The list of tokens (so far)
+        /// </summary>
+        public TokenList Root
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
+        //
+        // .ctor
+        //
+
+        #region public Tokeniser(Context context)
+
+        /// <summary>
+        /// Creates a new instance of teh 
+        /// </summary>
+        /// <param name="context"></param>
         public Tokeniser(Context context)
         {
-            this.Context = context;
+            this.Context = context ?? throw new ArgumentNullException(nameof(context));
             this.CurrentIndex = 0;
         }
 
+        #endregion
+
+        //
+        // public methods
+        //
+
+        #region public TokenList Tokenise(string expression)
+
+        /// <summary>
+        /// Tokenizes a single expression string into a list of tokens
+        /// </summary>
+        /// <param name="expression">The expression to tokenise</param>
+        /// <returns>A complete list of all the tokens in the expression</returns>
         public TokenList Tokenise(string expression)
         {
             if (this.CurrentIndex > 0)
@@ -33,11 +108,23 @@ namespace Scryber.Expressive.Tokenisation
             
             this.Root = new TokenList();
 
-            this.DoTokenise(expression);
+            try
+            {
+                this.DoTokenise(expression);
+            }
+            finally
+            {
+                this.CurrentIndex = 0;
+            }
 
-            this.CurrentIndex = 0;
             return this.Root;
         }
+
+        #endregion
+
+        //
+        // implementation
+        //
 
         #region DoTokenise
 
@@ -58,7 +145,7 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     TokeniseKeyword(expression, length);
                 }
-                else if(IsVariableName(expression, this.CurrentIndex, out length))
+                else if(IsCssVariableName(expression, this.CurrentIndex, out length))
                 {
                     TokeniseKeyword(expression, length);
                 }
@@ -89,7 +176,7 @@ namespace Scryber.Expressive.Tokenisation
 
         #endregion
 
-        #region IsKeyword + IsVariableName + TokeniseKeyword
+        #region IsKeyword + TokeniseKeyword
 
         /// <summary>
         /// Checks if the characters at and following index in the expression are a keyword (a function, a constant or an expression)
@@ -120,39 +207,6 @@ namespace Scryber.Expressive.Tokenisation
             }
             length = index - start;
             return length > 0;
-        }
-
-        protected virtual bool IsVariableName(string expression, int index, out int length)
-        {
-            int start = index;
-
-            if (expression[index] == '-' && expression.Length > index + 1 && expression[index + 1] == '-')
-            {
-                index += 2;
-
-                while (index < expression.Length)
-                {
-                    if (char.IsLetterOrDigit(expression, index))
-                        index++;
-                    else if (expression[index] == '_')
-                        index++;
-                    else if (expression[index] == '-')
-                    {
-                        index++;
-                    }
-                    else
-                        break;
-                }
-
-                length = index - start;
-                return length > 0;
-            }
-            else
-            {
-                length = 0;
-                return false;
-
-            }
         }
 
         /// <summary>
@@ -186,6 +240,54 @@ namespace Scryber.Expressive.Tokenisation
                 this.AddNewToken(start, length, "[" + name + "]", ExpressionTokenType.Variable);
             }
         }
+
+        #endregion
+
+        #region IsCSSVariableName
+
+        /// <summary>
+        /// Checks to see if the current token is a css variable name (start with -- and contains -_A-Z1-9)
+        /// </summary>
+        /// <param name="expression">The expression to check</param>
+        /// <param name="index">The index to check at</param>
+        /// <param name="length">Set to the length of the variable name</param>
+        /// <returns>True if the following string is a css variable name</returns>
+        protected virtual bool IsCssVariableName(string expression, int index, out int length)
+        {
+            int start = index;
+
+            if (expression[index] == '-' && expression.Length > index + 1 && expression[index + 1] == '-')
+            {
+                index += 2;
+
+                while (index < expression.Length)
+                {
+                    if (char.IsLetterOrDigit(expression, index))
+                        index++;
+                    else if (expression[index] == '_')
+                        index++;
+                    else if (expression[index] == '-')
+                    {
+                        index++;
+                    }
+                    else
+                        break;
+                }
+
+                length = index - start;
+                return length > 0;
+            }
+            else
+            {
+                length = 0;
+                return false;
+
+            }
+        }
+
+        #endregion
+
+        #region IsConstant
 
         /// <summary>
         /// Returns true if the name represents a known constant expression - null, true, false, pi or e. The comparison is based on the contect parsing string comparison.

@@ -91,6 +91,8 @@ namespace Scryber.Core.UnitTests.Html
                 /* Reverse the colors */
                 background-color: #222;
                 color:#808080;
+                margin: 20pt 10pt;
+                padding: 10pt 5pt 15pt 1pt;
             }";
 
         [TestMethod]
@@ -128,13 +130,23 @@ namespace Scryber.Core.UnitTests.Html
             var three = col[2] as StyleDefn;
 
             Assert.AreEqual("body.grey div.reverse", three.Match.ToString());
-            Assert.AreEqual(2, one.ValueCount); 
+            Assert.AreEqual(2 + 4 + 4, three.ValueCount); //2 colors and 4 each for margins and padding
+
             Assert.AreEqual((PDFColor)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
             Assert.AreEqual((PDFColor)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
+            Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsTopKey, 0.0));
+            Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsBottomKey, 0.0));
+            Assert.AreEqual((PDFUnit)10, three.GetValue(StyleKeys.MarginsLeftKey, 0.0));
+            Assert.AreEqual((PDFUnit)10, three.GetValue(StyleKeys.MarginsRightKey, 0.0));
 
-
+            Assert.AreEqual((PDFUnit)10, three.GetValue(StyleKeys.PaddingTopKey, 0.0));
+            Assert.AreEqual((PDFUnit)5, three.GetValue(StyleKeys.PaddingRightKey, 0.0));
+            Assert.AreEqual((PDFUnit)15, three.GetValue(StyleKeys.PaddingBottomKey, 0.0));
+            Assert.AreEqual((PDFUnit)1, three.GetValue(StyleKeys.PaddingLeftKey, 0.0));
         }
+
+
         [TestMethod()]
         [TestCategory("Performance")]
         public void ParseCSSWithComments_Performance()
@@ -597,17 +609,22 @@ body.grey div.reverse{
 
             Assert.IsTrue(defn.HasVariables);
             Assert.AreEqual(1, defn.Variables.Count);
-            Assert.AreEqual("main-color", defn.Variables["--main-color"].Name);
+            Assert.AreEqual("--main-color", defn.Variables["--main-color"].CssName);
+            Assert.AreEqual("main-color", defn.Variables["--main-color"].NormalizedName);
             Assert.AreEqual("#FF0000", defn.Variables["--main-color"].Value);
 
 
-            var applied = doc.GetAppliedStyle();
+            doc.InitializeAndLoad();
+            doc.DataBind();
 
+            //Should not be applied
+            var applied = doc.GetAppliedStyle();
 
             Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
 
 
             doc = new Document();
+
             context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
 
             cssparser = new CSSStyleParser(css, context);

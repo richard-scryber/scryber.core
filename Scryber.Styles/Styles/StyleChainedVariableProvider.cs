@@ -7,7 +7,7 @@ namespace Scryber.Styles
     /// <summary>
     /// Implements the Expressive IVariableProvider to look in the StyleVariableSet, or if not found, the next IVariableProvider
     /// </summary>
-    public class ChainedStyleVariableProvider : IVariableProvider
+    public class StyleChainedVariableProvider : IVariableProvider
     {
 
         private IVariableProvider _next;
@@ -29,9 +29,14 @@ namespace Scryber.Styles
             get { return _variables; }
         }
 
-        public ChainedStyleVariableProvider(StyleVariableSet vars, IVariableProvider next)
+        /// <summary>
+        /// Creates a new Chained variable provider
+        /// </summary>
+        /// <param name="vars"></param>
+        /// <param name="next"></param>
+        public StyleChainedVariableProvider(StyleVariableSet vars, IVariableProvider next)
         {
-            this._variables = vars;
+            this._variables = vars ?? throw new ArgumentNullException(nameof(vars));
             this._next = next;
         }
 
@@ -45,14 +50,14 @@ namespace Scryber.Styles
         {
             StyleVariable styleVar;
 
-            if (null != this._variables && this._variables.TryGetValue(variableName, out styleVar))
+            if (null != this.StyleVariables && this.StyleVariables.TryGetValue(variableName, out styleVar))
             {
                 value = styleVar.Value;
                 return true;
             }
             else if (null != this._next)
             {
-                return this._next.TryGetValue(variableName, out value);
+                return this.NextProvider.TryGetValue(variableName, out value);
             }
             else
             {

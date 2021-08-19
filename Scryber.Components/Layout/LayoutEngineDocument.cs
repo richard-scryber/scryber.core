@@ -87,11 +87,11 @@ namespace Scryber.Layout
 
             LayoutAdditions(style);
 
-            this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Layout_Pages);
+            //this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Layout_Pages);
 
             LayoutAllPages();
 
-            this.Context.PerformanceMonitor.End(PerformanceMonitorType.Layout_Pages);
+            //this.Context.PerformanceMonitor.End(PerformanceMonitorType.Layout_Pages);
 
             if (null != artefacts)
                 this.Document.CloseLayoutArtefacts(Context, artefacts, style);

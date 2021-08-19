@@ -311,7 +311,7 @@ namespace Scryber.Styles
             {
                 foreach (var item in this.Variables)
                 {
-                    style.AddVariable(item.Key, item.Value);
+                    style.AddVariable(item.Value);
                 }
             }
         }

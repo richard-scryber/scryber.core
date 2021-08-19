@@ -5,6 +5,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Html;
 using System.Drawing.Printing;
+using Scryber.Styles.Parsing.Typed;
 
 namespace Scryber.Styles.Parsing
 {
@@ -60,7 +61,7 @@ namespace Scryber.Styles.Parsing
                 {
                     var id = reader.CurrentAttribute;
                     if (reader.ReadNextValue(';', ignoreWhiteSpace: true))
-                        defn.AddVariable(id, variable, reader.CurrentTextValue);
+                        defn.AddVariable(variable, reader.CurrentTextValue);
                 }
                 else if (null != context && context.TraceLog.ShouldLog(TraceLevel.Warning))
                     context.TraceLog.Add(TraceLevel.Warning, "CSS", "Can only declare variables within style definitions '" + reader.CurrentAttribute + "' is not beinf set on a definition.");
@@ -84,7 +85,9 @@ namespace Scryber.Styles.Parsing
         {
             if (reader.CurrentAttribute.StartsWith(CSSVariableIdentifier))
             {
-                name = reader.CurrentAttribute.Substring(CSSVariableIdentifierLength);
+                var queue = new Queue<string>();
+
+                name = reader.CurrentAttribute;
                 return true;
             }
             else

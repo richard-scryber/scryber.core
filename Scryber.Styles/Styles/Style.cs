@@ -1141,21 +1141,21 @@ namespace Scryber.Styles
         // variables
         //
 
-        public bool AddVariable(string identifier, string name, string value)
+        public bool AddVariable(string name, string value)
         {
             if (null == this._variables)
                 _variables = new StyleVariableSet();
-            _variables.Add(identifier, new StyleVariable() { Name = name, Value = value });
+            _variables.Add(new StyleVariable(name, value));
 
             return true;
         }
 
-        internal void AddVariable(string identifier, StyleVariable variable)
+        internal void AddVariable(StyleVariable variable)
         {
             if (null == this._variables)
                 _variables = new StyleVariableSet();
 
-            _variables.Add(identifier, variable ?? throw new ArgumentNullException(nameof(variable)));
+            _variables.Add(variable ?? throw new ArgumentNullException(nameof(variable)));
         }
 
 

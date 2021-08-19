@@ -9,6 +9,9 @@ namespace Scryber.Options
     {
         public const string ParsingSection = ScryberOptions.ScryberSectionStub + "Parsing";
 
+        public const string ItemBindingPrefix = "item";
+        public const string CalcBindingPrefix = "calc";
+        public const string XPathBindingPrefix = "xpath";
 
         public ParserReferenceMissingAction MissingReferenceAction { get; set; }
 
@@ -44,7 +47,7 @@ namespace Scryber.Options
             });
 
             Bindings = new List<BindingPrefixOption>();
-            Bindings.Add(new BindingPrefixOption() { Prefix = "item",
+            Bindings.Add(new BindingPrefixOption() { Prefix = ItemBindingPrefix,
                                                      FactoryType = "Scryber.Binding.BindingItemExpressionFactory",
                                                      FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
@@ -52,11 +55,11 @@ namespace Scryber.Options
                                                      FactoryType = "Scryber.Binding.BindingItemExpressionFactory",
                                                      FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
-            Bindings.Add(new BindingPrefixOption() { Prefix = "calc",
+            Bindings.Add(new BindingPrefixOption() { Prefix = CalcBindingPrefix,
                                                      FactoryType = "Scryber.Binding.BindingCalcExpressionFactory",
                                                      FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
-            Bindings.Add(new BindingPrefixOption(){ Prefix = "xpath",
+            Bindings.Add(new BindingPrefixOption(){ Prefix = XPathBindingPrefix,
                                                     FactoryType = "Scryber.Binding.BindingXPathExpressionFactory",
                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
