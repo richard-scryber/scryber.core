@@ -153,13 +153,13 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.MarginsRight, new CSSMarginsRightParser());
             all.Add(CSSStyleItems.MarginsBottom, new CSSMarginsBottomParser());
             all.Add(CSSStyleItems.MarginsTop, new CSSMarginsTopParser());
-            all.Add(CSSStyleItems.Margins, new CSSMarginsParser());
+            all.Add(CSSStyleItems.Margins, new CSSMarginsAllParser());
 
             all.Add(CSSStyleItems.PaddingLeft, new CSSPaddingLeftParser());
             all.Add(CSSStyleItems.PaddingRight, new CSSPaddingRightParser());
             all.Add(CSSStyleItems.PaddingBottom, new CSSPaddingBottomParser());
             all.Add(CSSStyleItems.PaddingTop, new CSSPaddingTopParser());
-            all.Add(CSSStyleItems.Padding, new CSSPaddingParser());
+            all.Add(CSSStyleItems.Padding, new CSSPaddingAllParser());
 
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
 
