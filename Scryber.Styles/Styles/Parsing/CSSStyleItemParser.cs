@@ -481,28 +481,7 @@ namespace Scryber.Styles.Parsing
 
     
 
-    // fill
-
-    #region public class CSSOpacityParser : CSSStyleAttributeParser<double>
-
     
-
-    
-
-    #endregion
-
-    #region public class CSSColourParser : CSSColorStyleParser
-
-    
-
-    #endregion
-
-
-    #region public class CSSFillParser : CSSColorStyleParser
-
-    
-
-    #endregion
 
     // columns
 
@@ -512,69 +491,17 @@ namespace Scryber.Styles.Parsing
 
     #endregion
 
-    public class CSSColumnWidthParser : CSSStyleAttributeParser<PDFColumnWidths>
-    {
-        public CSSColumnWidthParser()
-            : base(CSSStyleItems.ColumnWidths, StyleKeys.ColumnWidthKey)
-        {
-
-        }
-
-        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
-        {
-            string all = string.Empty;
-            while(reader.ReadNextValue())
-            {
-                if (all.Length > 0)
-                    all += " ";
-                all += reader.CurrentTextValue;
-            }
-            if (!string.IsNullOrEmpty(all))
-            {
-                PDFColumnWidths widths = PDFColumnWidths.Parse(all);
-                this.SetValue(style, widths);
-                return true;
-            }
-            else
-                return false;
-        }
-    }
+    
 
     #region public class CSSColumnGapParser : CSSUnitStyleParser
 
-    public class CSSColumnGapParser : CSSUnitStyleParser
-    {
-        public CSSColumnGapParser()
-            : base(CSSStyleItems.ColumnGap, StyleKeys.ColumnAlleyKey)
-        {
-        }
-
-        
-    }
+    
 
     #endregion
 
     #region public class CSSColumnSpanParser : CSSStyleAttributeParser<int>
 
-    public class CSSColumnSpanParser : CSSStyleAttributeParser<int>
-    {
-        public CSSColumnSpanParser()
-            : base(CSSStyleItems.ColumnSpan, StyleKeys.TableCellColumnSpanKey)
-        {
-        }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            int number;
-
-            if (reader.ReadNextValue() && ParseInteger(reader.CurrentTextValue, out number) && number >= 1 && number < 100)
-            {
-                this.SetValue(onStyle, number);
-                return true;
-            }
-            return false;
-        }
-    }
+    
 
     #endregion
 
@@ -583,39 +510,20 @@ namespace Scryber.Styles.Parsing
 
     #region public class CSSLeftParser : CSSUnitStyleParser
 
-    public class CSSLeftParser : CSSUnitStyleParser
-    {
-        public CSSLeftParser()
-            : base(CSSStyleItems.Left, StyleKeys.PositionXKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
     #region public class CSSTopParser : CSSUnitStyleParser
 
-    public class CSSTopParser : CSSUnitStyleParser
-    {
-        public CSSTopParser()
-            : base(CSSStyleItems.Top, StyleKeys.PositionYKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
     #region public class CSSPositionFloatParser : CSSEnumStyleParser<FloatMode>
 
 
-    public class CSSPositionFloatParser : CSSEnumStyleParser<FloatMode>
-    {
-
-        public CSSPositionFloatParser(): base(CSSStyleItems.Float, StyleKeys.PositionFloat)
-        { }
-    }
+    
 
 
     #endregion
@@ -624,49 +532,13 @@ namespace Scryber.Styles.Parsing
 
     #region public class CSSWidthParser : CSSUnitStyleParser
 
-    public class CSSWidthParser : CSSUnitStyleParser
-    {
-        public CSSWidthParser()
-            : base(CSSStyleItems.Width, StyleKeys.SizeWidthKey)
-        {
-        }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            bool result = false;
-            if (reader.ReadNextValue())
-            {
-                string value = reader.CurrentTextValue;
-
-                PDFUnit parsed;
-                if(value == "100%")
-                {
-                    onStyle.SetValue(StyleKeys.SizeFullWidthKey, true);
-                    result = true;
-                }
-                else if (ParseCSSUnit(value, out parsed))
-                {
-                    onStyle.SetValue(this.StyleAttribute, parsed);
-                    result = true;
-                }
-            }
-            return result;
-        }
-
-    }
+    
 
     #endregion
 
     #region public class CSSHeightParser : CSSUnitStyleParser
 
-    public class CSSHeightParser : CSSUnitStyleParser
-    {
-        public CSSHeightParser()
-            : base(CSSStyleItems.Height, StyleKeys.SizeHeightKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
@@ -674,27 +546,13 @@ namespace Scryber.Styles.Parsing
 
     #region public class CSSMinWidthParser : CSSUnitStyleParser
 
-    public class CSSMinWidthParser : CSSUnitStyleParser
-    {
-        public CSSMinWidthParser()
-            : base(CSSStyleItems.MinimumWidth, StyleKeys.SizeMinimumWidthKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
     #region public class CSSMinHeightParser : CSSUnitStyleParser
 
-    public class CSSMinHeightParser : CSSUnitStyleParser
-    {
-        public CSSMinHeightParser()
-            : base(CSSStyleItems.MinimumHeight, StyleKeys.SizeMinimumHeightKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
@@ -702,27 +560,13 @@ namespace Scryber.Styles.Parsing
 
     #region public class CSSMaxWidthParser : CSSUnitStyleParser
 
-    public class CSSMaxWidthParser : CSSUnitStyleParser
-    {
-        public CSSMaxWidthParser()
-            : base(CSSStyleItems.MaximumWidth, StyleKeys.SizeMaximumWidthKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
     #region public class CSSMaxHeightParser : CSSUnitStyleParser
 
-    public class CSSMaxHeightParser : CSSUnitStyleParser
-    {
-        public CSSMaxHeightParser()
-            : base(CSSStyleItems.MaximumHeight, StyleKeys.SizeMaximumHeightKey)
-        {
-        }
-
-    }
+    
 
     #endregion
 
