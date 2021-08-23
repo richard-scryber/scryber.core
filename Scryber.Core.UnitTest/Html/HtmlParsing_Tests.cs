@@ -1397,6 +1397,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
+                doc.ConformanceMode = ParserConformanceMode.Strict;
                 //pass paramters as needed, supporting simple values, arrays or complex classes.
                 var style = doc.Pages[0].Style;
                 //style.OverlayGrid.ShowGrid = true;

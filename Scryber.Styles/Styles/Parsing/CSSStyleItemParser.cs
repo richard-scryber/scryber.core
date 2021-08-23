@@ -528,74 +528,7 @@ namespace Scryber.Styles.Parsing
 
     #region public class CSSListStyleTypeParser : CSSEnumStyleParser<Text.TextDecoration>
 
-    /// <summary>
-    /// Parses and sets the components text decoration option based on the CSS names
-    /// </summary>
-    public class CSSListStyleTypeParser : CSSEnumStyleParser<ListNumberingGroupStyle>
-    {
-        public CSSListStyleTypeParser()
-            : base(CSSStyleItems.ListStyleType, StyleKeys.ListNumberStyleKey)
-        {
-        }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            bool result = true;
-            ListNumberingGroupStyle type;
-            if (reader.ReadNextValue() && TryGetListTypeEnum(reader.CurrentTextValue, out type))
-                this.SetValue(onStyle, type);
-            else
-                result = false;
-
-            return result;
-        }
-
-        public static bool IsDecorationEnum(string value)
-        {
-            ListNumberingGroupStyle type;
-            return TryGetListTypeEnum(value, out type);
-        }
-
-        public static bool TryGetListTypeEnum(string value, out ListNumberingGroupStyle type)
-        {
-            switch (value.ToLower())
-            {
-                case ("disc"):
-                case("circle"):
-                    type = ListNumberingGroupStyle.Bullet;
-                    return true;
-
-                case ("decimal"):
-                    type = ListNumberingGroupStyle.Decimals;
-                    return true;
-
-                case("none"):
-                    type = ListNumberingGroupStyle.None;
-                    return true;
-
-                case("lower-roman"):
-                    type = ListNumberingGroupStyle.LowercaseRoman;
-                    return true;
-
-                case("lower-alpha"):
-                    type = ListNumberingGroupStyle.LowercaseLetters;
-                    return true;
-
-                case("upper-roman"):
-                    type = ListNumberingGroupStyle.UppercaseRoman;
-                    return true;
-
-                case("upper-alpha"):
-                    type = ListNumberingGroupStyle.UppercaseLetters;
-                    return true;
-                default:
-                    type = ListNumberingGroupStyle.Decimals;
-                    return false;
-
-            }
-        }
-
-    }
+    
 
     #endregion
 
