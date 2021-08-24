@@ -8,8 +8,8 @@
     <style>
         .grey{ background-color: grey; padding: 20pt}
         td.key{ color: #333; font-size:10pt;}
-        td.value{  color: #333; font-size:10pt; }
-        tr.odd{ background-color: #AAA;}
+        td.value{  color: black; font-size:10pt; }
+        tr.odd{ background-color: #AAA; border-top: solid 1px red;}
         tr.even{ background-color: #CCC; }
     </style>
 </head>
@@ -26,10 +26,10 @@
                     <td class="value" style="width: 120pt">Value</td>
                 </tr>
             </thead>
-            <template data-bind="{@:model.Items}" data-cache-styles="true" >
-                <tr class="{@:.Row}">
-                    <td class="key">{@:.Key}</td>
-                    <td class="value">{@:.Value}</td>
+            <template data-bind="{{model.Items}}" >
+                <tr class="{{if(index() % 2 == 1, 'odd', 'even')}}" >
+                    <td class="key" data-style-identifier="td_key">{{.Key}}</td>
+                    <td class="value" data-style-identifier="td_value">{{.Value}}</td>
                 </tr>
             </template>
         </table>

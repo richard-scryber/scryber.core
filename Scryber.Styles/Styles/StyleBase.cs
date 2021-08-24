@@ -579,6 +579,9 @@ namespace Scryber.Styles
         /// <returns></returns>
         public bool TryGetBaseValue(StyleKey key, out PDFStyleValueBase found)
         {
+            if (null == key)
+                throw new ArgumentNullException(nameof(key));
+
             if (key.Inherited)
             {
                 if(null == _inherited || _inherited.Count == 0)

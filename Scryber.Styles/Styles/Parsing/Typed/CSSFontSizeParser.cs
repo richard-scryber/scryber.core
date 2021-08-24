@@ -33,11 +33,13 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     result = this.AttachExpressionBindingHandler(onStyle, StyleKeys.FontSizeKey, str, DoConvertFontSize);
                 }
-                else
+                else if (TryGetFontSize(str, out size))
                 {
                     onStyle.SetValue(StyleKeys.FontSizeKey, size);
                     result = true;
                 }
+                else
+                    result = false;
             }
             else
                 result = false;

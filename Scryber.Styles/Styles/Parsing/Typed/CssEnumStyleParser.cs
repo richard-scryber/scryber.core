@@ -68,7 +68,7 @@ namespace Scryber.Styles.Parsing.Typed
             else if (value is T)
                 result = (T)value;
             else if (value is string)
-                success = Enum.TryParse<T>(value as string, out result);
+                success = Enum.TryParse<T>(value as string, IgnoreCase, out result);
             else
             {
                 var str = (value).ToString();
