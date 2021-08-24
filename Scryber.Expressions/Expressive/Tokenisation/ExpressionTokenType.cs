@@ -12,6 +12,8 @@ namespace Scryber.Expressive.Tokenisation
         Constant,
         Separator,
         Date,
+        Unit,
+        Color,
         Other
     }
 }

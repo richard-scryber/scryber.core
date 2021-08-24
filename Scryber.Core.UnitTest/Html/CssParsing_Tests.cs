@@ -17,8 +17,7 @@ namespace Scryber.Core.UnitTests.Html
 {
     [TestClass()]
     public class CssParsing_Test
-    {
-
+    { 
 
         private PDFLayoutContext _layoutcontext;
         private TestContext testContextInstance;
@@ -574,12 +573,15 @@ body.grey div.reverse{
             Assert.AreEqual("rgb(0,0,255)", applied.Fill.Color.ToString());
         }
 
+        
+
 
         [TestMethod()]
         public void ParseCSSWithVariables()
         {
+            //1. Initial to make sure it is parsed, but should not be used
 
-            var css = @"
+            string cssWithVariable = @"
 
                 :root{
                     color: #00FF00;
@@ -590,13 +592,9 @@ body.grey div.reverse{
                     color: var(--main-color);
                 }";
 
-            Document doc = new Document();
-            PDFLoadContext context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-
-            var cssparser = new CSSStyleParser(css, context);
-
-
-            StyleCollection col = new StyleCollection();
+            var doc = new Document();
+            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var cssparser = new CSSStyleParser(cssWithVariable, context);
 
             foreach (var style in cssparser)
             {
@@ -604,7 +602,7 @@ body.grey div.reverse{
             }
 
             //Check that the variable is there.
-            
+
             StyleDefn defn = doc.Styles[0] as StyleDefn;
 
             Assert.IsTrue(defn.HasVariables);
@@ -619,33 +617,153 @@ body.grey div.reverse{
 
             //Should not be applied
             var applied = doc.GetAppliedStyle();
-
             Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
 
+        }
 
-            doc = new Document();
+        [TestMethod]
+        public void ParseCSSWithVariablesApplied()
+        {
 
-            context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            //2. Second check that will use the variable
+            string cssWithVariable = @"
 
-            cssparser = new CSSStyleParser(css, context);
+                :root{
+                    color: #00FF00;
+                    --main-color: #FF0000;
+                }
 
-            col = new StyleCollection();
+                .other{
+                    color: var(--main-color);
+                }";
+
+            var doc = new Document();
+            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var cssparser = new CSSStyleParser(cssWithVariable, context);
 
             foreach (var style in cssparser)
             {
                 doc.Styles.Add(style);
             }
-            
 
-            
+
+
             //This should override the root declaration
             doc.StyleClass = "other";
 
             doc.InitializeAndLoad();
             doc.DataBind();
 
-            applied = doc.GetAppliedStyle();
+            var applied = doc.GetAppliedStyle();
             Assert.AreEqual("rgb(255,0,0)", applied.Fill.Color.ToString(), "Variable '--main-color' was not applied to the document");
+
+        }
+
+        [TestMethod]
+        public void ParseCSSWithVariablesOverriden()
+        {
+            //3. Third check that will use the items collection rather than the declared value
+            string cssWithVariable = @"
+
+                :root{
+                    color: #00FF00;
+                    --main-color: #FF0000;
+                }
+
+                .other{
+                    color: var(--main-color);
+                }";
+
+            var doc = new Document();
+            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var cssparser = new CSSStyleParser(cssWithVariable, context);
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+
+            //This should override the root declaration
+            doc.StyleClass = "other";
+
+            //And now we apply the color to the params collection
+            doc.Params["--main-color"] = PDFColors.Aqua;
+
+            doc.InitializeAndLoad();
+            doc.DataBind();
+
+            var applied = doc.GetAppliedStyle();
+            Assert.AreEqual(PDFColors.Aqua.ToString(), applied.Fill.Color.ToString(), "Parameter '--main-color' was not overriden in the document based on the parameters");
+
+
+        }
+
+        [TestMethod]
+        public void ParseCSSWithCalcExpression()
+        {
+            var cssWithCalc = @"
+
+            .other{
+               background-color: calc(concat('#', 'FF', '00', '00'));
+               color: var(--text-color, #00FFFF);
+            }";
+
+
+            var doc = new Document();
+            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var cssparser = new CSSStyleParser(cssWithCalc, context);
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+
+
+
+            //This should override the root declaration
+            doc.StyleClass = "other";
+
+            doc.InitializeAndLoad();
+            doc.DataBind();
+
+            var applied = doc.GetAppliedStyle();
+            Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
+
+            Assert.AreEqual("rgb(0,255,255)", applied.Fill.Color.ToString(), "The fallback for the variable --text-color was not used");
+        }
+
+        [TestMethod]
+        public void ParseCSSWithCalcExpressionAndVariable()
+        {
+            var cssWithCalc = @"
+
+            .other{
+               background-color: calc(concat('#', 'FF', '00', '00'));
+               color: var(--text-color, #00FFFF);
+            }";
+
+
+            var doc = new Document();
+            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var cssparser = new CSSStyleParser(cssWithCalc, context);
+
+            foreach (var style in cssparser)
+            {
+                doc.Styles.Add(style);
+            }
+
+
+
+            //This should override the root declaration
+            doc.StyleClass = "other";
+            doc.Params["--text-color"] = PDFColors.Lime;
+            doc.InitializeAndLoad();
+            doc.DataBind();
+
+            var applied = doc.GetAppliedStyle();
+            Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
+
+            Assert.AreEqual(PDFColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
         }
     }
 }

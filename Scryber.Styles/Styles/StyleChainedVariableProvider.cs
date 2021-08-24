@@ -49,21 +49,26 @@ namespace Scryber.Styles
         public bool TryGetValue(string variableName, out object value)
         {
             StyleVariable styleVar;
+            object nextVal;
+            bool result = false;
+            value = null;
 
+            //First check the style variables
             if (null != this.StyleVariables && this.StyleVariables.TryGetValue(variableName, out styleVar))
             {
                 value = styleVar.Value;
-                return true;
+                result = true;
             }
-            else if (null != this._next)
+
+            //Next we check any previous values
+            if (null != this._next && this.NextProvider.TryGetValue(variableName, out nextVal))
             {
-                return this.NextProvider.TryGetValue(variableName, out value);
+                value = nextVal;
+                result = true;
             }
-            else
-            {
-                value = null;
-                return false;
-            }
+
+            return result;
+            
         }
     }
 }

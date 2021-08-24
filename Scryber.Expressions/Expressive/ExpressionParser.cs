@@ -8,6 +8,7 @@ using System.Linq;
 using Scryber.Expressive.Tokenisation;
 using System.Reflection.Metadata;
 using System.Diagnostics;
+using Scryber.Drawing;
 
 namespace Scryber.Expressive
 {
@@ -247,6 +248,26 @@ namespace Scryber.Expressive
                         variables.Add(variableName);
                     }
 
+                }
+                else if(currentToken.Type == ExpressionTokenType.Color)
+                {
+                    PDFColor color;
+                    tokens.Dequeue();
+
+                    if (!PDFColor.TryParse(currentToken.CurrentToken, out color))
+                        throw new UnrecognisedTokenException(currentToken.CurrentToken);
+                    else
+                        leftHandSide = new ConstantValueExpression(color);
+                }
+                else if(currentToken.Type == ExpressionTokenType.Unit)
+                {
+                    PDFUnit unit;
+                    tokens.Dequeue();
+
+                    if (!PDFUnit.TryParse(currentToken.CurrentToken, out unit))
+                        throw new UnrecognisedTokenException(currentToken.CurrentToken);
+                    else
+                        leftHandSide = new ConstantValueExpression(unit);
                 }
                 else if (currentToken.CurrentToken.StartsWith(Context.DateSeparator.ToString()) && currentToken.CurrentToken.EndsWith(Context.DateSeparator.ToString())) // or a date?
                 {

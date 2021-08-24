@@ -27,4 +27,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
+  </ItemGroup>
 </Project>

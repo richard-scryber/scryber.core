@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Scryber.Styles.Parsing
 {
@@ -274,7 +275,7 @@ namespace Scryber.Styles.Parsing
                     indoublequote = !indoublequote;
 
                 else if (cur == '(')
-                    inparentheses = true;
+                    MoveToEndParentheses();
 
                 else if (cur == ')')
                     inparentheses = false;
@@ -290,6 +291,30 @@ namespace Scryber.Styles.Parsing
             }
             else
                 return false;
+        }
+
+        private void MoveToEndParentheses()
+        {
+            if (this.InnerEnumerator.Current != '(')
+                throw new InvalidOperationException("The string enumerator is not on an opening parenthese");
+
+            int count = 1;
+
+            while(this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            {
+                if (this.InnerEnumerator.Current == ')')
+                {
+                    count--;
+                    if (count == 0)
+                        break;
+                }
+                else if (this.InnerEnumerator.Current == '(')
+                {
+                    count++;
+                }
+                else if (this.InnerEnumerator.Offset == this.EndOffset)
+                    throw new InvalidOperationException("There are an odd number of open and close parenthese");
+            }
         }
 
         public bool ReadNextValue(char separator1, char separator2, char separator3, bool ignoreWhiteSpace = false)

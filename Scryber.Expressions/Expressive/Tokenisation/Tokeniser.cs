@@ -153,9 +153,9 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     TokeniseOperator(expression, length);
                 }
-                else if (IsNumber(expression, this.CurrentIndex, out length))
+                else if (IsNumber(expression, this.CurrentIndex, out length, out bool isUnit))
                 {
-                    TokeniseNumber(expression, length);
+                    TokeniseNumber(expression, length, isUnit);
                 }
                 else if (IsSeparator(expression, this.CurrentIndex, out length))
                 {
@@ -164,6 +164,10 @@ namespace Scryber.Expressive.Tokenisation
                 else if(IsString(expression, this.CurrentIndex, out length))
                 {
                     TokeniseString(expression, length);
+                }
+                else if(IsColor(expression, this.CurrentIndex, out length))
+                {
+                    TokeniseColor(expression, length);
                 }
                 else if(IsDate(expression, this.CurrentIndex, out length))
                 {
@@ -175,6 +179,70 @@ namespace Scryber.Expressive.Tokenisation
         }
 
         #endregion
+
+        protected virtual bool IsColor(string expression, int index, out int length)
+        {
+            int start = index;
+            length = 0;
+
+            if (expression[index] == '#')
+            {
+                bool match = true;
+                index++;
+                while (match && index < expression.Length)
+                {
+                    switch (expression[index])
+                    {
+                        case ('0'):
+                        case ('1'):
+                        case ('2'):
+                        case ('3'):
+                        case ('4'):
+                        case ('5'):
+                        case ('6'):
+                        case ('7'):
+                        case ('8'):
+                        case ('9'):
+                        case ('A'):
+                        case ('B'):
+                        case ('C'):
+                        case ('D'):
+                        case ('E'):
+                        case ('F'):
+                        case ('a'):
+                        case ('b'):
+                        case ('c'):
+                        case ('d'):
+                        case ('e'):
+                        case ('f'):
+                            index++;
+                            break;
+                        default:
+                            match = false;
+                            break;
+                    }
+                }
+
+                length = index - start;
+
+                if (length == 4) // #FFF
+                    return true;
+                else if (length == 7) // #FFFFFF
+                    return true;
+
+            }
+
+            return false;
+        }
+
+        protected void TokeniseColor(string expression, int length)
+        {
+            int start = this.CurrentIndex;
+            this.CurrentIndex += length;
+            var value = expression.Substring(start, length);
+
+            this.AddNewToken(start, length, value, ExpressionTokenType.Color);
+        }
 
         #region IsKeyword + TokeniseKeyword
 
@@ -517,6 +585,7 @@ namespace Scryber.Expressive.Tokenisation
                         index++;
                     }
                 }
+
                 if (!foundEnd)
                 {
                     length = 0;
@@ -735,9 +804,11 @@ namespace Scryber.Expressive.Tokenisation
         /// <param name="index">The index at whick to start checking</param>
         /// <param name="length">The output length of the string that constitutes the number</param>
         /// <returns>True if it is a number</returns>
-        protected virtual bool IsNumber(string expression, int index, out int length)
+        protected virtual bool IsNumber(string expression, int index, out int length, out bool isUnit)
         {
             int start = index;
+            isUnit = false;
+
             while (index < expression.Length)
             {
                 if (char.IsDigit(expression, index))
@@ -746,11 +817,59 @@ namespace Scryber.Expressive.Tokenisation
                 }
                 else if (expression[index] == this.Context.DecimalSeparator)
                 {
-                    index++;
+                    if (index > start)
+                        index++;
+                    else
+                        break;
+                }
+                else if(expression[index] == 'p') //1234.5pt
+                {
+                    if (index+1 < expression.Length && expression[index + 1] == 't')
+                    {
+                        index+= 2;
+                        isUnit = true;
+                        break;
+                    }
+                    else
+                        break;
+                }
+                else if(expression[index] == 'm') //1234.5mm
+                {
+                    if (index + 1 < expression.Length && expression[index + 1] == 'm')
+                    {
+                        index+= 2;
+                        isUnit = true;
+                        break;
+                    }
+                    else
+                        break;
+                }
+                else if (expression[index] == 'c') //1234.5cm
+                {
+                    if (index + 1 < expression.Length && expression[index + 1] == 'm')
+                    {
+                        index+= 2;
+                        isUnit = true;
+                        break;
+                    }
+                    else
+                        break;
+                }
+                else if (expression[index] == 'i') //1234.5mm
+                {
+                    if (index + 1 < expression.Length && expression[index + 1] == 'n')
+                    {
+                        index+= 2;
+                        isUnit = true;
+                        break;
+                    }
+                    else
+                        break;
                 }
                 else
                     break;
             }
+
             length = index - start;
             return length > 0;
 
@@ -762,9 +881,9 @@ namespace Scryber.Expressive.Tokenisation
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="length"></param>
-        protected virtual void TokeniseNumber(string expression, int length)
+        protected virtual void TokeniseNumber(string expression, int length, bool isUnit)
         {
-            this.AddNewToken(this.CurrentIndex, length, expression.Substring(this.CurrentIndex, length), ExpressionTokenType.Number);
+            this.AddNewToken(this.CurrentIndex, length, expression.Substring(this.CurrentIndex, length), ExpressionTokenType.Unit);
             this.CurrentIndex += length;
         }
 
