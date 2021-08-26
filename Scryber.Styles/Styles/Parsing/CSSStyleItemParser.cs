@@ -219,7 +219,7 @@ namespace Scryber.Styles.Parsing
             }
             else if (double.TryParse(part, out parsed))
             {
-                unit = new PDFUnit(parsed * Pixel2Point, PageUnits.Points);
+                unit = new PDFUnit(parsed, PageUnits.Points);
                 return true;
             }
 
@@ -291,8 +291,7 @@ namespace Scryber.Styles.Parsing
                 return true;
             }
             unitlength = 0;
-            //default is pixels - this is 96 per inch, points are 72 per inch
-            pointsFactor = Pixel2Point;
+            pointsFactor = 1.0;
             return false;
         }
 

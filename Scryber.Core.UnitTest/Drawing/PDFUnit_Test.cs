@@ -1385,9 +1385,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToString_Test()
         {
-            ConfirmString("0", true, new PDFUnit(0, PageUnits.Points));
-            ConfirmString("20", true, new PDFUnit(20, PageUnits.Points));
-            ConfirmString("123.456", true, new PDFUnit(123.456));
+            ConfirmString("0pt", true, new PDFUnit(0, PageUnits.Points));
+            ConfirmString("20pt", true, new PDFUnit(20, PageUnits.Points));
+            ConfirmString("123.456pt", true, new PDFUnit(123.456));
             ConfirmString("1.5in", true, new PDFUnit(1.5, PageUnits.Inches));
 
             //Three decimal places seems the most accurate.

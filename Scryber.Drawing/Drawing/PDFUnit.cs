@@ -693,7 +693,7 @@ namespace Scryber.Drawing
         public const string InchPostFix = "in";
         public const string ExplicitPointPostFix = "pt";
         public const string ExplicitPixelPostFix = "px";
-        public const string PointPostFix = "";
+        public const string PointPostFix = "pt";
 
 
 

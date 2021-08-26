@@ -150,7 +150,8 @@ namespace Scryber.Styles
             if (null == _expression)
             {
                 _expression = CreateExpression(context);
-                _variableProvider = context.Items.ValueProvider();
+                _variableProvider = context.Items.ValueProvider(context.CurrentIndex,
+                                            context.DataStack.HasData ? context.DataStack.Current : null);
             }
 
             //Execute once to make sure we are all set up - although css variables may not be there.
@@ -177,12 +178,6 @@ namespace Scryber.Styles
                 throw new InvalidOperationException("Cannot use expressions without a valid BindingExpressionFactory that supports the IExpressionFactory interface");
 
             var expr = factory.CreateExpression(this._expressionString);
-
-            if (null != expr)
-            {
-                expr.ExpressionContext.CurrentDataContext = context.DataStack.HasData ? context.DataStack.Current : null;
-                expr.ExpressionContext.CurrentDataIndex = context.CurrentIndex;
-            }
 
             return expr;
         }

@@ -426,7 +426,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit b = 40;
             PDFUnit l = 30;
             PDFThickness target = new PDFThickness(t, r, b, l);
-            string expected = "[10 20 40 30]";
+            string expected = "[10pt 20pt 40pt 30pt]";
             string actual;
             actual = target.ToString();
             Assert.AreEqual(expected, actual);

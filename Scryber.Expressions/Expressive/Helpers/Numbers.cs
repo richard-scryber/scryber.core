@@ -1,15 +1,26 @@
 ﻿using System;
+using Scryber.Drawing;
 
 namespace Scryber.Expressive.Helpers
 {
     //  Shout out to https://ncalc.codeplex.com/ for the bulk of this implementation.
     internal static class Numbers
     {
-        private static object ConvertIfString(object s)
+        private static object ConvertIfStringOrUnit(object s)
         {
-            if (s is String || s is char)
+            if(s is PDFUnit unit)
             {
-                return Decimal.Parse(s.ToString());
+                return unit.PointsValue;
+            }
+            else if (s is String || s is char)
+            {
+                if (Decimal.TryParse(s.ToString(), out Decimal result))
+                    return result;
+                else if (PDFUnit.TryParse(s.ToString(), out unit))
+                    return unit.PointsValue;
+                else
+                    throw new InvalidCastException("Cannot convert " + s.ToString() + " to a decimal");
+
             }
 
             return s;
@@ -22,8 +33,8 @@ namespace Scryber.Expressive.Helpers
                 return null;
             }
 
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -264,8 +275,8 @@ namespace Scryber.Expressive.Helpers
                 return null;
             }
 
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -478,8 +489,8 @@ namespace Scryber.Expressive.Helpers
                 return null;
             }
 
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -692,8 +703,8 @@ namespace Scryber.Expressive.Helpers
                 return null;
             }
 
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -923,8 +934,8 @@ namespace Scryber.Expressive.Helpers
                 return null;
             }
 
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -1132,8 +1143,8 @@ namespace Scryber.Expressive.Helpers
 
         internal static object Max(object a, object b)
         {
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is null || b is null)
             {
@@ -1173,8 +1184,8 @@ namespace Scryber.Expressive.Helpers
 
         internal static object Min(object a, object b)
         {
-            a = ConvertIfString(a);
-            b = ConvertIfString(b);
+            a = ConvertIfStringOrUnit(a);
+            b = ConvertIfStringOrUnit(b);
 
             if (a is null && b is null)
             {

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using Scryber.Expressive;
 using Scryber.Expressive.Expressions;
+using Scryber.Expressive.Functions.Relational;
 using Scryber.Expressive.Operators;
 
 namespace Scryber.Binding
 {
     public class BindingCalcExpression : BindingExpressionBase
     {
-        
 
         public PropertyInfo BoundTo { get; set; }
 
@@ -27,9 +27,12 @@ namespace Scryber.Binding
         public void BindComponent(object sender, PDFDataBindEventArgs args)
         {
             if (null == this.ItemValueProvider)
-                this.ItemValueProvider = args.Context.Items.ValueProvider();
+                this.ItemValueProvider = args.Context.Items.ValueProvider(
+                    args.Context.CurrentIndex,
+                    args.Context.DataStack.HasData ? args.Context.DataStack.Current : null);
 
             object value;
+
             if (this.TryEvaluate(this.ItemValueProvider, sender, args.Context, out value))
                 this.SetPropertyValue(sender, value, Expression.ToString(), BoundTo, args.Context);
 
@@ -38,27 +41,10 @@ namespace Scryber.Binding
         protected bool TryEvaluate(IVariableProvider provider, object owner, PDFDataContext context, out object value)
         {
             value = null;
-            bool result = false;
-
-            object prevData = null;
-            int prevIndex = -1;
-            bool hasData = false;
+            bool result;
 
             try
             {
-                // If we have a current data context, then we store the last value and
-                // Update to the current value
-
-                if (context.DataStack.HasData)
-                {
-                    prevData = this.Expression.ExpressionContext.CurrentDataContext;
-                    prevIndex = this.Expression.ExpressionContext.CurrentDataIndex;
-                    hasData = true;
-
-                    this.Expression.ExpressionContext.CurrentDataContext = context.DataStack.Current;
-                    this.Expression.ExpressionContext.CurrentDataIndex = context.CurrentIndex;
-                }
-
                 value = this.Expression.Evaluate(provider);
                 result = true;
             }
@@ -78,15 +64,7 @@ namespace Scryber.Binding
                 else
                     throw new Scryber.PDFBindException(message, ex);
             }
-            finally
-            {
-                //try and restore the previous values.
-                if(hasData && null != this.Expression && null != this.Expression.ExpressionContext)
-                {
-                    this.Expression.ExpressionContext.CurrentDataIndex = prevIndex;
-                    this.Expression.ExpressionContext.CurrentDataContext = prevData;
-                }
-            }
+            
 
             return result;
         }
@@ -97,9 +75,9 @@ namespace Scryber.Binding
     public static class PDFItemCollectionExtensions
     {
 
-        public static IVariableProvider ValueProvider(this PDFItemCollection items)
+        public static IVariableProvider ValueProvider(this PDFItemCollection items, int index, object currentdata)
         {
-            return new PDFItemVariableProvider(items);
+            return new PDFItemVariableProvider(items, index, currentdata);
         }
     }
 
@@ -107,20 +85,40 @@ namespace Scryber.Binding
     {
 
         private PDFItemCollection _items;
+        private object _currentData;
+        private int _currentIndex;
+
 
         protected PDFItemCollection Items { get { return _items; } }
 
-        public PDFItemVariableProvider(PDFItemCollection items)
+        protected object CurrentData { get { return _currentData; } }
+        protected int CurrentIndex { get { return _currentIndex; } }
+
+        public PDFItemVariableProvider(PDFItemCollection items, int index, object currentData)
         {
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
             _items = items;
+            _currentIndex = index;
+            _currentData = currentData;
         }
 
 
         public bool TryGetValue(string variableName, out object value)
         {
-            return Items.TryGetValue(variableName, out value);
+            if (variableName == IndexFunction.CurrentIndexVariableName)
+            {
+                value = this.CurrentIndex;
+                return null != value;
+            }
+            else if(variableName == CurrentDataExpression.CurrentDataVariableName)
+            {
+                value = this.CurrentData;
+
+                return null != value;
+            }
+            else
+                return Items.TryGetValue(variableName, out value);
         }
     }
 }

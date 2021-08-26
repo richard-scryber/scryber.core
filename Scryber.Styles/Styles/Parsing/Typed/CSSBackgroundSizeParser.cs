@@ -35,7 +35,7 @@ namespace Scryber.Styles.Parsing.Typed
                         else if (PDFUnit.TryParse(v, out uv))
                         {
                             //Not an expression so just set the value
-                            style.Background.PatternYPosition = uv;
+                            style.Background.PatternYSize = uv;
                             set &= true;
                         }
                         else

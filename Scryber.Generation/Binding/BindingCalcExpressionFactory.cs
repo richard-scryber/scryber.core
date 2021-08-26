@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using System.Reflection;
 using System.Text;
@@ -30,7 +31,8 @@ namespace Scryber.Binding
         private ExpressiveOptions _options;
         private FunctionSet _stdFunctions;
         private OperatorSet _stdOperators;
-
+        private IDictionary<string, Expression> _cache;
+        private bool _useCache;
 
         public ExpressiveOptions Options
         {
@@ -42,8 +44,15 @@ namespace Scryber.Binding
                     _options = value;
                     _stdFunctions = InitFunctions();
                     _stdOperators = InitOperators();
+                    _cache = InitExpressionCache();
                 }
             }
+        }
+
+        public bool UseCache
+        {
+            get { return _useCache; }
+            set { _useCache = value; }
         }
 
         public FunctionSet FactoryFunctions
@@ -56,6 +65,11 @@ namespace Scryber.Binding
             get { return _stdOperators; }
         }
 
+        public IDictionary<string, Expression> ExpressionCache
+        {
+            get { return _cache; }
+        }
+
         
         public DocumentGenerationStage BindingStage
         {
@@ -64,6 +78,7 @@ namespace Scryber.Binding
 
         public BindingCalcExpressionFactory()
         {
+            this._useCache = false;
             this.Options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
         }
 
@@ -100,6 +115,14 @@ namespace Scryber.Binding
                 return OperatorSet.CreateDefault(StringComparer.Ordinal);
         }
 
+        protected virtual IDictionary<string, Expression> InitExpressionCache()
+        {
+            if ((this.Options & ExpressiveOptions.IgnoreCaseForParsing) > 0)
+                return new Dictionary<string, Expression>(StringComparer.OrdinalIgnoreCase);
+            else
+                return new Dictionary<string, Expression>(StringComparer.Ordinal);
+        }
+
         
 
         public Expressive.Context GetContext(ExpressiveOptions options)
@@ -112,10 +135,18 @@ namespace Scryber.Binding
             if (!string.IsNullOrEmpty(value) && value.IndexOf('&') > -1)
                 value = CleanXmlString(value);
 
-            var context = GetContext(this.Options);
-            var parser = new BindingCalcParser(context);
-            var expr = new Expression(value, parser, context);
-            expr.CompileExpression();
+            Expression expr;
+
+            if (!this.UseCache || !this.ExpressionCache.TryGetValue(value, out expr))
+            {
+                var context = GetContext(this.Options);
+                var parser = new BindingCalcParser(context);
+                expr = new Expression(value, parser, context);
+                expr.CompileExpression();
+
+                if (UseCache)
+                    this.ExpressionCache.Add(value, expr);
+            }
 
             return expr;
         }

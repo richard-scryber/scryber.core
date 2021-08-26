@@ -5,6 +5,9 @@ namespace Scryber.Expressive.Expressions
 {
     public class CurrentDataExpression : IExpression
     {
+
+        public const string CurrentDataVariableName = "[CurrentData]";
+
         private Context context;
 
         public CurrentDataExpression(Context context)
@@ -18,7 +21,11 @@ namespace Scryber.Expressive.Expressions
         /// <inheritdoc />
         public object Evaluate(IDictionary<string, object> variables)
         {
-            return context.CurrentDataContext;
+            object value;
+            if (variables.TryGetValue(CurrentDataVariableName, out value))
+                return value;
+            else
+                return null;
         }
 
         #endregion

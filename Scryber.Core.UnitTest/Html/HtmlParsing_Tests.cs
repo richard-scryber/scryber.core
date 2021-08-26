@@ -1593,6 +1593,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 Items = GetListItems(10000)
             };
+
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Params["model"] = data;

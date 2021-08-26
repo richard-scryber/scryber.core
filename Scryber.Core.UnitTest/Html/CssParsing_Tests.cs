@@ -12,6 +12,7 @@ using Scryber.Styles.Parsing;
 
 using Scryber.Layout;
 using System.Diagnostics;
+using Scryber.Text;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -170,7 +171,7 @@ namespace Scryber.Core.UnitTests.Html
             counter.Stop();
 
             var elapsed = counter.Elapsed.TotalMilliseconds / repeatCount;
-            Assert.IsTrue(elapsed < 0.15, "Took too long to parse. Expected < 0.15ms per string, Actual : " + elapsed + "ms");
+            Assert.IsTrue(elapsed < 0.20, "Took too long to parse. Expected < 0.15ms per string, Actual : " + elapsed + "ms");
 
         }
 
@@ -526,9 +527,7 @@ body.grey div.reverse{
         [TestMethod()]
         public void ParseCSSWithRoot()
         {
-
             var css = @"
-
                 :root{
                     color: #00FF00;
                 }
@@ -536,41 +535,21 @@ body.grey div.reverse{
                 .other{
                     color: #0000FF
                 }";
-            Document doc = new Document();
-            PDFLoadContext context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-
-            var cssparser = new CSSStyleParser(css, context);
-
-
-            StyleCollection col = new StyleCollection();
-
-            foreach (var style in cssparser)
+            using (var doc = BuildDocumentWithStyles(css))
             {
-                doc.Styles.Add(style);
+                var applied = doc.GetAppliedStyle();
+                Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
             }
 
-            
-            var applied = doc.GetAppliedStyle();
-            Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
-
-
-            doc = new Document();
-            context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-
-            cssparser = new CSSStyleParser(css, context);
-
-            col = new StyleCollection();
-
-            foreach (var style in cssparser)
+            using (var doc = BuildDocumentWithStyles(css))
             {
-                doc.Styles.Add(style);
+
+                //This should override the root declaration
+                doc.StyleClass = "other";
+
+                var applied = doc.GetAppliedStyle();
+                Assert.AreEqual("rgb(0,0,255)", applied.Fill.Color.ToString());
             }
-
-            //This should override the root declaration
-            doc.StyleClass = "other";
-
-            applied = doc.GetAppliedStyle();
-            Assert.AreEqual("rgb(0,0,255)", applied.Fill.Color.ToString());
         }
 
         
@@ -592,33 +571,22 @@ body.grey div.reverse{
                     color: var(--main-color);
                 }";
 
-            var doc = new Document();
-            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-            var cssparser = new CSSStyleParser(cssWithVariable, context);
-
-            foreach (var style in cssparser)
+            using (var doc = BuildDocumentWithStyles(cssWithVariable))
             {
-                doc.Styles.Add(style);
+                //Check that the variable is there.
+                Assert.AreEqual(2, doc.Styles.Count);
+                StyleDefn defn = doc.Styles[0] as StyleDefn;
+
+                Assert.IsTrue(defn.HasVariables);
+                Assert.AreEqual(1, defn.Variables.Count);
+                Assert.AreEqual("--main-color", defn.Variables["--main-color"].CssName);
+                Assert.AreEqual("main-color", defn.Variables["--main-color"].NormalizedName);
+                Assert.AreEqual("#FF0000", defn.Variables["--main-color"].Value);
+
+                //Should not be applied
+                var applied = doc.GetAppliedStyle();
+                Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
             }
-
-            //Check that the variable is there.
-
-            StyleDefn defn = doc.Styles[0] as StyleDefn;
-
-            Assert.IsTrue(defn.HasVariables);
-            Assert.AreEqual(1, defn.Variables.Count);
-            Assert.AreEqual("--main-color", defn.Variables["--main-color"].CssName);
-            Assert.AreEqual("main-color", defn.Variables["--main-color"].NormalizedName);
-            Assert.AreEqual("#FF0000", defn.Variables["--main-color"].Value);
-
-
-            doc.InitializeAndLoad();
-            doc.DataBind();
-
-            //Should not be applied
-            var applied = doc.GetAppliedStyle();
-            Assert.AreEqual("rgb(0,255,0)", applied.Fill.Color.ToString());
-
         }
 
         [TestMethod]
@@ -637,26 +605,14 @@ body.grey div.reverse{
                     color: var(--main-color);
                 }";
 
-            var doc = new Document();
-            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-            var cssparser = new CSSStyleParser(cssWithVariable, context);
-
-            foreach (var style in cssparser)
+            using (var doc = BuildDocumentWithStyles(cssWithVariable))
             {
-                doc.Styles.Add(style);
+                //This should override the root declaration
+                doc.StyleClass = "other";
+
+                var applied = doc.GetAppliedStyle();
+                Assert.AreEqual("rgb(255,0,0)", applied.Fill.Color.ToString(), "Variable '--main-color' was not applied to the document");
             }
-
-
-
-            //This should override the root declaration
-            doc.StyleClass = "other";
-
-            doc.InitializeAndLoad();
-            doc.DataBind();
-
-            var applied = doc.GetAppliedStyle();
-            Assert.AreEqual("rgb(255,0,0)", applied.Fill.Color.ToString(), "Variable '--main-color' was not applied to the document");
-
         }
 
         [TestMethod]
@@ -674,28 +630,18 @@ body.grey div.reverse{
                     color: var(--main-color);
                 }";
 
-            var doc = new Document();
-            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-            var cssparser = new CSSStyleParser(cssWithVariable, context);
-
-            foreach (var style in cssparser)
+            using (var doc = BuildDocumentWithStyles(cssWithVariable))
             {
-                doc.Styles.Add(style);
+                
+                doc.StyleClass = "other";
+
+                //And now we apply the color to the params collection
+                doc.Params["--main-color"] = PDFColors.Aqua;
+
+                var applied = doc.GetAppliedStyle();
+                Assert.AreEqual(PDFColors.Aqua.ToString(), applied.Fill.Color.ToString(), "Parameter '--main-color' was not overriden in the document based on the parameters");
+
             }
-
-            //This should override the root declaration
-            doc.StyleClass = "other";
-
-            //And now we apply the color to the params collection
-            doc.Params["--main-color"] = PDFColors.Aqua;
-
-            doc.InitializeAndLoad();
-            doc.DataBind();
-
-            var applied = doc.GetAppliedStyle();
-            Assert.AreEqual(PDFColors.Aqua.ToString(), applied.Fill.Color.ToString(), "Parameter '--main-color' was not overriden in the document based on the parameters");
-
-
         }
 
         [TestMethod]
@@ -709,27 +655,14 @@ body.grey div.reverse{
             }";
 
 
-            var doc = new Document();
-            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-            var cssparser = new CSSStyleParser(cssWithCalc, context);
-
-            foreach (var style in cssparser)
+            using (var doc = BuildDocumentWithStyles(cssWithCalc))
             {
-                doc.Styles.Add(style);
+                doc.StyleClass = "other";
+                var applied = doc.GetAppliedStyle();
+
+                Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
+                Assert.AreEqual("rgb(0,255,255)", applied.Fill.Color.ToString(), "The fallback for the variable --text-color was not used");
             }
-
-
-
-            //This should override the root declaration
-            doc.StyleClass = "other";
-
-            doc.InitializeAndLoad();
-            doc.DataBind();
-
-            var applied = doc.GetAppliedStyle();
-            Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
-
-            Assert.AreEqual("rgb(0,255,255)", applied.Fill.Color.ToString(), "The fallback for the variable --text-color was not used");
         }
 
         [TestMethod]
@@ -737,33 +670,217 @@ body.grey div.reverse{
         {
             var cssWithCalc = @"
 
+            :root{
+               --text-color: #000000;
+            }
             .other{
                background-color: calc(concat('#', 'FF', '00', '00'));
                color: var(--text-color, #00FFFF);
             }";
 
 
+            using (var doc = BuildDocumentWithStyles(cssWithCalc))
+            {
+                doc.StyleClass = "other";
+                doc.Params["--text-color"] = PDFColors.Lime;
+                var applied = doc.GetAppliedStyle();
+
+                Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
+                Assert.AreEqual(PDFColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
+            }
+        }
+
+
+        [TestMethod]
+        public void ParseCssAllVariableProperties()
+        {
+            var cssAll = @"
+
+            :root{
+               --color: #0000FF;
+               --color-2: #FF00FF;
+
+               --unit: 12pt;
+               --unit-big: 5in;
+
+               --number: 3;
+
+               --img: url('paper.gif');
+               --repeat: repeat-x;
+               --font: Arial, sans-serif;
+               --border-style: dotted;
+               --breaks: always;
+               --no-breaks: avoid;
+               --widths: 0.5 * 20%;
+               --orientation: landscape;
+               --pgsize: A3;
+               --float: right;
+               --pos: absolute;
+               --dashes: 1 0 2 1;
+               --linecap: round;
+               --linejoin: mitre;
+               --opacity: 0.5;
+               --halign: justify;
+               --valign: bottom;
+               --decoration: line-through underline;
+               --white-space: pre;
+            }
+
+            .other{
+               background-color: var(--color-2);
+               color: var(--color, #00FFFF);
+               margin: var(--unit);
+               height: var(--unit-big);
+               padding: var(--unit) 10pt calc(--unit * 2) 5pt;
+               background-image: var(--img);
+               background-repeat: var(--repeat);
+               background-position: 10px var(--unit);
+               background-size: var(--unit) 10px;
+
+               border-color: var(--color-2);
+               border-radius: var(--unit);
+               border-style: var(--border-style);
+               border-width: calc(--unit / 10);
+
+               break-before: var(--breaks);
+               break-after: var(--no-breaks);
+               page-break-before: var(--breaks);
+               page-break-after: var(--no-breaks);
+
+               column-count: var(--number);
+               column-gap: var(--unit);
+               column-width: var(--widths);
+
+               size: var(--pgsize) var(--orientation);
+               float: var(--float);
+               position: var(--pos);
+
+               stroke: var(--color-2);
+               stroke-dasharray: var(--dashes);
+               stroke-linecap: var(--linecap);
+               stroke-linejoin: var(--linejoin);
+               stroke-opacity: var(--opacity);
+               stroke-width: calc(var(--unit) / 10);
+
+               text-align: var(--halign);
+               vertical-align: var(--valign);
+
+               left: var(--unit-big);
+               top: var(--unit);
+               width: var(--unit-big);
+               height: calc(--unit-big / 2);
+
+               letter-spacing: calc(--unit / 5);
+               word-spacing: var(--unit);
+               text-decoration: var(--decoration);
+               white-space: var(--white-space);
+            }";
+
+
+            var doc = BuildDocumentWithStyles(cssAll);
+            doc.StyleClass = "other";
+            var applied = doc.GetAppliedStyle();
+
+            Assert.AreEqual("rgb(0,0,255)", applied.Fill.Color.ToString(), "Color was not set");
+
+            Assert.AreEqual("12pt", applied.Margins.All.ToString(), "Margins was not set");
+            Assert.AreEqual("12pt", applied.Margins.Left.ToString(), "Margins Left was not set");
+            Assert.AreEqual("12pt", applied.Margins.Right.ToString(), "Margins Right was not set");
+            Assert.AreEqual("12pt", applied.Margins.Top.ToString(), "Margins Top was not set");
+            Assert.AreEqual("12pt", applied.Margins.Bottom.ToString(), "Margins Bottom was not set");
+
+            Assert.AreEqual("12pt", applied.Padding.Top.ToString(), "Padding Top was not set");
+            Assert.AreEqual("10pt", applied.Padding.Right.ToString(), "Padding Right was not set");
+            Assert.AreEqual("24pt", applied.Padding.Bottom.ToString(), "Padding Top was not set");
+            Assert.AreEqual("5pt", applied.Padding.Left.ToString(), "Padding Right was not set");
+
+            Assert.AreEqual("rgb(255,0,255)", applied.Background.Color.ToString(), "Background Color was not set");
+            Assert.AreEqual("paper.gif", applied.Background.ImageSource, "Image Source was not set");
+
+            Assert.AreEqual(PatternRepeat.RepeatX, applied.Background.PatternRepeat, "Pattern Repeat was not set");
+
+            Assert.AreEqual("7.5pt", applied.Background.PatternXPosition.ToString(), "Pattern X Position not set");
+            Assert.AreEqual("12pt", applied.Background.PatternYPosition.ToString(), "Pattern Y Position not set");
+
+            Assert.AreEqual("12pt", applied.Background.PatternXSize.ToString(), "Pattern X Size not set");
+            Assert.AreEqual("7.5pt", applied.Background.PatternYSize.ToString(), "Pattern Y Size not set");
+
+            Assert.AreEqual("rgb(255,0,255)", applied.Border.Color, "Border color not set");
+            Assert.AreEqual(LineType.Dash, applied.Border.LineStyle, "Border line style not set");
+            Assert.AreEqual("[2] 0", applied.Border.Dash.ToString(), "Border dash not set");
+            Assert.AreEqual("1.2pt", applied.Border.Width.ToString(), "Border width not set");
+
+            Assert.IsTrue(applied.Columns.BreakBefore, "Column break before not set");
+            Assert.IsTrue(applied.IsValueDefined(StyleKeys.ColumnBreakAfterKey), "Column break after not set");
+            Assert.IsFalse(applied.Columns.BreakAfter, "Column break after not set correctly");
+
+            Assert.IsTrue(applied.PageStyle.BreakBefore, "Column break before not set");
+            Assert.IsTrue(applied.IsValueDefined(StyleKeys.PageBreakAfterKey), "Page break after not set");
+            Assert.IsFalse(applied.PageStyle.BreakAfter, "Page break after not set correctly");
+
+            Assert.AreEqual(3, applied.Columns.ColumnCount, "Column count not set correctly");
+            Assert.AreEqual("12pt", applied.Columns.AlleyWidth.ToString(), "Alley width not set correctly");
+
+            Assert.IsNotNull(applied.Columns.ColumnWidths, "Column widths is not set");
+            Assert.IsFalse(applied.Columns.ColumnWidths.IsEmpty, "Column widths is empty");
+            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsEmpty, "Column widths explicit values is not empty");
+            Assert.AreEqual(3, applied.Columns.ColumnWidths.Widths.Length, "Column widths is not the right length");
+            Assert.AreEqual("[0.5 0 0.2]", applied.Columns.ColumnWidths.ToString(), "Column widths are not correct");
+
+            Assert.AreEqual(PaperSize.A3, applied.PageStyle.PaperSize, "Paper Size was not set");
+            Assert.AreEqual(PaperOrientation.Landscape, applied.PageStyle.PaperOrientation, "Paper Orientation was not set");
+
+            Assert.AreEqual(FloatMode.Right, applied.Position.Float, "Float was not set");
+            Assert.AreEqual(PositionMode.Absolute, applied.Position.PositionMode, "Position mode was not set");
+
+            Assert.AreEqual("rgb(255,0,255)", applied.Stroke.Color, "Stroke color was not set");
+            Assert.AreEqual("[1 0 2 1] 0", applied.Stroke.Dash.ToString(), "Stroke dashes were not set");
+            Assert.AreEqual(LineCaps.Round, applied.Stroke.LineCap, "Stroke line caps were not set");
+            Assert.AreEqual(LineJoin.Mitre, applied.Stroke.LineJoin, "Stroke line join was not set");
+            Assert.AreEqual(0.5, applied.Stroke.Opacity, "Stroke opacity was not set");
+            Assert.AreEqual(1.2, applied.Stroke.Width.PointsValue, "Stroke width was not set");
+
+            Assert.AreEqual(HorizontalAlignment.Justified, applied.Position.HAlign, "Horizontal alignment was not set");
+            Assert.AreEqual(VerticalAlignment.Bottom, applied.Position.VAlign, "Vertical alignment was not set");
+
+            Assert.AreEqual(360, applied.Position.X.PointsValue, "Left (X) was not applied");
+            Assert.AreEqual(12, applied.Position.Y.PointsValue, "Top (Y) was not applied");
+            Assert.AreEqual(360, applied.Size.Width.PointsValue, "Width was not applied");
+            Assert.AreEqual(180, applied.Size.Height.PointsValue, "Height was not applied");
+
+            Assert.AreEqual(TextDecoration.StrikeThrough | TextDecoration.Underline, applied.Text.Decoration, "Text decoration was not applied");
+            Assert.AreEqual(2.4, applied.Text.CharacterSpacing.PointsValue, "Letter spacing was not set");
+            Assert.AreEqual(12, applied.Text.WordSpacing.PointsValue, "Word spacing was not set");
+            Assert.AreEqual(WordWrap.NoWrap, applied.Text.WrapText, "Word wrapping was not set");
+            Assert.AreEqual(true, applied.Text.PreserveWhitespace, "White space preservation was not set");
+            
+        }
+
+
+        /// <summary>
+        /// Returns a style that would be applied to the document, based on the passed css and any class
+        /// </summary>
+        /// <param name="css">The css styles to use</param>
+        /// <param name="docClass">The css class to set on the document if any</param>
+        /// <returns>The applied style</returns>
+        private Document BuildDocumentWithStyles(string css)
+        {
             var doc = new Document();
             var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
-            var cssparser = new CSSStyleParser(cssWithCalc, context);
+            var cssparser = new CSSStyleParser(css, context);
 
+            //Add the parsed styles
             foreach (var style in cssparser)
             {
                 doc.Styles.Add(style);
             }
 
-
-
-            //This should override the root declaration
-            doc.StyleClass = "other";
-            doc.Params["--text-color"] = PDFColors.Lime;
+            //do the load and bind
             doc.InitializeAndLoad();
             doc.DataBind();
 
-            var applied = doc.GetAppliedStyle();
-            Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
-
-            Assert.AreEqual(PDFColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
+            return doc;
         }
+
     }
 }

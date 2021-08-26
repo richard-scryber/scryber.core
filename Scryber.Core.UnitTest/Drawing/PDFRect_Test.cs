@@ -582,7 +582,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ToString_Test()
         {
             PDFRect target = new PDFRect(10, new PDFUnit(20, PageUnits.Millimeters), 30, 40);
-            string expected = "[10, 20mm, 30, 40]";
+            string expected = "[10pt, 20mm, 30pt, 40pt]";
             string actual;
             actual = target.ToString();
             Assert.AreEqual(expected, actual);

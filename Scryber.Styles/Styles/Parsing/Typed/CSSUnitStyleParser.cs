@@ -49,7 +49,7 @@ namespace Scryber.Styles.Parsing.Typed
                 result = (PDFUnit)value;
                 return true;
             }
-            else if (ParseCSSUnit(value.ToString(), out result))
+            else if (PDFUnit.TryParse(value.ToString(), out result))
                 return true;
             else
                 return false;

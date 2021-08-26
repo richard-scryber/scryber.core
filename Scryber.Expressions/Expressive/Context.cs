@@ -48,13 +48,6 @@ namespace Scryber.Expressive
 
         #region Properties
 
-        /// <summary>
-        /// Gets or sets the data associate with the current data context
-        /// </summary>
-        public object CurrentDataContext { get; set; }
-
-        public int CurrentDataIndex { get; set; }
-
         internal ExpressiveOptions Options { get; }
 
         public CultureInfo CurrentCulture { get; }
@@ -113,9 +106,6 @@ namespace Scryber.Expressive
         public Context(ExpressiveOptions options, CultureInfo mainCurrentCulture, CultureInfo decimalCurrentCulture, FunctionSet functions, OperatorSet operators)
         {
             Options = options;
-
-            this.CurrentDataIndex = -1;
-            this.CurrentDataContext = null;
 
             this.CurrentCulture = mainCurrentCulture ?? throw new ArgumentNullException(nameof(mainCurrentCulture));
             // For now we will ignore any specific cultures but keeping it in a single place to simplify changing later if required.

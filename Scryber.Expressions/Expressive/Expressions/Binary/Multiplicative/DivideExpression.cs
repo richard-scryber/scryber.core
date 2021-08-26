@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Scryber.Drawing;
 using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Expressions.Binary.Multiplicative
@@ -21,10 +22,29 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
             EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) => 
                 l is null || r is null || IsReal(l) || IsReal(r)
                     ? Numbers.Divide(l, r)
-                    : Numbers.Divide(Convert.ToDouble(l), r));
+                    : Numbers.Divide(ConvertToDouble(l), r));
 
         #endregion
 
+        /// <summary>
+        /// Converts the value to a double so we know we have a floating point division rather than int/int = int
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static object ConvertToDouble(object value)
+        {
+            if (value is PDFUnit unit)
+                return unit.PointsValue;
+            else if(value is string s)
+            {
+                if (Double.TryParse(s, out double d))
+                    return d;
+                else if (PDFUnit.TryParse(s, out unit))
+                    return unit.PointsValue;
+            }
+            return Convert.ToDouble(value);
+
+        }
         private static bool IsReal(object value)
         {
             var typeCode = TypeHelper.GetTypeCode(value);
