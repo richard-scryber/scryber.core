@@ -15,7 +15,7 @@ namespace Scryber.Expressive.Functions
 
         /// <inheritdoc />
 #pragma warning disable CA2227 // Collection properties should be read only - it is likely this can be passed in to Evaluate but it will need to be done carefully (e.g. mark this setter as obsolete first).
-        //[Obsolete("Don't use", true)]
+        [Obsolete("Don't use", true)]
         public IDictionary<string, object> Variables { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
 
@@ -23,7 +23,7 @@ namespace Scryber.Expressive.Functions
         public abstract string Name { get; }
 
         /// <inheritdoc />
-        public abstract object Evaluate(IExpression[] parameters, Context context);
+        public abstract object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context);
 
         #endregion
 

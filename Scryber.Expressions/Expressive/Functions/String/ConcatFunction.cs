@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Scryber.Expressive.Expressions;
 
@@ -17,7 +18,7 @@ namespace Scryber.Expressive.Functions.String
             }
         }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             //We can accept 1 parameter that is an array
             this.ValidateParameterCount(parameters, -1, 1);
@@ -25,13 +26,13 @@ namespace Scryber.Expressive.Functions.String
             StringBuilder sb = new StringBuilder();
 
             //Recursive method if some parameters are arrays
-            Evaluate(sb, parameters, context);
+            Evaluate(sb, parameters, variables, context);
 
             //return the final full string
             return sb.ToString();
         }
 
-        protected virtual void Evaluate(StringBuilder sb, IEnumerable parameters, Context context)
+        protected virtual void Evaluate(StringBuilder sb, IEnumerable parameters, IDictionary<string, object> variables, Context context)
         {
             foreach (var p in parameters)
             {
@@ -39,7 +40,7 @@ namespace Scryber.Expressive.Functions.String
 
                 if (p is IExpression expression)
                 {
-                    value = expression.Evaluate(Variables);
+                    value = expression.Evaluate(variables);
                 }
                 else
                 {
@@ -56,7 +57,7 @@ namespace Scryber.Expressive.Functions.String
                 }
                 else if(value is IEnumerable enumerate)
                 {
-                    Evaluate(sb, enumerate, context);
+                    Evaluate(sb, enumerate, variables, context);
                 }
                 else
                 {

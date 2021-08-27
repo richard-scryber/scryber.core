@@ -1,4 +1,5 @@
-﻿using Scryber.Expressive.Expressions;
+﻿using System.Collections.Generic;
+using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Functions.String
 {
@@ -14,11 +15,11 @@ namespace Scryber.Expressive.Functions.String
             }
         }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 2);
 
-            object value = parameters[0].Evaluate(Variables);
+            object value = parameters[0].Evaluate(variables);
 
             if (value is null)
             {
@@ -36,11 +37,11 @@ namespace Scryber.Expressive.Functions.String
                 text = value.ToString();
             }
 
-            int startIndex = (int)parameters[1].Evaluate(Variables);
+            int startIndex = (int)parameters[1].Evaluate(variables);
 
             if (parameters.Length > 2)
             {
-                int length = (int)parameters[2].Evaluate(Variables);
+                int length = (int)parameters[2].Evaluate(variables);
 
                 return text?.Substring(startIndex, length);
             }

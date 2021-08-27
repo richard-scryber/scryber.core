@@ -642,8 +642,9 @@ namespace Scryber.Drawing
             if (string.IsNullOrEmpty(family))
                 throw new ArgumentNullException("family");
 
-            
-            
+
+            if (null == _customfamilies)
+                throw new InvalidOperationException("The custom families is not set");
             
             FontReference fref = _customfamilies[family, style];
             
@@ -720,28 +721,37 @@ namespace Scryber.Drawing
         /// </summary>
         private static void AssertInitialized()
         {
-            if (_init == false)
+
+            if (_init == false) //First check outside a lock
             {
-                lock (_initlock)
+                lock (_initlock) //inside is thread safe
                 {
-                    try
+                    //if we have an error then re-throw
+                    if(null != _initex)
                     {
-                        //Set init here. We only want to do it once, even if if fails
-                        _init = true;
-                        System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-                        _systemfamilies = LoadSystemFonts();
-                        _customfamilies = LoadCustomFamilies();
-                        _staticfamilies = LoadStaticFamilies();
-                        _genericfamilies = LoadGenericFamilies();
-                        _remotefamilies = new Dictionary<string, PDFFontDefinition>(StringComparer.InvariantCultureIgnoreCase);
-                        sw.Stop();
-                        //System.Diagnostics.Debug.WriteLine("Loaded all system and custom fonts in :" + sw.Elapsed);
+                        string msg = String.Format(Errors.CouldNotInitializeTheFonts, _initex.Message);
+                        throw new System.Configuration.ConfigurationErrorsException(msg, _initex);
                     }
-                    catch (Exception ex)
+                    else if (_init == false) //we have not started the initialization
                     {
-                        _initex = ex;
-                        string msg = String.Format(Errors.CouldNotInitializeTheFonts, ex.Message);
-                        throw new System.Configuration.ConfigurationErrorsException(msg, ex);
+                        try
+                        {
+                            //Set init here. We only want to do it once, even if if fails
+                            _systemfamilies = LoadSystemFonts();
+                            _customfamilies = LoadCustomFamilies();
+                            _staticfamilies = LoadStaticFamilies();
+                            _genericfamilies = LoadGenericFamilies();
+                            _remotefamilies = new Dictionary<string, PDFFontDefinition>(StringComparer.InvariantCultureIgnoreCase);
+
+                            _init = true;
+
+                        }
+                        catch (Exception ex)
+                        {
+                            _initex = ex;
+                            string msg = String.Format(Errors.CouldNotInitializeTheFonts, ex.Message);
+                            throw new System.Configuration.ConfigurationErrorsException(msg, ex);
+                        }
                     }
                 }
             }

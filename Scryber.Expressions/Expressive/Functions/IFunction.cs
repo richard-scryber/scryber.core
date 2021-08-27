@@ -26,6 +26,6 @@ namespace Scryber.Expressive.Functions
         /// <param name="parameters">The list of parameters inside the Function.</param>
         /// <param name="context">The evaluation context to be used.</param>
         /// <returns>The result of the Function.</returns>
-        object Evaluate(IExpression[] parameters, Context context);
+        object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context);
     }
 }

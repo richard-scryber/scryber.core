@@ -1,5 +1,6 @@
 ﻿using Scryber.Expressive.Expressions;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
@@ -11,7 +12,7 @@ namespace Scryber.Expressive.Functions.Mathematical
         public override string Name => "Count";
 
         /// <inheritdoc />
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
@@ -20,7 +21,7 @@ namespace Scryber.Expressive.Functions.Mathematical
             foreach (var value in parameters)
             {
                 var increment = 1;
-                var evaluatedValue = value.Evaluate(Variables);
+                var evaluatedValue = value.Evaluate(variables);
 
                 if (evaluatedValue is ICollection collection)
                 {

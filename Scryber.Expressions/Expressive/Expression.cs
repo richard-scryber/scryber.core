@@ -126,7 +126,12 @@ namespace Scryber.Expressive
             try
             {
                 object value = this.Evaluate(variables);
-                return (T)Convert.ChangeType(value, typeof(T));
+                if (null == value)
+                    return default;
+                else if (value is T t)
+                    return t;
+                else
+                    return (T)Convert.ChangeType(value, typeof(T));
             }
             catch (ExpressiveException)
             {

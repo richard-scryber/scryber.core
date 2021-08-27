@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Scryber.Expressive.Expressions;
 
@@ -17,7 +18,7 @@ namespace Scryber.Expressive.Functions.String
             }
         }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             //We can accept 1 parameter that is an array
             this.ValidateParameterCount(parameters, -1, 1);
@@ -28,11 +29,11 @@ namespace Scryber.Expressive.Functions.String
             foreach (var p in parameters)
             {
                 if (null == separator)
-                    separator = (p.Evaluate(this.Variables) ?? "").ToString();
+                    separator = (p.Evaluate(variables) ?? "").ToString();
 
                 else
                 {
-                    Evaluate(separator, sb, p, context);
+                    Evaluate(separator, sb, p, variables, context);
                 }
             }
 
@@ -41,13 +42,13 @@ namespace Scryber.Expressive.Functions.String
         }
 
   
-        protected virtual void Evaluate(string separator, StringBuilder sb, object p, Context context)
+        protected virtual void Evaluate(string separator, StringBuilder sb, object p, IDictionary<string, object> variables, Context context)
         {
             object value;
 
             if (p is IExpression expression)
             {
-                value = expression.Evaluate(Variables);
+                value = expression.Evaluate(variables);
             }
             else
             {
@@ -69,7 +70,7 @@ namespace Scryber.Expressive.Functions.String
             {
                 foreach (var item in enumerate)
                 {
-                    Evaluate(separator, sb, item, context);
+                    Evaluate(separator, sb, item, variables, context);
                 }
             }
             else

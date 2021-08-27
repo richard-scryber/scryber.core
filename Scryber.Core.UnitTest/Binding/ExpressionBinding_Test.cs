@@ -13,6 +13,9 @@ using System.Xml.Schema;
 using System.Text;
 using Scryber.Expressive.Functions;
 using Scryber.Expressive.Operators;
+using System.Threading.Tasks;
+using System.Xml;
+using Scryber.Html;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -510,9 +513,199 @@ namespace Scryber.Core.UnitTests.Binding
                 var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
                 Assert.AreEqual((PDFColor)"#FF0033", p.Style.Fill.Color, "Paragraph color was not correct");
             }
+        }
+
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindCalcExpressionCached()
+        {
+            var src = @"<!DOCTYPE html>
+<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Binding {{model.title}}</title>
+    </head>
+
+    <body id='mainbody' class='strong' >
+        <p id='myPara' style='border: solid 1px blue; padding: 5px;color:{{model.color}}' >This is a paragraph of content</p>
+        <ul id='mylist'>
+            <template data-bind='{{model.items}}' >
+                <li>{{concat('Item ',.name)}}</li>
+            </template>
+        </ul>
+    </body>
+
+</html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.Params["model"] = new
+                {
+                    title = "Document 1",
+                    color = "#FF0033",
+                    items = new[] {
+                        new { name = "first"},
+                        new { name = "second"}
+                    }
+                };
+
+                using (var stream = DocStreams.GetOutputStream("BindCalculationCached1.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+                Assert.AreEqual("Binding Document 1", doc.Info.Title, "Title is not correct");
+
+                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                Assert.AreEqual((PDFColor)"#FF0033", p.Style.Fill.Color, "Paragraph color was not correct");
+
+                var list = doc.FindAComponentById("mylist") as ListUnordered;
+                Assert.AreEqual(2, list.Items.Count, "List counts were not correct");
+            }
+
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.Params["model"] = new
+                {
+                    title = "Document 2",
+                    color = "#FF00FF",
+                    items = new[] {
+                        new { name = "first"},
+                        new { name = "second"},
+                        new { name = "third"},
+                        new { name = "fourth"},
+                        new { name = "fifth"}
+                    }
+                };
+
+                using (var stream = DocStreams.GetOutputStream("BindCalculationCached2.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+                Assert.AreEqual("Binding Document 2", doc.Info.Title, "Title is not correct");
+
+                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                Assert.AreEqual((PDFColor)"#FF00FF", p.Style.Fill.Color, "Paragraph color was not correct");
+
+                var list = doc.FindAComponentById("mylist") as ListUnordered;
+                Assert.AreEqual(5, list.Items.Count, "List counts were not correct");
+            }
 
 
         }
+
+
+        string taskSource = @"<!DOCTYPE html>
+<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Binding {{model.title}}</title>
+    </head>
+
+    <body id='mainbody' class='strong' >
+        <p id='myPara' style='border: solid 1px blue; padding: 5px;color:{{model.color}}' >This is a paragraph of content</p>
+        <ul id='mylist'>
+            <template data-bind='{{model.items}}' >
+                <li>{{concat('List ',.name)}}</li>
+            </template>
+        </ul>
+    </body>
+
+</html>";
+
+        public Document GenerateAsync(object model)
+        {
+            dynamic content = (dynamic)model;
+            int index = content.index;
+
+            using (var sr = new System.IO.StringReader(taskSource))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("BindCalculationAsync" + index + ".pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                return doc;
+            }
+        }
+
+        protected object GetAsyncModel(int index)
+        {
+            var items = new dynamic[index];
+
+            for (int i = 0; i < index; i++)
+            {
+                items[i] = new { name = "Item " + i, index = i };
+            }
+
+            var model = new
+            {
+                index = index,
+                title = "Document " + index.ToString(),
+                color = "#FF00FF",
+                items = items
+            };
+
+            return model;
+        }
+
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindCalcExpressionMultiThreaded()
+        {
+
+            int threadcount = 50;
+
+            Task<Document>[] all = new Task<Document>[threadcount];
+
+            for (int i = 0; i < threadcount; i++)
+            {
+                object model = GetAsyncModel(i);
+                var task = new Task<Document>(GenerateAsync, model);
+                all[i] = task;
+            }
+
+            foreach (var task in all)
+            {
+                task.Start();
+            }
+
+            Task.WaitAll(all);
+
+
+            for (int i = 0; i < threadcount; i++)
+            {
+                var doc = all[i].Result;
+
+                Assert.AreEqual("Binding Document " + i.ToString(), doc.Info.Title, "Title is not correct");
+
+                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                Assert.AreEqual((PDFColor)"#FF00FF", p.Style.Fill.Color, "Paragraph color was not correct");
+
+                var list = doc.FindAComponentById("mylist") as ListUnordered;
+                Assert.AreEqual(i, list.Items.Count, "List counts were not correct");
+
+                //Check each item
+                for(var j = 0; j < i; j++)
+                {
+                    var item = list.Items[j];
+                    Assert.AreEqual(1, item.Contents.Count, "No list item contents");
+                    var literal = item.Contents[0] as TextLiteral;
+                    Assert.IsNotNull(literal, "Text literal not found on list item " + j.ToString());
+
+                    Assert.AreEqual("List Item " + j.ToString(), literal.Text, "Literal text does not match for item " + j.ToString());
+                }
+            }
+        }
+
+
 
         [TestMethod()]
         [TestCategory("Binding")]

@@ -1,5 +1,6 @@
 ﻿using Scryber.Expressive.Expressions;
 using System;
+using System.Collections.Generic;
 
 namespace Scryber.Expressive.Functions.Mathematical
 {
@@ -9,11 +10,11 @@ namespace Scryber.Expressive.Functions.Mathematical
 
         public override string Name { get { return "Log"; } }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, 2, 2);
 
-            return Math.Log(Convert.ToDouble(parameters[0].Evaluate(Variables)), Convert.ToDouble(parameters[1].Evaluate(Variables)));
+            return Math.Log(Convert.ToDouble(parameters[0].Evaluate(variables)), Convert.ToDouble(parameters[1].Evaluate(variables)));
         }
 
         #endregion

@@ -15,12 +15,15 @@ namespace Scryber.Binding
 
         public Expression Expression { get; set; }
 
+        public string OriginalExpression { get; set; }
+
         public IVariableProvider ItemValueProvider { get; set; }
 
 
-        public BindingCalcExpression(Expression expression, PropertyInfo property)
+        public BindingCalcExpression(Expression expression, string origExpr, PropertyInfo property)
         {
             this.Expression = expression;
+            this.OriginalExpression = origExpr;
             this.BoundTo = property;
         }
 
@@ -35,6 +38,8 @@ namespace Scryber.Binding
 
             if (this.TryEvaluate(this.ItemValueProvider, sender, args.Context, out value))
                 this.SetPropertyValue(sender, value, Expression.ToString(), BoundTo, args.Context);
+            else
+                args.Context.TraceLog.Add(TraceLevel.Warning, "Expression Binding", "The expression '" + this.OriginalExpression + "' for '" + sender.ToString() + "' on property '" + this.BoundTo.Name + "' could not be evaluated ");
 
         }
 

@@ -30,9 +30,7 @@ namespace Scryber.Expressive.Functions
 
             ExecFunction exec = new ExecFunction((p, a, c) =>
             {
-                function.Variables = a;
-
-                return function.Evaluate(p, c);
+                return function.Evaluate(p, a, c);
             });
 
 

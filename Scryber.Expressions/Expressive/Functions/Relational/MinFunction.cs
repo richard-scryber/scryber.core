@@ -1,6 +1,7 @@
 ﻿using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Scryber.Expressive.Functions.Relational
@@ -11,11 +12,11 @@ namespace Scryber.Expressive.Functions.Relational
 
         public override string Name => "Min";
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
-            var result = parameters[0].Evaluate(this.Variables);
+            var result = parameters[0].Evaluate(variables);
 
             if (result is IEnumerable enumerableResult)
             {
@@ -31,7 +32,7 @@ namespace Scryber.Expressive.Functions.Relational
             // Skip the first item in the list as it has already been evaluated.
             foreach (var value in parameters.Skip(1))
             {
-                var evaluatedValue = value.Evaluate(this.Variables);
+                var evaluatedValue = value.Evaluate(variables);
 
                 if (evaluatedValue is IEnumerable enumerable)
                 {

@@ -24,7 +24,7 @@ namespace Scryber.Expressive.Expressions
             return left;
         }
 
-        private MemberInfo _lastReflected;
+        
 
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables)
         {
@@ -70,12 +70,12 @@ namespace Scryber.Expressive.Expressions
             PropertyInfo pi = null;
             FieldInfo fi = null;
 
-            if (this.TryGetProperty(type, name, context.EqualityStringComparison, out pi))
+            if (this.TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
             {
                 return pi.GetValue(parent, null);
             }
 
-            else if (this.TryGetField(type, name, context.EqualityStringComparison, out fi))
+            else if (this.TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
             {
                 return fi.GetValue(parent);
             }
@@ -112,48 +112,34 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
-        private bool TryGetProperty(Type fortype, string name, StringComparison comparer, out PropertyInfo found)
+       
+
+        private bool TryGetProperty(Type fortype, string name, bool ignoreCase, out PropertyInfo found)
         {
-            if (null != this._lastReflected && this._lastReflected.DeclaringType == fortype && this._lastReflected.Name.Equals(name, comparer))
+            found = fortype.GetProperty(name);
+
+            if (null == found)
             {
-                found = (PropertyInfo)this._lastReflected;
-                return true;
+                return false;
             }
             else
             {
-                found = fortype.GetProperty(name);
-                if (null == found)
-                {
-                    return false;
-                }
-                else
-                {
-                    this._lastReflected = found;
-                    return true;
-                }
+                return true;
             }
         }
 
-        private bool TryGetField(Type fortype, string name, StringComparison comparer, out FieldInfo found)
+        private bool TryGetField(Type fortype, string name, bool ignoreCase, out FieldInfo found)
         {
-            if (null != this._lastReflected && this._lastReflected.DeclaringType == fortype && this._lastReflected.Name.Equals(name, comparer))
+            found = fortype.GetField(name);
+            if (null == found)
             {
-                found = (FieldInfo)this._lastReflected;
-                return true;
+                return false;
             }
             else
             {
-                found = fortype.GetField(name);
-                if (null == found)
-                {
-                    return false;
-                }
-                else
-                {
-                    this._lastReflected = found;
-                    return true;
-                }
+                return true;
             }
+
         }
     }
 }

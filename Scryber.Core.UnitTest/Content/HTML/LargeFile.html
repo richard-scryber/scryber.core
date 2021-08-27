@@ -19,17 +19,20 @@
     </header>
     <p title="Inner">This is a test of binding the content to a table.</p>
     <div style="column-count: 2">
-        <table style="width:100%;">
-            <thead style="font-weight:bold;">
+        <table id="largeTable" style="width:100%;">
+            <thead style="font-weight:bold;" >
                 <tr>
+                    <td class="key">#</td>
                     <td class="key">Name</td>
                     <td class="value" style="width: 120pt">Value</td>
                 </tr>
             </thead>
             <template data-bind="{{model.Items}}" >
                 <tr class="{{if(index() % 2 == 1, 'odd', 'even')}}" >
+                    <td class="key" data-style-identifier="td_index" >{{index()}}</td>
                     <td class="key" data-style-identifier="td_key">{{.Key}}</td>
                     <td class="value" data-style-identifier="td_value">{{.Value}}</td>
+
                 </tr>
             </template>
         </table>

@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Functions.Statistical
 
         public override string Name { get { return "Mode"; } }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
             
@@ -19,7 +19,7 @@ namespace Scryber.Expressive.Functions.Statistical
 
             foreach (var p in parameters)
             {
-                var value = p.Evaluate(this.Variables);
+                var value = p.Evaluate(variables);
                 var enumerable = value as IEnumerable;
 
                 if (enumerable != null)

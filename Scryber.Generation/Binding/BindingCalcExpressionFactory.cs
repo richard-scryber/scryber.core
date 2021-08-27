@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Imaging;
@@ -78,7 +79,7 @@ namespace Scryber.Binding
 
         public BindingCalcExpressionFactory()
         {
-            this._useCache = false;
+            this._useCache = true;
             this.Options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
         }
 
@@ -117,10 +118,8 @@ namespace Scryber.Binding
 
         protected virtual IDictionary<string, Expression> InitExpressionCache()
         {
-            if ((this.Options & ExpressiveOptions.IgnoreCaseForParsing) > 0)
-                return new Dictionary<string, Expression>(StringComparer.OrdinalIgnoreCase);
-            else
-                return new Dictionary<string, Expression>(StringComparer.Ordinal);
+            //We are always case sensitive on the cache.
+            return new ConcurrentDictionary<string, Expression>(StringComparer.Ordinal);
         }
 
         
@@ -145,7 +144,7 @@ namespace Scryber.Binding
                 expr.CompileExpression();
 
                 if (UseCache)
-                    this.ExpressionCache.Add(value, expr);
+                    this.ExpressionCache[value] = expr;
             }
 
             return expr;
@@ -156,7 +155,7 @@ namespace Scryber.Binding
             try
             {
                 var expr = CreateExpression(value);
-                return new BindingCalcExpression(expr, forProperty);
+                return new BindingCalcExpression(expr, value, forProperty);
             }
             catch(Exception ex)
             {

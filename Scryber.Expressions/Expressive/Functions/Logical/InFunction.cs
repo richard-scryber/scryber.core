@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 
@@ -10,18 +11,18 @@ namespace Scryber.Expressive.Functions.Logical
 
         public override string Name { get { return "In"; } }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 2);
 
             var found = false;
 
-            var parameter = parameters[0].Evaluate(Variables);
+            var parameter = parameters[0].Evaluate(variables);
 
             // Goes through any values, and stop whe one is found
             for (var i = 1; i < parameters.Length; i++)
             {
-                var result = parameters[i].Evaluate(Variables);
+                var result = parameters[i].Evaluate(variables);
                 if(Compare(result, parameter, context))
                 {
                     found = true;

@@ -34,7 +34,7 @@
 
         
         .large{
-            font-size: calc(var(--font-size)*2);
+            font-size: calc(var(--font-size) * 2);
         }
         
         
@@ -60,7 +60,7 @@
     <table style="margin:20pt">
         <template data-bind="{{model.items}}">
             <tr class="bound-row {{if(index() % 2 == 0,'even', 'odd')}}">
-                <td>{{model.items[index()].Name}}</td>
+                <td>{{.Name}}</td>
             </tr>
         </template>
     </table>

@@ -125,12 +125,41 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("thead")]
     public class HTMLTableHead : HTMLTableSection
     {
+        /// <summary>
+        /// Gets or sets the flag that identifies if this
+        /// header should repeat at the top of each page/column.
+        /// Default is true
+        /// </summary>
+        [PDFAttribute("data-repeat")]
+        public bool Repeating
+        {
+            get
+            {
+                StyleValue<TableRowRepeat> found;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TableRowRepeatKey, out found))
+                    return found.Value(this.Style) == TableRowRepeat.RepeatAtTop;
+                else
+                    return true; //Default from the base
+            }
+            set
+            {
+                if (value)
+                    this.Style.SetValue(StyleKeys.TableRowRepeatKey, TableRowRepeat.RepeatAtTop);
+                else
+                    this.Style.SetValue(StyleKeys.TableRowRepeatKey, TableRowRepeat.None);
+            }
+        }
 
         public HTMLTableHead()
             : base((PDFObjectType)"htTH")
         { }
 
-        
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Table.RowRepeat = TableRowRepeat.RepeatAtTop;
+            return style;
+        }
     }
 
     [PDFParsableComponent("tbody")]

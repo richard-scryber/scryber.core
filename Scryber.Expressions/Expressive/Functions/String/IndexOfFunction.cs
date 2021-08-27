@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Scryber.Expressive.Expressions;
 
@@ -17,11 +18,11 @@ namespace Scryber.Expressive.Functions.String
             }
         }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 2);
 
-            object value = parameters[0].Evaluate(Variables);
+            object value = parameters[0].Evaluate(variables);
 
             if (value is null)
             {
@@ -34,7 +35,7 @@ namespace Scryber.Expressive.Functions.String
 
                 string text = value.ToString();
 
-                value = parameters[1].Evaluate(Variables);
+                value = parameters[1].Evaluate(variables);
 
                 if (value is null)
                 {
@@ -45,7 +46,7 @@ namespace Scryber.Expressive.Functions.String
 
                 if (parameters.Length > 2)
                 {
-                    int start = Convert.ToInt32(parameters[2].Evaluate(Variables));
+                    int start = Convert.ToInt32(parameters[2].Evaluate(variables));
                     return text.IndexOf(match, start, context.EqualityStringComparison);
                 }
                 else
@@ -59,14 +60,14 @@ namespace Scryber.Expressive.Functions.String
                 
                 var index = 0;
                 
-                value = parameters[1].Evaluate(Variables);
+                value = parameters[1].Evaluate(variables);
 
                 foreach (var p in col)
                 {
                     object innerValue = p;
                     if(innerValue is IExpression)
                     {
-                        innerValue = (innerValue as IExpression).Evaluate(Variables);
+                        innerValue = (innerValue as IExpression).Evaluate(variables);
                     }
 
                     if(null != innerValue)
@@ -95,7 +96,7 @@ namespace Scryber.Expressive.Functions.String
             {
                 var comp = (value as IComparable);
 
-                value = parameters[1].Evaluate(Variables);
+                value = parameters[1].Evaluate(variables);
 
                 if (comp.CompareTo(value) == 0)
                 {

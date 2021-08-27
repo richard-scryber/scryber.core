@@ -574,7 +574,13 @@ namespace Scryber.Core.UnitTests.Html
                 "\"footerText\" : \"Bound Footer\"," +
                 "\"content\" : \"This is the bound content text\"," +
                 "\"bodyStyle\" : \"background-color:red; color:#FFF; padding: 20pt\"," +
-                "\"bodyClass\" : \"top\"" +
+                "\"bodyClass\" : \"top\"," +
+                "\"number\" : 10.1," +
+                "\"items\" : [" + 
+                    "{ \"Name\" : \"First\" }," +
+                    "{ \"Name\" : \"Second\"}," +
+                    "{ \"Name\" : \"Third\" }" +
+                    "]" +
                 "}";
 
             dynamic model = Newtonsoft.Json.JsonConvert.DeserializeObject(modeljson);
@@ -584,7 +590,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("bodyWithJsonBinding.pdf"))
                 {
                     doc.Params["model"] = model;
-                    doc.AutoBind = true;
+                    doc.ConformanceMode = ParserConformanceMode.Strict;
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
@@ -682,7 +688,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.ConformanceMode = ParserConformanceMode.Strict;
+                //doc.ConformanceMode = ParserConformanceMode.Strict;
                 using (var stream = DocStreams.GetOutputStream("bodyWithExpressionBinding.pdf"))
                 {
                     doc.Params["model"] = model;
@@ -776,17 +782,6 @@ namespace Scryber.Core.UnitTests.Html
 
             color = pBlock.FullStyle.Fill.Color;
             Assert.AreEqual("rgb(255,255,255)", color);
-
-            //Performance check
-            using (var doc = Document.ParseDocument(path))
-            {
-                using (var stream = DocStreams.GetOutputStream("bodyWithExpressionBinding.pdf"))
-                {
-                    doc.Params["model"] = model;
-                    doc.AutoBind = true;
-                    doc.SaveAsPDF(stream);
-                }
-            }
         }
 
 
@@ -858,7 +853,7 @@ namespace Scryber.Core.UnitTests.Html
             for(var i = 0; i < 100; i++)
             {
                 var val = i + 1;
-                all[i] = new { Name = "Name " + val.ToString(), Cost = "£" + val + ".00" };
+                all[i] = new { Name = "Name " + val.ToString(), Cost = "£" + val + ".00", Style = "" };
                 total += val;
             }
 
@@ -913,7 +908,7 @@ namespace Scryber.Core.UnitTests.Html
                 if (i > 0)
                     content.Append(",");
 
-                content.Append("{ \"Name\": \"Name " + val.ToString() + "\", \"Cost\": \"£" + val.ToString() + ".00\" }\r\n");
+                content.Append("{ \"Name\": \"Name " + val.ToString() + "\", \"Cost\": \"£" + val.ToString() + ".00\", \"Style\": \"\" }\r\n");
 
                 total += val;
             }
@@ -1569,27 +1564,12 @@ namespace Scryber.Core.UnitTests.Html
 
         [TestMethod]
         public void LargeFileTest()
-
         {
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/LargeFile.html");
 
             var data = new
-            {
-                Items = GetListItems(10)
-            };
-            using (var doc = Document.ParseDocument(path))
-            {
-                doc.Params["model"] = data;
-                using (var stream = DocStreams.GetOutputStream("LargeFile.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            data = new
             {
                 Items = GetListItems(10000)
             };
@@ -1602,6 +1582,10 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
 
+                var table = doc.FindAComponentById("largeTable") as HTMLTableGrid;
+
+                //Check the row count including the header row
+                Assert.AreEqual(10000 + 1, table.Rows.Count, "Number of rows does not match expected count");
             }
         }
 

@@ -147,6 +147,12 @@ namespace Scryber.Data
         }
 
 
+        protected override void OnDataBinding(PDFDataContext context)
+        {
+            base.OnDataBinding(context);
+        }
+
+
         protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
             if(this.Template is IPDFDataTemplateGenerator)
@@ -205,11 +211,14 @@ namespace Scryber.Data
                     context.TraceLog.Add(TraceLevel.Warning, "Data For Each", string.Format("NULL data was returned for the path '{0}' on the PDFForEach component {1} with data source {2}", this.SelectPath, this.ID, dataSource.ID));
                 hasdata = true;
             }
-            
-            else
+            else if(context.DataStack.HasData)
             {
                 data = context.DataStack.Current;
                 dataSource = context.DataStack.Source;
+            }
+            else
+            {
+                hasdata = false;
             }
 
 

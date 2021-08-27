@@ -1,5 +1,6 @@
 ﻿using Scryber.Expressive.Expressions;
 using System;
+using System.Collections.Generic;
 
 namespace Scryber.Expressive.Functions.Conversion
 {
@@ -9,11 +10,11 @@ namespace Scryber.Expressive.Functions.Conversion
 
         public override string Name => "Decimal";
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, 1, 1);
 
-            var objectToConvert = parameters[0].Evaluate(this.Variables);
+            var objectToConvert = parameters[0].Evaluate(variables);
 
             // No point converting if there is nothing to convert.
             if (objectToConvert is null) { return null; }

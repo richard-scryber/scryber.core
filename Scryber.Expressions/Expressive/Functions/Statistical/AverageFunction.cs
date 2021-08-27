@@ -2,6 +2,7 @@
 using Scryber.Expressive.Helpers;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
@@ -11,7 +12,7 @@ namespace Scryber.Expressive.Functions.Statistical
 
         public override string Name { get { return "Average"; } }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
@@ -21,7 +22,7 @@ namespace Scryber.Expressive.Functions.Statistical
             foreach (var value in parameters)
             {
                 int increment = 1;
-                object evaluatedValue = value.Evaluate(Variables);
+                object evaluatedValue = value.Evaluate(variables);
                 IEnumerable enumerable = evaluatedValue as IEnumerable;
 
                 if (enumerable != null)

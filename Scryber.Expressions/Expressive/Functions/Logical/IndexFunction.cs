@@ -1,7 +1,7 @@
 ﻿using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 using System;
-
+using System.Collections.Generic;
 
 namespace Scryber.Expressive.Functions.Relational
 {
@@ -12,12 +12,12 @@ namespace Scryber.Expressive.Functions.Relational
 
         public override string Name { get { return "Index"; } }
 
-        public override object Evaluate(IExpression[] parameters, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
             this.ValidateParameterCount(parameters, 0, 0);
 
             object value;
-            if (this.Variables.TryGetValue(CurrentIndexVariableName, out value))
+            if (variables.TryGetValue(CurrentIndexVariableName, out value))
                 return value;
             else
                 return -1;
