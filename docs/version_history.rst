@@ -5,6 +5,33 @@ Version History
 The following change log is for developers upgrading from previous versions,
 or looking for new features
 
+Version 5.1.0
+---------------
+
+Released 31st August 2021
+
+**Major update to the binding framework**
+
+* Added support for handlebar expressions {{}}, as well as calc() and var() in css
+* Extensible function library based on the Expressive open source library
+* Updated the library to use the document component for loading remote files, fonts and images.
+
+**Other minor enhancements and fixes**
+
+* Added caching support to the document via the Scryber.ServiceProvider.
+* Fixed a bug on the font factory for multi-threading.
+
+Version 5.0.7
+-------------
+
+Released 30th May 2021
+
+**Cool new features added**
+
+* Added support for float left and right within a single block (e.g. p, div)
+* Added support for linear and radial gradients within css.
+* A couple of other minor bug fixes.
+
 Version 5.0.6
 --------------
 

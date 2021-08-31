@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.1.0.1-beta</PackageVersion>
+    <PackageVersion>5.1.0.2-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
@@ -13,12 +13,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.1.0.1-beta
+    <PackageReleaseNotes>5.1.0.2-beta
 
-We now support expressions inside attributes and text using the handlebars notation - {{...}}
+A major update that now fully supports expressions in attributes, css var and clac along with text, using the handlebars notation - {{...}}
 This includes support for simple mathematical expressions from the document variables as welll as functions such as 'concat', 'if(value, 'true', 'false')' or 'index() + model.property'
-
-Speed may take a bit of a hit from this, but working on it.
 
 5.0.7
 
@@ -58,10 +56,10 @@ Allow missing images on the document is now supported.
 Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber engine for easy, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
+    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 5;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The scryber pdf engine for dotnet 5 - change the way you make documents.
+    <Description>The scryber pdf engine for dotnet 5 - Beautiful documents from templates made easy.
 
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
