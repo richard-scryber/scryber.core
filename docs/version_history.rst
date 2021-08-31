@@ -15,6 +15,7 @@ Released 31st August 2021
 * Added support for handlebar expressions {{}}, as well as calc() and var() in css
 * Extensible function library based on the Expressive open source library
 * Updated the library to use the document component for loading remote files, fonts and images.
+* Added async support for document Generation with remote requests for images, fonts, etc.
 
 **Other minor enhancements and fixes**
 

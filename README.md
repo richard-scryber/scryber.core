@@ -187,7 +187,7 @@ Create a new html template file with your content.
       //using Scryber.Components
       //using Scryber.Components.Mvc
 
-      public IActionResult HelloWorld(string title = "This is the title")
+      public async IActionResult HelloWorld(string title = "This is the title")
       {
           using(var doc = Document.ParseDocument("[input template]"))
           {
@@ -198,7 +198,7 @@ Create a new html template file with your content.
               doc.Params["model"] = GetMyParameters(title);
 
               //This will output to the response inline.
-              return this.PDF(doc); // inline:false, outputFileName:"HelloWorld.pdf"
+              return await this.PDFAsync(doc); // inline:false, outputFileName:"HelloWorld.pdf"
           }
       }
 ```
