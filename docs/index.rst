@@ -21,17 +21,17 @@ Download the nuget package
 
 `<https://www.nuget.org/packages/Scryber.Core.Mvc>`_
 
-Start with a template. **The namespace declaration is important.**
+Start with a template. **The xmlns namespace declaration is important.**
 
 .. code-block:: html
 
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
         <head>
-            <title>{@:model}</title>
+            <title>{{model}}</title>
         </head>
         <body>
-            <div style='padding:10px'>{@:model}.</div>
+            <div style='padding:10px'>{{hello}}.</div>
         </body>
     </html>
 
@@ -40,9 +40,9 @@ And then generate your template in a view.
 .. code-block:: csharp
 
     //add the namespaces
-    //using Scryber.Components;
-    //using Scryber.Components.Mvc;
-    //using Microsoft.AspNetCore.Mvc;
+    using Scryber.Components;
+    using Scryber.Components.Mvc;
+    using Microsoft.AspNetCore.Mvc;
 
     public class HomeController : Controller
     {
@@ -64,7 +64,7 @@ And then generate your template in a view.
             //parsing the document creates a complete object graph from the content
             using(var doc = Document.ParseDocument(path))
             {
-                doc.Params["model"] = "Hello World";
+                doc.Params["hello"] = "Hello World";
                 return this.PDF(doc); //convenience extension method to return the result.
             }
         }
@@ -79,7 +79,7 @@ And then generate your template in a view.
 Hello World Plus
 -----------------
 
-Check out :doc:`mvc_controller_full` for a full MVC example with styles and binding, or :doc:`gui_controller_full` for a full gui application example (with styles and binding)
+Check out :doc:`overview/mvc_controller_full` for a full MVC example with styles and binding, or :doc:`overview/gui_controller_full` for a full gui application example (with styles and binding)
 
 
 =========
@@ -153,7 +153,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 .. toctree::
     :maxdepth: 1
     :hidden:
-    :caption: Overview
+    :caption: Getting Started
 
     overview/mvc_controller_full
     overview/gui_controller_full

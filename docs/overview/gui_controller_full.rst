@@ -5,13 +5,6 @@ Console or GUI - Getting Started
 A Complete example for creating a hello world PDF file in a console application or GUI front end.
 For us, we have just created a new dotnet core console application in Visual Studio.
 
-How it works
--------------
-
-We hope scryber works just as you would expect. The engine is based around the controllers you have, using XHTML template views with css, graphics 
-and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly.
-
-.. image:: images/ScryberMVCGraphic.png
 
 Nuget Packages
 ---------------
@@ -52,7 +45,7 @@ And the Copy to output to Always.
 
 Your solution should look something like this.
 
-.. image:: images/initialhelloworldgui.png
+.. image:: ../images/initialhelloworldgui.png
 
 
 
@@ -100,7 +93,7 @@ Next change the 'Main' method to your class to load the template and generate th
         }
 
 
-.. image:: images/programcs.png
+.. image:: ../images/programcs.png
 
 The parser will read the document from the pdfx XML content, and then create a new PDF document in the tempDirectory for the output.
 
@@ -112,7 +105,7 @@ Running your application, you should see the console output the path to the pdf.
 And opening this will show you the file. you could have saved it to a share, opened in Acrobat reader, or sent via email as a stream attachment.
 
 
-.. image:: images/helloworldconsole.png
+.. image:: ../images/helloworldconsole.png
 
 Adding dynamic content
 -----------------------
@@ -203,7 +196,7 @@ So we can expand our document body to use the model schema.
         </body>
 
 
-.. image:: images/HelloWorldWithData.png
+.. image:: ../images/HelloWorldWithData.png
 
 
 Adding Fonts and Styles
@@ -301,7 +294,7 @@ Make some minor changes to our model.
     
 The output from this is much more pleasing. Especially that Fruances font :-)
 
-.. image:: images/HelloWorldWithStyle.png
+.. image:: ../images/HelloWorldWithStyle.png
 
 
 Page Breaks and sizes
@@ -372,7 +365,7 @@ In our footer we can add the current page number (of total pages) and an author 
 
 With this we now alter the layout to use our new pages, and everything will flow nicely.
 
-.. image:: images/HelloWorldPages.png
+.. image:: ../images/HelloWorldPages.png
 
 
 
