@@ -1,16 +1,17 @@
 =============
-Scryber 5.0
+Scryber 5.1
 =============
 
 
-**What if there was a better way to create documents, is at the heart of everything we do.**
+**Simple, data driven, good looking, documents from templates**
 
-Scryber is **the** engine to create dynamic PDF documents quickly and easily from HTML templates with consistant styles, your own data, and an easy flowing layout.
+Scryber is **the** engine to create dynamic PDF documents quickly and easily from XHTML templates with consistant styles, your own data, and an easy flowing layout.
 It's open source; flexible; styles based; data driven and with a low learning curve. 
 
 Written entirely in C# for dotnet 5 using HTML, CSS and SVG.
 
-Documentation for previous 1.0.x pdfx versions for `Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_
+Documentation for the 5.0.x versions is here `5.0.6 Read the docs here <https://scrybercore.readthedocs.io/en/v5.0.6-package-release/>`_
+Documentation for previous 1.0.x pdfx versions for `1.0.0 Read the docs here <https://scrybercore.readthedocs.io/en/v1.0.0.20-beta/>`_
 
 
 Hello World MVC
@@ -128,9 +129,10 @@ or page conversion.
 Binding to your data
 ---------------------
 
-With a simple binding notation it's easy to add references to your data structures and pass information
-and complex data to your document from SQL, JSON, Entity Model and more.
-Or get the document to look up and bind the data for you.
+With a simple handlebars binding notation it's easy to add references to your data structures and pass information
+and complex data to your document from your model and more.
+
+**Now supporting full expressions support including css var and calc support**
 
 :doc:`binding_model`
 
@@ -147,13 +149,14 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 
 :doc:`document_security`
 
+
 .. toctree::
     :maxdepth: 1
     :hidden:
-    :caption: Getting started
+    :caption: Overview
 
-    mvc_controller_full
-    gui_controller_full
+    overview/mvc_controller_full
+    overview/gui_controller_full
 
 
 .. toctree::
