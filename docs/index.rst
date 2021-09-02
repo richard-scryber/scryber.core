@@ -157,7 +157,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 
     overview/mvc_controller_full
     overview/gui_controller_full
-    overview/package_and_libs
+    overview/packages_and_libs
 
 
 .. toctree::
