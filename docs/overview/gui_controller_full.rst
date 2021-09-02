@@ -95,7 +95,7 @@ Next change the 'Main' method to your class to load the template and generate th
 
 .. image:: ../images/programcs.png
 
-The parser will read the document from the pdfx XML content, and then create a new PDF document in the tempDirectory for the output.
+The parser will read the document from the XHTML content, and then create a new PDF document in the tempDirectory for the output.
 
 
 Testing your code
@@ -166,7 +166,7 @@ on the PDF extension method.
 
 The general syntax for referring paramters in a template is
 
-{@:**parameter[.property]**}
+{{**parameter[.property]**}}
 
 And the html5 tag 'template' is used with the data-bind attribute to loop over one or more items in a collection, and the 
 inner objects and properties can be used with the '.' prefix to reference the current data context.
@@ -318,6 +318,7 @@ be using our page for.
 
         /* We have a new page before the ordered list
          * And this new page uses the 'portrait' option */
+  
         main ol {
             page-break-before: always;
             padding-top: 20pt;
@@ -330,7 +331,8 @@ be using our page for.
             size: A4 landscape;
         }
 
-        /* But can use specific sizes for sections
+        /* But can use specific sizes for sections */
+        
         @page portrait {
             size: A4 portrait;
         }
