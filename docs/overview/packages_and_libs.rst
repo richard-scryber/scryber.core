@@ -32,6 +32,9 @@ Within the core are 6 main libraries with the top level library Scryber.Componen
     :alt: Package and library references
     :class: with-shadow
 
+`Full size version <../_images/dll_references.png>`_
+
+
 Document Processing lifecycle
 ------------------------------
 
@@ -45,7 +48,11 @@ When creating a PDF document from a template in your code there is a clear linea
 
 Each of the stages raises events that can be captured to perform any custom processing required
 
-.. image:: ../images/doc_lifecycle.padding
+.. figure:: ../images/doc_lifecycle.png
+    :target: ../_images/doc_lifecycle.png
+    :alt: Package and library references
+    :class: with-shadow
 
+`Full size version <../_images/doc_lifecycle.png>`_
 
 
