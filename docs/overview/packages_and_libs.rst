@@ -27,8 +27,10 @@ Scryber.Core libraries
 
 Within the core are 6 main libraries with the top level library Scryber.Components referencing others, and the Scryber.Common referencing none.
 
-.. image:: ../images/dll_references.png
-
+.. figure:: ../images/dll_references.png
+    :target: ../_images/dll_references.png
+    :alt: Package and library references
+    :class: with-shadow
 
 Document Processing lifecycle
 ------------------------------

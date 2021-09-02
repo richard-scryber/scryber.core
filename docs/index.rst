@@ -153,20 +153,20 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 .. toctree::
     :maxdepth: 1
     :hidden:
-    :caption: Getting Started
+    :caption: Scryber Overview
 
     overview/mvc_controller_full
     overview/gui_controller_full
+    overview/what_is_scryber
     overview/packages_and_libs
-
+    version_history
 
 .. toctree::
-    :caption: Standard features
+    :caption: Template features
     :maxdepth: 1
     :hidden:
 
     document_structure
-    document_styles
     document_components
     document_pages
     document_pagenumbering
@@ -174,28 +174,56 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     component_sizing
     component_positioning
     document_references
-    binding_model
     component_linking
     drawing_fonts
-    document_textlayout
     drawing_colors
     drawing_units
     drawing_images
     drawing_image_backgrounds
-    drawing_paths
     document_outline
     document_security
 
-
-.. toctree::
-    :caption: Extended capabilities
+.. toctree:: 
+    :caption: Binding model
     :maxdepth: 1
     :hidden:
 
-    document_code_vs_xml
-    document_code_classes
+    binding_model
+
+.. toc_tree:: 
+    :caption: Styles support
+    :maxdepth: 1
+    :hidden:
+
+    document_styles
+    referencing_stylesheets_td
+
+.. toc_tree:: 
+    :caption: Text Layout
+    :maxdepth: 1
+    :hidden:
+
+    document_textlayout
+    
+.. toc_tree:: 
+    :caption: Drawing and Shapes
+    :maxdepth: 1
+    :hidden:
+
+    drawing_paths
+
+.. toctree::
+    :caption: Performance and Tracing
+    :maxdepth: 1
+    :hidden:
+
     extending_logging
+
+.. toctree::
+    :caption: Extending Scryber
+    :maxdepth: 1
+    :hidden:
+
     namespaces_and_assemblies
     document_controllers
     extending_scryber
-    version_history
