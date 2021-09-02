@@ -126,8 +126,8 @@ on the PDF extension method.
 
         var model = new
             {
-                titlestyle = "color:#ff6347", //style data
-                title = "Hello from scryber", //simple content
+                titlecolor = "#ff6347", //style data
+                title = "scryber", //simple content
                 items = new[]                 //or even complex object data
                 {
                     new { name = "First item" },
@@ -180,15 +180,15 @@ So we can expand our document body to use the model schema.
             <main style="padding:10pt">
 
                 <!-- binding styles and values on content -->
-                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+                <h2 style="color:{{model.titlecolor}">{{concat("Hello from ",model.title)}}</h2>
 
                 <div>We hope you like it.</div>
 
                 <!-- Loop with nested item collection binding to the objects -->
                 <ol>
-                    <template data-bind='{@:model.items}'>
+                    <template data-bind='{{model.items}}'>
                         <!-- binding within the model.items content, and can be nested -->
-                        <li>{@:.name}</li> 
+                        <li>{{.name}}</li> 
                     </template>
                 </ol>
             </main>
@@ -259,21 +259,25 @@ The css style could just have easily come from another referenced stylesheet. Do
             <!-- support for many HTML5 tags-->
             <main style="padding:10pt">
 
-                <!-- binding style and values on content -->
-                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+                <!-- binding styles and values on content -->
+                <h2 style="color:{{model.titlecolor}">{{concat("Hello from ",model.title)}}</h2>
+
                 <div>We hope you like it.</div>
+
+                <!-- Loop with nested item collection binding to the objects -->
                 <ol>
-                    <!-- Loop through the items in the model -->
-                    <template data-bind='{@:model.items}'>
-                        <li>{@:.name}</li> <!-- and bind the name value -->
+                    <template data-bind='{{model.items}}'>
+                        <!-- binding within the model.items content, and can be nested -->
+                        <li>{{.name}}</li> 
                     </template>
                 </ol>
+
             </main>
             <footer>
                 <!-- footers in a table with style -->
                 <table class="foot" style="width:100%">
                     <tr>
-                        <td>{@:model.author}</td>
+                        <td>{{model.author}}</td>
                         <td>Hello World Sample</td>
                     </tr>
                 </table>
@@ -289,7 +293,7 @@ Make some minor changes to our model.
     var model = new
     {
          author = "Scryber Engine",   
-         titlestyle = "color:#ff6347 font-family:'Fraunces'", //style data
+         titlecolor = "#ff6347 font-family:'Fraunces'", //style data
     ...
     
 The output from this is much more pleasing. Especially that Fruances font :-)
@@ -352,7 +356,7 @@ In our footer we can add the current page number (of total pages) and an author 
     <footer>
         <table class="foot" style="width:100%">
             <tr>
-                <td>{@:author}</td>
+                <td>{{model.author}}</td>
 
                 <!-- the page tag is made up, and has a property attribute
                     (open to suggestions on better syntax)  -->

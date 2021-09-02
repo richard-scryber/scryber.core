@@ -4,13 +4,6 @@ MVC Controller - Getting Started
 
 A Complete example for creating a styled and databound hello world PDF file from an MVC Controller in C# with an HTML template
 
-How it works
--------------
-
-We hope scryber works just as you would expect. The engine is based around the controllers you have, using HTML template views with css, graphics 
-and images you are used to, along with your model data you have, to create PDF documents quickly, easily and flexibly.
-
-.. image:: images/ScryberMVCGraphic.png
 
 Nuget Packages
 ---------------
@@ -45,7 +38,7 @@ And paste the following content into the file
 
 Your solution should look something like this.
 
-.. image:: images/initialhelloworld.png
+.. image:: ../images/initialhelloworld.png
 
 
 
@@ -56,7 +49,7 @@ For for more information on the namespaces and mappings see this :doc:`namespace
 Controller code
 ----------------
 
-Add a new controller to your project, and a couple of namespaces are important to add to the top of your controller.
+Add a new 'Document' controller to your project, and a couple of namespaces are important to add to the top of your controller.
 
 .. code-block:: csharp
 
@@ -67,13 +60,13 @@ Add a new controller to your project, and a couple of namespaces are important t
 Add the Web host service
 -------------------------
 
-In order to nicely reference files in the solution, we add a reference to the IWebHostEnvironment to the home controller constructor.
+In order to nicely reference files in the solution, we add a reference to the IWebHostEnvironment to the controller constructor.
 
 .. code-block:: csharp
 
     private readonly IWebHostEnvironment _env;
             
-    public HomeController(IWebHostEnvironment environment)
+    public DocumentController(IWebHostEnvironment environment)
     {
         _env = environment;
     }
@@ -99,7 +92,7 @@ Next add a new Controller Method to your class for retrieve and generate
 
 The PDF extension method will read the PDF template from the path and generate the file to the response.
 
-.. image:: images/homecontroller.png
+.. image:: ../images/homecontroller.png
 
 Testing your action
 --------------------
@@ -112,14 +105,14 @@ To create your pdf simply add a link to your action method in a view.
     <div>
         <h2 class="display-4">Simple sample from the PDF Controller</h2>
         <ul>
-            <li><a href='@Url.Action("HelloWorld","Home")' target='_blank'>Hello World PDF</a></li>
+            <li><a href='@Url.Action("HelloWorld","Document")' target='_blank'>Hello World PDF</a></li>
         </ul>
     </div>
 
 
 Running your application, you should see the link and clicking on it will open the pdf in a new tab or window.
 
-.. image:: images/helloworldpage.png
+.. image:: ../images/helloworldpage.png
 
 Adding dynamic content
 -----------------------
@@ -133,15 +126,15 @@ on the PDF extension method.
 
 .. code-block:: csharp
 
-    private dynamic GetHelloWorldData()
+    private dynamic GetHelloWorldData(string name)
     {
         //get your model data however you wish
         //it's just a sample object for this one.
 
         var model = new
             {
-                titlestyle = "color:#ff6347", //style data
-                title = "Hello from scryber", //simple content
+                titlecolor = "#ff6347", //style data
+                name = name, //simple content
                 author = "Joe the Mack",
                 items = new[]                 //or even complex object data
                 {
@@ -155,25 +148,28 @@ on the PDF extension method.
     }
 
     [HttpGet]
-    public IActionResult HelloWorld()
+    public IActionResult HelloWorld(string name = "scryber")
     {
         var path = _env.ContentRootPath;
         path = System.IO.Path.Combine(path, "Views", "PDF", "HelloWorld.html");
 
         using(var doc = Document.ParseDocument(path))
         {
-            var model = GetHelloWorldData();
+            //get the data for the model, including an optional parameter from the request.
+
+            var model = GetHelloWorldData(name);
             
             //could use doc.Params["model"] = model; for the same effect.
             //It is just more convenient as below.
+
             return this.PDF(doc, model);
         }
     }
 
 
-The general syntax for referring paramters in a template is {@:   }
+We use a handlebars syntax for the binding to content, and support calculations and expressions within the context.
 
-{@:**parameter[.property]**}
+{{**parameter[.property]**}}
 
 And the html5 tag 'template' is used with the data-bind attribute to loop over one or more items in a collection, and the 
 inner objects and properties can be used with the '.' prefix to reference the current data context.
@@ -186,16 +182,16 @@ So we can expand our document body to use the model schema.
 
             <main style="padding:10pt">
 
-                <!-- binding styles and values on content -->
-                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+                <!-- binding styles and values on content including expressions and functions -->
+                <h2 style="color:{{model.titlecolor}}">{{concat('Hello World, from ',model.name)}}</h2>
 
                 <div>We hope you like it.</div>
 
                 <!-- Loop with nested item collection binding to the objects -->
                 <ol>
-                    <template data-bind='{@:model.items}'>
+                    <template data-bind='{{model.items}}'>
                         <!-- binding within the model.items content, and can be nested -->
-                        <li>{@:.name}</li> 
+                        <li>{{.name}}</li> 
                     </template>
                 </ol>
             </main>
@@ -203,12 +199,12 @@ So we can expand our document body to use the model schema.
         </body>
 
 
-.. image:: images/HelloWorldWithData.png
+.. image:: ../images/HelloWorldWithData.png
 
 Adding Fonts and Styles
 ------------------------
 
-It's good but rather uninspiring. With scryber we can use css styles, just as we would in html.
+It's good but rather uninspiring. With scryber we can use styles, just as we would in html.
 
 Here we are:
 
@@ -226,7 +222,7 @@ The css style could just have easily come from another referenced stylesheet.
         <head>
             <title>Hello World</title>
 
-            <!-- support for complex css selectors (or link ot external style sheets )-->
+            <!-- support for complex css selectors (or link to external style sheets )-->
             <link rel="stylesheet"
                 href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap"
                 title="Fraunces" />
@@ -267,21 +263,25 @@ The css style could just have easily come from another referenced stylesheet.
             <!-- support for many HTML5 tags-->
             <main style="padding:10pt">
 
-                <!-- binding style and values on content -->
-                <h2 style="{@:model.titlestyle}">{@:model.title}</h2>
+                <!-- binding styles and values on content including expressions and functions -->
+                <h2 style="color:{{model.titlecolor}}">{{concat('Hello World, from ',model.name)}}</h2>
+
                 <div>We hope you like it.</div>
+
+                <!-- Loop with nested item collection binding to the objects -->
                 <ol>
-                    <!-- Loop through the items in the model -->
-                    <template data-bind='{@:model.items}'>
-                        <li>{@:.name}</li> <!-- and bind the name value -->
+                    <template data-bind='{{model.items}}'>
+                        <!-- binding within the model.items content, and can be nested -->
+                        <li>{{.name}}</li> 
                     </template>
                 </ol>
+
             </main>
             <footer>
-                <!-- footers in a table with style -->
+                <!-- footers in a full width table with style -->
                 <table class="foot" style="width:100%">
                     <tr>
-                        <td>{@:model.author}</td>
+                        <td>{{model.author}}</td>
                         <td>Hello World Sample</td>
                     </tr>
                 </table>
@@ -292,7 +292,7 @@ The css style could just have easily come from another referenced stylesheet.
 
 The output from this is much more pleasing. Especially that Fruances font :-)
 
-.. image:: images/HelloWorldWithStyle.png
+.. image:: ../images/HelloWorldWithStyle.png
 
 
 Page Breaks and sizes
@@ -338,7 +338,7 @@ In our footer we can add the current page number (of total pages) and an author 
     <footer>
         <table class="foot" style="width:100%">
             <tr>
-                <td>{@:model.author}</td>
+                <td>{{model.author}}</td>
 
                 <!-- the page tag is made up, and has a property attribute
                     (open to suggestions on better syntax)  -->
@@ -351,7 +351,7 @@ In our footer we can add the current page number (of total pages) and an author 
 
 With this we now alter the layout to use our new pages, and everything will flow nicely.
 
-.. image:: images/HelloWorldPages.png
+.. image:: ../images/HelloWorldPages.png
 
 
 Further reading
