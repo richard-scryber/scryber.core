@@ -1,25 +1,16 @@
-==================================
-Parsing from stream to DOM
-==================================
+=====================================
+Parsing document from content to DOM
+=====================================
 
-When you parse the contents of an XML file, or a stream or a reader, Scryber builds a full object model of the content.
+When you parse the contents of an file, or a stream or a reader, Scryber builds a full object model of the content.
 As the parser is based around XML it is important that all content is valid - it does not like unclosed tags or elements.
 
 Content namespaces
 -------------------
 
-The namespace for an element must be known to the parser. For most XHTML templates this will be the standard XML Namespace (xmlns)  http://www.w3.org/1999/xhtml
-This namespace is mapped directly onto the library assembly and namespace *Scryber.Html.Components, Scryber.Components*
+As the most basic example
 
-In the library there is a class called *HTMLDocument* that is decorated with the *PDFParsableComponent* attribute with a name of 'html'.
-This is how the parser knows that when it sees an XHMTL element called *html* it should create an instance of the *Scryber.Html.Components.HTMLDocument* class.
-
-This class has a couple of properties on it for *Head* and *Body* that are decorated with the *PDFElement* attribute with names *head* and *body* respectively. 
-So the parser knows when it reads elements with this name, the values should be set as instances of the classes *HTMLHead* and *HTMLBody*.
-
-And so it goes on into the rest of the xml reading elements and attributes and trying to set the values to components or property values.
-
-.. code::html
+.. code:: html
 
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
@@ -31,7 +22,7 @@ And so it goes on into the rest of the xml reading elements and attributes and t
         </body>
     </html>
 
-And this would be parsed into the following DOM
+Would be parsed into the following Document Object Model
 
 .. figure:: ../images/doc_object_model.png
     :target: ../_images/doc_object_model.png
@@ -39,6 +30,55 @@ And this would be parsed into the following DOM
     :class: with-shadow
 
 `Full size version <../_images/doc_object_model.png>`_
+
+
+The namespace for an element must be known to the parser. For most XHTML templates this will be the standard XML Namespace (xmlns)  http://www.w3.org/1999/xhtml
+This namespace is mapped directly onto the library assembly and namespace ``Scryber.Html.Components, Scryber.Components``
+
+In the library there is a class called ``HTMLDocument`` that is decorated with the ``PDFParsableComponent`` attribute with a name of 'html'.
+This is how the parser knows that when it sees an XML element called *html* it should create an instance of the ``Scryber.Html.Components.HTMLDocument`` class.
+
+This class has a couple of properties on it for *Head* and *Body* that are decorated with the ``PDFElement`` attribute with names *head* and *body* respectively. 
+So the parser knows when it reads elements with this name, the values should be set as instances of the classes ``HTMLHead`` and ``HTMLBody``.
+
+It also has an attribute for the *lang* value that will be set.
+
+.. code:: csharp
+
+    namespace Scryber.Html.Components
+    {
+        [PDFParsableComponent("html")]
+        public class HTMLDocument : Document
+        {
+            [PDFElement("head")]
+            public HTMLHead Head
+            {
+                get;
+                set;
+            }
+
+            [PDFElement("body")]
+            public HTMLBody Body
+            {
+                get ;
+                set ;
+            }
+
+            [PDFAttribute("lang")]
+            public string Language
+            {
+                get;
+                set;
+            }
+
+            .
+            .
+            .
+        }
+    }
+
+And so it goes on into the rest of the xml, reading elements and attributes, and trying to set the values to components or property values.
+
 
 Parsing Documents
 -----------------
@@ -133,13 +173,43 @@ Or from a string itself
     }
 
 
+Embedding content from other files
+-----------------------------------
+
+Including content from other sources (files) is easy within the template by using the ``<embed>`` element with the ``src`` attribute set to the name of the source file.
+This can either be a relative or an absolute path to the content to be included.
+
+.. code:: html
+
+    <div style='border: 1px solid black'>
+        <embed src='./fragments/tsandcs.html' />
+    </div>
+
+The content will be loaded by the parser syncronously rather than at load time, which is the case for css stylesheets and images.
+This is to ensure there is a full file content to be parsed.
+
+The embedded content should be a fragment of valid xhtml / xml rather than a full html file.
+
+.. code:: html
+
+    <!-- Standard terms and conditions, with namespace -->
+    <div id='MyTsAndCs' xmlns='http://www.w3.org/1999/xhtml'>
+        <p>1. We will look after you</p>
+        <p>2. If you look after us</p>
+    </div>
+
+When loading with relative references, the original path to the source file will be used to resolve the location of the embedded source.
+As with the examples above - if the content is being parsed dynamically, either the base path to the location sould be specified in the ``ParseDocument``
+method, or a ``PDFReferenceResolver`` should be provided.
+
+
 Parsing and Reference Resolvers
 --------------------------------
 
-Sometimes the content that is to be returned is not a complete document, but a fragment and it's source may not be known at build time.
+Sometimes the content that is to be returned is not a complete document, but a fragment and its source may not be known at build time.
 
-The *Document.Parse* method, and its 12 overloads allows for parsing of any xml content as long as the root component returned implements the IPDFComponent interface.
-If there are references to other content, that needs to be resolved at runtime it is also possible to pass a PDFReferenceResolver delegate to the parser so that your
+The ``Document.Parse`` method, and its 12 overloads allows for parsing of any xml content as long as the root component returned implements the ``IPDFComponent`` interface.
+If there are references to other content, that needs to be resolved at runtime it is also possible to pass a ``PDFReferenceResolver`` delegate to the parser so that your
 code can load it's own content and return it.
 
 .. code:: csharp
@@ -193,11 +263,10 @@ For example if we wanted to embed some standard content we could provide our own
 .. note:: Remember, the content to be parsed MUST be valid XML. So the content returned from the LoadTermsStream() method should be valid xml in its own right, including all XML namespaces.
 
 
-
 Extending namespaces
 --------------------
 
 The scryber parsing engine is declarative and does not rely on knowing what it is meant to be parsing.
-As such it is easy to extend the namespaces it looks at to build object graphs (infact the html and svg classes are built directly on top of the base component classes).
+As such it is easy to extend the namespaces it looks at to build object graphs (in fact the html and svg classes are built directly on top of the base component classes).
 
-See :doc:`namespaces_and_assemblies` for more information on how to extend the namespaces and used by the parser.
+See :doc:`../namespaces_and_assemblies` for more information on how to extend the namespaces and used by the parser.

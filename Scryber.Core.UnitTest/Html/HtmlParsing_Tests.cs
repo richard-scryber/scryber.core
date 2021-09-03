@@ -1635,6 +1635,54 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        public void SimpleExpressionBinding()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>{{concat('Hello ', model.user.firstname)}}</title>
+                    </head>
+                    <body>
+                        <div style='color: {{theme.color}}; padding: {{theme.space}}; text-align: {{theme.align}}'>
+                            {{concat('Hello ',model.user.firstname)}}.
+                        </div>
+                    </body>
+                </html>";
+            
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["model"] = new
+                {
+                    user = new
+                    {
+                        firstname = "Richard",
+                        salutation = "Mr"
+                    }
+                };
+                doc.Params["theme"] = new
+                {
+                    color = "#FF0000",
+                    space = "10pt",
+                    align = "center"
+                };
+
+                using (var stream = DocStreams.GetOutputStream("SimpleModelExpressionBinding.pdf"))
+                {
+                    //Before databinding 
+                    Assert.IsTrue(string.IsNullOrEmpty(doc.Info.Title));
+
+                    doc.SaveAsPDF(stream);
+
+                    //After databinding
+                    Assert.AreEqual("Hello Richard", doc.Info.Title);
+                }
+
+            }
+        }
+
+
+        [TestMethod()]
         public void InvalidBackgroundImage()
         {
             var path = System.Environment.CurrentDirectory;
