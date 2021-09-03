@@ -807,7 +807,21 @@ namespace Scryber.Core.UnitTests.Html
 
                 }
 
-                
+                Assert.AreEqual(3, doc.SharedResources.Count, "Not all images were loaded");
+
+                var zero = doc.SharedResources[0] as PDFFontResource;
+                Assert.IsNotNull(zero);
+
+                var one = doc.SharedResources[1] as PDFImageXObject; //Should be the local image;
+                Assert.IsNotNull(one, "Not an image for the second resouce");
+                Assert.IsTrue(one.Registered);
+                Assert.IsTrue(one.Source.EndsWith("/HTML/images/ScyberLogo2_alpha_small.png"), "Source was not correct for the image");
+
+                var two = doc.SharedResources[2] as PDFImageXObject;
+                Assert.IsNotNull(two, "Not an image for the third resource");
+                Assert.IsTrue(two.Source.EndsWith("docs/images/ScyberLogo2_alpha_small.png"), "Source was not correct for the second image");
+
+
             }
 
         }
@@ -835,6 +849,22 @@ namespace Scryber.Core.UnitTests.Html
                     }).GetAwaiter().GetResult();
 
                 }
+
+                Assert.AreEqual(3, doc.SharedResources.Count, "Not all images were loaded");
+
+                var zero = doc.SharedResources[0] as PDFFontResource;
+                Assert.IsNotNull(zero);
+
+                var one = doc.SharedResources[1] as PDFImageXObject; //Should be the local image;
+                Assert.IsNotNull(one, "Not an image for the second resouce");
+                Assert.IsTrue(one.Registered);
+                Assert.IsTrue(one.Source.EndsWith("/HTML/images/ScyberLogo2_alpha_small.png"), "Source was not correct for the image");
+
+                var two = doc.SharedResources[2] as PDFImageXObject;
+                Assert.IsNotNull(two,"Not an image for the third resource");
+                Assert.IsTrue(two.Source.EndsWith("docs/images/ScyberLogo2_alpha_small.png"), "Source was not correct for the second image");
+
+
 
 
             }

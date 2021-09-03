@@ -547,6 +547,8 @@ namespace Scryber.Drawing
 
         public static PDFImageData LoadImageFromURI(string uri, IPDFComponent owner = null)
         {
+            //throw new NotSupportedException("Don't use the loading from a remote uri. Use the Document.RegisterRemoteFileRequest");
+
             using (System.Net.Http.HttpClient wc = new System.Net.Http.HttpClient())
             {
                 //wc. = System.Net.CredentialCache.DefaultNetworkCredentials;

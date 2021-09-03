@@ -344,50 +344,7 @@ namespace Scryber.Html.Components
                 }
             }, this);
 
-            return;
-
-            if (!isFile && Uri.IsWellFormedUriString(path, UriKind.Absolute))
-            {
-
-                using (var measure = context.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, path))
-                {
-                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
-
-                    content = DoLoadRemoteReference(path, context);
-
-                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
-
-                    else if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded remote href file " + path + " for link " + this.UniqueID);
-                }
-            }
-            else if (isFile && System.IO.File.Exists(path))
-            {
-                using (var measure = context.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, path))
-                {
-                    if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of local href file " + path + " for link " + this.UniqueID);
-
-
-                    content = System.IO.File.ReadAllText(path);
-
-                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of local file " + path + " for link " + this.UniqueID);
-
-                    else if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                        context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded local file " + path + " for link " + this.UniqueID);
-                }
-            }
-            else if (context.Conformance == ParserConformanceMode.Strict)
-                throw new System.IO.FileLoadException("The link with href " + this.Href + " could not be loaded from path '" + path + "'");
-            else
-            {
-                context.TraceLog.Add(TraceLevel.Error, "HTML", "The link with href " + this.Href + " could not be loaded from path '" + path + "'");
-            }
-
-            ParseLoadedContent(type, content, path, context);
+            
         }
 
         private void ParseLoadedContent(HTMLLinkType type, string content, string path, PDFContextBase context)

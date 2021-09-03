@@ -87,6 +87,8 @@ namespace Scryber.Components
                 this._compress = this.Document != null && this.Document.RenderOptions != null ? this.Document.RenderOptions.ImageCompression == ImageCompressionType.WebOptimize : false;
             base.DoInit(context);
         }
+
+
         /// <summary>
         /// Implementation method for the IPDFImageComponent to return the image data in a PDFImageXObject instance.
         /// </summary>
