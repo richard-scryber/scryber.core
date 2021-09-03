@@ -10,22 +10,22 @@ NuGet Packages
 
 There are 3 NuGet packages for scryber.
 
-The Scryber.Core.OpenType package contains a single library for parting ttf (open type) font files.
+The `Scryber.Core.OpenType <https://www.nuget.org/packages/Scryber.Core.OpenType/>`_ package contains a single library for parsing ttf (open type) font files.
 
-The Scryber.Core package contains the main libraries for PDF generation.
+The `Scryber.Core <https://www.nuget.org/packages/Scryber.Core/>`_ package contains the main libraries for PDF generation.
 
-The Scryber.Core.Mvc package contains the MVC extensions that allow for easy generation of you PDF from a web request.
+The `Scryber.Core.Mvc <https://www.nuget.org/packages/Scryber.Core.Mvc/>`_ package contains the MVC extensions that allow for easy generation of you PDF from a web request.
 
 Source code
 ------------
 
-The Scryber.Core Git repository contains the open source code, you are at liberty to use in your own projects for if wanted.
+The `Scryber.Core Git repository <https://github.com/richard-scryber/scryber.core>`_ contains the open source code, you are at liberty to use in your own projects for if wanted.
 
 
 Scryber.Core libraries
 ------------------------
 
-Within the core are 6 main libraries with the top level library Scryber.Components referencing others, and the Scryber.Common referencing none.
+Within the core package are 6 main libraries with the top level library Scryber.Components referencing others, and the Scryber.Common containing most of the interfaces and base structures.
 
 .. figure:: ../images/dll_references.png
     :target: ../_images/dll_references.png
@@ -54,5 +54,6 @@ Each of the stages raises events that can be captured to perform any custom proc
     :class: with-shadow
 
 `Full size version <../_images/doc_lifecycle.png>`_
+
 
 

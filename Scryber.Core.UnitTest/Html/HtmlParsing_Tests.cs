@@ -19,6 +19,7 @@ using Scryber.Svg.Components;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using Scryber.Resources;
+using NuGet.Frameworks;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -1517,8 +1518,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
                 doc.RenderOptions.AllowMissingImages = false; //Will error if the image is not found
-
-
+                
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
                 Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/", doc.LoadedSource, "Loaded Source is not correct");
                 
@@ -1537,6 +1537,100 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.IsNotNull(embed);
                 Assert.AreNotEqual(0, embed.Contents.Count, "SVG drawing was not loaded from the source");
                 
+            }
+        }
+
+        [TestMethod()]
+        public void XLinqHtmlParsing()
+        {
+            XNamespace ns = "http://www.w3.org/1999/xhtml";
+            var html = new XElement(ns + "html",
+                new XElement(ns + "head",
+                    new XElement(ns + "title",
+                        new XText("Hello World"))
+                    ),
+                new XElement(ns + "body",
+                    new XElement(ns + "div",
+                        new XAttribute("style", "padding:10px"),
+                        new XText("Hello World."))
+                    )
+                );
+            var doc = Document.ParseDocument(html.CreateReader(), string.Empty, ParseSourceType.DynamicContent);
+
+            Assert.IsNotNull(doc);
+            Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+            Assert.AreEqual("Hello World", doc.Info.Title);
+        }
+
+        [TestMethod()]
+        public void StringHtmlParsing()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Hello World</title>
+                              </head>
+                            <body>
+                                <div style='padding: 10px' >Hello World.</div>
+                            </body>
+                        </html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, string.Empty, ParseSourceType.DynamicContent);
+
+                Assert.IsNotNull(doc);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                Assert.AreEqual("Hello World", doc.Info.Title);
+            }
+        }
+
+        private StringReader LoadTermsStream()
+        {
+            return new StringReader("<p xmlns='http://www.w3.org/1999/xhtml'>These are my terms</p>");
+        }
+
+        private IPDFComponent CustomResolve(string filepath, string xpath, PDFGeneratorSettings settings)
+        {
+            if (filepath == "MyTsAndCs")
+            {
+                using (var tsAndCs = LoadTermsStream())
+                {
+                    //We have our stream so just do the parsing again with the same settings
+                    var comp = Document.Parse(filepath, tsAndCs, ParseSourceType.DynamicContent, CustomResolve, settings);
+                    return comp;
+                }
+            }
+            else
+            {
+                filepath = System.IO.Path.Combine("C:/", filepath);
+                return Document.Parse(filepath, CustomResolve, settings);
+            }
+        }
+
+        [TestMethod()]
+        public void StringParsingWithResolver()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Hello World</title>
+                              </head>
+                            <body>
+                                <div style='padding: 10px' >Hello World.</div>
+                                <embed id='TsAndCs' src='MyTsAndCs' />
+                            </body>
+                        </html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var comp = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, CustomResolve);
+
+                Assert.IsNotNull(comp);
+                Assert.IsInstanceOfType(comp, typeof(HTMLDocument));
+                var doc = comp as HTMLDocument;
+                Assert.AreEqual("Hello World", doc.Info.Title);
+
             }
         }
 

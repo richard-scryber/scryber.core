@@ -21,7 +21,9 @@ Scryber also does not fully support all css or html tags. Flexbox, :before pseud
 content properties, etc. Some are in the pipeline, some are in ideas and others will not make it.
 
 
-**However, we think with scryber, you will have better control of layout, pagination, maintenance and separation of the data you are presenting vs the design you want it to fit.**
+However, we think, with scryber, you will have better control of layout, pagination, styles and content. The maintenance and separation of the data you are presenting with the design you want it to fit.
+
+**In the end we think it is faster and better**
 
 
 Using templates
