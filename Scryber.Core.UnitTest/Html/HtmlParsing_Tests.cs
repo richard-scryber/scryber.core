@@ -1670,7 +1670,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("SimpleModelExpressionBinding.pdf"))
                 {
                     //Before databinding 
-                    Assert.IsTrue(string.IsNullOrEmpty(doc.Info.Title));
+                    Assert.IsNull(doc.Info.Title);
 
                     doc.SaveAsPDF(stream);
 
@@ -1679,6 +1679,67 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+        }
+
+        protected Document GetHelloWorld()
+        {
+            var doc = new Document();
+            doc.Info.Title = "Hello World";
+
+            var page = new Page();
+            doc.Pages.Add(page);
+
+            var div = new Div() { Padding = new PDFThickness(10) };
+            page.Contents.Add(div);
+
+            div.Contents.Add(new TextLiteral("Hello World"));
+
+            return doc;
+        }
+
+        private dynamic GetOrders()
+        {
+            var model = new
+            {
+                user = new
+                {
+                    lastname = "Smith",
+                    firstname = "Richard",
+                    salutation = "Mr"
+                },
+                order = new
+                {
+                    items = new[] {
+                        new { itemNo = "O 12", name = "Widget", qty = 2, price = 12.5 },
+                        new { itemNo = "O 17", name = "Sprogget", qty = 4, price = 1.5 },
+                        new { itemNo = "I 13", name = "M10 bolts with a counter clockwise thread on the inner content and a star nut top, tamper proof and locking ring included.", qty = 8, price = 1.0 },
+
+                    },
+                    currencyFormat = "£##0.00",
+                    taxRate = 0.2,
+                    total = 39.0
+                }
+            };
+
+            return model;
+        }
+
+        [TestMethod]
+        public void HTMLOrderItems()
+        {
+            var doc = Document.ParseDocument("../../../Content/HTML/OrderItems.html");
+
+            doc.Params["theme"] = new
+            {
+                color = "#FAFAFA",
+                space = "10pt",
+                align = "center"
+            };
+
+            doc.Params["model"] = GetOrders();
+
+            using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
+                doc.SaveAsPDF(stream);
         }
 
 

@@ -1,6 +1,6 @@
-=====================================
-Parsing document from content to DOM
-=====================================
+================================
+Parsing documents from content
+================================
 
 When you parse the contents of an file, or a stream or a reader, Scryber builds a full object model of the content.
 As the parser is based around XML it is important that all content is valid - it does not like unclosed tags or elements.
@@ -83,11 +83,11 @@ And so it goes on into the rest of the xml, reading elements and attributes, and
 Parsing Documents
 -----------------
 
-The easiest way to parse any xml content is to use the various static methods on the *Scryber.Components.Document* class.
+The easiest way to parse any xml content is to use the various static methods on the ``Scryber.Components.Document`` class.
 
-There are 2 variants called ParseDocument and Parse. 
+There are 2 variants called ``ParseDocument`` and ``Parse``. 
 
-ParseDocument has 6 overloads and the content parsed must have a root object that is (or inherits from) *Scryber.Components.Document*
+``ParseDocument`` has 6 overloads and the content parsed must have a root object that is (or inherits from) ``Scryber.Components.Document``
 The simplest is to load directly from a file
 
 .. code:: csharp
@@ -113,6 +113,8 @@ An enumeration value for ParseSourceType must be provided, and an optional path 
 If the stream will contain relative path references to other content such as stylesheets or embedded content then a path should be provided.
 If no path is provided then content will be looked for relative to the current executing assembly. 
 
+.. code:: csharp
+
     //from a stream where references are known to be stored
     var path = "C:/MyFiles/BasePath";
     using(var content = GetMyDocumentContent())
@@ -122,9 +124,9 @@ If no path is provided then content will be looked for relative to the current e
 
 The options for the content can be any of the following.
 
-* A *System.IO.Stream* or one of its sublcasses.
-* A *System.IO.TextReader* or one of its subclasses.
-* A *System.XML.XmlReader* or one of its subclasses.
+* A ``System.IO.Stream`` or one of its sublcasses.
+* A ``System.IO.TextReader`` or one of its subclasses.
+* A ``System.XML.XmlReader`` or one of its subclasses.
 
 Ultimately the content should be valid XML that can be read.
 
@@ -161,7 +163,7 @@ Or from a string itself
     var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                     <head>
                         <title>" + title + @"</title>
-                        </head>
+                    </head>
                     <body>
                         <div style='padding: 10px' >" + title + @".</div>
                     </body>
@@ -171,6 +173,37 @@ Or from a string itself
     {
         var doc = Document.ParseDocument(reader, string.Empty, ParseSourceType.DynamicContent);
     }
+
+Building documents in code
+--------------------------
+
+The template parsing engine is both flexible and extensible, but it does not have to be used.
+Scryber components are **real** object classes, they have properties and methods along with inner collections.
+
+We can just as easily create the document using a method.
+
+.. code:: csharp
+
+    //using Scryber.Components
+    //using Scryber.Drawing
+
+    protected Document GetHelloWorld()
+    {
+        var doc = new Document();
+        doc.Info.Title = "Hello World";
+
+        var page = new Page();
+        doc.Pages.Add(page);
+
+        var div = new Div() { Padding  = new PDFThickness(10) };
+        page.Contents.Add(div);
+
+        div.Contents.Add(new TextLiteral("Hello World"));
+
+        return doc;
+    }
+
+This works well, and may have benefits for your implementations, but ultimately could become very complex and difficult to maintain.
 
 
 Embedding content from other files
@@ -206,9 +239,8 @@ method, or a ``PDFReferenceResolver`` should be provided.
 Parsing and Reference Resolvers
 --------------------------------
 
-Sometimes the content that is to be returned is not a complete document, but a fragment and its source may not be known at build time.
-
 The ``Document.Parse`` method, and its 12 overloads allows for parsing of any xml content as long as the root component returned implements the ``IPDFComponent`` interface.
+
 If there are references to other content, that needs to be resolved at runtime it is also possible to pass a ``PDFReferenceResolver`` delegate to the parser so that your
 code can load it's own content and return it.
 
@@ -262,6 +294,31 @@ For example if we wanted to embed some standard content we could provide our own
     
 .. note:: Remember, the content to be parsed MUST be valid XML. So the content returned from the LoadTermsStream() method should be valid xml in its own right, including all XML namespaces.
 
+
+It is also possible to return just coded objects in the return of the reference resolver, and the ``PDFReferenceResolver`` delegate can be any instance.
+
+
+.. code:: csharp
+
+    //using Scryber.Components
+    //using Scryber.Drawing
+
+    private IPDFComponent CustomResolve(string filepath, string xpath, PDFGeneratorSettings settings)
+    {
+        if(filepath == "MyTsAndCs")
+        {
+            var  p = new Paragraph(){ BackgroundColor = PDFColors.Aqua };
+            p.Contents.Add(new PDFTextLiteral("These are my terms"));
+            retrieve p;
+        }
+        else
+        {
+            filepath = System.IO.Path.Combine(MyBasePath, filepath);
+            return Document.Parse(filepath, CustomResolve, settings);
+        }
+    }
+
+see :doc:
 
 Extending namespaces
 --------------------

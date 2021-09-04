@@ -48,7 +48,7 @@ namespace Scryber.Html.Components
         }
 
 
-        [PDFAttribute("number-format")]
+        [PDFAttribute("data-format")]
         public override string NumberFormat
         {
             get
