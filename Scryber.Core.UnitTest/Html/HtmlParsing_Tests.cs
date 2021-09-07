@@ -20,6 +20,10 @@ using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using Scryber.Resources;
 using NuGet.Frameworks;
+using Scryber.Expressive.Functions;
+using Scryber.Expressive.Expressions;
+using Scryber.Expressive.Exceptions;
+using Scryber.Expressive;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -1697,37 +1701,84 @@ namespace Scryber.Core.UnitTests.Html
             return doc;
         }
 
-        private dynamic GetOrders()
+
+        //
+        //Order Items binding
+        //
+
+
+        public class User
         {
-            var model = new
+            public string Salutation { get; set; }
+
+            public string FirstName { get; set; }
+
+            public string LastName { get; set; }
+        }
+
+        public class Order
+        {
+
+            public int ID { get; set; }
+
+            public string CurrencyFormat { get; set; }
+
+            public double TaxRate { get; set; }
+
+            public double Total { get; set; }
+
+            public List<OrderItem> Items { get; set; }
+
+            public int PaymentTerms { get; set; }
+        }
+
+
+        public class OrderItem
+        {
+
+            public string ItemNo { get; set; }
+
+            public string ItemName { get; set; }
+
+            public double Quantity { get; set; }
+
+            public double ItemPrice { get; set; }
+
+        }
+
+
+        public class OrderMockService
+        {
+
+            public Order GetOrder(int id)
             {
-                user = new
-                {
-                    lastname = "Smith",
-                    firstname = "Richard",
-                    salutation = "Mr"
-                },
-                order = new
-                {
-                    items = new[] {
-                        new { itemNo = "O 12", name = "Widget", qty = 2, price = 12.5 },
-                        new { itemNo = "O 17", name = "Sprogget", qty = 4, price = 1.5 },
-                        new { itemNo = "I 13", name = "M10 bolts with a counter clockwise thread on the inner content and a star nut top, tamper proof and locking ring included.", qty = 8, price = 1.0 },
+                var order = new Order() { ID = id, CurrencyFormat = "£##0.00", TaxRate = 0.2 };
+                order.Items = new List<OrderItem>(){
+                    new OrderItem() { ItemNo = "O 12", ItemName = "Widget", Quantity = 2, ItemPrice = 12.5 },
+                    new OrderItem() { ItemNo = "O 17", ItemName = "Sprogget", Quantity = 4, ItemPrice = 1.5 },
+                    new OrderItem() { ItemNo = "I 13", ItemName = "M10 bolts with a counter clockwise thread on the inner content and a star nut top, tamper proof and locking ring included.", Quantity = 8, ItemPrice = 1.0 }
+                };
+                order.Total = (2.0 * 12.5) + (4.0 * 1.5) + (8 * 1.0);
 
-                    },
-                    currencyFormat = "£##0.00",
-                    taxRate = 0.2,
-                    total = 39.0
-                }
-            };
+                return order;
+            }
 
-            return model;
         }
 
         [TestMethod]
         public void HTMLOrderItems()
         {
             var doc = Document.ParseDocument("../../../Content/HTML/OrderItems.html");
+            var service = new OrderMockService();
+            var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+            var order = service.GetOrder(1);
+            order.PaymentTerms = -1;
+
+            doc.Params["model"] = new
+            {
+                user = user,
+                order = order
+            };
 
             doc.Params["theme"] = new
             {
@@ -1736,11 +1787,69 @@ namespace Scryber.Core.UnitTests.Html
                 align = "center"
             };
 
-            doc.Params["model"] = GetOrders();
-
+            
             using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
                 doc.SaveAsPDF(stream);
         }
+
+        private class ToUpperFunction : IFunction
+        {
+            public string Name { get { return "ToUpper"; } }
+
+            public object Evaluate(IExpression[] param, IDictionary<string, object> vars, Expressive.Context context)
+            {
+                if (null == param && param.Length < 1)
+                    throw new ExpressiveException("Invalid arguments for the ToUpper expression");
+
+                object one = param[0].Evaluate(vars);
+
+                if (null == one)
+                    return null;
+                else
+                    return one.ToString().ToUpper();
+
+            }
+        }
+
+        static HtmlParsing_Test()
+        {
+            Scryber.Expressive.Functions.FunctionSet.RegisterFunction(new ToUpperFunction());
+        }
+
+
+        [TestMethod]
+        public void HTMLCustomFunction()
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                              <title>Page Numbering</title>
+                            </head>
+                            <body class='grey' style='margin:20px;' >
+                                <p id='paraConstant' >{{ToUpper('test')}}.</p>
+                                <p id='paraVariable' >{{ToUpper(model.title)}}.</p>
+                                <p id='paraExpression' >{{toupper(concat('hello ', model.title))}}.</p>
+                               </body>
+                        </html>";
+
+            var data = new
+            {
+                title = "My title"
+            };
+            using (var sr = new System.IO.StringReader(src))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    doc.Params["model"] = data;
+                    using (var stream = DocStreams.GetOutputStream("UpperCaseExpression.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+        }
+
 
 
         [TestMethod()]

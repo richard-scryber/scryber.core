@@ -233,7 +233,7 @@ The embedded content should be a fragment of valid xhtml / xml rather than a ful
 
 When loading with relative references, the original path to the source file will be used to resolve the location of the embedded source.
 As with the examples above - if the content is being parsed dynamically, either the base path to the location sould be specified in the ``ParseDocument``
-method, or a ``PDFReferenceResolver`` should be provided.
+method, or a ``PDFReferenceResolver`` should be provided, as below.
 
 
 Parsing and Reference Resolvers
@@ -309,7 +309,7 @@ It is also possible to return just coded objects in the return of the reference 
         {
             var  p = new Paragraph(){ BackgroundColor = PDFColors.Aqua };
             p.Contents.Add(new PDFTextLiteral("These are my terms"));
-            retrieve p;
+            return p;
         }
         else
         {
@@ -318,10 +318,10 @@ It is also possible to return just coded objects in the return of the reference 
         }
     }
 
-see :doc:
+see :doc:`document_code_vs_xml` for more information.
 
 Extending namespaces
---------------------
+---------------------
 
 The scryber parsing engine is declarative and does not rely on knowing what it is meant to be parsing.
 As such it is easy to extend the namespaces it looks at to build object graphs (in fact the html and svg classes are built directly on top of the base component classes).

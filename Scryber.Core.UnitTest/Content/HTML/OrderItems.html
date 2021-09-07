@@ -1,63 +1,54 @@
 ﻿<!DOCTYPE HTML>
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>{{concat('Orders for ', model.user.firstname)}}</title>
+    <title>{{concat('Hello ', model.user.FirstName)}}</title>
 </head>
 <body>
-    <div style='background-color: {{theme.color}};' >
-        <div style='padding:{{theme.space}}'>
-            <h2>{{count(model.order.items)}} orders for {{join(' ', model.user.salutation, model.user.firstname, model.user.lastname)}}</h2>
-        </div>
-        <div style='padding: {{theme.space}}; font-size: 12pt'>
-            <table style='width:100%'>
-                <thead>
-                    <tr style='background-color: #666; color: #FFF'>
-                        <td style='width:30px'>#</td>
-                        <td style='width:60px'>Item</td>
-                        <td>Description</td>
-                        <td style='width:100px'>Unit Price</td>
-                        <td style='width:60px'>Qty.</td>
-                        <td style='width:90px'>Total</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template data-bind='{{model.order.items}}'>
-                        <tr style='background-color: {{if(index() % 2 == 1, "#DDD","#EEE")}}'>
-                            <td>{{index() + 1}}</td>
-                            <td>{{.itemNo}}</td>
-                            <td>{{.name}}</td>
-                            <td><num value='{{.price}}' data-format='{{model.order.currencyFormat}}' /></td>
-                            <td>{{.qty}}</td>
-                            <td>
-                                <num value='{{.price * .qty}}' data-format='{{model.order.currencyFormat}}' />
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-                <tfoot>
+    <div style='color: {{theme.color}}; padding: {{theme.space}}; text-align: {{theme.align}}'>
+        Hello {{model.user.FirstName}}.
+    </div>
+    <div style='padding: {{theme.space}}; font-size: 12pt'>
+        <table style='width:100%'>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Item</td>
+                    <td>Description</td>
+                    <td>Unit Price</td>
+                    <td>Qty.</td>
+                    <td>Total</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Binding on each of the items in the model.order -->
+                <template data-bind='{{model.order.Items}}'>
                     <tr>
-                        <td colspan='3' style="border:none;"></td>
-                        <td colspan='2'>Total (ex.Tax)</td>
+                        <!-- The indexing of the loop + 1 -->
+                        <td>{{index() + 1}}</td>
+                        <td>{{.ItemNo}}</td>
+                        <td>{{.ItemName}}</td>
                         <td>
-                            <num value='{{model.order.total}}' data-format='{{model.order.currencyFormat}}' />
+                            <!-- we use a number tag to specify the data-format referring to the top model -->
+                            <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
                         </td>
-                    </tr>
-                    <tr>
-                        <td colspan='3' style="border:none;"></td>
-                        <td colspan='2'>Tax</td>
+                        <td>{{.Quantity}}</td>
                         <td>
-                            <num value='{{model.order.total * model.order.taxRate}}' data-format='{{model.order.currencyFormat}}' />
+                            <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan='3' style="border:none;"></td>
-                        <td colspan='2' style='background-color: #666; color: #FFF'>Grand Total</td>
-                        <td style='background-color: #666; color: #FFF'>
-                            <num value='{{(model.order.total * model.order.taxRate) + model.order.total}}' data-format='{{model.order.currencyFormat}}' />
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
+                </template>
+            </tbody>
+        </table>
+        <div id='terms'>
+            <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+            </div>
+            <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                <p>Please pay for your items now, and  we can process your order once received.</p>
+            </div>
+            <div id='payNow' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                <p>Your items will be shipped immediately, please ensure you pay our invoice within <b>{{model.order.PaymentTerms}} days</b></p>
+            </div>
         </div>
     </div>
 </body>

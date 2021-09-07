@@ -9,6 +9,7 @@ using Scryber.Expressive.Functions.Relational;
 using Scryber.Expressive.Functions.Statistical;
 using Scryber.Expressive.Functions.String;
 using Scryber.Expressive.Functions.CSS;
+using System.Runtime.CompilerServices;
 
 namespace Scryber.Expressive.Functions
 {
@@ -59,88 +60,124 @@ namespace Scryber.Expressive.Functions
                 return CreateDefaultSet(StringComparer.Ordinal);
         }
 
+        private static readonly List<IFunction> _all;
+        private static object _lock;
+
+        static FunctionSet()
+        {
+            _lock = new object();
+            _all = new List<IFunction>();
+
+            _all.Add(new DateFunction());
+            _all.Add(new DecimalFunction());
+            _all.Add(new DoubleFunction());
+            _all.Add(new IntegerFunction());
+            _all.Add(new LongFunction());
+            _all.Add(new StringFunction());
+            // Date
+            _all.Add(new AddDaysFunction());
+            _all.Add(new AddHoursFunction());
+            _all.Add(new AddMillisecondsFunction());
+            _all.Add(new AddMinutesFunction());
+            _all.Add(new AddMonthsFunction());
+            _all.Add(new AddSecondsFunction());
+            _all.Add(new AddYearsFunction());
+            _all.Add(new DayOfFunction());
+            _all.Add(new DaysBetweenFunction());
+            _all.Add(new HourOfFunction());
+            _all.Add(new HoursBetweenFunction());
+            _all.Add(new MillisecondOfFunction());
+            _all.Add(new MillisecondsBetweenFunction());
+            _all.Add(new MinuteOfFunction());
+            _all.Add(new MinutesBetweenFunction());
+            _all.Add(new MonthOfFunction());
+            _all.Add(new SecondOfFunction());
+            _all.Add(new SecondsBetweenFunction());
+            _all.Add(new YearOfFunction());
+            // Mathematical
+            _all.Add(new AbsFunction());
+            _all.Add(new AcosFunction());
+            _all.Add(new AsinFunction());
+            _all.Add(new AtanFunction());
+            _all.Add(new CeilingFunction());
+            _all.Add(new CosFunction());
+            _all.Add(new CountFunction());
+            _all.Add(new ExpFunction());
+            _all.Add(new FloorFunction());
+            _all.Add(new IEEERemainderFunction());
+            _all.Add(new Log10Function());
+            _all.Add(new LogFunction());
+            _all.Add(new PowFunction());
+            _all.Add(new RandomFunction());
+            _all.Add(new RoundFunction());
+            _all.Add(new SignFunction());
+            _all.Add(new SinFunction());
+            _all.Add(new SqrtFunction());
+            _all.Add(new SumFunction());
+            _all.Add(new TanFunction());
+            _all.Add(new TruncateFunction());
+            // Mathematical Constants
+            _all.Add(new EFunction());
+            _all.Add(new PIFunction());
+            // Logical
+            _all.Add(new IfFunction());
+            _all.Add(new InFunction());
+            _all.Add(new IndexFunction());
+            // Relational
+            _all.Add(new MaxFunction());
+            _all.Add(new MinFunction());
+            // Statistical
+            _all.Add(new AverageFunction());
+            _all.Add(new MeanFunction());
+            _all.Add(new MedianFunction());
+            _all.Add(new ModeFunction());
+            // String
+            _all.Add(new ContainsFunction());
+            _all.Add(new EndsWithFunction());
+            _all.Add(new LengthFunction());
+            _all.Add(new PadLeftFunction());
+            _all.Add(new PadRightFunction());
+            _all.Add(new RegexFunction());
+            _all.Add(new StartsWithFunction());
+            _all.Add(new SubstringFunction());
+            _all.Add(new ConcatFunction());
+            _all.Add(new IndexOfFunction());
+            _all.Add(new JoinFunction());
+            //css
+            _all.Add(new VarFunction());
+            _all.Add(new CalcFunction());
+        }
+
         public static FunctionSet CreateDefaultSet(StringComparer comparer)
         {
             var set = new FunctionSet(comparer);
-            set.RegisterFunction(new DateFunction());
-            set.RegisterFunction(new DecimalFunction());
-            set.RegisterFunction(new DoubleFunction());
-            set.RegisterFunction(new IntegerFunction());
-            set.RegisterFunction(new LongFunction());
-            set.RegisterFunction(new StringFunction());
-            // Date
-            set.RegisterFunction(new AddDaysFunction());
-            set.RegisterFunction(new AddHoursFunction());
-            set.RegisterFunction(new AddMillisecondsFunction());
-            set.RegisterFunction(new AddMinutesFunction());
-            set.RegisterFunction(new AddMonthsFunction());
-            set.RegisterFunction(new AddSecondsFunction());
-            set.RegisterFunction(new AddYearsFunction());
-            set.RegisterFunction(new DayOfFunction());
-            set.RegisterFunction(new DaysBetweenFunction());
-            set.RegisterFunction(new HourOfFunction());
-            set.RegisterFunction(new HoursBetweenFunction());
-            set.RegisterFunction(new MillisecondOfFunction());
-            set.RegisterFunction(new MillisecondsBetweenFunction());
-            set.RegisterFunction(new MinuteOfFunction());
-            set.RegisterFunction(new MinutesBetweenFunction());
-            set.RegisterFunction(new MonthOfFunction());
-            set.RegisterFunction(new SecondOfFunction());
-            set.RegisterFunction(new SecondsBetweenFunction());
-            set.RegisterFunction(new YearOfFunction());
-            // Mathematical
-            set.RegisterFunction(new AbsFunction());
-            set.RegisterFunction(new AcosFunction());
-            set.RegisterFunction(new AsinFunction());
-            set.RegisterFunction(new AtanFunction());
-            set.RegisterFunction(new CeilingFunction());
-            set.RegisterFunction(new CosFunction());
-            set.RegisterFunction(new CountFunction());
-            set.RegisterFunction(new ExpFunction());
-            set.RegisterFunction(new FloorFunction());
-            set.RegisterFunction(new IEEERemainderFunction());
-            set.RegisterFunction(new Log10Function());
-            set.RegisterFunction(new LogFunction());
-            set.RegisterFunction(new PowFunction());
-            set.RegisterFunction(new RandomFunction());
-            set.RegisterFunction(new RoundFunction());
-            set.RegisterFunction(new SignFunction());
-            set.RegisterFunction(new SinFunction());
-            set.RegisterFunction(new SqrtFunction());
-            set.RegisterFunction(new SumFunction());
-            set.RegisterFunction(new TanFunction());
-            set.RegisterFunction(new TruncateFunction());
-            // Mathematical Constants
-            set.RegisterFunction(new EFunction());
-            set.RegisterFunction(new PIFunction());
-            // Logical
-            set.RegisterFunction(new IfFunction());
-            set.RegisterFunction(new InFunction());
-            set.RegisterFunction(new IndexFunction());
-            // Relational
-            set.RegisterFunction(new MaxFunction());
-            set.RegisterFunction(new MinFunction());
-            // Statistical
-            set.RegisterFunction(new AverageFunction());
-            set.RegisterFunction(new MeanFunction());
-            set.RegisterFunction(new MedianFunction());
-            set.RegisterFunction(new ModeFunction());
-            // String
-            set.RegisterFunction(new ContainsFunction());
-            set.RegisterFunction(new EndsWithFunction());
-            set.RegisterFunction(new LengthFunction());
-            set.RegisterFunction(new PadLeftFunction());
-            set.RegisterFunction(new PadRightFunction());
-            set.RegisterFunction(new RegexFunction());
-            set.RegisterFunction(new StartsWithFunction());
-            set.RegisterFunction(new SubstringFunction());
-            set.RegisterFunction(new ConcatFunction());
-            set.RegisterFunction(new IndexOfFunction());
-            set.RegisterFunction(new JoinFunction());
-            //css
-            set.RegisterFunction(new VarFunction());
-            set.RegisterFunction(new CalcFunction());
+
+            lock (_lock)
+            {
+                foreach (var f in _all)
+                {
+                    set.RegisterFunction(f);
+                }
+            }
             return set;
+        }
+
+        /// <summary>
+        /// Registers a new function with the name, that can be used in calculations
+        /// </summary>
+        /// <param name="function">The name to be used.</param>
+        /// <returns>True</returns>
+        public static bool RegisterFunction(IFunction function)
+        {
+            if (null == function)
+                throw new ArgumentNullException(nameof(function));
+
+            //Just make it thread safe for the insertion
+            lock (_lock)
+            {
+                _all.Insert(0, function);
+            }
+            return true;
         }
     }
 }

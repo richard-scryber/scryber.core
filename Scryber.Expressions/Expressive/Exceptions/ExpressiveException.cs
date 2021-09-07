@@ -10,12 +10,18 @@ namespace Scryber.Expressive.Exceptions
 #endif
     public sealed class ExpressiveException : Exception
     {
-        internal ExpressiveException(string message) : base(message)
+        public ExpressiveException(string message) : base(message)
         {
 
         }
 
-        internal ExpressiveException(Exception innerException) : base(innerException.Message, innerException)
+        public ExpressiveException(string message, Exception inner)
+            : base(message, inner)
+        {
+
+        }
+
+        public ExpressiveException(Exception innerException) : base(innerException.Message, innerException)
         {
 
         }
