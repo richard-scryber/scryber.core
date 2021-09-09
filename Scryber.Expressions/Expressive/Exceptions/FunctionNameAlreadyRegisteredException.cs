@@ -24,7 +24,7 @@ namespace Scryber.Expressive.Exceptions
         /// Initializes a new instance of the <see cref="FunctionNameAlreadyRegisteredException"/> class.
         /// </summary>
         /// <param name="name">The name of the function.</param>
-        internal FunctionNameAlreadyRegisteredException(string name)
+        public FunctionNameAlreadyRegisteredException(string name)
             : base($"A function has already been registered '{name}'")
         {
             this.Name = name;

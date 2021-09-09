@@ -1,14 +1,44 @@
 ﻿<!DOCTYPE HTML>
+<?scryber append-log='true' parser-mode='Strict' ?>
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <title>{{concat('Hello ', model.user.FirstName)}}</title>
+    <link rel="stylesheet" href="./css/orderStyles.css" />
+    <style type="text/css" >
+
+        :root{
+            --theme_color:#232323;
+            --theme_space: 10pt;
+            --theme_align: center;
+            --theme_fsize: 12pt;
+        }
+
+        table.orderlist{
+            width:100%;
+            font-size: var(--theme_fsize, 18pt);
+        }
+
+        #terms{
+            font-size: var(--theme_fsize, 18pt);
+        }
+
+        #payNow {
+            border: 1px solid red;
+            padding: 5pt;
+            margin-top: 10pt;
+            background-color: #FFAAAA;
+            color: #FF0000;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 <body>
-    <div style='color: {{theme.color}}; padding: {{theme.space}}; text-align: {{theme.align}}'>
+    <div style='color: var(--theme_color); padding: var(--theme_space); text-align: var(--theme_align)'>
         Hello {{model.user.FirstName}}.
     </div>
-    <div style='padding: {{theme.space}}; font-size: 12pt'>
-        <table style='width:100%'>
+    <div style='padding: var(--theme_space);'>
+        <table class="orderlist" >
             <thead>
                 <tr>
                     <td>#</td>

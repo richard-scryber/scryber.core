@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Components;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -56,6 +57,12 @@ namespace Scryber.Html.Components
         {
         }
 
+
+        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
+        {
+            var style = base.GetAppliedStyle(forComponent, baseStyle);
+            return style;
+        }
 
         protected override void OnDataBinding(PDFDataContext context)
         {

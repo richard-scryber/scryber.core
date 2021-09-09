@@ -1772,7 +1772,7 @@ namespace Scryber.Core.UnitTests.Html
             var service = new OrderMockService();
             var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
             var order = service.GetOrder(1);
-            order.PaymentTerms = -1;
+            order.PaymentTerms = 0;
 
             doc.Params["model"] = new
             {
@@ -1813,17 +1813,19 @@ namespace Scryber.Core.UnitTests.Html
 
         static HtmlParsing_Test()
         {
-            Scryber.Expressive.Functions.FunctionSet.RegisterFunction(new ToUpperFunction());
+            //We do this early so we can make sure it is in the collection.
+            Scryber.Binding.BindingCalcExpressionFactory.RegisterFunction(new ToUpperFunction());
         }
 
 
         [TestMethod]
         public void HTMLCustomFunction()
         {
+            
 
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
-                              <title>Page Numbering</title>
+                              <title>Page Custom Function</title>
                             </head>
                             <body class='grey' style='margin:20px;' >
                                 <p id='paraConstant' >{{ToUpper('test')}}.</p>
@@ -1846,6 +1848,13 @@ namespace Scryber.Core.UnitTests.Html
                         doc.SaveAsPDF(stream);
                     }
 
+                    var pconst = doc.FindAComponentById("paraConstant") as Paragraph;
+                    var pvar = doc.FindAComponentById("paraVariable") as Paragraph;
+                    var pexpr = doc.FindAComponentById("paraExpression") as Paragraph;
+
+                    Assert.AreEqual("TEST", (pconst.Contents[0] as TextLiteral).Text, "Constant text was not uppercased");
+                    Assert.AreEqual("MY TITLE", (pvar.Contents[0] as TextLiteral).Text, "Variable text was not uppercased");
+                    Assert.AreEqual("HELLO MY TITLE", (pexpr.Contents[0] as TextLiteral).Text, "Expression text was not uppercased");
                 }
             }
         }

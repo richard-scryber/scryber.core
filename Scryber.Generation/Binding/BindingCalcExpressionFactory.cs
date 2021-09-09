@@ -43,9 +43,7 @@ namespace Scryber.Binding
                 if (value != _options)
                 {
                     _options = value;
-                    _stdFunctions = InitFunctions();
-                    _stdOperators = InitOperators();
-                    _cache = InitExpressionCache();
+                    ResetBindingOptions();
                 }
             }
         }
@@ -80,45 +78,70 @@ namespace Scryber.Binding
         public BindingCalcExpressionFactory()
         {
             this._useCache = true;
-            this.Options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
+            this._options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
+            this.ResetBindingOptions();
         }
 
+        /// <summary>
+        /// We don't do anything on Init
+        /// </summary>
         public PDFInitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
             throw new NotSupportedException("Expression Binding is not supported on any other document lifecycle stage than the databinding");
         }
 
+        /// <summary>
+        /// We don't do anything on Load
+        /// </summary>
         public PDFLoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
             throw new NotSupportedException("Expression Binding is not supported on any other document lifecycle stage than the databinding");
         }
 
-
+        /// <summary>
+        /// Creates a new BindingCalcExpression handler to be added the component
+        /// </summary>
+        /// <param name="expressionvalue"></param>
+        /// <param name="classType"></param>
+        /// <param name="forProperty"></param>
+        /// <returns></returns>
         public PDFDataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, PropertyInfo forProperty)
         {
             BindingCalcExpression expr = this.CreateBindingExpression(expressionvalue, forProperty);
             return new PDFDataBindEventHandler(expr.BindComponent);
         }
 
+
+
+        protected virtual void ResetBindingOptions()
+        {
+            _stdFunctions = InitFunctions();
+            _stdOperators = InitOperators();
+            _cache = InitExpressionCache();
+        }
+
+        /// <summary>
+        /// Initializes a new set of functions with the options for this class.
+        /// These are added from the extension method for the FunctionSet
+        /// </summary>
+        /// <returns></returns>
         protected virtual FunctionSet InitFunctions()
         {
-            if ((this.Options & ExpressiveOptions.IgnoreCaseForParsing) > 0)
-                return FunctionSet.CreateDefaultSet(StringComparer.OrdinalIgnoreCase);
-            else
-                return FunctionSet.CreateDefaultSet(StringComparer.Ordinal);
+            var set = new FunctionSet(this.Options);
+            set.AddDefaultFunctions();
+            return set;
         }
 
         protected virtual OperatorSet InitOperators()
         {
-            if ((this.Options & ExpressiveOptions.IgnoreCaseForParsing) > 0)
-                return OperatorSet.CreateDefault(StringComparer.OrdinalIgnoreCase);
-            else
-                return OperatorSet.CreateDefault(StringComparer.Ordinal);
+            var set = new OperatorSet(this.Options);
+            set.AddDefaultOperators();
+            return set;
+            
         }
 
         protected virtual IDictionary<string, Expression> InitExpressionCache()
         {
-            //We are always case sensitive on the cache.
             return new ConcurrentDictionary<string, Expression>(StringComparer.Ordinal);
         }
 
@@ -174,7 +197,73 @@ namespace Scryber.Binding
             return buffer.ToString();
         }
 
-        
+
+        public static void RegisterFunction(IFunction function)
+        {
+            BindingCalcFunctionSetExtensions.RegisterFunction(function);
+
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            if (null != service)
+            {
+                foreach (var binding in service.ParsingOptions.Bindings)
+                {
+                    var factory = binding.GetFactory();
+                    if (factory is BindingCalcExpressionFactory expressionFactory)
+                        expressionFactory.ResetBindingOptions();
+                }
+            }
+        }
+
+        public static void RegisterFunction(params IFunction[] functions)
+        {
+            BindingCalcFunctionSetExtensions.RegisterFunction(functions);
+
+            //Now reset the binding factories
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            if (null != service)
+            {
+                foreach (var binding in service.ParsingOptions.Bindings)
+                {
+                    var factory = binding.GetFactory();
+                    if (factory is BindingCalcExpressionFactory expressionFactory)
+                        expressionFactory.ResetBindingOptions();
+                }
+            }
+        }
+
+        public static void RegisterOperator(IOperator operation)
+        {
+            BindingCalcOperatorSetExtensions.RegisterOperator(operation);
+
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            if (null != service)
+            {
+                foreach (var binding in service.ParsingOptions.Bindings)
+                {
+                    var factory = binding.GetFactory();
+                    if (factory is BindingCalcExpressionFactory expressionFactory)
+                        expressionFactory.ResetBindingOptions();
+                }
+            }
+        }
+
+        public static void RegisterOperator(params IOperator[] operations)
+        {
+            BindingCalcOperatorSetExtensions.RegisterOperator(operations);
+
+            //Now reset the binding factories
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            if (null != service)
+            {
+                foreach (var binding in service.ParsingOptions.Bindings)
+                {
+                    var factory = binding.GetFactory();
+                    if (factory is BindingCalcExpressionFactory expressionFactory)
+                        expressionFactory.ResetBindingOptions();
+                }
+            }
+        }
+
 
     }
 }

@@ -56,7 +56,27 @@ namespace Scryber.Styles
     {
         public void Add(StyleVariable variable)
         {
-            this.Add(variable.CssName, variable);
+            this[variable.CssName] = variable;
+        }
+
+
+        
+
+        /// <summary>
+        /// Merges all the items in this set into the other set.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <param name="overwite">If true (default) then all values will be overwritten. If false, then only values
+        /// that do not exist in the set will be added.</param>
+        public void MergeInto(StyleVariableSet other, bool overwite = true)
+        {
+            foreach (var kvp in this)
+            {
+                if (overwite)
+                    other[kvp.Key] = kvp.Value;
+                else if (other.ContainsKey(kvp.Key) == false)
+                    other[kvp.Key] = kvp.Value;
+            }
         }
     }
 }

@@ -898,9 +898,7 @@ namespace Scryber.Components
             if (null == baseStyle)
                 baseStyle = new Style();
 
-            
-
-            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Root);
+            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
 
             
 

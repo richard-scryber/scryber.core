@@ -19,19 +19,17 @@ The values are passed to the document through the ``Params`` property of a docum
             <title>{{title}}</title>
         </head>
         <body>
-            <div style='color: {{color}}; padding: {{space}};'>{{title}}.</div>
+            <div style='color: #FF0000; padding: 10pt'>{{title}}.</div>
         </body>
     </html>
 
-When processing the document, the values for ``title``, ``space`` and ``color`` can be provided.
+When processing the document, the value for ``title`` can be provided.
 
 .. code:: csharp
 
     var doc = Document.ParseDocument("MyFile.html");
 
     doc.Params["title"] = "Hello World";
-    doc.Params["color"] = "#FF0000";
-    doc.Params["space"] = "10pt";
 
     //Before databinding - value is not set
     Assert.IsNull(doc.Info.Title);
@@ -54,28 +52,32 @@ As the layout has not executed before the databind, the content will be flowed w
 `Full size version <../_images/doc_simple_binding.png>`_
 
 
-.. note:: Scryber is strongly typed. It will try and convert or parse the values on databinding, and most of the style values and propoerties can be parsed. But the content should be of the correct type.
+.. note:: Scryber is strongly typed. It will try and convert or parse the values on databinding, and most of the style values and properties can be parsed. But the content should be of the correct type.
 
 
-Binding to complex types and expressions
+Complex types and expressions
 -----------------------------------------
 
 As you can imagine the parameters could start to get unmanageable and complex.
 Thankfully the support for expressions allows both interrogation and calculation.
 
 It is possible to use both strongly typed or dynamic objects (or a combination of both) for parameters.
-
-Expressions support any depth of property, and also an indexor in brackets. For example the following are all supported.
+And expressions support any depth of property, and also an indexor in brackets. For example the following are all supported.
 
 .. code:: csharp
 
         model.property
         model.property[index]
-        model.property[index].name
+        model.property[function()].name
 
-The classes can be dynamic or strongly typed but the properties are **Case Sensitive** to ensure canguage compatibility. 
+The classes can be dynamic or strongly typed but the properties are **Case Sensitive** to ensure language compatibility. 
 If properties are not found, then the whole expression will return null.
 
+
+Binding to complex objects
+--------------------------
+
+We can add both, a strongly typed user in the model, and also a dynamic theme object.
 
 .. code:: csharp
 
@@ -88,7 +90,6 @@ If properties are not found, then the whole expression will return null.
         public string LastName {get;set;}
     }
 
-We can add both, a strongly typed user in the model, and also a dynamic theme object.
 
 .. code:: csharp
 
@@ -116,7 +117,7 @@ Our template can then access the properties on each of these objects. It can eit
             <title>{{concat('Hello ', model.user.FirstName)}}</title>
         </head>
         <body>
-            <div style='color: {{theme.color}}; padding: {{theme.space}}; text-align: {{theme.align}}'>
+            <div style='color: #FF0000; padding: 10pt; text-align: center'>
                 Hello {{model.user.FirstName}}.
             </div>
         </body>
@@ -132,7 +133,7 @@ And the output as below.
 
 `Full size version <../_images/doc_expression_binding.png>`_
 
-.. note:: The styling for the div is becomming quite long and complex. In the next section we will go through the options for css classes along with var() and calc().
+.. note:: In the next section we will go through the options for css classes along with var() and calc() for custom styles.
 
 
 Looping over collections
@@ -207,12 +208,6 @@ We can then set the ``order`` property on our model.
                 order = order
     };
 
-    doc.Params["theme"] = new {
-                                color = "#FAFAFA",
-                                space = "10pt",
-                                align = "center"
-                          };
-
     doc.SaveAsPDF("OutputPath.pdf");
 
 In our template we can then **bind** the values in a table, looping over each one in a table body
@@ -225,10 +220,10 @@ In our template we can then **bind** the values in a table, looping over each on
             <title>{{concat('Hello ', model.user.FirstName)}}</title>
         </head>
         <body>
-            <div style='color: {{theme.color}}; padding: {{theme.space}}; text-align: {{theme.align}}'>
+            <div style='color: #FF0000; padding: 10pt; text-align: center'>
                 Hello {{model.user.FirstName}}.
             </div>
-            <div style='padding: {{theme.space}}; font-size: 12pt'>
+            <div style='padding: 10pt; font-size: 12pt'>
                 <table style='width:100%'>
                     <thead>
                         <tr>
@@ -285,10 +280,10 @@ We have already seen some binding syntax in scryber templates with functions and
     {{concat('Hello ', model.user.FirstName)}}
 
 There are many other functions for mathematical, comparison, aggregation and string operation.
-A complete list with examples of each are defined in the :doc:`binding_functions` section.
+A complete list with examples of each are defined in the :doc:`binding/binding_functions` section.
 
 It is also possible to register your own functions in the ``Scryber.Expressive.Functions.FunctionSet``, with a class implementing simple the ``IFunction`` interface.
-An example of which is in the :doc:`extend_functions` section.
+An example of which is in the :doc:`extending/extend_functions` section.
 
 
 Showing and hiding content dynamically
@@ -337,12 +332,6 @@ And set the value in the document generation...
                 order = order
     };
 
-    doc.Params["theme"] = new {
-                                color = "#FAFAFA",
-                                space = "10pt",
-                                align = "center"
-                          };
-
     doc.SaveAsPDF("OutputPath.pdf");
 
 We can then change the output based upon the PaymentTerms value directly in the template.
@@ -355,10 +344,10 @@ We can then change the output based upon the PaymentTerms value directly in the 
             <title>{{concat('Hello ', model.user.FirstName)}}</title>
         </head>
         <body>
-            <div style='color: {{theme.color}}; padding: {{theme.space}}; text-align: {{theme.align}}'>
+            <div style='color: #FF0000; padding: 10pt; text-align: center'>
                 Hello {{model.user.FirstName}}.
             </div>
-            <div style='padding: {{theme.space}}; font-size: 12pt'>
+            <div style='padding: 10pt; font-size: 12pt'>
                 <table style='width:100%'>
                     <thead>
                         <tr>
@@ -439,17 +428,11 @@ We could also do this directly in our output method by looking for the items and
     doc.FindAComponentById("payNow").Visible = (order.PaymentTerms == 0);
     doc.FindAComponentById("payLater").Visible = (order.PaymentTerms > 0);
 
-    doc.Params["theme"] = new {
-                                color = "#FAFAFA",
-                                space = "10pt",
-                                align = "center"
-                          };
-
     doc.SaveAsPDF("OutputPath.pdf");
 
 
 This does, however, start to create a dependacy on the layout and the code along with potential errors this may cause later on. 
-See :doc:`document_controllers` for a better way to interact with your template.
+See :doc:`document_controllers` for a better way to interact with your template in code.
 See :doc:`binding_model` for more on the databinding capabilities and available functions.
 
 Next we need to look at improving the layout design.

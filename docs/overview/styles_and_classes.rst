@@ -3,7 +3,97 @@ Styles, Classes and selectors
 ================================
 
 
+Scryber supports full cascading styles on all visual components.
+It also supports declaration of classes and styles within either the html head or as referenced stylesheets.
 
+So from our previous example we can reference an external stylesheet *(empty at the moment)*, relative to the document, and also declare some styles inside the document head.
+
+.. code:: html
+
+    <!DOCTYPE HTML>
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{{concat('Hello ', model.user.FirstName)}}</title>
+        <link rel="stylesheet" href="./css/orderStyles.css" />
+        <style type="text/css" >
+            :root{
+                --theme_color:#232323;
+                --theme_space:10pt;
+                --theme_align: center;
+            }
+
+            table.orderlist{
+                width:100%;
+            }
+
+            #payNow {
+                border: 1px solid red;
+                padding: 5px;
+                background-color: #FFAAAA;
+                color: #FF0000;
+                font-weight: bold;
+            }
+
+        </style>
+    </head>
+    <body>
+        <!-- our heading is also now valid css -->
+        <div style='color: var(--theme_color); padding: var(--theme_space); text-align: var(--theme_align)'>
+            Hello {{model.user.FirstName}}.
+        </div>
+        <div style='padding: var(--theme_space);'>
+            <!-- order list class styles are assigned -->
+            <table class="orderlist" >
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td>Item</td>
+                        <td>Description</td>
+                        <td>Unit Price</td>
+                        <td>Qty.</td>
+                        <td>Total</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Binding on each of the items in the model.order -->
+                    <template data-bind='{{model.order.Items}}'>
+                        <tr>
+                            <!-- The indexing of the loop + 1 -->
+                            <td>{{index() + 1}}</td>
+                            <td>{{.ItemNo}}</td>
+                            <td>{{.ItemName}}</td>
+                            <td>
+                                <!-- we use a number tag to specify the data-format referring to the top model -->
+                                <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                            </td>
+                            <td>{{.Quantity}}</td>
+                            <td>
+                                <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            <div id='terms'>
+                <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                    <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+                </div>
+                <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                    <p>Please pay for your items now, and  we can process your order once received.</p>
+                </div>
+                <div id='payNow' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                    <p>Your items will be shipped immediately, please ensure you pay our invoice within <b>{{model.order.PaymentTerms}} days</b></p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+Now we can set up our theme and apply styles to the order list and #payNow box.
+
+
+
+New for version 5.1 is the support for variables, and the ``var()`` and ``calc()`` functions inside styles.
 
 .. code:: html
 
@@ -11,22 +101,78 @@ Styles, Classes and selectors
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
     <head>
         <title>{{concat('Orders for ', model.user.firstname)}}</title>
+        <!-- external stylesheet reference -->
+        <link rel="stylesheet" href="./css/orderStyles.css" />
+        <!-- in document styles -->
+        <style type="text/css" >
+
+            :root{
+                --theme_color:#232323;
+                --theme_space:10pt;
+                --theme_align: center;
+                --td_w1: 30pt;
+            }
+
+            table.orderlist{
+                width:100%;
+            }
+
+            #payNow {
+                border: 1px solid red;
+                padding: 5px;
+                background-color: #FFAAAA;
+                color: #FF0000;
+                font-weight: bold;
+            }
+
+            .content{
+                background-color: var(--theme_color);
+                font-size: var(--theme_text_size);
+            }
+
+            .content h2{
+                padding: var(--theme_space);
+                margin-bottom: calc(--theme_space * 2);
+            }
+
+            .orderlist tr{
+                background-color: #EEE;
+            }
+
+            .orderlist tr.alt{
+                background-color: #DDD;
+            }
+
+            .orderlist td.w1{
+                width: var(--td_w1);
+            }
+
+            .orderlist td.w2{
+                width: calc(--td_w1 * 2);
+            }
+
+            .orderlist td.w3{
+                width: calc(--td_w1 * 3);
+            }
+
+        </style>
     </head>
     <body>
-        <div style='background-color: {{theme.color}};' >
-            <div style='padding:{{theme.space}}'>
-                <h2>{{count(model.order.items)}} orders for {{join(' ', model.user.salutation, model.user.firstname, model.user.lastname)}}</h2>
+        <div class='content' >
+                <h2>
+                    {{count(model.order.items)}} orders for {{join(' ', model.user.salutation, model.user.firstname, model.user.lastname)}}
+                </h2>
             </div>
-            <div style='padding: {{theme.space}}; font-size: 12pt'>
-                <table style='width:100%'>
+            <div style='padding: var(--theme_space); font-size: 12pt'>
+                <table class='orderlist' >
                     <thead>
                         <tr style='background-color: #666; color: #FFF'>
-                            <td style='width:30px'>#</td>
-                            <td style='width:60px'>Item</td>
+                            <td class='w1'>#</td>
+                            <td class='w2'>Item</td>
                             <td>Description</td>
-                            <td style='width:100px'>Unit Price</td>
-                            <td style='width:60px'>Qty.</td>
-                            <td style='width:90px'>Total</td>
+                            <td class='w3'>Unit Price</td>
+                            <td class='w2'>Qty.</td>
+                            <td class='w3'>Total</td>
                         </tr>
                     </thead>
                     <tbody>

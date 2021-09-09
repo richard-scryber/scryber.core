@@ -1,0 +1,29 @@
+﻿<!DOCTYPE HTML>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>{{concat('Hello ', model.user.firstname)}}</title>
+    <style type='text/css'>
+
+        :root {
+            color: green;
+            --var-color: red;
+        }
+
+        .asclass {
+            color: var(--var-color);
+        }
+
+        .change {
+            --var-color: blue;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id='outer' class='change'>
+        <div id='inner' class='asclass'>
+            Changed by the outer class
+        </div>
+    </div>
+</body>
+</html>

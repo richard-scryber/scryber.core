@@ -645,6 +645,98 @@ body.grey div.reverse{
         }
 
         [TestMethod]
+        public void ParseCSSWithInnerVariableApplied()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>{{concat('Hello ', model.user.firstname)}}</title>
+                        <style type='text/css' >
+
+                            :root{
+                                color: #00FF00;
+                                --var-color: #FF0000;
+                            }
+
+                            body{
+                                padding:20px;
+                            }
+                            .asclass{
+                                color: var(--var-color);
+                            }
+
+                            .change{
+                                --var-color: #0000FF;
+                                font-style: italic;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' class='' >
+                            <span id='inner1' class=''>
+                                Default root color of lime (#00FF00)
+                            </span>
+                        </div>
+                        <div id='explicit' class='' >
+                            <span id='inner2' style='color: var(--var-color);' >
+                                Explicit color of the variable value = red (#FF0000)
+                            </span>
+                        </div>
+                        <div id='asAClass' class='' >
+                            <span id='inner1' class='asclass'>
+                                Assigned as a class value = red (#FF0000)
+                            </span>
+                        </div>
+                        <div id='overridden' class='change' >
+                            <span id='inner' class='asclass'>
+                                Overwritten by the outer change class to blue (#0000FF)
+                            </span>
+                        </div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                
+
+                using (var stream = DocStreams.GetOutputStream("CSSVariableApplicationTest.pdf"))
+                {
+                    doc.LayoutComplete += ParseCSSWithInnerVariableApplied_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        private void ParseCSSWithInnerVariableApplied_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            //Make sure the variables are correctly assigned to the inline begin spans.
+            var layout = args.Context.DocumentLayout;
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+            var def = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
+            var exp = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
+            var asClass = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
+            var over = content.Columns[0].Contents[3] as PDFLayoutBlock; //Overridden block
+
+            Assert.AreEqual(PDFColors.Lime, CheckInnerVariableSpanColor(def), "The default colour did not match lime");
+            Assert.AreEqual(PDFColors.Red, CheckInnerVariableSpanColor(exp), "The explicit colour did not match red");
+            Assert.AreEqual(PDFColors.Red, CheckInnerVariableSpanColor(asClass), "The assigned class colour did not match red");
+            Assert.AreEqual(PDFColors.Blue, CheckInnerVariableSpanColor(over), "The overriden colour did not match blue");
+        }
+
+
+        private PDFColor CheckInnerVariableSpanColor(PDFLayoutBlock block)
+        {
+            var inline = block.Columns[0].Contents[0] as PDFLayoutLine;
+            var span = inline.Runs[0] as PDFLayoutInlineBegin;
+            return span.FullStyle.Fill.Color;
+        }
+
+
+
+        [TestMethod]
         public void ParseCSSWithCalcExpression()
         {
             var cssWithCalc = @"

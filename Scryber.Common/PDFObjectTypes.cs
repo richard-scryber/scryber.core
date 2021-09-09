@@ -64,6 +64,7 @@ namespace Scryber
 
         public static readonly PDFObjectType Document = (PDFObjectType)"doc ";
         public static readonly PDFObjectType Text = (PDFObjectType)"text";
+        public static readonly PDFObjectType Label = (PDFObjectType)"labl";
         public static readonly PDFObjectType Field = (PDFObjectType)"fild";
         public static readonly PDFObjectType Page = (PDFObjectType)"page";
         public static readonly PDFObjectType PageGroup = (PDFObjectType)"pggp";

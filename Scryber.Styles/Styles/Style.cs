@@ -130,6 +130,10 @@ namespace Scryber.Styles
             {
                 return _variables;
             }
+            set
+            {
+                _variables = value;
+            }
         }
 
         public bool HasVariables

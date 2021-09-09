@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Styles;
+using Scryber.Styles.Parsing.Typed;
 
 namespace Scryber.Html.Components
 {
@@ -122,14 +123,19 @@ namespace Scryber.Html.Components
                 this._innerItems.DataBind(context);
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnDataBound(PDFDataContext context)
         {
-             
+            base.OnDataBound(context);
             this.AddStylesToDocument();
-            base.OnPreLayout(context);
         }
 
-        
+        protected override void OnPreLayout(PDFLayoutContext context)
+        {
+            if (null == this._parsedGroup)
+                this.AddStylesToDocument();
+
+            base.OnPreLayout(context);
+        }
 
         protected void ClearInnerStyles()
         {

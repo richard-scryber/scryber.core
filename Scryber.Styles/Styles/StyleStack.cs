@@ -83,6 +83,7 @@ namespace Scryber.Styles
         private Style BuildFullStyle(IPDFComponent Component)
         {
             Style style = new StyleFull();
+            StyleVariableSet variables = null;
 
             int last = this._styles.Count - 1;
             if (last >= 0)
@@ -92,15 +93,32 @@ namespace Scryber.Styles
                     //As these are styles from parents, then any inherited values should be replaced by
                     //explicit values on the last style
                     // so set the style priority to 0
+                    var exist = this._styles[i];
+                    exist.MergeInherited(style, replace:true, priority:0);
 
-                    this._styles[i].MergeInherited(style, replace:true, priority:0);
+                    if(exist.HasVariables)
+                    {
+                        if (null == variables)
+                            variables = new StyleVariableSet();
+                        exist.Variables.MergeInto(variables);
+                    }
                 }
 
                 //This will use to the priority of the value itself to be used
+
                 this._styles[last].MergeInto(style);
+
+                if(this._styles[last].HasVariables)
+                {
+                    if (null == variables)
+                        variables = new StyleVariableSet();
+                    this._styles[last].Variables.MergeInto(variables);
+                }
             }
 
+            style.Variables = variables;
             style = style.Flatten();
+
             return style;
         }
 

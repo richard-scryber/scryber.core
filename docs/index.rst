@@ -161,6 +161,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     overview/packages_and_libs
     overview/scryber_parsing
     overview/parameters_and_expressions
+    overview/styles_and_classes
     version_history
 
 .. toctree::
@@ -191,6 +192,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     :hidden:
 
     binding_model
+    binding_functions
 
 .. toc_tree:: 
     :caption: Styles support
@@ -229,3 +231,4 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     namespaces_and_assemblies
     document_controllers
     extending_scryber
+    extending_functions

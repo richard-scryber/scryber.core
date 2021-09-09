@@ -36,7 +36,10 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindSingleExpression()
         {
             var options = ExpressiveOptions.IgnoreCaseForParsing;
-            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+            var set = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+            
+            var context = new Context(options, set, opSet);
 
             var str = "10 + 2";
             var expression = new Expression(str, context);
@@ -65,7 +68,10 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindUnqualifiedVariableExpression()
         {
             var options = ExpressiveOptions.IgnoreCaseForParsing;
-            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+            var fSet = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+
+            var context = new Context(options, fSet, opSet);
 
 
             Dictionary<string, object> vars = new Dictionary<string, object>();
@@ -98,7 +104,10 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindDeepVariableExpression()
         {
             var options = ExpressiveOptions.IgnoreCaseForParsing;
-            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+            var fSet = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+
+            var context = new Context(options, fSet, opSet);
 
             Dictionary<string, object> vars = new Dictionary<string, object>();
             vars.Add("val1", new { num = 2 });
@@ -211,7 +220,10 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindWithFunctionExpression()
         {
             var options = ExpressiveOptions.IgnoreCaseForParsing;
-            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+            var fSet = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+
+            var context = new Context(options, fSet, opSet);
 
             Dictionary<string, object> vars = new Dictionary<string, object>();
             vars.Add("val1", new { num = 2, text = "a variable" });
@@ -458,7 +470,10 @@ namespace Scryber.Core.UnitTests.Binding
 
 
             var options = ExpressiveOptions.IgnoreCaseForParsing;
-            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+            var fset = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+
+            var context = new Context(options, fset, opSet);
 
             Dictionary<string, object> vars = new Dictionary<string, object>(context.ParsingStringComparer)
             {
@@ -740,7 +755,10 @@ namespace Scryber.Core.UnitTests.Binding
             };
 
             var options = ExpressiveOptions.IgnoreCaseForParsing;
-            var context = new Context(options, FunctionSet.CreateDefault(options), OperatorSet.CreateDefault(options));
+            var fset = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+
+            var context = new Context(options, fset, opSet);
 
             Dictionary<string, object> vars = new Dictionary<string, object>(context.ParsingStringComparer)
             {

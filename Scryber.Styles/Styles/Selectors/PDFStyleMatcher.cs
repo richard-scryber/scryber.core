@@ -87,7 +87,7 @@ namespace Scryber.Styles.Selectors
 
             if(string.Equals(":root", selector))
             {
-                return new PDFStyleMatcher(new PDFStyleSelector() { AppliedState = ComponentState.Root });
+                return new PDFStyleRootMatcher();
             }
 
             StringBuilder buffer = new StringBuilder();

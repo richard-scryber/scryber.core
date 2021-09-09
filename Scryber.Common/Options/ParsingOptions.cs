@@ -187,13 +187,20 @@ namespace Scryber.Options
         public string FactoryAssembly { get; set; }
 
         /// <summary>
+        /// We store a local cached version of the factory.
+        /// </summary>
+        private IPDFBindingExpressionFactory _factory;
+
+        /// <summary>
         /// Gets the factory instance that is specified by this options FactoryType and FactoryAssembly
         /// </summary>
         /// <returns></returns>
         public IPDFBindingExpressionFactory GetFactory()
         {
-            var factory = Utilities.TypeHelper.GetInstance<IPDFBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
-            return factory;
+            if(null == _factory)
+                _factory = Utilities.TypeHelper.GetInstance<IPDFBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
+
+            return _factory;
         }
     }
 }

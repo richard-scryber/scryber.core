@@ -10,6 +10,7 @@ namespace Scryber.Styles.Parsing
     {
         private List<CSSParsingError> _err;
         private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("/\\*.*?\\*/");
+
         public IEnumerable<CSSParsingError> Errors
         {
             get { return _err; }
@@ -57,15 +58,15 @@ namespace Scryber.Styles.Parsing
             return this.GetEnumerator();
         }
 
-        private string RemoveComments(string contnet)
+        private string RemoveComments(string content)
         {
             if (this._log.ShouldLog(TraceLevel.Verbose))
                 this._log.Add(TraceLevel.Verbose, "CSS", "Removing comments from css styles");
 
             
-            contnet = CommentMatcher.Replace(contnet, "");
+            content = CommentMatcher.Replace(content, "");
 
-            return contnet;
+            return content;
         }
     }
 

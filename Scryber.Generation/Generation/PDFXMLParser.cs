@@ -572,7 +572,8 @@ namespace Scryber.Generation
         /// <param name="isremotecomponent"></param>
         /// <param name="reader"></param>
         /// <param name="cdef"></param>
-        private void ParseAttributes(object container, bool isremotecomponent, XmlReader reader, ParserClassDefinition cdef)
+        /// <param name="skipUnknown">Optional. If true then any unknown attributes will simply be ignored</param>
+        private void ParseAttributes(object container, bool isremotecomponent, XmlReader reader, ParserClassDefinition cdef, bool skipUnknown = false)
         {
             if (!reader.MoveToFirstAttribute())
                 return;
@@ -637,6 +638,10 @@ namespace Scryber.Generation
                     else if(this.HasController)
                         TryAttachEventHandlerToController(reader, container, reader.Value, evt, cdef);
                     
+                }
+                else if(skipUnknown)
+                {
+                    LogAdd(reader, TraceLevel.Verbose, "Unknown attribute " + name + " is being explicitly skipped on " + cdef.ClassType);
                 }
                 else if (this.Mode == ParserConformanceMode.Strict)
                     throw BuildParserXMLException(reader, Errors.ParsedTypeDoesNotContainDefinitionFor, cdef.ClassType, "attribute", name);
@@ -984,7 +989,8 @@ namespace Scryber.Generation
 
             if (reader.NodeType == XmlNodeType.Element && reader.HasAttributes)
             {
-                this.ParseAttributes(tempgen, false, reader, defn);
+                bool skipUnknown = true;
+                this.ParseAttributes(tempgen, false, reader, defn, skipUnknown);
                 reader.MoveToElement();
             }
             
