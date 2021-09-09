@@ -9,7 +9,7 @@ It also supports the use of binding and repeating at the row and/or the cell lev
 
 
 Simple Tables
-=============
+-------------
 
 A simple table with no style or formatting will be output with a 
 single point gray border and 4pt padding on each cell.
