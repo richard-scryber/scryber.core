@@ -51,7 +51,7 @@ Each column will take up as much room as needed (or possible).
 
 .. figure:: ../images/samples_tables_simple.png
     :target: ../_images/samples_tables_simple.png
-    :alt: Styled order items.
+    :alt: Simple table.
     :width: 600px
     :class: with-shadow
 
@@ -61,6 +61,42 @@ Each column will take up as much room as needed (or possible).
 Applying the full-width addtibute will make the table use all available space, obeying any fixed column widths.
 
 The cells support a column-span attribute to allow multiple column content.
+
+.. code:: html
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Tables</title>
+    </head>
+    <body style="padding:20pt">
+        <table style="width:100%">
+            <tr>
+                <td>Cell 1.1</td>
+                <td style="width: 300pt">Wider Cell 1.2</td>
+                <td>Cell 1.3</td>
+            </tr>
+            <tr>
+                <td>Cell 2.1</td>
+                <td colspan="2">Cell 2.2</td>
+            </tr>
+            <tr>
+                <td>Cell 3.1</td>
+                <td>Cell 3.2</td>
+                <td>Cell 3.3</td>
+            </tr>
+        </table>
+    </body>
+    </html>
+
+.. figure:: ../images/samples_tables_spanned.png
+    :target: ../_images/samples_tables_spanned.png
+    :alt: Spanning full width tables.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_tables_spanned.png>`_
 
 
 Headers, Footers and overflow

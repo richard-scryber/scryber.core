@@ -46,5 +46,20 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
         }
+
+        [TestMethod()]
+        public void SimpleTableSpanned()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/TableSpanned.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("Samples_TableSpanned.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
+        }
     }
 }
