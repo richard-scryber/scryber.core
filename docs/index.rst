@@ -167,7 +167,6 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 .. toctree::
     :caption: Template features
     :maxdepth: 1
-    :hidden:
 
     document_structure
     document_components
@@ -185,6 +184,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     drawing_image_backgrounds
     document_outline
     document_security
+    components/tables_reference
 
 .. toctree:: 
     :caption: Binding model
@@ -214,7 +214,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     :maxdepth: 1
     :hidden:
 
-    components/tables_reference
+    document_textlayout
 
 .. toc_tree:: 
     :caption: Drawing and Shapes
