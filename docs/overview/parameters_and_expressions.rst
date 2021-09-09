@@ -56,7 +56,7 @@ As the layout has not executed before the databind, the content will be flowed w
 
 
 Complex types and expressions
------------------------------------------
+-------------------------------
 
 As you can imagine the parameters could start to get unmanageable and complex.
 Thankfully the support for expressions allows both interrogation and calculation.
@@ -75,7 +75,7 @@ If properties are not found, then the whole expression will return null.
 
 
 Binding to complex objects
---------------------------
+----------------------------
 
 We can add both, a strongly typed user in the model, and also a dynamic theme object.
 

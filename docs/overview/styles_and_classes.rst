@@ -1,11 +1,15 @@
-===============================
+================================
 Styles, Classes and selectors
 ================================
+
 
 Scryber supports full cascading styles on all visual components.
 It also supports declaration of classes and styles within either the html head or as referenced stylesheets.
 
 So from our previous example we can reference an external stylesheet *(empty at the moment)*, relative to the document, and also declare some styles inside the document head.
+
+Orders with style
+---------------------
 
 .. code:: html
 
@@ -118,7 +122,7 @@ The heading div uses the css variables with the ``var()`` syntax, and scryber al
 
 
 Allowed style selectors.
--------------------------
+---------------------------
 
 Scyber does not support the full set of selectors or the !important modifier (at the moment). 
 We only support the use of 
