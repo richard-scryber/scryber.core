@@ -89,6 +89,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
+                result = PDFColor.Transparent;
                 return false;
             }
         }

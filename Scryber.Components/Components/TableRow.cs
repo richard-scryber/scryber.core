@@ -749,6 +749,21 @@ namespace Scryber.Components
         // override methods
         //
 
+        #region Databind()
+
+        /// <summary>
+        /// Inheritors should override this method to provide their own databing implementations.
+        /// </summary>
+        /// <param name="includeChildren">Flag to identifiy if children should be databound also</param>
+        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        {
+            if (includeChildren && this.HasStyle)
+                this.Style.DataBind(context);
+            base.DoDataBind(context, includeChildren);
+        }
+
+        #endregion
+
         #region protected override Styles.PDFStyle GetBaseStyle()
 
         /// <summary>

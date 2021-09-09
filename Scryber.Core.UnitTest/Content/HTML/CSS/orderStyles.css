@@ -1,2 +1,19 @@
-﻿body {
+﻿:root {
+    --std-width: 30pt;
+}
+
+.td_w1 {
+    width: var(--std-width);
+}
+
+.td_w2 {
+    width: calc(var(--std-width) * 2.0);
+}
+
+.td_w3 {
+    width: calc(var(--std-width) * 3.0);
+}
+
+.noborder{
+    border:none;
 }

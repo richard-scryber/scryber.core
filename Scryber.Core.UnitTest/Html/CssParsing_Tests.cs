@@ -735,6 +735,164 @@ body.grey div.reverse{
         }
 
 
+        /// <summary>
+        /// Checks the calc value on style attributes. Appling both a light and a dark theme with properties
+        /// </summary>
+        [TestMethod]
+        public void ParseCSSWithInlineCalcApplied()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>{{concat('Hello ', model.user.firstname)}}</title>
+                    </head>
+                    <body>
+                        <div id='lime' style='color: calc(theme.lime);' >
+                            <span id='inner1' class=''>
+                                Default root color of lime (#00FF00)
+                            </span>
+                        </div>
+                        <div id='red' style='color: calc(theme.red);' >
+                            <span id='inner2' >
+                                Explicit color of the variable value = red (#FF0000)
+                            </span>
+                        </div>
+                        <div id='darkorlight' style='background-color: calc(if(theme.dark, #000, #FFF)); color: calc(if(theme.dark, theme.lime, #000));' >
+                            <span id='inner1' class='asclass'>
+                                Based on dark
+                            </span>
+                        </div>
+                        
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["theme"] = new
+                {
+                    lime = PDFColors.Lime,
+                    red = PDFColors.Red,
+                    dark = false
+                };
+
+                using (var stream = DocStreams.GetOutputStream("CSSInlineCalcLightTest.pdf"))
+                {
+                    doc.LayoutComplete += ParseCSSWithInlineCalcLight_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            //Change to the dark theme
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["theme"] = new
+                {
+                    lime = PDFColors.Lime,
+                    red = PDFColors.Red,
+                    dark = true
+                };
+
+                using (var stream = DocStreams.GetOutputStream("CSSInlineCalcDarkTest.pdf"))
+                {
+                    doc.LayoutComplete += ParseCSSWithInlineCalcDark_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        private void ParseCSSWithInlineCalcLight_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            //Make sure the variables are correctly assigned to the inline begin spans.
+            var layout = args.Context.DocumentLayout;
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+            var lime = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
+            var red = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
+            var dark = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
+
+            Assert.AreEqual(PDFColors.Lime, lime.FullStyle.Fill.Color, "The default colour did not match lime");
+            Assert.AreEqual(PDFColors.Red, red.FullStyle.Fill.Color, "The explicit colour did not match red");
+            Assert.AreEqual(PDFColors.Black, dark.FullStyle.Fill.Color, "The calc colour did not match black");
+            Assert.AreEqual(PDFColors.White, dark.FullStyle.Background.Color, "The calc background colour did not match white");
+        }
+
+        private void ParseCSSWithInlineCalcDark_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            //Make sure the variables are correctly assigned to the inline begin spans.
+            var layout = args.Context.DocumentLayout;
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+            var lime = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
+            var red = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
+            var dark = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
+
+            Assert.AreEqual(PDFColors.Lime, lime.FullStyle.Fill.Color, "The default colour did not match lime");
+            Assert.AreEqual(PDFColors.Red, red.FullStyle.Fill.Color, "The explicit colour did not match red");
+            Assert.AreEqual(PDFColors.Lime, dark.FullStyle.Fill.Color, "The calc colour did not match lime");
+            Assert.AreEqual(PDFColors.Black, dark.FullStyle.Background.Color, "The calc background colour did not match black");
+        }
+
+        [TestMethod]
+        public void ParseCSSWithInlineCalcRepeatingApplied()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Repeating calc in template</title>
+                    </head>
+                    <body>
+                        <template data-bind='{{model.items}}' >
+                            <div style='background-color: calc(if(index() % 2 == 1, model.red, #00FF00));' >
+                                <span >Item {{index()}}. {{model.items[index()]}}</span>
+                            </div>
+                        </template>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["model"] = new
+                {
+                    items = new[]
+                    {
+                        "First",
+                        "Second",
+                        "Third"
+                    },
+                    red = PDFColors.Red,
+                    dark = false
+                };
+
+                using (var stream = DocStreams.GetOutputStream("CSSInlineCalcRepeatingTest.pdf"))
+                {
+                    doc.LayoutComplete += ParseCSSWithInlineCalcRepeater_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+        }
+
+        private void ParseCSSWithInlineCalcRepeater_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        {
+            //Make sure the variables are correctly assigned to the inline begin spans.
+            var layout = args.Context.DocumentLayout;
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+            var first = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
+            var second = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
+            var third = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
+
+            Assert.AreEqual(PDFColors.Lime, first.FullStyle.Background.Color, "The default colour did not match lime");
+            Assert.AreEqual(PDFColors.Red, second.FullStyle.Background.Color, "The explicit colour did not match red");
+            Assert.AreEqual(PDFColors.Lime, third.FullStyle.Background.Color, "The calc colour did not match lime");
+        }
+
 
         [TestMethod]
         public void ParseCSSWithCalcExpression()

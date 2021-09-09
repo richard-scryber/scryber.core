@@ -1780,23 +1780,14 @@ namespace Scryber.Core.UnitTests.Html
                 order = order
             };
 
-            var grid = doc.FindAComponentById("orders") as TableGrid;
-            //Properties directly on the visual component.
-            grid.BackgroundColor = "#EEE";
-            //Using the style property
-            grid.Style.Margins.Right = 20;
-            grid.Style.Margins.Left = 20;
-
-            //Using style keys
-            var pay = doc.FindAComponentById("payNow") as Div;
-            pay.Style.SetValue(StyleKeys.BorderStyleKey, LineType.Dash);
-            pay.Style.SetValue(StyleKeys.BorderDashKey, PDFDashes.LongDash);
-
-            //A new style to the document
-            StyleDefn style = new StyleDefn("#terms div#payNow");
-            style.Border.Width = 2;
-            doc.Styles.Add(style);
-
+            doc.Params["style"] = new
+            {
+                rowColor = (PDFColor)"#EEE",
+                altColor = (PDFColor)"#DDD",
+                dateFormat ="dd MMMM yyyy",
+                currencyFormat = "£##0.00"
+            };
+            
             using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
                 doc.SaveAsPDF(stream);
         }

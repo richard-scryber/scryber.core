@@ -2,18 +2,19 @@
 <!DOCTYPE HTML>
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <title>{{concat('Hello ', model.user.FirstName)}}</title>
+    <title>{{concat('Orders for ', model.user.FirstName)}}</title>
     <link rel="stylesheet" href="./css/orderStyles.css" />
     <style type="text/css">
         :root {
             --theme_color: #FF0000;
             --theme_space: 10pt;
             --theme_align: center;
+            --theme_fsize: 12pt;
         }
 
         table.orderlist {
             width: 100%;
-            font-size: 12pt;
+            font-size: var(--theme_fsize);
         }
 
         table.orderlist thead {
@@ -21,9 +22,10 @@
             color: white;
         }
 
+
         #terms {
             margin-top: 20pt;
-            font-size: 12pt;
+            font-size: var(--theme_fsize);
         }
 
         #payNow {
@@ -33,45 +35,78 @@
             color: #FF0000;
             font-weight: bold;
         }
+
     </style>
 </head>
 <body>
-    <!-- our heading has explicit styles -->
-    <div style='color: var(--theme_color); padding: var(--theme_space); text-align: var(--theme_align)'>
-        Hello {{model.user.FirstName}}.
+    <!-- setting the background color to the style -->
+    <div style='background-color: calc(style.altColor); padding: var(--theme_space); text-align: var(--theme_align)'>
+        {{count(model.order.Items)}} items for {{join(' ', model.user.Salutation, model.user.FirstName, model.user.LastName)}}
+    </div>
+    <!-- a preamble paragraph with concatenated values and a date -->
+    <div style="padding: var(--theme_space);">
+        <p style="font-size: var(--theme_fsize);" >
+            Dear {{concat(model.user.Salutation, ' ', model.user.LastName)}},<br/>
+            Thank you for your order on <time data-format="{{var(style.dateFormat, 'dd MMM yyyy')}}" /> for the following items:
+        </p>
     </div>
     <div style='padding: var(--theme_space);'>
-        <!-- order list class styles are assigned -->
+        <!-- classes on the header cells define the width of the table cells
+             relative to the variable in the css stylesheet. -->
         <table id="orders" class="orderlist">
             <thead>
                 <tr>
-                    <td>#</td>
-                    <td>Item</td>
-                    <td>Description</td>
-                    <td>Unit Price</td>
-                    <td>Qty.</td>
-                    <td>Total</td>
+                    <td class="td_w1">#</td>
+                    <td class="td_w2">Item</td>
+                    <td >Description</td>
+                    <td class="td_w3">Unit Price</td>
+                    <td class="td_w1">Qty</td>
+                    <td class="td_w3">Total</td>
                 </tr>
             </thead>
             <tbody>
-                <!-- Binding on each of the items in the model.order -->
+                <!-- Changing the row color for alternates -->
                 <template data-bind='{{model.order.Items}}'>
-                    <tr>
+                    <tr style="background-color: calc(if(index() % 2 == 1, style.altColor, style.rowColor));">
                         <!-- The indexing of the loop + 1 -->
                         <td>{{index() + 1}}</td>
                         <td>{{.ItemNo}}</td>
                         <td>{{.ItemName}}</td>
                         <td>
-                            <!-- we use a number tag to specify the data-format referring to the top model -->
-                            <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                            <!-- Data format is now coming from the style parameter -->
+                            <num value='{{.ItemPrice}}' data-format='{{style.currencyFormat}}' />
                         </td>
                         <td>{{.Quantity}}</td>
                         <td>
-                            <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                            <num value='{{.ItemPrice * .Quantity}}' data-format='{{style.currencyFormat}}' />
                         </td>
                     </tr>
                 </template>
             </tbody>
+            <!-- Added some footer rows for calculations with fallback values -->
+            <tfoot>
+                <tr>
+                    <td class="noborder" colspan="3"></td>
+                    <td colspan="2">Total (ex VAT)</td>
+                    <td colspan="1">
+                        <num value='{{model.order.Total}}' data-format='{{style.currencyFormat}}' />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="noborder" colspan="3"></td>
+                    <td colspan="2">VAT</td>
+                    <td colspan="1">
+                        <num value='{{model.order.Total * var(model.order.TaxRate,0.2)}}' data-format='{{style.currencyFormat}}' />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="noborder" colspan="3"></td>
+                    <td colspan="2" style="background-color: calc(style.altColor);">Grand Total </td>
+                    <td colspan="1" style="background-color: calc(style.altColor);">
+                        <num value='{{model.order.Total + (model.order.Total * var(model.order.TaxRate, 0.2))}}' data-format='{{style.currencyFormat}}' />
+                    </td>
+                </tr>
+            </tfoot>
         </table>
         <div id='terms'>
             <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>

@@ -262,6 +262,202 @@ The main classes (and structs) used in styles are
 Base components styles
 ----------------------
 
+Each component has a standard base style applied. For example the Div has a position mode of block. The paragraph also has a position mode of block, but also a top margin of 4 points. The table cell has a standard gray 1 point border.
+By defining these there is a consistant appearance, but these can be easily overriden using css styles in your document or referenced css stylesheet.
+
+.. code:: css
+
+    td { border: none; }
+
+
+Using calc() and binding dynamic values.
+-----------------------------------------
+
+Along with support for ``var()`` for looking up css variables, scryber supports ``calc()``.
+This enables styles to be completely dynamic as well as the data.
+
+The functions can either be on the css classes or wthin the style attribute itself.
+
+In our linked orderStyles.css file we can set up some standard widths.
+
+.. code:: css
+
+    :root {
+        --std-width: 30pt;
+    }
+
+    .td_w1 {
+        width: var(--std-width);
+    }
+
+    .td_w2 {
+        width: calc(var(--std-width) * 2.0);
+    }
+
+    .td_w3 {
+        width: calc(var(--std-width) * 3.0);
+    }
+
+And in our code we can create a style parameter.
+
+.. code:: csharp
+
+
+    //using Scryber.Components
+    //using Scryber.Drawing
+
+    var doc = Document.ParseDocument("MyFile.html");
+
+    var service = new OrderMockService();
+    var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+    var order = service.GetOrder(1);
+    order.PaymentTerms = 30;
+
+    doc.Params["model"] = new {
+                user =  user,
+                order = order
+    };
+
+    //new style document parameter
+    doc.Params["style"] = new
+    {
+        rowColor = (PDFColor)"#EEE",
+        altColor = (PDFColor)"#DDD",
+        dateFormat ="dd MMMM yyyy",
+        currencyFormat = "£##0.00"
+    };
+
+    doc.SaveAsPDF("OutputPath.pdf");
+
+And finally we can update our template to use the new styles and add a bit more juice to the template.
+
+.. code:: html
+
+    <!DOCTYPE HTML>
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{{concat('Orders for ', model.user.FirstName)}}</title>
+        <link rel="stylesheet" href="./css/orderStyles.css" />
+        <style type="text/css">
+            :root {
+                --theme_color: #FF0000;
+                --theme_space: 10pt;
+                --theme_align: center;
+                --theme_fsize: 12pt;
+            }
+
+            table.orderlist {
+                width: 100%;
+                font-size: var(--theme_fsize);
+            }
+
+            table.orderlist thead {
+                background-color: #333;
+                color: white;
+            }
+
+
+            #terms {
+                margin-top: 20pt;
+                font-size: var(--theme_fsize);
+            }
+
+            #payNow {
+                border: 1px solid red;
+                padding: 5px;
+                background-color: #FFAAAA;
+                color: #FF0000;
+                font-weight: bold;
+            }
+
+        </style>
+    </head>
+    <body>
+        <!-- setting the background color to the style -->
+        <div style='background-color: calc(style.altColor); padding: var(--theme_space); text-align: var(--theme_align)'>
+            {{count(model.order.Items)}} items for {{join(' ', model.user.Salutation, model.user.FirstName, model.user.LastName)}}
+        </div>
+        <!-- a preamble paragraph with concatenated values and a date -->
+        <div style="padding: var(--theme_space);">
+            <p style="font-size: var(--theme_fsize);" >
+                Dear {{concat(model.user.Salutation, ' ', model.user.LastName)}},<br/>
+                Thank you for your order on <time data-format="{{var(style.dateFormat, 'dd MMM yyyy')}}" /> for the following items:
+            </p>
+        </div>
+        <div style='padding: var(--theme_space);'>
+            <!-- classes on the header cells define the width of the table cells
+                relative to the variable in the css stylesheet. -->
+            <table id="orders" class="orderlist">
+                <thead>
+                    <tr>
+                        <td class="td_w1">#</td>
+                        <td class="td_w2">Item</td>
+                        <td >Description</td>
+                        <td class="td_w3">Unit Price</td>
+                        <td class="td_w1">Qty</td>
+                        <td class="td_w3">Total</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Changing the row color for alternates -->
+                    <template data-bind='{{model.order.Items}}'>
+                        <tr style="background-color: calc(if(index() % 2 == 1, style.altColor, style.rowColor));">
+                            <!-- The indexing of the loop + 1 -->
+                            <td>{{index() + 1}}</td>
+                            <td>{{.ItemNo}}</td>
+                            <td>{{.ItemName}}</td>
+                            <td>
+                                <!-- Data format is now coming from the style parameter -->
+                                <num value='{{.ItemPrice}}' data-format='{{style.currencyFormat}}' />
+                            </td>
+                            <td>{{.Quantity}}</td>
+                            <td>
+                                <num value='{{.ItemPrice * .Quantity}}' data-format='{{style.currencyFormat}}' />
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <!-- Added some footer rows for calculations with fallback values -->
+                <tfoot>
+                    <tr>
+                        <td class="noborder" colspan="3"></td>
+                        <td colspan="2">Total (ex VAT)</td>
+                        <td colspan="1">
+                            <num value='{{model.order.Total}}' data-format='{{style.currencyFormat}}' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="noborder" colspan="3"></td>
+                        <td colspan="2">VAT</td>
+                        <td colspan="1">
+                            <num value='{{model.order.Total * var(model.order.TaxRate,0.2)}}' data-format='{{style.currencyFormat}}' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="noborder" colspan="3"></td>
+                        <td colspan="2" style="background-color: calc(style.altColor);">Grand Total </td>
+                        <td colspan="1" style="background-color: calc(style.altColor);">
+                            <num value='{{model.order.Total + (model.order.Total * var(model.order.TaxRate, 0.2))}}' data-format='{{style.currencyFormat}}' />
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div id='terms'>
+                <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                    <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+                </div>
+                <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                    <p>Please pay for your items now, and we can process your order once received.</p>
+                </div>
+                <div id='paySoon' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                    <p>Your items will be shipped immediately, please ensure you pay our invoice within <b>{{model.order.PaymentTerms}} days</b></p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+
 
 
 New for version 5.1 is the support for variables, and the ``var()`` and ``calc()`` functions inside styles.
@@ -390,46 +586,15 @@ New for version 5.1 is the support for variables, and the ``var()`` and ``calc()
     </html>
 
 
+And our output should now look something similar to this.
 
-.. code:: csharp
-
-    var doc = Document.ParseDocument("MyFile.html");
-
-    doc.Params["model"] = new {
-                user = new
-                {
-                    lastname = "Smith",
-                    firstname = "Richard",
-                    salutation = "Mr"
-                },
-                order = new
-                {
-                    items = new[] {
-                        new { itemNo = "O 12", name = "Widget", qty = 2, price = 12.5 },
-                        new { itemNo = "O 17", name = "Sprogget", qty = 4, price = 1.5 },
-                        new { itemNo = "I 13", name = "M10 bolts with a counter clockwise thread on the inner content and a star nut top, tamper proof and locking ring included.", qty = 8, price = 1.0 },
-                    },
-                    currencyFormat = "£##0.00",
-                    taxRate = 0.2,
-                    total = 39.0
-                }
-    };
-
-    doc.Params["theme"] = new {
-                                color = "#FAFAFA",
-                                space = "10pt",
-                                align = "center"
-                          };
-
-    doc.SaveAsPDF("OutputPath.pdf");
-
-.. figure:: ../images/doc_expression_ordertemplate.png
-    :target: ../_images/doc_expression_ordertemplate.png
-    :alt: Repeating binding on items for documents
-    :width: 600px
+.. figure:: ../images/doc_styled_orders.png
+    :target: ../_images/doc_final_orders.png
+    :alt: Styled order items.
     :class: with-shadow
 
-`Full size version <../_images/doc_sexpression_ordertemplate.png>`_
+`Full size version <../_images/doc_styled_orders.png>`_
+
 
 There is a lot going on here, but...
 
@@ -444,9 +609,5 @@ There is a lot going on here, but...
 * The ``footer`` rows are performing some calculations based on the summary information, and outputting the total values.
 * The ``num @data-format`` is changing the output text to a currency value within the model.
 
-The template data-binding works on any collection of objects, or an individual object as a *with* expression.
 
-
-It would also be possible to use the model.order.items[index()].*property* in replacement of any of the context cases.
-
-It is also possible to nest templates, for example looping over drders and items in the orders.
+It is also possible to nest templates, for example looping over orders and items in the orders.

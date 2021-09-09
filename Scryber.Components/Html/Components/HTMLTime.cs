@@ -17,7 +17,7 @@ namespace Scryber.Html.Components
         [PDFAttribute("datetime")]
         public override DateTime Value { get => base.Value; set => base.Value = value; }
 
-        [PDFAttribute("date-format")]
+        [PDFAttribute("data-format")]
         public override string DateFormat { get => base.DateFormat; set => base.DateFormat = value; }
 
         [PDFElement()]

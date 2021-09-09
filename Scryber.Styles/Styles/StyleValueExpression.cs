@@ -111,10 +111,13 @@ namespace Scryber.Styles
         /// <returns></returns>
         public override T Value(StyleBase forStyle)
         {
-            if (this.CanEvaluate)
-                return EvaluateExpression(forStyle);
-            else
-                return base.Value(forStyle);
+            if (this.CanEvaluate == false)
+            {
+                this.EnsureExpression(forStyle);
+            }
+
+            return EvaluateExpression(forStyle);
+            
         }
 
         #endregion
@@ -147,18 +150,32 @@ namespace Scryber.Styles
                 throw new InvalidCastException("Style values can only be bound on styles or the StyledComponents that own them");
 
             var context = args.Context;
-            if (null == _expression)
-            {
-                _expression = CreateExpression(context);
-                _variableProvider = context.Items.ValueProvider(context.CurrentIndex,
+
+            this._expression = CreateExpression();
+            this._variableProvider = context.Items.ValueProvider(context.CurrentIndex,
                                             context.DataStack.HasData ? context.DataStack.Current : null);
-            }
+            
 
             //Execute once to make sure we are all set up - although css variables may not be there.
             base.SetValue(this.EvaluateExpression(style));
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates an expression without the varabile provider
+        /// </summary>
+        /// <param name="forStyle"></param>
+        /// <returns></returns>
+        protected virtual bool EnsureExpression(StyleBase forStyle)
+        {
+            if(null == _expression)
+            {
+                _expression = CreateExpression();
+                _variableProvider = null;
+            }
+            return null != _expression;
+        }
 
         #region protected virtual Expression CreateExpression(PDFDataContext context)
 
@@ -167,7 +184,7 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="context">The datacontext for the current dataitem and index</param>
         /// <returns>A compiled expression or null</returns>
-        protected virtual Expression CreateExpression(PDFDataContext context)
+        protected virtual Expression CreateExpression()
         {
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
 

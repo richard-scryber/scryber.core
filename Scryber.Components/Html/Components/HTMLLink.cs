@@ -236,6 +236,9 @@ namespace Scryber.Html.Components
             
         }
 
+        private bool _contentAdded = false;
+        private bool _contentBound = false;
+
         protected override void OnLoaded(PDFLoadContext context)
         {
             base.OnLoaded(context);
@@ -249,8 +252,13 @@ namespace Scryber.Html.Components
 
             DoLoadReference(context);
 
-            if (this.IsContentLoaded )
+            if (this.IsContentLoaded)
+            {
+                this.InnerContent.AddContent(this.Document, context);
                 this.InnerContent.DataBind(context);
+                _contentAdded = true;
+                _contentBound = true;
+            }
         }
 
         protected override void OnDataBound(PDFDataContext context)
@@ -265,8 +273,11 @@ namespace Scryber.Html.Components
 
             DoLoadReference(context);
 
-            if (this.IsContentLoaded)
+            if (this.IsContentLoaded && !_contentAdded)
+            {
                 this.InnerContent.AddContent(this.Document, context);
+                _contentAdded = true;
+            }
         }
 
         protected void ClearInnerContent()
@@ -275,6 +286,8 @@ namespace Scryber.Html.Components
             {
                 this._content.ClearContent(this.Document);
                 this._content = null;
+                this._contentAdded = false;
+                this._contentBound = false;
             }
         }
 
