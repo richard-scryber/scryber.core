@@ -79,18 +79,6 @@ namespace Scryber.Styles
             
         }
 
-        //public PDFStyle MatchClass(string classname)
-        //{
-        //    PDFStyle style = new PDFStyle();
-        //    foreach (PDFStyleBase stylebase in this)
-        //    {
-        //        PDFStyle matched = stylebase.MatchClass(classname);
-        //        if (matched != null)
-        //            matched.MergeInto(style);
-        //    }
-        //    return style;
-        //}
-
         private void UpdateAllParents(IPDFComponent parent)
         {
             foreach (StyleBase item in this)

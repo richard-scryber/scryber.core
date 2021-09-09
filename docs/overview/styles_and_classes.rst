@@ -24,6 +24,17 @@ So from our previous example we can reference an external stylesheet *(empty at 
 
             table.orderlist{
                 width:100%;
+                font-size: 12pt;
+            }
+
+            table.orderlist thead{
+                background-color: #333;
+                color: white;
+            }
+
+            #terms{
+                margin-top: 20pt;
+                font-size: 12pt;
             }
 
             #payNow {
@@ -37,7 +48,7 @@ So from our previous example we can reference an external stylesheet *(empty at 
         </style>
     </head>
     <body>
-        <!-- our heading is also now valid css -->
+        <!-- our heading has explicit styles -->
         <div style='color: var(--theme_color); padding: var(--theme_space); text-align: var(--theme_align)'>
             Hello {{model.user.FirstName}}.
         </div>
@@ -89,7 +100,103 @@ So from our previous example we can reference an external stylesheet *(empty at 
     </body>
     </html>
 
-Now we can set up our theme and apply styles to the order list and #payNow box.
+Now we can set up our theme and apply styles to the order list table and #payNow box.
+In the same was as css, the font size of the #terms div is cascaded to the #payNow div, and the #payNow styles are applied over the top, overriding where appropriate. 
+
+
+.. figure:: ../images/doc_initial_styles.png
+    :target: ../_images/doc_initial_styles.png
+    :alt: Initial Styles
+    :class: with-shadow
+
+`Full size version <../_images/doc_initial_styles.png>`_
+
+The heading div uses the css variables with the ``var()`` syntax, and scryber also supports using a fallback value in this function.
+
+.. code:: css
+
+    color: var(--theme_color, #000);
+
+
+Allowed style selectors.
+-------------------------
+
+Scyber does not support the full set of selectors or the !important modifier (at the moment). 
+We only support the use of 
+
+* Chained selectors on tags, classes and id. 
+* The > direct descendant selector.
+* The :root selector
+* The @font-face, @media and @page rules.
+
+Other unsupported selectors and rules will be ignored.
+
+
+.. code:: css
+
+    /* these are supported */
+
+    .classname { }
+    #id { }
+    tag { }
+
+    tag.classname { }
+
+    tag.classname .inner { }
+    tag.classname tag.inner {  }
+
+    tag.classname > .direct.descendant { }
+
+    @media print {
+
+    }
+
+    /* these and other pseudo classes will not be supported 
+
+    td:first {}
+    td::last {}
+
+    */
+
+    /* Or these other rules
+
+    @import {}
+
+    @supports () {}
+
+
+    */
+
+Supported css properties
+------------------------
+
+For a complete list of all the supported style properties see :doc:`styles/document_styles`, but as an overview scyber currently supports.
+
+* Fills - Colors, images, positions, repeats and gradients.
+* Strokes - Widths, dashes, colors and joins.
+* Backgrounds - Colors, images, positions, repeats and gradients.
+* Borders - Width, dashes, colors and individual sides.
+* Text - Fonts, alignment, spacing, wrapping
+* Size - Explicit width, height, minimum and maximum widths and heights.
+* Positions - Block, Inline, Relative to parents, Absolute to the current page, 100% width.
+* Spacing - Margins, padding including individual sides
+* Lists - style, groups, number formats and labels.
+* Page - sizes, orientations, numbers and formats.
+* Columns - count, widths, gutter/alleys.
+
+.. note:: All dimensions in scryber are based on actual sizes, rather than relative sizes. We are hoping to implement relative sizes, but for the moment units should be in Points (pt), Millimeters (mm) and Inches (in).
+
+
+Setting styles in code
+-----------------------
+
+Remember that all content parsed is converted to an object graph? This applies to styles as well.
+
+All visual components (generally anything on a page) has a ``Style`` property. So we could apply some values to the style directly from our generation method.
+We can even define our own styles in the document to override
+
+
+
 
 
 

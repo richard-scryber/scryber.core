@@ -435,5 +435,5 @@ This does, however, start to create a dependacy on the layout and the code along
 See :doc:`document_controllers` for a better way to interact with your template in code.
 See :doc:`binding_model` for more on the databinding capabilities and available functions.
 
-Next we need to look at improving the layout design.
+Next we need to look at improving the layout design in :doc:`styles_and_classes`.
 

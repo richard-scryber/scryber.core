@@ -1,44 +1,48 @@
-﻿<!DOCTYPE HTML>
-<?scryber append-log='true' parser-mode='Strict' ?>
+﻿
+<!DOCTYPE HTML>
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <title>{{concat('Hello ', model.user.FirstName)}}</title>
     <link rel="stylesheet" href="./css/orderStyles.css" />
-    <style type="text/css" >
-
-        :root{
-            --theme_color:#232323;
+    <style type="text/css">
+        :root {
+            --theme_color: #FF0000;
             --theme_space: 10pt;
             --theme_align: center;
-            --theme_fsize: 12pt;
         }
 
-        table.orderlist{
-            width:100%;
-            font-size: var(--theme_fsize, 18pt);
+        table.orderlist {
+            width: 100%;
+            font-size: 12pt;
         }
 
-        #terms{
-            font-size: var(--theme_fsize, 18pt);
+        table.orderlist thead {
+            background-color: #333;
+            color: white;
+        }
+
+        #terms {
+            margin-top: 20pt;
+            font-size: 12pt;
         }
 
         #payNow {
             border: 1px solid red;
-            padding: 5pt;
-            margin-top: 10pt;
+            padding: 5px;
             background-color: #FFAAAA;
             color: #FF0000;
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
+    <!-- our heading has explicit styles -->
     <div style='color: var(--theme_color); padding: var(--theme_space); text-align: var(--theme_align)'>
         Hello {{model.user.FirstName}}.
     </div>
     <div style='padding: var(--theme_space);'>
-        <table class="orderlist" >
+        <!-- order list class styles are assigned -->
+        <table class="orderlist">
             <thead>
                 <tr>
                     <td>#</td>

@@ -1780,14 +1780,6 @@ namespace Scryber.Core.UnitTests.Html
                 order = order
             };
 
-            doc.Params["theme"] = new
-            {
-                color = "#FAFAFA",
-                space = "10pt",
-                align = "center"
-            };
-
-            
             using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
                 doc.SaveAsPDF(stream);
         }

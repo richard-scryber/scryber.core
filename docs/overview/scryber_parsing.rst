@@ -80,8 +80,8 @@ It also has an attribute for the *lang* value that will be set.
 And so it goes on into the rest of the xml, reading elements and attributes, and trying to set the values to components or property values.
 
 
-Parsing Documents
------------------
+Parsing Documents from files
+-----------------------------
 
 The easiest way to parse any xml content is to use the various static methods on the ``Scryber.Components.Document`` class.
 
@@ -98,6 +98,9 @@ The simplest is to load directly from a file
     var doc = Document.Parse(filepath);
 
 This reads the file from the stream and will resolve any references to relative content (images, stylesheets, etc) based on the *filepath*.
+
+Parsing documents from a stream
+-------------------------------
 
 If you want to load content dynamically from a stream then you can use the overloads that take a stream.
 An enumeration value for ParseSourceType must be provided, and an optional path value, so the parser can know where other references may reside.
@@ -236,7 +239,7 @@ As with the examples above - if the content is being parsed dynamically, either 
 method, or a ``PDFReferenceResolver`` should be provided, as below.
 
 
-Parsing and Reference Resolvers
+Resolving references dynamically
 --------------------------------
 
 The ``Document.Parse`` method, and its 12 overloads allows for parsing of any xml content as long as the root component returned implements the ``IPDFComponent`` interface.
@@ -288,7 +291,7 @@ For example if we wanted to embed some standard content we could provide our own
         using (var reader = new StringReader(src))
         {
             //Execute the parsing with the custom resolver
-            var doc = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, CustomResolve);
+            var doc = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, CustomResolve) as Document;
         }
     }
     
