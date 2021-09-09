@@ -5,89 +5,63 @@ Tables, Rows and Cells
 Scryber supports the use of tables with rows, cells and allows nesting, overflow, headings, footers and 
 column-spans.
 
-It also supports the use of binding and repeating.
+It also supports the use of binding and repeating at the row and/or the cell level.
 
 
 Simple Tables
 =============
 
-A simple table with no style or formatting will be output with a single point gray border and 4pt padding on each cell.
-The cells support a column-span attribute to allow multiple column content.
+A simple table with no style or formatting will be output with a 
+single point gray border and 4pt padding on each cell.
 
 Each column will take up as much room as needed (or possible).
+
+
+.. code-block:: html
+
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Tables</title>
+    </head>
+    <body style="padding:20pt">
+        <table>
+            <tr>
+                <td>Cell 1.1</td>
+                <td>Wider Cell 1.2</td>
+                <td>Cell 1.3</td>
+            </tr>
+            <tr>
+                <td>Cell 2.1</td>
+                <td>Cell 2.2</td>
+                <td>Cell 2.3</td>
+            </tr>
+            <tr>
+                <td>Cell 3.1</td>
+                <td>Cell 3.2</td>
+                <td>Cell 3.3</td>
+            </tr>
+        </table>
+    </body>
+    </html>
+
+
+
+.. figure:: ../images/samples_tables_simple.png
+    :target: ../_images/samples_tables_simple.png
+    :alt: Styled order items.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_tables_simple.png>`_
+
+
 Applying the full-width addtibute will make the table use all available space, obeying any fixed column widths.
 
-Rows and cells also support individual styles.
+The cells support a column-span attribute to allow multiple column content.
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    
-    <Styles>
-
-        <styles:Style applied-type="doc:Cell" applied-class="strong" >
-            <styles:Font bold="true"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-
-        <doc:Page styles:margins="20pt" styles:font-size="14pt">
-            <Content>
-
-                <!-- Basic unstyled Table -->
-
-                <doc:Table styles:margins="0 0 10 0">
-                    <doc:Row>
-                        <doc:Cell>Cell 1.1</doc:Cell>
-                        <doc:Cell>Wide Cell 1.2</doc:Cell>
-                        <doc:Cell>Cell 1.3</doc:Cell>
-                    </doc:Row>
-                    <doc:Row>
-                        <doc:Cell>Cell 2.1</doc:Cell>
-                        <doc:Cell styles:column-span="2">2 Column Cell 2.2</doc:Cell>
-                    </doc:Row>
-                    <doc:Row>
-                        <doc:Cell>Cell 3.1</doc:Cell>
-                        <doc:Cell>Cell 3.2</doc:Cell>
-                        <doc:Cell styles:width="200pt">Cell 3.3</doc:Cell>
-                    </doc:Row>
-                </doc:Table>
-
-                <!-- Table with full width and styles -->
-
-                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
-                <doc:Row styles:bg-color="#CCC">
-                    <doc:Cell styles:class="strong">Cell 1.1</doc:Cell>
-                    <doc:Cell>Wide Cell 1.2</doc:Cell>
-                    <doc:Cell styles:class="strong">Cell 1.3</doc:Cell>
-                </doc:Row>
-                <doc:Row>
-                    <doc:Cell>Cell 2.1</doc:Cell>
-                    <doc:Cell styles:column-span="2">2 Column Cell 2.2</doc:Cell>
-                </doc:Row>
-                <doc:Row>
-                    <doc:Cell>Cell 3.1</doc:Cell>
-                    <doc:Cell>Cell 3.2</doc:Cell>
-                    <doc:Cell styles:width="200pt">Cell 3.3</doc:Cell>
-                </doc:Row>
-                <doc:Row>
-                    <doc:Cell styles:class="strong" styles:bg-color="#CCC">Cell 4.1</doc:Cell>
-                </doc:Row>
-                </doc:Table>
-
-            </Content>
-        </doc:Page>
-
-    </Pages>
-    
-    </doc:Document>
-
-
-.. image:: images/documentTables1.png
 
 Headers, Footers and overflow
 =============================

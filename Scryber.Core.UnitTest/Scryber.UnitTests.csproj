@@ -50,6 +50,7 @@
     <Folder Include="Content\HTML\Fragments\" />
     <Folder Include="Content\SVG\" />
     <Folder Include="Secure\" />
+    <Folder Include="Content\HTML\Samples\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -57,6 +58,7 @@
     <None Remove="Mocks\Fonts\segoeuib.ttf" />
     <None Remove="Mocks\Fonts\segoeuii.ttf" />
     <None Remove="Content\ImageOutput.pdf" />
+    <None Remove="Content\HTML\Samples\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />
