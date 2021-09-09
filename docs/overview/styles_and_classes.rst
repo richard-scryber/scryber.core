@@ -2,7 +2,6 @@
 Styles, Classes and selectors
 ================================
 
-
 Scryber supports full cascading styles on all visual components.
 It also supports declaration of classes and styles within either the html head or as referenced stylesheets.
 
@@ -49,12 +48,12 @@ So from our previous example we can reference an external stylesheet *(empty at 
     </head>
     <body>
         <!-- our heading has explicit styles -->
-        <div style='color: var(--theme_color); padding: var(--theme_space); text-align: var(--theme_align)'>
+        <div style='color: var(--theme_color, #000); padding: var(--theme_space); text-align: var(--theme_align)'>
             Hello {{model.user.FirstName}}.
         </div>
         <div style='padding: var(--theme_space);'>
             <!-- order list class styles are assigned -->
-            <table class="orderlist" >
+            <table id="orders" class="orderlist" >
                 <thead>
                     <tr>
                         <td>#</td>
@@ -92,7 +91,7 @@ So from our previous example we can reference an external stylesheet *(empty at 
                 <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
                     <p>Please pay for your items now, and  we can process your order once received.</p>
                 </div>
-                <div id='payNow' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                <div id='paySoon' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
                     <p>Your items will be shipped immediately, please ensure you pay our invoice within <b>{{model.order.PaymentTerms}} days</b></p>
                 </div>
             </div>
@@ -149,6 +148,9 @@ Other unsupported selectors and rules will be ignored.
 
     @media print {
 
+        tag.mediaoverrides {
+
+        }
     }
 
     /* these and other pseudo classes will not be supported 
@@ -192,11 +194,73 @@ Setting styles in code
 
 Remember that all content parsed is converted to an object graph? This applies to styles as well.
 
-All visual components (generally anything on a page) has a ``Style`` property. So we could apply some values to the style directly from our generation method.
+All visual components (generally anything on a page) have a range of properties for setting styles, as well as a ``Style`` property. So we could apply some values to the style directly from our generation method.
+
 We can even define our own styles in the document to override
 
 
+.. code:: csharp
 
+    //using Scryber.Components
+    //using Scryber.Drawing
+    //using Scryber.Styles
+
+    var doc = Document.ParseDocument("MyFile.html");
+
+    var service = new OrderMockService();
+    var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+    var order = service.GetOrder(1);
+    order.PaymentTerms = 30;
+
+    doc.Params["model"] = new {
+                user =  user,
+                order = order
+    };
+
+    var grid = doc.FindAComponentById("orders") as TableGrid;
+    var pay = doc.FindAComponentById("payNow") as Div;
+    
+   
+    //Properties directly on the visual component.
+    grid.BackgroundColor = "#EEE";
+
+    //Using the style property
+    grid.Style.Margins.Right = 20;
+    grid.Style.Margins.Left = 20;
+
+    //Using style keys
+    pay.Style.SetValue(StyleKeys.BorderStyleKey, LineType.Dash);
+    pay.Style.SetValue(StyleKeys.BorderDashKey, PDFDashes.LongDash);
+
+    //A new style to the document
+    StyleDefn style = new StyleDefn("#terms div#payNow");
+    style.Border.Width = 2;
+    doc.Styles.Add(style);
+
+    doc.SaveAsPDF("OutputPath.pdf");
+
+
+.. figure:: ../images/doc_coded_styles.png
+    :target: ../_images/doc_coded_styles.png
+    :alt: Styles in code.
+    :class: with-shadow
+
+`Full size version <../_images/doc_coded_styles.png>`_
+
+.. note:: We had to set the Border Style to dash, as well as providing a dash value, as our css styles had defined the border as solid. 
+
+All the style properties are strongly typed, even the ``Style.SetValue`` as the style keys are strongly typed. However most of the values used have an explicit or implicit conversion from numbers or strings, or a simple constructor.
+The main classes (and structs) used in styles are
+
+* PDFUnit - a basic dimension with units. Implicit conversion from a number, along with parsing and constructors. See :doc:`drawing_units`
+* PDFColor - a standard color in either RGB, CMYK or Gray scale. Implicit conversion from a string, along with parsing and constructors. See :doc:`drawing_colors`
+* PDFThickness - 4 PDFUnits in a top, right, bottom and left order. Parsing and constructors. See :doc:`drawing_units`
+* PDFFontSelector - A chained list of names of fonts, e.g "Arial" sans-serif. Explicit conversion along with parsing and constructor. See :doc:`drawing_fonts`
+* Various Enumerations - Used for setting style types such as line caps, background styles, etc.
+
+
+Base components styles
+----------------------
 
 
 
