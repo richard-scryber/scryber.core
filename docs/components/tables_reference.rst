@@ -20,6 +20,7 @@ Each column will take up as much room as needed (or possible).
 .. code-block:: html
 
 
+    <!-- /Content/HTML/Samples/TableSimple.html -->
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -47,6 +48,59 @@ Each column will take up as much room as needed (or possible).
     </body>
     </html>
 
+.. code:: csharp
+
+    using Scryber;
+    using Scryber.Drawing;
+    using Scryber.Styles;
+    using Scryber.Components
+    
+    /// <summary>
+    /// Returns a file stream in '/My Documents/Scryber Test Output' folder.
+    /// If the document exists it will be overwritten
+    /// </summary>
+    /// <param name="docName">The name of the file with extension</param>
+    /// <returns>A new file stream</returns>
+    public Stream GetOutputStream(string docName)
+    {
+        var path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        path = System.IO.Path.Combine(path, "Scryber Test Output");
+
+        if (!System.IO.Directory.Exists(path))
+            System.IO.Directory.CreateDirectory(path);
+
+        var output = System.IO.Path.Combine(path, docName);
+
+        return new System.IO.FileStream(output, System.IO.FileMode.Create);
+    }
+
+    /// <summary>
+    /// Returns the path to a template in the samples folder.
+    /// </summary>
+    /// <param name="templateName"></param>
+    /// <returns></returns>
+    public string GetSampleTemplatePath(string templateName)
+    {
+        var path = System.Environment.CurrentDirectory;
+        path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/", templateName);
+
+        return path;
+    }
+
+
+    public void Table1_SimpleTable()
+    {
+        var path = System.Environment.CurrentDirectory;
+        path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/TableSimple.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = DocStreams.GetOutputStream("Samples_TableSimple.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+    }
 
 
 .. figure:: ../images/samples_tables_simple.png
@@ -64,6 +118,7 @@ The cells support a column-span attribute to allow multiple column content.
 
 .. code:: html
 
+    <!-- /Content/HTML/Samples/TableSimple.html -->
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -89,6 +144,22 @@ The cells support a column-span attribute to allow multiple column content.
         </table>
     </body>
     </html>
+
+.. code:: csharp
+
+    public void Table2_SimpleTableSpanned()
+    {
+        var path = System.Environment.CurrentDirectory;
+        path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/TableSpanned.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Samples_TableSpanned.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+    }
 
 .. figure:: ../images/samples_tables_spanned.png
     :target: ../_images/samples_tables_spanned.png
@@ -154,6 +225,9 @@ These properties wrap the protected ``InnerContent`` property from the ``PDFCont
     :class: with-shadow
 
 `Full size version <../_images/samples_tableincode.png>`_
+
+
+It is also possible to access a parsed table to alter the content as needed.
 
 
 
