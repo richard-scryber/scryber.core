@@ -27,7 +27,7 @@ Each column will take up as much room as needed (or possible).
         <title>Simple Tables</title>
     </head>
     <body style="padding:20pt">
-        <table>
+        <table id='FirstTable' >
             <tr>
                 <td>Cell 1.1</td>
                 <td>Wider Cell 1.2</td>
@@ -71,7 +71,7 @@ The cells support a column-span attribute to allow multiple column content.
         <title>Simple Tables</title>
     </head>
     <body style="padding:20pt">
-        <table style="width:100%">
+        <table id='FirstTable' style="width:100%">
             <tr>
                 <td>Cell 1.1</td>
                 <td style="width: 300pt">Wider Cell 1.2</td>
@@ -97,6 +97,65 @@ The cells support a column-span attribute to allow multiple column content.
     :class: with-shadow
 
 `Full size version <../_images/samples_tables_spanned.png>`_
+
+
+Tables in code
+----------------
+
+Tables can be created just as easily through code. The ``table`` has a ``Rows`` property and each ``row`` has a ``Cells`` property.
+These properties wrap the protected ``InnerContent`` property from the ``PDFContainerComponent`` class.
+
+.. code:: csharp
+
+    var doc = new Document();
+
+    var pg = new Page();
+    doc.Pages.Add(pg);
+    pg.Padding = new PDFThickness(20);
+
+    var tbl = new TableGrid();
+    pg.Contents.Add(tbl);
+    tbl.FullWidth = true;
+
+    for (int i = 0; i < 3; i++)
+    {
+        var row = new TableRow();
+        tbl.Rows.Add(row);
+
+        for (int j = 0; j < 3; j++)
+        {
+            if (i == 1 && j == 2)
+            {
+                //We make the previous cell 2 clolumns wide rather than add a new one.
+                row.Cells[1].ColumnCount = 2;
+                continue;
+            }
+            else
+            {
+                var cell = new TableCell() { BorderColor = PDFColors.Aqua, FontItalic = true };
+                row.Cells.Add(cell);
+
+                var txt = new TextLiteral("Cell " + (i + 1) + "." + (j + 1));
+                cell.Contents.Add(txt);
+            }
+        }
+    }
+
+    using (var stream = DocStreams.GetOutputStream("Samples_TableInCode.pdf"))
+    {
+        doc.SaveAsPDF(stream);
+    }
+
+
+.. figure:: ../images/samples_tableincode.png
+    :target: ../_images/samples_tableincode.png
+    :alt: Spanning full width tables.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_tableincode.png>`_
+
+
 
 
 Headers, Footers and overflow
