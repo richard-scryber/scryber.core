@@ -571,5 +571,12 @@ See :doc:`binding_databinding` for more information on the data binding capabili
 
 `Full size version <../_images/samples_tabledatabound.png>`_
 
+Alternating row styles
+-----------------------
 
-.. note:: Scryber also includes the data-style-identifier which can improve the speed of output for data bound repeats
+The conditional function ``if(index(), [true expression], [false expression])`` was applied above for an alternating class to the table rows, even when we don't know how many items there are.
+We could have combined this with the ``concat()`` function to apply multiple classes.
+
+See :doc:`binding/binding_functions` for more examples and information.
+
+.. note:: Scryber also includes the data-style-identifier which can improve the speed of output for data bound repeats but can impact the styles within repeating content.
