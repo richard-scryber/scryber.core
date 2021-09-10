@@ -10,7 +10,7 @@ It also supports the use of binding and repeating at the row and/or the cell lev
 Generation methods
 -------------------
 
-All methods and files in these samples use the standard testing set up as outlined in :doc:`overview/samples_reference.rst`
+All methods and files in these samples use the standard testing set up as outlined in :doc:`overview/samples_reference`
 
 Simple Tables
 -------------
@@ -18,13 +18,14 @@ Simple Tables
 A simple table with no style or formatting will be output with a 
 single point gray border and 4pt padding on each cell.
 
-Each column will take up as much room as needed (or possible).
+Each column will take up as much room as needed (or possible). And the table will be be sized for the widths. 
 
 
 .. code-block:: html
 
 
-    <!-- /Content/HTML/Samples/TableSimple.html -->
+    <!-- /Templates/Tables/TableSimple.html -->
+
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -54,56 +55,20 @@ Each column will take up as much room as needed (or possible).
 
 .. code:: csharp
 
-    using Scryber;
-    using Scryber.Drawing;
-    using Scryber.Styles;
-    using Scryber.Components;
-
-    
-    /// <summary>
-    /// Returns a file stream in '/My Documents/Scryber Test Output' folder.
-    /// If the document exists it will be overwritten
-    /// </summary>
-    /// <param name="docName">The name of the file with extension</param>
-    /// <returns>A new file stream</returns>
-    public Stream GetOutputStream(string docName)
-    {
-        var path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        path = System.IO.Path.Combine(path, "Scryber Test Output");
-
-        if (!System.IO.Directory.Exists(path))
-            System.IO.Directory.CreateDirectory(path);
-
-        var output = System.IO.Path.Combine(path, docName);
-
-        return new System.IO.FileStream(output, System.IO.FileMode.Create);
-    }
-
-    /// <summary>
-    /// Returns the path to a template in the samples folder.
-    /// </summary>
-    /// <param name="templateName"></param>
-    /// <returns></returns>
-    public string GetSampleTemplatePath(string templateName)
-    {
-        var path = System.Environment.CurrentDirectory;
-        path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/", templateName);
-
-        return path;
-    }
-
+    //using Scryber.Components;
+    //Scryber.UnitSamples/TableTests.cs
 
     public void Table1_SimpleTable()
     {
-        var path = System.Environment.CurrentDirectory;
-        path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/TableSimple.html");
+        var path = GetTemplatePath("Tables", "TableSimple.html");
 
         using (var doc = Document.ParseDocument(path))
         {
-            using (var stream = DocStreams.GetOutputStream("Samples_TableSimple.pdf"))
+            using(var stream = GetOutputStream("Tables", "TableSimple.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }
+
         }
     }
 
@@ -123,7 +88,7 @@ The cells support a column-span attribute to allow multiple column content.
 
 .. code:: html
 
-    <!-- /Content/HTML/Samples/TableSimple.html -->
+    <!-- /Templates/Tables/TableSpanned.html -->
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -152,17 +117,19 @@ The cells support a column-span attribute to allow multiple column content.
 
 .. code:: csharp
 
-    public void Table2_SimpleTableSpanned()
+    //Scryber.UnitSamples/TableTests.cs
+
+    public void SpannedTable()
     {
-        var path = System.Environment.CurrentDirectory;
-        path = System.IO.Path.Combine(path, "../../../Content/HTML/Samples/TableSpanned.html");
+        var path = GetTemplatePath("Tables", "TableSpanned.html");
 
         using (var doc = Document.ParseDocument(path))
         {
-            using (var stream = GetOutputStream("Samples_TableSpanned.pdf"))
+            using (var stream = GetOutputStream("Tables", "TableSpanned.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }
+
         }
     }
 
@@ -175,6 +142,7 @@ The cells support a column-span attribute to allow multiple column content.
 `Full size version <../_images/samples_tables_spanned.png>`_
 
 
+
 Tables in code
 ----------------
 
@@ -183,45 +151,49 @@ These properties wrap the protected ``InnerContent`` property from the ``PDFCont
 
 .. code:: csharp
 
-    var doc = new Document();
+    //Scryber.UnitSamples/TableTests.cs
 
-    var pg = new Page();
-    doc.Pages.Add(pg);
-    pg.Padding = new PDFThickness(20);
-
-    var tbl = new TableGrid();
-    pg.Contents.Add(tbl);
-    tbl.FullWidth = true;
-
-    for (int i = 0; i < 3; i++)
+    public void CodedTable()
     {
-        var row = new TableRow();
-        tbl.Rows.Add(row);
+        var doc = new Document();
 
-        for (int j = 0; j < 3; j++)
+        var pg = new Page();
+        doc.Pages.Add(pg);
+        pg.Padding = new PDFThickness(20);
+
+        var tbl = new TableGrid();
+        pg.Contents.Add(tbl);
+        tbl.FullWidth = true;
+
+        for (int i = 0; i < 3; i++)
         {
-            if (i == 1 && j == 2)
-            {
-                //We make the previous cell 2 clolumns wide rather than add a new one.
-                row.Cells[1].ColumnCount = 2;
-                continue;
-            }
-            else
-            {
-                var cell = new TableCell() { BorderColor = PDFColors.Aqua, FontItalic = true };
-                row.Cells.Add(cell);
+            var row = new TableRow();
+            tbl.Rows.Add(row);
 
-                var txt = new TextLiteral("Cell " + (i + 1) + "." + (j + 1));
-                cell.Contents.Add(txt);
+            for (int j = 0; j < 3; j++)
+            {
+                if (i == 1 && j == 2)
+                {
+                    //We make the previous cell 2 columns wide rather than add a new one.
+                    row.Cells[1].CellColumnSpan = 2;
+                    continue;
+                }
+                else
+                {
+                    var cell = new TableCell() { BorderColor = PDFColors.Aqua, FontItalic = true };
+                    row.Cells.Add(cell);
+
+                    var txt = new TextLiteral("Cell " + (i + 1) + "." + (j + 1));
+                    cell.Contents.Add(txt);
+                }
             }
         }
-    }
 
-    using (var stream = DocStreams.GetOutputStream("Samples_TableInCode.pdf"))
-    {
-        doc.SaveAsPDF(stream);
+        using (var stream = DocStreams.GetOutputStream("Samples_TableInCode.pdf"))
+        {
+            doc.SaveAsPDF(stream);
+        }
     }
-
 
 .. figure:: ../images/samples_tableincode.png
     :target: ../_images/samples_tableincode.png
@@ -231,9 +203,55 @@ These properties wrap the protected ``InnerContent`` property from the ``PDFCont
 
 `Full size version <../_images/samples_tableincode.png>`_
 
+.. note:: The property for the number of columns spanned by a cell is CellColumnSpan. The ColumnCount property will refer to the number of columns to layout inner content with.
+
 
 It is also possible to access a parsed table to alter the content as needed.
 
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/TableTests.cs
+
+    public void ModifyTable()
+    {
+        //Use the simple table sample
+        var path = GetTemplatePath("Tables", "TableSimple.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            //Make full width and add a footer to the table
+            if(doc.TryFindAComponentByID("FirstTable", out TableGrid tbl))
+            {
+                tbl.FullWidth = true;
+
+                var row = new TableRow();
+                tbl.Rows.Add(row);
+
+                var span = tbl.Rows[0].Cells.Count;
+
+                var cell = new TableCell();
+                cell.Contents.Add(new TextLiteral("Adding a bottom row to the table with a span of " + span));
+                cell.CellColumnSpan = span;
+                row.Cells.Add(cell);
+            }
+
+            using (var stream = GetOutputStream("Tables", "TableWithNewRow.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_tablewithnewrow.png
+    :target: ../_images/samples_tablewithnewrow.png
+    :alt: Spanning full width tables.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_tablewithnewrow.png>`_
 
 
 

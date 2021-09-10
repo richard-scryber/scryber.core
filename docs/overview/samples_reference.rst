@@ -115,3 +115,57 @@ The pre-defined values for the output folder, the location of the templates fold
 either if you are experiencing dificulties in locating the samples or want to change where they will be created.
 
 If you **do not** want to execute the tests to save to an actual file, the compiler directive OUTPUT_FILES can be removed (or commented)
+
+
+Empty Sample Test class
+------------------------
+
+A basic set up for a sample test in a test class is 
+
+.. code:: csharp
+
+    //Standard using namespaces
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Scryber.Components;
+    using Scryber.Styles;
+    using Scryber.Drawing;
+
+    namespace Scryber.UnitSamples
+    {
+        //Inherits from Scryber.UnitSamples.TestBase
+
+        [TestClass]
+        public class MyTest : TestBase
+        {
+            //Declare a test method
+
+            [TestMethod]
+            public void SimpleSample()
+            {
+                //Get the path to the template
+                var path = GetTemplatePath("Samples", "Simple.html");
+
+                //Parse the document at the path
+                using (var doc = Document.ParseDocument(path))
+                {
+                    //do any further processing needed
+
+                    //Create an output stream 
+                    using(var stream = GetOutputStream("Samples", "Simple.pdf"))
+                    {
+                        //And save the document to that file
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+        }
+    }
+
+Contributing examples
+---------------------
+
+We would love to add more samples and starter documents / recipies. 
+
+If you have an example you are proud of, or think would be useful to others. Please **do** fork the repository and propose the additions.
