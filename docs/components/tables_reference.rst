@@ -7,6 +7,10 @@ column-spans.
 
 It also supports the use of binding and repeating at the row and/or the cell level.
 
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`overview/samples_reference.rst`
 
 Simple Tables
 -------------
@@ -53,7 +57,8 @@ Each column will take up as much room as needed (or possible).
     using Scryber;
     using Scryber.Drawing;
     using Scryber.Styles;
-    using Scryber.Components
+    using Scryber.Components;
+
     
     /// <summary>
     /// Returns a file stream in '/My Documents/Scryber Test Output' folder.
