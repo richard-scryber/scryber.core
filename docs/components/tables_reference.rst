@@ -82,8 +82,15 @@ Each column will take up as much room as needed (or possible). And the table wil
 `Full size version <../_images/samples_tables_simple.png>`_
 
 
-Applying the full-width addtibute will make the table use all available space, obeying any fixed column widths.
 
+For speed the first 5 rows are tested for desired width, if they are not explicitly set. 
+This allows for giving good measurement of a desired layout without having to double measure an entire table.
+If the 6th row on a table has a particularly large flowing content, then this will be ignored - set an explicit width on that column, or all the others.
+
+Table width and cell spans
+--------------------------
+
+Applying the full-width (``width:100%``) will make the table use all available space in it's container, obeying any fixed column widths.
 The cells support a column-span attribute to allow multiple column content.
 
 .. code:: html
@@ -163,6 +170,8 @@ These properties wrap the protected ``InnerContent`` property from the ``PDFCont
 
         var tbl = new TableGrid();
         pg.Contents.Add(tbl);
+
+        //Full width is equivalent to width:100%
         tbl.FullWidth = true;
 
         for (int i = 0; i < 3; i++)
@@ -256,367 +265,311 @@ It is also possible to access a parsed table to alter the content as needed.
 
 
 Headers, Footers and overflow
-=============================
+-----------------------------
 
-Tables support both header and footer rows (single or multiple) along with header and footer cells.
-The header cells by default will repeat across columns and or pages, but can be set not to repeat.
-(Alternatively, rows can simply be set to repeat, and will do so after they are initially been laid out).
+Tables support both headers and footers (single or multiple).
+The header cells, by default, will repeat across columns and or pages and be in bold, but can be set not to repeat with the ``repeat='none'`` attribute.
+(Alternatively, any row can simply be set to repeat with the ``repeat='RepeatAtTop'``, and will do so after they have initially been laid out).
 
 Rows support the block styles, except margins, padding and positioning.
 
-.. code-block:: xml
+Empty cells will still show size and borders, but can be hidden with the ``border:none`` style.
 
-    <?xml version="1.0" encoding="utf-8" ?>
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    
-    <Styles>
+.. code-block:: html
 
-        <styles:Style applied-type="doc:Cell" >
-        </styles:Style>
+    <!-- /Templates/Tables/TableHeaders.html -->
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Table Headers and Footers</title>
+    </head>
+    <body style="padding:20pt">
+        <!-- put the table in a div with 2 columns and a maximum height of 270pt -->
+        <div style="max-height: 270pt; font-size:12pt; column-count: 2">
 
-        <styles:Style applied-type="doc:Cell" applied-class="strong" >
-        <styles:Font bold="true"/>
-        </styles:Style>
+            <table id='TableHead' style="width:100%">
+                <thead>
+                    <tr>
+                        <td>Header 1</td>
+                        <td>Header 2</td>
+                        <td>Header 3</td>
+                    </tr>
+                    <!-- This row will not repeat across multiple columns -->
+                    <tr repeat="none">
+                        <td>Header 1</td>
+                        <td>Header 2</td>
+                        <td>Header 3</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                    <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+                </tbody>
+                <tfoot style="font-style: italic;">
+                    <tr>
+                        <td colspan="2" style="border:none;"></td>
+                        <td>Footer</td>
+                    </tr>
+                </tfoot>
+            </table>
 
-        <styles:Style applied-class="table-title" >
-        <styles:Table row-repeat="None"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-
-            <doc:Page styles:margins="20pt" styles:font-size="12pt">
-            <Content>
-
-                <doc:Div styles:column-count="2" styles:max-height="200pt" styles:border-color="aqua" styles:padding="2pt" >
-
-
-                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
-                    
-                    <!-- Header that will not repeat based on style-->
-                    <doc:Header-Row styles:class="table-title" >
-                    <doc:Header-Cell styles:column-span="3" >A flowing table</doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <!-- Header that will repeat -->
-                    <doc:Header-Row>
-                    <doc:Header-Cell>Header 1</doc:Header-Cell>
-                    <doc:Header-Cell>Header 2</doc:Header-Cell>
-                    <doc:Header-Cell>Header 3</doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <doc:Row>
-                    <doc:Cell>Cell 1.1</doc:Cell>
-                    <doc:Cell>Wide Cell 1.2</doc:Cell>
-                    <doc:Cell>Cell 1.3</doc:Cell>
-                    </doc:Row>
-                    <doc:Row>
-                    <doc:Cell>Cell 2.1</doc:Cell>
-                    <doc:Cell styles:column-span="2">2 Column Cell 2.2</doc:Cell>
-                    </doc:Row>
-                    
-                    <!-- Standard row, that will repeat after
-                    it has been initially laid out -->
-                    <doc:Row styles:repeat="RepeatAtTop" styles:bg-color="#EEE">
-                    <doc:Cell>Repeat 3.1</doc:Cell>
-                    <doc:Cell>Repeat 3.2</doc:Cell>
-                    <doc:Cell styles:width="60pt">Cell 3.3</doc:Cell>
-                    </doc:Row>
-                    
-                    <doc:Row><doc:Cell>Cell 4.1</doc:Cell><doc:Cell>Wide Cell 4.2</doc:Cell><doc:Cell>Cell 4.3</doc:Cell></doc:Row>
-                    <doc:Row><doc:Cell>Cell 5.1</doc:Cell><doc:Cell>Wide Cell 5.2</doc:Cell><doc:Cell>Cell 5.3</doc:Cell></doc:Row>
-                    <doc:Row><doc:Cell>Cell 6.1</doc:Cell><doc:Cell>Wide Cell 6.2</doc:Cell><doc:Cell>Cell 6.3</doc:Cell></doc:Row>
-                    <doc:Row><doc:Cell>Cell 7.1</doc:Cell><doc:Cell>Cell 7.2</doc:Cell><doc:Cell>Cell 7.3</doc:Cell></doc:Row>
-                    <doc:Row><doc:Cell>Cell 8.1</doc:Cell><doc:Cell>Cell 8.2</doc:Cell><doc:Cell>Cell 8.3</doc:Cell></doc:Row>
-                    <doc:Row><doc:Cell>Cell 9.1</doc:Cell><doc:Cell>Cell 9.2</doc:Cell><doc:Cell>Cell 9.3</doc:Cell></doc:Row>
-                    <doc:Row><doc:Cell>Cell 10.1</doc:Cell><doc:Cell>Cell 10.2</doc:Cell><doc:Cell>Cell 10.3</doc:Cell></doc:Row>
-                    
-                    <doc:Footer-Row styles:bg-color="#CCC" >
-                    <doc:Footer-Cell>Footer 1</doc:Footer-Cell>
-                    <doc:Footer-Cell>Footer 2</doc:Footer-Cell>
-                    <doc:Footer-Cell>Footer 3</doc:Footer-Cell>
-                    </doc:Footer-Row>
-                </doc:Table>
-                
-                </doc:Div>
-
-            </Content>
-            </doc:Page>
-
-    </Pages>
-    
-    </doc:Document>
+        </div>
+    </body>
+    </html>
 
 
-.. image:: images/documentTablesFlow.png
+.. code:: csharp
 
-.. note:: Because of the layout mechanism, repeating cells cannot be accessed or modified between itterations. The next table header is from the layout of the original.
+    //Scryber.UnitSamples/TableTests.cs
 
-Mixed content and nesting
-=========================
+    public void TableHeaderAndFooter()
+    {
+        var path = GetTemplatePath("Tables", "TableHeaders.html");
 
-All teble cells can contain any content, just like other block components, including other tables, 
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Tables", "TableHeaders.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_tableheaders.png
+    :target: ../_images/samples_tableheaders.png
+    :alt: Tables with headers and footers.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_tableheaders.png>`_
+
+The Component classes for Header and Footer rows and cells are ``TableHeaderRow``, ``TableFooterRow``, ``TableHeaderCell`` and ``TableFooterCell``.
+They simply inherit from ``TableRow`` and ``TableCell`` and can be added to a ``TableGrid`` and ``TableRow`` at any point.
+
+.. note:: Because of the layout mechanism, repeating cells cannot be accessed or modified between layout itterations (columns or pages). The next table header is from the layout of the original.
+
+
+Mixed content, styling and nesting
+----------------------------------
+
+All table cells can contain any content, just like other block components, including other tables, 
 and they also support sizing and alignment of content.
 
-A table row however is designated at not being allowed to split across columns or 
-pages (even if it's got a nested table. It will probably just mess up the layout.
 
-.. code-block:: xml
+.. code:: html
 
-    <?xml version="1.0" encoding="utf-8" ?>
+    <!-- /Templates/Tables/TableNested.html -->
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Table Headers and Footers</title>
+    </head>
+    <body style="padding:20pt">
+        <div style="font-size:12pt;">
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
+            <table id='TopTable' style="width:100%">
+                <thead>
+                    <tr>
+                        <td colspan="2">Table with mixed content and another nested table</td>
+                    </tr>
+                    <tr>
+                        <td>Left Side</td>
+                        <td>Right Side</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: #AAAAAF;"><td style="min-height:35pt">Cell 1</td><td>Cell 2</td></tr>
+                    <tr>
+                        <td>
+                            <img src="../../images/landscape.jpg" style="width:150pt;" />
+                            <p style="text-align:center; vertical-align:middle; height:60pt; background-color: #AFAFAF">The image above is a beautiful landscape in the Cheshire countryside.</p>
+                            <table style="width:100%; margin-top: 10pt;">
+                                <tr><td>1</td><td>2</td><td style="width:200pt">3</td></tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table style="width:100%; margin-top: 10pt">
+                                <tr><td>1</td><td>2</td><td>3</td></tr>
+                                <tr><td>1</td><td>2</td><td>3</td></tr>
+                                <tr><td>1</td><td>2</td><td>3</td></tr>
+                                <tr><td>1</td><td>2</td><td>3</td></tr>
+                            </table>
+                            <p style="text-align:justify">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar, ipsum eu molestie elementum,
+                                nibh ante ultricies dui, et euismod nulla sapien ac purus. Morbi suscipit elit tellus, nec elementum lacus dignissim a.
+                                Aliquam molestie turpis consectetur rutrum pretium. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+                                Quisque varius vitae erat sagittis facilisis. Vivamus quis tellus quis augue fringilla posuere vitae ac ante. Aliquam ultricies sodales cursus.
+                                Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                <br />
+                                Vestibulum dolor libero, faucibus quis tristique at, euismod vitae nunc. Donec vel volutpat urna, eget tristique nunc.
+                                Quisque vitae iaculis dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                Fusce fermentum odio ac feugiat pharetra. Integer sit amet elit a urna maximus sollicitudin sit amet sed mauris.
+                                Proin finibus nec diam blandit porttitor.
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot style="font-style: italic;">
+                    <tr>
+                        <td style="border:none;"></td>
+                        <td>Footer</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </body>
+    </html>
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/TableTests.cs
+
+    public void TableMixedNestedContent()
+    {
+        var path = GetTemplatePath("Tables", "TableNested.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Tables", "TableNested.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. note:: A table row is designated to not being allowed to split across columns or pages (even if it's got a nested table). It will probably just mess up the layout. Use a div
     
-    <Styles>
 
-        <styles:Style applied-type="doc:Header-Cell" >
-        <styles:Position h-align="Center" v-align="Middle"/>
-        <styles:Size height="40pt"/>
-        </styles:Style>
+.. figure:: ../images/samples_tablenested.png
+    :target: ../_images/samples_tablenested.png
+    :alt: Tables with headers and footers.
+    :width: 600px
+    :class: with-shadow
 
-        <styles:Style applied-class="table-title">
-        <styles:Table row-repeat="None"/>
-        </styles:Style>
-        
-        <styles:Style applied-class="img-footer" >
-        <styles:Font family="Helvetica"  size="10pt" italic="true"/>
-        <styles:Position h-align="Center"/>
-        <styles:Background color="black"/>
-        <styles:Fill color="white"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
+`Full size version <../_images/samples_tablenested.png>`_
 
-            <doc:Section styles:margins="20pt" styles:font-size="12pt">
-            <Content>
-
-                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
-                    
-                    <!-- Header that will not repeat based on style-->
-                    <doc:Header-Row styles:class="table-title" >
-                    <doc:Header-Cell styles:column-span="3" >A nested table</doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <!-- Header that will repeat -->
-                    <doc:Header-Row>
-                    <doc:Header-Cell>Left</doc:Header-Cell>
-                    <doc:Header-Cell>Right</doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <doc:Row>
-                    
-                    <doc:Cell styles:v-align="Middle" styles:h-align="Center">
-                        <doc:Image src="../../Content/Images/landscape.jpg" styles:width="100pt" />
-                        <doc:Div styles:class="img-footer" styles:width="100pt">Landscape Image</doc:Div>
-                    </doc:Cell>
-                    
-                    <doc:Cell>
-                        Inner Nested table
-                        <doc:Table>
-                        <doc:Row><doc:Cell>Cell 4.1</doc:Cell><doc:Cell>Wide Cell 4.2</doc:Cell><doc:Cell>Cell 4.3</doc:Cell></doc:Row>
-                        <doc:Row><doc:Cell>Cell 5.1</doc:Cell><doc:Cell>Wide Cell 5.2</doc:Cell><doc:Cell>Cell 5.3</doc:Cell></doc:Row>
-                        <doc:Row><doc:Cell>Cell 6.1</doc:Cell><doc:Cell>Wide Cell 6.2</doc:Cell><doc:Cell>Cell 6.3</doc:Cell></doc:Row>
-                        <doc:Row><doc:Cell>Cell 7.1</doc:Cell><doc:Cell>Cell 7.2</doc:Cell><doc:Cell>Cell 7.3</doc:Cell></doc:Row>
-                        <doc:Row><doc:Cell>Cell 8.1</doc:Cell><doc:Cell>Cell 8.2</doc:Cell><doc:Cell>Cell 8.3</doc:Cell></doc:Row>
-                        <doc:Row><doc:Cell>Cell 9.1</doc:Cell><doc:Cell>Cell 9.2</doc:Cell><doc:Cell>Cell 9.3</doc:Cell></doc:Row>
-                        <doc:Row><doc:Cell>Cell 10.1</doc:Cell><doc:Cell>Cell 10.2</doc:Cell><doc:Cell>Cell 10.3</doc:Cell></doc:Row>
-                        <doc:Footer-Row styles:bg-color="#CCC" ><doc:Footer-Cell>Footer 1</doc:Footer-Cell><doc:Footer-Cell>Footer 2</doc:Footer-Cell><doc:Footer-Cell>Footer 3</doc:Footer-Cell></doc:Footer-Row>
-                        </doc:Table>
-
-                    </doc:Cell>
-                    <doc:Cell>
-                        Cell 1.3
-                    </doc:Cell>
-                    </doc:Row>
-                    
-                    <doc:Row>
-                        <doc:Cell>
-                            <doc:B>Rows will not split across pages.</doc:B>
-                        </doc:Cell>
-                        <doc:Cell styles:column-span="2">
-                            <doc:Table>
-                            <doc:Row><doc:Cell>Cell 4.1</doc:Cell><doc:Cell>Wide Cell 4.2</doc:Cell><doc:Cell>Cell 4.3</doc:Cell></doc:Row>
-                            <doc:Row><doc:Cell>Cell 5.1</doc:Cell><doc:Cell>Wide Cell 5.2</doc:Cell><doc:Cell>Cell 5.3</doc:Cell></doc:Row>
-                            <doc:Row><doc:Cell>Cell 6.1</doc:Cell><doc:Cell>Wide Cell 6.2</doc:Cell><doc:Cell>Cell 6.3</doc:Cell></doc:Row>
-                            <doc:Row><doc:Cell>Cell 7.1</doc:Cell><doc:Cell>Cell 7.2</doc:Cell><doc:Cell>Cell 7.3</doc:Cell></doc:Row>
-                            <doc:Row><doc:Cell>Cell 8.1</doc:Cell><doc:Cell>Cell 8.2</doc:Cell><doc:Cell>Cell 8.3</doc:Cell></doc:Row>
-                            <doc:Row><doc:Cell>Cell 9.1</doc:Cell><doc:Cell>Cell 9.2</doc:Cell><doc:Cell>Cell 9.3</doc:Cell></doc:Row>
-                            <doc:Row><doc:Cell>Cell 10.1</doc:Cell><doc:Cell>Cell 10.2</doc:Cell><doc:Cell>Cell 10.3</doc:Cell></doc:Row>
-                            <doc:Footer-Row styles:bg-color="#CCC" ><doc:Footer-Cell>Footer 1</doc:Footer-Cell><doc:Footer-Cell>Footer 2</doc:Footer-Cell><doc:Footer-Cell>Footer 3</doc:Footer-Cell></doc:Footer-Row>
-                            </doc:Table>
-                            <doc:Para>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar, ipsum eu molestie elementum, nibh ante ultricies dui, et euismod nulla sapien ac purus. Morbi suscipit elit tellus, nec elementum lacus dignissim a. Aliquam molestie turpis consectetur rutrum pretium. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque varius vitae erat sagittis facilisis. Vivamus quis tellus quis augue fringilla posuere vitae ac ante. Aliquam ultricies sodales cursus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                            <doc:Br/>
-                            Vestibulum dolor libero, faucibus quis tristique at, euismod vitae nunc. Donec vel volutpat urna, eget tristique nunc. Quisque vitae iaculis dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce fermentum odio ac feugiat pharetra. Integer sit amet elit a urna maximus sollicitudin sit amet sed mauris. Proin finibus nec diam blandit porttitor.
-                            <doc:Br/>
-                            Nunc laoreet, enim in faucibus volutpat, nunc ligula sollicitudin magna, eget fermentum nulla neque scelerisque lectus. Nulla vel tincidunt enim. Nam vulputate eros a mi ultrices aliquet. Vestibulum et convallis tortor. Aenean pellentesque libero quis consectetur tincidunt. Proin maximus leo non felis tempor, ut iaculis ipsum iaculis. Nullam tristique justo diam, at ultricies diam ultrices ac. Aenean venenatis, lorem vel bibendum tristique, sem nisi congue ex, sed eleifend magna nisl luctus velit. Donec hendrerit malesuada neque eu imperdiet. Duis tempor venenatis leo, sed aliquet sem aliquet sed. Ut nec ligula non lacus fermentum bibendum sed sit amet est. Nam pharetra tempor tortor vel auctor. Fusce metus felis, lacinia quis mauris sed, porta iaculis metus.
-                            <doc:Br/>
-                            Aliquam et sodales orci, quis sollicitudin velit. Nam ornare molestie aliquam. Mauris vitae convallis metus. Maecenas dignissim dui quis enim pretium, id interdum leo condimentum. Maecenas rutrum faucibus sapien. Praesent rutrum efficitur lorem, nec hendrerit dui. Ut ac massa ut magna ultricies gravida ut in mi. Fusce sed leo elit. Donec finibus rhoncus pulvinar.
-                            </doc:Para>
-                        </doc:Cell>
-                    </doc:Row>
-                    
-                    <!-- Standard row, that will repeat after
-                    it has been initially laid out -->
-                    <doc:Row styles:repeat="RepeatAtTop" styles:bg-color="#EEE">
-                        <doc:Cell>Repeat 3.1</doc:Cell>
-                        <doc:Cell>Repeat 3.2</doc:Cell>
-                    <doc:Cell styles:width="60pt">Cell 3.3</doc:Cell>
-                </doc:Row>
-                    
-            </doc:Table>
-                
-
-            </Content>
-        </doc:Section>
-
-    </Pages>
-    
-    </doc:Document>
-
-
-.. image:: images/documentTablesNested.png
-
-.. note:: In future we might be able to work on getting table rows to overflow across pages, but there are always other ways of achieving a similar layout.
 
 Binding to Data
-===============
+---------------
 
 As with all things in scryber. Tables, rows and cells are fully bindable.
 It is very common to want to layout data in tables so that it can easily be compared.
 
-Tables support the use of the data binding and also data choice flow  within their structure.
-Giving a flexible, but segmented content to the document.
+Tables support the use of the data binding with the ``template`` tag and ``data-bind`` attribute.
 
 See :doc:`binding_databinding` for more information on the data binding capabilities of scryber.
 
-.. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
+.. code:: html
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    
-    <Styles>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Table data bound</title>
+        <style>
+            .grey {
+                background-image: linear-gradient(#777, #BBB);
+                padding: 20pt
+            }
 
-        <styles:Style applied-class="header">
-            <styles:Size width="100pt"/>
-            <styles:Position h-align="Center"/>
-            <styles:Background color="black"/>
-            <styles:Fill color="white"/>
-        </styles:Style>
+            td.key, td.index {
+                color: #333;
+                font-size: 10pt;
+            }
 
-        <styles:Style applied-class="first">
-            <styles:Position h-align="Center"/>
-            <styles:Size width="300pt"/>
-        </styles:Style>
-        
-    </Styles>
-    <Data>
-        
-        <!-- Custom data source that will provide the data. -->
-        <data:XMLDataSource id="Content" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
-    </Data>
-    <Pages>
+            td.value {
+                color: black;
+                font-size: 10pt;
+                text-align:right;
+            }
 
-            <doc:Section styles:margins="20pt" styles:font-size="12pt">
-            <Content>
-                
-                <!-- set the current context to the DataSources element of the xml source -->
-                <data:With datasource-id="Content"  select="DataSources">
-                
-                <doc:Table styles:margins="0 0 10 0" styles:full-width="true">
-                    <!-- Header row, not repeating -->
-                    <doc:Header-Row styles:repeat="None"  >
-                        <doc:Header-Cell styles:column-span="2" styles:h-align="Center" >
-                            <doc:Image styles:class="header" src="../../Content/Images/landscape.jpg" />
-                            <doc:Div styles:class="header" >
-                            <doc:Text value="{xpath:@title}" />
-                            </doc:Div>
-                        </doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <!-- Header that will repeat -->
-                    <doc:Header-Row>
-                        <doc:Header-Cell styles:class="first" styles:width="300pt" styles:h-align="Center">ID</doc:Header-Cell>
-                        <doc:Header-Cell>Name</doc:Header-Cell>
-                    </doc:Header-Row>
-                    
-                    <!-- Loop through each of the Entries/Entry values from the current context -->
-                    <data:ForEach value="{xpath:Entries/Entry}" >
-                    <Template>
-                        
-                        <!-- Add a choice if we have the Id attribute equal to 'ThirdID' -->
-                        <data:Choose>
-                            <data:When test="{xpath:@Id = 'ThirdID'}" >
-                                <Template>
+            tr.odd {
+                background-color: #AAA;
+                border-top: solid 1px red;
+            }
 
-                                <doc:Row styles:bg-color="#CCC">
-                                    <doc:Cell styles:column-span="2" >
-                                    <doc:Text value="{xpath:concat('This is the ',@Name,' Row with the id ',@Id)}" />
-                                    </doc:Cell>
-                                </doc:Row>
+            tr.even {
+                background-color: #CCC;
+            }
+        </style>
+    </head>
+    <body class="grey">
+        <h4>Binding content over 2 columns for {{count(model)}} items</h4>
+        <div style="column-count: 2">
+            <table id="largeTable" style="width:100%;">
+                <thead style="font-weight:bold;">
+                    <tr>
+                        <td class="index">#</td>
+                        <td class="key">Name</td>
+                        <td class="value" style="width: 120pt">Value</td>
+                    </tr>
+                </thead>
+                <template data-bind="{{model}}">
+                    <tr class="{{if(index() % 2 == 1, 'odd', 'even')}}">
+                        <td class="index">{{index()}}</td>
+                        <td class="key">{{.Key}}</td>
+                        <td class="value">
+                            <num value="{{.Value}}" data-format="£##0.00" />
+                        </td>
+                    </tr>
+                </template>
+            </table>
+        </div>
+    </body>
+    </html>
 
-                                </Template>
-                            </data:When>
-                            
-                            <!-- Not 'ThirdID' then do this -->
-                            <data:Otherwise>
-                                <Template>
-                                <!-- General row of 2 cells with databound content-->
-                                <doc:Row>
-                                    <doc:Cell styles:class="first" >
-                                    <doc:Text value="{xpath:@Id}" />
-                                    </doc:Cell>
-                                    <doc:Cell>
-                                    <doc:Text value="{xpath:@Name}" />
-                                    </doc:Cell>
-                                </doc:Row>
+.. code:: csharp
 
-                                </Template>
-                            </data:Otherwise>
-                        </data:Choose>
-                        
-                    </Template>
-                    </data:ForEach>
-                </doc:Table>
-                
-                </data:With>
+    public void TableBoundContent()
+    {
+        var path = GetTemplatePath("Tables", "TableDatabound.html");
 
-            </Content>
-            </doc:Section>
-    
-    </Pages>
-    
-    </doc:Document>
-
-And a datasource response that results as follows
-
-.. code-block:: csharp
-
-        public IActionResult Xml()
+        using (var doc = Document.ParseDocument(path))
         {
-            var xml = new XDocument(
-                new XElement("DataSources",
-                    new XAttribute("title", "Testing Xml Datasources"),
-                    new XElement("Entries",
-                        new XElement("Entry", new XAttribute("Name", "First Xml"), new XAttribute("Id", "FirstID")),
-                        new XElement("Entry", new XAttribute("Name", "Second Xml"), new XAttribute("Id", "SecondID")),
-                        new XElement("Entry", new XAttribute("Name", "Third Xml"), new XAttribute("Id", "ThirdID")),
-                        new XElement("Entry", new XAttribute("Name", "Fourth Xml"), new XAttribute("Id", "FourthID"))
-                        )
-                    )
-                );
-            return Content(xml.ToString(), "text/xml");
+            List<dynamic> all = new List<dynamic>();
+            for(int i = 0; i < 1000; i++)
+            {
+                all.Add(new { Key = "Item " + (i + 1).ToString(), Value = i * 50.0 });
+            }
+
+            doc.Params["model"] = all;
+
+            using (var stream = GetOutputStream("Tables", "TableDatabound.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
         }
+    }
+
+.. figure:: ../images/samples_tabledatabound.png
+    :target: ../_images/samples_tabledatabound.png
+    :alt: Tables bound to data.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_tabledatabound.png>`_
 
 
-Content can be generated dynamically as per the output.
-
-.. image:: images/documentTablesDatabound.png
-
-.. note:: Scryber also includes the doc:DataGrid component that can easily create tables from datasources MUCH faster. But the doc:ForEach and doc:Choice allow full control where needed.
+.. note:: Scryber also includes the data-style-identifier which can improve the speed of output for data bound repeats

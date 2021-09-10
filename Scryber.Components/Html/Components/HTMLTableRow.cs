@@ -59,6 +59,9 @@ namespace Scryber.Html.Components
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
         }
+
+        
+
         public HTMLTableRow()
             : base()
         {

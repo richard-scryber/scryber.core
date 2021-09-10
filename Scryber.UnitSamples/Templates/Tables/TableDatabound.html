@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Table data bound</title>
+    <style>
+        .grey {
+            background-image: linear-gradient(#777, #BBB);
+            padding: 20pt
+        }
+
+        td.key, td.index {
+            color: #333;
+            font-size: 10pt;
+        }
+
+        td.value {
+            color: black;
+            font-size: 10pt;
+            text-align:right;
+        }
+
+        tr.odd {
+            background-color: #AAA;
+            border-top: solid 1px red;
+        }
+
+        tr.even {
+            background-color: #CCC;
+        }
+    </style>
+</head>
+<body class="grey">
+    <h4>Binding content over 2 columns for {{count(model)}} items</h4>
+    <div style="column-count: 2">
+        <table id="largeTable" style="width:100%;">
+            <thead style="font-weight:bold;">
+                <tr>
+                    <td class="index">#</td>
+                    <td class="key">Name</td>
+                    <td class="value" style="width: 120pt">Value</td>
+                </tr>
+            </thead>
+            <template data-bind="{{model}}">
+                <tr class="{{if(index() % 2 == 1, 'odd', 'even')}}">
+                    <td class="index">{{index()}}</td>
+                    <td class="key">{{.Key}}</td>
+                    <td class="value">
+                        <num value="{{.Value}}" data-format="£##0.00" />
+                    </td>
+                </tr>
+            </template>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿<!-- /Templates/Tables/TableNested.html -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Table Headers and Footers</title>
+</head>
+<body style="padding:20pt">
+    <div style="font-size:12pt;">
+
+        <table id='TopTable' style="width:100%">
+            <thead>
+                <tr>
+                    <td colspan="2">Table with mixed content and another nested table</td>
+                </tr>
+                <tr>
+                    <td>Left Side</td>
+                    <td>Right Side</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #AAAAAF;"><td style="min-height:35pt">Cell 1</td><td>Cell 2</td></tr>
+                <tr>
+                    <td>
+                        <img src="../../images/landscape.jpg" style="width:150pt;" />
+                        <p style="text-align:center; vertical-align:middle; height:60pt; background-color: #AFAFAF">The image above is a beautiful landscape in the Cheshire countryside.</p>
+                        <table style="width:100%; margin-top: 10pt; vertical-align:bottom;">
+                            <tr><td>1</td><td>2</td><td style="width:200pt">3</td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table style="width:100%; margin-top: 10pt">
+                            <tr><td>1</td><td>2</td><td>3</td></tr>
+                            <tr><td>1</td><td>2</td><td>3</td></tr>
+                            <tr><td>1</td><td>2</td><td>3</td></tr>
+                            <tr><td>1</td><td>2</td><td>3</td></tr>
+                        </table>
+                        <p style="text-align:justify">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar, ipsum eu molestie elementum,
+                            nibh ante ultricies dui, et euismod nulla sapien ac purus. Morbi suscipit elit tellus, nec elementum lacus dignissim a.
+                            Aliquam molestie turpis consectetur rutrum pretium. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+                            Quisque varius vitae erat sagittis facilisis. Vivamus quis tellus quis augue fringilla posuere vitae ac ante. Aliquam ultricies sodales cursus.
+                            Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                            <br />
+                            Vestibulum dolor libero, faucibus quis tristique at, euismod vitae nunc. Donec vel volutpat urna, eget tristique nunc.
+                            Quisque vitae iaculis dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                            Fusce fermentum odio ac feugiat pharetra. Integer sit amet elit a urna maximus sollicitudin sit amet sed mauris.
+                            Proin finibus nec diam blandit porttitor.
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot style="font-style: italic;">
+                <tr>
+                    <td style="border:none;"></td>
+                    <td>Footer</td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</body>
+</html>

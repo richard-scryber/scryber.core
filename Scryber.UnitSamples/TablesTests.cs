@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
@@ -129,6 +130,59 @@ namespace Scryber.UnitSamples
                 }
 
                 using (var stream = GetOutputStream("Tables", "TableWithNewRow.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
+        [TestMethod]
+        public void TableHeaderAndFooter()
+        {
+            var path = GetTemplatePath("Tables", "TableHeaders.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Tables", "TableHeaders.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod]
+        public void TableMixedNestedContent()
+        {
+            var path = GetTemplatePath("Tables", "TableNested.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Tables", "TableNested.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod]
+        public void TableBoundContent()
+        {
+            var path = GetTemplatePath("Tables", "TableDatabound.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                List<dynamic> all = new List<dynamic>();
+                for(int i = 0; i < 1000; i++)
+                {
+                    all.Add(new { Key = "Item " + (i + 1).ToString(), Value = i * 50.0 });
+                }
+
+                doc.Params["model"] = all;
+                using (var stream = GetOutputStream("Tables", "TableDatabound.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }

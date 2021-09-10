@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Styles;
 using Scryber.Components;
+using System.Transactions;
 
 namespace Scryber.Html.Components
 {
@@ -158,6 +159,8 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.Table.RowRepeat = TableRowRepeat.RepeatAtTop;
+            style.Font.FontBold = true;
+
             return style;
         }
     }
