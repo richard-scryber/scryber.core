@@ -10,7 +10,7 @@ It also supports the use of binding and repeating at the row and/or the cell lev
 Generation methods
 -------------------
 
-All methods and files in these samples use the standard testing set up as outlined in :doc:`overview/samples_reference`
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
 
 Simple Tables
 -------------

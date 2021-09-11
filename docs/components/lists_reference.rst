@@ -3,76 +3,127 @@ Unordered, Ordered and Definition Lists
 =======================================
 
 Scryber supports the use of lists both ordered and unordered and allows nesting, overflow, and definition lists.
-It also supports the use of binding and repeating.
+It also supports the use of binding and repeating on list items.
+
+A list item is just a container for other content, and can contain any children.
+
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
 
 Unordered and ordered lists
-===========================
+----------------------------
 
-Scryber uses the doc:List as the generic component with a default bullet style, but same 
-tags as Html for the Ordered Lists (doc:Ol) and Unordered Lists (doc:Ul) as short hand for these variants.
+Scryber uses the same  tags as Html for the Ordered Lists ``ol`` and Unordered Lists ``ul`` as per html, this is also possible
+to alter the list style type using the ``list-style`` option.
 
-The contents of a list item (doc:Li) can be any form of content (inline or otherwise).
-The entire list item will move.
+The contents of a list item ``li`` can be any form of content (inline or otherwise).
 
-.. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
+.. code-block:: html
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Pages>
+    <!-- /Templates/Lists/ListsSimple.html -->
 
-        <doc:Page styles:margins="20pt" styles:font-size="12pt" styles:column-count="3">
-            <Content>
-                
-                <doc:Ul>
-                    <doc:Li >First Item</doc:Li>
-                    <doc:Li >Second Item</doc:Li>
-                    <doc:Li >Third Item</doc:Li>
-                    <doc:Li >Fourth Item</doc:Li>
-                    <doc:Li >Fifth Item</doc:Li>
-                </doc:Ul>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+            }
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>An unordered list.</h4>
+            <ul style="break-after: always;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>Fifth Item</li>
+            </ul>
 
-                <doc:ColumnBreak/>
+            <h4>An ordered list</h4>
+            <ol>
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>Fifth Item</li>
+            </ol>
+        </div>
 
-                <doc:Ol>
-                    <doc:Li >First Item</doc:Li>
-                    <doc:Li >Second Item</doc:Li>
-                    <doc:Li >Third Item</doc:Li>
-                    <doc:Li >Fourth Item</doc:Li>
-                    <doc:Li >
-                        Complex Item
-                        <doc:Span styles:fill-color="red">
-                        With inner content,
-                        <doc:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
-                        that flows across the column.
-                        </doc:Span>
-                    </doc:Li>
-                </doc:Ol>
+        <div class="separator">
+            <h4>A list with lower alpha.</h4>
+            <ul style="break-after: always; list-style:lower-alpha;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>Fifth Item</li>
+            </ul>
 
-                <doc:ColumnBreak/>
+            <h4>A list with upper romam</h4>
+            <ol style="list-style: upper-roman;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>Fifth Item</li>
+            </ol>
+        </div>
+    </body>
+    </html>
 
-                <doc:List styles:number-style="LowercaseRoman">
-                    <doc:Li>First item roman.</doc:Li>
-                    <doc:Li>Second item roman.</doc:Li>
-                    <doc:Li>Third item roman.</doc:Li>
-                    <doc:Li>Fourth item roman.</doc:Li>
-                    <doc:Li>Fifth item roman.</doc:Li>
-                </doc:List>
-                
-            </Content>
-        </doc:Page>
 
-    
-    </Pages>
-    
-    </doc:Document>
+.. code:: csharp
 
-.. image:: images/documentLists1.png
+    public void SimpleList()
+    {
+        var path = GetTemplatePath("Lists", "ListsSimple.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsSimple.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_listsSimple.png
+    :target: ../_images/samples_listsSimple.png
+    :alt: Simple lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsSimple.png>`_
+
+Supported list numbering types
+------------------------------
+
+The following types of numbering are supported for lists. This is based on the numbering supported in the PDF Specification.
+
+* disc or circle - this will be a bulleted list.
+* decimal - this will be a number 1,2,3,4, etc.
+* upper-roman - Roman numerals I, II, III, IV, etc.
+* lower-roman - Roman numerals i, ii, iii, iv, etc.
+* upper-alpha - Letters A, B, C, D, etc.
+* lower-alpha - Letters a, b, c, d, etc.
+
+Any other values will be output as  decimals.
+
 
 Overflowing list items
-======================
+-----------------------
 
 As with table rows (see :doc:`component_tables`) the list items are not designed to be split across columns or pages.
 They will attempt to keep together and bring any numbers, bullets or defitions with them.
