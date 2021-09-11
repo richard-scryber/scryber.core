@@ -2,21 +2,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title>Simple Links</title>
-    <style>
-
-        .break-before{ page-break-before: always; }
-    </style>
+    <title>Remote and Relative Links</title>
 </head>
 <body style="padding:20pt">
-    <template data-bind="{{pages}}">
-        <div class="{{if(index() > 0, 'break-before', 'break-none')}}">
-            <h4>Content for the {{.Id}} page with number <page /></h4>
-            <a href="FirstPage">First Page</a>,
-            <a href="PreviousPage">Previous Page</a>,
-            <a href="NextPage">Next Page</a>,
-            <a href="LastPage">Last Page</a>
+
+    <!-- A web link to the google home page -->
+    <a href="https://www.google.com" target="_blank">Google</a><br />
+
+    <!-- a link to a local pdf that will open in a new reader tab or window -->
+    <a href="AnotherDocument.pdf" target="_blank">
+        <div style="border:solid 1px gray; padding:5pt; text-align:center; font-size: 12pt; width: 100pt;">
+            <img src="../../images/landscape.jpg" />Document Link
         </div>
-    </template>
+    </a><br/>
+    <br/>
+    <span style="font-size:12pt;">A link to <a href="{{siteurl}}" style="text-decoration: none;">{{siteurl}}</a> site.</span>
 </body>
 </html>

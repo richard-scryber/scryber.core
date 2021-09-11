@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Broken Navigation Links</title>
+</head>
+<body>
+
+    <h4>Links with nowhere to go</h4>
+    <div>
+        <!-- Loop over the items for the content of the table -->
+        <template data-bind="{{pages}}">
+           <a href="{{concat('#',.Id)}}">{{.Id}}</a>, 
+        </template>
+    </div>
+
+</body>
+</html>

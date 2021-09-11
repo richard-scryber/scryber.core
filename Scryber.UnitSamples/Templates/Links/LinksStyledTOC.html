@@ -19,22 +19,39 @@
 
         footer .nav-item > a { font-weight: bold; text-decoration: none; color: white;}
 
+        /* Table of contents */
+
+        table.toc { margin: 0pt 20pt 0pt 20pt; font-size: 12pt; width:100%; }
+
+        table.toc td {padding: 0; border:none; margin-bottom: 10px; text-decoration: none; }
+
+        table.toc td a { text-decoration:none; }
+
+        table.toc td.name hr.spacer { display:inline; margin-top: 12pt; stroke: #777; stroke-dasharray: 1 2; }
     </style>
 </head>
 <body>
 
     <h4>Table of Contents</h4>
-    <table>
+    <table class="toc">
+        <!-- Loop over the items for the content of the table -->
         <template data-bind="{{pages}}">
             <tr>
-                <td><a href="{{concat('#',.Id)}}">{{.Id}}</a></td>
-                <td></td>
-                <td><a href="{{concat('#',.Id)}}"><page for="{{concat('#',.Id)}}" /></a></td>
+                <td class="name">
+                    <!-- The link is set to the concatenation of # and Id in the data
+                         We also use a hr spacer with a dotted style -->
+                    <a href="{{concat('#',.Id)}}">{{.Id}} </a> <hr class="spacer" />
+                </td>
+                <td class="page-num" style="width:20pt;">
+                    <!-- The page for will look up the page number of the item referenced too -->
+                    <a href="{{concat('#',.Id)}}"><page for="{{concat('#',.Id)}}" /></a>
+                </td>
             </tr>
         </template>
     </table>
 
     <template data-bind="{{pages}}">
+        <!-- Each heading wrapper has the id from the pages data -->
         <div id="{{.Id}}" class="break-before">
             <h4>Content for the {{.Id}} page with number <page /></h4>
         </div>
@@ -55,7 +72,7 @@
                 <td class="nav-item">
                     <a href="NextPage">&gt;</a>
                 </td>
-                <td class="nav-item" >
+                <td class="nav-item">
                     <a href="LastPage">&gt;&gt;</a>
                 </td>
             </tr>
