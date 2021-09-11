@@ -39,10 +39,28 @@ namespace Scryber.UnitSamples
 
             using (var doc = Document.ParseDocument(path))
             {
-                var pages = new string[] { "first", "second", "third", "fourth" };
+                var pages = new [] { new { Id = "first" }, new { Id = "second" }, new { Id = "third" }, new { Id = "fourth" } };
                 doc.Params["pages"] = pages;
 
                 using (var stream = GetOutputStream("Links", "LinksSimple.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
+        public void StyledFooterNavigationLinks()
+        {
+            var path = GetTemplatePath("Links", "LinksStyledFooter.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var pages = new[] { new { Id = "first" }, new { Id = "second" }, new { Id = "third" }, new { Id = "fourth" } };
+                doc.Params["pages"] = pages;
+
+                using (var stream = GetOutputStream("Links", "LinksStyledFooter.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }

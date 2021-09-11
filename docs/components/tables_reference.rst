@@ -482,6 +482,8 @@ See :doc:`binding_databinding` for more information on the data binding capabili
 
 .. code:: html
 
+    <!-- /Templates/Tables/TableDatabound.html -->
+
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -540,6 +542,8 @@ See :doc:`binding_databinding` for more information on the data binding capabili
 
 .. code:: csharp
 
+    //Scryber.UnitSamples/TableTests.cs
+
     public void TableBoundContent()
     {
         var path = GetTemplatePath("Tables", "TableDatabound.html");
@@ -587,7 +591,7 @@ Not (Currently) Supported
 There are some things that are not supported on tables.
 
 1. Scryber does not support the ``rowspan`` property. This is simply a case of complex calculation, and we do expect to implement in the future.
-2. Table rows cannot be split across pages. Do to page layout constraints rows should not flow. It has an impact on the column layout, but we may implement in the future.
+2. Table rows cannot be split across pages. Due to page layout constraints rows should not flow. It has an impact on the column layout, but we may implement in the future.
 3. Rows do not support margins, padding, or position. This is a constraint of the layout.
 4. Cells do not work well with inner content in multiple columns. It may be that once balanced columns are sorted this automatically resolves itself.
 

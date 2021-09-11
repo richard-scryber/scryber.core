@@ -11,7 +11,7 @@ Scryber supports the standard ``a`` anchor tag with the ``href`` attribute for l
 Generation methods
 -------------------
 
-All methods and files in these samples use the standard testing set up as outlined in :doc:`overview/samples_reference`
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
 
 
 The Anchor Component
@@ -20,9 +20,9 @@ The Anchor Component
 An `a`nchor tag is an invisible component (although styles will be applied to content within it) that allows linking to other components.
 The href attribute supports 3 types of content.
 
-* Named Action - These are the standard links to and from pages (see below).
-* #id - If set, then the link is an action for a different document or Url. Effectively like the href of an anchor tag in html.
-* url - A relative or remote link to a document or webpage.
+* **Named Action** - These are the standard links to and from pages (see below).
+* **#id** - If set, then the link is an action for a different document or Url. Effectively like the href of an anchor tag in html.
+* **url** - A relative or remote link to a document or webpage.
 
 The content within a link can be anything, including images; text; svg components and more. 
 There can also be more than one component within the link.
@@ -49,7 +49,7 @@ It does not matter what page they are put on, they will perform the action if po
     <a href='nextpage' >Next Page Link</a>
 
 
-For example we can create a navigation header.
+For example we can create a navigation set of links.
 
 .. code-block:: xml
 
@@ -66,7 +66,7 @@ For example we can create a navigation header.
     <body style="padding:20pt">
         <template data-bind="{{pages}}">
             <div class="{{if(index() > 0, 'break-before', 'break-none')}}">
-                <h4>Content for the {{pages[index()]}} page with number <page /></h4>
+                <h4>Content for the {{.Id}} page with number <page /></h4>
                 <a href="FirstPage">First Page</a>,
                 <a href="PreviousPage">Previous Page</a>,
                 <a href="NextPage">Next Page</a>,
@@ -79,13 +79,15 @@ For example we can create a navigation header.
 
 .. code:: csharp
 
+    //Scryber.UnitSamples/LinksTests.cs
+
     public void SimpleNavigationLinks()
     {
         var path = GetTemplatePath("Links", "LinksSimple.html");
 
         using (var doc = Document.ParseDocument(path))
         {
-            var pages = new string[] { "first", "second", "third", "fourth" };
+            var pages = new [] { new { Id = "first" }, new { Id = "second" }, new { Id = "third" }, new { Id = "fourth" } };
             doc.Params["pages"] = pages;
 
             using (var stream = GetOutputStream("Links", "LinksSimple.pdf"))
@@ -103,6 +105,114 @@ For example we can create a navigation header.
     :class: with-shadow
 
 `Full size version <../_images/samples_linkssimple.png>`_
+
+
+**In this sample we are binding to an array of strings, and then setting the class on an outer div, so that there is a page break before the div on every itteration *except* the first**
+
+
+Styling Links
+--------------
+
+Although the default style is inline with blue text and underline. Links can be styled independently.
+
+In this example we use a footer template for the navigation links between pages (see :doc:`../overview/pages_and_sections` for more on page headers and footers).
+
+We style the footer with a table where the links are set in 50pt wide cells, and the centre cell takes up the rest of the space for a Page N of Total.
+
+.. code:: html
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Navigation Links</title>
+        <style>
+
+            .break-before{ page-break-before: always; }
+
+            h4{ margin: 20pt; padding: 20pt; background-color: #AAA; }
+
+            footer{ background-image: linear-gradient(#000, #333); padding: 4pt;}
+
+            footer .nav{ width:100%; font-size: 14pt; }
+
+            footer .nav td { border:none; text-align: center; vertical-align:bottom; color:white; }
+
+            footer .nav-item { width: 50pt; }
+
+            footer .nav-item > a { font-weight: bold; text-decoration: none; color: white;}
+
+        </style>
+    </head>
+    <body>
+
+        <template data-bind="{{pages}}">
+            <div id="{{.Id}}" class="{{if(index() > 0, 'break-before', 'break-none')}}">
+                <h4>Content for the {{.Id}} page with number <page /></h4>
+            </div>
+        </template>
+
+        <footer>
+            <table class="nav">
+                <tr>
+                    <td class="nav-item">
+                        <a href="FirstPage">&lt;&lt;</a>
+                    </td>
+                    <td class="nav-item">
+                        <a href="PreviousPage">&lt;</a>
+                    </td>
+                    <td>
+                        Page <page /> of <page property="total" />
+                    </td>
+                    <td class="nav-item">
+                        <a href="NextPage">&gt;</a>
+                    </td>
+                    <td class="nav-item" >
+                        <a href="LastPage">&gt;&gt;</a>
+                    </td>
+                </tr>
+            </table>
+        </footer>
+    </body>
+    </html>
+
+
+.. note:: The white color is applied to the `a`nchor tag as well as the cell, because the default style of blue would override the inherited white color from the cell class.
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/LinksTests.cs
+
+    public void StyledFooterNavigationLinks()
+    {
+        var path = GetTemplatePath("Links", "LinksStyledFooter.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            var pages = new[] { new { Id = "first" }, new { Id = "second" }, new { Id = "third" }, new { Id = "fourth" } };
+            doc.Params["pages"] = pages;
+
+            using (var stream = GetOutputStream("Links", "LinksStyledFooter.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_linksstyled.png
+    :target: ../_images/samples_linksstyled.png
+    :alt: Simple links to a page.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_linksstyled.png>`_
+
+
+(H)Over Styles
+--------------
+
+There is no support for hover, down, over, clicked within the scryber pdf support. At the moment the use of the pointer cursor over a link and it's default style is what is available.
 
 
 

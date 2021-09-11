@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Navigation Links</title>
+    <style>
+
+        .break-before{ page-break-before: always; }
+
+        h4{ margin: 20pt; padding: 20pt; background-color: #AAA; }
+
+        footer{ background-image: linear-gradient(#000, #333); padding: 4pt;}
+
+        footer .nav{ width:100%; font-size: 14pt; }
+
+        footer .nav td { border:none; text-align: center; vertical-align:bottom; color:white; }
+
+        footer .nav-item { width: 50pt; }
+
+        footer .nav-item > a { font-weight: bold; text-decoration: none; color: white;}
+
+    </style>
+</head>
+<body>
+
+    <template data-bind="{{pages}}">
+        <div id="{{.Id}}" class="{{if(index() > 0, 'break-before', 'break-none')}}">
+            <h4>Content for the {{.Id}} page with number <page /></h4>
+        </div>
+    </template>
+
+    <footer>
+        <table class="nav">
+            <tr>
+                <td class="nav-item">
+                    <a href="FirstPage">&lt;&lt;</a>
+                </td>
+                <td class="nav-item">
+                    <a href="PreviousPage">&lt;</a>
+                </td>
+                <td>
+                    Page <page /> of <page property="total" />
+                </td>
+                <td class="nav-item">
+                    <a href="NextPage">&gt;</a>
+                </td>
+                <td class="nav-item" >
+                    <a href="LastPage">&gt;&gt;</a>
+                </td>
+            </tr>
+        </table>
+    </footer>
+</body>
+</html>
