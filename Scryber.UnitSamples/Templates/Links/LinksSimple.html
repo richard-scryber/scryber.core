@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Simple Links</title>
+    <style>
+
+        .break-before{ page-break-before: always; }
+    </style>
+</head>
+<body style="padding:20pt">
+    <template data-bind="{{pages}}">
+        <div class="{{if(index() > 0, 'break-before', 'break-none')}}">
+            <h4>Content for the {{pages[index()]}} page with number <page /></h4>
+            <a href="FirstPage">First Page</a>,
+            <a href="PreviousPage">Previous Page</a>,
+            <a href="NextPage">Next Page</a>,
+            <a href="LastPage">Last Page</a>
+        </div>
+    </template>
+</body>
+</html>

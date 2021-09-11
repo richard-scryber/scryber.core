@@ -17,11 +17,13 @@
     <None Remove="Templates\" />
     <None Remove="Templates\Tables\" />
     <None Remove="Images\" />
+    <None Remove="Templates\Links\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
     <Folder Include="Templates\Tables\" />
     <Folder Include="Images\" />
+    <Folder Include="Templates\Links\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />

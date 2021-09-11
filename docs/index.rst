@@ -177,7 +177,6 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     component_sizing
     component_positioning
     document_references
-    component_linking
     drawing_fonts
     drawing_colors
     drawing_units
@@ -216,6 +215,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
 
     document_textlayout
     components/tables_reference
+    components/links_reference
 
 .. toctree:: 
     :caption: Drawing and Shapes

@@ -5,6 +5,14 @@ Links in  and out of documents
 Within a document, it's easy to add a link to another component, another page, 
 another document, or remote web link.
 
+Scryber supports the standard ``a`` anchor tag with the ``href`` attribute for linking between items.
+
+
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`overview/samples_reference`
+
 
 The Anchor Component
 ----------------------
@@ -18,6 +26,10 @@ The href attribute supports 3 types of content.
 
 The content within a link can be anything, including images; text; svg components and more. 
 There can also be more than one component within the link.
+
+By default the ``a`` tag is inline with a style applied for any inner text of underlined blue, 
+but it does support the use of being positioned as a block and all other styling options.
+
 
 Page Named Action
 ------------------
@@ -41,64 +53,56 @@ For example we can create a navigation header.
 
 .. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
-
-    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <!-- /Templates/Links/LinksSimple.html -->
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Navigation Links</title>
-        <meta name="author" content="Scryber" />
-        <style type="text/css">
-            /* Or Header Style with 4 columns */
-            .header{
-                background-color: #EEE;
-                column-count:4;
-                text-align:center;
-            }
-            /* Our Link button style */
-            .header a{
-                display:block;
-                border: solid 1pt #DDD;
-                border-radius: 4pt;
-                padding:6pt;
-                margin:6pt;
-                break-after:always;
-                text-decoration:none;
-                color: #333;
-                font-size:10pt;
-                
-            }
-            /* And our divs */
-            div {
-                margin: 20pt 0 0 20pt;
-            }
-            div.break{
-                page-break-after:always;
-            }
-
+        <meta charset="utf-8" />
+        <title>Simple Links</title>
+        <style>
+            .break-before{ page-break-before: always; }
         </style>
     </head>
-    <body style="font-size:20pt;">
-        <header>
-            <!-- navigation on the header -->
-            <nav class="header">
-                <a href="FirstPage">First Page</a>
-                <a href="PrevPage">Prev Page</a>
-                <a href="NextPage">Next Page</a>
+    <body style="padding:20pt">
+        <template data-bind="{{pages}}">
+            <div class="{{if(index() > 0, 'break-before', 'break-none')}}">
+                <h4>Content for the {{pages[index()]}} page with number <page /></h4>
+                <a href="FirstPage">First Page</a>,
+                <a href="PreviousPage">Previous Page</a>,
+                <a href="NextPage">Next Page</a>,
                 <a href="LastPage">Last Page</a>
-            </nav>
-        </header>
-        <!-- Each on it's own page -->
-        <div class="break">First</div>
-        <div class="break">Second</div>
-        <div class="break">Third</div>
-        <div class="break">Fourth</div>
-        <div>Fifth</div>
+            </div>
+        </template>
     </body>
     </html>
 
-.. image:: images/documentLinksNav.png
+
+.. code:: csharp
+
+    public void SimpleNavigationLinks()
+    {
+        var path = GetTemplatePath("Links", "LinksSimple.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            var pages = new string[] { "first", "second", "third", "fourth" };
+            doc.Params["pages"] = pages;
+
+            using (var stream = GetOutputStream("Links", "LinksSimple.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_linkssimple.png
+    :target: ../_images/samples_linkssimple.png
+    :alt: Simple links to a page.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_linkssimple.png>`_
 
 
 

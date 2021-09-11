@@ -458,7 +458,6 @@ and they also support sizing and alignment of content.
         }
     }
 
-.. note:: A table row is designated to not being allowed to split across columns or pages (even if it's got a nested table). It will probably just mess up the layout. Use a div
     
 
 .. figure:: ../images/samples_tablenested.png
@@ -580,3 +579,15 @@ We could have combined this with the ``concat()`` function to apply multiple cla
 See :doc:`binding/binding_functions` for more examples and information.
 
 .. note:: Scryber also includes the data-style-identifier which can improve the speed of output for data bound repeats but can impact the styles within repeating content.
+
+
+Not (Currently) Supported
+--------------------------
+
+There are some things that are not supported on tables.
+
+1. Scryber does not support the ``rowspan`` property. This is simply a case of complex calculation, and we do expect to implement in the future.
+2. Table rows cannot be split across pages. Do to page layout constraints rows should not flow. It has an impact on the column layout, but we may implement in the future.
+3. Rows do not support margins, padding, or position. This is a constraint of the layout.
+4. Cells do not work well with inner content in multiple columns. It may be that once balanced columns are sorted this automatically resolves itself.
+
