@@ -85,6 +85,8 @@ The contents of a list item ``li`` can be any form of content (inline or otherwi
 
 .. code:: csharp
 
+    //Scryber.UnitSamples/ListTests.cs
+
     public void SimpleList()
     {
         var path = GetTemplatePath("Lists", "ListsSimple.html");
@@ -125,8 +127,96 @@ Any other values will be output as  decimals.
 Overflowing list items
 -----------------------
 
-As with table rows (see :doc:`component_tables`) the list items are not designed to be split across columns or pages.
+As with table rows (see :doc:`tables_reference`) the list items are not designed to be split across columns or pages.
 They will attempt to keep together and bring any numbers, bullets or defitions with them.
+
+.. code:: html
+
+    <!-- /Templates/Lists/ListsOverflow.html -->
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+                height: 200pt;
+            }
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>A list flowing onto a second column.</h4>
+            <ul>
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>Fifth Item</li>
+                <li>Sixth Item</li>
+                <li>Seventh Item</li>
+                <li>Eighth Item</li>
+                <li>Nineth Item</li>
+                <li>Tenth Item</li>
+                <li>Eleventh Item</li>
+                <li>Twelveth Item</li>
+                <li>Thirteenth Item</li>
+                <li>Fourteenth Item</li>
+                <li>Fifteenth Item</li>
+            </ul>
+        </div>
+
+        <div class="separator">
+            <h4>A list flowing as a block onto a second column.</h4>
+            <ul style="break-after: always; list-style:lower-alpha;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>Fifth Item</li>
+                <li>Sixth Item with long flowing content, that will push the
+                list item over onto the next column as a block, rather than
+                split on each of the lines.</li>
+                <li>Seventh Item</li>
+                <li>Eighth Item</li>
+                <li>Nineth Item</li>
+                <li>Tenth Item</li>
+            </ul>
+        </div>
+    </body>
+    </html>
+
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/ListTests.cs
+
+    public void OverflowingList()
+    {
+        var path = GetTemplatePath("Lists", "ListsOverflow.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsOverflow.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_listsOverflowing.png
+    :target: ../_images/samples_listsOverflowing.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsOverflowing.png>`_
 
 .. code-block:: xml
 

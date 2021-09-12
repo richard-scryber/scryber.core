@@ -48,5 +48,21 @@ namespace Scryber.UnitSamples
         }
 
 
+        [TestMethod()]
+        public void OverflowingList()
+        {
+            var path = GetTemplatePath("Lists", "ListsOverflow.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsOverflow.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
     }
 }
