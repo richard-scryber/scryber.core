@@ -218,70 +218,128 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
 
 `Full size version <../_images/samples_listsOverflowing.png>`_
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Pages>
-
-        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
-            <Content>
-
-                <doc:Div styles:column-count="3" styles:height="150" styles:border-color="blue">
-                <doc:Ul>
-                    <doc:Li >1st Item</doc:Li>
-                    <doc:Li >2nd Item</doc:Li>
-                    <doc:Li >3rd Item</doc:Li>
-                    <doc:Li >4th Item</doc:Li>
-                    <doc:Li >5th Item</doc:Li>
-                    <doc:Li >6th Item</doc:Li>
-                    <doc:Li >7th Item</doc:Li>
-                    <doc:Li >8th Item</doc:Li>
-                    <doc:Li >9th Item</doc:Li>
-                    <doc:Li >10th Item</doc:Li>
-                    <doc:Li >11th Item</doc:Li>
-                    <doc:Li >12th Item</doc:Li>
-                    <doc:Li >13th Item</doc:Li>
-                    <doc:Li >14th Item</doc:Li>
-                </doc:Ul>
-                
-                <doc:Br/>
-                
-                <doc:Ol>
-                    <doc:Li >First Item</doc:Li>
-                    <doc:Li >Second Item</doc:Li>
-                    <doc:Li >Third Item</doc:Li>
-                    <doc:Li >Fourth Item</doc:Li>
-                    <doc:Li >
-                    Complex Item
-                    <doc:Span styles:fill-color="red">
-                        With inner content,
-                        <doc:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
-                        that flows across the column.
-                    </doc:Span>
-                    </doc:Li>
-                </doc:Ol>
-                
-                </doc:Div>
-
-                
-            </Content>
-        </doc:Page>
-
-    
-    </Pages>
-    
-    </doc:Document>
+Definition Lists
+-----------------
 
 
-.. image:: images/documentListOverflow.png
 
+
+Nested Lists
+------------
 
 List styles and grouping
-========================
+------------------------
+
+
+Building Lists in code
+----------------------
+
+Lists and list items are just as easy to define in code. The base class in the ``Scryber.Components`` namespace is 
+``List``, with ``ListOrdered``, ``ListUnordered`` and ``ListDefinition``  inheriting from the base class and applying 
+their own base style.
+
+The list items ``Scryber.Components.ListItem`` can be added to the list ``Items`` collection, and adds some extra style properties
+for the ItemLabelText (for definition lists), the NumberAlignment and the NumberInset.
+
+.. code:: html
+
+    <!-- /Templates/Lists/ListsCoded.html -->
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Coded Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+                height: 170px;
+            }
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+
+        <h4>Add a list after</h4>
+        <div id="TopDiv" class="separator">
+        </div>
+
+        <h4>Add another list after</h4>
+        <div id="SecondDiv" class="separator">
+        </div>
+    </body>
+    </html>
+
+
+.. code:: csharp
+
+    // Scryber.UnitSamples/ListTests.cs
+
+    public void CodedList()
+    {
+        var path = GetTemplatePath("Lists", "ListsCoded.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            
+            if (doc.TryFindAComponentById("TopDiv", out Div top))
+            {
+                ListOrdered ol = new ListOrdered() { NumberingStyle = ListNumberingGroupStyle.LowercaseLetters };
+                for(var i = 1; i < 10; i ++)
+                {
+                    ListItem li = new ListItem();
+                    li.Contents.Add(new TextLiteral("Item #" + i));
+
+                    //Setting the item number alignment to left individually
+                    if (i == 5)
+                        li.NumberAlignment = HorizontalAlignment.Left;
+
+                    ol.Items.Add(li);
+                }
+                top.Contents.Add(ol);
+            }
+
+            if (doc.TryFindAComponentById("SecondDiv", out Div second))
+            {
+                ListDefinition dl = new ListDefinition();
+                dl.NumberAlignment = HorizontalAlignment.Left;
+                dl.NumberInset = 50;
+
+                for (var i = 1; i < 10; i++)
+                {
+                    ListItem li = new ListItem() { ItemLabelText = "Item #" + i };
+                    li.Contents.Add(new TextLiteral("Definition for item " + i));
+
+                    //Setting the item number inset to 50 individually
+                    if (i == 5)
+                        li.NumberInset = 100;
+
+                    dl.Items.Add(li);
+
+                }
+                second.Contents.Add(dl);
+            }
+
+            using (var stream = GetOutputStream("Lists", "ListsCoded.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_listsCoded.png
+    :target: ../_images/samples_listsCoded.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsCoded.png>`_
+
+
 
 The list number-style supports the following options.
 
@@ -309,7 +367,7 @@ The number-alignment and number-inset can also be applied to individual list ite
 
 
 Nesting Lists
-=============
+-------------
 
 Lists can be nested to any level, but the overflow rule still applies. The top level item cannot be split.
 
@@ -374,7 +432,7 @@ Using the number-concat and prefix / postfix the numbers can be built up within 
 
 
 Definition Lists
-================
+----------------
 
 Definition lists are slightly different as they use the doc:Dl and doc:Di components, with the item-label style value rather than a bullet or number.
 They also have a default inset of 100pt, rather than 30pt to fit the label content. 
@@ -431,7 +489,7 @@ This can be changed using the number inset, and number alignment.
 
 
 Binding List items
-==================
+------------------
 
 Just as with tables and any other content , lists fully support data binding (at any level),
  and can take data from eitehr the parameters or and explicit datasource.

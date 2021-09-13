@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 Div div;
-                if(doc.TryFindAComponentByID("mydiv", out div))
+                if(doc.TryFindAComponentById("mydiv", out div))
                 {
                     div.Style.SetValue(StyleKeys.TransformRotateKey, 90);
                 }

@@ -3313,7 +3313,7 @@ namespace Scryber.Components
     public static class DocumentExtensions
     {
 
-        public static bool TryFindAComponentByID<T>(this Scryber.Components.Document doc, string id, out T found) where T : Scryber.Components.Component
+        public static bool TryFindAComponentById<T>(this Scryber.Components.Document doc, string id, out T found) where T : Scryber.Components.Component
         {
             found = doc.FindAComponentById(id) as T;
             return null != found;

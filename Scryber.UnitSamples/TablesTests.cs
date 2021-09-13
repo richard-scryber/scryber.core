@@ -114,7 +114,7 @@ namespace Scryber.UnitSamples
             using (var doc = Document.ParseDocument(path))
             {
                 //Make full width and add a footer to the table
-                if(doc.TryFindAComponentByID("FirstTable", out TableGrid tbl))
+                if(doc.TryFindAComponentById("FirstTable", out TableGrid tbl))
                 {
                     tbl.FullWidth = true;
 
