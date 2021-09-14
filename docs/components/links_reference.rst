@@ -65,7 +65,7 @@ Links can also contain images or any other content, and can use the target='_bla
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/LinksTests.cs
+    //Scryber.UnitSamples/LinkSamples.cs
 
     public void SimpleNavigationLinks()
     {
@@ -142,7 +142,7 @@ For example we can create a navigation set of links.
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/LinksTests.cs
+    //Scryber.UnitSamples/LinkSamples.cs
 
     public void NamedActionLinks()
     {
@@ -247,7 +247,7 @@ We style the footer with a table where the links are set in 50pt wide cells, and
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/LinksTests.cs
+    //Scryber.UnitSamples/LinkSamples.cs
 
     public void StyledFooterNavigationLinks()
     {
@@ -393,7 +393,7 @@ A Table of Contents
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/LinksTests.cs
+    //Scryber.UnitSamples/LinkSamples.cs
 
     public void StyledFooterWithTOCLinks()
     {
@@ -463,7 +463,7 @@ As a container, links can still have any content inside them, and be placed anyw
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/LinksTests.cs
+    //Scryber.UnitSamples/LinkSamples.cs
 
     public void SimpleLinksWithCustomAddition()
     {

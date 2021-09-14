@@ -56,7 +56,7 @@ Each column will take up as much room as needed (or possible). And the table wil
 .. code:: csharp
 
     //using Scryber.Components;
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void Table1_SimpleTable()
     {
@@ -124,7 +124,7 @@ The cells support a column-span attribute to allow multiple column content.
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void SpannedTable()
     {
@@ -158,7 +158,7 @@ These properties wrap the protected ``InnerContent`` property from the ``PDFCont
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void CodedTable()
     {
@@ -220,7 +220,7 @@ It is also possible to access a parsed table to alter the content as needed.
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void ModifyTable()
     {
@@ -337,7 +337,7 @@ Empty cells will still show size and borders, but can be hidden with the ``borde
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void TableHeaderAndFooter()
     {
@@ -442,7 +442,7 @@ and they also support sizing and alignment of content.
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void TableMixedNestedContent()
     {
@@ -542,7 +542,7 @@ See :doc:`binding_databinding` for more information on the data binding capabili
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/TableTests.cs
+    //Scryber.UnitSamples/TableSamples.cs
 
     public void TableBoundContent()
     {

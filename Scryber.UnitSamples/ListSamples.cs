@@ -7,7 +7,7 @@ using Scryber.Drawing;
 namespace Scryber.UnitSamples
 {
     [TestClass]
-    public class ListTests : TestBase
+    public class ListSamples : SampleBase
     {
 
         #region public TestContext TestContext
@@ -119,7 +119,7 @@ namespace Scryber.UnitSamples
                         ListDefinitionItem def = new ListDefinitionItem();
                         def.Contents.Add(new TextLiteral("Definition for term " + i));
 
-                        //Setting the item number inset to 50 individually
+                        //Setting the item number inset to 100 individually
                         if (i == 5)
                             def.Style.Margins.Left = 100;
                         

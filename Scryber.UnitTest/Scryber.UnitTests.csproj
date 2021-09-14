@@ -51,7 +51,6 @@
     <Folder Include="Content\SVG\" />
     <Folder Include="Secure\" />
     <Folder Include="Content\HTML\Samples\" />
-    <Folder Include="Html\Samples\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -60,7 +59,6 @@
     <None Remove="Mocks\Fonts\segoeuii.ttf" />
     <None Remove="Content\ImageOutput.pdf" />
     <None Remove="Content\HTML\Samples\" />
-    <None Remove="Html\Samples\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

@@ -85,7 +85,7 @@ The contents of a list item ``li`` can be any form of content (inline or otherwi
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/ListTests.cs
+    //Scryber.UnitSamples/ListSamples.cs
 
     public void SimpleList()
     {
@@ -194,7 +194,7 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
 
 .. code:: csharp
 
-    //Scryber.UnitSamples/ListTests.cs
+    //Scryber.UnitSamples/ListSamples.cs
 
     public void OverflowingList()
     {
@@ -221,6 +221,16 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
 Definition Lists
 -----------------
 
+Definition lists allow terms and contents to be set out with a term and a definition.
+Whilst not expressly a list, they are covered here as part of our list building.
+
+The ``<dl></dt>`` top level tag defines the list, and the inner ``<dt></dt>`` terms and ``<dd></dd>`` definitions supporting any inner content. 
+The definitions are margins inset by 100pt's to the left.
+
+As the definitions are simply blocks, they support all style and class properties of :doc:`block_styles`
+
+.. code:: html
+
 
 
 
@@ -240,6 +250,7 @@ their own base style.
 
 The list items ``Scryber.Components.ListItem`` can be added to the list ``Items`` collection, and adds some extra style properties
 for the ItemLabelText (for definition lists), the NumberAlignment and the NumberInset.
+
 
 .. code:: html
 
@@ -275,7 +286,7 @@ for the ItemLabelText (for definition lists), the NumberAlignment and the Number
 
 .. code:: csharp
 
-    // Scryber.UnitSamples/ListTests.cs
+    // Scryber.UnitSamples/ListSamples.cs
 
     public void CodedList()
     {
@@ -304,19 +315,21 @@ for the ItemLabelText (for definition lists), the NumberAlignment and the Number
             if (doc.TryFindAComponentById("SecondDiv", out Div second))
             {
                 ListDefinition dl = new ListDefinition();
-                dl.NumberAlignment = HorizontalAlignment.Left;
-                dl.NumberInset = 50;
-
+                
                 for (var i = 1; i < 10; i++)
                 {
-                    ListItem li = new ListItem() { ItemLabelText = "Item #" + i };
-                    li.Contents.Add(new TextLiteral("Definition for item " + i));
+                    ListDefinitionTerm term = new ListDefinitionTerm();
+                    term.Contents.Add(new TextLiteral("Term " + i));
+                    dl.Items.Add(term);
 
-                    //Setting the item number inset to 50 individually
+                    ListDefinitionItem def = new ListDefinitionItem();
+                    def.Contents.Add(new TextLiteral("Definition for term " + i));
+
+                    //Setting the item number inset to 100 individually
                     if (i == 5)
-                        li.NumberInset = 100;
-
-                    dl.Items.Add(li);
+                        def.Style.Margins.Left = 100;
+                    
+                    dl.Items.Add(def);
 
                 }
                 second.Contents.Add(dl);
@@ -326,6 +339,8 @@ for the ItemLabelText (for definition lists), the NumberAlignment and the Number
             {
                 doc.SaveAsPDF(stream);
             }
+
+        }
 
         }
     }

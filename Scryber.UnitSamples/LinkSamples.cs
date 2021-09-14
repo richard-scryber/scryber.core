@@ -7,7 +7,7 @@ using Scryber.Drawing;
 namespace Scryber.UnitSamples
 {
     [TestClass]
-    public class LinkTests : TestBase
+    public class LinkSamples : SampleBase
     {
 
         #region public TestContext TestContext

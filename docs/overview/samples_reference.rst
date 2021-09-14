@@ -32,7 +32,7 @@ set up on a base class called ``TestBase`` that all sample tests inherit from.
 
     namespace Scryber.UnitSamples
     {
-        public class TestBase
+        public class SampleBase
         {
             public const Environment.SpecialFolder baseOutput = Environment.SpecialFolder.MyDocuments;
 
@@ -120,7 +120,7 @@ If you **do not** want to execute the tests to save to an actual file, the compi
 Empty Sample Test class
 ------------------------
 
-A basic set up for a sample test in a test class is 
+A basic set up for a sample in a test class is 
 
 .. code:: csharp
 
@@ -133,10 +133,10 @@ A basic set up for a sample test in a test class is
 
     namespace Scryber.UnitSamples
     {
-        //Inherits from Scryber.UnitSamples.TestBase
+        //Inherits from Scryber.UnitSamples.SampleBase
 
         [TestClass]
-        public class MyTest : TestBase
+        public class MySamples : SampleBase
         {
             //Declare a test method
 

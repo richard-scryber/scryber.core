@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Scryber.UnitSamples
 {
-    public class TestBase
+    public class SampleBase
     {
         public const Environment.SpecialFolder baseOutput = Environment.SpecialFolder.MyDocuments;
 

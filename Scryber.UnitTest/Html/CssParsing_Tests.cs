@@ -171,7 +171,7 @@ namespace Scryber.Core.UnitTests.Html
             counter.Stop();
 
             var elapsed = counter.Elapsed.TotalMilliseconds / repeatCount;
-            Assert.IsTrue(elapsed < 0.20, "Took too long to parse. Expected < 0.15ms per string, Actual : " + elapsed + "ms");
+            Assert.IsTrue(elapsed < 0.20, "Took too long to parse. Expected < 0.20ms per string, Actual : " + elapsed + "ms");
 
         }
 
