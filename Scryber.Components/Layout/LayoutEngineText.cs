@@ -931,6 +931,13 @@ namespace Scryber.Layout
                 throw new NullReferenceException("Parent engine was not the expected BlockLayoutEngine. A Hack that is needed for overflowing textual content");
             else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
+                if(IsEmptyText(region))
+                {
+                    if (region.Parent == block && block.Columns.Length == 1)
+                        block.ExcludeFromOutput = true;
+                    
+                    region.ExcludeFromOutput = true;
+                }
                 if (!this.StartText())
                     return;
             }
@@ -939,8 +946,38 @@ namespace Scryber.Layout
                 if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
                     this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full and cannot move to another region.");
 
+                if(null != region && IsEmptyText(region))
+                {
+                    if (region.Parent == block && block.Columns.Length == 1)
+                        block.ExcludeFromOutput = true;
+
+                    region.ExcludeFromOutput = true;
+                }
+
                 this.ContinueLayout = false;
             }
+        }
+
+        protected bool IsEmptyText(PDFLayoutRegion region)
+        {
+            if (region.Contents.Count > 1)
+                return false;
+            var line = region.Contents[0] as PDFLayoutLine;
+
+            if (null == line) //It's a block not a line
+                return false;
+
+            else if (line.IsEmpty) //empty so true
+                return true;
+
+            if (line.Runs.Count != 2)
+                return false;
+
+            //We have a start and end run without any characters.
+            if (line.Runs[0] is PDFTextRunBegin && line.Runs[1] is PDFTextRunEnd)
+                return true;
+
+            return false;
         }
 
         public bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)

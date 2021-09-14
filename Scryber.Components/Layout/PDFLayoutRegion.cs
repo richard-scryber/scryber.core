@@ -148,7 +148,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the offset of this region in comparison to it's containing block
         /// </summary>
-        public PDFUnit OffsetX
+        public override PDFUnit OffsetX
         {
             get { return this.UnusedBounds.X; }
         }
@@ -298,6 +298,12 @@ namespace Scryber.Layout
         /// Gets or sets the floating blocks in this region.
         /// </summary>
         public PDFFloatAddition Floats { get; set; }
+
+
+        /// <summary>
+        /// If true then this region will not be rendered.
+        /// </summary>
+        public bool ExcludeFromOutput { get; set; }
 
         //
         // ctor(s)
@@ -828,9 +834,12 @@ namespace Scryber.Layout
                 context.TraceLog.Begin(TraceLevel.Debug, "Layout Region", "Outputting region " + name);
             }
 
-
-
-            if (this._contents != null && this._contents.Count > 0)
+            if(this.ExcludeFromOutput)
+            {
+                if (logdebug)
+                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Region " + name + " is marked as excluded from output, so not rendering anything");
+            }
+            else if (this._contents != null && this._contents.Count > 0)
             {
                 PDFSize prevsize = context.Space;
                 PDFPoint prevloc = context.Offset;

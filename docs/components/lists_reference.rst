@@ -231,8 +231,71 @@ As the definitions are simply blocks, they support all style and class propertie
 
 .. code:: html
 
+    <!DOCTYPE html>
+    <?scryber append-log=false parser-log=true ?>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Definition Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                max-height: 250pt;
+                column-count: 2;
+            }
+
+            dt{ border: solid 1px black; padding:5pt; }
+            dd{ border: solid 1px red; padding:5pt }
+
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <h4>A definition list.</h4>
+        <div id="sep1" class="separator">
+            <dl id="dl1">
+                <dt>First Item</dt>
+                <dd id="def1">First Definition</dd>
+                <dt id="term1">Second Item</dt>
+                <dd id="def2">Second Definition with a long name that should overflow onto a new line.</dd>
+                <dt>Third Item</dt>
+                <dd>Third Definition</dd>
+                <dt id="dt4">Fourth Item</dt>
+                <dd id="dd4">Fourth Definition with a long name, that will overflow onto a new column.</dd>
+                <dt>Fifth Item</dt>
+                <dd>Fifth Definition</dd>
+            </dl>
+        </div>
+    </body>
+    </html>
+
+.. code:: csharp
+
+    //cryber.UnitSamples/ListSamples.cs
+
+    public void DefinitionList()
+    {
+        var path = GetTemplatePath("Lists", "ListsDefinition.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsDefinition.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
 
 
+.. figure:: ../images/samples_listsDefinition.png
+    :target: ../_images/samples_listsDefinition.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsDefinition.png>`_
 
 Nested Lists
 ------------

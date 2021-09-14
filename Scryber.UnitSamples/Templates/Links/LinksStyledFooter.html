@@ -23,19 +23,8 @@
 </head>
 <body>
 
-    <h4>Table of Contents</h4>
-    <table>
-        <template data-bind="{{pages}}">
-            <tr>
-                <td><a href="{{concat('#',.Id)}}">{{.Id}}</a></td>
-                <td></td>
-                <td><a href="{{concat('#',.Id)}}"><page for="{{concat('#',.Id)}}" /></a></td>
-            </tr>
-        </template>
-    </table>
-
     <template data-bind="{{pages}}">
-        <div id="{{.Id}}" class="break-before">
+        <div id="{{.Id}}" class="{{if(index() > 0 , 'break-before' , 'break-none')}}">
             <h4>Content for the {{.Id}} page with number <page /></h4>
         </div>
     </template>

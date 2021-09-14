@@ -9,17 +9,18 @@
             border-bottom: solid 1px gray;
             margin-bottom: 10pt;
             padding-bottom: 10pt;
-            column-count: 1;
+            max-height: 250pt;
+            column-count: 2;
         }
-        dt{ border: solid 1px black; padding:5pt; float:left; }
+
+        dt{ border: solid 1px black; padding:5pt; }
         dd{ border: solid 1px red; padding:5pt }
 
     </style>
 </head>
 <body style="padding:20pt; font-size: 14pt;">
-    <div class="separator">
-
-        <h4>A definition list.</h4>
+    <h4>A definition list.</h4>
+    <div id="sep1" class="separator">
         <dl id="dl1">
             <dt>First Item</dt>
             <dd id="def1">First Definition</dd>
@@ -27,9 +28,13 @@
             <dd id="def2">Second Definition with a long name that should overflow onto a new line.</dd>
             <dt>Third Item</dt>
             <dd>Third Definition</dd>
+            <dt id="dt4">Fourth Item</dt>
+            <dd id="dd4">Fourth Definition with a long name, that will overflow onto a new column.</dd>
+            <dt>Fifth Item</dt>
+            <dd>Fifth Definition</dd>
         </dl>
     </div>
 
-    
+
 </body>
 </html>
