@@ -30,6 +30,7 @@ namespace Scryber.Components
         public ListItemLabel(string text)
             : base(text)
         {
+            this.ElementName = "lbl";
         }
 
         public ListItemLabel() : this(null)
@@ -49,10 +50,11 @@ namespace Scryber.Components
         public PDFListBulletItemLabel(string text)
             : base(text)
         {
+            this.ElementName = "lbl";
         }
 
         public PDFListBulletItemLabel()
-            : base(null)
+            : this(null)
         {
         }
 
@@ -72,6 +74,7 @@ namespace Scryber.Components
         public PDFListDefinitionItemLabel(string text)
             : base(text)
         {
+            this.ElementName = "lbl";
         }
 
         public PDFListDefinitionItemLabel()

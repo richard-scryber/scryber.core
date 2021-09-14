@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<?scryber append-log=false parser-log=true ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Definition Lists</title>
+    <style>
+        .separator {
+            border-bottom: solid 1px gray;
+            margin-bottom: 10pt;
+            padding-bottom: 10pt;
+            column-count: 1;
+        }
+        dt{ border: solid 1px black; padding:5pt; float:left; }
+        dd{ border: solid 1px red; padding:5pt }
+
+    </style>
+</head>
+<body style="padding:20pt; font-size: 14pt;">
+    <div class="separator">
+
+        <h4>A definition list.</h4>
+        <dl id="dl1">
+            <dt>First Item</dt>
+            <dd id="def1">First Definition</dd>
+            <dt id="term1">Second Item</dt>
+            <dd id="def2">Second Definition with a long name that should overflow onto a new line.</dd>
+            <dt>Third Item</dt>
+            <dd>Third Definition</dd>
+        </dl>
+    </div>
+
+    
+</body>
+</html>

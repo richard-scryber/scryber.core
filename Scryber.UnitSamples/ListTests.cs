@@ -63,6 +63,23 @@ namespace Scryber.UnitSamples
             }
         }
 
+        [TestMethod()]
+        public void DefinitionList()
+        {
+            var path = GetTemplatePath("Lists", "ListsDefinition.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsDefinition.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
+
 
         [TestMethod()]
         public void CodedList()
@@ -92,19 +109,21 @@ namespace Scryber.UnitSamples
                 if (doc.TryFindAComponentById("SecondDiv", out Div second))
                 {
                     ListDefinition dl = new ListDefinition();
-                    dl.NumberAlignment = HorizontalAlignment.Left;
-                    dl.NumberInset = 50;
-
+                    
                     for (var i = 1; i < 10; i++)
                     {
-                        ListItem li = new ListItem() { ItemLabelText = "Item #" + i };
-                        li.Contents.Add(new TextLiteral("Definition for item " + i));
+                        ListDefinitionTerm term = new ListDefinitionTerm();
+                        term.Contents.Add(new TextLiteral("Term " + i));
+                        dl.Items.Add(term);
+
+                        ListDefinitionItem def = new ListDefinitionItem();
+                        def.Contents.Add(new TextLiteral("Definition for term " + i));
 
                         //Setting the item number inset to 50 individually
                         if (i == 5)
-                            li.NumberInset = 100;
+                            def.Style.Margins.Left = 100;
                         
-                        dl.Items.Add(li);
+                        dl.Items.Add(def);
 
                     }
                     second.Contents.Add(dl);

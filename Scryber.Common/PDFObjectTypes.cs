@@ -89,6 +89,7 @@ namespace Scryber
         public static readonly PDFObjectType ListItem = (PDFObjectType)"litm";
         public static readonly PDFObjectType ListItemTitle = (PDFObjectType)"liti";
         public static readonly PDFObjectType DefinitionListItem = (PDFObjectType)"dlii";
+        public static readonly PDFObjectType DefinitionListTerm = (PDFObjectType)"dlit";
 
         public static readonly PDFObjectType TopAndTail = (PDFObjectType)"tatp";
         public static readonly PDFObjectType TableCell = (PDFObjectType)"tcel";

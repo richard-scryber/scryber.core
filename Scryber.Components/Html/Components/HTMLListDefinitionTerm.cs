@@ -8,8 +8,8 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
 
-    [PDFParsableComponent("dd")]
-    public class HTMLListDefinitionItem : Scryber.Components.ListDefinitionItem
+    [PDFParsableComponent("dt")]
+    public class HTMLListDefinitionTerm : Scryber.Components.ListDefinitionTerm
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -46,7 +46,7 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
-        public HTMLListDefinitionItem()
+        public HTMLListDefinitionTerm()
             : base()
         {
         }
@@ -54,7 +54,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Margins.Left = 40;
+            style.Font.FontBold = true;
             return style;
         }
     }

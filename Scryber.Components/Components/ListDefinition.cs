@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Styles;
 
 namespace Scryber.Components
 {
@@ -27,8 +28,29 @@ namespace Scryber.Components
     /// A list of definition terms. The inner items 
     /// </summary>
     [PDFParsableComponent("Dl")]
-    public class ListDefinition : List
+    public class ListDefinition : VisualComponent, IPDFViewPortComponent
     {
+
+        #region public DefinitionItemList Items {get;}
+
+        private DefinitionItemList _items;
+
+        /// <summary>
+        /// Gets the collection of PDFListItem(s). This will return a wrapped collection of List Items 
+        /// </summary>
+        [PDFArray(typeof(ListDefinitionItemBase))]
+        [PDFElement("")]
+        public DefinitionItemList Items
+        {
+            get
+            {
+                if (this._items == null)
+                    this._items = new DefinitionItemList(this.InnerContent);
+                return this._items;
+            }
+        }
+
+        #endregion
 
         public ListDefinition()
             : this(PDFObjectTypes.DefinitionList)
@@ -41,13 +63,19 @@ namespace Scryber.Components
         }
 
 
-        protected override Styles.Style GetBaseStyle()
-        {
-            Styles.Style style = base.GetBaseStyle();
-            style.List.NumberingStyle = ListNumberingGroupStyle.Labels;
-            style.List.NumberInset = Const.DefaultDefinitionListInset;
+        #region IPDFViewPortComponent Members
 
-            return style;
+        IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        {
+            return this.CreateLayoutEngine(parent, context, style);
         }
+
+        protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        {
+            return new Layout.LayoutEnginePanel(this, parent);
+        }
+
+        #endregion
+
     }
 }
