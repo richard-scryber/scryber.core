@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -37,6 +38,15 @@ namespace Scryber.Html.Components
                     this.Visible = false;
             }
         }
+
+        [PDFAttribute("data-li-alignment")]
+        public override HorizontalAlignment NumberAlignment { get => base.NumberAlignment; set => base.NumberAlignment = value; }
+
+        [PDFAttribute("data-li-inset")]
+        public override PDFUnit NumberInset { get => base.NumberInset; set => base.NumberInset = value; }
+
+        [PDFAttribute("data-li-label")]
+        public override string ItemLabelText { get => base.ItemLabelText; set => base.ItemLabelText = value; }
 
         [PDFAttribute("title")]
         public override string OutlineTitle

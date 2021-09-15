@@ -79,6 +79,22 @@ namespace Scryber.UnitSamples
         }
 
 
+        [TestMethod()]
+        public void NestedList()
+        {
+            var path = GetTemplatePath("Lists", "ListsNested.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsNested.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
 
 
         [TestMethod()]

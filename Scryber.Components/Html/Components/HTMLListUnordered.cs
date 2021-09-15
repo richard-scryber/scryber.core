@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Styles;
+using Scryber.Drawing;
 
 namespace Scryber.Html.Components
 {
@@ -39,6 +40,26 @@ namespace Scryber.Html.Components
                     this.Visible = false;
             }
         }
+
+        [PDFAttribute("data-list-group")]
+        public override string NumberingGroup { get => base.NumberingGroup; set => base.NumberingGroup = value; }
+
+        [PDFAttribute("data-list-concat")]
+        public override bool ConcatenateNumberWithParent { get => base.ConcatenateNumberWithParent; set => base.ConcatenateNumberWithParent = value; }
+
+        [PDFAttribute("data-li-postfix")]
+        public override string NumberPostfix { get => base.NumberPostfix; set => base.NumberPostfix = value; }
+
+        [PDFAttribute("data-li-prefix")]
+        public override string NumberPrefix { get => base.NumberPrefix; set => base.NumberPrefix = value; }
+
+        [PDFAttribute("data-li-inset")]
+        public override PDFUnit NumberInset { get => base.NumberInset; set => base.NumberInset = value; }
+
+
+        [PDFAttribute("data-li-align")]
+        public override HorizontalAlignment NumberAlignment { get => base.NumberAlignment; set => base.NumberAlignment = value; }
+
 
         [PDFAttribute("title")]
         public override string OutlineTitle

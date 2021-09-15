@@ -153,6 +153,13 @@ namespace Scryber.Html
 
         public const string ListStyleType = "list-style-type";
         public const string ListStyle = "list-style";
+        public const string ListGroup = "-pdf-list-group";
+        public const string ListConcatenate = "-pdf-list-concat";
+
+        public const string ListItemAlignment = "-pdf-li-align";
+        public const string ListItemInset = "-pdf-li-inset";
+        public const string ListItemPrefix = "-pdf-li-prefix";
+        public const string ListItemPostfix = "-pdf-li-postfix";
 
         public const string PageBreakInside = "page-break-inside";
         public const string PageBreakAfter = "page-break-after";

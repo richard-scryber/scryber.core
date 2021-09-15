@@ -300,7 +300,11 @@ As the definitions are simply blocks, they support all style and class propertie
 Nested Lists
 ------------
 
-List styles and grouping
+
+Lists can be nested within each other, and the numbers can also be concatenated.
+
+
+List grouping
 ------------------------
 
 

@@ -62,7 +62,7 @@ namespace Scryber.Components
         [PDFAttribute("number-style", Styles.Style.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.listNumbers_attr")]
         [PDFDesignable("Number Style", Category ="General", Priority = 2, Type = "ListNumberSelect")]
-        public ListNumberingGroupStyle NumberingStyle
+        public virtual ListNumberingGroupStyle NumberingStyle
         {
             get { return this.Style.List.NumberingStyle; }
             set { this.Style.List.NumberingStyle = value; }
@@ -77,7 +77,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-group", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Number Group", Ignore = true)]
-        public string NumberingGroup
+        public virtual string NumberingGroup
         {
             get { return this.Style.List.NumberingGroup; }
             set { this.Style.List.NumberingGroup = value; }
@@ -92,7 +92,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-prefix", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Prefix", Ignore = true)]
-        public string NumberPrefix
+        public virtual string NumberPrefix
         {
             get { return this.Style.List.NumberPrefix; }
             set { this.Style.List.NumberPrefix = value; }
@@ -107,7 +107,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-postfix", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Postfix", Ignore = true)]
-        public string NumberPostfix
+        public virtual string NumberPostfix
         {
             get { return this.Style.List.NumberPostfix; }
             set { this.Style.List.NumberPostfix = value; }
@@ -122,7 +122,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-inset", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Inset", Ignore = true)]
-        public PDFUnit NumberInset
+        public virtual PDFUnit NumberInset
         {
             get { return this.Style.GetValue(StyleKeys.ListInsetKey, Const.DefaultListNumberInset); }
             set { this.Style.SetValue(StyleKeys.ListInsetKey, value); }
@@ -137,7 +137,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-alignment", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Alignment", Ignore = true)]
-        public HorizontalAlignment NumberAlignment
+        public virtual HorizontalAlignment NumberAlignment
         {
             get
             {
@@ -158,7 +158,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-concat", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Concatenate", Ignore = true)]
-        public bool ConcatenateNumberWithParent
+        public virtual bool ConcatenateNumberWithParent
         {
             get { return this.Style.List.ConcatenateWithParent; }
             set { this.Style.List.ConcatenateWithParent = value; }
