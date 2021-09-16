@@ -11,7 +11,7 @@ namespace Scryber.UnitSamples
     {
         public const Environment.SpecialFolder baseOutput = Environment.SpecialFolder.MyDocuments;
 
-        public const string SampleOutputFolder = "../../../Generated/";
+        public const string SampleOutputFolder = "../../../../docs/samples/";
         public const string TemplatesFolder = "../../../Templates/";
 
         /// <summary>

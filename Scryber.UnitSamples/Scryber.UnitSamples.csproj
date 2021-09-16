@@ -27,7 +27,6 @@
     <Folder Include="Images\" />
     <Folder Include="Templates\Links\" />
     <Folder Include="Templates\Lists\" />
-    <Folder Include="Generated\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
