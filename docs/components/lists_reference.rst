@@ -390,7 +390,7 @@ Scryber supports the nesting of lists within each other. The number type and sty
     :width: 600px
     :class: with-shadow
 
-`Full size version <../_images/samples_listsNested.png>`_
+`Full version <../_images/samples_listsNested.png>`_
 
 Prefix and postfix
 --------------------

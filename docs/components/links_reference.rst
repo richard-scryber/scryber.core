@@ -551,6 +551,6 @@ This can all be done either with the ``<?scryber append-log='true' ?>`` processi
     :width: 600px
     :class: with-shadow
 
-`Full size version <../_images/samples_linksBroken.png>`_
+`Full version <https://raw.githubusercontent.com/richard-scryber/scryber.core/documentation/Scryber.UnitSamples/Generated/Links/LinksBrokenWithLog.pdf>`_
 
 See :doc:`../overview/scryber_output` for more about the tracing and logging in document output.
