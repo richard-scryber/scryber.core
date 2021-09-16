@@ -28,7 +28,18 @@ namespace Scryber.Styles.Parsing.Typed
                 }
                 else if(!string.IsNullOrEmpty(val))
                 {
-                    style.SetValue(this.StyleKey, val.ToString());
+                    //remove any spaces at the start and end
+                    string str = val.ToString().Trim();
+
+                    //if in quotes then remove the quotes (single or double)
+
+                    if (str.StartsWith("'") && str.EndsWith("'"))
+                        str = str.Substring(1, str.Length - 2);
+
+                    else if (str.StartsWith("\"") && str.EndsWith("\""))
+                        str = str.Substring(1, str.Length - 2);
+
+                    style.SetValue(this.StyleKey, str);
                     success = true;
                 }
                 else

@@ -1,10 +1,10 @@
 ﻿using System;
 namespace Scryber.Styles.Parsing.Typed
 {
-    public class CSSListConcatenationParser : CSSStyleValueParser
+    public class CSSListItemConcatenationParser : CSSStyleValueParser
     {
-        public CSSListConcatenationParser()
-            : base("-pdf-list-concat")
+        public CSSListItemConcatenationParser()
+            : base("-pdf-li-concat")
         {
         }
 

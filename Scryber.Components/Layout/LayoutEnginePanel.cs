@@ -175,6 +175,15 @@ namespace Scryber.Layout
 
             }
 
+            //Check for list style
+            //StyleValue<ListNumberingGroupStyle> listStyle;
+            //PDFLayoutBlock listItemBlock;
+
+            //if(this.FullStyle.TryGetValue(StyleKeys.ListNumberStyleKey, out listStyle) && listStyle.Value(this.FullStyle) != ListNumberingGroupStyle.None)
+            //{
+                //TODO:Support the list on other types
+            //}
+
             CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, position.PositionMode);
             CurrentBlock.BlockRepeatIndex = 0;
             return containerBlock;

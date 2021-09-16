@@ -40,10 +40,10 @@ namespace Scryber.Html.Components
             }
         }
 
-        [PDFAttribute("data-list-group")]
+        [PDFAttribute("data-li-group")]
         public override string NumberingGroup { get => base.NumberingGroup; set => base.NumberingGroup = value; }
 
-        [PDFAttribute("data-list-concat")]
+        [PDFAttribute("data-li-concat")]
         public override bool ConcatenateNumberWithParent { get => base.ConcatenateNumberWithParent; set => base.ConcatenateNumberWithParent = value; }
 
         [PDFAttribute("data-li-postfix")]

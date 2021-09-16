@@ -202,8 +202,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.ListStyleType, new CSSListStyleTypeParser());
             all.Add(CSSStyleItems.ListStyle, new CSSListStyleParser());
             //custom list parsers
-            all.Add(CSSStyleItems.ListGroup, new CSSListGroupParser());
-            all.Add(CSSStyleItems.ListConcatenate, new CSSListConcatenationParser());
+            all.Add(CSSStyleItems.ListItemGroup, new CSSListItemGroupParser());
+            all.Add(CSSStyleItems.ListItemConcatenate, new CSSListItemConcatenationParser());
             all.Add(CSSStyleItems.ListItemAlignment, new CSSListItemAlignmentParser());
             all.Add(CSSStyleItems.ListItemInset, new CSSListItemInsetParser());
 

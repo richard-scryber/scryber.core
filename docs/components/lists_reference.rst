@@ -120,6 +120,7 @@ The following types of numbering are supported for lists. This is based on the n
 * lower-roman - Roman numerals i, ii, iii, iv, etc.
 * upper-alpha - Letters A, B, C, D, etc.
 * lower-alpha - Letters a, b, c, d, etc.
+* none - No list numbering will be shown.
 
 Any other values will be output as  decimals.
 
@@ -297,12 +298,141 @@ As the definitions are simply blocks, they support all style and class propertie
 
 `Full size version <../_images/samples_listsDefinition.png>`_
 
+
+
 Nested Lists
 ------------
 
+Scryber supports the nesting of lists within each other. The number type and style can change with inner lists.
 
-Lists can be nested within each other, and the numbers can also be concatenated.
+.. note:: The rules still apply for keeing items together. A list item should not break across columns or pages. See the end of this section for further information.
 
+
+.. code:: html
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 3;
+                font-size:12pt;
+                /* fix the height to cause overflow */
+                height: 180pt;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>An nested list.</h4>
+            <ul style="break-after: always;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>
+                    Fourth Item
+                    <ul>
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ul>
+                </li>
+                <li>Fifth Item</li>
+            </ul>
+
+            <h4>An overflowing nested list</h4>
+            <ol class="top">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>
+                    Fifth Item at the end will cause overflow.
+                    <ol class="inner">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+    </body>
+    </html>
+
+.. codde:: csharp
+
+    public void NestedList()
+    {
+        var path = GetTemplatePath("Lists", "ListsNested.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsNested.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_listsNested.png
+    :target: ../_images/samples_listsNested.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsNested.png>`_
+
+Prefix and postfix
+--------------------
+
+Lists support a pre-fix, and a post-fix string that can be applied to the numbering. This will add a string value to either
+before the list number and/or after the list number.
+
+The values can be specified in 2 ways:
+
+1. As an attribute on the list itself with the ``data-li-prefix`` and ``data-li-posfix`` values.
+2. As a custom css property with the ``-pdf-li-prefix`` and ``-pdf-li-postfix`` values either on the tag style, or on the CSS `styles`.
+
+If it is set in the css, then the value can be wrapped in single or double quotes, so preceding or trailing spaces are not removed.
+This can also be combined with nesting, concatenation and grouping, as in the examples below.
+
+
+Grouped and concatenated Lists
+------------------------------
+
+
+Numbering groups can be done so the values increment outside of the list using the ``-pdf-li-group`` css property, or if
+preferred, the ``data-li-group`` attribute on the list tag itself.
+
+When grouped the style type can still be updated, without affecting the numbering.
+
+The ``-pdf-li-concat`` css property or ``data-li-concat`` attribute control if nested list numbers are concatenated with their parents.
+The concatenation value can be true, 1, or `concatenate` in the css property, any other value will be treated as false.
+The concatenation value can only be `true` or `false` for the data attribute (as it is directly on the boolean class property - see :doc:`../overview/scryber_parsing`).
+
+There are four list properties that alter the .
+
+
+
+
+
+.. figure:: ../images/samples_listsNested.png
+    :target: ../_images/samples_listsNested.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsNested.png>`_
 
 List grouping
 ------------------------
