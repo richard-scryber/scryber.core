@@ -142,6 +142,21 @@ namespace Scryber.UnitSamples
             }
         }
 
+        [TestMethod()]
+        public void NumberInsetAndAlignList()
+        {
+            var path = GetTemplatePath("Lists", "ListsInsetAndAlign.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsInsetAndAlign.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
 
 
 

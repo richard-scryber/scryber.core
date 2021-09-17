@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<?scryber append-log=true ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Simple Lists</title>
+    <style>
+        .separator {
+            border-bottom: solid 1px gray;
+            margin-bottom: 10pt;
+            padding-bottom: 10pt;
+            column-count: 2;
+            font-size: 12pt;
+        }
+
+        .top {
+            -pdf-li-postfix: .;
+        }
+
+        .inner {
+            list-style-type: lower-alpha;
+            -pdf-li-concat: concatenate;
+            -pdf-li-prefix: ' ';
+            -pdf-li-postfix: ".";
+        }
+
+
+        ol.left {
+            /* left aligned */
+            -pdf-li-align: left;
+        }
+
+        ol.wide {
+            /* increase the li number width */
+            -pdf-li-inset: 50pt;
+            list-style-type: lower-roman;
+        }
+
+        li.v-wide {
+            /* increase an item explicitly */
+            -pdf-li-inset: 80pt;
+        }
+    </style>
+</head>
+<body style="padding:20pt; font-size: 14pt;">
+    <div class="separator">
+        <h4>Wide explicit list.</h4>
+        <ol data-li-align="Left"  data-li-postfix="." style="break-after: always;">
+            <li>First Item</li>
+            <li>Second Item</li>
+            <li>Third Item</li>
+            <li>
+                Fourth Item
+                <ol data-li-align="Left" data-li-prefix=" "
+                    data-li-concat="true" data-li-postfix=".">
+                    <li>Inner First Item</li>
+                    <li>Inner Second Item</li>
+                    <li>Inner Third Item</li>
+                    <li>Inner Fourth Item
+                        <ol data-li-inset="50pt" data-li-align="Left"
+                            data-li-prefix=" " data-li-concat="true"
+                            data-li-postfix=".">
+                            <li>Inner First Item</li>
+                            <li>Inner Second Item</li>
+                            <li data-li-inset="80pt">Wide Third Item</li>
+                            <li data-li-inset="80pt">Wide Fourth Item</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li>Fifth Item</li>
+        </ol>
+
+        <h4>Wide styled list</h4>
+        <ol class="top left" >
+            <li>First Item</li>
+            <li>Second Item</li>
+            <li>Third Item</li>
+            <li>Fourth Item</li>
+            <li>
+                Fifth Item
+                <ol class="inner left">
+                    <li>Inner First Item</li>
+                    <li>Inner Second Item</li>
+                    <li>Inner Third Item</li>
+                    <li>Inner Fourth Item
+                        <ol class="inner left wide">
+                            <li>Inner First Item</li>
+                            <li>Inner Second Item</li>
+                            <li class="v-wide">Inner Third Item</li>
+                            <li class="v-wide">Inner Fourth Item</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>

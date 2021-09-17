@@ -631,6 +631,8 @@ When grouped the style type can still be updated, without affecting the numberin
 
 .. code:: html
 
+    <!-- /Templates/Lists/ListsGrouped.html -->
+
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -706,6 +708,8 @@ When grouped the style type can still be updated, without affecting the numberin
 
 .. code:: csharp
 
+    //Scryber.UnitSamples/ListSamples.cs
+
     public void NumberGroupedList()
     {
         var path = GetTemplatePath("Lists", "ListsGrouped.html");
@@ -731,10 +735,146 @@ When grouped the style type can still be updated, without affecting the numberin
 .. note:: This is now similar to the css counter-reset and counter-increment options. It may be implemented in the future to allow numbering on any tag, but both counted and -pdf-li- options can be used together as needed.
 
 
-
-
 Number alignment and inset.
 ----------------------------
+
+The list items number block is right align by default with a width of 30pts with an alley of 10pt (between the number and the content).
+If lists numbers are concatenated, are deeply nested, or have long pre-fixes etc. then this may cause the numbers to flow onto multiple lines.
+
+As such the ``data-li-inset`` (or ``-pdf-li-inset``) will take a unit value as the effective width of the number, and then at 10pt for the start of the item content block.
+
+If needed, then the number can be aligned with ``data-li-align`` (or ``-pdf-li-align``) to alter the alignment of the number text to `left` or even `center`.
+
+The inset is available for list items as well, to affect the layout and ensure items can fit.
+
+.. code:: html
+
+    <!-- /Templates/Lists/ListsInsetAndAlign.html -->
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+                font-size: 12pt;
+            }
+
+            .top {
+                -pdf-li-postfix: .;
+            }
+
+            .inner {
+                list-style-type: lower-alpha;
+                -pdf-li-concat: concatenate;
+                -pdf-li-prefix: ' ';
+                -pdf-li-postfix: ".";
+            }
+
+
+            ol.left{
+                /* left aligned */
+                -pdf-li-align:left;
+            }
+
+            ol.wide {
+                /* increase the li number width */
+                -pdf-li-inset: 50pt;
+                list-style-type:lower-roman;
+            }
+
+            li.v-wide{
+                /* increase an item explicitly */
+                -pdf-li-inset: 80pt;
+            }
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>Wide explicit list.</h4>
+            <ol data-li-align="Left"  data-li-postfix="." style="break-after: always;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>
+                    Fourth Item
+                    <ol data-li-align="Left" data-li-prefix=" "
+                        data-li-concat="true" data-li-postfix=".">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item
+                            <ol data-li-inset="50pt" data-li-align="Left"
+                                data-li-prefix=" " data-li-concat="true"
+                                data-li-postfix=".">
+                                <li>Inner First Item</li>
+                                <li>Inner Second Item</li>
+                                <li data-li-inset="80pt">Wide Third Item</li>
+                                <li data-li-inset="80pt">Wide Fourth Item</li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>Fifth Item</li>
+            </ol>
+
+            <h4>Wide styled list</h4>
+            <ol class="top left" >
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>
+                    Fifth Item
+                    <ol class="inner left">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item
+                            <ol class="inner left wide">
+                                <li>Inner First Item</li>
+                                <li>Inner Second Item</li>
+                                <li class="v-wide">Inner Third Item</li>
+                                <li class="v-wide">Inner Fourth Item</li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+    </body>
+    </html>
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/ListSamples.cs
+
+    public void NumberInsetAndAlignList()
+    {
+        var path = GetTemplatePath("Lists", "ListsInsetAndAlign.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsInsetAndAlign.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_listsInsetAlign.png
+    :target: ../_images/samples_listsInsetAlign.png
+    :alt: Inset and aligned lists.
+    :width: 600px
+
+`Full size version <../_images/samples_listsInsetAlign.png>`_
+
 
 Building Lists in code
 ----------------------
@@ -746,6 +886,24 @@ their own base style.
 The list items ``Scryber.Components.ListItem`` can be added to the list ``Items`` collection, and adds some extra style properties
 for the ItemLabelText (for definition lists), the NumberAlignment and the NumberInset.
 
+The properties for the specific list styles on the ``List`` class are
+
+* NumberingStyle
+* NumberingGroup
+* NumberPrefix
+* NumberPostfix
+* NumberInset
+* NumberAlignment
+
+or they can be set on the components ``Style`` property, or on a ``StyleDefn`` properties. (see: :doc:`../overview/styles_and_classes`)
+
+* comp.Style.List.NumberingStyle
+* comp.Style.List.NumberingGroup
+* comp.Style.List.NumberPrefix
+* comp.Style.List.NumberPostfix
+* comp.Style.List.NumberInset
+* comp.Style.List.NumberAlignment
+  
 
 .. code:: html
 
@@ -820,7 +978,7 @@ for the ItemLabelText (for definition lists), the NumberAlignment and the Number
                     ListDefinitionItem def = new ListDefinitionItem();
                     def.Contents.Add(new TextLiteral("Definition for term " + i));
 
-                    //Setting the item number inset to 100 individually
+                    //Setting the item number inset to 100 with margins
                     if (i == 5)
                         def.Style.Margins.Left = 100;
                     
@@ -851,32 +1009,7 @@ for the ItemLabelText (for definition lists), the NumberAlignment and the Number
 
 
 
-The list number-style supports the following options.
-
-* Decimals (1, 2, 3, 4)
-* LowercaseRoman (i, ii, iii, iv)
-* UppercaseRoman (I, II, III, IV)
-* LowercaseLetters (a, b, c, d)
-* UppercaseLetters (A, B, C, D)
-* Bullets (•, •, •, •)
-* Labels (see `Definition Lists`_ below)
-* None
-
-Along with the style of the list entries, the doc:List; doc:Ol; doc:Ul also support the following style options.
-
-* number-alignment - Left, Middle, Right (default), Justify. Specifies the horizontal alignment of the number based on the content.
-* number-concat - true or false. If the list is nested, a true value will concatenate the list number with the previous list.
-* number-group - A group name. Number groups follow consecutively in the whole document. By default this is blank (and not used), but can be set to any value.
-* number-inset - The space allowed to the left of the item for the bullet, number or label.
-* number-prefix - A string that appears before the number in the list item.
-* number-postfix - A string that appears after the number in the list item.
-
-For nested lists, the prefix and postfix will be honoured in any concatenation. (see below)
-
-The number-alignment and number-inset can also be applied to individual list items within any of the lists.
-
-
-Nesting Lists
+List contents
 -------------
 
 Lists can be nested to any level, but the overflow rule still applies. The top level item cannot be split.
@@ -890,50 +1023,7 @@ Using the number-concat and prefix / postfix the numbers can be built up within 
     <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
                 xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
                 xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Styles>
-        <styles:Style applied-type="doc:Ol" >
-            <styles:List number-style="Decimals" number-postfix="."/>
-        </styles:Style>
-        
-        <styles:Style applied-class="inner" >
-            <styles:List number-style="LowercaseRoman" number-concat="true" number-group="lr"/>
-        </styles:Style>
-    </Styles>
-    <Pages>
-
-        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
-            <Content>
-
-                <doc:Div styles:column-count="2" styles:height="170pt" styles:border-color="aqua">
-                
-                <doc:Ol styles:number-alignment="Left" styles:number-inset="20pt">
-                    <doc:Li >Decimal First Item</doc:Li>
-                    <doc:Li >
-                        Decimal Second Item with inner list that inherits the Ol style and adds the 'inner' list style.
-                        <doc:Ol styles:class="inner" >
-                            <doc:Li>First Lowercase item</doc:Li>
-                            <doc:Li>Second Lowercase item</doc:Li>
-                            <doc:Li>Third Lowercase item</doc:Li>
-                        </doc:Ol>
-                    </doc:Li>
-                    <doc:Li >Decimal Third Item</doc:Li>
-                    <doc:Li >Decimal Fourth Item 
-                </doc:Li>
-                    <doc:Li>
-                        Decimal fifth Item with continuation of the 'lr' group from the inner style
-                        <doc:Ol styles:class="inner" >
-                            <doc:Li styles:number-alignment="Left" styles:number-inset="100pt">Fourth Lowercase item</doc:Li>
-                            <doc:Li styles:number-alignment="Left" styles:number-inset="70pt">Fifth Lowercase item</doc:Li>
-                            <doc:Li styles:number-alignment="Left" styles:number-inset="30pt">Sixth Lowercase item</doc:Li>
-                        </doc:Ol>
-                    </doc:Li>
-                </doc:Ol>
-                </doc:Div>
-                
-            </Content>
-         </doc:Page>
-
-    </Pages>
+    
     
     </doc:Document>
 
@@ -941,68 +1031,22 @@ Using the number-concat and prefix / postfix the numbers can be built up within 
 .. image:: images/documentListNested.png
 
 
-Definition Lists
-----------------
+Inline-BLock None Style
+-----------------------
 
-Definition lists are slightly different as they use the doc:Dl and doc:Di components, with the item-label style value rather than a bullet or number.
-They also have a default inset of 100pt, rather than 30pt to fit the label content. 
+A common scenario with html list items is to use them as navigation elements.
 
-This can be changed using the number inset, and number alignment.
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8" ?>
-
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    <Pages>
-
-        <doc:Page styles:margins="20pt" styles:font-size="12pt" >
-            <Content>
-                
-                <doc:Dl styles:margins="0 0 20 0">
-                    <doc:Di styles:item-label="First" >First Item</doc:Di>
-                    <doc:Di styles:item-label="Second" >Second Item</doc:Di>
-                    <doc:Di styles:item-label="Third" >Third Item</doc:Di>
-                    <doc:Di styles:item-label="Fourth" >Fourth Item</doc:Di>
-                    <doc:Di styles:item-label="Fifth" >Fifth Item</doc:Di>
-                </doc:Dl>
+We are getting there with our html support for design of content, but at the moment fixed width and floating is probably the best available option for this scenario.
 
 
-                <doc:Dl styles:number-inset="150pt" styles:number-alignment="Left">
-                    <doc:Di styles:item-label="Long First" >First Item</doc:Di>
-                    <doc:Di styles:item-label="Long Second" >Second Item</doc:Di>
-                    <doc:Di styles:item-label="Long Third" >Third Item</doc:Di>
-                    <doc:Di styles:item-label="Long Fourth" >Fourth Item</doc:Di>
-                    <doc:Di styles:item-label="Very Long Fifth that will force a new line" >
-                        Fifth Item
-                        <doc:Span styles:fill-color="red">
-                        With inner content,
-                        <doc:Image src="../../Content/Images/Toroid24.png" styles:width="18pt" styles:position-mode="Inline" />
-                        that flows across the page and onto a new line.
-                        </doc:Span>
-                    </doc:Di>
-                </doc:Dl>
-                
-            </Content>
-        </doc:Page>
-
-    
-    </Pages>
-    
-    </doc:Document>
-
-
-.. image:: images/documentListDefinitions.png
 
 
 
 Binding List items
 ------------------
 
-Just as with tables and any other content , lists fully support data binding (at any level),
- and can take data from eitehr the parameters or and explicit datasource.
+Just as with tables and any other content, lists fully support data binding (at any level),
+and can take data from either the parameters or the current data.
 
 See :doc:`binding_databinding` for more on how to set up sources and get data into a document.
 
