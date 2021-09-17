@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 using Scryber.Logging;
 
@@ -9,7 +10,7 @@ namespace Scryber.Styles.Parsing
     public class CSSStyleParser : IEnumerable<StyleBase>
     {
         private List<CSSParsingError> _err;
-        private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("/\\*.*?\\*/");
+        private static System.Text.RegularExpressions.Regex CommentMatcher = new System.Text.RegularExpressions.Regex("\\/\\*[^*]*\\*+([^/*][^*]*\\*+)*\\/", System.Text.RegularExpressions.RegexOptions.Multiline);
 
         public IEnumerable<CSSParsingError> Errors
         {

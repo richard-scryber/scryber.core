@@ -9,92 +9,63 @@
             margin-bottom: 10pt;
             padding-bottom: 10pt;
             column-count: 2;
+            font-size: 12pt;
         }
 
-        ol.top{
-            -pdf-list-group: top;
-            -pdf-li-align: left;
+        .top {
+            -pdf-li-postfix: .;
+            /* group name is 'one' */
+            -pdf-li-group: one;
         }
 
-        ol.inner{
-            -pdf-list-group: inner;
-            -pdf-list-concat: concatenate;
-            -pdf-li-prefix : .;
-            -pdf-li-postfix : .;
-            -pdf-li-inset: 35pt;
+        .inner {
+            -pdf-li-concat: concatenate;
+            /* group name is 'two' */
+            -pdf-li-group: two;
+            list-style-type: lower-alpha;
+            -pdf-li-prefix: ' ';
+            -pdf-li-postfix: ".";
         }
     </style>
 </head>
 <body style="padding:20pt; font-size: 14pt;">
     <div class="separator">
-        <h4>An unordered list.</h4>
-        <ul style="break-after: always;">
+        <h4>Grouped explicit list.</h4>
+        <!-- start group 'one' -->
+        <ol data-li-group="one" data-li-postfix="." style="break-after: always;">
             <li>First Item</li>
             <li>Second Item</li>
             <li>Third Item</li>
-            <li>Fourth Item
-                <ul>
-                    <li>Inner First Item</li>
-                    <li>Inner Second Item</li>
-                    <li>Inner Third Item</li>
-                    <li>Inner Fourth Item</li>
-                </ul>
-            </li>
-            <li>Fifth Item</li>
-        </ul>
-
-        <h4>An ordered nested list</h4>
-        <ol>
-            <li>First Item</li>
-            <li>Second Item</li>
-            <li>Third Item
-                <ol>
+            <li>
+                Fourth Item
+                <!-- Start group 'two' -->
+                <ol data-li-group="two" data-li-prefix=" " data-li-concat="true" data-li-postfix=".">
                     <li>Inner First Item</li>
                     <li>Inner Second Item</li>
                     <li>Inner Third Item</li>
                     <li>Inner Fourth Item</li>
                 </ol>
             </li>
+            <li>Fifth Item</li>
+        </ol>
+
+        <h4>Continuation grouped list</h4>
+        <!-- continue group 'one' -->
+        <ol class="top">
+            <li>First Item</li>
+            <li>Second Item</li>
+            <li>Third Item</li>
             <li>Fourth Item</li>
-            <li>Fifth Item</li>
-        </ol>
-    </div>
-
-    <div class="separator">
-        <h4>A list with concatenation.</h4>
-        <ol data-li-group="top" data-li-align="left" style="break-after: always; list-style:decimal;">
-            <li>First Item</li>
-            <li>Second Item</li>
-            <li>Third Item</li>
-            <li>Fourth Item
-                <ol style="list-style: lower-alpha; -pdf-li-concat: concatenate; -pdf-li-group: inner;
-                            -pdf-li-prefix: .; -pdf-li-postfix:.; -pdf-li-inset: 35pt; -pdf-li-align: left;">
+            <li>
+                Fifth Item
+                <!-- continues group 'two' -->
+                <ol class="inner">
                     <li>Inner First Item</li>
                     <li>Inner Second Item</li>
                     <li>Inner Third Item</li>
                     <li>Inner Fourth Item</li>
                 </ol>
             </li>
-            <li>Fifth Item</li>
-        </ol>
-
-        <h4>A list with continuation.</h4>
-        <!-- set a postfix on the top list -->
-        <ol class="top" data-li-postfix=" - " >
-            <li>First Item</li>
-            <li>Second Item</li>
-            <li>Third Item</li>
-            <li>Fourth Item
-                <!-- and a postfix on the bottom list -->
-                <ol data-li-group="inner" data-li-concat="true" style="list-style: lower-roman;"
-                    data-li-postfix="." data-li-inset="35pt" data-li-align="left">
-                    <li>Inner First Item</li>
-                    <li>Inner Second Item</li>
-                    <li>Inner Third Item</li>
-                    <li>Inner Fourth Item</li>
-                </ol>
-            </li>
-            <li>Fifth Item</li>
         </ol>
     </div>
 </body>

@@ -111,6 +111,38 @@ namespace Scryber.UnitSamples
         }
 
 
+        [TestMethod()]
+        public void ConcatenatedList()
+        {
+            var path = GetTemplatePath("Lists", "ListsNestedConcatenated.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsNestedConcatenated.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
+        [TestMethod()]
+        public void NumberGroupedList()
+        {
+            var path = GetTemplatePath("Lists", "ListsGrouped.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsGrouped.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
 
 
         [TestMethod()]

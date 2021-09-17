@@ -429,10 +429,14 @@ This can also be combined with nesting, concatenation and grouping, as in the ex
                 height: 180pt;
             }
 
+            /* Style properties without quotes,
+               the value will be truncated     */
             .top{
                 -pdf-li-postfix: .;
             }
 
+            /* Style properties with quotes,
+               can have spaces in.          */
             .inner{
                 -pdf-li-prefix: '# ';
                 -pdf-li-postfix: ".";
@@ -505,36 +509,232 @@ This can also be combined with nesting, concatenation and grouping, as in the ex
 
 `Full version <../_images/samples_listsPrePostFix.png>`_
 
-Grouped and concatenated Lists
-------------------------------
 
+Concatenated List numbers
+--------------------------
 
-Numbering groups can be done so the values increment outside of the list using the ``-pdf-li-group`` css property, or if
-preferred, the ``data-li-group`` attribute on the list tag itself.
-
-When grouped the style type can still be updated, without affecting the numbering.
 
 The ``-pdf-li-concat`` css property or ``data-li-concat`` attribute control if nested list numbers are concatenated with their parents.
-The concatenation value can be true, 1, or `concatenate` in the css property, any other value will be treated as false.
-The concatenation value can only be `true` or `false` for the data attribute (as it is directly on the boolean class property - see :doc:`../overview/scryber_parsing`).
+The concatenation value can be true, 1, or `concatenate` in the css property. **Any** other value will be treated as false.
 
-There are four list properties that alter the .
+For the data attribute, the concatenation value can only be `true` or `false` (as it is directly on the boolean class property - see :doc:`../overview/scryber_parsing`).
+
+.. code:: html
+
+    <!-- /Templates/Lists/ListsNestedConcatenated.html -->
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+                font-size: 12pt;
+            }
 
 
+            .top {
+                -pdf-li-postfix: .;
+            }
+
+            .inner {
+                /*using the 'concatenate' option*/
+                -pdf-li-concat: concatenate;
+                list-style-type: lower-alpha;
+                -pdf-li-prefix: ' ';
+                -pdf-li-postfix: ".";
+            }
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>Concatenated explicit list.</h4>
+            <ol data-li-postfix="." style="break-after: always;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>
+                    Fourth Item
+                    <ol data-li-prefix=" " data-li-concat="true" data-li-postfix=".">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+                <li>Fifth Item</li>
+            </ol>
+
+            <h4>Concatenated styled list</h4>
+            <ol class="top">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>
+                    Fifth Item
+                    <ol class="inner">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+    </body>
+    </html>
 
 
+.. code:: csharp
 
-.. figure:: ../images/samples_listsNested.png
-    :target: ../_images/samples_listsNested.png
-    :alt: Overflowing lists.
+    //Scryber.UnitSamples/ListSamples.cs
+
+    public void ConcatenatedList()
+    {
+        var path = GetTemplatePath("Lists", "ListsNestedConcatenated.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsNestedConcatenated.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_listsConcatenated.png
+    :target: ../_images/samples_listsConcatenated.png
+    :alt: Concatenated lists.
     :width: 600px
     :class: with-shadow
 
-`Full size version <../_images/samples_listsNested.png>`_
+`Full size version <../_images/samples_listsConcatenated.png>`_
 
 List grouping
-------------------------
+---------------
 
+Number groups can be used so the values increment outside of the list using the ``-pdf-li-group`` css property, or if
+preferred, the ``data-li-group`` attribute on the list tag itself. Group names can be any valid string, but *are* case sensitive
+
+A group will maintain the index number across the whole document, and each list item will increment the number.
+
+When grouped the style type can still be updated, without affecting the numbering.
+
+
+.. code:: html
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+                font-size: 12pt;
+            }
+
+            .top {
+                -pdf-li-postfix: .;
+                /*group name is 'one'*/
+                -pdf-li-group: one;
+            }
+
+            .inner {
+                -pdf-li-concat: concatenate;
+                /*group name is 'two'*/
+                -pdf-li-group: two;
+                list-style-type: lower-alpha;
+                -pdf-li-prefix: ' ';
+                -pdf-li-postfix: ".";
+            }
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>Grouped explicit list.</h4>
+            <!-- start group 'one' -->
+            <ol data-li-group="one" data-li-postfix="." style="break-after: always;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>
+                    Fourth Item
+                    <!-- Start group 'two' -->
+                    <ol data-li-group="two" data-li-prefix=" " data-li-concat="true" data-li-postfix=".">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+                <li>Fifth Item</li>
+            </ol>
+
+            <h4>Continuation grouped list</h4>
+            <!-- continue group 'one' -->
+            <ol class="top">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>
+                    Fifth Item
+                    <!-- continues group 'two' -->
+                    <ol class="inner">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+    </body>
+    </html>
+
+.. code:: csharp
+
+    public void NumberGroupedList()
+    {
+        var path = GetTemplatePath("Lists", "ListsGrouped.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsGrouped.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_listsGrouped.png
+    :target: ../_images/samples_listsGrouped.png
+    :alt: Number Grouped lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsGrouped.png>`_
+
+.. note:: This is now similar to the css counter-reset and counter-increment options. It may be implemented in the future to allow numbering on any tag, but both counted and -pdf-li- options can be used together as needed.
+
+
+
+
+Number alignment and inset.
+----------------------------
 
 Building Lists in code
 ----------------------
