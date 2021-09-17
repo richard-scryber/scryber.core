@@ -11,7 +11,7 @@ namespace Scryber.UnitSamples
     {
         public const Environment.SpecialFolder baseOutput = Environment.SpecialFolder.MyDocuments;
 
-        public const string SampleOutputFolder = "../../../../docs/samples/";
+        public const string SampleOutputFolder = "Scryber Test Output";
         public const string TemplatesFolder = "../../../Templates/";
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Scryber.UnitSamples
 #if OUTPUT_FILES
 
             //We are actually outputting to a file on the test machine.
-            var path = System.Environment.CurrentDirectory;
+            var path = System.Environment.GetFolderPath(baseOutput);
 
             path = Path.Combine(path, SampleOutputFolder);
 
