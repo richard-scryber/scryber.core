@@ -105,7 +105,6 @@ The contents of a list item ``li`` can be any form of content (inline or otherwi
     :target: ../_images/samples_listsSimple.png
     :alt: Simple lists.
     :width: 600px
-    :class: with-shadow
 
 `Full size version <../_images/samples_listsSimple.png>`_
 
@@ -215,7 +214,6 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
     :target: ../_images/samples_listsOverflowing.png
     :alt: Overflowing lists.
     :width: 600px
-    :class: with-shadow
 
 `Full size version <../_images/samples_listsOverflowing.png>`_
 
@@ -231,6 +229,8 @@ The definitions are margins inset by 100pt's to the left.
 As the definitions are simply blocks, they support all style and class properties of :doc:`block_styles`
 
 .. code:: html
+
+    <!-- /Templates/Lists/ListsDefinition.html -->
 
     <!DOCTYPE html>
     <?scryber append-log=false parser-log=true ?>
@@ -292,9 +292,8 @@ As the definitions are simply blocks, they support all style and class propertie
 
 .. figure:: ../images/samples_listsDefinition.png
     :target: ../_images/samples_listsDefinition.png
-    :alt: Overflowing lists.
+    :alt: Definition lists.
     :width: 600px
-    :class: with-shadow
 
 `Full size version <../_images/samples_listsDefinition.png>`_
 
@@ -309,6 +308,8 @@ Scryber supports the nesting of lists within each other. The number type and sty
 
 
 .. code:: html
+
+    <!-- /Templates/Lists/ListsNested.html -->
 
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -369,6 +370,8 @@ Scryber supports the nesting of lists within each other. The number type and sty
 
 .. codde:: csharp
 
+    //Scryber.UnitSamples/ListSamples.cs
+
     public void NestedList()
     {
         var path = GetTemplatePath("Lists", "ListsNested.html");
@@ -388,9 +391,10 @@ Scryber supports the nesting of lists within each other. The number type and sty
     :target: ../_images/samples_listsNested.png
     :alt: Overflowing lists.
     :width: 600px
-    :class: with-shadow
 
 `Full version <../_images/samples_listsNested.png>`_
+
+*We hope to make the keeping together an optional style in the next release (5.1+)*
 
 Prefix and postfix
 --------------------
@@ -406,6 +410,100 @@ The values can be specified in 2 ways:
 If it is set in the css, then the value can be wrapped in single or double quotes, so preceding or trailing spaces are not removed.
 This can also be combined with nesting, concatenation and grouping, as in the examples below.
 
+.. code:: html
+
+    <!-- /Templates/Lists/ListsPrePostFix.html -->
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+                font-size: 12pt;
+                height: 180pt;
+            }
+
+            .top{
+                -pdf-li-postfix: .;
+            }
+
+            .inner{
+                -pdf-li-prefix: '# ';
+                -pdf-li-postfix: ".";
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>Pre/Post explicit list.</h4>
+            <ol data-li-postfix="." style="break-after: always;">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>
+                    Fourth Item
+                    <ol data-li-prefix="# " data-li-postfix=".">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+                <li>Fifth Item</li>
+            </ol>
+
+            <h4>Pre/Post styled list</h4>
+            <ol class="top">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li>
+                    Fifth Item
+                    <ol class="inner">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+    </body>
+    </html>
+
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/ListSamples.cs
+
+    public void PrePostFixList()
+    {
+        var path = GetTemplatePath("Lists", "ListsPrePostFix.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsPrePostFix.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_listsPrePostFix.png
+    :target: ../_images/samples_listsPrePostFix.png
+    :alt: Pre and Post fix lists.
+    :width: 600px
+
+`Full version <../_images/samples_listsPrePostFix.png>`_
 
 Grouped and concatenated Lists
 ------------------------------

@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Simple Lists</title>
+    <style>
+        .separator {
+            border-bottom: solid 1px gray;
+            margin-bottom: 10pt;
+            padding-bottom: 10pt;
+            column-count: 2;
+            font-size: 12pt;
+            height: 180pt;
+        }
+
+        .top{
+            -pdf-li-postfix: .;
+        }
+
+        .inner{
+            -pdf-li-prefix: '# ';
+            -pdf-li-postfix: ".";
+        }
+
+    </style>
+</head>
+<body style="padding:20pt; font-size: 14pt;">
+    <div class="separator">
+        <h4>Pre/Post explicit list.</h4>
+        <ol data-li-postfix="." style="break-after: always;">
+            <li>First Item</li>
+            <li>Second Item</li>
+            <li>Third Item</li>
+            <li>
+                Fourth Item
+                <ol data-li-prefix="# " data-li-postfix=".">
+                    <li>Inner First Item</li>
+                    <li>Inner Second Item</li>
+                    <li>Inner Third Item</li>
+                    <li>Inner Fourth Item</li>
+                </ol>
+            </li>
+            <li>Fifth Item</li>
+        </ol>
+
+        <h4>Pre/Post styled list</h4>
+        <ol class="top">
+            <li>First Item</li>
+            <li>Second Item</li>
+            <li>Third Item</li>
+            <li>Fourth Item</li>
+            <li>
+                Fifth Item
+                <ol class="inner">
+                    <li>Inner First Item</li>
+                    <li>Inner Second Item</li>
+                    <li>Inner Third Item</li>
+                    <li>Inner Fourth Item</li>
+                </ol>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>

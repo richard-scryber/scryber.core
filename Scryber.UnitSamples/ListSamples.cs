@@ -95,6 +95,22 @@ namespace Scryber.UnitSamples
         }
 
 
+        [TestMethod()]
+        public void PrePostFixList()
+        {
+            var path = GetTemplatePath("Lists", "ListsPrePostFix.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsPrePostFix.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
 
 
         [TestMethod()]
