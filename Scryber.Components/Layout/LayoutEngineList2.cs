@@ -57,6 +57,20 @@ namespace Scryber.Layout
 
         #endregion
 
+        public PDFUnit ItemNumberWidth
+        {
+            get; set;
+        }
+
+        public PDFUnit ItemAlleyWidth
+        {
+            get; set;
+        }
+
+        public HorizontalAlignment ItemAlignment
+        {
+            get; set;
+        }
 
         public string GroupName
         {

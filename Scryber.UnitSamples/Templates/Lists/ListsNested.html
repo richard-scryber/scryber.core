@@ -52,5 +52,23 @@
             </li>
         </ol>
     </div>
+    <div class="separator">
+        <h4>A breakable nested list</h4>
+        <ol class="top" style="break-inside:auto;">
+            <li>First Item</li>
+            <li>Second Item</li>
+            <li>Third Item</li>
+            <li>Fourth Item</li>
+            <li>
+                Fifth Item at the end will cause overflow.
+                <ol class="inner">
+                    <li>Inner First Item</li>
+                    <li>Inner Second Item</li>
+                    <li>Inner Third Item</li>
+                    <li>Inner Fourth Item</li>
+                </ol>
+            </li>
+        </ol>
+    </div>
 </body>
 </html>

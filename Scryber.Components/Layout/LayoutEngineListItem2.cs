@@ -136,6 +136,15 @@ namespace Scryber.Layout
             base.DoLayoutBlockComponent(position, columnOptions);
         }
 
+        protected override bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
+        {
+            return base.CanOverflowFromCurrentRegion(region);
+        }
+
+        protected internal override bool MoveToNextRegion(PDFUnit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
+        {
+            return base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
+        }
 
         protected override void DoLayoutChildren()
         {
