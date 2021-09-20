@@ -154,12 +154,12 @@ namespace Scryber.Layout
 
         #endregion
 
-        #region protected IPDFLayoutEngine ParentEngine {get;set;}
+        #region public IPDFLayoutEngine ParentEngine {get;set;}
 
         /// <summary>
         /// Gets  the parent engine that called this one
         /// </summary>
-        protected IPDFLayoutEngine ParentEngine
+        public IPDFLayoutEngine ParentEngine
         {
             get;
             private set;

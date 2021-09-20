@@ -1009,12 +1009,14 @@ or they can be set on the components ``Style`` property, or on a ``StyleDefn`` p
 
 
 
-List contents
--------------
+Any list contents
+------------------
 
-Lists can be nested to any level, but the overflow rule still applies. The top level item cannot be split.
+So far all list content has been text (or other list items), 
+however the content for a list item can be any visual content. 
+Tables, paragraphs, images, divs, spans etc are all supported.
 
-Using the number-concat and prefix / postfix the numbers can be built up within the lists.
+Scryber will attempt to lay them out appropriately.
 
 .. code-block:: xml
 

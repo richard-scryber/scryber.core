@@ -72,6 +72,11 @@ namespace Scryber.Html.Components
             : base()
         {
         }
+
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        {
+            return new Layout.LayoutEngineList2(this, parent);
+        }
     }
 
 }

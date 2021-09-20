@@ -29,10 +29,22 @@ namespace Scryber.Layout
     public class LayoutEnginePageGroup : IPDFLayoutEngine
     {
         private PageGroup _group;
-        private IPDFLayoutEngine _parent;
         private PDFLayoutContext _context;
         private Style _full;
-        
+
+        #region public IPDFLayoutEngine ParentEngine {get;set;}
+
+        /// <summary>
+        /// Gets  the parent engine that called this one
+        /// </summary>
+        public IPDFLayoutEngine ParentEngine
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
         public bool ContinueLayout
         {
             get;
@@ -45,7 +57,7 @@ namespace Scryber.Layout
                 throw new ArgumentNullException("group");
 
             this._group = group;
-            this._parent = parent;
+            this.ParentEngine = parent;
             this._context = context;
             this._full = full;
             this.ContinueLayout = true;
@@ -180,12 +192,12 @@ namespace Scryber.Layout
 
         public bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<Layout.PDFLayoutBlock> depth, ref Layout.PDFLayoutRegion region, ref Layout.PDFLayoutBlock block)
         {
-            return this._parent.MoveToNextPage(initiator, initiatorStyle, depth, ref region, ref block);
+            return this.ParentEngine.MoveToNextPage(initiator, initiatorStyle, depth, ref region, ref block);
         }
 
         public Layout.PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(Layout.PDFLayoutBlock blockToClose, Layout.PDFLayoutRegion joinToRegion)
         {
-            return _parent.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
+            return this.ParentEngine.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
         }
 
 

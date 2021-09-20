@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Drawing;
+using Scryber.Layout;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("li")]
-    public class HTMLListItem : Scryber.Components.ListItem
+    public class HTMLListItem : Scryber.Components.ListItem, IPDFViewPortComponent
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -58,6 +59,14 @@ namespace Scryber.Html.Components
         public HTMLListItem()
             : base()
         {
+        }
+
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        {
+            if (parent is LayoutEngineList2)
+                return new LayoutEngineListItem2(this, parent as LayoutEngineList2);
+            else
+                return base.CreateLayoutEngine(parent, context, style);
         }
     }
 

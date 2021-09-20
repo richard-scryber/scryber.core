@@ -176,6 +176,7 @@ namespace Scryber
         public static readonly PDFObjectType StyleBadge = (PDFObjectType)"badg";
         public static readonly PDFObjectType StyleBarcode = (PDFObjectType)"sbar";
         public static readonly PDFObjectType StyleList = (PDFObjectType)"slst";
+        public static readonly PDFObjectType StyleListItem = (PDFObjectType)"slli";
         public static PDFObjectType StyleModify = (PDFObjectType)"smod";
 
 

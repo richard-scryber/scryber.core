@@ -20,12 +20,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Drawing;
 
 namespace Scryber.Components
 {
     [PDFParsableComponent("Li-Label")]
     public class ListItemLabel : TextLiteral
     {
+        public HorizontalAlignment Alignment { get; set; }
+
+        public ListNumberingGroupStyle ListType { get; set; }
+
+        public PDFListNumberGroup Group { get; set; }
+
+        public PDFUnit NumberWidth { get; set; }
+
+        public PDFUnit AlleyWidth { get; set; }
 
         public ListItemLabel(string text)
             : base(text)
@@ -42,6 +52,8 @@ namespace Scryber.Components
             Styles.Style style = base.GetBaseStyle();
             return style;
         }
+
+        
     }
 
     [PDFParsableComponent("Li-Bullet")]

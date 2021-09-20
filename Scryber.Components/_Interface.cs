@@ -310,6 +310,11 @@ namespace Scryber
     public interface IPDFLayoutEngine : IDisposable
     {
         /// <summary>
+        /// Gets the parent layout engine that invoked this engine
+        /// </summary>
+        public IPDFLayoutEngine ParentEngine { get; }
+
+        /// <summary>
         /// Gets or sets the flag for the engine to continue on and layout more components
         /// </summary>
         bool ContinueLayout { get; set; }

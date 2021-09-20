@@ -150,7 +150,7 @@ namespace Scryber.Layout
         /// <summary>
         /// Gets the parent engine of this instance
         /// </summary>
-        public IPDFLayoutEngine Parent
+        public IPDFLayoutEngine ParentEngine
         {
             get { return this._par; }
         }
@@ -926,7 +926,7 @@ namespace Scryber.Layout
             bool newPage;
             PDFLayoutRegion region = lastline.Region;
             PDFLayoutBlock block = (PDFLayoutBlock)region.Parent;
-            LayoutEngineBase engine = this.Parent as LayoutEngineBase;
+            LayoutEngineBase engine = this.ParentEngine as LayoutEngineBase;
             if (null == engine)
                 throw new NullReferenceException("Parent engine was not the expected BlockLayoutEngine. A Hack that is needed for overflowing textual content");
             else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))

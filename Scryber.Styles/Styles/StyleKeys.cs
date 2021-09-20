@@ -197,16 +197,18 @@ namespace Scryber.Styles
         public static readonly PDFStyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"hlgn", TextItemKey);
 
         //List
-        public static readonly StyleKey ListItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleList, NOT_INHERITED);
-        public static readonly PDFStyleKey<ListNumberingGroupStyle> ListNumberStyleKey = StyleKey.InternalCreateStyleValueKey<ListNumberingGroupStyle>((PDFObjectType)"styl", ListItemKey);
-        public static readonly PDFStyleKey<string> ListGroupKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"grup", ListItemKey);
+        public static readonly StyleKey ListKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleList, NOT_INHERITED);
+        public static readonly StyleKey ListItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleListItem, NOT_INHERITED);
+
         public static readonly PDFStyleKey<PDFUnit> ListInsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"inst", ListItemKey);
+        public static readonly PDFStyleKey<HorizontalAlignment> ListAlignmentKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"alig", ListItemKey);
+        public static readonly PDFStyleKey<string> ListLabelKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"labl", ListItemKey);
+        public static readonly PDFStyleKey<string> ListGroupKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"grup", ListItemKey);
+        public static readonly PDFStyleKey<bool> ListConcatKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"conc", ListItemKey);
         public static readonly PDFStyleKey<string> ListPrefixKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"pref", ListItemKey);
         public static readonly PDFStyleKey<string> ListPostfixKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"post", ListItemKey);
-        public static readonly PDFStyleKey<HorizontalAlignment> ListAlignmentKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"alig", ListItemKey);
-        public static readonly PDFStyleKey<bool> ListConcatKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"conc", ListItemKey);
-        public static readonly PDFStyleKey<string> ListLabelKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"labl", ListItemKey);
-
+        public static readonly PDFStyleKey<ListNumberingGroupStyle> ListNumberStyleKey = StyleKey.InternalCreateStyleValueKey<ListNumberingGroupStyle>((PDFObjectType)"styl", ListItemKey);
+        public static readonly PDFStyleKey<PDFUnit> ListAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ally", ListItemKey);
         //Outline
         public static readonly StyleKey OutlineItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleOutline, NOT_INHERITED);
         public static readonly PDFStyleKey<bool> OutlineIsOutlinedKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"outl", OutlineItemKey);
