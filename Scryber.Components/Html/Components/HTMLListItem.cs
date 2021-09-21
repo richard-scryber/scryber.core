@@ -68,13 +68,7 @@ namespace Scryber.Html.Components
             return style;
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
-        {
-            if (parent is LayoutEngineList2)
-                return new LayoutEngineListItem2(this, parent as LayoutEngineList2);
-            else
-                return base.CreateLayoutEngine(parent, context, style);
-        }
+        
     }
 
 }

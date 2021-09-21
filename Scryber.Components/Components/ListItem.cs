@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
+using Scryber.Layout;
+using Scryber.Styles;
 
 namespace Scryber.Components
 {
@@ -29,7 +31,7 @@ namespace Scryber.Components
     /// </summary>
     [PDFParsableComponent("Li")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_listitem")]
-    public class ListItem : Panel
+    public class ListItem : Panel, IPDFViewPortComponent
     {
 
         #region public PDFComponent ItemLabelComponent
@@ -130,7 +132,14 @@ namespace Scryber.Components
             return defaultStyle;
         }
 
-        
+
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        {
+            if (parent is LayoutEngineList2)
+                return new LayoutEngineListItem2(this, parent as LayoutEngineList2);
+            else
+                return base.CreateLayoutEngine(parent, context, style);
+        }
 
     }
 

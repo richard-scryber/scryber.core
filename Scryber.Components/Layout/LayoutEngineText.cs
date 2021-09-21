@@ -924,21 +924,15 @@ namespace Scryber.Layout
             this.EndText(); //Always end this block of text
 
             bool newPage;
-            PDFLayoutRegion region = lastline.Region;
-            PDFLayoutBlock block = (PDFLayoutBlock)region.Parent;
+            PDFLayoutRegion origRegion = lastline.Region;
+            PDFLayoutBlock origBlock = (PDFLayoutBlock)origRegion.Parent;
+            PDFLayoutRegion region = origRegion;
+            PDFLayoutBlock block = origBlock;
             LayoutEngineBase engine = this.ParentEngine as LayoutEngineBase;
             if (null == engine)
                 throw new NullReferenceException("Parent engine was not the expected BlockLayoutEngine. A Hack that is needed for overflowing textual content");
             else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
-                //if we have changed region and last one is now empty
-                if(IsEmptyText(region))
-                {
-                    if (region.Parent == block && block.Columns.Length == 1)
-                        block.ExcludeFromOutput = true;
-                    
-                    region.ExcludeFromOutput = true;
-                }
                 if (!this.StartText())
                     return;
             }
@@ -959,10 +953,22 @@ namespace Scryber.Layout
             }
         }
 
+        private bool IsEmptyBlock(PDFLayoutBlock block)
+        {
+            if (block.Columns.Length == 1 &&
+                block.Position.Width.HasValue == false &&
+                block.Position.Height.HasValue == false &&
+                block.Position.MinimumHeight.HasValue == false &&
+                block.Position.MinimumWidth.HasValue == false)
+
+                return true;
+
+            else
+                return false;
+        }
+
         protected bool IsEmptyText(PDFLayoutRegion region)
         {
-            return false;
-
             var currblock = this.Context.DocumentLayout.CurrentPage.CurrentBlock.LastOpenBlock();
 
             if (currblock.Position.PositionMode == PositionMode.Relative)
@@ -971,6 +977,7 @@ namespace Scryber.Layout
             if (null != currblock && null != currblock.CurrentRegion && region == currblock.CurrentRegion)
                 return false;
 
+            
             if (region.Contents.Count > 1)
                 return false;
             var line = region.Contents[0] as PDFLayoutLine;

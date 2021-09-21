@@ -171,12 +171,12 @@ namespace Scryber.UnitSamples
                 
                 if (doc.TryFindAComponentById("TopDiv", out Div top))
                 {
-                    HTMLListOrdered ol = new HTMLListOrdered() {
+                    ListOrdered ol = new ListOrdered() {
                         NumberingStyle = ListNumberingGroupStyle.LowercaseLetters,
                         BorderColor = PDFColors.Red, BorderWidth = 1 };
                     for(var i = 1; i < 10; i ++)
                     {
-                        HTMLListItem li = new HTMLListItem();
+                        ListItem li = new ListItem();
                         li.Contents.Add(new TextLiteral("Item #" + i));
 
                         //Setting the item number alignment to left individually

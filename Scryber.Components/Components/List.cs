@@ -196,7 +196,7 @@ namespace Scryber.Components
 
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.Style style)
         {
-            return new Layout.LayoutEngineList(this, parent);
+            return new Layout.LayoutEngineList2(this, parent);
         }
 
     }

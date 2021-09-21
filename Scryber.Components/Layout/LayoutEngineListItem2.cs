@@ -117,6 +117,9 @@ namespace Scryber.Layout
             PDFThickness padding = PDFThickness.Empty();
             PDFUnit inset = PDFUnit.Zero;
 
+            //When laying out an item we inset the content by the required amount and then add a
+            //relatively positioned number block to the current child collection.
+
             if(this.Component.Document.ListNumbering.HasCurrentGroup && null != this.ParentListEngine)
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
@@ -142,16 +145,6 @@ namespace Scryber.Layout
 
         }
 
-        protected override bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
-        {
-            return base.CanOverflowFromCurrentRegion(region);
-        }
-
-        protected internal override bool MoveToNextRegion(PDFUnit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
-        {
-            return base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
-        }
-
         protected override void DoLayoutChildren()
         {
             Panel num = null;
@@ -161,7 +154,7 @@ namespace Scryber.Layout
             base.DoLayoutChildren();
 
             if (null != num)
-                this.ListItem.Contents.RemoveAt(0);
+                this.ListItem.Contents.Remove(num);
         }
 
         
@@ -174,12 +167,6 @@ namespace Scryber.Layout
             panel.PositionMode = PositionMode.Relative;
             panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
             panel.Y = 0;
-            if (item.ID == "liEight")
-                panel.BorderColor = PDFColors.Red;
-            else
-                panel.BorderColor = PDFColors.Black;
-
-            panel.BorderWidth = 1;
             panel.OverflowSplit = OverflowSplit.Never;
             panel.ID = (item.ID ?? "no_id") + "_Num";
             
