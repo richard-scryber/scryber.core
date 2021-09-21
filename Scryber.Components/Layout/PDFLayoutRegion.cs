@@ -567,6 +567,43 @@ namespace Scryber.Layout
 
         #endregion
 
+        public virtual PDFLayoutPositionedRegionRun AddExistingPositionedRegion(PDFLayoutPositionedRegion region, PDFLayoutBlock associatedBlock)
+        {
+            if (null == region)
+                throw new ArgumentNullException("region");
+            if (null == associatedBlock)
+                throw new ArgumentNullException("associatedBlock");
+
+            if (region.AssociatedRun != null && region.AssociatedRun.Parent != null)
+                (region.AssociatedRun.Parent as PDFLayoutLine).Runs.Remove(region.AssociatedRun);
+
+
+            var origParent = region.GetParentBlock();
+            if(null != origParent)
+            {
+                if (origParent.HasPositionedRegions)
+                    origParent.PositionedRegions.Remove(region);
+            }
+
+            var newParent = this.GetParentBlock();
+            if (null != newParent)
+            {
+                newParent.PositionedRegions.Add(region);
+                region.SetParent(newParent);
+                associatedBlock.SetParent(newParent);
+                
+            }
+
+            var line = this.CurrentItem as PDFLayoutLine;
+            if (line == null)
+                line = this.BeginNewLine();
+
+            var run = line.AddPositionedRun(region, associatedBlock.Owner);
+
+            return run;
+
+        }
+
         #region protected virtual PDFUnit GetAvailableWidth()
 
         /// <summary>
@@ -814,6 +851,18 @@ namespace Scryber.Layout
         }
 
         #endregion
+
+        public void ReOpen(bool includeChildren)
+        {
+            this.IsClosed = false;
+
+            if (includeChildren && this.Contents.Count > 0)
+            {
+                var item = this.Contents[this.Contents.Count - 1];
+                if (item is PDFLayoutBlock block)
+                    block.ReOpen();
+            }
+        }
 
         #region protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
 

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 
 namespace Scryber.UnitSamples
 {
@@ -170,10 +171,12 @@ namespace Scryber.UnitSamples
                 
                 if (doc.TryFindAComponentById("TopDiv", out Div top))
                 {
-                    ListOrdered ol = new ListOrdered() { NumberingStyle = ListNumberingGroupStyle.LowercaseLetters };
+                    HTMLListOrdered ol = new HTMLListOrdered() {
+                        NumberingStyle = ListNumberingGroupStyle.LowercaseLetters,
+                        BorderColor = PDFColors.Red, BorderWidth = 1 };
                     for(var i = 1; i < 10; i ++)
                     {
-                        ListItem li = new ListItem();
+                        HTMLListItem li = new HTMLListItem();
                         li.Contents.Add(new TextLiteral("Item #" + i));
 
                         //Setting the item number alignment to left individually

@@ -114,14 +114,17 @@ namespace Scryber.Layout
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
+            PDFThickness padding = PDFThickness.Empty();
+            PDFUnit inset = PDFUnit.Zero;
+
             if(this.Component.Document.ListNumbering.HasCurrentGroup && null != this.ParentListEngine)
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
                 var style = this.FullStyle;
-                var padding = position.Padding;
+                padding = position.Padding;
                 var left = padding.Left;
 
-                var inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
+                inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
                 var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
 
                 //Add the extra space for the list item number
@@ -131,9 +134,12 @@ namespace Scryber.Layout
 
                 var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
                 this.LabelComponent = comp;
+
+                inset += alley;
             }
 
             base.DoLayoutBlockComponent(position, columnOptions);
+
         }
 
         protected override bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
@@ -148,13 +154,19 @@ namespace Scryber.Layout
 
         protected override void DoLayoutChildren()
         {
+            Panel num = null;
             if (null != this.LabelComponent)
-                this.AddLabelToBlock(this.LabelComponent, this.ListItem);
+                num = this.AddLabelToBlock(this.LabelComponent, this.ListItem);
 
             base.DoLayoutChildren();
+
+            if (null != num)
+                this.ListItem.Contents.RemoveAt(0);
         }
 
-        protected virtual void AddLabelToBlock(ListItemLabel label, ListItem item)
+        
+
+        protected virtual Panel AddLabelToBlock(ListItemLabel label, ListItem item)
         {
             Panel panel = new Panel();
             panel.Width = label.NumberWidth;
@@ -162,14 +174,25 @@ namespace Scryber.Layout
             panel.PositionMode = PositionMode.Relative;
             panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
             panel.Y = 0;
-            panel.BorderColor = PDFColors.Black;
-            panel.BorderWidth = 1;
+            if (item.ID == "liEight")
+                panel.BorderColor = PDFColors.Red;
+            else
+                panel.BorderColor = PDFColors.Black;
 
+            panel.BorderWidth = 1;
+            panel.OverflowSplit = OverflowSplit.Never;
+            panel.ID = (item.ID ?? "no_id") + "_Num";
             
             panel.Contents.Add(label);
 
             item.Contents.Insert(0, panel);
 
+            return panel;
+        }
+
+        protected override void PushBlockStackOntoNewRegion(Stack<PDFLayoutBlock> stack, PDFLayoutBlock tomove, PDFLayoutBlock current, PDFLayoutRegion currentRegion, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
+        {
+            base.PushBlockStackOntoNewRegion(stack, tomove, current, currentRegion, ref region, ref block);
         }
 
         #region private PDFComponent BuildAListNumberComponent(PDFListItem item, PDFStyle itemstyle ....)
@@ -229,64 +252,7 @@ namespace Scryber.Layout
 
         #endregion
 
-        //
-        // inner classes
-        //
-
-        #region private class ListNumberEntry
-
-        /// <summary>
-        /// Encapsulates the details about a single list entry
-        /// </summary>
-        private class ListNumberEntry
-        {
-            /// <summary>
-            /// The component to use for the numbering region
-            /// </summary>
-            public Component NumberComponent;
-
-            /// <summary>
-            /// The layout width of the number region
-            /// </summary>
-            public PDFUnit NumberWidth;
-
-            /// <summary>
-            /// The list item this entry holds the details for
-            /// </summary>
-            public ListItem ListItem;
-
-            /// <summary>
-            /// The list item full style
-            /// </summary>
-            public Style FullStyle;
-
-            /// <summary>
-            /// The list item applied style
-            /// </summary>
-            public Style AppliedStyle;
-
-            /// <summary>
-            /// The index of the item in the list
-            /// </summary>
-            public int NumberIndex;
-
-            /// <summary>
-            /// The numbering group style (UppercaseRoman, Decimal, Bullet etc).
-            /// </summary>
-            public ListNumberingGroupStyle NumberGroupStyle;
-
-            /// <summary>
-            /// The alignment of the number component in its region
-            /// </summary>
-            public HorizontalAlignment NumberAlignment;
-
-            /// <summary>
-            /// The actual text associated with the number.
-            /// </summary>
-            public string NumberText;
-        }
-
-        #endregion
+        
 
     }
 }

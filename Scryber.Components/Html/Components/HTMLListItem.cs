@@ -61,6 +61,13 @@ namespace Scryber.Html.Components
         {
         }
 
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.RemoveValue(StyleKeys.OverflowSplitKey);
+            return style;
+        }
+
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             if (parent is LayoutEngineList2)

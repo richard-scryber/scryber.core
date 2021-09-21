@@ -1381,7 +1381,8 @@ namespace Scryber.Layout
         {
 
             const string logCategory = "Region Overflow";
-
+            PDFLayoutPositionedRegion posRegion = null;
+            bool posIsOpen = false;
 
             if (region.IsClosed == false && (null == tomove))//|| region != tomove.CurrentRegion))
                 region.Close();
@@ -1396,6 +1397,15 @@ namespace Scryber.Layout
                     PDFLayoutRegion parentRegion = (tomove.Parent as PDFLayoutBlock).CurrentRegion;
                     if (parentRegion.Contents.Count > 0 && parentRegion.Contents[parentRegion.Contents.Count - 1] == tomove)
                         parentRegion.RemoveLastItem();
+                }
+
+                var mode = tomove.Position.PositionMode;
+
+                if(mode == PositionMode.Absolute || mode == PositionMode.Relative)
+                {
+                    posRegion = tomove.GetParentBlock().CurrentRegion as PDFLayoutPositionedRegion;
+                    posIsOpen = !tomove.IsClosed;
+                    posRegion.Contents.Remove(tomove);
                 }
             }
 
@@ -1434,9 +1444,22 @@ namespace Scryber.Layout
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, logCategory, "Have existing block '" + tomove + "' to move to the next region");
 
-                //and then add it back into the new region.
                 PDFUnit origheight = region.UsedSize.Height;
-                region.AddExistingItem(tomove);
+
+                if (null != posRegion)
+                {
+                    posRegion.Contents.Add(tomove);
+                    //we are positioned so move the postioned region, rather than the block iteslf.
+                    region.AddExistingPositionedRegion(posRegion, tomove);
+
+                    if (posIsOpen && posRegion.IsClosed)
+                        posRegion.ReOpen(includeChildren : true);
+                }
+                else
+                {
+                    //add it back into the new region
+                    region.AddExistingItem(tomove);
+                }
                 tomove.ResetAvailableHeight(region.AvailableHeight - origheight, true);
             }
 

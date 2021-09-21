@@ -698,7 +698,7 @@ namespace Scryber.Layout
                 else if (fitted + offset == chars.Length) // everything fitted on the line
                 {
                     zeros.Reset();
-                    string all = chars.Substring(offset);
+                    string all = offset == 0 ? chars : chars.Substring(offset);
                     //if (offset == 0)
                         this.AddCharactersToCurrentLine(required, all);
                     //else
@@ -931,6 +931,7 @@ namespace Scryber.Layout
                 throw new NullReferenceException("Parent engine was not the expected BlockLayoutEngine. A Hack that is needed for overflowing textual content");
             else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
+                //if we have changed region and last one is now empty
                 if(IsEmptyText(region))
                 {
                     if (region.Parent == block && block.Columns.Length == 1)
@@ -960,6 +961,16 @@ namespace Scryber.Layout
 
         protected bool IsEmptyText(PDFLayoutRegion region)
         {
+            return false;
+
+            var currblock = this.Context.DocumentLayout.CurrentPage.CurrentBlock.LastOpenBlock();
+
+            if (currblock.Position.PositionMode == PositionMode.Relative)
+                return false;
+
+            if (null != currblock && null != currblock.CurrentRegion && region == currblock.CurrentRegion)
+                return false;
+
             if (region.Contents.Count > 1)
                 return false;
             var line = region.Contents[0] as PDFLayoutLine;
