@@ -127,8 +127,12 @@ Any other values will be output as  decimals.
 Overflowing list items
 -----------------------
 
-As with table rows (see :doc:`tables_reference`) the list items are not designed to be split across columns or pages.
-They will attempt to keep together and bring any numbers, bullets or defitions with them.
+The content of list items will flow niely onto new columns and pages, and are not designed to be split.
+
+However, if this is not the desired effect then they can be moved as a single block onto 
+a new column or page with the ``break-inside: avoid`` selector, as with other block components.
+
+This can be put any of the items individually, or as in the case below - as a css selector.
 
 .. code:: html
 
@@ -147,33 +151,34 @@ They will attempt to keep together and bring any numbers, bullets or defitions w
                 column-count: 2;
                 height: 200pt;
             }
+
+             .keep-together > li{
+                break-inside: avoid;
+            }
         </style>
     </head>
     <body style="padding:20pt; font-size: 14pt;">
         <div class="separator">
             <h4>A list flowing onto a second column.</h4>
-            <ul>
+            <ol>
                 <li>First Item</li>
                 <li>Second Item</li>
                 <li>Third Item</li>
                 <li>Fourth Item</li>
                 <li>Fifth Item</li>
-                <li>Sixth Item</li>
+                <li>Sixth Item with long flowing content, that will flow the
+                    list item over onto the next column nicely, and evenly
+                    split on each of the lines.</li>
                 <li>Seventh Item</li>
                 <li>Eighth Item</li>
                 <li>Nineth Item</li>
                 <li>Tenth Item</li>
-                <li>Eleventh Item</li>
-                <li>Twelveth Item</li>
-                <li>Thirteenth Item</li>
-                <li>Fourteenth Item</li>
-                <li>Fifteenth Item</li>
-            </ul>
+            </ol>
         </div>
 
         <div class="separator">
             <h4>A list flowing as a block onto a second column.</h4>
-            <ul style="break-after: always; list-style:lower-alpha;">
+            <ul class="keep-together" style="list-style:lower-alpha;">
                 <li>First Item</li>
                 <li>Second Item</li>
                 <li>Third Item</li>
@@ -226,7 +231,8 @@ Whilst not expressly a list, they are covered here as part of our list building.
 The ``<dl></dt>`` top level tag defines the list, and the inner ``<dt></dt>`` terms and ``<dd></dd>`` definitions supporting any inner content. 
 The definitions are margins inset by 100pt's to the left.
 
-As the definitions are simply blocks, they support all style and class properties of :doc:`block_styles`
+As the definitions are simply blocks, they support all style and class properties of :doc:`block_styles`, and will split across columns and pages.
+Unlike list items, the terms and the definitions are separate blocks, so the term is be independent of the  definition.
 
 .. code:: html
 
@@ -247,8 +253,8 @@ As the definitions are simply blocks, they support all style and class propertie
                 column-count: 2;
             }
 
-            dt{ border: solid 1px black; padding:5pt; }
-            dd{ border: solid 1px red; padding:5pt }
+            dt{ border: solid 1px black; padding:5pt; break-inside: avoid; }
+            dd{ border: solid 1px red; padding:5pt;  break-inside: avoid; }
 
         </style>
     </head>
@@ -303,9 +309,6 @@ Nested Lists
 ------------
 
 Scryber supports the nesting of lists within each other. The number type and style can change with inner lists.
-
-.. note:: The rules still apply for keeing items together. A list item should not break across columns or pages. See the end of this section for further information.
-
 
 .. code:: html
 

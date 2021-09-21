@@ -8,18 +8,18 @@
             border-bottom: solid 1px gray;
             margin-bottom: 10pt;
             padding-bottom: 10pt;
-            column-count: 3;
             font-size: 12pt;
-            /* fix the height to cause overflow */
-            height: 180pt;
+            column-count:2;
+            height: 100pt;
         }
 
+        
     </style>
 </head>
 <body style="padding:20pt; font-size: 14pt;">
-    <div class="separator">
-        <h4>An nested list.</h4>
-        <ul style="break-after: always;">
+    <h4>An nested list.</h4>
+    <div class="separator" >
+        <ul>
             <li>First Item</li>
             <li>Second Item</li>
             <li>Third Item</li>
@@ -34,8 +34,10 @@
             </li>
             <li>Fifth Item</li>
         </ul>
+    </div>
+    <h4>An overflowing nested list</h4>
+    <div class="separator">
 
-        <h4>An overflowing nested list</h4>
         <ol class="top">
             <li>First Item</li>
             <li>Second Item</li>
@@ -52,14 +54,14 @@
             </li>
         </ol>
     </div>
+    <h4>A non-breaking nested list</h4>
     <div class="separator">
-        <h4>A breakable nested list</h4>
-        <ol class="top" style="break-inside:auto;">
+        <ol class="top">
             <li>First Item</li>
             <li>Second Item</li>
             <li>Third Item</li>
             <li>Fourth Item</li>
-            <li>
+            <li style="break-inside:avoid;">
                 Fifth Item at the end will cause overflow.
                 <ol class="inner">
                     <li>Inner First Item</li>

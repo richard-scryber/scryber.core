@@ -157,7 +157,13 @@ namespace Scryber.Layout
                 this.ListItem.Contents.Remove(num);
         }
 
-        
+        protected internal override bool MoveToNextRegion(PDFUnit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
+        {
+            bool success = base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
+            if (!success)
+                this.ContinueLayout = false;
+            return success;
+        }
 
         protected virtual Panel AddLabelToBlock(ListItemLabel label, ListItem item)
         {

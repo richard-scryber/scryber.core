@@ -105,6 +105,11 @@ namespace Scryber.Html.Components
                 }
 
             }
+            else if(string.Equals("PreviousPage", file, StringComparison.OrdinalIgnoreCase))
+            {
+                this.Action = LinkAction.PrevPage;
+                return this.Action;
+            }
             else if (!string.IsNullOrEmpty(file) && file.StartsWith("#"))
             {
                 this.Destination = file;

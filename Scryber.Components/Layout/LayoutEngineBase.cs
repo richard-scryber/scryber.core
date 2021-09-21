@@ -843,6 +843,7 @@ namespace Scryber.Layout
             }
             else
             {
+                this.ContinueLayout = true;
                 Stack<PDFLayoutBlock> closeorder = new Stack<PDFLayoutBlock>(depth.Reverse());
 
                 //We need to close from the inner to the outer
@@ -1087,13 +1088,16 @@ namespace Scryber.Layout
         {
             try
             {
-                using (IPDFLayoutEngine engine = new Layout.LayoutEngineText(text,this))
+                using (IPDFLayoutEngine engine = new Layout.LayoutEngineText(text, this))
                 {
                     engine.Layout(this.Context, style);
+
+                    PDFLayoutBlock block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                    if (null == block)
+                        this.ContinueLayout = false;
+                    else if(IsOutsideOfCurrentBlock(block))
+                        this.ContinueLayout = false;
                 }
-                PDFLayoutBlock block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-                if (null == block)
-                    this.ContinueLayout = false;
             }
             catch (PDFLayoutException)
             {
@@ -1107,6 +1111,7 @@ namespace Scryber.Layout
         }
 
         #endregion
+
 
         #region protected virtual void DoLayoutVisualRenderComponent(IPDFImageComponent image, PDFStyle style)
 
@@ -1151,6 +1156,8 @@ namespace Scryber.Layout
                 PDFLayoutBlock block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
                 if (null == block)
                     this.ContinueLayout = false;
+                else if (IsOutsideOfCurrentBlock(block))
+                    this.ContinueLayout = false;
             }
             catch (PDFLayoutException)
             {
@@ -1169,6 +1176,21 @@ namespace Scryber.Layout
         // overflow methods
         //
 
+
+        protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
+        {
+            if (ablock.Owner == this.Component)
+                return false;
+
+            else if ((ablock.Owner is PDFPageHeader) || (ablock.Owner is PDFPageFooter))
+                return false;
+
+            else if (this.FullStyle.Position.PositionMode == PositionMode.Inline)
+                return false;
+
+            else
+                return true;
+        }
 
         #region internal protected virtual bool MoveToNextRegion(ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
 
