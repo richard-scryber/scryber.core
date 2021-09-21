@@ -219,5 +219,51 @@ namespace Scryber.UnitSamples
 
             }
         }
+
+        [TestMethod()]
+        public void ComplexListContent()
+        {
+            var path = GetTemplatePath("Lists", "ListsComplexContent.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Lists", "ListsComplexContent.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
+        public void BoundListData()
+        {
+            var path = GetTemplatePath("Lists", "ListsDataBound.html");
+
+            var model = new
+            {
+                items = new []
+                {
+                    new { name = "First Item", color = "#FFF"},
+                    new { name = "Second Item", color = "#FFD"},
+                    new { name = "Third Item", color = "#FFB"},
+                    new { name = "Fourth Item", color = "#FF9" },
+                    new { name = "Fifth Item", color = "#FF7" },
+                    new { name = "Sixth Item", color = "#FF5" },
+                    new { name = "Seventh Item", color = "#FF3"},
+                    new { name = "Eighth Item", color = "#FF1"}
+                }
+
+            };
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Params["model"] = model;
+                using (var stream = GetOutputStream("Lists", "ListsDataBound.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
     }
 }

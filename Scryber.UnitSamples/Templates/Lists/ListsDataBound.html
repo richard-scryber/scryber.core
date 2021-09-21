@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Nested Lists</title>
+    <style>
+        .separator {
+            border-bottom: solid 1px gray;
+            margin-bottom: 10pt;
+            padding-bottom: 10pt;
+            font-size: 12pt;
+            height: 100pt;
+        }
+
+        li.full { width: 100%}
+        
+    </style>
+</head>
+<body style="padding:20pt; font-size: 14pt;">
+    <h4>A data bound list of {{count(model.items)}} items.</h4>
+    <div class="separator" style="height: 160pt;" >
+        <ol style="width:100%">
+            <li><b>Name</b></li>
+            <template data-bind="{{model.items}}">
+                <li class="full" style="background-color: calc(.color);">
+                    <span>{{.name}}</span>
+                </li>
+            </template>
+            <li style="-pdf-li-inset:100pt;"><b>{{concat('# of items is ', count(model.items))}}</b></li>
+        </ol>
+    </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Simple Lists</title>
+    <style>
+        .separator {
+            border-bottom: solid 1px gray;
+            margin-bottom: 10pt;
+            padding-bottom: 10pt;
+            column-count: 2;
+        }
+
+        .mixed {
+            background-image: radial-gradient(farthest-corner at 40px 40px, #f35 0%, #43e 100%);
+            padding:10pt;
+        }
+
+        .mixed table {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .mixed > li > p{
+            font: bold 20pt;
+            margin-top:0;
+            padding-bottom: 5pt;
+        }
+
+        .mixed .last {
+            font-size: 20pt;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body style="padding:20pt; font-size: 14pt;">
+    <div class="separator">
+        <h4>A mixed content list.</h4>
+        <ol class="mixed">
+            <li>First <b>Strong</b> Item </li>
+            <li>
+                <img src="../../images/landscape.jpg" style="width: 50pt; opacity: 0.5" />
+            </li>
+            <li>
+                <table style="width:100%">
+                    <tr><td>One</td><td>Two</td><td>Three</td></tr>
+                    <tr><td>Four</td><td>Five</td><td>Six</td></tr>
+                </table>
+            </li>
+            <li style="margin-top:10pt">
+                <p>This is a paragraph of content with a specific style</p>
+                <p>A following paragraph</p>
+            </li>
+            <li class="last">Normal list item where the style is applied to the content <b>and</b> the number.</li>
+        </ol>
+
+        
+    </div>
+
+</body>
+</html>

@@ -309,6 +309,7 @@ Nested Lists
 ------------
 
 Scryber supports the nesting of lists within each other. The number type and style can change with inner lists.
+As above the overlow of list items can be avoided as needed.
 
 .. code:: html
 
@@ -318,24 +319,24 @@ Scryber supports the nesting of lists within each other. The number type and sty
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta charset="utf-8" />
-        <title>Simple Lists</title>
+        <title>Nested Lists</title>
         <style>
             .separator {
                 border-bottom: solid 1px gray;
                 margin-bottom: 10pt;
                 padding-bottom: 10pt;
-                column-count: 3;
-                font-size:12pt;
-                /* fix the height to cause overflow */
-                height: 180pt;
+                font-size: 12pt;
+                column-count:2;
+                height: 100pt;
             }
 
+            
         </style>
     </head>
     <body style="padding:20pt; font-size: 14pt;">
-        <div class="separator">
-            <h4>An nested list.</h4>
-            <ul style="break-after: always;">
+        <h4>A nested list.</h4>
+        <div class="separator" style="height: 160pt;" >
+            <ul>
                 <li>First Item</li>
                 <li>Second Item</li>
                 <li>Third Item</li>
@@ -350,14 +351,34 @@ Scryber supports the nesting of lists within each other. The number type and sty
                 </li>
                 <li>Fifth Item</li>
             </ul>
+        </div>
+        <h4>An overflowing nested list</h4>
+        <div class="separator">
 
-            <h4>An overflowing nested list</h4>
             <ol class="top">
                 <li>First Item</li>
                 <li>Second Item</li>
                 <li>Third Item</li>
                 <li>Fourth Item</li>
                 <li>
+                    Fifth Item at the end will cause overflow.
+                    <ol class="inner">
+                        <li>Inner First Item</li>
+                        <li>Inner Second Item</li>
+                        <li>Inner Third Item</li>
+                        <li>Inner Fourth Item</li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+        <h4>A non-breaking nested list</h4>
+        <div class="separator">
+            <ol class="top">
+                <li>First Item</li>
+                <li>Second Item</li>
+                <li>Third Item</li>
+                <li>Fourth Item</li>
+                <li style="break-inside:avoid;">
                     Fifth Item at the end will cause overflow.
                     <ol class="inner">
                         <li>Inner First Item</li>
@@ -397,7 +418,7 @@ Scryber supports the nesting of lists within each other. The number type and sty
 
 `Full version <../_images/samples_listsNested.png>`_
 
-*We hope to make the keeping together an optional style in the next release (5.1+)*
+
 
 Prefix and postfix
 --------------------
@@ -405,7 +426,7 @@ Prefix and postfix
 Lists support a pre-fix, and a post-fix string that can be applied to the numbering. This will add a string value to either
 before the list number and/or after the list number.
 
-The values can be specified in 2 ways:
+As this is a `non-standard` html capability, the values can be specified in 2 ways:
 
 1. As an attribute on the list itself with the ``data-li-prefix`` and ``data-li-posfix`` values.
 2. As a custom css property with the ``-pdf-li-prefix`` and ``-pdf-li-postfix`` values either on the tag style, or on the CSS `styles`.
@@ -1010,7 +1031,7 @@ or they can be set on the components ``Style`` property, or on a ``StyleDefn`` p
 
 `Full size version <../_images/samples_listsCoded.png>`_
 
-
+It is also just as easy to look up an existing list and add or remove items, or alter contents as needed.
 
 Any list contents
 ------------------
@@ -1023,21 +1044,97 @@ Scryber will attempt to lay them out appropriately.
 
 .. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                column-count: 2;
+            }
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    
-    
-    </doc:Document>
+            .mixed {
+                background-image: radial-gradient(farthest-corner at 40px 40px, #f35 0%, #43e 100%);
+                padding:10pt;
+            }
+
+            .mixed table {
+                background-color: rgba(255,255,255,0.2);
+            }
+
+            .mixed > li > p{
+                font: bold 20pt;
+                margin-top:0;
+                padding-bottom: 5pt;
+            }
+
+            .mixed .last {
+                font-size: 20pt;
+                font-style: italic;
+            }
+
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <div class="separator">
+            <h4>A mixed content list.</h4>
+            <ol class="mixed">
+                <li>First <b>Strong</b> Item </li>
+                <li>
+                    <img src="../../images/landscape.jpg" style="width: 50pt; opacity: 0.5" />
+                </li>
+                <li>
+                    <table style="width:100%">
+                        <tr><td>One</td><td>Two</td><td>Three</td></tr>
+                        <tr><td>Four</td><td>Five</td><td>Six</td></tr>
+                    </table>
+                </li>
+                <li style="margin-top:10pt">
+                    <p>This is a paragraph of content with a specific style</p>
+                    <p>A following paragraph</p>
+                </li>
+                <li class="last">Normal list item where the style is applied to the content <b>and</b> the number.</li>
+            </ol>
+
+            
+        </div>
+
+    </body>
+    </html>
+
+.. code:: csharp
+
+    //Scryber.UnitSamples/ListSamples.cs
+
+    public void ComplexListContent()
+    {
+        var path = GetTemplatePath("Lists", "ListsComplexContent.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Lists", "ListsComplexContent.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_listsComplexContent.png
+    :target: ../_images/samples_listsComplexContent.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsComplexContent.png>`_
 
 
-.. image:: images/documentListNested.png
-
-
-Inline-BLock None Style
------------------------
+Inline-Block None and image Style
+---------------------------------
 
 A common scenario with html list items is to use them as navigation elements.
 
@@ -1045,126 +1142,94 @@ We are getting there with our html support for design of content, but at the mom
 
 
 
-
-
 Binding List items
 ------------------
 
 Just as with tables and any other content, lists fully support data binding (at any level),
-and can take data from either the parameters or the current data.
+and can take data from either the parameters or the current data, using the ``template`` component
 
-See :doc:`binding_databinding` for more on how to set up sources and get data into a document.
+See :doc:`../overview/parameters_and_expressions` for more on how to set up sources and get data into a document.
 
-.. code-block:: xml
 
-    <?xml version="1.0" encoding="utf-8" ?>
+.. code-block:: html
 
-    <doc:Document xmlns:doc="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd"
-                xmlns:styles="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd"
-                xmlns:data="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd">
-    
-        <Styles>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Nested Lists</title>
+        <style>
+            .separator {
+                border-bottom: solid 1px gray;
+                margin-bottom: 10pt;
+                padding-bottom: 10pt;
+                font-size: 12pt;
+                height: 100pt;
+            }
 
-            <styles:Style applied-class="first">
-                <styles:Position h-align="Center"/>
-                <styles:Size width="300pt"/>
-            </styles:Style>
+            li.full { width: 100%}
             
-        </Styles>
-        <Data>
-            
-            <!-- Custom data source that will provide the data. -->
-            <data:XMLDataSource id="Content" source-path="http://localhost:5000/Home/Xml" ></data:XMLDataSource>
-        </Data>
-        <Pages>
+        </style>
+    </head>
+    <body style="padding:20pt; font-size: 14pt;">
+        <h4>A data bound list of {{count(model.items)}} items.</h4>
+        <div class="separator" style="height: 160pt;" >
+            <ol style="width:100%">
+                <li><b>Name</b></li>
+                <template data-bind="{{model.items}}">
+                    <li class="full" style="background-color: calc(.color);">
+                        <span>{{.name}}</span>
+                    </li>
+                </template>
+                <li style="-pdf-li-inset:100pt;"><b>{{concat('# of items is ', count(model.items))}}</b></li>
+            </ol>
+        </div>
+    </body>
+    </html>
 
-            <doc:Section styles:margins="20pt" styles:font-size="12pt">
-            <Content>
-                
-                <data:With datasource-id="Content"  select="DataSources">
-                
-                <doc:H3 styles:h-align="Center" styles:margins="0 0 20 0" text="{xpath:@title}" />
-                
-                <doc:Div styles:column-count="2" styles:padding="4pt" styles:bg-color="#CCC" >
-                    
-                    <!-- simple list binding on the Name attribute of each of the Entry(s) -->
-                    <doc:Ol styles:number-style="UppercaseLetters" >
-                        <data:ForEach value="{xpath:Entries/Entry}" >
-                            <Template>
-                            <doc:Li >
-                                <doc:Text value="{xpath:@Name}" />
-                            </doc:Li>
-                            </Template>
-                        </data:ForEach>
-                    </doc:Ol>
+.. code:: csharp
 
-                    <doc:ColumnBreak />
-                    <!-- Using a definition list with the binding. -->
-                    <doc:Dl>
-                    <data:ForEach value="{xpath:Entries/Entry}" >
-                        <Template>
-                        <data:Choose>
+    public void BoundListData()
+    {
+        var path = GetTemplatePath("Lists", "ListsDataBound.html");
 
-                            <!-- Set up the test for then we have an Id of 'ThirdID'-->
-                            <data:When test="{xpath:@Id = 'ThirdID'}" >
-                                <Template>
-
-                                    <!-- Complex content for this item -->
-                                    <doc:Di styles:item-label="{xpath:@Id}" >
-                                        <doc:Span styles:font-bold="true" styles:fill-color="#AA0000" >
-                                            <doc:Text value="{xpath:concat('This is the ',@Name,' item')}" />
-                                        </doc:Span>
-                                    </doc:Di>
-                                </Template>
-                            </data:When>
-
-                            <!-- Just a simple item otherwise -->
-                            <data:Otherwise>
-                                <Template>
-                                    <doc:Di styles:item-label="{xpath:@Id}" >
-                                        <doc:Text value="{xpath:@Name}" />
-                                    </doc:Di>
-                                </Template>
-                            </data:Otherwise>
-
-                        </data:Choose>
-                        </Template>
-                    </data:ForEach>
-
-                    </doc:Dl>
-                </doc:Div>
-                
-                </data:With>
-
-            </Content>
-            </doc:Section>
-
-    </Pages>
-    
-    </doc:Document>
-
-And a datasource response that results as follows
-
-.. code-block:: csharp
-
-        public IActionResult Xml()
+        var model = new
         {
-            var xml = new XDocument(
-                new XElement("DataSources",
-                    new XAttribute("title", "Testing Xml Datasources"),
-                    new XElement("Entries",
-                        new XElement("Entry", new XAttribute("Name", "First Xml"), new XAttribute("Id", "FirstID")),
-                        new XElement("Entry", new XAttribute("Name", "Second Xml"), new XAttribute("Id", "SecondID")),
-                        new XElement("Entry", new XAttribute("Name", "Third Xml"), new XAttribute("Id", "ThirdID")),
-                        new XElement("Entry", new XAttribute("Name", "Fourth Xml"), new XAttribute("Id", "FourthID"))
-                        )
-                    )
-                );
-            return Content(xml.ToString(), "text/xml");
+            items = new []
+            {
+                new { name = "First Item", color = "#FFF"},
+                new { name = "Second Item", color = "#FFD"},
+                new { name = "Third Item", color = "#FFB"},
+                new { name = "Fourth Item", color = "#FF9" },
+                new { name = "Fifth Item", color = "#FF7" },
+                new { name = "Sixth Item", color = "#FF5" },
+                new { name = "Seventh Item", color = "#FF3"},
+                new { name = "Eighth Item", color = "#FF1"}
+            }
+
+        };
+        using (var doc = Document.ParseDocument(path))
+        {
+            doc.Params["model"] = model;
+            using (var stream = GetOutputStream("Lists", "ListsDataBound.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
         }
+    }
 
 
-.. image:: images/documentListsBinding.png
+.. figure:: ../images/samples_listsDatabound.png
+    :target: ../_images/samples_listsDatabound.png
+    :alt: Overflowing lists.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_listsDatabound.png>`_
 
 
-.. note:: Scryber also includes the doc:DataList component that can easily create ordered and unordered lists from datasources MUCH faster. But the doc:ForEach and doc:Choice allow full control where needed.
+Other numbering components
+--------------------------
+
+All other container content also supports numbers and numbering, not just lists - see :doc:`headings_reference` for more information.
