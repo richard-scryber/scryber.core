@@ -30,6 +30,10 @@ If a page has a header or footer the available space for the content will be red
     <head>
         <style>
 
+        body {
+            background-color: #DDD;
+        }
+
         header, footer{
                 padding: 10pt;
                 background-color: #333;
@@ -57,9 +61,62 @@ If a page has a header or footer the available space for the content will be red
 
     </html>
 
-.. image:: images/documentpages1.png
+.. code:: csharp
+
+    //Scryber.UnitSamples/PagesSamples.cs
+
+    public void SimpleNavigationLinks()
+    {
+        var path = GetTemplatePath("Pages", "PagesSimple.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Pages", "PagesSimple.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+
+.. figure:: ../images/samples_pagesSimple.png
+    :target: ../_images/samples_pagesSimple.png
+    :alt: Simple Pages.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_pagesSimple.png>`_
+
 
 .. note:: Any styles set on the body will be applied to the header and footer as well. e.g. padding or margins.
+
+Single body structure
+---------------------
+
+In the example above the ``html`` tag references the ``Scryber.Html.Components.HTMLDocument`` class that inherits from the
+``Scryber.Components.Document`` class.
+
+See :doc:`../overview/scryber_parsing` for more information on how instances are created from elements.
+
+The ``HTMLDocumemt`` has 2 properties on it for the `head` (``HTMLHead``) and `body` (``HTMLBody``) that are matched to the content 
+of the template.
+
+The ``HTMLBody`` inherits from the ``Scryber.Components.Section`` which in itself inherits from 
+the ``Scryber.Components.Page`` class.and supports multiple pages, and then the ``Scryber.Components.PageBase``
+that all page components should inherit from.
+
+
+.. figure:: ../images/diagrams_DocumentClasses.png
+    :target: ../_images/diagrams_DocumentClasses.png
+    :alt: Page class hierarchy.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/diagrams_DocumentClasses.png>`_
+
+
 
 Flowing Pages
 ---------------

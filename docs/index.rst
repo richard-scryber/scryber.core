@@ -216,6 +216,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     components/tables_reference
     components/links_reference
     components/lists_reference
+    components/pages_reference
 
 .. toctree:: 
     :caption: Drawing and Shapes
