@@ -124,6 +124,13 @@ namespace Scryber.Styles.Parsing.Typed
 
                 result = true;
             }
+            else if(value == "initial")
+            {
+                action = OverflowAction.Truncate;
+                split = OverflowSplit.Never;
+
+                result = true;
+            }
             else
             {
                 split = null;

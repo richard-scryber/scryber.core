@@ -33,13 +33,28 @@ namespace Scryber.UnitSamples
         #endregion
 
         [TestMethod()]
-        public void SimpleNavigationLinks()
+        public void PagesSimple()
         {
             var path = GetTemplatePath("Pages", "PagesSimple.html");
 
             using (var doc = Document.ParseDocument(path))
             {
                 using (var stream = GetOutputStream("Pages", "PagesSimple.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod()]
+        public void PagesFlowing()
+        {
+            var path = GetTemplatePath("Pages", "PagesFlowing.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Pages", "PagesFlowing.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }

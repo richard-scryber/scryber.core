@@ -120,6 +120,7 @@ that all page components should inherit from.
 
 Flowing Pages
 ---------------
+
 If the size of the content is more than can fit on a page it will overflow onto another page. Repeating any header or footer.
 
 .. code-block:: html
@@ -178,12 +179,45 @@ If the size of the content is more than can fit on a page it will overflow onto 
 
     </html>
 
+.. code:: csharp
 
+    //Scryber.UnitSamples/PagesSamples.cs
+
+    public void PagesFlowing()
+    {
+        var path = GetTemplatePath("Pages", "PagesFlowing.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Pages", "PagesFlowing.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
 
 Here we can see that the content flows naturally onto the next page, including the padding and borders.
-And the header and footer are shown on the second page.
+And the header and footer are shown on the following pages.
 
-.. image:: images/documentpages3.png
+.. figure:: ../images/samples_pagesFlowing.png
+    :target: ../_images/samples_pagesFlowing.png
+    :alt: Pages flowing across multiple layouts.
+    :width: 600px
+
+`Full size version <../_images/samples_pagesFlowing.png>`_
+
+Creating pages in code.
+-----------------------
+
+As with everything else in scryber, it is simple and easy to create pages in code from the document and pagebase classes.
+
+It is also possible to add pages, sections and page groups to an existing parsed template.
+
+For headers and footers, these are supported through the ``IPDFTemplate`` interface. 
+See :doc:`page_headers_reference` for an example of this.
+
+
 
 Page breaks
 -------------
