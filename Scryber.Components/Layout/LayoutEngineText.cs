@@ -480,11 +480,14 @@ namespace Scryber.Layout
             PDFUnit lineright = widthOfLastTextDraw;
             
             PDFUnit back = line.Width - lineright;
-            
+
             //Previous - 27 Feb 2015
             //br.Offset = new PDFSize(back, line.Height);
 
             //Updated
+            if (line.Height == PDFUnit.Zero)
+                line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
+
             if (line.BaseLineOffset == 0 || this.TextRenderOptions.Leading.HasValue) //we don't have any begins or ends affecting the flow (or an explicit leading)
                 br.Offset = new PDFSize(back, line.Height);
             else

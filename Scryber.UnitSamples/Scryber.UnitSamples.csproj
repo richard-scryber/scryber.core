@@ -21,6 +21,7 @@
     <None Remove="Templates\Lists\" />
     <None Remove="output\" />
     <None Remove="Templates\Pages\" />
+    <None Remove="Scryber.Core" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

@@ -169,7 +169,7 @@ namespace Scryber.UnitSamples
 
             using (var doc = Document.ParseDocument(path))
             {
-                
+
                 if (doc.TryFindAComponentById("TopDiv", out Div top))
                 {
                     ListOrdered ol = new ListOrdered() {
@@ -192,7 +192,7 @@ namespace Scryber.UnitSamples
                 if (doc.TryFindAComponentById("SecondDiv", out Div second))
                 {
                     ListDefinition dl = new ListDefinition();
-                    
+
                     for (var i = 1; i < 10; i++)
                     {
                         ListDefinitionTerm term = new ListDefinitionTerm();
@@ -205,7 +205,7 @@ namespace Scryber.UnitSamples
                         //Setting the item number inset to 100 individually
                         if (i == 5)
                             def.Style.Margins.Left = 100;
-                        
+
                         dl.Items.Add(def);
 
                     }

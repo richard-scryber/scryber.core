@@ -11,6 +11,12 @@ The body has an optional header and footer that will be used on every page if se
 
 Scryber also supports the use of the @page rule to be able to change the size and orientation of each of the pages either as a whole, or within a section or tag.
 
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
+
+
 The body and its content
 --------------------------
 
@@ -106,6 +112,8 @@ of the template.
 The ``HTMLBody`` inherits from the ``Scryber.Components.Section`` which in itself inherits from 
 the ``Scryber.Components.Page`` class.and supports multiple pages, and then the ``Scryber.Components.PageBase``
 that all page components should inherit from.
+
+The ``HTMLHead`` is a specific html component that wraps the title and `Contents` for links, styles etc.
 
 
 .. figure:: ../images/diagrams_DocumentClasses.png
@@ -213,6 +221,8 @@ Creating pages in code.
 As with everything else in scryber, it is simple and easy to create pages in code from the document and pagebase classes.
 
 It is also possible to add pages, sections and page groups to an existing parsed template.
+
+
 
 For headers and footers, these are supported through the ``IPDFTemplate`` interface. 
 See :doc:`page_headers_reference` for an example of this.
