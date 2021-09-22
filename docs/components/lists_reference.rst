@@ -1044,6 +1044,8 @@ Scryber will attempt to lay them out appropriately.
 
 .. code-block:: xml
 
+    <!-- /Templates/Lists/ListsComplexContent.html -->
+
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -1153,6 +1155,8 @@ See :doc:`../overview/parameters_and_expressions` for more on how to set up sour
 
 .. code-block:: html
 
+    <!-- /Templates/Lists/ListsDataBound.html -->
+
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -1189,6 +1193,8 @@ See :doc:`../overview/parameters_and_expressions` for more on how to set up sour
 
 .. code:: csharp
 
+    //Scryber.UnitSamples/ListSamples.cs
+    
     public void BoundListData()
     {
         var path = GetTemplatePath("Lists", "ListsDataBound.html");
