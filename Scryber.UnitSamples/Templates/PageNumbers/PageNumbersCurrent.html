@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>My Document</title>
+    <style>
+
+        p, h1 {
+            padding: 10pt;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        @media print {
+
+            .print-only {
+                display: block;
+            }
+
+            .foot {
+                border-top: solid 1pt gray;
+                text-align: center;
+                font: 10pt sans-serif;
+                margin: 5pt;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p>This is the header</p>
+    </header>
+
+    <!-- Page number within the content -->
+    <h1>This is the content on page <page /></h1>
+
+    <footer>
+        <!-- a page number using the current font style in a footer -->
+        <p class='print-only foot'> The Current Page is <page /></p>
+    </footer>
+
+</body>
+
+</html>

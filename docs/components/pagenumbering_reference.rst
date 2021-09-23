@@ -7,6 +7,37 @@ Putting numbers in pages is often a requirement, but honestly we have never like
 At scryber we have taken a slightly more declarative approach with the 'page' tag. Browsers do not understand this tag, and will ignore it.
 The scryber engine will understand and output the current page number
 
+.. code:: html
+
+    <!-- current page number -->
+    <page />
+
+    <!-- total number of pages -->
+    <page property='total'>
+
+    <!-- page number of another component -->
+    <page for='#id' />
+
+    <!-- page with custom format -->
+    <page data-format='Page {0} of {1}' />
+
+
+The page number component classes are ``PageNumberLabel`` and ``PageOfLabel`` in the 
+``Scryber.Components`` namespace.
+
+.. code:: csharp
+
+    var pgNum = new PageNumberLabel(){ DisplayFormat = "{0} of {1}" };
+
+    var pgOf = new PageOfLabel() { ComponentName = "#id", NotFoundText = "Oops!" };
+
+
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
+
+
 Current Page Numbers
 ---------------------
 
@@ -60,11 +91,35 @@ inline style options from as with any other span.
 
     </html>
 
-And our page footer will display as expected.
 
-.. image:: images/PageNumbers1.png
+.. code:: csharp
 
-The page tag also supports the property attribute for displying the 'total' number of pages, and it also the current 'section' or 'sectiontotal' page count.
+    public void CurrentPageNumber()
+    {
+        var path = GetTemplatePath("PageNumbers", "PageNumbersCurrent.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("Links", "PageNumbersCurrent.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_pagenumberCurrent.png
+    :target: ../_images/samples_pagenumberCurrent.png
+    :alt: Simple Pages.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_pagenumberCurrent.png>`_
+
+
+
+The page tag also supports the property attribute for displying the 'total' number of pages.
 
 .. code-block:: html
 

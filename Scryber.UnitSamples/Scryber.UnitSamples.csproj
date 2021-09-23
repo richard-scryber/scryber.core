@@ -22,6 +22,7 @@
     <None Remove="output\" />
     <None Remove="Templates\Pages\" />
     <None Remove="Scryber.Core" />
+    <None Remove="Templates\PageNumbers\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
@@ -30,6 +31,7 @@
     <Folder Include="Templates\Links\" />
     <Folder Include="Templates\Lists\" />
     <Folder Include="Templates\Pages\" />
+    <Folder Include="Templates\PageNumbers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
