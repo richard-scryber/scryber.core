@@ -34,6 +34,14 @@ namespace Scryber.Html.Components
         [PDFTemplate(IsBlock = true)]
         public override IPDFTemplate Footer { get => base.Footer; set => base.Footer = value; }
 
+        [PDFElement("continuation-header")]
+        [PDFTemplate(IsBlock = true)]
+        public override IPDFTemplate ContinuationHeader { get => base.ContinuationHeader; set => base.ContinuationHeader = value; }
+
+        [PDFElement("continuation-footer")]
+        [PDFTemplate(IsBlock = true)]
+        public override IPDFTemplate ContinuationFooter { get => base.ContinuationFooter; set => base.ContinuationFooter = value; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>

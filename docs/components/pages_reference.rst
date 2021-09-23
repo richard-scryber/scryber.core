@@ -1,5 +1,5 @@
 ================================
-Body, Pages and Sections - TD
+Body, Pages, breaks and sizes
 ================================
 
 All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 
@@ -28,6 +28,7 @@ A single page has a structure of optional elements
 * footer - Optional, but always sited at the bottom of a page
 
 If a page has a header or footer the available space for the content will be reduced.
+Headers and footers can contain any content in the same way as any other block.
 
 .. code-block:: html
 
@@ -216,6 +217,12 @@ a new page in the flow.
 
 In this example we have set up a ``h1`` to force the break after so the rest of the content will be on a new page.
 
+.. code:: css
+
+    body h1.title {
+        page-break-after : always;
+    }
+
 The breaking can be at any depth, and borders; padding; margins; etc. should be preserved.
 
 .. code:: html
@@ -248,16 +255,18 @@ The breaking can be at any depth, and borders; padding; margins; etc. should be 
                 column-count: 2;
             }
 
+            /* title page with background image
+                and page-break-after */
             body h1.title{
                 background-image: url(../../images/landscape.jpg);
                 background-size: cover;
                 font: 30pt serif;
                 color: white;
-                page-break-after : always;
                 height: 300pt;
                 margin: 0;
                 vertical-align:middle;
                 text-align:center;
+                page-break-after: always;
             }
 
         </style>
@@ -269,6 +278,7 @@ The breaking can be at any depth, and borders; padding; margins; etc. should be 
 
         <!-- title content that forces a
         page break after -->
+
         <h1 class="title">
             This is the title
         </h1>
@@ -311,106 +321,39 @@ The breaking can be at any depth, and borders; padding; margins; etc. should be 
 
 `Full size version <../_images/samples_pageBreaks.png>`_
 
-Creating pages in code.
------------------------
 
-As with everything else in scryber, it is simple and easy to create pages in code from the document and pagebase classes.
+Page sizes
+----------
 
-It is also possible to add pages, sections and page groups to an existing parsed template.
-
-
-
-For headers and footers, these are supported through the ``IPDFTemplate`` interface. 
-See :doc:`page_headers_reference` for an example of this.
+The default page size for a layout in scryber is A4 portrait. 
+Scryber supports the use of the ``@page`` directive to alter the size of the layout page in the document.
 
 
+.. code:: css
 
-Page breaks
--------------
+    @page {
+        size: A4 landscape;
+    }
 
-When using a <section> it will, by default, force a break in the pages using the before the component, so that it flows
-nicely onto a new page and begins the new content from there. (the default style is page-break-before:always)
+This will change **all** the pages to use landscape layout.
 
-This behaviour can can be stopped by applying the css attribute for 'page-break-before:avoid' value,
-and a page break can also be applied to any element using the style 'page-break-before:always' (or 'page-break-after:always').
+To define specific page sizes the `@page` directive can be followed by a label and then that label applied to the style of
+the component that is currently forcing a new page.
 
-Margins, padding, boarder and depth should be preserved during the page break, and the engine 
-will try and layout the content appropriately for breaks inside nested elements.
+.. code:: css
 
-.. code-block:: html
+    @page main-body {
+        size: A4 portrait;
+    }
 
-    <?xml version="1.0" encoding="utf-8" ?>
-    <html xmlns='http://www.w3.org/1999/xhtml'>
-    <head>
-        <style type="text/css">
+    .main {
+        page: main-body;
+        page-break-before: always;
+    }
 
-            header, footer {
-            padding: 10pt;
-            background-color: #333;
-            color: #EEE;
-            border-bottom: 1px solid black;
-            border-top: 1px solid black;
-            }
+.. note:: As the layout page will be created when a page-break property css is met, the `page` property should be set at that level. This means that a component that has the page-break-after property, should also stipulate which page size to use.
 
-            body .content {
-            margin: 20pt;
-            font-size:12pt;
-            padding: 4pt;
-            border: solid 1px silver;
-            }
-
-        </style>
-    </head>
-    <body>
-        <header>
-            <h4>This is the header</h4>
-        </header>
-        <h1>This is the content</h1>
-
-        <!-- section that does not force a new page (so that it stays on the first page -->
-        <section class='content' style="page-break-before:avoid">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas scelerisque porttitor urna.
-            <!-- Truncated for brevity -->
-            Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-            Praesent mollis tempor enim.<br />
-
-        </section>
-
-        <!-- This will be default appear on a new page -->
-        <section class='content'>
-            Nullam et erat vel nisl suscipit volutpat id vitae massa. Nunc volutpat feugiat iaculis.
-            Mauris sit amet eleifend augue. Nulla imperdiet eu mauris nec consequat. Donec a urna blandit,
-            <!-- Truncated for brevity -->
-            sagittis dignissim volutpat. Integer efficitur euismod lectus at varius. Vestibulum euismod massa mauris.
-            Mauris laoreet urna est, et tristique velit lobortis eu.
-        </section>
-
-        <!-- Any tag can force a new page within the document flow, and it does not have to be at the
-            root level. Borders and spacing will be preserved as much as possible -->
-        <div class="content">
-            The inner content will be on a new page.
-            <div class='content' style="page-break-before:always;">
-                Phasellus luctus dapibus nisi, et pulvinar neque ultrices vitae. Pellentesque quis purus felis.
-                <!-- Truncated for brevity -->
-                venenatis ut ex. Donec euismod risus eros, dapibus tincidunt dolor varius id.
-            </div>
-            After the content.
-        </div>
-        <footer>
-            <h4>This is the footer</h4>
-        </footer>
-
-    </body>
-
-    </html>
-
-.. image:: images/SectionsOverflow.png
-
-Page size and orientation
--------------------------
-
-When outputting a page the default paper size is ISO A4 Portrait (210mm x 29.7mm), however Scryber supports setting the paper size 
-either on the section or via styles to the standard ISO or Imperial page sizes, in landscape or portrait.
+Scryber supports the use of the following page sizes.
 
 * ISO 216 Standard Paper sizes
     * `A0 to A9 <https://papersizes.io/a/>`_
@@ -418,58 +361,75 @@ either on the section or via styles to the standard ISO or Imperial page sizes, 
     * `C0 to C9 <https://papersizes.io/c/>`_
 * Imperial Paper Sizes
     * Quarto, Foolscap, Executive, GovermentLetter, Letter, Legal, Tabloid, Post, Crown, LargePost, Demy, Medium, Royal, Elephant, DoubleDemy, QuadDemy, Statement,
+  
+But custom values can be used for a specific width or height on the `size` property.
+
+.. code:: css
+
+    @page {
+        size: 200mm 200mm;
+    }
 
 
-The body or a section can only be 1 size of paper, but different sections (or page breaks) can be different pages and can have different sizes.
+Putting this together with the example above, the title page uses the default A4 landscape size, and following pages use the portrait size.
 
-An @page { ... } rule will apply to all pages in the document.
-
-To specify an explicit named page size use the name after the @page rule, and then 
-identify the rule with the page css declaration either on the tag style or in css. 
-The same priories will be applied if multiple page values are matched.
-
-To revert back to the default size use a value of auto or initial.
-
-.. code-block:: html
+.. code:: html
 
     <?xml version="1.0" encoding="utf-8" ?>
     <html xmlns='http://www.w3.org/1999/xhtml'>
     <head>
-        <style type="text/css">
+        <style>
 
             header, footer {
-            padding: 10pt;
-            background-color: #333;
-            color: #EEE;
-            border-bottom: 1px solid black;
-            border-top: 1px solid black;
+                padding: 10pt 20pt 10pt 20pt;
+                background-color: #333;
+                color: #EEE;
+                border-bottom: 1px solid black;
+                border-top: 1px solid black;
             }
 
-            body .content {
-            margin: 20pt;
-            font-size:12pt;
-            padding: 4pt;
-            border: solid 1px silver;
+            header{
+                text-align: right;
             }
 
-            .small-page{
-            page: initial;
+            body h1, body div {
+                margin: 20pt;
             }
 
-            .big-page{
-            page: landscape;
+            body div.content {
+                font-size: 12pt;
+                padding: 4pt;
+                border: solid 1px silver;
+                column-count: 2;
             }
 
-            /* This will be the default initial size */
+            body h1.title{
+                background-image: url(../../images/landscape.jpg);
+                background-size: cover;
+                font: 30pt serif;
+                color: white;
+                height: 300pt;
+                margin: 0;
+                vertical-align:middle;
+                text-align:center;
+            }
+
+            /* The main will force a new page
+                of style main-content
+            */
+            body h1.main{
+                page-break-before: always;
+                page: main-content;
+            }
+
+            /* default */
             @page {
-            size: A4 landscape;
+                size: A4 landscape;
             }
 
-            /* any new pages with the page:landscape will
-            use this size */
-
-            @page landscape {
-            size: A3 landscape;
+            /* main content specific */
+            @page main-content {
+                size: A4 portrait;
             }
 
         </style>
@@ -478,44 +438,16 @@ To revert back to the default size use a value of auto or initial.
         <header>
             <h4>This is the header</h4>
         </header>
-        <h1>This is the content</h1>
 
-        <!-- section that does not force a new page (so that it stays on the first page -->
-        <section class='content' style="page-break-before:avoid">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas scelerisque porttitor urna.
-            Duis pellentesque sem tempus magna faucibus, quis lobortis magna aliquam. Nullam eu risus
+        <h1 class="title">
+            This is the title
+        </h1>
 
-            <!-- Truncated for brevity -->
+        <!-- this now forces a break before and
+            specifies the page orientation of portrait -->
+        <h1 class="main">This is the content</h1>
 
-            Praesent mollis tempor enim.
-        </section>
-
-        <!-- This will be on the A3 landscape page -->
-        <section class='content big-page'>
-            Nullam et erat vel nisl suscipit volutpat id vitae massa. Nunc volutpat feugiat iaculis.
-            Mauris sit amet eleifend augue. Nulla imperdiet eu mauris nec consequat. Donec a urna blandit,
-
-            <!-- Truncated for brevity -->
-
-            Mauris laoreet urna est, et tristique velit lobortis eu.
-        </section>
-
-        <!-- The inner div of small-page will revert the size back to the default (initial) size  -->
-        <div class="content">
-        
-            The inner content will be on a new page.
-
-            <div class='content small-page' style="page-break-before:always;">
-                Phasellus luctus dapibus nisi, et pulvinar neque ultrices vitae. Pellentesque quis purus felis.
-                Aliquam feugiat efficitur sem quis placerat. Quisque viverra magna vitae elit eleifend, a porttitor
-                enim vulputate. Quisque elit metus, aliquam eget purus at, blandit gravida diam.
-
-                <!-- Truncated for brevity -->
-
-                venenatis ut ex. Donec euismod risus eros, dapibus tincidunt dolor varius id.
-            </div>
-            After the content.
-        </div>
+        <div class='content' style="white-space: pre-wrap">{{content}}</div>
         <footer>
             <h4>This is the footer</h4>
         </footer>
@@ -524,15 +456,193 @@ To revert back to the default size use a value of auto or initial.
 
     </html>
 
+.. code:: csharp
 
-.. image:: images/SectionsPageSizes.png
+    public void PagesSizes()
+    {
+        var path = GetTemplatePath("Pages", "PageSizes.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            var txtPath = GetTemplatePath("Pages", "LongTextFile.txt");
+            doc.Params["content"] = System.IO.File.ReadAllText(txtPath);
+
+            using (var stream = GetOutputStream("Pages", "PageSizes.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+    }
+    
+
+.. figure:: ../images/samples_pageSizes.png
+    :target: ../_images/samples_pageSizes.png
+    :alt: Changing page sizes in a document.
+    :width: 600px
+
+`Full size version <../_images/samples_pageSizes.png>`_
 
 
-Stopping overflow
--------------------
 
-If overflowing onto a new page is not required or wanted then the 
-page-break-inside='avoid' will block any overflow or new pages.
 
-A section can be a single page, and never overflow.
+Creating pages in code.
+-----------------------
+
+As with everything else in scryber, it is simple and easy to create pages in code from the document and pagebase classes.
+
+It is also possible to insert pages, sections and page groups to an existing parsed template. As the ``body`` inherits from ``Scyber.Components.Section`` this will
+be parsed as a single section.
+
+For headers and footers, these are supported through the ``IPDFTemplate`` interface. 
+See :doc:`page_headers_reference` for more on this topic.
+
+.. code:: csharp
+
+
+    public void PagesCoded()
+    {
+        using(var doc = new Document())
+        {
+            //Define the title style that matches onto the '.title' style class.
+            var titleStyle = new StyleDefn(".title");
+            
+            titleStyle.Background.ImageSource = "../../../Images/Landscape.jpg";
+            titleStyle.Background.PatternRepeat = PatternRepeat.Fill;
+            titleStyle.Position.VAlign = VerticalAlignment.Middle;
+            titleStyle.Position.HAlign = HorizontalAlignment.Center;
+            titleStyle.Size.Height = 300;
+            titleStyle.Font.FontSize = 30;
+            titleStyle.Fill.Color = PDFColors.White;
+            titleStyle.Font.FontFamily = new PDFFontSelector("serif");
+
+
+            //Define the body style that matches onto the '.body' style class
+            var bodyStyle = new StyleDefn(".body");
+            bodyStyle.Font.FontSize = 12;
+            bodyStyle.Padding.All = 10;
+            bodyStyle.Border.Color = (PDFColor)"#AAA";
+            bodyStyle.Columns.ColumnCount = 2;
+
+            var textStyle = new StyleDefn(".preserve");
+            textStyle.Text.PreserveWhitespace = true;
+
+            //Add the styles to the document
+            doc.Styles.Add(bodyStyle);
+            doc.Styles.Add(titleStyle);
+            doc.Styles.Add(textStyle);
+
+            //Create a page with a size
+            var pg = new Page()
+            {
+                PaperSize = PaperSize.A4,
+                PaperOrientation = PaperOrientation.Landscape
+            };
+
+            //add it to the document Pages collection
+            doc.Pages.Add(pg);
+
+            //Create new instances of the header and footer classes that implement
+            //The IPDFTemplate interface and set to the header and footer.
+            pg.Header = new CodedHeader();
+            pg.Footer = new CodedFooter();
+
+            //Create the title div and add it to the first page
+            var div = new Div();
+            div.StyleClass = "title";
+            pg.Contents.Add(div);
+
+            //With some text in it.
+            var txt = new TextLiteral("This is the title page");
+            div.Contents.Add(txt);
+
+            //Now add a section to the document
+            var sect = new Section()
+            {
+                PaperOrientation = PaperOrientation.Portrait
+            };
+            doc.Pages.Add(sect);
+
+            //Set the header and footer (to the same as the page)
+            sect.Header = pg.Header;
+            sect.Footer = pg.Footer;
+
+            //Add a header
+            var contentTitle = new Head1() { Text = "This is the loaded content", Margins = new PDFThickness(20) };
+            sect.Contents.Add(contentTitle);
+
+            //And add the body content to the section.
+            var body = new Div();
+            //Add the body class, and preserve so extra returns are retained
+            //Will still wrap text.
+            body.StyleClass = "body preserve";
+            sect.Contents.Add(body);
+
+            //Read some long plain text from a file into a text literal
+            var path = GetTemplatePath("Pages", "LongTextFile.txt");
+            var content = new TextLiteral();
+            content.Text = System.IO.File.ReadAllText(path);
+
+            //We set the style to preserve, so that the white space in the content is retained
+            content.StyleClass = "preserve";
+            
+            //Add it to the body.
+            body.Contents.Add(content);
+
+            //And process in the same way
+            using (var stream = GetOutputStream("Pages", "PagesCoded.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+
+    }
+
+    /// <summary>
+    /// IPDFTemplate for the header
+    /// </summary>
+    private class CodedHeader : IPDFTemplate
+    {
+        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        {
+            return new IPDFComponent[]
+            {
+                new Head4(){
+                    Text = "This is the coded header",
+                    Padding = new PDFThickness(10, 20, 10, 20),
+                    Margins = PDFThickness.Empty(),
+                    BackgroundColor = PDFColors.Silver,
+                    HorizontalAlignment = HorizontalAlignment.Right
+                }
+            };
+        }
+    }
+
+    /// <summary>
+    /// IPDFTemplate for the footer
+    /// </summary>
+    private class CodedFooter : IPDFTemplate
+    {
+        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        {
+            var div = new Div() {
+                BackgroundColor = PDFColors.Silver,
+                FillColor = PDFColors.White,
+                FontSize = 12,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Padding = new PDFThickness(10)
+            };
+            div.Contents.Add(new PageNumberLabel() { DisplayFormat = "{0} of {1}" });
+
+            return new IPDFComponent[] { div };
+        }
+    }
+
+
+.. figure:: ../images/samples_pageCoded.png
+    :target: ../_images/samples_pageCoded.png
+    :alt: Creating pages in code.
+    :width: 600px
+
+`Full size version <../_images/samples_pageCoded.png>`_
 

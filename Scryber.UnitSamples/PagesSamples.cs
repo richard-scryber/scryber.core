@@ -88,7 +88,18 @@ namespace Scryber.UnitSamples
         [TestMethod]
         public void PagesSizes()
         {
+            var path = GetTemplatePath("Pages", "PageSizes.html");
 
+            using (var doc = Document.ParseDocument(path))
+            {
+                var txtPath = GetTemplatePath("Pages", "LongTextFile.txt");
+                doc.Params["content"] = System.IO.File.ReadAllText(txtPath);
+
+                using (var stream = GetOutputStream("Pages", "PageSizes.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
         }
 
         [TestMethod]
@@ -158,6 +169,10 @@ namespace Scryber.UnitSamples
                 //Set the header and footer (to the same as the page)
                 sect.Header = pg.Header;
                 sect.Footer = pg.Footer;
+
+                //Add a header
+                var contentTitle = new Head1() { Text = "This is the loaded content", Margins = new PDFThickness(20) };
+                sect.Contents.Add(contentTitle);
 
                 //And add the body content to the section.
                 var body = new Div();

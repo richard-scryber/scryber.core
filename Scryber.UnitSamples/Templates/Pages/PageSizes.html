@@ -26,19 +26,33 @@
             column-count: 2;
         }
 
-        /* title page with background image
-            and page-break-after */
-
         body h1.title{
             background-image: url(../../images/landscape.jpg);
             background-size: cover;
             font: 30pt serif;
             color: white;
-            page-break-after : always;
             height: 300pt;
             margin: 0;
             vertical-align:middle;
             text-align:center;
+        }
+
+        /* The main will force a new page
+            of style main-content
+        */
+        body h1.main{
+            page-break-before: always;
+            page: main-content;
+        }
+
+        /* default */
+        @page {
+            size: A4 landscape;
+        }
+
+        /* main content specific */
+        @page main-content {
+            size: A4 portrait;
         }
 
     </style>
@@ -48,13 +62,14 @@
         <h4>This is the header</h4>
     </header>
 
-    <!-- title content that forces a
-       page break after -->
     <h1 class="title">
         This is the title
     </h1>
 
-    <h1>This is the content</h1>
+    <!-- this now forces a break before and
+        specifies the page orientation of portrait -->
+    <h1 class="main">This is the content</h1>
+
     <div class='content' style="white-space: pre-wrap">{{content}}</div>
     <footer>
         <h4>This is the footer</h4>
