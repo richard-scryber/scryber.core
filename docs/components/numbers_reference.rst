@@ -7,6 +7,8 @@ Scryber supports the formatting of these types of content with specific elements
 
 .. code:: html
 
+    <!-- xmlns='http://www.w3.org/1999/xhtml' -->
+    
     <!-- output as british pounds -->
     <num value='100' data-format='£#0.00' />
 

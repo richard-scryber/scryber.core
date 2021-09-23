@@ -9,6 +9,8 @@ The scryber engine will understand and output the current page number
 
 .. code:: html
 
+    <!-- xmlns='http://www.w3.org/1999/xhtml' -->
+
     <!-- current page number -->
     <page />
 
@@ -27,6 +29,8 @@ The page number component classes are ``PageNumberLabel`` and ``PageOfLabel`` in
 
 .. code:: csharp
 
+    //using Scryber.Components
+    
     var pgNum = new PageNumberLabel(){ DisplayFormat = "{0} of {1}" };
 
     var pgOf = new PageOfLabel() { ComponentName = "#id", NotFoundText = "Oops!" };

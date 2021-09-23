@@ -7,6 +7,36 @@ It also supports the use of binding and repeating on list items.
 
 A list item is just a container for other content, and can contain any children.
 
+.. code:: html
+
+    <!-- xmlns='http://www.w3.org/1999/xhtml' -->
+
+    <ol style='list-style-type: lower-roman'>
+        <li>First Item</li>
+        <li>Second Item</li>
+        <li>Third Item</li>
+    </ol>
+
+    <ul>
+        <li>First Item</li>
+        <li>Second Item</li>
+        <li>Third Item</li>
+    </ul>
+
+The ``ol`` and ``ul`` lists inherit from ``ListOrdered`` and ``ListUnordered``
+
+.. code:: csharp
+
+    //using Scryber.Components
+
+    var list = new ListOrdered() { NumberingStyle = ListNumberingGroupStyle.LowercseRoman };
+    for(var i = 0; i < 3; i++)
+    {
+        var li = new ListItem();
+        li.Contents.Add(new TextLiteral("Item #" + i));
+        list.Items.Add(li);
+    }
+
 Generation methods
 -------------------
 
@@ -1194,7 +1224,7 @@ See :doc:`../overview/parameters_and_expressions` for more on how to set up sour
 .. code:: csharp
 
     //Scryber.UnitSamples/ListSamples.cs
-    
+
     public void BoundListData()
     {
         var path = GetTemplatePath("Lists", "ListsDataBound.html");

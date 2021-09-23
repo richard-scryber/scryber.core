@@ -3,13 +3,52 @@ Body, Pages, breaks and sizes
 ================================
 
 All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 
-and also explicit flowing pages in a section.
 
-The use of the page-break-before and after is supported on any content to force a new page is set to 'always' on a section, but can, along with page-break-after, be set and supported on any component tag
+The use of the `page-break-before` or `page-break-after` is supported on any content to force a new page when set to 'always' on any component tag
 
 The body has an optional header and footer that will be used on every page if set.
 
 Scryber also supports the use of the @page rule to be able to change the size and orientation of each of the pages either as a whole, or within a section or tag.
+
+.. code:: html
+
+    <body>
+        <header>Page Header</header>
+        <div>On the first page</div>
+        <div class='next-page' >On the second page in landscape</div>
+    </body>
+
+.. code:: css
+
+    @page{ size: A4 portrait }
+
+    @page landscape { size: A4 landscape }
+
+    .next-page {
+        page: landscape;
+        page-break-before: always;
+    }
+
+.. code:: csharp
+    
+    using(var doc = new Document())
+    {
+        var sect = new Section();
+
+        var div1 = new Div();
+        div1.Contents.Add(new TextLiteral("On the first page"));
+        sect.Contents.Add(div1);
+        doc.Pages.Add(sect);
+
+        sect = new Section();
+        sect.PaperSize = PaperSizes.A4;
+        sect.PaperOrientation = PaperOrientation.Landscape;
+
+        var div2 = new Div();
+        div2.Contents.Add(new TextLiteral("On the second page"));
+        sect.Contents.Add(div2);
+        doc.Pages.Add(sect);
+    }
 
 Generation methods
 -------------------
@@ -667,4 +706,3 @@ To add an explicit page break in a ``Section`` the ``PageBreak`` component can b
 
     pbreak.Visible = false;
 
-    

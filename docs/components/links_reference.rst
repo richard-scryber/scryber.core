@@ -8,6 +8,32 @@ another document, or remote web link.
 Scryber supports the standard ``a`` anchor tag with the ``href`` attribute for linking between items.
 
 
+.. code:: html
+
+    <!-- xmlns='http://www.w3.org/1999/xhtml' -->
+
+    <a href='https://www.scyber.co.uk' >Link to scryber</a>
+
+    <a href='#componentId' >Link to local component with ID 'componentId'</a>
+
+    <a href='LastPage' >Link to the last page in the document</a>
+
+The ``a`` tag has a standard base class of ``Scryber.Components.Link``
+    
+.. code:: csharp
+
+    //using Scryber.Components
+
+    var href = new Link() { File = "https://scryber.co.uk", Action = LinkAction.Uri  };
+    href.Contents.Add(new TextLiteral("Link to scryber"));
+
+    var complink = new Link() { Destination = "#componentId", Action = LinkAction.Destination };
+    complink.Contents.Add(new TextLiteral("Link to local component with ID 'componentId'"));
+
+    var nav = new Link() { Action = LinkAction.LastPage };
+    nav.Contents.Add(new TextLiteral("Link to the last page in the document"));
+        
+
 Generation methods
 -------------------
 
@@ -455,7 +481,7 @@ To link to a remote page or site set the ``File`` property to the required url.
     var link = new Link()
     {
         Action = LinkAction.Uri,
-        Destination = "https://www.scryber.co.uk",
+        File = "https://www.scryber.co.uk",
     };
 
 As a container, links can still have any content inside them, and be placed anywhere in the visual content of the document.
