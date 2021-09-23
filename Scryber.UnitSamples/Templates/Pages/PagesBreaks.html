@@ -4,11 +4,15 @@
     <style>
 
         header, footer {
-            padding: 10pt;
+            padding: 10pt 20pt 10pt 20pt;
             background-color: #333;
             color: #EEE;
             border-bottom: 1px solid black;
             border-top: 1px solid black;
+        }
+
+        header{
+            text-align: right;
         }
 
         body h1, body div {
@@ -21,15 +25,33 @@
             border: solid 1px silver;
             column-count: 2;
         }
+
+        body h1.title{
+            background-image: url(../../images/landscape.jpg);
+            background-size: cover;
+            font: 30pt serif;
+            color: white;
+            page-break-after : always;
+            height: 300pt;
+            margin: 0;
+            vertical-align:middle;
+            text-align:center;
+        }
+
     </style>
 </head>
 <body>
     <header>
         <h4>This is the header</h4>
     </header>
+
+    <!-- title content that forces a
+       page break after -->
+    <h1 class="title">
+        This is the title
+    </h1>
+
     <h1>This is the content</h1>
-    <!-- main content in the document
-        bound from the parameter 'content' -->
     <div class='content' style="white-space: pre-wrap">{{content}}</div>
     <footer>
         <h4>This is the footer</h4>

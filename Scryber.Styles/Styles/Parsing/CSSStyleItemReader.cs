@@ -154,23 +154,29 @@ namespace Scryber.Styles.Parsing
 
             int start = this.InnerEnumerator.Offset;
             int end = this.InnerEnumerator.Offset;
-            
+            bool started = false;
+            bool ended = false;
+
             if (CurrentIsWhiteSpace())
                 start += 1;
+
 
             while (this.InnerEnumerator.MoveNext() 
                 && this.InnerEnumerator.Current != ':' 
                 && this.InnerEnumerator.Offset <= this.EndOffset)
             {
-                if (CurrentIsWhiteSpace() || this.InnerEnumerator.Current == ';')
+                if (!started && (CurrentIsWhiteSpace() || this.InnerEnumerator.Current == ';'))
                     start = this.InnerEnumerator.Offset + 1;
-                else
+                else if (!ended)
+                {
                     end = this.InnerEnumerator.Offset;
+                    started = true;
+                }
             }
             if (end > start)
             {
                 this.Buffer.Append(this.InnerEnumerator.InnerString, start, (end - start) + 1);
-                this._attr = this.Buffer.ToString();
+                this._attr = this.Buffer.ToString().TrimEnd();
                 
                 return true;
             }

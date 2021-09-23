@@ -138,24 +138,24 @@ If the size of the content is more than can fit on a page it will overflow onto 
     <head>
         <style>
 
-        header, footer {
-            padding: 10pt;
-            background-color: #333;
-            color: #EEE;
-            border-bottom: 1px solid black;
-            border-top: 1px solid black;
-        }
+            header, footer {
+                padding: 10pt;
+                background-color: #333;
+                color: #EEE;
+                border-bottom: 1px solid black;
+                border-top: 1px solid black;
+            }
 
-        body h1, body div {
-            margin: 20pt;
-        }
-        
-        body div.content {
-            font-size:12pt;
-            padding: 4pt;
-            border: solid 1px silver;
-        }
+            body h1, body div {
+                margin: 20pt;
+            }
 
+            body div.content {
+                font-size: 12pt;
+                padding: 4pt;
+                border: solid 1px silver;
+                column-count: 2;
+            }
         </style>
     </head>
     <body>
@@ -163,22 +163,9 @@ If the size of the content is more than can fit on a page it will overflow onto 
             <h4>This is the header</h4>
         </header>
         <h1>This is the content</h1>
-        <div class='content'>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas scelerisque porttitor urna. 
-        Duis pellentesque sem tempus magna faucibus, quis lobortis magna aliquam. Nullam eu risus 
-        facilisis sapien fermentum condimentum. Pellentesque ut placerat diam, sed suscipit nibh. 
-        Integer dictum dolor vel finibus imperdiet. Orci varius natoque penatibus et magnis dis 
-        parturient montes, nascetur ridiculus mus. Integer congue turpis at varius porttitor. 
-        <!-- Truncated for brevity -->
-        nec faucibus ipsum bibendum sed. Nunc tristique risus eu quam porttitor blandit.
-        In erat mauris, imperdiet a venenatis eu, tempus a nunc.
-        <br/>
-        Nullam et erat vel nisl suscipit volutpat id vitae massa. Nunc volutpat feugiat iaculis. 
-        Mauris sit amet eleifend augue. Nulla imperdiet eu mauris nec consequat. Donec a urna blandit, 
-        porttitor libero vel, rutrum diam. Fusce scelerisque diam eu rutrum vestibulum. 
-        Vivamus a quam in nisi euismod laoreet. Morbi mauris augue, lobortis id volutpat in, 
-        venenatis ut ex. Donec euismod risus eros, dapibus tincidunt dolor varius id. 
-        </div>
+        <!-- main content in the document
+            bound from the parameter 'content' -->
+        <div class='content' style="white-space: pre-wrap">{{content}}</div>
         <footer>
             <h4>This is the footer</h4>
         </footer>
@@ -187,6 +174,9 @@ If the size of the content is more than can fit on a page it will overflow onto 
 
     </html>
 
+Loading a long text file and binding to the `content` parameter, we use the ``white-space: pre-wrap`` style
+so the carriage returns are preserved, but the text will flow in the columns and over multiple pages.
+
 .. code:: csharp
 
     //Scryber.UnitSamples/PagesSamples.cs
@@ -194,6 +184,9 @@ If the size of the content is more than can fit on a page it will overflow onto 
     public void PagesFlowing()
     {
         var path = GetTemplatePath("Pages", "PagesFlowing.html");
+
+        var txtPath = GetTemplatePath("Pages", "LongTextFile.txt");
+        doc.Params["content"] = System.IO.File.ReadAllText(txtPath);
 
         using (var doc = Document.ParseDocument(path))
         {
@@ -205,7 +198,7 @@ If the size of the content is more than can fit on a page it will overflow onto 
         }
     }
 
-Here we can see that the content flows naturally onto the next page, including the padding and borders.
+Here we can see that the content flows naturally onto the next pages, including the padding and borders.
 And the header and footer are shown on the following pages.
 
 .. figure:: ../images/samples_pagesFlowing.png
@@ -214,6 +207,109 @@ And the header and footer are shown on the following pages.
     :width: 600px
 
 `Full size version <../_images/samples_pagesFlowing.png>`_
+
+Page breaks
+------------
+
+Using the `page-break-before: always` and `page-break-after: always` css properties, we can force content onto 
+a new page in the flow.
+
+In this example we have set up a ``h1`` to force the break after so the rest of the content will be on a new page.
+
+The breaking can be at any depth, and borders; padding; margins; etc. should be preserved.
+
+.. code:: html
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <style>
+
+            header, footer {
+                padding: 10pt 20pt 10pt 20pt;
+                background-color: #333;
+                color: #EEE;
+                border-bottom: 1px solid black;
+                border-top: 1px solid black;
+            }
+
+            header{
+                text-align: right;
+            }
+
+            body h1, body div {
+                margin: 20pt;
+            }
+
+            body div.content {
+                font-size: 12pt;
+                padding: 4pt;
+                border: solid 1px silver;
+                column-count: 2;
+            }
+
+            body h1.title{
+                background-image: url(../../images/landscape.jpg);
+                background-size: cover;
+                font: 30pt serif;
+                color: white;
+                page-break-after : always;
+                height: 300pt;
+                margin: 0;
+                vertical-align:middle;
+                text-align:center;
+            }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <h4>This is the header</h4>
+        </header>
+
+        <!-- title content that forces a
+        page break after -->
+        <h1 class="title">
+            This is the title
+        </h1>
+
+        <h1>This is the content</h1>
+        <div class='content' style="white-space: pre-wrap">{{content}}</div>
+        <footer>
+            <h4>This is the footer</h4>
+        </footer>
+
+    </body>
+
+    </html>
+
+
+.. code:: csharp
+
+    public void PagesBreaks()
+    {
+        var path = GetTemplatePath("Pages", "PagesBreaks.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            var txtPath = GetTemplatePath("Pages", "LongTextFile.txt");
+            doc.Params["content"] = System.IO.File.ReadAllText(txtPath);
+
+            using (var stream = GetOutputStream("Pages", "PagesBreaks.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_pageBreaks.png
+    :target: ../_images/samples_pageBreaks.png
+    :alt: Breaking on various pages.
+    :width: 600px
+
+`Full size version <../_images/samples_pageBreaks.png>`_
 
 Creating pages in code.
 -----------------------

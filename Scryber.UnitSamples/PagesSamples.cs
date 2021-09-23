@@ -56,12 +56,39 @@ namespace Scryber.UnitSamples
 
             using (var doc = Document.ParseDocument(path))
             {
+                var txtPath = GetTemplatePath("Pages", "LongTextFile.txt");
+                doc.Params["content"] = System.IO.File.ReadAllText(txtPath);
+
                 using (var stream = GetOutputStream("Pages", "PagesFlowing.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }
 
             }
+        }
+
+        [TestMethod]
+        public void PagesBreaks()
+        {
+            var path = GetTemplatePath("Pages", "PagesBreaks.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var txtPath = GetTemplatePath("Pages", "LongTextFile.txt");
+                doc.Params["content"] = System.IO.File.ReadAllText(txtPath);
+
+                using (var stream = GetOutputStream("Pages", "PagesBreaks.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        [TestMethod]
+        public void PagesSizes()
+        {
+
         }
 
         [TestMethod]
