@@ -2,7 +2,11 @@
 Body, Pages, breaks and sizes
 ================================
 
-All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 
+All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it.
+
+.. figure:: ../images/samples_pageSizes.png
+    :alt: Changing page sizes in a document.
+    :width: 600px
 
 The use of the `page-break-before` or `page-break-after` is supported on any content to force a new page when set to 'always' on any component tag
 
@@ -13,7 +17,7 @@ Scryber also supports the use of the @page rule to be able to change the size an
 .. code:: html
 
     <body>
-        <header>Page Header</header>
+        <header>Header on every page</header>
         <div>On the first page</div>
         <div class='next-page' >On the second page in landscape</div>
     </body>
@@ -29,8 +33,11 @@ Scryber also supports the use of the @page rule to be able to change the size an
         page-break-before: always;
     }
 
+In code a document can have ``Page``s, ``Section``s and ``PageGroup``s added to it that allow inner content to be split over different parts of the document.
+A styled component can also have it's ``Style.Page.BreakBefore`` or ``Style.Page.BreakBefore`` set to `true` and flow onto a new page (if allowed).
+
 .. code:: csharp
-    
+
     using(var doc = new Document())
     {
         var sect = new Section();
@@ -60,7 +67,7 @@ The body and its content
 --------------------------
 
 
-A single page has a structure of optional elements
+A body section has a structure of optional elements
 
 * header - Optional, but always sited at the top of a page
 * Sited between the Header and Footer is any content to be included within the page.
@@ -136,7 +143,7 @@ Headers and footers can contain any content in the same way as any other block.
 `Full size version <../_images/samples_pagesSimple.png>`_
 
 
-.. note:: Any styles set on the body will be applied to the header and footer as well. e.g. padding or margins.
+.. note:: Any styles set on the body will be applied to the header and footer as well. e.g. padding or margins. But they can have their own (overriding) styles as well.
 
 Single body structure
 ---------------------

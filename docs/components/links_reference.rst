@@ -5,8 +5,14 @@ Links in  and out of documents
 Within a document, it's easy to add a link to another component, another page, 
 another document, or remote web link.
 
-Scryber supports the standard ``a`` anchor tag with the ``href`` attribute for linking between items.
+.. figure:: ../images/samples_linkstoc.png
+    :alt: Links in a table of contents.
+    :width: 600px
 
+Scryber supports the standard ``a`` anchor tag with the ``href`` attribute for linking between items.
+As a component itself it has no explicit content, but it can support any type of content within it.
+
+The default style for the ``a`` tag has blue text with an underline. 
 
 .. code:: html
 
@@ -18,8 +24,9 @@ Scryber supports the standard ``a`` anchor tag with the ``href`` attribute for l
 
     <a href='LastPage' >Link to the last page in the document</a>
 
-The ``a`` tag has a standard base class of ``Scryber.Components.Link``
-    
+The ``a`` tag has a standard base class of ``Scryber.Components.Link``. The base ``Link`` class does not infer any styles, and inner content
+should be styled appropriately.
+
 .. code:: csharp
 
     //using Scryber.Components
@@ -32,7 +39,8 @@ The ``a`` tag has a standard base class of ``Scryber.Components.Link``
 
     var nav = new Link() { Action = LinkAction.LastPage };
     nav.Contents.Add(new TextLiteral("Link to the last page in the document"));
-        
+    nav.Style.Text.Decoration = Text.TextDecoration.Underline;
+    
 
 Generation methods
 -------------------

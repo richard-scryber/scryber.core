@@ -81,8 +81,6 @@ namespace Scryber.UnitSamples
         [TestMethod()]
         public void CodedPageNumbers()
         {
-            
-
             using (var doc = new Document())
             {
                 for(var i = 0; i < 5; i++)
@@ -101,6 +99,7 @@ namespace Scryber.UnitSamples
                     if(i == 0) //First page add links to components on the nex
                     {
                         var div = new Div();
+                        
                         div.Style.Margins.All = 20;
                         div.Style.Border.Color = PDFColors.Black;
                         pg.Contents.Add(div);

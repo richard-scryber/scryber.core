@@ -4,6 +4,11 @@ Pages Numbers
 
 Putting numbers in pages is often a requirement, but honestly we have never liked the CSS approach.
 
+.. figure:: ../images/samples_pagenumberFor.png
+    :alt: Page numbers for another component.
+    :width: 600px
+    :class: with-shadow
+
 At scryber we have taken a slightly more declarative approach with the 'page' tag. Browsers do not understand this tag, and will ignore it.
 The scryber engine will understand and output the current page number
 
@@ -30,7 +35,7 @@ The page number component classes are ``PageNumberLabel`` and ``PageOfLabel`` in
 .. code:: csharp
 
     //using Scryber.Components
-    
+
     var pgNum = new PageNumberLabel(){ DisplayFormat = "{0} of {1}" };
 
     var pgOf = new PageOfLabel() { ComponentName = "#id", NotFoundText = "Oops!" };

@@ -2,7 +2,7 @@
 Styles in your template
 =======================
 
-In scryber styles are used through out to build the document. Every component has a base style and  styles (such as fill colour and font) that flow down
+In scryber styles are used through out to build the document. Every component has a base style and styles (such as fill colour and font) that flow down
 to their inner contents.
 
 Styles on elements

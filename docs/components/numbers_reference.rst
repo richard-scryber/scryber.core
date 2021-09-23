@@ -8,7 +8,7 @@ Scryber supports the formatting of these types of content with specific elements
 .. code:: html
 
     <!-- xmlns='http://www.w3.org/1999/xhtml' -->
-    
+
     <!-- output as british pounds -->
     <num value='100' data-format='£#0.00' />
 
@@ -36,4 +36,29 @@ They can also be created and used in code
         found.Value = DateTime.Now.AddDays(30);
 
 
+The general use for the ``num`` and ``time`` tag is when binding data to a parameters, as other content is treated simply as text.
+
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
+
+See the :doc:`tables_reference` for more details on what is supported in tables.
+
+Binding Simple numbers
+----------------------
+
+
+
+
+Binding Dates and Times
+-----------------------
+
+
+Calculating values
+------------------
+
+
+Building in code
+-----------------
 

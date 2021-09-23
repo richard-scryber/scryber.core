@@ -5,6 +5,12 @@ Unordered, Ordered and Definition Lists
 Scryber supports the use of lists both ordered and unordered and allows nesting, overflow, and definition lists.
 It also supports the use of binding and repeating on list items.
 
+
+.. figure:: ../images/samples_listsGrouped.png
+    :alt: Number Grouped lists.
+    :width: 600px
+
+
 A list item is just a container for other content, and can contain any children.
 
 .. code:: html
@@ -29,7 +35,7 @@ The ``ol`` and ``ul`` lists inherit from ``ListOrdered`` and ``ListUnordered``
 
     //using Scryber.Components
 
-    var list = new ListOrdered() { NumberingStyle = ListNumberingGroupStyle.LowercseRoman };
+    var list = new ListOrdered() { NumberingStyle = ListNumberingGroupStyle.LowercaseRoman };
     for(var i = 0; i < 3; i++)
     {
         var li = new ListItem();

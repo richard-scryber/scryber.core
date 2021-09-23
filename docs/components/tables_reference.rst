@@ -7,6 +7,72 @@ column-spans.
 
 It also supports the use of binding and repeating at the row and/or the cell level.
 
+.. figure:: ../images/samples_tabledatabound.png
+    :alt: Tables bound to data.
+    :width: 600px
+    :class: with-shadow
+
+By default a table will consume as much width as needed, measured for the first 5 rows, but can be full width (`width:100%``).
+The thead and tbody are optional as in html, but help separate the content, and header rows will by default repeat across breaks.
+
+.. code:: html
+
+    <!-- xmlns='http://www.w3.org/1999/xhtml' -->
+
+    <table style='width:100%'>
+        <thead>
+            <tr>
+                <td>Header 1</td>
+                <td>Header 2</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Content 1</td>
+                <td>Content 2</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan='2'>Wide footer</td>
+            </tr>
+        </tfoot>
+    </table>
+
+Using the header, row and cell classes in code allows creation of tables too.
+
+.. code:: csharp
+
+    //using Scryber.Components;
+
+    var table = new TableGrid() { FullWidth = true };
+    var head = new TableHeaderRow();
+    var h1 = new TableHeaderCell();
+    h1.Contents.Add(new TextLiteral("Header 1"));
+    head.Cells.Add(h1);
+    var h2 = new TableHeaderCell();
+    h2.Contents.Add(new TextLiteral("Header 2"));
+    head.Cells.Add(h2);
+    table.Rows.Add(head);
+
+    for(var r = 0; r < 2; r++)
+    {
+        var row = new TableRow();
+        for(var c = 0; c < 2; c++)
+        {
+            var cell = new TableCell();
+            cell.Contents.Add(new TextLiteral("Content " + c));
+            row.Cells.Add(cell);
+        }
+        table.Rows.Add(row);
+    }
+    var foot = new TableFooterRow();
+    var fd = new TableFooterCell() { CellColumnSpan = 2 };
+    fd.Contents.Add(new TextLiteral("Wide footer"));
+    foot.Cells.Add(fd);
+    table.Rows.Add(foot);
+    
+
 Generation methods
 -------------------
 
