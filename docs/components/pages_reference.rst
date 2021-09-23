@@ -646,3 +646,25 @@ See :doc:`page_headers_reference` for more on this topic.
 
 `Full size version <../_images/samples_pageCoded.png>`_
 
+Coded page breaks
+------------------
+
+The components in code support the page break before and page break after style.
+
+.. code:: csharp
+
+    content.Style.Page.BreakBefore = true;
+
+
+To add an explicit page break in a ``Section`` the ``PageBreak`` component can be added to the content.
+
+.. code:: csharp
+
+    var pbreak = new PageBreak();
+    body.Contents.Add(pbreak);
+
+    //this can also be disabled with the Visible property
+
+    pbreak.Visible = false;
+
+    

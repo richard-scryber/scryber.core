@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>My Document</title>
+    <style type="text/css">
+
+        p, h1 {
+            padding: 10pt;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        @media print {
+
+            .print-only {
+                display: block;
+            }
+
+            .foot {
+                border-top: solid 1pt gray;
+                text-align: center;
+                font: 10pt sans-serif;
+                margin: 5pt;
+            }
+
+            .break {
+                page-break-before: always;
+            }
+
+            /* Table of Contents Styling */
+
+            table.toc {
+                font-size: 12pt;
+                margin-left: 30pt;
+            }
+
+            table.toc thead {
+                font-weight: bold;
+                text-decoration: underline;
+            }
+
+            /*  Remove the underline from a hyperlink */
+
+            table.toc a {
+                text-decoration: none;
+            }
+
+            /*  a horizontal rule, inline dashed with a
+                margin to push down to the baseline */
+
+            table.toc hr {
+                display: inline;
+                margin-top: 12pt;
+                stroke: gray;
+                stroke-dasharray: 2;
+            }
+
+            /* remove the default borders from the cells */
+
+            table.toc td {
+                border: none;
+            }
+
+            /* Explicit width on the last cell */
+
+            table.toc td.pg-num {
+                width: 30pt;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p>This is the header</p>
+    </header>
+    <h1 id='First'>Table of Contents</h1>
+    <table class="toc" style="margin:20pt; width:100%;">
+        <tr>
+            <td><a href="#Second">Section 1</a><hr class="tab-spacer" /></td>
+            <td class="pg-num"><page for="#Second" /></td>
+        </tr>
+        <tr>
+            <td><a href="#Third">Section 2</a><hr class="tab-spacer" /></td>
+            <td class="pg-num"><page for="#Third" /></td>
+        </tr>
+        <tr>
+            <td><a href="#Fourth">Section 3</a><hr class="tab-spacer" /></td>
+            <td class="pg-num"><page for="#Fourth" /></td>
+        </tr>
+    </table>
+    <h1 id='Second' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+    <h1 id='Third' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+    <h1 id='Fourth' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+    <footer>
+        <p class='print-only foot'> The Current Page is <page /> of <page property='total' /></p>
+    </footer>
+
+</body>
+
+</html>

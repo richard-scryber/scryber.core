@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>My Document</title>
+    <style>
+
+        p, h1 {
+            padding: 10pt;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        @media print {
+
+            .print-only {
+                display: block;
+            }
+
+            .foot {
+                border-top: solid 1pt gray;
+                text-align: center;
+                font: 10pt sans-serif;
+                margin: 5pt;
+            }
+
+            .break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p>This is the header</p>
+    </header>
+    <h1 id='First'>This is the content on page <page /> of <page property='total' /></h1>
+    <h1 id='Second' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+    <h1 id='Third' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+    <h1 id='Fourth' class='break'>This is the content on page <page /> of <page property='total' /></h1>
+    <footer>
+        <p class='print-only foot'> The Current Page is <page /> of <page property='total' /></p>
+    </footer>
+
+</body>
+
+</html>

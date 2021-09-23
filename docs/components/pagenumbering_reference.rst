@@ -118,8 +118,10 @@ inline style options from as with any other span.
 `Full size version <../_images/samples_pagenumberCurrent.png>`_
 
 
+Total number of pages
+---------------------
 
-The page tag also supports the property attribute for displying the 'total' number of pages.
+The page tag also supports the property attribute for displaying the 'total' number of pages.
 
 .. code-block:: html
 
@@ -172,19 +174,41 @@ The page tag also supports the property attribute for displying the 'total' numb
     </html>
 
 
+.. code:: csharp
 
-.. image:: images/PageNumbers1of2.png
+    public void TotalPageNumbers()
+    {
+        var path = GetTemplatePath("PageNumbers", "PageNumberTotal.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("PageNumbers", "PageNumberTotal.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+.. figure:: ../images/samples_pagenumberTotal.png
+    :target: ../_images/samples_pagenumberTotal.png
+    :alt: Total Page numbers.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_pagenumberTotal.png>`_
 
 
-
-The page for
--------------
+The page *for* another component
+------------------------------
 
 Conversly to the current page number, it is also possible to get the page number of another element.
-By using the 'for' attribute.
+By using the ``for`` attribute.
 
 The example below is a table of contents with links to sections based on their 
 ID and a line leading to the page numbers on the right cell.
+
+.. note:: The for referenced component can be following the current content, and not yet laid out. It is only once everything is laid out would the page numbers for another component be evaluated.
 
 .. code-block:: html
 
@@ -194,69 +218,69 @@ ID and a line leading to the page numbers on the right cell.
         <title>My Document</title>
         <style type="text/css">
 
-            p, h1 {
+        p, h1 {
             padding: 10pt;
-            }
+        }
 
-            .print-only{
+        .print-only{
             display:none;
+        }
+
+        @media print{
+
+            .print-only{ display: block; }
+
+            .foot{
+            border-top: solid 1pt gray;
+            text-align:center;
+            font: 10pt sans-serif;
+            margin: 5pt;
             }
 
-            @media print{
-
-                .print-only{ display: block; }
-
-                .foot{
-                border-top: solid 1pt gray;
-                text-align:center;
-                font: 10pt sans-serif;
-                margin: 5pt;
-                }
-
-                .break{
-                page-break-before:always;
-                }
+            .break{
+            page-break-before:always;
+            }
 
             /* Table of Contents Styling */
 
-                table.toc{
-                font-size:12pt;
-                margin-left:30pt;
-                }
-
-                table.toc thead{
-                font-weight:bold;
-                text-decoration:underline;
-                }
-
-                /*  Remove the underline from a hyperlink */
-
-                table.toc a{
-                text-decoration:none;
-                }
-
-                /*  a horizontal rule, inline dashed with a
-                    margin to push down to the baseline */
-
-                table.toc hr{
-                display:inline;
-                margin-top:12pt;
-                stroke: gray;
-                stroke-dasharray: 2;
-                }
-
-                /* remove the default borders from the cells */
-
-                table.toc td{
-                border:none;
-                }
-
-                /* Explicit width on the last cell */
-
-                table.toc td.pg-num {
-                width:30pt;
-                }
+            table.toc{
+            font-size:12pt;
+            margin-left:30pt;
             }
+
+            table.toc thead{
+            font-weight:bold;
+            text-decoration:underline;
+            }
+
+            /*  Remove the underline from a hyperlink */
+
+            table.toc a{
+            text-decoration:none;
+            }
+
+            /*  a horizontal rule, inline dashed with a
+                margin to push down to the baseline */
+
+            table.toc hr{
+            display:inline;
+            margin-top:12pt;
+            stroke: gray;
+            stroke-dasharray: 2;
+            }
+
+            /* remove the default borders from the cells */
+
+            table.toc td{
+            border:none;
+            }
+
+            /* Explicit width on the last cell */
+
+            table.toc td.pg-num {
+            width:30pt;
+            }
+        }
 
         </style>
     </head>
@@ -291,12 +315,102 @@ ID and a line leading to the page numbers on the right cell.
     </html>
 
 
-But the output is quite pleasing. And you could use also databinding to achieve this (:doc:`binding_model`).
+.. code:: csharp
 
-.. image:: images/PageTableOfContents.png
+    public void ForComponentPageNumbers()
+    {
+        var path = GetTemplatePath("PageNumbers", "PageNumbersFor.html");
 
+        using (var doc = Document.ParseDocument(path))
+        {
+            using (var stream = GetOutputStream("PageNumbers", "PageNumbersFor.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
 
-For more information on anchor links see :doc:`component_linking`
+        }
+    }
+
+Is is also possible to use also databinding to achieve this (see :doc:`links_reference` in the next section for an example of this).
+
+.. figure:: ../images/samples_pagenumberFor.png
+    :target: ../_images/samples_pagenumberFor.png
+    :alt: Page numbers for another component.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_pagenumberFor.png>`_
 
 .. note:: The page index of a component can be forward as in this case, as well as backward looking, 
           but will always be the very first page the component is laid out at, even if it overflows onto another page.
+
+
+Page Numbers in code
+---------------------
+
+The use of the ``PageNumberLabel`` and ``PageOfLabel`` in coded documents is just the same as in templates.
+
+Creating a five page document with headings on each and a references to each of the the headings on the first page.
+Add the spans as individual blocks, showing the page numbers of following headings.
+
+.. code:: csharp
+
+    public void CodedPageNumbers()
+    {
+        
+
+        using (var doc = new Document())
+        {
+            for(var i = 0; i < 5; i++)
+            {
+                var pg = new Page();
+                var head = new Head1() { ID = "Item" + i };
+                var lit = new TextLiteral() { Text = "This is the heading index " + i + " on page " };
+                var num = new PageNumberLabel() { DisplayFormat = "{0} of {1}" };
+                pg.Style.Margins.All = 20;
+
+                doc.Pages.Add(pg);
+                pg.Contents.Add(head);
+                head.Contents.Add(lit);
+                head.Contents.Add(num);
+
+                if(i == 0) //First page add links to components on the nex
+                {
+                    var div = new Div();
+                    div.Style.Margins.All = 20;
+                    div.Style.Border.Color = PDFColors.Black;
+                    pg.Contents.Add(div);
+
+                    for (int j = 0; j < 5; j++)
+                    {
+                        var span = new Span() { PositionMode = PositionMode.Block, Padding = new PDFThickness(4) };
+                        span.Contents.Add(new TextLiteral("The page number of index " + j + " is "));
+                        span.Contents.Add(new PageOfLabel() { ComponentName = "#Item" + j });
+                        div.Contents.Add(span);
+                    }
+                }
+
+            }
+
+            
+            using (var stream = GetOutputStream("PageNumbers", "PageNumbersCoded.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
+
+
+.. figure:: ../images/samples_pagenumberCoded.png
+    :target: ../_images/samples_pagenumberCoded.png
+    :alt: Page numbers in code.
+    :width: 600px
+    :class: with-shadow
+
+`Full size version <../_images/samples_pagenumberCoded.png>`_
+
+
+Page number spacing
+-------------------
+
