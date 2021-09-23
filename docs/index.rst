@@ -218,6 +218,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     components/pages_reference
     components/pagenumbering_reference
     components/links_reference
+    components/numbers_reference
     
 
 .. toctree:: 

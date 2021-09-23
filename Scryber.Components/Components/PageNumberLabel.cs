@@ -57,7 +57,7 @@ namespace Scryber.Components
         /// we need something to tell us what length the total page count will be. 
         /// This is the hint.</remarks>
         [PDFAttribute("total-count-hint", Style.PDFStylesNamespace)]
-        public int TotalPageCountHint
+        public virtual int TotalPageCountHint
         {
             get { return this.Style.PageStyle.PageTotalCountHint; }
             set { this.Style.PageStyle.PageTotalCountHint = value; }

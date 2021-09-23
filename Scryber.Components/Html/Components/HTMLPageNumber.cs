@@ -49,6 +49,8 @@ namespace Scryber.Html.Components
         [PDFAttribute("for")]
         public string ForComponent { get; set; }
 
+        [PDFAttribute("data-page-hint")]
+        public override int TotalPageCountHint { get => base.TotalPageCountHint; set => base.TotalPageCountHint = value; }
 
         [PDFAttribute("title")]
         public override string OutlineTitle

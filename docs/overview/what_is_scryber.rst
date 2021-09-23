@@ -13,8 +13,9 @@ We really hope it meets the needs of many other developers to exceed the needs o
 What scryber is not
 --------------------
 
-The simplest way to put this is, scryber is not an HTML printing engine.
-It will not simply take an html page and render a PDF from it and there are many other 
+The simplest way to put this is, scryber is not an web page printing engine.
+
+It will not simply take an html page and render a PDF from it, there are many other 
 packages; libraries and engines which can do this.
 
 Scryber also does not fully support all css or html tags. Flexbox, :before pseudo elements, 

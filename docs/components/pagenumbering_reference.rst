@@ -350,8 +350,8 @@ Page Numbers in code
 
 The use of the ``PageNumberLabel`` and ``PageOfLabel`` in coded documents is just the same as in templates.
 
-Creating a five page document with headings on each and a references to each of the the headings on the first page.
-Add the spans as individual blocks, showing the page numbers of following headings.
+Creating a five page document with headings on each and a reference to each of the the headings on the first page.
+The spans are added as individual blocks, showing the page numbers of following headings.
 
 .. code:: csharp
 
@@ -413,4 +413,23 @@ Add the spans as individual blocks, showing the page numbers of following headin
 
 Page number spacing
 -------------------
+
+Because the page numbers are calculated at the end of the layout, the spacing needed for the total number of pages (or the page number of a following component)
+is deferred to the end of the layout. Before then a proxy value is used.
+
+By default this is '99', so enough space will be left for the number '99' to be rendered in the content. For smaller numbers, very long documents, or very large font sizes
+this may alter the layout too much and potentially casue character clashes.
+
+The ``<page />`` element supports the `data-page-hint` attribute.
+
+And the ``PageNumberLabel`` and ``PageOfLabel`` support the `TotalPageCountHint` properties that can be set to an integer value where clashes need to be fixed.
+
+.. code:: html
+
+    <page property='total' data-page-hint='9999' />
+
+.. code:: csharp
+
+    var pglbl = new PageOfLabel() { ComponentName = "#VeryLastComponent", TotalPageCountHint = 9999 };
+
 
