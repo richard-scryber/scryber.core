@@ -106,6 +106,9 @@ The header also supports the <link> and <style> elements discussed below, althou
 It is only the meta and title elements that need to be in the html head.
 The print-restrictions applies security to the document as discussed in :doc:`document_security`
 
+Document Info
+-------------
+
 
 Html link element
 ------------------

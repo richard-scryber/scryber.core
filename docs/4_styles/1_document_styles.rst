@@ -39,6 +39,9 @@ Or if you are dynamically generating some content in the code
 
     }
 
+The :root selector
+------------------
+
 Style Classes
 ---------------
 
