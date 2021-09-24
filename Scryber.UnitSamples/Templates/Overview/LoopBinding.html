@@ -1,0 +1,44 @@
+﻿<!DOCTYPE HTML>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>{{concat('Hello ', model.user.FirstName)}}</title>
+</head>
+<body>
+    <div style='color: calc(theme.color); padding: calc(theme.space); text-align: calc(theme.align)'>
+        Hello {{model.user.FirstName}}.
+    </div>
+    <div style='padding: 10pt; font-size: 12pt'>
+        <table style='width:100%'>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Item</td>
+                    <td>Description</td>
+                    <td>Unit Price</td>
+                    <td>Qty.</td>
+                    <td>Total</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Binding on each of the items in the model.order -->
+                <template data-bind='{{model.order.Items}}'>
+                    <tr>
+                        <!-- The indexing of the loop + 1 -->
+                        <td>{{index() + 1}}</td>
+                        <td>{{.ItemNo}}</td>
+                        <td>{{.ItemName}}</td>
+                        <td>
+                            <!-- we use a number tag to specify the data-format referring to the top model -->
+                            <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                        </td>
+                        <td>{{.Quantity}}</td>
+                        <td>
+                            <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

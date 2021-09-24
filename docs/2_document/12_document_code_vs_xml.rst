@@ -108,33 +108,6 @@ The use of the first component argument in ParseTemplate is to provide the sourc
 It can also be called with the owner and a base path.
 
 
-Resolving paths to custom content
------------------------------------
-
-The static Parse method has 12 overloads and counting, from a simple stream and base path, to the explicit PDFGeneratorSettings.
-It also supports the use of the PDFReferenceResolver, that can implement custom methods to resolve references to content (e.g. database images, or authenticated document sources).
-
-.. code-block:: csharp
-
-        //custom reference resolver implementation
-
-        private IPDFComponent ResolveReference(string filename, string xpath, PDFGeneratorSettings settings)
-        {
-            Stream content = GetMyContentForPath(filename);
-            return Document.Parse(filename, content, ParseSourceType.DynamicContent, settings.Resolver);
-        }
-
-
-And this method can be used when parsing inner content or documents with references to other content.
-
-.. code-block:: csharp
-
-        using (var reader = new StringReader(content))
-        {
-            Document.Parse("", reader, ParseSourceType.DynamicContent, new PDFReferenceResolver(this.ResolveReference));
-        }
-
-
 
 Why use one over the other
 --------------------------

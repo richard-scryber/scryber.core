@@ -110,7 +110,7 @@ It also has an attribute for the *lang* value that will be set.
 And so it goes on into the rest of the xml, reading elements and attributes, and trying to set the values to components or property values.
 
 
-1.6.2. Parsing Documents from files
+1.6.2. Parsing documents from files
 ------------------------------------
 
 The easiest way to parse any xml content is to use the various static methods on the ``Scryber.Components.Document`` class.
@@ -129,7 +129,7 @@ The simplest is to load directly from a file
 
 This reads the file from the stream and will resolve any references to relative content (images, stylesheets, etc) based on the *filepath*.
 
-1.6.3. Parsing documents from a stream
+1.6.3. Parsing documents from streams
 --------------------------------------
 
 If you want to load content dynamically from a stream then you can use the overloads that take a stream.
@@ -236,8 +236,8 @@ Or from a string itself
     
 All 3 methods create exactly the same document.
 
-1.6.4. Building documents in code
----------------------------------
+1.6.4. Building in code
+------------------------
 
 The template parsing engine is both flexible and extensible, but it does not have to be used.
 Scryber components are **real** object classes, they have properties and methods along with inner collections.
@@ -283,8 +283,8 @@ We can just as easily create the document using a method.
 This works well, and may have benefits for your implementations, but ultimately could become very complex and difficult to maintain.
 
 
-1.6.5. Embedding content from other files
------------------------------------------
+1.6.5. Embedding other content
+-------------------------------
 
 Including content from other sources (files) is easy within the template by using the ``<embed>`` element with the ``src`` attribute set to the name of the source file.
 This can either be a relative or an absolute path to the content to be included.
@@ -338,8 +338,8 @@ As with the examples above - if the content is being parsed dynamically, either 
 method, or a ``PDFReferenceResolver`` should be provided, as below.
 
 
-1.6.6. Resolving references dynamically
----------------------------------------
+1.6.6. Resolving references
+-----------------------------
 
 The ``Document.Parse`` method, and its 12 overloads allows for parsing of any xml content as long as the root component returned implements the ``IPDFComponent`` interface.
 
@@ -422,10 +422,20 @@ It is also possible to return just coded objects in the return of the reference 
 
 see :doc:`document_code_vs_xml` for more information.
 
-Extending namespaces
----------------------
+1.6.7. Extending namespaces
+----------------------------
 
 The scryber parsing engine is declarative and does not rely on knowing what it is meant to be parsing.
 As such it is easy to extend the namespaces it looks at to build object graphs (in fact the html and svg classes are built directly on top of the base component classes).
 
 See :doc:`../namespaces_and_assemblies` for more information on how to extend the namespaces and used by the parser.
+
+
+1.6.8. Further reading
+-----------------------
+
+* Learn about :doc:`7_parameters_and_expressions` in the next section.
+* For more about code vs templates see :doc:`../2_document/12_document_code_vs_xml`
+* All the available components see :doc:`../3_components/1_component_reference`
+* All the available styles see :doc:`../4_styles/1_document_styles`
+

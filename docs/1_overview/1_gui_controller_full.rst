@@ -60,8 +60,8 @@ In your program.cs add the namespace to the top of your class.
 
 
 
-1.1.5. Replace your main program method.
------------------------------------------
+1.1.5. Replace your main method.
+-----------------------------------
 
 Next change the 'Main' method to your class to load the template and generate the pdf file
 
