@@ -6,7 +6,9 @@ Scryber 5.1
     :alt: Simple data driven documents.
     :width: 600px
 
-**Simple, data driven, good looking, documents from templates**
+
+Data driven, good looking, documents from templates
+-----------------------------------------------------
 
 Scryber is **the** engine to create dynamic PDF documents quickly and easily from XHTML templates with consistant styles, your own data, and an easy flowing layout.
 It's open source; flexible; styles based; data driven and with a low learning curve. 
@@ -31,7 +33,7 @@ Start with a template. **The xmlns namespace declaration is important.**
     <!DOCTYPE HTML >
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
         <head>
-            <title>{{model}}</title>
+            <title>{{hello}}</title>
         </head>
         <body>
             <div style='padding:10px'>{{hello}}.</div>
@@ -85,70 +87,6 @@ Getting Started
 Check out :doc:`1_overview/2_mvc_controller_full` for a full MVC example with styles and binding.
 Or :doc:`1_overview/1_gui_controller_full` for a full gui application example (with styles and binding)
 
-
-=========
-Features
-=========
-
-
-Easy, and intuitive structure
-------------------------------
-
-Whether you are using xhtml templates or directly in code, scryber
-is quick and easy to build complex documents from your designs and data using standard xhtml.
-
-:doc:`2_document/document_overview`
-
-Intelligent flowing layout engine
-----------------------------------
-
-In scryber, content can either be laid out explicitly, or jut flowing with the the page.
-Change the page size, or insert content and everything will adjust around it.
-
-:doc:`3_components/1_component_reference`
-
-Cascading Styles 
------------------
-
-With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
-or nested selectors.
-
-:doc:`4_styles/1_document_styles`
-
-Drawing and Typographic support
---------------------------------
-
-Scryber supports inclusion of Images, Fonts (inc. Google fonts) and SVG components for drawing graphics and icons.
-
-:doc:`5_shapes/1_drawing_paths`
-
-
-Binding to your data
----------------------
-
-With a simple handlebars binding notation it's easy to add references to your data structures and pass information
-and complex data to your document from your model and more.
-
-**Now supporting full expressions support including css var and calc support**
-
-:doc:`6_binding/1_binding_model`
-
-Extensible Framework
------------------------
-
-Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
-With iFrame includes, a namespace based parser engine, and configuration options for images, fonts, binding it's down to your imagination
-
-:doc:`7_extending/1_extending_scryber`
-
-Secure and Encrypted
------------------------
-
-Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encryption of documents using owner and user passwords.
-
-:doc:`2_document/7_document_security`
-
-
 .. toctree::
     :maxdepth: 1
     :caption: Scryber Overview
@@ -163,6 +101,14 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     1_overview/8_styles_and_classes
     1_overview/9_document_output
     version_history
+
+
+
+Easy, and intuitive structure
+------------------------------
+
+Whether you are using xhtml templates or directly in code, scryber
+is quick and easy to build complex documents from your designs and data using standard xhtml.
 
 .. toctree::
     :caption: Document features
@@ -182,6 +128,14 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     2_document/12_document_code_vs_xml
     2_document/13_document_lifecycle
     2_document/14_document_references
+
+
+Intelligent flowing layout engine
+----------------------------------
+
+In scryber, content can either be laid out explicitly, or jut flowing with the the page.
+It supports many of the standard html elements that allow you to build complex documents
+with ease.
 
 .. toctree:: 
     :caption: Building components
@@ -204,6 +158,17 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     3_components/14_embed_reference
     3_components/15_template_reference
     3_components/16_pre_reference
+
+
+Cascading Styles 
+-----------------
+
+With a styles based structure, it's easy to apply designs to templates. Use class names, id's or component types,
+or nested selectors.
+
+You can add inline styles, add css classes or reference stylesheets, even import your Google fonts.
+
+**Now including css calc() and var() support**
 
 .. toctree:: 
     :caption: Styling content
@@ -229,6 +194,10 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     4_styles/18_unsupported_reference
 
 
+Drawing and Typographic support
+--------------------------------
+
+Scryber supports inclusion of Images, Fonts (inc. Google fonts) and SVG components for drawing graphics and icons.
 
 .. toctree:: 
     :caption: Drawing and Shapes
@@ -244,6 +213,15 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     5_shapes/8_viewport_reference
     5_shapes/9_groups_defns_reference
     5_shapes/10_unsupported
+
+
+Binding to your data
+---------------------
+
+With a simple handlebars binding notation it's easy to add references to your data structures and pass information
+and complex data to your document from your model and more.
+
+**Now supporting full expressions support**
 
 .. toctree:: 
     :caption: Binding model
@@ -266,6 +244,11 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     6_binding/15_document_controllers
     6_binding/16_binding_performance
 
+Extensible Framework
+-----------------------
+
+Scryber was designed from the ground up to be extensible. If it doesn't do what you need, then we think you can make it do it.
+With iFrame includes, a namespace based parser engine, and configuration options for images, fonts, binding it's down to your imagination
 
 .. toctree::
     :caption: Extending Scryber
@@ -281,4 +264,23 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     7_extending/8_key_namespaces
     7_extending/9_namespaces_and_assemblies
     7_extending/10_binding_parameters
+
+Secure and Encrypted
+-----------------------
+
+Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encryption of documents using owner and user passwords.
+
+:doc:`2_document/7_document_security`
+
+
+
+
+
+
+
+
+
+
+
+
 
