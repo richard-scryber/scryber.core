@@ -1,6 +1,6 @@
-==========================================
-1.7. Document parameters and binding data
-==========================================
+=====================================
+1.7. Document parameters and binding
+=====================================
 
 Within the content of a document the parser will look for expressions that will be evaluated at binding time into actual values.
 Every attribute in scryber, and all text can be bound with an expression.
@@ -80,8 +80,8 @@ As the layout has not executed before the databind, the content will be flowed w
 .. note:: Scryber is strongly typed. It will try and convert or parse the values on databinding, and most of the style values and properties can be parsed. But the content should be of the correct type.
 
 
-1.7.3. Complex types and expressions
--------------------------------------
+1.7.3. Complex expressions
+----------------------------
 
 As you can imagine the parameters could start to get unmanageable and complex.
 Thankfully the support for expressions allows both interrogation and calculation.
@@ -503,6 +503,8 @@ We can check the payment terms value and show or hide some content based on this
 
 `Full size version <../_images/doc_expression_visible.png>`_
 
+With the above example, our service instance has changed, our template has been adapted, but there is no need to update any other code.
+This flexibility allows data models to change, templates to be updated. And the rest of the code keep working.
 
 1.7.8. Changing in code
 -----------------------

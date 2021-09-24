@@ -38,7 +38,19 @@
                     </tr>
                 </template>
             </tbody>
+
         </table>
+        <div id='terms'>
+            <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+            </div>
+            <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                <p>Please pay for your items now, and  we can process your order once received.</p>
+            </div>
+            <div id='payLater' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                <p>Your items will be shipped immediately, please ensure you pay our invoice within <b> {{model.order.PaymentTerms}} days</b></p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
