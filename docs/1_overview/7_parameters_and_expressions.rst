@@ -1,15 +1,27 @@
-=====================================
-Document parameters and expressions
-=====================================
+==========================================
+1.7. Document parameters and binding data
+==========================================
 
 Within the content of a document the parser will look for expressions that will be evaluated at binding time into actual values.
 Every attribute in scryber, and all text can be bound with an expression.
 
-The usual method for specifying these values uses the handlebars syntax - ``{{ expression }}``
-
-This allows the inclusion of dynamic content at runtime either for specific values or for binding onto repeating content.
+The usual method for specifying these values uses the handlebars syntax - ``{{ expression }}``.
+This allows the inclusion of dynamic content at runtime either for specific values, for binding onto repeating content, or for evaluating expressions.
 
 The values are passed to the document through the ``Params`` property of a document instance.
+
+See :doc:`../6_binding/1_binding_model` for a deeper dive into binding support and features.
+See :doc:`../7_extending/1_extending_scryber` for more about the options for binding and configuration.
+
+
+Generation methods
+-------------------
+
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
+
+
+Simple Binding Example
+----------------------
 
 .. code:: html
 
@@ -90,8 +102,6 @@ We can add both, a strongly typed user in the model, and also a dynamic theme ob
         public string LastName {get;set;}
     }
 
-
-.. code:: csharp
 
     var doc = Document.ParseDocument("MyFile.html");
     var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };

@@ -1,13 +1,13 @@
-================
-File structure
-================
+===================
+Template structure
+===================
 
 Scryber expects all content to be in valid XHTML structrure.
 Tags must be properly closed, and ampersands (&) must either be escaped or valid html character notations (&amp; &quot; etc.)
 
 
 Example
---------
+---------
 
 .. code-block:: html
 

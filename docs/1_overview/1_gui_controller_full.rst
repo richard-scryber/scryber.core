@@ -1,13 +1,13 @@
-================================
-Console or GUI - Getting Started
-================================
+======================================
+1.1. Console or GUI - Getting Started
+======================================
 
 A Complete example for creating a hello world PDF file in a console application or GUI front end.
 For us, we have just created a new dotnet core console application in Visual Studio.
 
 
-Nuget Packages
----------------
+1.1.1. Nuget Packages
+----------------------
 
 Make sure you install the Nuget Packages from the Nuget Package Manager
 
@@ -15,8 +15,8 @@ Make sure you install the Nuget Packages from the Nuget Package Manager
 
 This will add the latest version of the Scryber.Core nuget package.
 
-Add a document template
-------------------------
+1.1.2. Add a document template
+-------------------------------
 
 In our applications we like to add our templates to a PDF folder. You can break it down however works for you, 
 but for now a create a new XHML file called HelloWorld.html in your folder.
@@ -36,8 +36,8 @@ And paste the following content into the file
     </html>
 
 
-File properties
----------------------
+1.1.3. File properties
+-----------------------
 
 In the file properties for the HelloWorld.html file:
 Set the Build Action to None (if it is not already)
@@ -49,8 +49,8 @@ Your solution should look something like this.
 
 
 
-Program code
---------------
+1.1.4. Program code
+--------------------
 
 In your program.cs add the namespace to the top of your class.
 
@@ -60,8 +60,8 @@ In your program.cs add the namespace to the top of your class.
 
 
 
-Replace your main program method.
-----------------------------------
+1.1.5. Replace your main program method.
+-----------------------------------------
 
 Next change the 'Main' method to your class to load the template and generate the pdf file
 
@@ -98,8 +98,8 @@ Next change the 'Main' method to your class to load the template and generate th
 The parser will read the document from the XHTML content, and then create a new PDF document in the tempDirectory for the output.
 
 
-Testing your code
-------------------
+1.1.6. Testing your code
+-------------------------
 
 Running your application, you should see the console output the path to the pdf. 
 And opening this will show you the file. you could have saved it to a share, opened in Acrobat reader, or sent via email as a stream attachment.
@@ -107,8 +107,8 @@ And opening this will show you the file. you could have saved it to a share, ope
 
 .. image:: ../images/helloworldconsole.png
 
-Adding dynamic content
------------------------
+1.1.7. Adding dynamic content
+------------------------------
 
 One of the driving forces behind scryber is the separation of the content, data and style. It
 is common practice in sites. With scryber all attributes and content is bindable to the data you want to pass to it,
@@ -199,8 +199,8 @@ So we can expand our document body to use the model schema.
 .. image:: ../images/HelloWorldWithData.png
 
 
-Adding Fonts and Styles
-------------------------
+1.1.8. Adding Fonts and Styles
+-------------------------------
 
 It's good but rather uninspiring. With scryber we can use css styles, just as we would in html.
 
@@ -301,8 +301,8 @@ The output from this is much more pleasing. Especially that Fruances font :-)
 .. image:: ../images/HelloWorldWithStyle.png
 
 
-Further reading
------------------
+1.1.9. Further reading
+----------------------
 
 You can read more about the what you can do with scryber from the contents.
 

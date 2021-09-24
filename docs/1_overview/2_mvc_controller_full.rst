@@ -1,12 +1,12 @@
-================================
-MVC Controller - Getting Started
-================================
+======================================
+1.2. MVC Controller - Getting Started
+======================================
 
 A Complete example for creating a styled and databound hello world PDF file from an MVC Controller in C# with an HTML template
 
 
-Nuget Packages
----------------
+1.2.1. Nuget Packages
+---------------------
 
 If you have not done so already, make sure you install the Nuget Package in your new or existing MVC project.
 
@@ -15,8 +15,8 @@ If you have not done so already, make sure you install the Nuget Package in your
 This will add the latest version of the Scryber.Core, and also the Scryber.Core.Mvc Controller extension methods.
 
 
-Add a document template
-------------------------
+1.2.2. Add a document template
+-------------------------------
 
 In our applications we like to add our templates to a PDF folder the Views folder. You can break it down however 
 works for you, but for now, a create a new html file called HelloWorld.html in your folder.
@@ -46,8 +46,8 @@ The xmlns is really important for knowing what type of document and schema is be
 
 For for more information on the namespaces and mappings see this :doc:`namespaces_and_assemblies` documentation
 
-Controller code
-----------------
+1.2.3. Controller code
+----------------------
 
 Add a new 'Document' controller to your project, and a couple of namespaces are important to add to the top of your controller.
 
@@ -57,8 +57,8 @@ Add a new 'Document' controller to your project, and a couple of namespaces are 
     using Scryber.Components.Mvc;
 
 
-Add the Web host service
--------------------------
+1.2.4. Add the Web host service
+-------------------------------
 
 In order to nicely reference files in the solution, we add a reference to the IWebHostEnvironment to the controller constructor.
 
@@ -72,8 +72,8 @@ In order to nicely reference files in the solution, we add a reference to the IW
     }
 
 
-Add a Controller Method
-------------------------
+1.2.5. Add a Controller Method
+------------------------------
 
 Next add a new Controller Method to your class for retrieve and generate
 
@@ -94,8 +94,8 @@ The PDF extension method will read the PDF template from the path and generate t
 
 .. image:: ../images/homecontroller.png
 
-Testing your action
---------------------
+1.2.6. Testing your action
+---------------------------
 
 To create your pdf simply add a link to your action method in a view.
 
@@ -114,8 +114,8 @@ Running your application, you should see the link and clicking on it will open t
 
 .. image:: ../images/helloworldpage.png
 
-Adding dynamic content
------------------------
+1.2.7. Adding dynamic content
+------------------------------
 
 One of the driving forces behind scryber is the separation of the content, data and style. It
 is common practice in sites. With scryber all attributes and content is bindable to the data you want to pass to it,
@@ -201,8 +201,8 @@ So we can expand our document body to use the model schema.
 
 .. image:: ../images/HelloWorldWithData.png
 
-Adding Fonts and Styles
-------------------------
+1.2.8. Adding Fonts and Styles
+------------------------------
 
 It's good but rather uninspiring. With scryber we can use styles, just as we would in html.
 
@@ -295,8 +295,8 @@ The output from this is much more pleasing. Especially that Fruances font :-)
 .. image:: ../images/HelloWorldWithStyle.png
 
 
-Further reading
------------------
+1.2.9. Further reading
+----------------------
 
 You can read more about the what you can do with scryber from the contents.
 

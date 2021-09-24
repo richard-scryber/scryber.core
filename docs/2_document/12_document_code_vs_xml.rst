@@ -2,12 +2,12 @@
 To code or not to code...
 ==========================
 
-Scryber does not rely on xml / html, but it makes life easier and is more visual and structured.
+Scryber does not rely on xml / xhtml, but it makes life easier and is more visual and structured.
 
 When ever you parse a Document or component you are simply creating the same as you could in code.
 
 
-XML Template
+XHTML Template
 ------------
 
 .. code-block:: html
@@ -35,24 +35,24 @@ The same in code
 
 .. code-block:: csharp
 
-            var doc = new Document();
-            doc.Info.Title = "Coded Document";
+        var doc = new Document();
+        doc.Info.Title = "Coded Document";
 
-            var style = new StyleDefn(".grey");
-            style.Background.Color = (PDFColor)"grey";
-            doc.Styles.Add(style);
+        var style = new StyleDefn(".grey");
+        style.Background.Color = (PDFColor)"grey";
+        doc.Styles.Add(style);
 
-            var pg = new Page();
-            pg.StyleClass = "grey";
-            pg.OutlineTitle = "Page 1";
+        var pg = new Page();
+        pg.StyleClass = "grey";
+        pg.OutlineTitle = "Page 1";
 
-            var para = new Paragraph();
-            para.Contents.Add(new TextLiteral("Hello World From scryber"));
+        var para = new Paragraph();
+        para.Contents.Add(new TextLiteral("Hello World From scryber"));
 
-            pg.Contents.Add(para);
-            doc.Pages.Add(pg);
+        pg.Contents.Add(para);
+        doc.Pages.Add(pg);
 
-            return doc.ProcessDocument();
+        return doc.ProcessDocument();
 
 
 The same in XLinQ
@@ -133,8 +133,6 @@ And this method can be used when parsing inner content or documents with referen
         {
             Document.Parse("", reader, ParseSourceType.DynamicContent, new PDFReferenceResolver(this.ResolveReference));
         }
-
-
 
 
 

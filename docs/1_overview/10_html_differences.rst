@@ -1,6 +1,6 @@
-====================================
-Output to files, streams or results
-===================================
+================================
+Differences to html output
+================================
 
 We have seen 2 ways to create the resultant document from a template.
 

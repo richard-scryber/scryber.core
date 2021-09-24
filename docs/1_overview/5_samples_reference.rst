@@ -1,6 +1,6 @@
-=================================
-Using the documentation Samples
-=================================
+=====================================
+1.5. Using the documentation Samples
+=====================================
 
 All the samples in the documentation are available in the source code to follow along with.
 
@@ -13,12 +13,11 @@ They will load any needed templates from the project folder /Templates/[category
 And they will save files to the output /My Documents/Scryber Test Output/[category]/[filename.pdf]
 
 
-Sample test base class
------------------------
+1.5.1. Sample test base class
+------------------------------
 
 To reduce the boilerplate code the methods ``GetTemplatePath`` and ``GetOutputStream`` have been 
 set up on a base class called ``TestBase`` that all sample tests inherit from.
-
 
 
 .. code:: csharp
@@ -108,8 +107,8 @@ set up on a base class called ``TestBase`` that all sample tests inherit from.
     }
 
 
-Changing the defaults
-----------------------
+1.5.2 Changing the defaults
+---------------------------
 
 The pre-defined values for the output folder, the location of the templates folder, and the 'SpecialFolder' where the output will be saved can be modified to alter location
 either if you are experiencing dificulties in locating the samples or want to change where they will be created.
@@ -117,8 +116,8 @@ either if you are experiencing dificulties in locating the samples or want to ch
 If you **do not** want to execute the tests to save to an actual file, the compiler directive OUTPUT_FILES can be removed (or commented)
 
 
-Empty Sample Test class
-------------------------
+1.5.3. Empty Sample Test class
+------------------------------
 
 A basic set up for a sample in a test class is 
 
@@ -163,9 +162,11 @@ A basic set up for a sample in a test class is
         }
     }
 
-Contributing examples
----------------------
+1.5.4. Contributing examples
+-----------------------------
 
 We would love to add more samples and starter documents / recipies. 
 
 If you have an example you are proud of, or think would be useful to others. Please **do** fork the repository and propose the additions.
+
+And if you find a *bug* please let us know, or even fork and fix. 

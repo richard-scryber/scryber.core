@@ -486,6 +486,16 @@ There is a lot going on here, but...
 * The ``model.order.TaxRate`` is being looked for, but is not available, so the fallback var() value is being used.
 * The ``num @data-format`` and ``time @data-format`` are changing the output text to a formatted value within the style
 
-See :doc:`styles/document_styles` for a more detailed explation of each of the styling options within scryber.
+
+Next Steps
+---------------
+
+See :doc:`1_overview/9_document_output` to understand more on the options for outputting a document to a stream or a file
+
+See :doc:`4_styles/1_document_styles` for a more detailed explation of each of the styling options within scryber.
+
+See :doc:`6_binding/4_css_calc_reference` to get a deep dive into the calc() and var() support in scryber.
+
+See :doc:`2_document/3_drawing_units`, :doc:`2_document/4_drawing_colors` and :doc:`2_document/5_drawing_fonts` for more on the support for measurements, colors and fonts.
 
 .. note:: Remember, all of this is part of an object instance. The options to build a document are completely dynamic.

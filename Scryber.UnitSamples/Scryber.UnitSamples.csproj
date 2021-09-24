@@ -23,6 +23,8 @@
     <None Remove="Templates\Pages\" />
     <None Remove="Scryber.Core" />
     <None Remove="Templates\PageNumbers\" />
+    <None Remove="Templates\Overview\" />
+    <None Remove="Templates\Overview\Fragments\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
@@ -32,6 +34,8 @@
     <Folder Include="Templates\Lists\" />
     <Folder Include="Templates\Pages\" />
     <Folder Include="Templates\PageNumbers\" />
+    <Folder Include="Templates\Overview\" />
+    <Folder Include="Templates\Overview\Fragments\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />

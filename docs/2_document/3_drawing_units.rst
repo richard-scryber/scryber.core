@@ -1,5 +1,5 @@
 ========================================
-Units and measures
+Using units and measures
 ========================================
 
 Within scryber all drawing and positioning is based from the top left of the page. Scryber allows the definition of a dimension 
@@ -17,7 +17,6 @@ and also pixels (px) as postfix units. A pixel is translated to 1/96 th of an in
     * Units are used in many places in xml templates
     * e.g. 72, 72pt, 1in, 25.4mm would all represent a 1.0 inch dimension.
     * Units can directly be cast and converted from integer and double values, or constructed in code.
-    * see :doc:`reference/drawing_unit` for more information.
 
 * PDFSize
     * This is a width and height dimension with 2 PDFUnits.
@@ -35,13 +34,11 @@ and also pixels (px) as postfix units. A pixel is translated to 1/96 th of an in
     * It can be defined with 1, 2 or 4 values as a string, where 1 dimension refers to all values, 2 is the vertical and then horizontal and all 4 are explicit.
     * Thicknesses are used by the margins, padding, clipping attributes on components.
     * e.g. `25.4mm`, `1in 72pt` or `72 72 72 72` are all equivalent to 1 inch thickness all around.
-    * see :doc:`reference/drawing_thickness` for more information.
 
 * PDFRect
     * A rectagle is represented by 4 dimensions forming the x, y, width and height of a rectangle.
     * They can be mixed and matched in units, but are generally only used internally for calculation.
     * This should not be confused with the PDFRectangle used in drawing (see :doc:`drawing_paths`)
-    * see :doc:`reference/drawing_rect` for more information.
 
 
 Units use in templates

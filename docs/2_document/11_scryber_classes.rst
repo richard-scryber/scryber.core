@@ -129,6 +129,8 @@ When parsing content from HTML the document component graph will be constructed 
         }
     }
 
+The HTML components generally map directly onto their superclass Component, with added support for the html specific attributes (title, hidden, etc).
+
 Layout content
 ---------------
 
