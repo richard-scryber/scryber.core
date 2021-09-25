@@ -357,6 +357,39 @@ namespace Scryber.UnitSamples
             }
         }
 
+        [TestMethod]
+        public void AggregationAndCalcBinding()
+        {
+            var path = GetTemplatePath("Overview", "AggregationAndCalcBinding.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //Use mock service 2
+                var service = new OrderMockService2();
+
+                var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+                var order = service.GetOrder(1);
+
+                doc.Params["model"] = new
+                {
+                    user = user,
+                    order = order
+                };
+
+                doc.Params["theme"] = new
+                {
+                    color = "#FF0000",
+                    space = "10pt",
+                    align = "center"
+                };
+
+                using (var stream = GetOutputStream("Overview", "AggregationAndCalcBinding.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
+        }
+
 
         [TestMethod]
         public void ComponentStyles()

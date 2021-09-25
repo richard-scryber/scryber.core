@@ -1,0 +1,72 @@
+﻿<!DOCTYPE HTML>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>{{concat('Hello ', model.user.FirstName)}}</title>
+</head>
+<body>
+    <!-- count of items and join of user name -->
+    <div style='color: calc(theme.color); padding: calc(theme.space); text-align: calc(theme.align)'>
+        {{count(model.order.Items)}} items for {{join(' ',model.user.Salutation, model.user.FirstName, model.user.LastName)}}.
+    </div>
+    <div style='padding: 10pt; font-size: 12pt'>
+        <table style='width:100%'>
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Item</td>
+                    <td>Description</td>
+                    <td>Unit Price</td>
+                    <td>Qty.</td>
+                    <td>Total</td>
+                </tr>
+            </thead>
+            <tbody>
+                <template data-bind='{{model.order.Items}}'>
+                    <tr>
+                        <td>{{index() + 1}}</td>
+                        <td>{{.ItemNo}}</td>
+                        <td>{{.ItemName}}</td>
+                        <td>
+                            <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                        </td>
+                        <td>{{.Quantity}}</td>
+                        <td>
+                            <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4"></td>
+                    <td>Total (ex. Tax)</td>
+                    <td><num value='{{model.order.Total}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                    <td>Tax</td>
+                    <!-- Caclulate the tax -->
+                    <td><num value='{{model.order.Total * model.order.TaxRate}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                    <td>Grand Total</td>
+                    <!-- Calculate the grand total with tax -->
+                    <td><num value='{{model.order.Total * (1 + model.order.TaxRate)}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div id='terms'>
+            <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+            </div>
+            <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                <p>Please pay for your items now, and  we can process your order once received.</p>
+            </div>
+            <div id='payLater' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                <p>Your items will be shipped immediately, please ensure you pay our invoice within <b> {{model.order.PaymentTerms}} days</b></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -5,8 +5,8 @@
 Within the content of a document the parser will look for expressions that will be evaluated at binding time into actual values.
 Every attribute in scryber, and all text can be bound with an expression.
 
-.. figure:: ../images/doc_expression_visible.png
-    :alt: Showing and hiding content
+.. figure:: ../images/samples_overviewBindingCalc.png
+    :alt: Aggregations and calculations
 
 The usual method for specifying these values uses the handlebars syntax - ``{{expression}}``.
 
@@ -356,22 +356,7 @@ In our template we can then **bind** the values in a table, looping over each on
 `Full size version <../_images/doc_expression_template.png>`_
 
 
-1.7.6. Expressions and calculations
--------------------------------------
-
-We have already seen some binding syntax in scryber templates with functions and calculations between the handlebars.
-
-.. code:: csharp
-
-    {{.ItemPrice * .Quantity}}
-    {{index() + 1}}
-    {{concat('Hello ', model.user.FirstName)}}
-
-There are many other functions for mathematical, comparison, aggregation and string operation.
-A complete list with examples of each are defined in the :doc:`../6_binding/6_functions_reference` section.
-
-
-1.7.7. Showing and hiding content
+1.7.6. Showing and hiding content
 ----------------------------------
 
 Scryber supports visual changes to the content based on decisions in the data. The use of the css style ``display:none`` is supported, and evaluated at layout time.
@@ -523,7 +508,7 @@ We can check the payment terms value and show or hide some content based on this
 With the above example, our service instance has changed, our template has been adapted, but there is no need to update any other code.
 This flexibility allows data models to change, templates to be updated. And the rest of the code keep working.
 
-1.7.8. Changing in code
+1.7.7. Changing in code
 -----------------------
 
 We could also do this directly in our output method by looking for the items and setting their ``Visible`` property.
@@ -562,6 +547,138 @@ We could also do this directly in our output method by looking for the items and
 This does, however, start to create a dependacy on the layout and the code along with potential errors this may cause later 
 on plus dependencies on types and casting.
 
+1.7.8. Expressions and calculations
+-------------------------------------
+
+We have already seen some binding syntax in scryber templates with functions and calculations between the handlebars.
+
+.. code:: csharp
+
+    {{.ItemPrice * .Quantity}}
+    {{index() + 1}}
+    {{concat('Hello ', model.user.FirstName)}}
+
+There are many other functions for mathematical, comparison, aggregation and string operation.
+A complete list with examples of each are defined in the :doc:`../6_binding/6_functions_reference` section.
+
+We can use standard calculations and aggregation operations on out model directly in the template.
+
+.. code:: html
+
+    <!DOCTYPE HTML>
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{{concat('Hello ', model.user.FirstName)}}</title>
+    </head>
+    <body>
+        <!-- count of items and join of user name -->
+        <div style='color: calc(theme.color); padding: calc(theme.space); text-align: calc(theme.align)'>
+            {{count(model.order.Items)}} items for {{join(' ',model.user.Salutation, model.user.FirstName, model.user.LastName)}}.
+        </div>
+        <div style='padding: 10pt; font-size: 12pt'>
+            <table style='width:100%'>
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td>Item</td>
+                        <td>Description</td>
+                        <td>Unit Price</td>
+                        <td>Qty.</td>
+                        <td>Total</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template data-bind='{{model.order.Items}}'>
+                        <tr>
+                            <td>{{index() + 1}}</td>
+                            <td>{{.ItemNo}}</td>
+                            <td>{{.ItemName}}</td>
+                            <td>
+                                <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                            </td>
+                            <td>{{.Quantity}}</td>
+                            <td>
+                                <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>Total (ex. Tax)</td>
+                        <td><num value='{{model.order.Total}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>Tax</td>
+                        <!-- Caclulate the tax -->
+                        <td><num value='{{model.order.Total * model.order.TaxRate}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>Grand Total</td>
+                        <!-- Calculate the grand total with tax -->
+                        <td><num value='{{model.order.Total * (1 + model.order.TaxRate)}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div id='terms'>
+                <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                    <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+                </div>
+                <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                    <p>Please pay for your items now, and  we can process your order once received.</p>
+                </div>
+                <div id='payLater' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                    <p>Your items will be shipped immediately, please ensure you pay our invoice within <b> {{model.order.PaymentTerms}} days</b></p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+.. code:: csharp
+
+    public void AggregationAndCalcBinding()
+    {
+        var path = GetTemplatePath("Overview", "AggregationAndCalcBinding.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            //Use mock service 2
+            var service = new OrderMockService2();
+
+            var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+            var order = service.GetOrder(1);
+
+            doc.Params["model"] = new
+            {
+                user = user,
+                order = order
+            };
+
+            doc.Params["theme"] = new
+            {
+                color = "#FF0000",
+                space = "10pt",
+                align = "center"
+            };
+
+            using (var stream = GetOutputStream("Overview", "AggregationAndCalcBinding.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+    }
+
+
+.. figure:: ../images/samples_overviewBindingCalc.png
+    :target: ../_images/samples_overviewBindingCalc.png
+    :alt: Aggregations and calculations
+    :class: with-shadow
+
+`Full size version <../_images/samples_overviewBindingCalc.png>`_
 
 1.7.9. Further Reading
 ----------------------
