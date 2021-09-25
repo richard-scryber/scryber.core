@@ -1,15 +1,20 @@
-================================
-Styles, Classes and selectors
-================================
-
+===================================
+1.8. Styles, Classes and selectors
+===================================
 
 Scryber supports full cascading styles on all visual components.
 It also supports declaration of classes and styles within either the html head or as referenced stylesheets.
+And the use of ``var()`` and ``calc()`` for expressions.
 
-So from our previous example we can reference an external stylesheet *(empty at the moment)*, relative to the document, and also declare some styles inside the document head.
+.. figure:: ../images/doc_styled_orders.png
+    :alt: Styled order items.
 
-Orders with style
----------------------
+
+1.8.1 Orders with style
+------------------------
+
+from our previous example (:doc:`7_parameters_and_expressions`) we can reference an external stylesheet 
+*(empty at the moment)*, relative to the document, and also declare some styles inside the document head.
 
 .. code:: html
 
@@ -312,7 +317,7 @@ And in our code we can create a style parameter.
 
     var doc = Document.ParseDocument("MyFile.html");
 
-    var service = new OrderMockService();
+    var service = new OrderMockService2();
     var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
     var order = service.GetOrder(1);
     order.PaymentTerms = 30;

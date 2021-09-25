@@ -5,19 +5,39 @@
 Within the content of a document the parser will look for expressions that will be evaluated at binding time into actual values.
 Every attribute in scryber, and all text can be bound with an expression.
 
-The usual method for specifying these values uses the handlebars syntax - ``{{ expression }}``.
+.. figure:: ../images/doc_expression_visible.png
+    :alt: Showing and hiding content
+
+The usual method for specifying these values uses the handlebars syntax - ``{{expression}}``.
+
+.. code:: html
+
+    <div>{{concat('Hello ',model.userName)}}</div>
+
+For styles and css the ``calc()`` method is extended to used expressions.
+
+.. code:: css
+
+    .banner {
+        background-image: calc(model.logoSource);
+    }
+
 This allows the inclusion of dynamic content at runtime either for specific values, for binding onto repeating content, or for evaluating expressions.
 
 The values are passed to the document through the ``Params`` property of a document instance.
 
-See :doc:`../6_binding/1_binding_model` for a deeper dive into binding support and features.
-See :doc:`../7_extending/1_extending_scryber` for more about the options for binding and configuration.
+.. code:: csharp
+
+    doc.Params["model"] = new {
+        userName = "Richard",
+        logoSource = "url(../images/mylogo.png)"
+    };
 
 
 1.7.1 Generation methods
 -------------------
 
-All methods and files in these samples use the standard testing set up as outlined in :doc:`../overview/samples_reference`
+All methods and files in these samples use the standard testing set up as outlined in :doc:`../1_overview/5_samples_reference`
 
 
 1.7.2 Simple Binding Example
@@ -287,7 +307,7 @@ In our template we can then **bind** the values in a table, looping over each on
             <title>{{concat('Hello ', model.user.FirstName)}}</title>
         </head>
         <body>
-            <div style='color: #FF0000; padding: 10pt; text-align: center'>
+            <div style='color: calc(theme.color); padding: calc(theme.space); text-align: calc(theme.align)'>
                 Hello {{model.user.FirstName}}.
             </div>
             <div style='padding: 10pt; font-size: 12pt'>
@@ -349,9 +369,6 @@ We have already seen some binding syntax in scryber templates with functions and
 
 There are many other functions for mathematical, comparison, aggregation and string operation.
 A complete list with examples of each are defined in the :doc:`../6_binding/6_functions_reference` section.
-
-It is also possible to register your own functions in the ``Scryber.Expressive.Functions.FunctionSet``, with a class implementing simple the ``IFunction`` interface.
-An example of which is in the :doc:`../7_extending/extending_functions` section.
 
 
 1.7.7. Showing and hiding content
@@ -443,7 +460,7 @@ We can check the payment terms value and show or hide some content based on this
             <title>{{concat('Hello ', model.user.FirstName)}}</title>
         </head>
         <body>
-            <div style='color: #FF0000; padding: 10pt; text-align: center'>
+            <div style='color: calc(theme.color); padding: calc(theme.space); text-align: calc(theme.align)'>
                 Hello {{model.user.FirstName}}.
             </div>
             <div style='padding: 10pt; font-size: 12pt'>
@@ -527,6 +544,13 @@ We could also do this directly in our output method by looking for the items and
                 order = order
     };
 
+    doc.Params["theme"] = new
+    {
+        color = "#FF0000",
+        space = "10pt",
+        align = "center"
+    };
+
     //Update the visibility of lookup items - dependent on them being there.
     doc.FindAComponentById("paidAlready").Visible = (order.PaymentTerms < 0);
     doc.FindAComponentById("payNow").Visible = (order.PaymentTerms == 0);
@@ -545,5 +569,4 @@ on plus dependencies on types and casting.
 * Next we can add some style to the template with :doc:`8_styles_and_classes`.
 * See :doc:`../6_binding/1_binding_model` for more on the databinding capabilities and available functions.
 * See :doc:`../6_binding/15_document_controllers` for a deep dive into interacting with your templates in code.
-
-
+* See :doc:`../7_extending/1_extending_scryber` for more about the options for binding and configuration.

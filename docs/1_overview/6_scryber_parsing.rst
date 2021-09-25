@@ -2,8 +2,11 @@
 1.6. Parsing documents from content
 ====================================
 
-When you parse the contents of an file, or a stream or a reader, Scryber builds a full object model of the content.
+When you parse the contents of an file, or a stream or a reader, Scryber builds a full object model of the content plus any referenced content.
 As the parser is based around XML it is important that all content is valid - it does not like unclosed tags or elements.
+
+.. figure:: ../images/samples_overviewEmbed.png
+    :alt: Embedded content
 
 1.6.1. Content namespaces
 --------------------------
@@ -318,13 +321,34 @@ The embedded content should be a fragment of valid xhtml / xml rather than a ful
     </head>
     <body>
         <div style='padding:10px'>Hello World.</div>
-        <!-->
+        <!-- embedded content within a div -->
         <div style="border:solid 1px black; margin:10pt; padding:5pt">
             <embed src="./fragments/tsandcs.html" />
         </div>
     </body>
     </html>
 
+.. code:: csharp
+
+    //Scryber.UnitSamples/OverviewSamples.cs
+
+    public void EmbedContent()
+    {
+        var path = GetTemplatePath("Overview", "EmbeddedContent.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            //Embedded content is loaded at parse time
+            var embedded = doc.FindAComponentById("MyTsAndCs") as Div;
+            Assert.IsNotNull(embedded);
+
+            using (var stream = GetOutputStream("Overview", "EmbeddedContent.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+        }
+    }
 
 .. figure:: ../images/samples_overviewEmbed.png
     :target: ../_images/samples_overviewEmbed.png
@@ -374,27 +398,15 @@ For example if we wanted to embed some standard content we could provide our own
         }
     }
 
+And our document can reference the custom resolver with the 
 
-    private Document LoadDocument()
-    {
-        var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
-                    <head>
-                        <title>" + title + @"</title>
-                        </head>
-                    <body>
-                        <div style='padding: 10px' >" + title + @".</div>
-                        <embed id='TsAndCs' src='MyTsAndCs' />
-                    </body>
-                </html>";
+.. code:: csharp
 
-        using (var reader = new StringReader(src))
-        {
-            //Execute the parsing with the custom resolver
-            var doc = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, CustomResolve) as Document;
-        }
-    }
-    
-.. note:: Remember, the content to be parsed MUST be valid XML. So the content returned from the LoadTermsStream() method should be valid xml in its own right, including all XML namespaces.
+    var doc = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, CustomResolve) as Document;
+
+This will allow content from databases, or authenticated feeds to be added, or even transformed and added.
+
+.. note:: Remember, the content to be parsed MUST be valid XML, including all XML namespaces, OR wrapped in an xml element.
 
 
 It is also possible to return just coded objects in the return of the reference resolver, and the ``PDFReferenceResolver`` delegate can be any instance.
@@ -420,15 +432,21 @@ It is also possible to return just coded objects in the return of the reference 
         }
     }
 
-see :doc:`document_code_vs_xml` for more information.
 
-1.6.7. Extending namespaces
+1.6.7. Default namespaces
 ----------------------------
 
-The scryber parsing engine is declarative and does not rely on knowing what it is meant to be parsing.
-As such it is easy to extend the namespaces it looks at to build object graphs (in fact the html and svg classes are built directly on top of the base component classes).
+The html and svg namespaces are also automatically added.
 
-See :doc:`../namespaces_and_assemblies` for more information on how to extend the namespaces and used by the parser.
+* http://www.w3.org/1999/xhtml
+    * The html components used in scryber. e.g. div, span, section etc.
+    * It refers to the Scryber.Html.Components namespace in the Scryber.Components assembly (Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe)
+* http://www.w3.org/2000/svg
+    * The svg drawing components used in scryber. e.g. ellipse, circle, rect etc.
+    * It refers to the Scryber.Svg.Components namespace in the Scryber.Components assembly (Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe)
+
+
+See :doc:`../7_extending/1_extending_scryber` for more information on how to extend the namespaces used by the parser, and create your own components.
 
 
 1.6.8. Further reading
@@ -438,4 +456,4 @@ See :doc:`../namespaces_and_assemblies` for more information on how to extend th
 * For more about code vs templates see :doc:`../2_document/12_document_code_vs_xml`
 * All the available components see :doc:`../3_components/1_component_reference`
 * All the available styles see :doc:`../4_styles/1_document_styles`
-
+* Split your files? See :doc:`2_document/14_document_references` for more on stylesheet links and embedding content.

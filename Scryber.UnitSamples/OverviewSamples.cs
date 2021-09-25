@@ -145,6 +145,10 @@ namespace Scryber.UnitSamples
 
             using (var doc = Document.ParseDocument(path))
             {
+                //Embedded content is loaded at parse time
+                var embedded = doc.FindAComponentById("MyTsAndCs") as Div;
+                Assert.IsNotNull(embedded);
+                
                 using (var stream = GetOutputStream("Overview", "EmbeddedContent.pdf"))
                 {
                     doc.SaveAsPDF(stream);
