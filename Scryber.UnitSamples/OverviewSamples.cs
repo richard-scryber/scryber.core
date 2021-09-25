@@ -411,15 +411,6 @@ namespace Scryber.UnitSamples
                     order = order
                 };
 
-                doc.Params["theme"] = new
-                {
-                    color = "#FF0000",
-                    space = "10pt",
-                    align = "center"
-                };
-
-
-
                 using (var stream = GetOutputStream("Overview", "StylingComponents.pdf"))
                 {
                     doc.SaveAsPDF(stream);
@@ -427,6 +418,33 @@ namespace Scryber.UnitSamples
             }
         }
 
+
+        [TestMethod]
+        public void StylesWithCSSLink()
+        {
+            var path = GetTemplatePath("Overview", "StylingWithCSSLink.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //Use mock service 2
+                var service = new OrderMockService2();
+
+                var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+                var order = service.GetOrder(1);
+
+
+                doc.Params["model"] = new
+                {
+                    user = user,
+                    order = order
+                };
+
+                using (var stream = GetOutputStream("Overview", "StylingWithCSSLink.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
+        }
 
     }
 }

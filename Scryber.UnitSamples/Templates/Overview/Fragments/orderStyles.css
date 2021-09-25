@@ -1,0 +1,27 @@
+﻿body {
+    --std-width: 30pt;
+}
+
+td.w1 {
+    width: var(--std-width);
+}
+
+td.w2 {
+    width: calc(var(--std-width) * 2.0);
+}
+
+td.w3 {
+    width: calc(var(--std-width) * 3.0);
+}
+
+td.empty {
+    border: none;
+}
+
+td.num {
+    text-align: center;
+}
+
+td.curr {
+    text-align:right;
+}

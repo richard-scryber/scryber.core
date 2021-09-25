@@ -21,24 +21,26 @@ From our previous example (:doc:`7_parameters_and_expressions`) we can declare s
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
     <head>
         <title>{{concat('Hello ', model.user.FirstName)}}</title>
-        <style type="text/css" >
-            :root{
-                --theme_color:#232323;
-                --theme_space:10pt;
+        <style type="text/css">
+            :root {
+                --theme_color: #000000;
+                --theme_bg: #AAA;
+                --theme_logo: url(../../Images/ScryberLogo.png);
+                --theme_space: 10pt;
                 --theme_align: center;
             }
 
-            table.orderlist{
-                width:100%;
+            table.orderlist {
+                width: 100%;
                 font-size: 12pt;
             }
 
-            table.orderlist thead{
+            table.orderlist thead {
                 background-color: #333;
                 color: white;
             }
 
-            #terms{
+            #terms {
                 margin-top: 20pt;
                 font-size: 12pt;
             }
@@ -51,16 +53,26 @@ From our previous example (:doc:`7_parameters_and_expressions`) we can declare s
                 font-weight: bold;
             }
 
+            .heading{
+                color: var(--theme_color, #000);
+                background-color: var(--theme_bg, #FFF);
+                background-image: var(--theme_logo);
+                background-position: 5pt 5pt;
+                background-repeat: no-repeat;
+                background-size: 35pt;
+                padding: var(--theme_space, 10pt);
+                text-align: var(--theme_align, left);
+                border-bottom: solid 2px var(--theme_color);
+            }
         </style>
     </head>
     <body>
         <!-- our heading has explicit styles -->
-        <div style='color: var(--theme_color, #000); padding: var(--theme_space); text-align: var(--theme_align)'>
-            Hello {{model.user.FirstName}}.
+        <div class="heading">
+            {{count(model.order.Items)}} items for {{join(' ',model.user.Salutation, model.user.FirstName, model.user.LastName)}}.
         </div>
-        <div style='padding: var(--theme_space);'>
-            <!-- order list class styles are assigned -->
-            <table id="orders" class="orderlist" >
+        <div style='padding: 10pt; font-size: 12pt'>
+            <table style='width:100%'>
                 <thead>
                     <tr>
                         <td>#</td>
@@ -72,15 +84,12 @@ From our previous example (:doc:`7_parameters_and_expressions`) we can declare s
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Binding on each of the items in the model.order -->
                     <template data-bind='{{model.order.Items}}'>
                         <tr>
-                            <!-- The indexing of the loop + 1 -->
                             <td>{{index() + 1}}</td>
                             <td>{{.ItemNo}}</td>
                             <td>{{.ItemName}}</td>
                             <td>
-                                <!-- we use a number tag to specify the data-format referring to the top model -->
                                 <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
                             </td>
                             <td>{{.Quantity}}</td>
@@ -90,6 +99,25 @@ From our previous example (:doc:`7_parameters_and_expressions`) we can declare s
                         </tr>
                     </template>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>Total (ex. Tax)</td>
+                        <td><num value='{{model.order.Total}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>Tax</td>
+                        <!-- Caclulate the tax -->
+                        <td><num value='{{model.order.Total * model.order.TaxRate}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>Grand Total</td>
+                        <!-- Calculate the grand total with tax -->
+                        <td><num value='{{model.order.Total * (1 + model.order.TaxRate)}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                </tfoot>
             </table>
             <div id='terms'>
                 <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
@@ -98,36 +126,67 @@ From our previous example (:doc:`7_parameters_and_expressions`) we can declare s
                 <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
                     <p>Please pay for your items now, and  we can process your order once received.</p>
                 </div>
-                <div id='paySoon' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
-                    <p>Your items will be shipped immediately, please ensure you pay our invoice within <b>{{model.order.PaymentTerms}} days</b></p>
+                <div id='payLater' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                    <p>Your items will be shipped immediately, please ensure you pay our invoice within <b> {{model.order.PaymentTerms}} days</b></p>
                 </div>
             </div>
         </div>
     </body>
     </html>
 
-Now we can set up our theme and apply styles to the order list table and #payNow box.
-In the same was as css, the font size of the #terms div is cascaded to the #payNow div, and the #payNow styles are applied over the top, overriding where appropriate. 
+
+.. code:: csharp
+
+    public void ComponentStyles()
+    {
+        var path = GetTemplatePath("Overview", "StylingComponents.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            //Use mock service 2
+            var service = new OrderMockService2();
+
+            var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+            var order = service.GetOrder(1);
+            
+
+            doc.Params["model"] = new
+            {
+                user = user,
+                order = order
+            };
+
+            using (var stream = GetOutputStream("Overview", "StylingComponents.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+    }
 
 
-.. figure:: ../images/doc_initial_styles.png
-    :target: ../_images/doc_initial_styles.png
+Now we can set up our theme and apply styles to the .header, .orderlist table and #payNow box.
+We were also able to remove the dependency on the `theme` parameter.
+
+.. figure:: ../images/samples_overviewStyledVars.png
+    :target: ../_images/samples_overviewStyledVars.png
     :alt: Initial Styles
     :class: with-shadow
 
-`Full size version <../_images/doc_initial_styles.png>`_
+`Full size version <../_images/samples_overviewStyledVars.png>`_
 
-The heading div uses the css variables with the ``var()`` syntax, and scryber also supports using a fallback value in this function.
+In the same way as css, the font size of the #terms div is cascaded to the #payNow div, and the #payNow styles are applied over the top, overriding where appropriate. 
+
+The .header takes a number of css variables declared at the `:root` and applies them to the top div. These can be changed within selectors, can fallback, and as we will see later can be changed in code.
 
 .. code:: css
 
     color: var(--theme_color, #000);
 
 
-Allowed style selectors.
----------------------------
+1.8.2 Allowed style selectors.
+------------------------------
 
-Scyber does not support the full set of selectors or the !important modifier (at the moment). 
+Scyber does **not** support the full set of selectors or the `!important` modifier (at the moment). 
 We only support the use of 
 
 * Chained selectors on tags, classes and id. 
@@ -136,7 +195,6 @@ We only support the use of
 * The @font-face, @media and @page rules.
 
 Other unsupported selectors and rules will be ignored.
-
 
 .. code:: css
 
@@ -173,13 +231,12 @@ Other unsupported selectors and rules will be ignored.
 
     @supports () {}
 
-
     */
 
-Supported css properties
+1.8.3. Supported css properties
 ------------------------
 
-For a complete list of all the supported style properties see :doc:`styles/document_styles`, but as an overview scyber currently supports.
+For a complete list of all the supported style properties see :doc:`../4_styles/1_document_styles`, but as an overview scyber currently supports.
 
 * Fills - Colors, images, positions, repeats and gradients.
 * Strokes - Widths, dashes, colors and joins.
@@ -196,12 +253,219 @@ For a complete list of all the supported style properties see :doc:`styles/docum
 .. note:: All dimensions in scryber are based on actual sizes, rather than relative sizes. We are hoping to implement relative sizes, but for the moment units should be in Points (pt), Millimeters (mm) and Inches (in).
 
 
-Setting styles in code
------------------------
+1.8.4. Caclulation in styles
+-------------------------------
+
+As already seen using the ``cacl()`` function on css styles and classes is fully supported.
+This will respont to model content and also css values.
+
+We can add a linked stylesheet with some table layout options, some calculated from a standard variable.
+
+.. code:: css
+
+    /* /Templates/Overview/Fragments/orderStyles.css */
+
+    body {
+        --std-width: 30pt;
+    }
+
+    td.w1 {
+        width: var(--std-width);
+    }
+
+    td.w2 {
+        width: calc(var(--std-width) * 2.0);
+    }
+
+    td.w3 {
+        width: calc(var(--std-width) * 3.0);
+    }
+
+    td.empty {
+        border: none;
+    }
+
+    td.num {
+        text-align: center;
+    }
+
+    td.curr {
+        text-align:right;
+    }
+
+We can reference this stylesheet in our html and apply the styles to the content including support for multiple classes.
+
+.. code:: html
+
+    <!--  /Templates/Overview/StylingWithCSSLink -->
+
+    <!DOCTYPE HTML>
+    <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+        <title>{{concat('Hello ', model.user.FirstName)}}</title>
+        <!-- reference the stylesheet -->
+        <link rel="stylesheet" href="./Fragments/orderStyles.css" />
+        <style type="text/css">
+            :root {
+                --theme_color: #000000;
+                --theme_bg: #AAA;
+                --theme_logo: url(../../Images/ScryberLogo.png);
+                --theme_space: 10pt;
+                --theme_align: center;
+            }
+
+            table.orderlist {
+                width: 100%;
+                font-size: 12pt;
+            }
+
+            table.orderlist thead {
+                background-color: #333;
+                color: white;
+            }
+
+            #terms {
+                margin-top: 20pt;
+                font-size: 12pt;
+            }
+
+            #payNow {
+                border: 1px solid red;
+                padding: 5px;
+                background-color: #FFAAAA;
+                color: #FF0000;
+                font-weight: bold;
+            }
+
+            .heading{
+                color: var(--theme_color, #000);
+                background-color: var(--theme_bg, #FFF);
+                background-image: var(--theme_logo);
+                background-position: 5pt 5pt;
+                background-repeat: no-repeat;
+                background-size: 35pt;
+                padding: var(--theme_space, 10pt);
+                text-align: var(--theme_align, left);
+                border-bottom: solid 2px var(--theme_color);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="heading">
+            {{count(model.order.Items)}} items for {{join(' ',model.user.Salutation, model.user.FirstName, model.user.LastName)}}.
+        </div>
+        <div style='padding: 10pt; font-size: 12pt'>
+            <table style='width:100%'>
+                <thead>
+                    <tr>
+                        <td class="num">#</td>
+                        <td>Item</td>
+                        <td>Description</td>
+                        <td class="curr">Unit Price</td>
+                        <td class="num">Qty.</td>
+                        <td class="curr">Total</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- apply the widths and alignment styles to the rows -->
+                    <template data-bind='{{model.order.Items}}'>
+                        <tr>
+                            <td class="w1 num">{{index() + 1}}</td>
+                            <td class="w2">{{.ItemNo}}</td>
+                            <td>{{.ItemName}}</td>
+                            <td class="w3 curr">
+                                <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                            </td>
+                            <td class="w1 num">{{.Quantity}}</td>
+                            <td class="w3 curr">
+                                <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="empty" colspan="3"></td>
+                        <td colspan="2">Total (ex. Tax)</td>
+                        <td><num value='{{model.order.Total}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                    <tr>
+                        <td class="empty" colspan="3"></td>
+                        <td colspan="2">Tax</td>
+                        <!-- Caclulate the tax -->
+                        <td><num value='{{model.order.Total * model.order.TaxRate}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                    <tr>
+                        <td class="empty" colspan="3"></td>
+                        <td colspan="2">Grand Total</td>
+                        <!-- Calculate the grand total with tax -->
+                        <td><num value='{{model.order.Total * (1 + model.order.TaxRate)}}' data-format='{{model.order.CurrencyFormat}}' /></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div id='terms'>
+                <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                    <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+                </div>
+                <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                    <p>Please pay for your items now, and  we can process your order once received.</p>
+                </div>
+                <div id='payLater' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                    <p>Your items will be shipped immediately, please ensure you pay our invoice within <b> {{model.order.PaymentTerms}} days</b></p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+And using the same method generate our document.
+
+.. code:: csharp
+
+    // Scryber.UnitSamples/OverviewSamples.cs
+
+    public void StylesWithCSSLink()
+    {
+        var path = GetTemplatePath("Overview", "StylingWithCSSLink.html");
+
+        using (var doc = Document.ParseDocument(path))
+        {
+            //Use mock service 2
+            var service = new OrderMockService2();
+
+            var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+            var order = service.GetOrder(1);
+
+
+            doc.Params["model"] = new
+            {
+                user = user,
+                order = order
+            };
+
+            using (var stream = GetOutputStream("Overview", "StylingWithCSSLink.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+    }
+
+
+
+.. figure:: ../images/samples_overviewLinkedCSS.png
+    :target: ../_images/samples_overviewLinkedCSS.png
+    :alt: Initial Styles
+    :class: with-shadow
+
+`Full size version <../_images/samples_overviewLinkedCSS.png>`_
+
+
+1.8.5. Style values in code
+-----------------------------
 
 Remember that all content parsed is converted to an object graph? This applies to styles as well.
 
-All visual components (generally anything on a page) have a range of properties for setting styles, as well as a ``Style`` property. So we could apply some values to the style directly from our generation method.
+All visual components (generally anything on a page) has a range of properties for setting styles, as well as a ``Style`` property itself. So we could apply some values to the style directly from our generation method.
 
 We can even define our own styles in the document to override
 
@@ -269,7 +533,7 @@ The main classes (and structs) used in styles are
 Base components styles
 ----------------------
 
-Each component has a standard base style applied. For example the Div has a position mode of block. The paragraph also has a position mode of block, but also a top margin of 4 points. The table cell has a standard gray 1 point border.
+Each component has a standard base style applied. For example the Div has a position mode of block. The paragraph also has a position mode of block, but includes a top margin of 4 points. The table cell has a standard gray 1 point border.
 By defining these there is a consistant appearance, but these can be easily overriden using css styles in your document or referenced css stylesheet.
 
 .. code:: css

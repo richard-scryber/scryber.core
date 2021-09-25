@@ -14,7 +14,7 @@ namespace Scryber.Styles.Parsing.Typed
         {
             string h, v;
             PDFUnit uh, uv;
-            bool set = false;
+            bool set = true;
             if (reader.ReadNextValue())
             {
                 h = reader.CurrentTextValue;
