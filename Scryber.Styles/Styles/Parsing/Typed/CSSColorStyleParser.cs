@@ -33,7 +33,7 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 if (IsExpression(reader.CurrentTextValue))
                 {
-                    this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertColor);
+                    result = this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertColor);
                 }
                 else if (this.DoConvertColor(onStyle, reader.CurrentTextValue, out color))
                 {

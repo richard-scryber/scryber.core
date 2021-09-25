@@ -13,8 +13,7 @@ And the use of ``var()`` and ``calc()`` for expressions.
 1.8.1 Orders with style
 ------------------------
 
-from our previous example (:doc:`7_parameters_and_expressions`) we can reference an external stylesheet 
-*(empty at the moment)*, relative to the document, and also declare some styles inside the document head.
+From our previous example (:doc:`7_parameters_and_expressions`) we can declare some styles inside the document head.
 
 .. code:: html
 
@@ -22,7 +21,6 @@ from our previous example (:doc:`7_parameters_and_expressions`) we can reference
     <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
     <head>
         <title>{{concat('Hello ', model.user.FirstName)}}</title>
-        <link rel="stylesheet" href="./css/orderStyles.css" />
         <style type="text/css" >
             :root{
                 --theme_color:#232323;

@@ -26,7 +26,7 @@ namespace Scryber.Styles.Parsing.Typed
                 PDFUnit parsed;
                 if (IsExpression(value))
                 {
-                    AttachExpressionBindingHandler(onStyle, this.StyleAttribute, value, this.DoConvertUnit);
+                    result = AttachExpressionBindingHandler(onStyle, this.StyleAttribute, value, this.DoConvertUnit);
                 }
                 if (this.DoConvertUnit(onStyle, value, out parsed))
                 {

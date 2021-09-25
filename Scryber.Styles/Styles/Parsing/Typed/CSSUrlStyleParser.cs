@@ -23,9 +23,9 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 if(IsExpression(reader.CurrentTextValue))
                 {
-                    this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertGradient);
+                    result = this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertWithGradient);
                 }
-                else if(this.DoConvertGradient(onStyle, reader.CurrentTextValue, out attrvalue))
+                else if(this.DoConvertWithGradient(onStyle, reader.CurrentTextValue, out attrvalue))
                 {
                     onStyle.SetValue(this.StyleAttribute, attrvalue);
                     result = true;
@@ -34,7 +34,7 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected virtual bool DoConvertGradient(StyleBase onStyle, object value, out string result)
+        protected virtual bool DoConvertWithGradient(StyleBase onStyle, object value, out string result)
         {
             if(null == value)
             {

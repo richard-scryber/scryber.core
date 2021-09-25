@@ -1,0 +1,101 @@
+﻿<!DOCTYPE HTML>
+<?scryber append-log=true ?>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>{{concat('Hello ', model.user.FirstName)}}</title>
+    <style type="text/css">
+        :root {
+            --theme_color: #000000;
+            --theme_bg: #AAA;
+            --theme_logo: url(../../Images/ScryberLogo.png);
+            --theme_space: 10pt;
+            --theme_align: center;
+        }
+
+        table.orderlist {
+            width: 100%;
+            font-size: 12pt;
+        }
+
+            table.orderlist thead {
+                background-color: #333;
+                color: white;
+            }
+
+        #terms {
+            margin-top: 20pt;
+            font-size: 12pt;
+        }
+
+        #payNow {
+            border: 1px solid red;
+            padding: 5px;
+            background-color: #FFAAAA;
+            color: #FF0000;
+            font-weight: bold;
+        }
+
+        .heading{
+            color: var(--theme_color, #000);
+            background-color: var(--theme_bg, #FFF);
+            background-image: var(--theme_logo);
+            background-position: 5pt 5pt;
+            background-repeat: no-repeat;
+            background-size: 35pt;
+            padding: var(--theme_space, 10pt);
+            text-align: var(--theme_align, left);
+        }
+    </style>
+</head>
+<body>
+    <!-- our heading has explicit styles -->
+    <div class="heading" >
+        Hello {{model.user.FirstName}}.
+    </div>
+    <div style='padding: var(--theme_space);'>
+        <!-- order list class styles are assigned -->
+        <table id="orders" class="orderlist">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Item</td>
+                    <td>Description</td>
+                    <td>Unit Price</td>
+                    <td>Qty.</td>
+                    <td>Total</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Binding on each of the items in the model.order -->
+                <template data-bind='{{model.order.Items}}'>
+                    <tr>
+                        <!-- The indexing of the loop + 1 -->
+                        <td>{{index() + 1}}</td>
+                        <td>{{.ItemNo}}</td>
+                        <td>{{.ItemName}}</td>
+                        <td>
+                            <!-- we use a number tag to specify the data-format referring to the top model -->
+                            <num value='{{.ItemPrice}}' data-format='{{model.order.CurrencyFormat}}' />
+                        </td>
+                        <td>{{.Quantity}}</td>
+                        <td>
+                            <num value='{{.ItemPrice * .Quantity}}' data-format='{{model.order.CurrencyFormat}}' />
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <div id='terms'>
+            <div id='paidAlready' hidden='{{if(model.order.PaymentTerms &lt; 0, "", "hidden")}}'>
+                <p>Thank you for pre-paying for these items. They will be shipped immediately</p>
+            </div>
+            <div id='payNow' hidden='{{if(model.order.PaymentTerms == 0, "", "hidden")}}'>
+                <p>Please pay for your items now, and  we can process your order once received.</p>
+            </div>
+            <div id='paySoon' hidden='{{if(model.order.PaymentTerms &gt; 0, "", "hidden")}}'>
+                <p>Your items will be shipped immediately, please ensure you pay our invoice within <b>{{model.order.PaymentTerms}} days</b></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

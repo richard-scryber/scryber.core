@@ -8,9 +8,6 @@ namespace Scryber.Styles.Parsing.Typed
         {
         }
 
-        protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
-        {
-            return base.DoSetStyleValue(style, reader);
-        }
+        
     }
 }

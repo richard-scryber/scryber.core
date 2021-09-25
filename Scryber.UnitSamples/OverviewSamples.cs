@@ -316,7 +316,7 @@ namespace Scryber.UnitSamples
                     new OrderItem() { ItemNo = "I 13", ItemName = "M10 bolts with a counter clockwise thread on the inner content and a star nut top, tamper proof and locking ring included.", Quantity = 8, ItemPrice = 1.0 }
                 };
                 order.Total = (2.0 * 12.5) + (4.0 * 1.5) + (8 * 1.0);
-                order.PaymentTerms = 30;
+                order.PaymentTerms = 0;
                 return order;
             }
 
@@ -351,6 +351,43 @@ namespace Scryber.UnitSamples
 
 
                 using (var stream = GetOutputStream("Overview", "ChoicesBinding.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
+        }
+
+
+        [TestMethod]
+        public void ComponentStyles()
+        {
+            var path = GetTemplatePath("Overview", "StylingComponents.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //Use mock service 2
+                var service = new OrderMockService2();
+
+                var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
+                var order = service.GetOrder(1);
+                
+
+                doc.Params["model"] = new
+                {
+                    user = user,
+                    order = order
+                };
+
+                doc.Params["theme"] = new
+                {
+                    color = "#FF0000",
+                    space = "10pt",
+                    align = "center"
+                };
+
+
+
+                using (var stream = GetOutputStream("Overview", "StylingComponents.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }

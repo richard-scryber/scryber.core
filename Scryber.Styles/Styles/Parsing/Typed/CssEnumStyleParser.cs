@@ -39,7 +39,7 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 if (IsExpression(reader.CurrentTextValue))
                 {
-                    this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertEnum);
+                    success = this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertEnum);
                 }
                 else if (this.DoConvertEnum(onStyle, reader.CurrentTextValue, out result))
                 {
