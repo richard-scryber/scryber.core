@@ -1,6 +1,6 @@
-==========================
-To code or not to code...
-==========================
+================================
+To code or not to code... - PD
+===============================
 
 Scryber does not rely on xml / xhtml, but it makes life easier and is more visual and structured.
 

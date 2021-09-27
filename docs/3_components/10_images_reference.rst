@@ -1,5 +1,5 @@
 ================================
-B, I, U, etc - TD
+Adding Images to documents - TD
 ================================
 
 Preamble

@@ -1,5 +1,5 @@
 ==========================================
-Using controllers with your templates - td
+Scryber library namespaces - TD
 ==========================================
 
 Content to complete

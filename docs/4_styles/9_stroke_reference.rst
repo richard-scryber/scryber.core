@@ -1,5 +1,5 @@
 ================================
-Headings 1 to 6 and numbers - TD
+Strokes on components - TD
 ================================
 
 All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 

@@ -1,6 +1,6 @@
-=======================
-Styles in your template
-=======================
+=============================
+Styles in your template - PD
+============================
 
 In scryber styles are used through out to build the document. Every component has a base style and styles (such as fill colour and font) that flow down
 to their inner contents.
@@ -39,8 +39,7 @@ Or if you are dynamically generating some content in the code
 
     }
 
-The :root selector
-------------------
+
 
 Style Classes
 ---------------
@@ -73,6 +72,10 @@ Along with appling styles directly to the components, Scryber supports the use o
 
 By using styles, it cleans the code and makes it easier to standardise and change later on.
 This can either be within the document itself, or in a separate link files (see: :doc:`referencing_files`)
+
+The :root selector
+------------------
+
 
 
 Block Styles
@@ -435,5 +438,8 @@ The following at-rules are supported
 * @media - including or excluding css based on print.
 * @font-face - using explicit font files and names.
 * @page - specifying page sizes for sections and breaks.
+
+Styles in code
+---------------
 
 

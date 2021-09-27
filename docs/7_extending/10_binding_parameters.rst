@@ -1,6 +1,6 @@
-======================================
-Binding to paramters and the model
-======================================
+========================================
+Paramter types and the model - PD
+========================================
 
 The document parameters are values that can be set within the template or in code.
 They are able to hold values used through out the generation process (see :doc:`document_lifecycle`) and are passed via the Context to any event handlers.

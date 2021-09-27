@@ -1,5 +1,5 @@
 =====================================
-Available expression functions
+String functions - TD
 =====================================
 
 All the operators

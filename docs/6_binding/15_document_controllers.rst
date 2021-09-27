@@ -1,6 +1,6 @@
-================================
-Controllers for your templates
-================================
+====================================
+Controllers for your templates - PD
+====================================
 
 Sometimes it's just not quite enough to give the data and render the output.
 More control is needed over altering the content.

@@ -1,5 +1,5 @@
 ======================================
-Images as backgrounds and fills
+Images as backgrounds and fills - PD
 ======================================
 
 Images are also supported on the backgrounds of block level components (see :doc:`component_positioning`),

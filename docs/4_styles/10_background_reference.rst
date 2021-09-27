@@ -1,5 +1,5 @@
 ================================
-Floats and positions - TD
+Backgrounds on blocks - TD
 ================================
 
 All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 

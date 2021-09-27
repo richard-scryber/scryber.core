@@ -1,5 +1,5 @@
 ================================
-Headings 1 to 6 and numbers - TD
+CSS var() and calc support - TD
 ================================
 
 All the visual content in a document sits in pages. Scryber supports the use of both a single body with content within it, 

@@ -1,6 +1,6 @@
-================================
-Document outline (or bookmarks)
-================================
+=====================================
+Document outline (or bookmarks) - PD
+=====================================
 
 Structing a document also allows for the outline. This is effectively a table of contents
 available in PDF readers that support quick navigation of the whole document, to go to the 

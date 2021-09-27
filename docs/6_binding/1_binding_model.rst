@@ -1,8 +1,7 @@
 ======================================
-Dynamic content in your template
+Dynamic content in your template - PD
 ======================================
 
-**This is where it get's exciting**
 
 A document template is just that, a template.
 You can add any source of information to be included.

@@ -1,5 +1,5 @@
 ===============================
-Adding custom functions
+Custom component example - TD
 ================================
 
 When to declare it

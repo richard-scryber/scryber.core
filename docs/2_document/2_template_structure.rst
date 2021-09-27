@@ -1,6 +1,6 @@
-===================
-Template structure
-===================
+========================
+Template structure - PD
+========================
 
 Scryber expects all content to be in valid XHTML structrure.
 Tags must be properly closed, and ampersands (&) must either be escaped or valid html character notations (&amp; &quot; etc.)

@@ -1,6 +1,6 @@
-========================================
-Binding Performance and style caching
-========================================
+============================================
+Binding Performance and style caching - PD
+============================================
 
 Scryber does a number of activities underneath to improve performance and reuse cached data where possible.
 Downloaded font-files are kept locally

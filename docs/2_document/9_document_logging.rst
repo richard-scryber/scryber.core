@@ -1,6 +1,6 @@
-======================
-Scryber Trace Log
-======================
+================================
+Scryber Trace log details - PD
+================================
 
 Internally scryber has lots of logging that can be used to understand what is going on underneath, without having to debug the libraries
 This is achieved with the scryber processing instruction that needs to be at the top of the file.
