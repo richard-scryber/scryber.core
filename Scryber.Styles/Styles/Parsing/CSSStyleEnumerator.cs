@@ -148,7 +148,8 @@ namespace Scryber.Styles.Parsing
 
                     while (reader.ReadNextAttributeName())
                     {
-                        parser.SetStyleValue(ff, reader, this.Context);
+                        if (!parser.SetStyleValue(ff, reader, this.Context))
+                            reader.SkipToNextAttribute();
                     }
 
 

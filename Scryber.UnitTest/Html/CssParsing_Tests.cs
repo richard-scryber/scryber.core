@@ -13,6 +13,7 @@ using Scryber.Styles.Parsing;
 using Scryber.Layout;
 using System.Diagnostics;
 using Scryber.Text;
+using System.Runtime.ExceptionServices;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -522,6 +523,84 @@ body.grey div.reverse{
             Assert.AreEqual("path/to/font.otf", parsed.Source);
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual(FontSourceFormat.EmbeddedOpenType, parsed.Format);
+        }
+
+        [TestMethod()]
+        public void ParseFontFace()
+        {
+
+            var src = @"@font-face {
+                          font-family: 'Roboto Condensed';
+                          font-style: normal;
+                          font-weight: 400;
+                          src: url(https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf) format('truetype');
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            StyleFontFace first = null;
+
+            foreach (var item in parser)
+            {
+                if (null != first)
+                    throw new InvalidOperationException("There has been more than one parsed style");
+
+                if (!(item is StyleFontFace))
+                    throw new InvalidCastException("The item is not a font face");
+
+                first = item as StyleFontFace;
+            }
+
+            Assert.IsNotNull(first, "No font face was parsed");
+
+            var fsrc = first.GetValue(StyleKeys.FontFaceSrcKey, null);
+
+            Assert.AreEqual("https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf", fsrc.Source, "Source does not match");
+            Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
+            
+
+        }
+
+        [TestMethod()]
+        public void ParseGoogleFontLink()
+        {
+            var link = "<link href=\"https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&amp;display=swap\" rel=\"stylesheet\"/>";
+            var family = "\"Roboto Condensed\"";
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>{{concat('Hello ', model.user.firstname)}}</title>
+                        " + link + @"
+                    </head>
+                    <body>
+                        <div id='lime' style='font-family: " + family + @"' >
+                            <span id='inner1' class=''>
+                                Should be in Roboto Condensed
+                            </span>
+                        </div>
+                    </body>
+                </html>";
+
+            Document doc = null;
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+
+                using (var stream = DocStreams.GetOutputStream("FontsRobotoCondensed.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.AreEqual(1, doc.SharedResources.Count, "Remote font not loaded");
+                var fntRsrc = doc.SharedResources[0] as Resources.PDFFontResource;
+                Assert.IsNotNull(fntRsrc, "The font was not loaded");
+                var name = fntRsrc.FontName;
+                Assert.AreEqual("Roboto Condensed", name, "The font name does not match");
+
+
+            }
+
         }
 
         [TestMethod()]

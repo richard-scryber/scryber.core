@@ -135,6 +135,20 @@ namespace Scryber.Styles.Parsing
             return ReadNextValue(';');
         }
 
+        public bool SkipToNextAttribute()
+        {
+            while(this.InnerEnumerator.Offset < this.EndOffset)
+            {
+                if (!this.InnerEnumerator.MoveNext())
+                    return false;
+
+                if (this.InnerEnumerator.Current == ';')
+                    break;
+            }
+            this.Buffer.Clear();
+            return this.InnerEnumerator.MoveNext();
+        }
+
         public bool MoveToNextAttribute()
         {
             while (this.InnerEnumerator.Current == ';' && this.InnerEnumerator.Offset < this.EndOffset)

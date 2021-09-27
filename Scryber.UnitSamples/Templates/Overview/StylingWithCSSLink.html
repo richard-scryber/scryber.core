@@ -1,7 +1,11 @@
 ﻿<!DOCTYPE HTML>
+<?scryber append-log='true' ?>
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <title>{{concat('Hello ', model.user.FirstName)}}</title>
+    <!-- add the OpenSans font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&amp;display=swap" rel="stylesheet"/>
+    <!-- link to a relative css file -->
     <link rel="stylesheet" href="./Fragments/orderStyles.css" />
     <style type="text/css">
         :root {
@@ -12,15 +16,19 @@
             --theme_align: center;
         }
 
+        body {
+            font-family: 'Roboto Condensed', serif;
+        }
+
         table.orderlist {
             width: 100%;
             font-size: 12pt;
         }
 
-        table.orderlist thead {
-            background-color: #333;
-            color: white;
-        }
+            table.orderlist thead {
+                background-color: #333;
+                color: white;
+            }
 
         #terms {
             margin-top: 20pt;
@@ -35,7 +43,7 @@
             font-weight: bold;
         }
 
-        .heading{
+        .heading {
             color: var(--theme_color, #000);
             background-color: var(--theme_bg, #FFF);
             background-image: var(--theme_logo);

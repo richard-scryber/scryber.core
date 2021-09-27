@@ -465,9 +465,41 @@ And using the same method generate our document.
 
 Remember that all content parsed is converted to an object graph? This applies to styles as well.
 
-All visual components (generally anything on a page) has a range of properties for setting styles, as well as a ``Style`` property itself. So we could apply some values to the style directly from our generation method.
+All visual components (generally anything on a page) has a range of properties for setting styles
+As well as a ``Style`` property for seting the values.
+And they can even be set directly using the defined ``StyleKeys``.
+
+
+.. code:: csharp
+
+    // These are all equivalent
+
+    //using Scryber.Drawing;
+    //using Scryber.Styles;
+
+    div.BackgroundColor = new PDFColor(255, 0, 0);
+    div.Style.Background.Color = new PDFColor(255, 0, 0);
+    div.Style.SetValue(StyleKeys.BgColorKey, new PDFColor(255, 0, 0));
+
+We can also override css variables in our document, as values in the params dictionary
+
+.. code:: csharp
+
+    doc.Params["--bg-color"] = new PDFColor(255, 0, 0); // could also be a string value.
 
 We can even define our own styles in the document to override
+
+.. code:: csharp
+
+    //using Scryber.Drawing;
+    //using Scryber.Styles;
+
+    //A style definition is a style with a selector.
+
+    var defn = new StyleDefn("div#payNow");
+    defn.Background.Color = new PDFColor(255, 0, 0);
+    doc.Styles.Add(defn);
+
 
 
 .. code:: csharp
