@@ -1,5 +1,5 @@
 =====================================
-Available expression functions
+Mathematical functions - TD
 =====================================
 
 All the operators

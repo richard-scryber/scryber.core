@@ -211,7 +211,7 @@ Scryber fully supports the PDF restrictions and both 40 bit and 128 bit encrypti
     :maxdepth: 1
 
     4_styles/1_document_styles
-    4_styles/2_link_stylesheet_references
+    4_styles/2_link_stylesheet_reference
     4_styles/3_columns_reference
     4_styles/4_text_alignment_reference
     4_styles/5_other_alignment_reference
