@@ -172,7 +172,7 @@ namespace Scryber.Styles
                     doc.EnsureResource(PDFFontResource.FontDefnResourceType, name, definition);
                 }
                 else
-                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "The font for " + this.Source.ToString() + " with name " + this.FontFamily + " could not be loaded");
+                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "The font for " + this.Source.ToString() + " with name " + this.FontFamily + " could not be loaded. It may be an unsupported font file.");
             }
             else
                 context.TraceLog.Add(TraceLevel.Warning, "CSS", "No font-family or src was specified for the @font-face rule.");
