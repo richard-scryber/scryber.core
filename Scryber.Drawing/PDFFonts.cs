@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using Scryber.Resources;
+using Scryber.Drawing;
 
 namespace Scryber
 {
@@ -282,13 +283,13 @@ namespace Scryber
         /// <returns></returns>
         public static PDFFontDefinition GetStandardFontDefinition(Scryber.Drawing.PDFFont font)
         {
-            return GetStandardFontDefinition(font.FamilyName, font.GetDrawingStyle());
+            return GetStandardFontDefinition(font.FamilyName, font.FontWeight, font.FontStyle);
         }
 
-        public static PDFFontDefinition GetStandardFontDefinition(string name, FontStyle style)
+        public static PDFFontDefinition GetStandardFontDefinition(string name, int weight, Scryber.Drawing.FontStyle style)
         {
-            bool italic = (style & FontStyle.Italic) > 0;
-            bool bold = (style & FontStyle.Bold) > 0;
+            bool italic = (style & Scryber.Drawing.FontStyle.Italic) > 0;
+            bool bold = (weight >= FontWeights.Bold);
             name = TranslateGenericName(name);
 
             foreach (PDFFontDefinition defn in _stds)

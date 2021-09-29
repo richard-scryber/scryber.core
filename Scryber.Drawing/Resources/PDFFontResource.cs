@@ -30,7 +30,48 @@ namespace Scryber.Resources
     /// </summary>
     public class PDFFontResource : PDFResource, IEquatable<PDFFontResource>
     {
+        /// <summary>
+        /// An inner class that allows multiple matches to particular font resources.
+        /// </summary>
+        private class FontResourceMatch
+        {
+            public string FamilyName;
+            public int Weight;
+            public bool Italic;
+
+            public FontResourceMatch Next;
+
+            public bool IsMatch(string family, int weight, bool italic)
+            {
+                if(string.Equals(this.FamilyName, family, StringComparison.OrdinalIgnoreCase))
+                {
+                    if(this.Weight == weight)
+                    {
+                        if (this.Italic == italic)
+                            return true;
+                    }
+                }
+
+                if (null != Next)
+                    return Next.IsMatch(family, weight, italic);
+                else
+                    return false;
+            }
+
+            public bool AddMatch(string family, int weight, bool italic)
+            {
+                if (null != Next)
+                    return Next.AddMatch(family, weight, italic);
+                else
+                {
+                    Next = new FontResourceMatch() { FamilyName = family, Weight = weight, Italic = italic };
+                    return true;
+                }
+            }
+        }
+
         private string _fontName;
+        private FontResourceMatch _matches;
         private PDFFontDefinition _defn;
         private PDFFontWidths _widths;
         private string _rsrcKey = null;
@@ -117,6 +158,7 @@ namespace Scryber.Resources
 
         #endregion
 
+        
         //
         // .ctor
         //
@@ -132,6 +174,7 @@ namespace Scryber.Resources
             _defn = defn;
             _widths = widths;
             _fontName = defn.FullName;
+            _matches = new FontResourceMatch() { FamilyName = _defn.Family, Weight = _defn.Weight, Italic = _defn.Italic };
 
             this.Name = (Native.PDFName)resourceName;
         }
@@ -154,6 +197,17 @@ namespace Scryber.Resources
         }
 
         #endregion
+
+        /// <summary>
+        /// Registers a font style that will also match this resource
+        /// </summary>
+        /// <param name="familyName"></param>
+        /// <param name="weight"></param>
+        /// <param name="style"></param>
+        public void RegisterSubstitution(string familyName, int weight, FontStyle style)
+        {
+            this._matches.AddMatch(familyName, weight, style == FontStyle.Italic);
+        }
 
         #region public bool Equals(PDFFontResource other) + 2 overloads
 
@@ -195,6 +249,13 @@ namespace Scryber.Resources
         }
 
         #endregion
+
+        public bool Equals(string familyName, int fontWeight, FontStyle style)
+        {
+            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic);
+        }
+
+        
 
         //
         // rendering

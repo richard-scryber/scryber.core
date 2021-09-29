@@ -1,6 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using Scryber;
 using Scryber.Drawing;
 using Scryber.Styles;
 
@@ -89,7 +87,8 @@ namespace Scryber.Core.UnitTests.Styles
             PDFFont expected = new PDFFont(PDFStyleConst.DefaultFontFamily, PDFStyleConst.DefaultFontSize);
             PDFFont actual;
             actual = target.CreateFont();
-            Assert.AreEqual(expected, actual,"Default not the same");
+            bool equal = expected.Equals(actual);
+            Assert.AreEqual(expected, actual,"Default not the same, " + expected + " was not equal to " + actual);
 
             target.FontFamily = (PDFFontSelector)"Symbol";
             expected = new PDFFont(StandardFont.Symbol, PDFStyleConst.DefaultFontSize);
@@ -106,7 +105,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.FontItalic = true;
             target.FontSize = new PDFUnit(10, PageUnits.Millimeters);
 
-            expected = new PDFFont("Bauhaus 92", new PDFUnit(10, PageUnits.Millimeters), Scryber.Drawing.FontStyle.Bold | Scryber.Drawing.FontStyle.Italic);
+            expected = new PDFFont("Bauhaus 92", new PDFUnit(10, PageUnits.Millimeters), FontWeights.Bold , Scryber.Drawing.FontStyle.Italic);
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Bauhaus not the same");
 
@@ -132,7 +131,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.FontBold);
             
             
-            target.RemoveFontBold();
+            target.RemoveFontWeight();
             expected = false;
             Assert.AreEqual(expected, target.FontBold);
         }
@@ -182,7 +181,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.FontItalic);
 
 
-            target.RemoveFontItalic();
+            target.RemoveFontStyle();
             expected = false;
             Assert.AreEqual(expected, target.FontItalic);
         }

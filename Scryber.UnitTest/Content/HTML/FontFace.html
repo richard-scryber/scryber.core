@@ -13,21 +13,25 @@
 
         /* Roboto black */
         @font-face {
-            font-family: "Roboto Black";
+            font-family: "Roboto";
             font-style: normal;
+            font-weight: 900;
             src: url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmYUtvAw.ttf) format('truetype')
         }
 
         @font-face {
-            font-family: 'Open Sans Light';
+            font-family: 'Open Sans';
+            font-weight: 300;
             src: url(../../resources/OpenSans-Light.ttf);
         }
-
+        
 
     body { font-family: 'Fraunces'; }
 
     .grey{
-        font: 'Roboto Black' 12pt;
+        font: 'Roboto' 12pt;
+        font-weight: 900;
+        font-style: normal;
         padding: 5pt;
         color:#999;
         border: solid 1px #999;
@@ -48,7 +52,7 @@
     </p>
     <p style="font-style:italic">And this has <b>Bold</b> in an italic span</p>
    </div>
-    <div style="font-family:'Roboto Black'; color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Roboto font</div>
-    <div style="font-family:'Open Sans Light';color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Open Sans Light font</div>
+    <div style="font-family:'Roboto'; font-weight:900; color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Roboto font</div>
+    <div style="font-family:'Open Sans'; font-weight: 300;color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Open Sans Light font</div>
 </body>
 </html>

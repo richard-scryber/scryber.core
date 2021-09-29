@@ -109,9 +109,9 @@ namespace Scryber.Drawing
 
         public void SetCurrentFont(PDFFont font)
         {
-            PDFResource rsrc = this.Container.Document.GetResource(PDFResource.FontDefnResourceType, font.FullName, true);
+            PDFResource rsrc = font.Resource; // this.Container.Document.GetResource(PDFResource.FontDefnResourceType, font.FullName, true);
             if (null == rsrc)
-                throw new NullReferenceException(String.Format(Errors.FontNotFound, font.FullName));
+                throw new NullReferenceException(String.Format("The font resource has not bee set on '{0}'", font.FullName));
 
             PDFName name = this.Container.Register(rsrc);
             this.CurrentFontResource = (PDFFontResource)rsrc;
@@ -234,15 +234,7 @@ namespace Scryber.Drawing
                 return 0.0;
         }
 
-        [Obsolete("No Longer Using System Fonts", true)]
-        private System.Drawing.Font GetSystemFont(PDFTextRenderOptions options)
-        {
-            //if (options == null || options.Font == null)
-                return null;
-            //else
-            //   return options.Font.GetSystemFont();
-            
-        }
+        
 
 
         private void ReleaseTextRenderOptions(PDFTextRenderOptions options, PDFRect bounds)

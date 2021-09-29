@@ -523,24 +523,53 @@ namespace Scryber.Components
 
         #endregion
 
+
         #region public bool FontBold
 
         /// <summary>
         /// Gets or sets the Font bold value of this component
         /// </summary>
         [PDFAttribute("font-bold", Const.PDFStylesNamespace)]
-        public bool FontBold
+        [PDFJSConvertor("scryber.studio.design.convertors.bold_css", JSParams = "\"font-weight\"")]
+        [PDFDesignable("Bold", Category = "Font", Priority = 2, Type = "Boolean")]
+        public virtual bool FontBold
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FontBoldKey, false);
+                    return this.Style.GetValue(StyleKeys.FontWeightKey, FontWeights.Regular) >= FontWeights.Bold;
                 else
                     return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.FontBoldKey, value);
+                if (value)
+                    this.Style.SetValue(StyleKeys.FontWeightKey, FontWeights.Bold);
+                else
+                    this.Style.SetValue(StyleKeys.FontWeightKey, FontWeights.Regular);
+            }
+        }
+
+        #endregion
+
+        #region public virtual int FontWeight {get;set;}
+
+        /// <summary>
+        /// Gets or sets the weight (light, regular, bold, black, etc) of this font
+        /// </summary>
+        public virtual int FontWeight
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.FontWeightKey, FontWeights.Regular);
+                else
+                    return FontWeights.Regular;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.FontWeightKey, value);
+
             }
         }
 
@@ -552,18 +581,45 @@ namespace Scryber.Components
         /// Gets or sets the Font italic value of this component
         /// </summary>
         [PDFAttribute("font-italic", Const.PDFStylesNamespace)]
-        public bool FontItalic
+        [PDFJSConvertor("scryber.studio.design.convertors.italic_css", JSParams = "\"font-style\"")]
+        [PDFDesignable("Italic", Category = "Font", Priority = 2, Type = "Boolean")]
+        public virtual bool FontItalic
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FontItalicKey, false);
+                    return this.Style.GetValue(StyleKeys.FontStyleKey, Drawing.FontStyle.Regular) == Drawing.FontStyle.Italic;
                 else
                     return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.FontItalicKey, value);
+                if (value)
+                    this.Style.SetValue(StyleKeys.FontFaceStyleKey, Drawing.FontStyle.Italic);
+                else
+                    this.Style.SetValue(StyleKeys.FontFaceStyleKey, Drawing.FontStyle.Regular);
+            }
+        }
+
+        #endregion
+
+        #region public virtual FontFaceStyle FontStyle {get; set; }
+
+        /// <summary>
+        /// Gets or sets the font face style (italic, oblique, regular) of this component
+        /// </summary>
+        public virtual Drawing.FontStyle FontStyle
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.FontStyleKey, Drawing.FontStyle.Regular);
+                else
+                    return Drawing.FontStyle.Regular;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.FontStyleKey, value);
             }
         }
 

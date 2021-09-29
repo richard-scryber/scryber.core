@@ -1069,11 +1069,14 @@ namespace Scryber.Styles
             bool hasvalues = false;
             StyleValue<PDFFontSelector> familyVal;
             StyleValue<PDFUnit> sizeVal;
-            StyleValue<bool> boldVal, italicVal;
+            StyleValue<int> boldVal;
+            StyleValue<Drawing.FontStyle> italicVal;
 
             PDFFontSelector family;
             PDFUnit size;
+            int weight = FontWeights.Regular;
             Drawing.FontStyle style = Drawing.FontStyle.Regular;
+            
 
             if (this.TryGetValue(StyleKeys.FontFamilyKey, out familyVal) && (null != familyVal.Value(this)))
             {
@@ -1091,21 +1094,21 @@ namespace Scryber.Styles
             else
                 size = new PDFUnit(Const.DefaultFontSize, PageUnits.Points);
 
-            if (this.TryGetValue(StyleKeys.FontBoldKey, out boldVal) && boldVal.Value(this))
+            if (this.TryGetValue(StyleKeys.FontWeightKey, out boldVal))
             {
                 hasvalues = true;
-                style |= Drawing.FontStyle.Bold;
+                weight = boldVal.Value(this);
             }
 
-            if (this.TryGetValue(StyleKeys.FontItalicKey, out italicVal) && italicVal.Value(this))
+            if (this.TryGetValue(StyleKeys.FontStyleKey, out italicVal))
             {
                 hasvalues = true;
-                style |= Drawing.FontStyle.Italic;
+                style = italicVal.Value(this);
             }
 
             if (force || hasvalues)
             {
-                PDFFont font = new PDFFont(family, size, style);
+                PDFFont font = new PDFFont(family, size, weight, style);
                 return font;
             }
             else

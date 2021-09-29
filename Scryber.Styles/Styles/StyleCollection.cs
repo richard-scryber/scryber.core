@@ -18,7 +18,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
 using System.Text;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.Styles
 {
@@ -68,6 +71,7 @@ namespace Scryber.Styles
             this.Owner = owner;
             this._hasowner = hasowner;
         }
+
 
         public void MergeInto(Style style, IPDFComponent forComponent, ComponentState state)
         {
@@ -194,5 +198,7 @@ namespace Scryber.Styles
                 comp.Parent = null;
             }
         }
+
+        
     }
 }

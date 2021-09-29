@@ -1,0 +1,97 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<?scryber append-log='true' ?>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+    <title>This is a body with headers and footers</title>
+    <!-- load the regular and italic Fraunces font with weights 100, 400 and 700 -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,400;0,700;1,100;1,400;1,700&amp;display=swap" title="Fraunces" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400&amp;display=swap" rel="stylesheet"/>
+    <style type="text/css">
+
+        /* Regular */
+        body {
+            font-family: 'Fraunces';
+            margin: 20pt;
+            font-size: 16pt;
+        }
+
+        .thin {
+            font-weight: 100;
+        }
+
+        .xlight {
+            font-weight: 200;
+        }
+
+        .med {
+            font-weight: 300;
+        }
+
+        .black {
+            font-weight: 900;
+        }
+
+        p {
+            margin-top: 20pt;
+            border-bottom: #AAA 1px solid;
+        }
+
+        .fallback {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .uni-eth {
+            font-family: 'Noto Serif Ethiopic'
+        }
+
+        .uni-tc {
+            font-family: 'Noto Sans TC'
+        }
+    </style>
+</head>
+
+<body title="Outer">
+    <p>
+        Body with regular Fraunce font.
+    </p>
+    <p style="font-style:italic">And this has <b>Bold</b> span in an italic regular weight</p>
+
+    <p class="thin">
+        And this has <b>Bold (700)</b> span in a thin (100) weight.
+    </p>
+    <p class="xlight">
+        Extra light (200) should fall back to the thin (100) weight.
+    </p>
+    <p class="med">
+        Medium (300) should fall back to regular (400) weight.
+    </p>
+    <p class="med">
+        Fallback (300) should still use a <b>Bold span</b>
+    </p>
+    <p class="black">
+        Black should fallback to bold (700) and <b>bold is no different.</b>
+    </p>
+    <p style="font-family: Roboto">
+        A non-existent font with <b>Bold</b>, <i>Italic</i> and <b><i>Bold Italic</i></b>
+    </p>
+
+    <p class="fallback">
+        A non-existent font with fallback of sans-serif including <b>Bold</b>, <i>Italic</i> and <b><i>Bold Italic</i></b>
+    </p>
+    <p>
+        A Unicode etheopian example :
+        <span class="uni-eth">የሰው፡ልጅ፡ሁሉ፡ሲወለድ፡ነጻና፡በክብርና፡በመብትም፡እኩልነት፡ያለው፡ነው።፡የተፈጥሮ፡ማስተዋልና</span>
+    </p>
+
+    <p>
+        A Unicode traditional chinese example :
+        <span class="uni-tc">鑑於對人類家庭所有成員的固有尊嚴及其平等的和不移的權利的承認，乃是世界自由、正義與和平的基礎</span>
+    </p>
+</body>
+</html>

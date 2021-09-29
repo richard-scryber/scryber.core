@@ -171,7 +171,7 @@ namespace Scryber.Resources
         public string FilePath
         {
             get { return this._filepath; }
-            private set { _filepath = value; }
+            set { _filepath = value; }
         }
 
         #endregion
@@ -199,15 +199,24 @@ namespace Scryber.Resources
 
         #region public bool Bold {get;set;}
 
-        private bool _bold;
-
         /// <summary>
         /// Gets or sets teh Bold flag on this font definition
         /// </summary>
         public bool Bold
         {
-            get { return _bold; }
-            set { _bold = value; }
+            get { return _weight >= FontWeights.Bold; }
+        }
+
+        #endregion
+
+        #region public int Weight {get;set;}
+
+        private int _weight = FontWeights.Regular;
+
+        public int Weight
+        {
+            get { return _weight; }
+            set { _weight = value; }
         }
 
         #endregion
@@ -831,8 +840,10 @@ namespace Scryber.Resources
             {
 
                 PDFObjectRef desc = this.Descriptor.RenderToPDF(fullname, context, writer);
+
                 if (null != desc)
                     writer.WriteDictionaryObjectRefEntry("FontDescriptor", desc);
+                
             }
             writer.EndDictionary();
             writer.EndObject();
@@ -951,49 +962,6 @@ namespace Scryber.Resources
         public const int PDFGlyphUnits = 1000;
 
 
-        #region internal static PDFFontDefinition LoadStandardFont(PDFFont font) + 1 overload
-
-        /// <summary>
-        /// Loads a single standard font definition (one of the base 16 fonts defined in PDF - Helvetica. Times etc).
-        /// </summary>
-        /// <param name="font"></param>
-        /// <returns></returns>
-        [Obsolete("Use the generic bag instead", true)]
-        internal static PDFFontDefinition LoadStandardFont(PDFFont font)
-        {
-            PDFFontDefinition defn;
-            if (font.IsStandard)
-            {
-                defn = PDFFonts.GetStandardFontDefinition(font);
-            }
-            else
-            {
-                throw new InvalidOperationException("The font requested is not a standard font");
-            }
-            return defn;
-        }
-
-        /// <summary>
-        /// Loads a single standard font definition based on the name and style (one of the base 16 fonts defined in PDF - Helvetica. Times etc).
-        /// </summary>
-        /// <param name="family"></param>
-        /// <param name="style"></param>
-        /// <returns></returns>
-        [Obsolete("Use the generic bag instead", true)]
-        public static PDFFontDefinition LoadStandardFont(string family, System.Drawing.FontStyle style)
-        {
-            PDFFontDefinition defn;
-            if (PDFFont.IsStandardFontFamily(family))
-                defn = PDFFonts.GetStandardFontDefinition(family, style);
-            else
-                throw new InvalidOperationException("The font requested is not a standard font");
-
-            defn.IsStandard = true;
-
-            return defn;
-        }
-
-        #endregion
 
         #region internal static PDFFontDefinition LoadOpenTypeFontFile(string path, string familyname, System.Drawing.FontStyle style)
 
@@ -1004,7 +972,7 @@ namespace Scryber.Resources
         /// <param name="familyname">The font family name in the file</param>
         /// <param name="style">The style (bold, italic etc) for the font</param>
         /// <returns>The new PDFFontDefinition</returns>
-        internal static PDFFontDefinition LoadOpenTypeFontFile(string path, string familyname, System.Drawing.FontStyle style, int headOffset)
+        internal static PDFFontDefinition LoadOpenTypeFontFile(string path, string familyname, Scryber.Drawing.FontStyle style, int weight, int headOffset)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException("path");
@@ -1013,7 +981,7 @@ namespace Scryber.Resources
             try
             {
                 Scryber.OpenType.TTFFile ttf = new Scryber.OpenType.TTFFile(path, headOffset);
-                defn = LoadOpenTypeFontFile(ttf, familyname, style);
+                defn = LoadOpenTypeFontFile(ttf, familyname, style, weight);
                 defn.FilePath = path;
             }
             catch (Scryber.PDFException) { throw; }
@@ -1035,7 +1003,7 @@ namespace Scryber.Resources
         /// <param name="familyname">The family name (Helvetica, Arial, etc) for the font</param>
         /// <param name="style">The style (Bold, Italic, etc) for the font</param>
         /// <returns>A new PDFFontDefinition for the font</returns>
-        internal static PDFFontDefinition LoadOpenTypeFontFile(byte[] data, string familyname, System.Drawing.FontStyle style, int headOffset)
+        internal static PDFFontDefinition LoadOpenTypeFontFile(byte[] data, string familyname, Scryber.Drawing.FontStyle style, int weight, int headOffset)
         {
             if (null == data || data.Length == 0)
                 throw new ArgumentNullException("data");
@@ -1044,7 +1012,7 @@ namespace Scryber.Resources
             try
             {
                 Scryber.OpenType.TTFFile ttf = new OpenType.TTFFile(data, headOffset);
-                defn = LoadOpenTypeFontFile(ttf, familyname, style);
+                defn = LoadOpenTypeFontFile(ttf, familyname, style, weight);
             }
             catch (Scryber.PDFException) { throw; }
             catch (Exception ex)
@@ -1065,7 +1033,7 @@ namespace Scryber.Resources
         /// <param name="familyname">The font family name</param>
         /// <param name="style">The font style</param>
         /// <returns>A new PDFFontDefinition</returns>
-        internal static PDFFontDefinition LoadOpenTypeFontFile(Scryber.OpenType.TTFFile ttf, string familyname, System.Drawing.FontStyle style)
+        internal static PDFFontDefinition LoadOpenTypeFontFile(Scryber.OpenType.TTFFile ttf, string familyname, Scryber.Drawing.FontStyle style, int weight)
         {
             if (null == ttf)
                 throw new ArgumentNullException("ttf");
@@ -1082,8 +1050,8 @@ namespace Scryber.Resources
                 defn.TTFFile = ttf;
                 
                 defn.BaseType = ttf.Tables.Names.GetInvariantName(NameIDFullFamily).Replace(" ", "");
-                defn.Bold = (style & System.Drawing.FontStyle.Bold) > 0;
-                defn.Italic = (style & System.Drawing.FontStyle.Italic) > 0;
+                defn.Weight = weight;
+                defn.Italic = (style != FontStyle.Regular);
                 defn.WindowsName = defn.BaseType;
                 defn.IsEmbedable = IsEmbeddable(ttf);
                 defn.Descriptor = GetFontDescriptor(defn.BaseType, defn.IsEmbedable, ttf);
@@ -1599,7 +1567,7 @@ namespace Scryber.Resources
             f.BaseType = basetype;
             f.Encoding = FontEncoding.WinAnsiEncoding;
             f.Family = basetype;
-            f.Bold = false;
+            f.Weight = FontWeights.Regular;
             f.Italic = false;
             f.SpaceWidthFontUnits = 577;
             f.FontUnitsPerEm = 2048;
@@ -1634,7 +1602,7 @@ namespace Scryber.Resources
             f.Encoding = FontEncoding.WinAnsiEncoding;
             f.Family = family;
             f.WindowsName = winName;
-            f.Bold = bold;
+            f.Weight = bold ? FontWeights.Bold : FontWeights.Regular;
             f.Italic = italic;
             
             f.FontUnitsPerEm = 2048;

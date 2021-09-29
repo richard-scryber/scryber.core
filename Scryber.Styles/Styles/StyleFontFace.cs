@@ -86,33 +86,33 @@ namespace Scryber.Styles
 
         public void RemoveFontFamily()
         {
-            this._ff.RemoveValue(StyleKeys.FontFaceFamilyKey);
+            this._ff.RemoveValue(StyleKeys.FontFamilyKey);
         }
 
         #endregion
 
-        #region public string FontWeightBold {get; set;}
+        #region public string FontWeight {get; set;}
 
         [PDFAttribute("font-weight")]
-        public bool FontBold
+        public int FontWeight
         {
             get
             {
-                bool found;
-                if (this._ff.TryGetValue(StyleKeys.FontBoldKey, out found))
+                int found;
+                if (this._ff.TryGetValue(StyleKeys.FontWeightKey, out found))
                     return found;
                 else
-                    return false;
+                    return FontWeights.Regular;
             }
             set
             {
-                this._ff.SetValue(StyleKeys.FontBoldKey, value);
+                this._ff.SetValue(StyleKeys.FontWeightKey, value);
             }
         }
 
         public void RemoveFontWeight()
         {
-            this._ff.RemoveValue(StyleKeys.FontBoldKey);
+            this._ff.RemoveValue(StyleKeys.FontWeightKey);
         }
 
         #endregion
@@ -120,26 +120,26 @@ namespace Scryber.Styles
         #region public string FontStyleItalic {get; set;}
 
         [PDFAttribute("font-style")]
-        public bool FontItalic
+        public Drawing.FontStyle FontStyle
         {
             get
             {
-                bool found;
-                if (this._ff.TryGetValue(StyleKeys.FontItalicKey, out found))
+                Drawing.FontStyle found;
+                if (this._ff.TryGetValue(StyleKeys.FontStyleKey, out found))
                     return found;
                 else
-                    return false;
+                    return Drawing.FontStyle.Regular;
             }
             set
             {
-                this.SetValue(StyleKeys.FontItalicKey, value);
+                this.SetValue(StyleKeys.FontStyleKey, value);
             }
         }
 
         
         public void RemoveFontItalic()
         {
-            this._ff.RemoveValue(StyleKeys.FontItalicKey);
+            this._ff.RemoveValue(StyleKeys.FontStyleKey);
         }
 
         #endregion
@@ -166,7 +166,7 @@ namespace Scryber.Styles
 
                 if (this.TryGetFont(doc, context, out definition))
                 {
-                    string name = PDFFont.GetFullName(this.FontFamily.FamilyName, this.FontBold, this.FontItalic);
+                    string name = PDFFont.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
                     //PDFFontResource resource = PDFFontResource.Load(definition, name);
 
                     doc.EnsureResource(PDFFontResource.FontDefnResourceType, name, definition);
@@ -188,17 +188,17 @@ namespace Scryber.Styles
         
         private bool TryGetFont(IPDFDocument doc, PDFContextBase context, out PDFFontDefinition definition)
         {
-            System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
-            if (this.FontBold)
-                style |= System.Drawing.FontStyle.Bold;
-            if (this.FontItalic)
-                style |= System.Drawing.FontStyle.Italic;
-
+            Drawing.FontStyle style = this.FontStyle;
+            int weight = this.FontWeight;
             string name = this.FontFamily.FamilyName;
 
-            PDFFontFactory.TryEnsureFont(doc, context, this.Source, name, style, out definition);
-            
-            return null != definition;
+            PDFFontFactory.TryEnsureFont(doc, context, this.Source, name, style, weight, out definition);
+            if (null != definition)
+            {
+                return true;
+            }
+            else
+                return false;
         }
         
 

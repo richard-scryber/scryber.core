@@ -995,13 +995,39 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FontBoldKey, false);
+                    return this.Style.GetValue(StyleKeys.FontWeightKey, FontWeights.Regular) >= FontWeights.Bold;
                 else
                     return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.FontBoldKey, value);
+                if (value)
+                    this.Style.SetValue(StyleKeys.FontWeightKey, FontWeights.Bold);
+                else
+                    this.Style.SetValue(StyleKeys.FontWeightKey, FontWeights.Regular);
+            }
+        }
+
+        #endregion
+
+        #region public virtual int FontWeight {get;set;}
+
+        /// <summary>
+        /// Gets or sets the weight (light, regular, bold, black, etc) of this font
+        /// </summary>
+        public virtual int FontWeight
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.FontWeightKey, FontWeights.Regular);
+                else
+                    return FontWeights.Regular;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.FontWeightKey, value);
+               
             }
         }
 
@@ -1020,18 +1046,42 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FontItalicKey, false);
+                    return this.Style.GetValue(StyleKeys.FontStyleKey, Drawing.FontStyle.Regular) == Drawing.FontStyle.Italic;
                 else
                     return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.FontItalicKey, value);
+                if (value)
+                    this.Style.SetValue(StyleKeys.FontFaceStyleKey, Drawing.FontStyle.Italic);
+                else
+                    this.Style.SetValue(StyleKeys.FontFaceStyleKey, Drawing.FontStyle.Regular);
             }
         }
 
         #endregion
 
+        #region public virtual FontFaceStyle FontStyle {get; set; }
+
+        /// <summary>
+        /// Gets or sets the font face style (italic, oblique, regular) of this component
+        /// </summary>
+        public virtual Drawing.FontStyle FontStyle
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.FontStyleKey, Drawing.FontStyle.Regular);
+                else
+                    return Drawing.FontStyle.Regular;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.FontStyleKey, value);
+            }
+        }
+
+        #endregion
 
         #region public HorizontalAlignment HorizontalAlignment
 

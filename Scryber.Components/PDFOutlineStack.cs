@@ -23,6 +23,7 @@ using Scryber.Components;
 using Scryber.Styles;
 //using Scryber.Drawing;
 using Scryber.Native;
+using Scryber.Drawing;
 
 namespace Scryber
 {
@@ -209,6 +210,8 @@ namespace Scryber
             PDFOutline outline = outlineref.Outline;
             Scryber.Drawing.PDFColor c = outlineref.GetColor();
             Scryber.Drawing.FontStyle fs = outlineref.GetFontStyle();
+            int weight = outlineref.GetFontWeight();
+
             bool isopen = outlineref.GetIsOpen();
             count = 1;//this one
             PDFObjectRef item = writer.BeginObject();
@@ -229,9 +232,9 @@ namespace Scryber
             if (fs != Scryber.Drawing.FontStyle.Regular)
             {
                 int f = 0;
-                if ((fs & Scryber.Drawing.FontStyle.Bold) > 0)
+                if (weight >= FontWeights.Bold)
                     f = 2;
-                if ((fs & Scryber.Drawing.FontStyle.Italic) > 0)
+                if ((fs & Drawing.FontStyle.Italic) > 0)
                     f += 1;
                 writer.WriteDictionaryNumberEntry("F", f);
             }
@@ -342,26 +345,29 @@ namespace Scryber
             return c;
         }
 
-        internal Scryber.Drawing.FontStyle GetFontStyle()
+        internal Drawing.FontStyle GetFontStyle()
         {
-            var fs = Scryber.Drawing.FontStyle.Regular;
-            if (this.Outline.HasBold)
-            {
-                if (this.Outline.FontBold)
-                    fs = Scryber.Drawing.FontStyle.Bold;
-            }
-            else if (this.Style.FontBold)
-                fs = Scryber.Drawing.FontStyle.Bold;
+            var fs = Drawing.FontStyle.Regular;
+            
 
             if (this.Outline.HasItalic)
             {
-                if (this.Outline.FontItalic)
-                    fs |= Scryber.Drawing.FontStyle.Italic;
+                fs = Drawing.FontStyle.Italic;
             }
             else if (this.Style.FontItalic)
-                fs |= Scryber.Drawing.FontStyle.Italic;
+                fs = Drawing.FontStyle.Italic;
 
             return fs;
+        }
+
+        internal int GetFontWeight()
+        {
+            if (this.Outline.HasBold)
+                return FontWeights.Bold;
+            else if (this.Style.FontBold)
+                return FontWeights.Bold;
+            else
+                return FontWeights.Regular;
         }
 
         public bool GetIsOpen()

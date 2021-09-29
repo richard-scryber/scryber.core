@@ -45,7 +45,8 @@
         },
         {
           "Family": "Segoe UI",
-          "Style": "Bold",
+          "Style": "Regular",
+          "Weight" : 700,
           "File": "Mocks/Fonts/segoeuib.ttf"
         },
         {

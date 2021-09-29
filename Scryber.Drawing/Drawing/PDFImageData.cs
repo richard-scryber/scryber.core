@@ -481,7 +481,7 @@ namespace Scryber.Drawing
             this._filterdata = null;
         }
 
-        protected byte[] GetCachedFilteredData(IStreamFilter[] filters, PDFContextBase context)
+        public byte[] GetCachedFilteredData(IStreamFilter[] filters, PDFContextBase context)
         {
             if (null == filters || filters.Length == 0)
                 return null;

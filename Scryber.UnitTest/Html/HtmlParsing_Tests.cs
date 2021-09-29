@@ -1228,13 +1228,143 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("FontFace.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
+
+                    //Check the remote style link for Fraunces
+
+                    var remote = doc.Styles[0] as StyleGroup;
+                    
+                    Assert.IsNotNull(remote);
+                    Assert.AreEqual(4, remote.Styles.Count, "4 fonts were NOT loaded from the remote source");
+
+                    bool[] checks = new bool[4];
+                    //Should be Italic 400 and 700 + Regular 400 and 700
+                    for(var i = 0; i < 4; i++)
+                    {
+                        var one = remote.Styles[i] as StyleFontFace;
+                        Assert.IsNotNull(one);
+                        Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
+
+                        if(one.FontStyle == Scryber.Drawing.FontStyle.Regular)
+                        {
+                            if (one.FontWeight == 400)
+                                checks[0] = true;
+                            else if (one.FontWeight == 700)
+                                checks[1] = true;
+                        }
+                        else if(one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                        {
+                            if (one.FontWeight == 400)
+                                checks[2] = true;
+                            else if (one.FontWeight == 700)
+                                checks[3] = true;
+                        }
+                    }
+
+                    Assert.IsTrue(checks[0], "No regular 400 weight");
+                    Assert.IsTrue(checks[1], "No regular 700 weight");
+                    Assert.IsTrue(checks[2], "No italic 400 weight");
+                    Assert.IsTrue(checks[3], "No italic 700 weight");
+
+                    //Check the local style groups for 2 fontface and 2 styles
+
+                    var inline = doc.Styles[1] as StyleGroup;
+
+                    Assert.IsNotNull(inline);
+                    Assert.AreEqual(4, inline.Styles.Count, "4 styles were not defined locally");
+
+                    var ffone = inline.Styles[0] as StyleFontFace;
+                    Assert.IsNotNull(ffone);
+                    Assert.AreEqual("Roboto", ffone.FontFamily.ToString(), "Inline @fontface was not Robototo");
+                    Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, ffone.FontStyle, "Inline @fontface was not regular");
+                    Assert.AreEqual(900, ffone.FontWeight, "Inline @fontface was not black");
+                    Assert.IsNotNull(ffone.Source, "No source was set");
+
+                    var name = PDFFont.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
+                    var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+                    Assert.IsNotNull(rsrc1);
 
                 }
 
             }
 
+        }
+
+        /// <summary>
+        /// Tests that the font face will fallback to the closest weight / style and none
+        /// </summary>
+        [TestMethod()]
+        public void FontFaceWeightFallback()
+        {
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceFallback.html");
+            StyleFontFace ff;
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                using (var stream = DocStreams.GetOutputStream("FontFaceFallback.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+
+                    //Check the remote style link for Fraunces
+
+                    var remote = doc.Styles[0] as StyleGroup;
+
+                    Assert.IsNotNull(remote);
+                    Assert.AreEqual(6, remote.Styles.Count, "6 fonts were NOT loaded from the remote source");
+
+                    bool[] checks = new bool[6];
+                    //Should be Italic 100, 400 and 700 + Regular 100, 400 and 700
+                    for (var i = 0; i < 6; i++)
+                    {
+                        var one = remote.Styles[i] as StyleFontFace;
+                        Assert.IsNotNull(one);
+                        Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
+
+                        if (one.FontStyle == Scryber.Drawing.FontStyle.Regular)
+                        {
+                            if (one.FontWeight == 400)
+                                checks[0] = true;
+                            else if (one.FontWeight == 700)
+                                checks[1] = true;
+                            else if (one.FontWeight == 100)
+                                checks[2] = true;
+                        }
+                        else if (one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                        {
+                            if (one.FontWeight == 400)
+                                checks[3] = true;
+                            else if (one.FontWeight == 700)
+                                checks[4] = true;
+                            else if (one.FontWeight == 100)
+                                checks[5] = true;
+
+                        }
+                    }
+
+                    Assert.IsTrue(checks[0], "No regular 400 weight");
+                    Assert.IsTrue(checks[1], "No regular 700 weight");
+                    Assert.IsTrue(checks[2], "No regular 100 weight");
+                    Assert.IsTrue(checks[3], "No italic 400 weight");
+                    Assert.IsTrue(checks[4], "No italic 700 weight");
+                    Assert.IsTrue(checks[5], "No italic 100 weight");
+
+                }
+
+            }
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                //doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                using (var stream = DocStreams.GetOutputStream("FontFaceFallback_performance.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+            }
         }
 
         public class ReadMeModel

@@ -102,7 +102,7 @@ namespace Scryber
         Licensing_Check = 17,
         Data_Load = 18,
         Encrypting_Streams = 19,
-        Count = 20,
+        Count = 20
     }
 
     /// <summary>

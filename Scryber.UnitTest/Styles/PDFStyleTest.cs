@@ -351,7 +351,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Font is inherited
             bool expected = true;
-            bool actual = merged.IsValueDefined(StyleKeys.FontBoldKey);
+            bool actual = merged.IsValueDefined(StyleKeys.FontWeightKey);
             Assert.AreEqual(expected, actual);
 
             //Background was defined on the target, but is not inherited
@@ -471,9 +471,10 @@ namespace Scryber.Core.UnitTests.Styles
             bool actual;
 
             actual = target.RemoveItemStyleValues(StyleKeys.FontItemKey);
+
             Assert.AreEqual(expected, actual);
             Assert.IsFalse(target.IsValueDefined(StyleKeys.FontFamilyKey));
-            Assert.IsFalse(target.IsValueDefined(StyleKeys.FontBoldKey));
+            Assert.IsFalse(target.IsValueDefined(StyleKeys.FontWeightKey));
 
             actual = target.RemoveItemStyleValues(StyleKeys.BgItemKey);
             Assert.AreEqual(expected, actual);

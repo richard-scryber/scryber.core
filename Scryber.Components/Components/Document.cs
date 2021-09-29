@@ -1158,19 +1158,23 @@ namespace Scryber.Components
         public virtual PDFFontResource GetFontResource(PDFFont font, bool create, bool throwOnNotFound = true)
         {
 
-
             string type = PDFResource.FontDefnResourceType;
             var sel = font.Selector;
 
             while (null != sel)
             {
-                var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontStyle);
-                var rsrc = this.GetResource(type, this, fullname, false) as PDFFontResource;
-                if (null != rsrc)
+                foreach (var rsrc in this.SharedResources)
                 {
-                    font.SetResourceFont(sel.FamilyName, rsrc.Definition);
-                    return rsrc;
+                    if (rsrc is PDFFontResource frsc)
+                    {
+                        if (frsc.Equals(sel.FamilyName, font.FontWeight, font.FontStyle))
+                        {
+                            font.SetResourceFont(sel.FamilyName, frsc);
+                            return frsc;
+                        }
+                    }
                 }
+
                 sel = sel.Next;
             }
 
@@ -1180,25 +1184,169 @@ namespace Scryber.Components
                 sel = font.Selector;
                 while (null != sel)
                 {
-                    var found = PDFFontFactory.GetFontDefinition(sel.FamilyName, PDFFont.GetDrawingStyle(font.FontStyle), false);
+                    var found = PDFFontFactory.GetFontDefinition(sel.FamilyName, font.FontStyle, font.FontWeight, false);
                     if (null != found)
                     {
-                        var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontStyle);
+                        var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontWeight, font.FontStyle);
                         var rsrc = this.RegisterFontResource(fullname, this, found);
-                        font.SetResourceFont(sel.FamilyName, rsrc.Definition);
+                        font.SetResourceFont(sel.FamilyName, rsrc);
                         return rsrc;
                     }
                     else
                         sel = sel.Next;
                 }
+
+
+                //Cannot load so look for a substitution
+
+                if (this.RenderOptions.UseFontSubstitution)
+                {
+                    sel = font.Selector;
+                    while (null != sel)
+                    {
+                        var rsrc = GetSubstitutionFont(sel.FamilyName, font.FontWeight, font.FontStyle);
+                        if (null != rsrc)
+                        {
+                            rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
+                            font.SetResourceFont(sel.FamilyName, rsrc);
+                            return rsrc;
+                        }
+                        else
+                            sel = sel.Next;
+                    }
+
+                    //No match for the style so fall back to regular if we can
+                    if (font.FontStyle != Drawing.FontStyle.Regular)
+                    {
+                        sel = font.Selector;
+                        while (null != sel)
+                        {
+                            var rsrc = GetSubstitutionFont(sel.FamilyName, font.FontWeight, Drawing.FontStyle.Regular);
+                            if (null != rsrc)
+                            {
+                                rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
+                                font.SetResourceFont(sel.FamilyName, rsrc);
+                                return rsrc;
+                            }
+                            else
+                                sel = sel.Next;
+                        }
+                    }
+
+                    //Still no match - let's fallback to courier and issue an error message
+                    this.TraceLog.Add(TraceLevel.Error, "Document", "The font '" + font.FullName + "' could not be loaded, falling back to Courier for rendering");
+
+                    string defaultFont = "Courier";
+                    int defWeight = 400;
+                    Drawing.FontStyle defStyle = Drawing.FontStyle.Regular;
+                    string rsrcName = defaultFont;
+
+                    if (font.FontWeight >= FontWeights.SemiBold)
+                    {
+                        rsrcName += ", Bold";
+                        defWeight = FontWeights.Bold;
+                        if (font.FontStyle != Drawing.FontStyle.Regular)
+                        {
+                            defStyle = Drawing.FontStyle.Italic;
+                            rsrcName += " Italic";
+                        }
+                    }
+                    else if (font.FontStyle != Drawing.FontStyle.Regular)
+                    {
+                        defStyle = Drawing.FontStyle.Italic;
+                        rsrcName += ", Italic";
+                    }
+
+                    var mono = this.SharedResources.GetResource(PDFResource.FontDefnResourceType, rsrcName) as PDFFontResource;
+                    if(null == mono)
+                    {
+                        var monoDefn = PDFFontFactory.GetFontDefinition(defaultFont, defStyle, defWeight, true);
+                        var fullname = PDFFont.GetFullName(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
+                        mono = this.RegisterFontResource(fullname, this, monoDefn);
+                        
+                    }
+                    else
+                    {
+                        mono.RegisterSubstitution(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
+                    }
+                    font.SetResourceFont(font.Selector.FamilyName, mono);
+                    return mono;
+
+                }
             }
 
             if (throwOnNotFound)
-                throw new NullReferenceException("No fonts could be found that matched the selector " + font.Selector.ToString() + " with style" + font.FontStyle.ToString());
+                throw new NullReferenceException("No fonts could be found that matched the selector " + font.Selector.ToString() + " with name " + (font.FamilyName ?? "UNNAMED") + ", style " + font.FontStyle.ToString() + " and weight " + font.FontWeight);
 
             font.ClearResourceFont();
             return null;
 
+        }
+
+        //We use a single look up buffer in the document
+        private List<PDFFontResource> _lookupBuffer = new List<PDFFontResource>();
+
+        private PDFFontResource GetSubstitutionFont(string familyName, int fontWeight, Drawing.FontStyle fontStyle)
+        {
+            int proximity = int.MaxValue;
+
+            if (this.SharedResources.Count > 0)
+            {
+                _lookupBuffer.Clear();
+
+                foreach (var rsrc in this.SharedResources)
+                {
+                    if(rsrc is PDFFontResource fnt)
+                    {
+                        if(fnt.Definition.Family == familyName)
+                        {
+                            if (fontStyle == Drawing.FontStyle.Italic && fnt.Definition.Italic)
+                                _lookupBuffer.Add(fnt);
+                            else if (fontStyle == Drawing.FontStyle.Regular && !fnt.Definition.Italic)
+                                _lookupBuffer.Add(fnt);
+                            else
+                            {
+                                //Styles don't match so don't add.
+                            }
+                        }
+                    }
+                }
+                
+
+                if(_lookupBuffer.Count > 0)
+                {
+                    //We have matching font resources.
+                    //so find the closest match
+                    
+                    PDFFontResource closest = null;
+
+                    foreach (var fnt in _lookupBuffer)
+                    {
+                        int newProx = 0;
+                        if (fontStyle == Drawing.FontStyle.Italic)
+                            newProx = fnt.Definition.Italic ? 0 : 1000; //Prefer a style rather than a weight.
+                        else
+                            newProx = fnt.Definition.Italic ? 1000 : 0; //reverse check we don't really want to use italic unless absolutely nescessary
+
+                        newProx += Math.Abs(fontWeight - fnt.Definition.Weight);
+
+                        //if we don't have a closest match
+                        //or this resource more closely matches
+                        if(closest == null || newProx < proximity)
+                        {
+                            proximity = newProx;
+                            closest = fnt;
+                        }
+                        
+                    }
+
+                    return closest;
+
+                }
+            }
+
+
+            return null;
         }
 
         #endregion
@@ -2011,7 +2159,7 @@ namespace Scryber.Components
                 try
                 {
                     origFile = PDFFile.Load(interim, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off));
-                    appended = CreateTraceLogAppendDocument(genData, origFile);
+                    appended = CreateTraceLogAppendDocument(genData, origFile, doc.DocumentComponent.SharedResources);
                     appended.SaveAsPDF(writer.InnerStream, true);
                 }
                 finally
@@ -2033,9 +2181,9 @@ namespace Scryber.Components
             }
         }
 
-        protected virtual Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile)
+        protected virtual Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile, PDFResourceCollection resources)
         {
-            var appended = new PDFTraceLogDocument(this.FileName, origFile, genData);
+            var appended = new PDFTraceLogDocument(this.FileName, origFile, genData, resources);
             appended.PasswordProvider = this.PasswordProvider;
             appended.Permissions = this.Permissions;
             appended.DocumentID = this.DocumentID;

@@ -103,6 +103,12 @@ namespace Scryber
             set;
         }
 
+        [PDFAttribute("font-substitute")]
+        public bool UseFontSubstitution
+        {
+            get;set;
+        }
+
         
         [PDFElement("")]
         public Scryber.Components.PDFWriterFactory WriterFactory
@@ -115,10 +121,15 @@ namespace Scryber
         public PDFDocumentRenderOptions()
         {
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
+
+            if (null == config)
+                config = new Scryber.Utilities.ScryberDefaultConfigurationService();
+
             var output = config.OutputOptions;
             var imging = config.ImagingOptions;
+            var font = config.FontOptions;
 
-            
+            this.UseFontSubstitution = font.FontSubstitution;
             this.Compression = output.Compression;
             this.ComponentNames = output.NameOutput;
             //this.PDFVersion = section.PDFVersion;

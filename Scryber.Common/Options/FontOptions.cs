@@ -36,7 +36,9 @@ namespace Scryber.Options
     {
         public string Family { get; set; }
 
-        public System.Drawing.FontStyle Style { get; set; }
+        public string Style { get; set; }
+
+        public int Weight { get; set; }
 
         public string File { get; set; }
     }

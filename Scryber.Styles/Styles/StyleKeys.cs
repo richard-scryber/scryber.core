@@ -141,8 +141,8 @@ namespace Scryber.Styles
         //Font
         public static readonly StyleKey FontItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleFont, INHERITED);
         public static readonly PDFStyleKey<PDFFontSelector> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<PDFFontSelector>((PDFObjectType)"faml", FontItemKey);
-        public static readonly PDFStyleKey<bool> FontBoldKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bold", FontItemKey);
-        public static readonly PDFStyleKey<bool> FontItalicKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"ital", FontItemKey);
+        public static readonly PDFStyleKey<int> FontWeightKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"weig", FontItemKey);
+        public static readonly PDFStyleKey<Drawing.FontStyle> FontStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((PDFObjectType)"styl", FontItemKey);
         public static readonly PDFStyleKey<PDFUnit> FontSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"size", FontItemKey);
 
         //Overflow
@@ -290,8 +290,8 @@ namespace Scryber.Styles
         public static readonly StyleKey FontFaceItemKey = StyleKey.InternalCreateStyleItemKey((PDFObjectType)"csff", NOT_INHERITED);
         public static readonly PDFStyleKey<PDFFontSource> FontFaceSrcKey = StyleKey.InternalCreateStyleValueKey<PDFFontSource>((PDFObjectType)"fsrc", FontFaceItemKey);
         public static readonly PDFStyleKey<string> FontFaceFamilyKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"ffam", FontFaceItemKey);
-        public static readonly PDFStyleKey<bool> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"fwgt", FontFaceItemKey);
-        public static readonly PDFStyleKey<bool> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"fsyl", FontFaceItemKey);
+        public static readonly PDFStyleKey<int> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"fwgt", FontFaceItemKey);
+        public static readonly PDFStyleKey<Drawing.FontStyle> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((PDFObjectType)"fsyl", FontFaceItemKey);
 
 
 

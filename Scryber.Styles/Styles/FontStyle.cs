@@ -70,21 +70,41 @@ namespace Scryber.Styles
         {
             get
             {
-                bool found;
-                if (this.TryGetValue(StyleKeys.FontBoldKey, out found))
-                    return found;
+                int found;
+                if (this.TryGetValue(StyleKeys.FontWeightKey, out found))
+                    return found >= FontWeights.Bold;
                 else
                     return false;
             }
             set
             {
-                this.SetValue(StyleKeys.FontBoldKey, value);
+                if (value)
+                    this.SetValue(StyleKeys.FontWeightKey, FontWeights.Bold);
+                else
+                    this.SetValue(StyleKeys.FontWeightKey, FontWeights.Regular);
             }
         }
 
-        public void RemoveFontBold()
+        public int FontWeight
         {
-            this.RemoveValue(StyleKeys.FontBoldKey);
+            get
+            {
+                int found;
+                if (this.TryGetValue(StyleKeys.FontWeightKey, out found))
+                    return found;
+                else
+                    return FontWeights.Regular;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.FontWeightKey, value);
+            }
+
+        }
+
+        public void RemoveFontWeight()
+        {
+            this.RemoveValue(StyleKeys.FontWeightKey);
         }
 
         #endregion
@@ -98,21 +118,50 @@ namespace Scryber.Styles
         {
             get
             {
-                bool found;
-                if (this.TryGetValue(StyleKeys.FontItalicKey, out found))
-                    return found;
+                Drawing.FontStyle found;
+                if (this.TryGetValue(StyleKeys.FontStyleKey, out found))
+                    return (found & Drawing.FontStyle.Italic) > 0;
                 else
                     return false;
             }
             set
             {
-                this.SetValue(StyleKeys.FontItalicKey, value);
+                Drawing.FontStyle curr;
+                if (!this.TryGetValue(StyleKeys.FontStyleKey, out curr))
+                    curr = Drawing.FontStyle.Regular;
+
+                if (value)
+                {
+                    curr = curr | Drawing.FontStyle.Italic;
+                }
+                else
+                {
+                    curr = curr & (~Drawing.FontStyle.Italic);
+                }
+
+                this.SetValue(StyleKeys.FontStyleKey, curr);
             }
         }
 
-        public void RemoveFontItalic()
+        public Drawing.FontStyle FontFaceStyle
         {
-            this.RemoveValue(StyleKeys.FontItalicKey);
+            get
+            {
+                Drawing.FontStyle found;
+                if (this.TryGetValue(StyleKeys.FontStyleKey, out found))
+                    return found;
+                else
+                    return Drawing.FontStyle.Regular;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.FontStyleKey, value);
+            }
+        }
+
+        public void RemoveFontStyle()
+        {
+            this.RemoveValue(StyleKeys.FontFaceStyleKey);
         }
 
         #endregion

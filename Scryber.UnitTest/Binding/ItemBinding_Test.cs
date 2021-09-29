@@ -210,7 +210,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background colour is not set");
                 Assert.AreEqual(Scryber.Drawing.PDFColor.Parse(expectedColor), style.Background.Color, "The style color does not match");
 
-                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.FontBoldKey), "The font bold is not set");
+                Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.FontWeightKey), "The font bold is not set");
                 Assert.AreEqual(expectedBool, style.Font.FontBold, "The font bolds do not match");
 
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.PaddingTopKey), "The padding top is not set");

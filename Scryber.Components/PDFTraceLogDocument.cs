@@ -23,6 +23,7 @@ using System.Text;
 using Scryber.Native;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.Resources;
 
 namespace Scryber
 {
@@ -49,12 +50,18 @@ namespace Scryber
             set { _data = value; }
         }
 
-        internal PDFTraceLogDocument(string name, PDFFile original, PDFDocumentGenerationData data)
+        internal PDFResourceCollection OwnerResources
+        {
+            get; private set;
+        }
+
+        internal PDFTraceLogDocument(string name, PDFFile original, PDFDocumentGenerationData data, PDFResourceCollection resources)
             : base()
         {
             this.OriginalSourceFile = original;
             this.FileName = name;
             this.GenerationData = data;
+            this.OwnerResources = resources;
             this.Info = data.DocumentInfo;
             this.ViewPreferences = data.DocumentViewerPrefs;
         }
@@ -77,7 +84,7 @@ namespace Scryber
 
         private void InitContent(PDFInitContext context)
         {
-            Section logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData };
+            Section logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData, OwnerResources = this.OwnerResources };
             this.Pages.Add(logsect);
 
             return;

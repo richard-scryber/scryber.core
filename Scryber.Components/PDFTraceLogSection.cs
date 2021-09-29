@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Components;
+using Scryber.Resources;
 
 namespace Scryber
 {
@@ -13,21 +14,38 @@ namespace Scryber
     {
         public PDFDocumentGenerationData GenerationData { get; set; }
 
+        public PDFResourceCollection OwnerResources { get; set; }
+
         protected override void DoInit(PDFInitContext context)
         {
             if (this.GenerationData != null)
-                this.InitAllContent();
+                this.TryInitAllContent();
             base.DoInit(context);
         }
 
+        private void TryInitAllContent()
+        {
+            try
+            {
+                this.InitAllContent();
+            }
+            catch(Exception ex)
+            {
+                throw new Scryber.PDFRenderException("Could not build the trace log: " + ex.Message);
+            }
+        }
         private void InitAllContent()
         {
             Head1 title = new Head1() { Text = "Trace Output"};
             this.Contents.Add(title);
 
             AddDocumentOverview();
+
             if (null != this.GenerationData.PerformanceMetrics)
                 AddPerformance(this.GenerationData.PerformanceMetrics);
+
+            if (null != this.OwnerResources)
+                AddResources(this.OwnerResources);
 
             if (null != this.GenerationData.TraceLog)
                 AddTraceLog(this.GenerationData.TraceLog);
@@ -73,6 +91,113 @@ namespace Scryber
 
 
         }
+
+        private void AddResources(PDFResourceCollection resources)
+        {
+            Head3 head = new Head3() { Text = "Document Resources" };
+            this.Contents.Add(head);
+
+            TableGrid tbl = new TableGrid();
+            this.Contents.Add(tbl);
+
+            if(resources.Count == 0)
+            {
+                TableRow row = new TableRow();
+                TableCell cell = new TableCell();
+                cell.Contents.Add(new TextLiteral("This document contains no resources"));
+                row.Cells.Add(cell);
+                tbl.Rows.Add(row);
+            }
+            else
+            {
+                TableRow row = new TableRow();
+                TableCell cell = new TableCell();
+                cell.CellColumnSpan = 2;
+                cell.Contents.Add(new TextLiteral("This document contains " + resources.Count.ToString() + " resources"));
+                row.Cells.Add(cell);
+                tbl.Rows.Add(row);
+
+                foreach (var rsrc in resources)
+                {
+                    if (rsrc.ResourceType == PDFResource.FontDefnResourceType)
+                        this.AddFontResource(tbl, rsrc as PDFFontResource);
+                    else if (rsrc.ResourceType == PDFFontResource.XObjectResourceType)
+                        this.AddXObjectResource(tbl, rsrc as PDFImageXObject);
+                    else
+                        this.AddOtherResource(tbl, rsrc);
+                }
+            }
+        }
+
+        private void AddFontResource(TableGrid tbl, PDFFontResource fnt)
+        {
+            TableRow row = new TableRow();
+            TableCell cell = new TableCell();
+            cell.Width = 100;
+            if (fnt.Definition.IsStandard)
+                cell.Contents.Add(new TextLiteral("Standard Font"));
+            else if (fnt.Definition.IsUnicode)
+                cell.Contents.Add(new TextLiteral("Composite Font"));
+            else
+                cell.Contents.Add(new TextLiteral("Ansi Font"));
+
+            row.Cells.Add(cell);
+
+            cell = new TableCell();
+            var bold = new BoldSpan();
+            bold.Contents.Add(new TextLiteral(fnt.Definition.Family + ", weight : " + fnt.Definition.Weight + ", style : " + (fnt.Definition.Italic ? "Italic" : "Regular")));
+            cell.Contents.Add(bold);
+            row.Cells.Add(cell);
+
+            if (!string.IsNullOrEmpty(fnt.Definition.FilePath))
+            {
+                cell.Contents.Add(new LineBreak());
+                cell.Contents.Add(new TextLiteral(fnt.Definition.FilePath));
+            }
+            tbl.Rows.Add(row);
+        }
+
+        private void AddXObjectResource(TableGrid tbl, PDFImageXObject img)
+        {
+            TableRow row = new TableRow();
+            TableCell cell = new TableCell();
+            cell.Width = 100;
+            cell.Contents.Add(new TextLiteral("Image"));
+            row.Cells.Add(cell);
+
+            cell = new TableCell();
+            var bold = new BoldSpan();
+            
+            if (img.ImageData != null)
+            {
+                bold.Contents.Add(new TextLiteral(img.ImageData.SourcePath));
+                cell.Contents.Add(bold);
+                cell.Contents.Add(new LineBreak());
+                var str = img.ImageData.PixelWidth + " by " + img.ImageData.PixelHeight + " pixels, ";
+                str += Math.Round((double)img.ImageData.Data.Length / 1024.0,2) + " original Kb";
+                if(img.ImageData.HasFilter)
+                {
+                    var data = img.ImageData.GetCachedFilteredData(img.ImageData.Filters, null);
+                    if (null != data)
+                        str += ", " + Math.Round((double)data.Length / 1024.0, 2) + " compressed Kb";
+                }
+                cell.Contents.Add(new TextLiteral(str));
+            }
+            else
+            {
+                bold.Contents.Add(new TextLiteral(img.Source));
+                cell.Contents.Add(bold);
+            }
+            row.Cells.Add(cell);
+            tbl.Rows.Add(row);
+        }
+
+        private void AddOtherResource(TableGrid togrid, PDFResource rsrc)
+        {
+            
+        }
+
+
 
         private void AddPerformance(PDFPerformanceMonitor perfdata)
         {

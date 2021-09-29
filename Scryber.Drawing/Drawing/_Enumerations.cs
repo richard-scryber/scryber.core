@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Scryber.Drawing
 {
@@ -115,17 +116,53 @@ namespace Scryber.Drawing
         Zapf_Dingbats
     }
 
-    [Flags()]
+
     public enum FontStyle
     {
         Regular = 0,
-        Bold = 1,
         Italic = 2,
-        Superscript = 4,
-        Subscript = 8
+        Oblique = 3
     }
 
-    
+    public static class FontWeights
+    {
+        /// <summary>
+        /// Thin weight = 100
+        /// </summary>
+        public static readonly int Thin = 100;
+        /// <summary>
+        /// ExtraLight = 200
+        /// </summary>
+        public static readonly int ExtraLight = 200;
+        /// <summary>
+        /// Light = 300
+        /// </summary>
+        public static readonly int Light = 300;
+        /// <summary>
+        /// Regular (aka Normal) = 400
+        /// </summary>
+        public static readonly int Regular = 400;
+        /// <summary>
+        /// Medium = 500
+        /// </summary>
+        public static readonly int Medium = 500;
+        /// <summary>
+        /// SemiBold = 600
+        /// </summary>
+        public static readonly int SemiBold = 600;
+        /// <summary>
+        /// Bold = 700
+        /// </summary>
+        public static readonly int Bold = 700;
+        /// <summary>
+        /// ExtraBold = 800
+        /// </summary>
+        public static readonly int ExtraBold = 800;
+        /// <summary>
+        /// Black = 900
+        /// </summary>
+        public static readonly int Black = 900;
+    }
 
     public enum FontType
     {

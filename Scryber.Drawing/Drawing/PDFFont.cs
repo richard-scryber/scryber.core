@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
 using Scryber.Configuration;
 using System.ComponentModel;
 using Scryber.Resources;
@@ -47,6 +46,7 @@ namespace Scryber.Drawing
         // properties
         //
 
+        #region public PDFFontSelector Selector {get; set;}
 
         private PDFFontSelector _selector;
 
@@ -59,6 +59,8 @@ namespace Scryber.Drawing
                 this.ClearResourceFont();
             }
         }
+
+        #endregion
 
         #region public string FamilyName {get; set;}
 
@@ -92,6 +94,8 @@ namespace Scryber.Drawing
 
         #region public string FullName {get;}
 
+        private string _fullName;
+
         /// <summary>
         /// Gets the FullName for the font in the format 'FamilyName [,FontStyle]'.
         /// </summary>
@@ -99,14 +103,15 @@ namespace Scryber.Drawing
         {
             get
             {
-                return GetFullName(this.FamilyName, this.FontStyle);
+                if(null == _fullName)
+                    _fullName = GetFullName(this.FamilyName, this.FontWeight, this.FontStyle);
+                return _fullName;
             }
         }
 
         #endregion
 
         #region public bool IsStandard {get;} + private static bool DerriveIsStandard(string value)
-
         
 
         /// <summary>
@@ -114,10 +119,10 @@ namespace Scryber.Drawing
         /// </summary>
         public bool IsStandard
         {
-            get { return IsStandardFontFamily(this.FamilyName); }
+            get { return IsStandardFontFamily(this.FamilyName) && IsStandardStyle(this.FontWeight, this.FontStyle); }
         }
 
-        private static Dictionary<string, bool> _stdFonts = new Dictionary<string, bool>()
+        private static Dictionary<string, bool> _stdFonts = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
         {
             {"Helvetica", true },
             {"Times", true },
@@ -128,6 +133,16 @@ namespace Scryber.Drawing
             {"Sans-Serif", true },
             {"Monospace", true }
         };
+
+        private static bool IsStandardStyle(int weight, FontStyle style)
+        {
+            if(style == FontStyle.Regular || style == FontStyle.Italic)
+            {
+                return weight == FontWeights.Regular || weight == FontWeights.Bold;
+            }
+            //Anything else is not standard
+            return false;
+        }
 
         /// <summary>
         /// Returns the flag to identify if this is a Standard PDF font (does not need to be included in PDF document.
@@ -183,6 +198,23 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public int FontWeight {get;set;}
+
+        private int _fontWeight = FontWeights.Regular;
+
+        public int FontWeight
+        {
+            get {
+                return _fontWeight;
+            }
+            set
+            {
+                _fontWeight = value;
+                this.ClearResourceFont();
+            }
+        }
+
+        #endregion
 
         #region public PFFontMetrics FontMetrics {get;}
 
@@ -208,6 +240,15 @@ namespace Scryber.Drawing
 
         #endregion
 
+        private PDFFontResource _cachedResource;
+
+        public PDFFontResource Resource
+        {
+            get { return _cachedResource; }
+            private set { _cachedResource = value; }
+
+        }
+        
         //
         // .ctor
         //
@@ -220,9 +261,8 @@ namespace Scryber.Drawing
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="size">The new font size</param>
         public PDFFont(PDFFont basefont, PDFUnit size)
-            : this(basefont.Selector, size, basefont.FontStyle)
+            : this(basefont.Selector, size, basefont.FontWeight, basefont.FontStyle)
         {
-            this._familyName = basefont._familyName;
         }
 
         /// <summary>
@@ -230,10 +270,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="style">The new FontStyle</param>
-        public PDFFont(PDFFont basefont, FontStyle style)
-            : this(basefont.Selector, basefont.Size, style)
+        public PDFFont(PDFFont basefont, int weight, FontStyle style)
+            : this(basefont.Selector, basefont.Size, weight, style)
         {
-            this._familyName = basefont._familyName;
         }
 
         /// <summary>
@@ -242,10 +281,9 @@ namespace Scryber.Drawing
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="size">the new font size</param>
         /// <param name="style">the new font style</param>
-        public PDFFont(PDFFont basefont, PDFUnit size, FontStyle style)
-            : this(basefont.Selector, size, style)
+        public PDFFont(PDFFont basefont, PDFUnit size, int weight, FontStyle style)
+            : this(basefont.Selector, size, weight, style)
         {
-            this._familyName = basefont._familyName;
         }
 
 
@@ -255,7 +293,7 @@ namespace Scryber.Drawing
         /// <param name="font">One of the PDF Standard fonts that does not need to be included in the PDF file</param>
         /// <param name="size">The em size of the font</param>
         public PDFFont(StandardFont font, PDFUnit size)
-            : this(font.ToString(), size, FontStyle.Regular)
+            : this(font.ToString(), size, FontWeights.Regular, FontStyle.Regular)
         {
         }
 
@@ -265,8 +303,8 @@ namespace Scryber.Drawing
         /// <param name="font">One of the PDF Standard fonts that does not need to be included in the PDF file</param>
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
-        public PDFFont(StandardFont font, PDFUnit size, FontStyle style)
-            : this(font.ToString(), size, style)
+        public PDFFont(StandardFont font, PDFUnit size, int weight, FontStyle style)
+            : this(font.ToString(), size, weight, style)
         {
         }
 
@@ -276,7 +314,7 @@ namespace Scryber.Drawing
         /// <param name="family">The family name of the font (e.g. Arial, Helvetica, Courier)</param>
         /// <param name="size">The em size of the font</param>
         public PDFFont(string family, PDFUnit size)
-            : this(family, size, FontStyle.Regular)
+            : this(family, size, FontWeights.Regular, FontStyle.Regular)
         {
         }
 
@@ -286,8 +324,8 @@ namespace Scryber.Drawing
         /// <param name="family">The family name of the font (e.g. Arial, Helvetica, Courier)</param>
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
-        public PDFFont(string family, PDFUnit size, FontStyle style)
-            : this(PDFFontSelector.Parse(family), size, style)
+        public PDFFont(string family, PDFUnit size, int weight, FontStyle style)
+            : this(PDFFontSelector.Parse(family), size, weight, style)
         {
         }
 
@@ -300,11 +338,13 @@ namespace Scryber.Drawing
         /// <param name="size">The fonts unit size</param>
         /// <param name="style">The fonts style</param>
         /// <param name="isStd">Flag to identify if this is one of the PDF standard fonts.</param>
-        public PDFFont(PDFFontSelector selector, PDFUnit size, FontStyle style)
+        public PDFFont(PDFFontSelector selector, PDFUnit size, int weight, FontStyle style)
         {
-            this._selector = selector;
+            this._selector = selector ?? throw new ArgumentNullException("The font selector for a PDFFont cannot be null");
             this._size = size;
             this._style = style;
+            this._fontWeight = weight;
+            this._familyName = selector.FamilyName;
             this.ClearResourceFont();
         }
 
@@ -350,7 +390,7 @@ namespace Scryber.Drawing
             else if (null == two)
                 return false;
             else
-                return (one.FamilyName == two.FamilyName) && (one.FontStyle == two.FontStyle) && (one.Size == two.Size);
+                return (one.FontStyle == two.FontStyle) && (one.FontWeight == two.FontWeight) && (one.Size == two.Size) && one.Selector.Equals(two.Selector);
         }
 
         #endregion
@@ -375,40 +415,19 @@ namespace Scryber.Drawing
         /// and call this method if any properties would invalidate the cached font.</remarks>
         public virtual void ClearResourceFont()
         {
+            this._fullName = null;
             this._familyName = null;
+            this._cachedResource = null;
             this._cachedmetrics = null;
         }
 
-        public virtual void SetResourceFont(string name, PDFFontDefinition definition)
+        public virtual void SetResourceFont(string name, PDFFontResource resource)
         {
             this._familyName = name;
-            this._cachedmetrics = definition.GetFontMetrics(this.Size);
-            //var style = this.GetDrawingStyle();
-            //var sys = PDFFontFactory.GetSystemFont(this._familyName, this.GetDrawingStyle(), (float)this.Size.PointsValue);
-            //int line = sys.FontFamily.GetLineSpacing(style);
+            this._cachedResource = resource;
+            this._cachedmetrics = resource.Definition.GetFontMetrics(this.Size);
         }
 
-        public System.Drawing.FontStyle GetDrawingStyle()
-        {
-            return GetDrawingStyle(this.FontStyle);
-        }
-
-        /// <summary>
-        /// Converts the PDFX.FontStyle to a System.Drawing.FontStyle
-        /// </summary>
-        /// <param name="fontStyle">The PDFX.FontStyle</param>
-        /// <returns>A comparable System.Drawing.FontStyle</returns>
-        public static System.Drawing.FontStyle GetDrawingStyle(FontStyle fontStyle)
-        {
-            System.Drawing.FontStyle fs = System.Drawing.FontStyle.Regular;
-            if ((fontStyle & FontStyle.Bold) > 0)
-                fs |= System.Drawing.FontStyle.Bold;
-
-            if ((fontStyle & FontStyle.Italic) > 0)
-                fs |= System.Drawing.FontStyle.Italic;
-
-            return fs;
-        }
 
         #endregion
 
@@ -456,11 +475,48 @@ namespace Scryber.Drawing
         /// <param name="family"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public static string GetFullName(string font, FontStyle style)
+        public static string GetFullName(string familyName, int weight, FontStyle style)
         {
-            bool bold = (style & FontStyle.Bold) > 0;
-            bool ital = (style & FontStyle.Italic) > 0;
-            return GetFullName(font, bold, ital);
+            string fn;
+            if (string.IsNullOrEmpty(familyName))
+                fn = "UNKNOWN_FONT";
+            else
+                fn = familyName;
+
+            if (weight == FontWeights.Bold)
+            {
+                //Backwards compatibility for font names - Name, Bold Italic
+                fn += ",Bold";
+
+                if (style == FontStyle.Italic)
+                {
+                    fn += " Italic";
+                }
+                else if (style == FontStyle.Oblique)
+                {
+                    fn += " Oblique";
+                }
+            }
+            else if (weight == FontWeights.Regular)
+            {
+                if (style == FontStyle.Italic)
+                {
+                    fn += ",Italic";
+                }
+                else if (style == FontStyle.Oblique)
+                {
+                    fn += ",Oblique";
+                }
+            }
+            else if (style == FontStyle.Regular)
+            {
+                fn += "," + weight;
+            }
+            else
+                fn += "," + weight + " " + style;
+
+            return fn;
+            
         }
 
         #endregion
@@ -472,27 +528,15 @@ namespace Scryber.Drawing
 
         public static string GetFullName(string familyName, bool bold, bool italic)
         {
-            string fn;
-            if (string.IsNullOrEmpty(familyName))
-                fn = "UNKNOWN_FONT";
-            else
-                fn = familyName;
-
-            if (bold)
-                fn += ",Bold";
-            if (italic)
-            {
-                if (!bold)
-                    fn += ",";
-                else
-                    fn += " ";
-                fn += "Italic";
-            }
-            return fn;
+            return GetFullName(familyName, bold ? FontWeights.Bold : FontWeights.Regular, italic ? FontStyle.Italic : FontStyle.Regular);
         }
 
         #endregion
 
 
+        public override string ToString()
+        {
+            return this.FullName + " @" + this.Size.ToString();
+        }
     }
 }

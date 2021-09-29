@@ -18,16 +18,17 @@
             stroke-opacity: 0.5;
         }
     </style>
-    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100;1,700&amp;display=swap" />
     <style>
 
         
         body {
-            font: 12pt 'Roboto';
+            font: 100 12pt 'Roboto';
             padding: 20pt;
         }
         .small {
             font: italic 13px 'Roboto';
+            font-weight:100;
         }
 
         .heavy {
@@ -38,6 +39,7 @@
             comment */
         .red {
             font: italic 40px 'Roboto';
+            font-weight:100;
             fill: /* in attribute*/ red;
         }
 
@@ -174,7 +176,7 @@
     <p title="Explicit text layout">This is after the view box svg</p>
 
     <p>This is some text</p>
-    <svg xmlns="http://www.w3.org/2000/svg">
+    <svg id="grumpycat_pos" xmlns="http://www.w3.org/2000/svg">
         <text x="20" y="35" class="small">My</text>
         <text x="35" y="35" class="heavy">cat</text>
         <text x="55" y="60" class="small">is</text>
@@ -182,8 +184,9 @@
     </svg>
 
 
-    <p style="font-style:italic;">This is some text in spans</p>
-    <svg xmlns="http://www.w3.org/2000/svg">
+    <p>This is some text in spans</p>
+
+    <svg id="grumpycat_flow" xmlns="http://www.w3.org/2000/svg">
         <text x="20" y="35" class="small">My</text>
         <text x="40" y="35" class="heavy">cat <tspan style="fill:red;">is Grumpy</tspan> </text>
     </svg>

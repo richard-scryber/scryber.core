@@ -16,7 +16,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            bool italic = true;
+            Drawing.FontStyle italic = Drawing.FontStyle.Regular;
             bool result = true;
 
 
@@ -25,11 +25,11 @@ namespace Scryber.Styles.Parsing.Typed
                 var str = reader.CurrentTextValue;
                 if (IsExpression(str))
                 {
-                    result = AttachExpressionBindingHandler(onStyle, StyleKeys.FontItalicKey, str, DoConvertFontStyle);
+                    result = AttachExpressionBindingHandler(onStyle, StyleKeys.FontStyleKey, str, DoConvertFontStyle);
                 }
                 else if (TryGetFontStyle(str, out italic))
                 {
-                    onStyle.SetValue(StyleKeys.FontItalicKey, italic);
+                    onStyle.SetValue(StyleKeys.FontStyleKey, italic);
                     result = true;
                 }
                 else
@@ -41,51 +41,53 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertFontStyle(StyleBase style, object value, out bool fontStyle)
+        protected bool DoConvertFontStyle(StyleBase style, object value, out Drawing.FontStyle fontStyle)
         {
             if(null == value)
             {
-                fontStyle = false;
+                fontStyle = Drawing.FontStyle.Regular;
                 return false;
             }
             else if(value is bool ital)
             {
-                fontStyle = ital;
+                fontStyle = Drawing.FontStyle.Italic;
                 return true;
             }
-            else if(TryGetFontStyle(value.ToString(), out ital))
+            else if(TryGetFontStyle(value.ToString(), out fontStyle))
             {
-                fontStyle = ital;
                 return true;
             }
             else
             {
-                fontStyle = false;
+                fontStyle = Drawing.FontStyle.Regular;
                 return false;
             }    
         }
 
         public static bool IsFontStyle(string value)
         {
-            bool italic;
+            Drawing.FontStyle italic;
             return TryGetFontStyle(value, out italic);
         }
 
-        public static bool TryGetFontStyle(string value, out bool italic)
+        public static bool TryGetFontStyle(string value, out Drawing.FontStyle italic)
         {
             switch (value.ToLower())
             {
                 case ("italic"):
+                    italic = Drawing.FontStyle.Italic;
+                    return true;
+
                 case ("oblique"):
-                    italic = true;
+                    italic = Drawing.FontStyle.Oblique;
                     return true;
 
                 case ("normal"):
-                    italic = false;
+                    italic = Drawing.FontStyle.Regular;
                     return true;
 
                 default:
-                    italic = false;
+                    italic = Drawing.FontStyle.Regular;
                     return false;
 
             }

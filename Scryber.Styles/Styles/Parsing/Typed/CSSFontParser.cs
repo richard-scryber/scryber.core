@@ -8,12 +8,12 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public class CSSFontParser : CSSStyleValueParser
     {
-        public static readonly PDFFont CaptionFont = new PDFFont("Helvetica", 12, Drawing.FontStyle.Bold);
-        public static readonly PDFFont IconFont = new PDFFont("Helvetica", 8, Drawing.FontStyle.Bold);
-        public static readonly PDFFont MenuFont = new PDFFont("Times", 10, Drawing.FontStyle.Regular);
-        public static readonly PDFFont MessageBoxFont = new PDFFont("Times", 10, Drawing.FontStyle.Bold);
-        public static readonly PDFFont SmallCaptionFont = new PDFFont("Helvetica", 8, Drawing.FontStyle.Italic);
-        public static readonly PDFFont StatusBarFont = new PDFFont("Courier", 10, Drawing.FontStyle.Bold);
+        public static readonly PDFFont CaptionFont = new PDFFont("Helvetica", 12, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly PDFFont IconFont = new PDFFont("Helvetica", 8, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly PDFFont MenuFont = new PDFFont("Times", 10, FontWeights.Regular, Drawing.FontStyle.Regular);
+        public static readonly PDFFont MessageBoxFont = new PDFFont("Times", 10, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly PDFFont SmallCaptionFont = new PDFFont("Helvetica", 8, FontWeights.Regular, Drawing.FontStyle.Italic);
+        public static readonly PDFFont StatusBarFont = new PDFFont("Courier", 10, FontWeights.Bold, Drawing.FontStyle.Regular);
 
         public CSSFontParser()
             : base(CSSStyleItems.Font)
@@ -65,8 +65,8 @@ namespace Scryber.Styles.Parsing.Typed
             result = true;
 
             //discreet values - font-style font-variant font-weight font-size/line-height font-family
-            bool italic;
-            bool bold;
+            Drawing.FontStyle italic;
+            int weight;
             PDFUnit fsize, lineheight;
             double relativeLeading;
 
@@ -74,7 +74,7 @@ namespace Scryber.Styles.Parsing.Typed
 
             if (CSSFontStyleParser.TryGetFontStyle(reader.CurrentTextValue, out italic))
             {
-                onStyle.Font.FontItalic = italic;
+                onStyle.Font.FontFaceStyle = italic;
                 if (!reader.MoveToNextValue())
                     return result;
             }
@@ -85,9 +85,9 @@ namespace Scryber.Styles.Parsing.Typed
                 if (!reader.MoveToNextValue())
                     return result;
             }
-            if (CSSFontWeightParser.TryGetFontWeight(reader.CurrentTextValue, out bold))
+            if (CSSFontWeightParser.TryGetFontWeight(reader.CurrentTextValue, out weight))
             {
-                onStyle.Font.FontBold = bold;
+                onStyle.Font.FontWeight = weight;
                 if (!reader.MoveToNextValue())
                     return result;
             }
@@ -168,8 +168,8 @@ namespace Scryber.Styles.Parsing.Typed
         {
             onStyle.SetValue(StyleKeys.FontFamilyKey, font.Selector);
             onStyle.SetValue(StyleKeys.FontSizeKey, font.Size);
-            onStyle.SetValue(StyleKeys.FontBoldKey, (font.FontStyle & Drawing.FontStyle.Bold) > 0);
-            onStyle.SetValue(StyleKeys.FontItalicKey, (font.FontStyle & Drawing.FontStyle.Italic) > 0);
+            onStyle.SetValue(StyleKeys.FontWeightKey, font.FontWeight);
+            onStyle.SetValue(StyleKeys.FontStyleKey, font.FontStyle);
         }
 
 
