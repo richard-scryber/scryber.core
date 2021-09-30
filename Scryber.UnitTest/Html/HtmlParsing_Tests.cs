@@ -33,6 +33,7 @@ namespace Scryber.Core.UnitTests.Html
 
 
         private PDFLayoutContext _layoutcontext;
+
         private TestContext testContextInstance;
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        private void SimpleDocumentParsing_Layout(object sender, PDFLayoutEventArgs args)
+        private void DocumentParsing_Layout(object sender, PDFLayoutEventArgs args)
         {
             _layoutcontext = args.Context;
         }
@@ -180,7 +181,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("HtmlSimple.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                 }
 
@@ -235,7 +236,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("HtmlSimple2.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                 }
 
@@ -348,7 +349,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoading.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                 }
 
@@ -388,7 +389,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoadingAsync.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     Task.Run(async () =>
                     {
                         await doc.SaveAsPDFAsync(stream);
@@ -419,7 +420,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var stream = DocStreams.GetOutputStream("bodyheadfoot.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                     
                 }
@@ -464,7 +465,7 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     doc.Params["model"] = model;
                     doc.AutoBind = true;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -596,7 +597,7 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     doc.Params["model"] = model;
                     doc.ConformanceMode = ParserConformanceMode.Strict;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -698,7 +699,7 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     doc.Params["model"] = model;
                     doc.AutoBind = true;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -807,7 +808,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var stream = DocStreams.GetOutputStream("LocalAndRemoteImages.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -847,7 +848,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var stream = DocStreams.GetOutputStream("LocalAndRemoteImagesAsync.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     Task.Run(async () =>
                     {
                         await doc.SaveAsPDFAsync(stream);
@@ -907,7 +908,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("bodytemplating.pdf"))
                 {
                     doc.Params["model"] = model;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -964,7 +965,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("bodytemplatingWithJson.pdf"))
                 {
                     doc.Params["model"] = model;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1019,7 +1020,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("htmlDisplayNone.pdf"))
                 {
                     doc.Params["model"] = model;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1048,7 +1049,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("topandtailed.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1074,7 +1075,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var stream = DocStreams.GetOutputStream("BorderSides.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                 }
             }
@@ -1096,7 +1097,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("BodyFraming.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1130,7 +1131,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("LinksLocalAndRemote.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1161,7 +1162,7 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     doc.Params["model"] = model;
                     doc.AutoBind = true;
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1200,7 +1201,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("Html5AllTags.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                 }
@@ -1307,6 +1308,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("FontFaceFallback.pdf"))
                 {
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
 
                     //Check the remote style link for Fraunces
@@ -1345,26 +1347,73 @@ namespace Scryber.Core.UnitTests.Html
                         }
                     }
 
-                    Assert.IsTrue(checks[0], "No regular 400 weight");
-                    Assert.IsTrue(checks[1], "No regular 700 weight");
-                    Assert.IsTrue(checks[2], "No regular 100 weight");
-                    Assert.IsTrue(checks[3], "No italic 400 weight");
-                    Assert.IsTrue(checks[4], "No italic 700 weight");
-                    Assert.IsTrue(checks[5], "No italic 100 weight");
+                    Assert.IsNotNull(_layoutcontext);
+                    var pg = _layoutcontext.DocumentLayout.AllPages[0];
+                    var blocks = pg.ContentBlock.Columns[0].Contents;
 
+                    var regular = GetFontFallbackRunBegin(blocks[0]);
+                    var italic = GetFontFallbackRunBegin(blocks[1]);
+                    var thin = GetFontFallbackRunBegin(blocks[2]);
+                    var thinfallback = GetFontFallbackRunBegin(blocks[3]);
+                    var medfallback = GetFontFallbackRunBegin(blocks[4]);
+                    var medfallbackwithbold = GetFontFallbackRunBegin(blocks[5]);
+                    var blackfallback = GetFontFallbackRunBegin(blocks[6]);
+                    var courierfallback = GetFontFallbackRunBegin(blocks[7]);
+                    var fallbackwithstyle = GetFontFallbackRunBegin(blocks[8]);
+                    var unicode = GetFontFallbackRunBegin(blocks[9]);
+                    var uniUnsupported = GetFontFallbackRunBegin(blocks[10]);
+
+                    //no fallback
+                    AssertFontFallback(regular.TextRenderOptions, "Fraunces", 400, false);
+
+                    //no fallback italic
+                    AssertFontFallback(italic.TextRenderOptions, "Fraunces", 400, true);
+
+                    //no fallback thin
+                    AssertFontFallback(thin.TextRenderOptions, "Fraunces", 100, false);
+
+                    //fallback from 200 to 100
+                    AssertFontFallback(thinfallback.TextRenderOptions, "Fraunces", 100, false);
+
+                    //fallback from 300 to 400
+                    AssertFontFallback(medfallback.TextRenderOptions, "Fraunces", 400, false);
+
+                    //fallback from 300 to 400
+                    AssertFontFallback(medfallbackwithbold.TextRenderOptions, "Fraunces", 400, false);
+
+                    //fallback from 900 to 700
+                    AssertFontFallback(blackfallback.TextRenderOptions, "Fraunces", 700, false);
+
+                    //fallback from Roboto to courier
+                    AssertFontFallback(courierfallback.TextRenderOptions, "Courier", 400, false);
+
+                    //Roboto not loaded so use sans-serif
+                    AssertFontFallback(fallbackwithstyle.TextRenderOptions, "Helvetica", 400, false);
+
+                    //Use unicode font
+                    AssertFontFallback(unicode.TextRenderOptions, "Noto Serif Ethiopic", 400, false);
+
+                    //Unicode fails to courier
+                    AssertFontFallback(uniUnsupported.TextRenderOptions, "Courier", 400, false);
                 }
 
             }
+        }
 
-            using (var doc = Document.ParseDocument(path))
-            {
-                //doc.RenderOptions.Compression = OutputCompressionType.None;
+        private void AssertFontFallback(PDFTextRenderOptions options, string familyName, int weight, bool italic)
+        {
+            Assert.AreEqual(familyName, options.Font.Resource.Definition.Family);
+            Assert.AreEqual(weight, options.Font.Resource.Definition.Weight);
+            Assert.AreEqual(italic, options.Font.Resource.Definition.Italic);
+        }
 
-                using (var stream = DocStreams.GetOutputStream("FontFaceFallback_performance.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
+        private PDFTextRunBegin GetFontFallbackRunBegin(PDFLayoutItem para)
+        {
+            var block = (PDFLayoutBlock)para;
+            var line = (PDFLayoutLine)block.Columns[0].Contents[0];
+            var run = (PDFTextRunBegin)line.Runs[0];
+
+            return run;
         }
 
         public class ReadMeModel
@@ -1658,7 +1707,7 @@ namespace Scryber.Core.UnitTests.Html
                 
                 using (var stream = DocStreams.GetOutputStream("DynamicBasePath.pdf"))
                 {
-                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                 }
                 Assert.AreEqual(1, doc.Styles.Count, "Remote styles were not loaded");
@@ -2004,7 +2053,7 @@ namespace Scryber.Core.UnitTests.Html
                     doc.ConformanceMode = ParserConformanceMode.Strict;
                     using (var stream = DocStreams.GetOutputStream("InvalidBackgroundImage.pdf"))
                     {
-                        doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                        doc.LayoutComplete += DocumentParsing_Layout;
                         doc.SaveAsPDF(stream);
                     }
                 }
@@ -2028,7 +2077,7 @@ namespace Scryber.Core.UnitTests.Html
                         //Set the conformance to lax
                         doc.ConformanceMode = ParserConformanceMode.Lax;
 
-                        doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                        doc.LayoutComplete += DocumentParsing_Layout;
                         doc.SaveAsPDF(stream);
                     }
                 }

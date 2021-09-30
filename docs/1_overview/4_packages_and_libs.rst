@@ -38,7 +38,23 @@ Within the core package are 6 main libraries with the top level library Scryber.
 `Full size version <../_images/dll_references.png>`_
 
 
-1.4.4 Further reading
----------------------
+1.4.4 Assemblies and Namespaces
+--------------------------------
+
+**The Scryber.Common library**
+
+The base library for all other libraries
+
+1. Scryber - Contains the core interfaces, attributes, events and handler delegate definitions.
+2. Scryber.Logging - Contains specific implementations of the Scryber logging infrastructure
+3. Scryber.Options - Classes for the configuration of scryber.
+4. Scryber.Native - Classes for the reading and parsing of an existing PDF file.
+5. Scryber.Caching - Base classes and interfaces for data caching.
+6. Scryber.Utility - Helper classes for paths, data load; numbering and types; frameworks and versions.
+
+**The Scryber.Drawing library**
+
+Contains all the drawing structures and classes for units, points, rects, thicknesses and colors.
+
 
 

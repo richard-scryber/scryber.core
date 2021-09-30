@@ -50,48 +50,49 @@
             font-family: 'Noto Serif Ethiopic'
         }
 
+        /* Not currently supported open-type CCF font */
         .uni-tc {
-            font-family: 'Noto Sans TC', sans-serif;
+            font-family: 'Noto Sans TC';
         }
     </style>
 </head>
 
 <body title="Outer">
-    <p>
+    <p id="regular">
         Body with regular Fraunce font.
     </p>
-    <p style="font-style:italic">And this has <b>Bold</b> span in an italic regular weight</p>
+    <p id="italic" style="font-style:italic">And this has <b>Bold</b> span in an italic regular weight</p>
 
-    <p class="thin">
+    <p id="thin" class="thin">
         And this has <b>Bold (700)</b> span in a thin (100) weight.
     </p>
-    <p class="xlight">
+    <p id="thinfallback" class="xlight">
         Extra light (200) should fall back to the thin (100) weight.
     </p>
-    <p class="med">
+    <p id="medfallback" class="med">
         Medium (300) should fall back to regular (400) weight.
     </p>
-    <p class="med">
+    <p id="medfallbackwithbold" class="med">
         Fallback (300) should still use a <b>Bold span</b>
     </p>
-    <p class="black">
+    <p id="blackfallback" class="black">
         Black should fallback to bold (700) and <b>bold is no different.</b>
     </p>
-    <p style="font-family: Roboto">
+    <p id="courierfallback" style="font-family: Roboto">
         A non-existent font with <b>Bold</b>, <i>Italic</i> and <b><i>Bold Italic</i></b>
     </p>
 
-    <p class="fallback">
-        A non-existent font with fallback of sans-serif including <b>Bold</b>, <i>Italic</i> and <b><i>Bold Italic</i></b>
+    <p id="fallbackwithstyle" class="fallback">
+        A non-existent font with second of sans-serif including <b>Bold</b>, <i>Italic</i> and <b><i>Bold Italic</i></b>
     </p>
-    <p>
+    <p id="unicode" class="uni-eth">
         A Unicode etheopian example :
-        <span class="uni-eth">የሰው፡ልጅ፡ሁሉ፡ሲወለድ፡ነጻና፡በክብርና፡በመብትም፡እኩልነት፡ያለው፡ነው።፡የተፈጥሮ፡ማስተዋልና</span>
+        የሰው፡ልጅ፡ሁሉ፡ሲወለድ፡ነጻና፡በክብርና፡በመብትም፡እኩልነት፡ያለው፡ነው።፡የተፈጥሮ፡ማስተዋልና
     </p>
-
-    <p>
-        A Unicode traditional chinese example :
-        <span class="uni-tc">鑑於對人類家庭所有成員的固有尊嚴及其平等的和不移的權利的承認，乃是世界自由、正義與和平的基礎</span>
+    <!-- unsupported font-->
+    <p id="uniunsupported" class="uni-tc">
+        A Unicode traditional chinese in not supported font :
+        鑑於對人類家庭所有成員的固有尊嚴及其平等的和不移的權利的承認，乃是世界自由、正義與和平的基礎
     </p>
 </body>
 </html>

@@ -1439,7 +1439,7 @@ namespace Scryber.Drawing
             if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
                 HttpClient client = null;
-                
+
 
                 try
                 {
@@ -1453,6 +1453,7 @@ namespace Scryber.Drawing
                 {
                     context.TraceLog.Add(TraceLevel.Error, "FONT", "Could not load the font from the url " + url);
                     definition = null;
+                    tried = false;
                 }
                 finally
                 {
@@ -1476,6 +1477,7 @@ namespace Scryber.Drawing
                 {
                     context.TraceLog.Add(TraceLevel.Error, "FONT", "Could not open the font from the file path " + url);
                     definition = null;
+                    tried = false;
                 }
                 finally
                 {
@@ -1484,8 +1486,10 @@ namespace Scryber.Drawing
                 }
             }
             else
+            {
+                tried = false;
                 context.TraceLog.Add(TraceLevel.Error, "FONT", "Font from the path " + url + " could not be found");
-
+            }
 
             return tried;
         }

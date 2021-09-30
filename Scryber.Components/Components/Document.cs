@@ -1201,12 +1201,15 @@ namespace Scryber.Components
 
                 if (this.RenderOptions.UseFontSubstitution)
                 {
+
                     sel = font.Selector;
                     while (null != sel)
                     {
                         var rsrc = GetSubstitutionFont(sel.FamilyName, font.FontWeight, font.FontStyle);
                         if (null != rsrc)
                         {
+                            this.TraceLog.Add(TraceLevel.Warning, "Document", "The font '" + font.FullName + "' could not be found, falling back to " + rsrc.Definition.Family + ": " + rsrc.Definition.Weight + (rsrc.Definition.Italic ? " Italic" : "") + " for rendering");
+
                             rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
                             font.SetResourceFont(sel.FamilyName, rsrc);
                             return rsrc;
@@ -1224,6 +1227,7 @@ namespace Scryber.Components
                             var rsrc = GetSubstitutionFont(sel.FamilyName, font.FontWeight, Drawing.FontStyle.Regular);
                             if (null != rsrc)
                             {
+                                this.TraceLog.Add(TraceLevel.Warning, "Document", "The font '" + font.FullName + "' could not be found, falling back to " + rsrc.Definition.Family + ": " + rsrc.Definition.Weight + (rsrc.Definition.Italic ? " Italic" : "") + " for rendering");
                                 rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
                                 font.SetResourceFont(sel.FamilyName, rsrc);
                                 return rsrc;
