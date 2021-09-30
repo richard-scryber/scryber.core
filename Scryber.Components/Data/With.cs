@@ -51,7 +51,7 @@ namespace Scryber.Data
         {
         }
 
-        public With(PDFObjectType type)
+        public With(ObjectType type)
             : base(type)
         {
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -57,7 +58,7 @@ namespace Scryber.Components
         public FormInputField() : this(PDFObjectTypes.FormInputField)
         { }
 
-        protected FormInputField(PDFObjectType type) : base(type)
+        protected FormInputField(ObjectType type) : base(type)
         {
 
         }
@@ -116,8 +117,7 @@ namespace Scryber.Components
 
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEngineInput(this, parent);
-            //base.CreateLayoutEngine(parent, context, style);
+            return new PDF.Layout.LayoutEngineInput(this, parent);
         }
 
         protected override Style GetBaseStyle()

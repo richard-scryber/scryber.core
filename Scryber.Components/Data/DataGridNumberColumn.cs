@@ -45,10 +45,10 @@ namespace Scryber.Data
         #endregion
 
         public DataGridNumberColumn()
-            : this((PDFObjectType)"DgNc")
+            : this((ObjectType)"DgNc")
         { }
 
-        protected DataGridNumberColumn(PDFObjectType type)
+        protected DataGridNumberColumn(ObjectType type)
             : base(type)
         {
         }

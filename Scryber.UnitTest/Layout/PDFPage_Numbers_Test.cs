@@ -5,8 +5,9 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Styles;
-using Scryber.Layout;
-using LD = Scryber.Layout.PDFLayoutDocument;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
+using LD = Scryber.PDF.Layout.PDFLayoutDocument;
 using System.Runtime.InteropServices;
 using System.IO;
 
@@ -72,7 +73,7 @@ namespace Scryber.Core.UnitTests.Layout
                 int pgNum = i + 1;
                 PDFLayoutPage lpg = layout.AllPages[i];
 
-                PDFPageNumberData data = lpg.GetPageNumber();
+                PageNumberData data = lpg.GetPageNumber();
 
                 //Check the number
                 Assert.AreEqual(pgNum, data.PageNumber);
@@ -121,7 +122,7 @@ namespace Scryber.Core.UnitTests.Layout
                 int pgNum = i + 1;
                 PDFLayoutPage lpg = layout.AllPages[i];
 
-                PDFPageNumberData data = lpg.GetPageNumber();
+                PageNumberData data = lpg.GetPageNumber();
 
                 //Check the number
                 Assert.AreEqual(pgNum, data.PageNumber, "Page Number failed");
@@ -181,7 +182,7 @@ namespace Scryber.Core.UnitTests.Layout
                 string expected = string.Format("Page {0} of {1} ({2} of {3})", allpages[i], grptotal[i], i + 1, allpages.Length);
 
                 PDFLayoutPage lpg = layout.AllPages[i];
-                PDFPageNumberData data = lpg.GetPageNumber();
+                PageNumberData data = lpg.GetPageNumber();
 
                 string actual = data.ToString("Page {0} of {1} ({2} of {3})");
                 Assert.AreEqual(expected, actual);

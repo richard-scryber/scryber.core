@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Components;
 using Scryber.Styles;
+using Scryber.PDF;
+using Scryber.PDF.Secure;
 
 namespace Scryber.Html.Components
 {
@@ -144,7 +146,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected void ParseSecurityType(string content, Secure.DocumentPermissions permissions, PDFTraceLog log)
+        protected void ParseSecurityType(string content, DocumentPermissions permissions, PDFTraceLog log)
         {
             if (!string.IsNullOrEmpty(content))
             {
@@ -154,12 +156,12 @@ namespace Scryber.Html.Components
                     case ("40bit"):
                         if (log.ShouldLog(TraceLevel.Message))
                             log.Add(TraceLevel.Message, "meta", "Set the document encryption to 40 bit standard (v1.2)");
-                        permissions.Type = Secure.SecurityType.Standard40Bit;
+                        permissions.Type = PDF.Secure.SecurityType.Standard40Bit;
                         break;
                     case ("128bit"):
                         if (log.ShouldLog(TraceLevel.Message))
                             log.Add(TraceLevel.Message, "meta", "Set the document encryption to 128 bit standard (v2.3)");
-                        permissions.Type = Secure.SecurityType.Standard128Bit;
+                        permissions.Type = PDF.Secure.SecurityType.Standard128Bit;
                         break;
                     default:
                         if (log.ShouldLog(TraceLevel.Warning))
@@ -172,7 +174,7 @@ namespace Scryber.Html.Components
 
         private static readonly char[] _splits = new char[] { ' ', ',' };
 
-        protected void ParseRestrictions(string content, Secure.DocumentPermissions permissions, PDFTraceLog log)
+        protected void ParseRestrictions(string content, DocumentPermissions permissions, PDFTraceLog log)
         {
             if (string.IsNullOrEmpty(content))
                 return;
@@ -268,7 +270,7 @@ namespace Scryber.Html.Components
 
         }
 
-        public HTMLHead(PDFObjectType type): base(type)
+        public HTMLHead(ObjectType type): base(type)
         {
 
         }

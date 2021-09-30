@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
 using Scryber.Text;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -45,7 +46,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Label(PDFObjectType type)
+        protected Label(ObjectType type)
             : base(type)
         {
         }

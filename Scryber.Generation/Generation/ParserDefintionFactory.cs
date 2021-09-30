@@ -694,7 +694,7 @@ namespace Scryber.Generation
                         Type basetype = array.ContentBaseType;
                         //ArrayCollection
                         if (null == basetype)
-                            basetype = typeof(IPDFComponent);
+                            basetype = typeof(IComponent);
 
                         propele = new ParserArrayDefinition(name, ns, basetype, pi);
                     }
@@ -748,9 +748,9 @@ namespace Scryber.Generation
         /// <returns></returns>
         private static bool IsReservedName(string attrName)
         {
-            if (attrName == PDFXMLParser.InheritsAttributeName)
+            if (attrName == XMLParser.InheritsAttributeName)
                 return true;
-            else if (attrName == PDFXMLParser.CodeBehindAttributeName)
+            else if (attrName == XMLParser.CodeBehindAttributeName)
                 return true;
             else
                 return false;
@@ -885,7 +885,7 @@ namespace Scryber.Generation
                         xmlconvert = new PDFXmlConverter(ConverterXml.ToXmlNode);
                         result = true;
                     }
-                    else if(type== typeof(IPDFTemplate))
+                    else if(type== typeof(ITemplate))
                     {
                         xmlconvert = new PDFXmlConverter(ConverterXml.ToPDFTemplate);
                         result = true;

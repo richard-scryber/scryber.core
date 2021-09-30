@@ -176,7 +176,7 @@ namespace Scryber.Components
         {
         }
 
-        protected List(PDFObjectType type)
+        protected List(ObjectType type)
             : base(type)
         {
             
@@ -194,9 +194,9 @@ namespace Scryber.Components
             return style;
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.Style style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Styles.Style style)
         {
-            return new Layout.LayoutEngineList2(this, parent);
+            return new PDF.Layout.LayoutEngineList2(this, parent);
         }
 
     }

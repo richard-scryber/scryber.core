@@ -24,7 +24,8 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
-using Scryber.Layout;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -115,7 +116,7 @@ namespace Scryber.Components
         {
         }
 
-        public Panel(PDFObjectType type)
+        public Panel(ObjectType type)
             : base(type)
         {
 
@@ -142,12 +143,12 @@ namespace Scryber.Components
 
         protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEnginePanel(this, parent);
+            return new LayoutEnginePanel(this, parent);
         }
 
         #endregion
 
-        protected override void SetArrangement(PDFComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange)
         {
             base.SetArrangement(arrange);
         }

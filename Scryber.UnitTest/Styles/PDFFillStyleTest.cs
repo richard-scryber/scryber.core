@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber;
 using Scryber.Styles;
 

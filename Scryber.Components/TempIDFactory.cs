@@ -27,7 +27,7 @@ namespace Scryber
         private static int _tempid = 0;
         private static int MaxTempID = 10000000; //ten million item limit
 
-        public static string GetTempID(PDFObjectType type)
+        public static string GetTempID(ObjectType type)
         {
             _tempid++;
             if (_tempid > MaxTempID)

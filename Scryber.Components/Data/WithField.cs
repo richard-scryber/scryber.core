@@ -14,7 +14,7 @@ namespace Scryber.Data
     public abstract class WithField : Panel
     {
 
-        public WithField(PDFObjectType type)
+        public WithField(ObjectType type)
             : base(type)
         {
         }
@@ -38,12 +38,12 @@ namespace Scryber.Data
             }
         }
 
-        public WithContentField(): this((PDFObjectType)"WtCf")
+        public WithContentField(): this((ObjectType)"WtCf")
         {
 
         }
 
-        public WithContentField(PDFObjectType type) 
+        public WithContentField(ObjectType type) 
             : base(type)
         {
         }
@@ -124,7 +124,7 @@ namespace Scryber.Data
         private bool _contentsBuilt = false;
         private Label _labelItem = null;
 
-        public WithBoundField(PDFObjectType type): base(type)
+        public WithBoundField(ObjectType type): base(type)
         {
 
         }
@@ -223,7 +223,7 @@ namespace Scryber.Data
         /// Here we make sure that the contents of the field ase created.
         /// </summary>
         /// <param name="context"></param>
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(PDF.PDFLayoutContext context)
         {
             this.EnsureContents(context);
             base.OnPreLayout(context);

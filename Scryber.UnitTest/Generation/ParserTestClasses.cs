@@ -18,7 +18,7 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
     /// 
     [PDFParsableComponent("Root1")]
     [PDFRequiredFramework("0.8.0.0")]
-    public class ParserRootOne : IPDFComponent
+    public class ParserRootOne : IComponent
     {
         /// <summary>
         /// Simple read write name attribute
@@ -51,7 +51,7 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
 
         public event PDFInitializedEventHandler Initialized;
 
-        void IPDFComponent.Init(PDFInitContext context)
+        void IComponent.Init(PDFInitContext context)
         {
             if (null != this.Initialized)
                 this.Initialized(this, new PDFInitEventArgs(context));
@@ -66,13 +66,13 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
                 this.Loaded(this, new PDFLoadEventArgs(context));
         }
 
-        string IPDFComponent.ElementName
+        string IComponent.ElementName
         {
             get;
             set;
         }
 
-        string IPDFComponent.ID
+        string IComponent.ID
         {
             get
             {
@@ -84,12 +84,12 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
             }
         }
 
-        IPDFDocument IPDFComponent.Document
+        IDocument IComponent.Document
         {
             get { return null; }
         }
 
-        IPDFComponent IPDFComponent.Parent
+        IComponent IComponent.Parent
         {
             get
             {
@@ -101,14 +101,14 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
             }
         }
 
-        string IPDFComponent.MapPath(string source)
+        string IComponent.MapPath(string source)
         {
             return source;
         }
 
-        PDFObjectType ITypedObject.Type
+        ObjectType ITypedObject.Type
         {
-            get { return (PDFObjectType)"naob"; }
+            get { return (ObjectType)"naob"; }
         }
 
         void IDisposable.Dispose()
@@ -145,7 +145,7 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
     /// </summary>
     [PDFParsableComponent("Inner")]
     [PDFRemoteParsableComponent("Inner-Ref")]
-    public class ParserInnerComplex : ParserInnerBase, IPDFComponent
+    public class ParserInnerComplex : ParserInnerBase, IComponent
     {
         /// <summary>
         /// Overrides the base implementation
@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
 
         public event PDFInitializedEventHandler Initialized;
 
-        void IPDFComponent.Init(PDFInitContext context)
+        void IComponent.Init(PDFInitContext context)
         {
             if (null != this.Initialized)
                 this.Initialized(this, new PDFInitEventArgs(context));
@@ -201,13 +201,13 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
                 this.Loaded(this, new PDFLoadEventArgs(context));
         }
 
-        string IPDFComponent.ElementName
+        string IComponent.ElementName
         {
             get;
             set;
         }
 
-        string IPDFComponent.ID
+        string IComponent.ID
         {
             get
             {
@@ -219,12 +219,12 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
             }
         }
 
-        IPDFDocument IPDFComponent.Document
+        IDocument IComponent.Document
         {
             get { return null; }
         }
 
-        IPDFComponent IPDFComponent.Parent
+        IComponent IComponent.Parent
         {
             get
             {
@@ -236,14 +236,14 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
             }
         }
 
-        string IPDFComponent.MapPath(string source)
+        string IComponent.MapPath(string source)
         {
             return source;
         }
 
-        PDFObjectType ITypedObject.Type
+        ObjectType ITypedObject.Type
         {
-            get { return (PDFObjectType)"naob"; }
+            get { return (ObjectType)"naob"; }
         }
 
         void IDisposable.Dispose()

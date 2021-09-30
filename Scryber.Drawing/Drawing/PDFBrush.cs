@@ -19,8 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
-using Scryber.Resources;
+using Scryber.PDF.Native;
+using Scryber.PDF;
+using Scryber.PDF.Resources;
 using System.ComponentModel;
 
 namespace Scryber.Drawing

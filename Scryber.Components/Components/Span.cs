@@ -32,7 +32,7 @@ namespace Scryber.Components
         {
         }
 
-        protected SpanBase(PDFObjectType type)
+        protected SpanBase(ObjectType type)
             : base(type)
         {
         }

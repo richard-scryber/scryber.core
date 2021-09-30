@@ -4,7 +4,7 @@ using System;
 using Scryber;
 using System.Drawing;
 using System.CodeDom;
-using Scryber.Native;
+using Scryber.PDF.Native;
 
 namespace Scryber.Core.UnitTests.Drawing
 {

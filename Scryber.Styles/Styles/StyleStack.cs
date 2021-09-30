@@ -74,13 +74,13 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="Component"></param>
         /// <returns></returns>
-        public Style GetFullStyle(IPDFComponent Component)
+        public Style GetFullStyle(IComponent Component)
         {
             Style style = BuildFullStyle(Component);
             return style;
         }
 
-        private Style BuildFullStyle(IPDFComponent Component)
+        private Style BuildFullStyle(IComponent Component)
         {
             Style style = new StyleFull();
             StyleVariableSet variables = null;

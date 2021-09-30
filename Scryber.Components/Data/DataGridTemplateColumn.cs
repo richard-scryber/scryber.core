@@ -64,33 +64,33 @@ namespace Scryber.Data
         [PDFTemplate()]
         [PDFAttribute("item-template")]
         [PDFElement("ItemTemplate")]
-        public IPDFTemplate ItemTemplate { get; set; }
+        public ITemplate ItemTemplate { get; set; }
 
         [PDFTemplate()]
         [PDFAttribute("alternate-item-template")]
         [PDFElement("AlternatingItemTemplate")]
-        public IPDFTemplate AlternatingItemTemplate { get; set; }
+        public ITemplate AlternatingItemTemplate { get; set; }
 
         [PDFTemplate()]
         [PDFAttribute("header-template")]
         [PDFElement("HeaderTemplate")]
-        public IPDFTemplate HeaderTemplate { get; set; }
+        public ITemplate HeaderTemplate { get; set; }
 
         [PDFTemplate()]
         [PDFAttribute("footer-template")]
         [PDFElement("FooterTemplate")]
-        public IPDFTemplate FooterTemplate { get; set; }
+        public ITemplate FooterTemplate { get; set; }
 
         //
         // .ctor
         //
 
         public DataGridTemplateColumn()
-            : this((PDFObjectType)"DgTm")
+            : this((ObjectType)"DgTm")
         {
         }
 
-        protected DataGridTemplateColumn(PDFObjectType type)
+        protected DataGridTemplateColumn(ObjectType type)
             : base(type)
         {
         }
@@ -188,11 +188,11 @@ namespace Scryber.Data
 
         private const int APPEND = -1; //mark the index so it appends to the container
 
-        protected int AddTemplateToContainer(IPDFContainerComponent container, int index, IPDFTemplate template)
+        protected int AddTemplateToContainer(IPDFContainerComponent container, int index, ITemplate template)
         {
             int count = 0;
-            IEnumerable<IPDFComponent> generated = template.Instantiate(index, container);
-            foreach (IPDFComponent comp in generated)
+            IEnumerable<IComponent> generated = template.Instantiate(index, container);
+            foreach (IComponent comp in generated)
             {
                 Component actual = comp as Component;
                 if (null != actual)
@@ -203,8 +203,8 @@ namespace Scryber.Data
                         container.Content.Add(actual);
                     count++;
                 }
-                if(comp is IPDFBindableComponent)
-                    ((IPDFBindableComponent)comp).DataBinding += PDFDataGridTemplateColumn_DataBinding;
+                if(comp is IBindableComponent)
+                    ((IBindableComponent)comp).DataBinding += PDFDataGridTemplateColumn_DataBinding;
             }
             return count;
         }

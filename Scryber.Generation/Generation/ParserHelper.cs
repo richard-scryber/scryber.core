@@ -197,7 +197,7 @@ namespace Scryber.Generation
         /// <param name="bindingfactory"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings = null)
+        public static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             bindingfactory = null;
 
@@ -288,7 +288,7 @@ namespace Scryber.Generation
         /// <param name="bindingfactory"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static bool TryGetBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings = null)
+        public static bool TryGetBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             bindingfactory = null;
             if (string.IsNullOrEmpty(value) || value.Length < 4)

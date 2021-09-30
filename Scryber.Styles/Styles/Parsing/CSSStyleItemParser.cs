@@ -90,7 +90,7 @@ namespace Scryber.Styles.Parsing
         protected abstract bool DoSetStyleValue(Style style, CSSStyleItemReader reader);
 
 
-        protected bool AttachExpressionBindingHandler<AttrT>(Style style, PDFStyleKey<AttrT> key, string value, StyleValueConvertor<AttrT> convert)
+        protected bool AttachExpressionBindingHandler<AttrT>(Style style, StyleKey<AttrT> key, string value, StyleValueConvertor<AttrT> convert)
         {
             StyleValueExpression<AttrT> expression = new StyleValueExpression<AttrT>(key, value, convert);
             style.DataBinding += expression.BindValue;

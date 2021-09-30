@@ -10,13 +10,13 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public abstract class CSSBorderSideParser : CSSStyleValueParser
     {
-        private PDFStyleKey<PDFUnit> _width;
+        private StyleKey<PDFUnit> _width;
 
-        private PDFStyleKey<PDFColor> _color;
-        private PDFStyleKey<LineType> _style;
-        private PDFStyleKey<PDFDash> _dash;
+        private StyleKey<PDFColor> _color;
+        private StyleKey<LineType> _style;
+        private StyleKey<PDFDash> _dash;
 
-        public CSSBorderSideParser(string cssName, PDFStyleKey<PDFUnit> width, PDFStyleKey<PDFColor> color, PDFStyleKey<LineType> style, PDFStyleKey<PDFDash> dash)
+        public CSSBorderSideParser(string cssName, StyleKey<PDFUnit> width, StyleKey<PDFColor> color, StyleKey<LineType> style, StyleKey<PDFDash> dash)
             : base(cssName)
         {
             this._width = width;

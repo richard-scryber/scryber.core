@@ -35,7 +35,7 @@ namespace Scryber.Caching
         /// Gets the IPDFCacheProvider for a web based (ASP.NET) infrastructure
         /// </summary>
         /// <returns></returns>
-        public static IPDFCacheProvider GetWeb()
+        public static ICacheProvider GetWeb()
         {
             throw new NotSupportedException("Not Supported in .Net Core");
             //return new PDFWebCacheProvider();
@@ -45,7 +45,7 @@ namespace Scryber.Caching
         /// Gets the IPDFCacheProvider for and application / service based infrastructure
         /// </summary>
         /// <returns></returns>
-        public static IPDFCacheProvider GetStatic()
+        public static ICacheProvider GetStatic()
         {
             return new PDFStaticCacheProvider();
         }

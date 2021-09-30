@@ -68,7 +68,7 @@ namespace Scryber.Components
         #endregion
 
 
-        public DataTemplateComponent(PDFObjectType type)
+        public DataTemplateComponent(ObjectType type)
             : base(type)
         {
         }

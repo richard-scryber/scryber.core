@@ -23,7 +23,7 @@ using System.Text;
 using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Data;
-using Scryber.Native;
+using Scryber.PDF.Native;
 
 namespace Scryber.Components
 {
@@ -35,7 +35,7 @@ namespace Scryber.Components
 
         private bool _parsed = false;
         string _data;
-        IPDFTemplate _template;
+        ITemplate _template;
 
         [PDFAttribute("contents")]
         [PDFElement()]
@@ -56,7 +56,7 @@ namespace Scryber.Components
         #endregion
 
         [PDFAttribute("template")]
-        public IPDFTemplate Template
+        public ITemplate Template
         {
             get { return this._template; }
             set
@@ -112,7 +112,7 @@ namespace Scryber.Components
         {
         }
 
-        protected PlaceHolder(PDFObjectType type)
+        protected PlaceHolder(ObjectType type)
             : base(type)
         {
         }
@@ -164,9 +164,9 @@ namespace Scryber.Components
         {
             if (!this._parsed)
             {
-                IEnumerable<IPDFComponent> all = DoParseContents(context);
+                IEnumerable<IComponent> all = DoParseContents(context);
 
-                foreach (IPDFComponent child in all)
+                foreach (IComponent child in all)
                 {
                     this.InnerContent.Add((Component)child);
                 }
@@ -175,11 +175,11 @@ namespace Scryber.Components
 
                 PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                 PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
-                foreach (IPDFComponent child in all)
+                foreach (IComponent child in all)
                 {
                     child.Init(init);
                 }
-                foreach (IPDFComponent child in all)
+                foreach (IComponent child in all)
                 {
                     if (child is Component)
                         ((Component)child).Load(load);
@@ -194,10 +194,10 @@ namespace Scryber.Components
                 return false;
         }
 
-        protected virtual IEnumerable<IPDFComponent> DoParseContents(PDFContextBase context)
+        protected virtual IEnumerable<IComponent> DoParseContents(PDFContextBase context)
         {
             System.Xml.XmlNamespaceManager mgr = GetNamespaceManager();
-            IPDFTemplate gen = null;
+            ITemplate gen = null;
 
             if (!string.IsNullOrEmpty(this.ParsableContents))
                 gen = new Data.ParsableTemplateGenerator(this.ParsableContents, mgr);
@@ -206,12 +206,12 @@ namespace Scryber.Components
 
             if (null != gen)
             {
-                IEnumerable<IPDFComponent> all = gen.Instantiate(0, this);
+                IEnumerable<IComponent> all = gen.Instantiate(0, this);
 
                 return all;
             }
             else
-                return new IPDFComponent[] { };
+                return new IComponent[] { };
         }
 
 
@@ -219,7 +219,7 @@ namespace Scryber.Components
         {
             System.Xml.NameTable nt = new System.Xml.NameTable();
             System.Xml.XmlNamespaceManager mgr = new System.Xml.XmlNamespaceManager(nt);
-            IPDFRemoteComponent parsed = this.GetParsedParent();
+            IRemoteComponent parsed = this.GetParsedParent();
             IDictionary<string, string> parsedNamespaces = null;
 
             //add the namespaces of the last parsed document so we can infer any declarations

@@ -20,27 +20,31 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using Scryber.Native;
+
 using Scryber.Styles;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
+
 using Scryber.Drawing;
 using Scryber.Data;
 using Scryber.Generation;
-using Scryber.Layout;
+
+using Scryber.PDF;
+using Scryber.PDF.Layout;
+using Scryber.PDF.Native;
 using Scryber.Options;
 using System.Runtime.CompilerServices;
-using Scryber.Secure;
 using System.Text.RegularExpressions;
 using Scryber.OpenType.SubTables;
 using System.Net.Http;
+
 
 namespace Scryber.Components
 {
     [PDFParsableComponent("Document")]
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
-    public class Document : ContainerComponent, IPDFDocument, IPDFViewPortComponent, IPDFRemoteComponent, IPDFStyledComponent,
-                                                      IPDFTemplateParser, IPDFXMLParsedDocument, IPDFControlledComponent
+    public class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IPDFStyledComponent,
+                                                      IPDFTemplateParser, IParsedDocument, IControlledComponent
     {
         //
         // events
@@ -57,7 +61,7 @@ namespace Scryber.Components
         /// Raises the ComponentRegistered event if there are receivers.
         /// </summary>
         /// <param name="comp"></param>
-        protected virtual void OnComponentRegistered(IPDFComponent comp)
+        protected virtual void OnComponentRegistered(IComponent comp)
         {
             if (null != ComponentRegistered)
             {
@@ -78,7 +82,7 @@ namespace Scryber.Components
         /// Rasises the RemoteFileRegisted event to any added handlers
         /// </summary>
         /// <param name="request"></param>
-        protected virtual void OnRemoteFileRequestRegistered(PDFRemoteFileRequest request)
+        protected virtual void OnRemoteFileRequestRegistered(RemoteFileRequest request)
         {
             if (null != RemoteFileRegistered)
                 this.RemoteFileRegistered(this, new RemoteFileRequestEventArgs(request));
@@ -105,15 +109,15 @@ namespace Scryber.Components
 
         #region protected PDFDocument(PDFObjectType type)
 
-        protected Document(PDFObjectType type)
+        protected Document(ObjectType type)
             : base(type)
         {
-            this._incrementids = new Dictionary<PDFObjectType, int>();
+            this._incrementids = new Dictionary<ObjectType, int>();
 
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             this.ImageFactories = config.ImagingOptions.GetFactories();
             this._startTime = DateTime.Now;
-            this._requests = new PDFRemoteFileRequestSet(this);
+            this._requests = new RemoteFileRequestSet(this);
         }
 
         #endregion
@@ -139,17 +143,17 @@ namespace Scryber.Components
 
         #region public PDFDocumentListNumbering ListNumbering {get;}
 
-        private PDFListNumbering _numbering;
+        private ListNumbering _numbering;
 
         /// <summary>
         /// Gets the list numbering manager for this document. This can be used for starting to enumerate over a list, and remembering last values.
         /// </summary>
-        public PDFListNumbering ListNumbering
+        public ListNumbering ListNumbering
         {
             get
             {
                 if (null == _numbering)
-                    _numbering = new PDFListNumbering();
+                    _numbering = new ListNumbering();
                 return _numbering;
             }
         }
@@ -440,7 +444,7 @@ namespace Scryber.Components
         /// Gets or sets the list of Additions (non-visual components) in this document.
         /// </summary>
         [PDFElement("Additions")]
-        [PDFArray(typeof(IPDFComponent))]
+        [PDFArray(typeof(IComponent))]
         public DocumentAdditionList Additions
         {
             get
@@ -600,18 +604,18 @@ namespace Scryber.Components
 
         #region public Secure.DocumentPermissions Permissions {get;set;}
 
-        private Secure.DocumentPermissions _perms;
+        private PDF.Secure.DocumentPermissions _perms;
 
         /// <summary>
         /// Gets or sets the permissions for this document
         /// </summary>
         [PDFElement("Permissions")]
-        public Secure.DocumentPermissions Permissions
+        public PDF.Secure.DocumentPermissions Permissions
         {
             get
             {
                 if (_perms == null)
-                    _perms = new Secure.DocumentPermissions();
+                    _perms = new PDF.Secure.DocumentPermissions();
                 return _perms;
             }
             set
@@ -624,12 +628,12 @@ namespace Scryber.Components
 
         #region public IPDFSecurePasswordProvider PasswordProvider {get;set;}
 
-        private Secure.IPDFSecurePasswordProvider _password;
+        private PDF.Secure.IPDFSecurePasswordProvider _password;
 
         /// <summary>
         /// Gets or sets a password provider
         /// </summary>
-        public Secure.IPDFSecurePasswordProvider PasswordProvider
+        public PDF.Secure.IPDFSecurePasswordProvider PasswordProvider
         {
             get { return this._password; }
             set { this._password = value; }
@@ -649,11 +653,11 @@ namespace Scryber.Components
 
         #region public IPDFCacheProvider CacheProvider {get;} + protected virtual IPDFCacheProvider CreateCacheProvider()
 
-        private IPDFCacheProvider _cacheprov;
+        private ICacheProvider _cacheprov;
         /// <summary>
         /// Gets the caching provider for this instance
         /// </summary>
-        public IPDFCacheProvider CacheProvider
+        public ICacheProvider CacheProvider
         {
             get
             {
@@ -667,7 +671,7 @@ namespace Scryber.Components
         /// Gets an instance of the ICaching provider from the service provider.
         /// </summary>
         /// <returns></returns>
-        protected virtual IPDFCacheProvider CreateCacheProvider()
+        protected virtual ICacheProvider CreateCacheProvider()
         {
 
             var factory = ServiceProvider.GetService<IScryberCachingServiceFactory>();
@@ -706,14 +710,14 @@ namespace Scryber.Components
         //
 
         
-        private PDFRemoteFileRequestSet _requests;
+        private RemoteFileRequestSet _requests;
 
-        public PDFRemoteFileRequestSet RemoteRequests
+        public RemoteFileRequestSet RemoteRequests
         {
             get
             {
                 if (null == _requests)
-                    _requests = new PDFRemoteFileRequestSet(this);
+                    _requests = new RemoteFileRequestSet(this);
                 return _requests;
             }
             set
@@ -727,15 +731,15 @@ namespace Scryber.Components
             get { return null != _requests && _requests.Count > 0; }
         }
 
-        public virtual PDFRemoteFileRequest RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IPDFComponent owner = null, object arguments = null)
+        public virtual RemoteFileRequest RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
         {
-            var request = new PDFRemoteFileRequest(filePath, callback, owner, arguments);
+            var request = new RemoteFileRequest(filePath, callback, owner, arguments);
             this.RegisterRemoteFileRequest(request);
 
             return request;
         }
 
-        public virtual void RegisterRemoteFileRequest(PDFRemoteFileRequest request)
+        public virtual void RegisterRemoteFileRequest(RemoteFileRequest request)
         {
             if (null == request)
                 throw new ArgumentNullException(nameof(request));
@@ -1047,17 +1051,17 @@ namespace Scryber.Components
 
         #region GetIncrementID
 
-        private Dictionary<PDFObjectType, int> _incrementids = null;
+        private Dictionary<ObjectType, int> _incrementids = null;
 
         /// <summary>
         /// Gets the next unique id for an Component of a specific type
         /// </summary>
         /// <param name="type">The type of Component to create the new ID for</param>
         /// <returns>A unique id</returns>
-        public override string GetIncrementID(PDFObjectType type)
+        public override string GetIncrementID(ObjectType type)
         {
             if (this._incrementids == null)
-                this._incrementids = new Dictionary<PDFObjectType, int>();
+                this._incrementids = new Dictionary<ObjectType, int>();
             int lastindex;
 
             if (this._incrementids.TryGetValue(type, out lastindex) == false)
@@ -1089,7 +1093,7 @@ namespace Scryber.Components
         /// Override the GetFirstArrangement to return the arrangement of the first page
         /// </summary>
         /// <returns></returns>
-        public override PDFComponentArrangement GetFirstArrangement()
+        public override ComponentArrangement GetFirstArrangement()
         {
             if (this.Pages.Count > 0)
                 return this.Pages[0].GetFirstArrangement();
@@ -1357,6 +1361,11 @@ namespace Scryber.Components
 
         #region public virtual PDFResource GetResource(string resourceType, PDFComponent owner, string resourceKey, bool create)
 
+        ISharedResource IDocument.GetResource(string type, string key, bool create)
+        {
+            return this.GetResource(type, key, create);
+        }
+
         /// <summary>
         /// Implements the IPDFDocument.GetResource interface and supports the extraction and creation of document specific resources.
         /// </summary>
@@ -1441,6 +1450,11 @@ namespace Scryber.Components
         #endregion
 
         #region public PDFResource EnsureResource(string type, string fullname, object resource) + 1 overload
+
+        ISharedResource IDocument.EnsureResource(string type, string key, object resource)
+        {
+            return this.EnsureResource(type, Name, resource);
+        }
 
         public PDFResource EnsureResource(string type, string fullname, object resource)
         {
@@ -1722,8 +1736,8 @@ namespace Scryber.Components
                         if (context.ShouldLogDebug)
                             context.TraceLog.Add(TraceLevel.Debug, "PDF Document", "Initializing the style '" + style.ToString() + "'");
 
-                        if (style is IPDFComponent)
-                            (style as IPDFComponent).Init(context);
+                        if (style is IComponent)
+                            (style as IComponent).Init(context);
                     }
                     catch (PDFException)
                     {
@@ -1782,8 +1796,8 @@ namespace Scryber.Components
                         if (context.ShouldLogDebug)
                             context.TraceLog.Add(TraceLevel.Debug, "PDF Document", "Loading the style '" + style.ToString() + "'");
 
-                        if (style is IPDFComponent)
-                            (style as IPDFComponent).Load(context);
+                        if (style is IComponent)
+                            (style as IComponent).Load(context);
                     }
                     catch (PDFException)
                     {
@@ -1891,8 +1905,8 @@ namespace Scryber.Components
                     {
                         if (context.ShouldLogDebug)
                             context.TraceLog.Add(TraceLevel.Debug, "PDF Document", "Binding the style '" + style.ToString() + "'");
-                        if (style is IPDFBindableComponent)
-                            (style as IPDFBindableComponent).DataBind(context);
+                        if (style is IBindableComponent)
+                            (style as IBindableComponent).DataBind(context);
                     }
                     catch (PDFDataException)
                     {
@@ -2185,9 +2199,9 @@ namespace Scryber.Components
             }
         }
 
-        protected virtual Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile, PDFResourceCollection resources)
+        private Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile, PDFResourceCollection resources)
         {
-            var appended = new PDFTraceLogDocument(this.FileName, origFile, genData, resources);
+            var appended = new TraceLogDocument(this.FileName, origFile, genData, resources);
             appended.PasswordProvider = this.PasswordProvider;
             appended.Permissions = this.Permissions;
             appended.DocumentID = this.DocumentID;
@@ -2424,13 +2438,13 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="source">The full path or absolute location of the image data file</param>
         /// <returns></returns>
-        public PDFImageXObject LoadImageData(IPDFComponent owner, string src)
+        public PDFImageXObject LoadImageData(IComponent owner, string src)
         {
             PDFImageData data;
             string key = src;
             bool compress = false;
-            if (owner is IPDFOptimizeComponent)
-                compress = ((IPDFOptimizeComponent)owner).Compress;
+            if (owner is IOptimizeComponent)
+                compress = ((IOptimizeComponent)owner).Compress;
             try
             {
                 object cached;
@@ -2560,7 +2574,7 @@ namespace Scryber.Components
                 return data;
         }
 
-        private PDFImageData LoadImageDataFromFactory(IPDFComponent owner, IPDFImageDataFactory factory, string path)
+        private PDFImageData LoadImageDataFromFactory(IComponent owner, IPDFImageDataFactory factory, string path)
         {
             PDFImageData data;
 
@@ -2693,9 +2707,9 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected override IPDFComponent ParseComponentAtPath(string path)
+        protected override IComponent ParseComponentAtPath(string path)
         {
-            IPDFComponent parsed = null;
+            IComponent parsed = null;
             try
             {
                 parsed = Document.Parse(path, this.Resolver ?? new PDFReferenceChecker(string.Empty).Resolver);
@@ -2750,55 +2764,55 @@ namespace Scryber.Components
 
         #region public static IPDFComponent Parse(string fullpath) + 11 overloads
 
-        public static IPDFComponent Parse(string fullpath)
+        public static IComponent Parse(string fullpath)
         {
             using (System.IO.Stream stream = new System.IO.FileStream(fullpath,System.IO.FileMode.Open,System.IO.FileAccess.Read))
             {
                 
                 PDFReferenceChecker checker = new PDFReferenceChecker(fullpath);
 
-                IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, checker.Resolver);
+                IComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, checker.Resolver);
 
-                if (comp is IPDFRemoteComponent)
-                    ((IPDFRemoteComponent)comp).LoadedSource = fullpath;
+                if (comp is IRemoteComponent)
+                    ((IRemoteComponent)comp).LoadedSource = fullpath;
 
                 return comp;
             }
         }
 
-        public static IPDFComponent Parse(System.IO.Stream stream, ParseSourceType type)
+        public static IComponent Parse(System.IO.Stream stream, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
-            IPDFComponent comp = Parse(string.Empty, stream, type, checker.Resolver);
+            IComponent comp = Parse(string.Empty, stream, type, checker.Resolver);
 
             return comp;
         }
 
-        public static IPDFComponent Parse(System.IO.TextReader reader, ParseSourceType type)
+        public static IComponent Parse(System.IO.TextReader reader, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
-            IPDFComponent comp = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent comp = Parse(string.Empty, reader, type, checker.Resolver);
 
             return comp;
         }
 
-        public static IPDFComponent Parse(System.Xml.XmlReader reader, ParseSourceType type)
+        public static IComponent Parse(System.Xml.XmlReader reader, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
-            IPDFComponent comp = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent comp = Parse(string.Empty, reader, type, checker.Resolver);
 
             return comp;
         }
 
-        public static IPDFComponent Parse(string fullpath, PDFReferenceResolver resolver)
+        public static IComponent Parse(string fullpath, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
 
-            PDFGeneratorSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
             return Parse(fullpath, resolver, settings);
         }
 
-        public static IPDFComponent Parse(string fullpath, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
+        public static IComponent Parse(string fullpath, PDFReferenceResolver resolver, ParserSettings settings)
         {
             if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
             {
@@ -2814,9 +2828,9 @@ namespace Scryber.Components
                 {
                     using (var stream = client.GetStreamAsync(fullpath).Result)
                     {
-                        IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
-                        if (comp is IPDFRemoteComponent)
-                            ((IPDFRemoteComponent)comp).LoadedSource = fullpath;
+                        IComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
+                        if (comp is IRemoteComponent)
+                            ((IRemoteComponent)comp).LoadedSource = fullpath;
                         return comp;
                     }
                 }
@@ -2831,57 +2845,57 @@ namespace Scryber.Components
             {
                 using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
                 {
-                    IPDFComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
-                    if (comp is IPDFRemoteComponent)
-                        ((IPDFRemoteComponent)comp).LoadedSource = fullpath;
+                    IComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, resolver, settings);
+                    if (comp is IRemoteComponent)
+                        ((IRemoteComponent)comp).LoadedSource = fullpath;
                     return comp;
                 }
             }
         }
 
-        public static IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
+        public static IComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            PDFGeneratorSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
             return Parse(source, stream, type, resolver, settings);
         }
 
-        public static IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
+        public static IComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver, ParserSettings settings)
         {
-            IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
+            IComponentParser parser = new Scryber.Generation.XMLParser(settings);
 
-            IPDFComponent comp = parser.Parse(source, stream, type);
+            IComponent comp = parser.Parse(source, stream, type);
             return comp;
         }
 
-        public static IPDFComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver)
+        public static IComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            PDFGeneratorSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
             return Parse(source, textreader, type, resolver, settings);
         }
 
-        public static IPDFComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
+        public static IComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver, ParserSettings settings)
         {
-            IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
+            IComponentParser parser = new Scryber.Generation.XMLParser(settings);
 
-            IPDFComponent comp = parser.Parse(source, textreader, type);
+            IComponent comp = parser.Parse(source, textreader, type);
             return comp;
         }
 
-        public static IPDFComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver)
+        public static IComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            PDFGeneratorSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
             
             return Parse(source, xmlreader, type, resolver, settings);
         }
 
-        public static IPDFComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver, PDFGeneratorSettings settings)
+        public static IComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver, ParserSettings settings)
         {
-            IPDFParser parser =  new Scryber.Generation.PDFXMLParser(settings);
+            IComponentParser parser =  new Scryber.Generation.XMLParser(settings);
 
-            IPDFComponent comp = parser.Parse(source, xmlreader, type);
+            IComponent comp = parser.Parse(source, xmlreader, type);
             return comp;
         }
 
@@ -2889,12 +2903,12 @@ namespace Scryber.Components
 
         #region public IPDFComponent ParseTemplate(IPDFRemoteComponent owner, string referencepath, Stream stream) + 2 overloads
 
-        public IPDFComponent ParseTemplate(IPDFRemoteComponent owner, System.IO.TextReader reader)
+        public IComponent ParseTemplate(IRemoteComponent owner, System.IO.TextReader reader)
         {
             return ParseTemplate(owner, owner.LoadedSource, reader);
         }
 
-        public IPDFComponent ParseTemplate(IPDFRemoteComponent owner, string referencepath, System.IO.Stream stream)
+        public IComponent ParseTemplate(IRemoteComponent owner, string referencepath, System.IO.Stream stream)
         {
             using (System.Xml.XmlReader xml = System.Xml.XmlReader.Create(stream))
             {
@@ -2904,7 +2918,7 @@ namespace Scryber.Components
 
 
 
-        public IPDFComponent ParseTemplate(IPDFComponent owner, string referencepath, System.IO.TextReader reader)
+        public IComponent ParseTemplate(IComponent owner, string referencepath, System.IO.TextReader reader)
         {
             using (System.Xml.XmlReader xml = System.Xml.XmlReader.Create(reader))
             {
@@ -2919,14 +2933,14 @@ namespace Scryber.Components
         /// <param name="referencepath"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public virtual IPDFComponent ParseTemplate(IPDFComponent owner, string referencepath, System.Xml.XmlReader reader)
+        public virtual IComponent ParseTemplate(IComponent owner, string referencepath, System.Xml.XmlReader reader)
         {
             if (null == owner)
                 throw RecordAndRaise.ArgumentNull("owner");
             if (null == reader)
                 throw RecordAndRaise.ArgumentNull("reader");
             
-            IPDFComponent comp;
+            IComponent comp;
 
             PDFReferenceResolver resolver = this.Resolver;
             if (null == resolver)
@@ -2935,10 +2949,10 @@ namespace Scryber.Components
                 resolver = checker.Resolver;
             }
 
-            PDFGeneratorSettings settings = this.DoCreateGeneratorSettings(resolver);
+            ParserSettings settings = this.DoCreateGeneratorSettings(resolver);
             //settings.Controller = this.Controller;
 
-            IPDFParser parser = new Scryber.Generation.PDFXMLParser(settings);
+            IComponentParser parser = new Scryber.Generation.XMLParser(settings);
 
             parser.RootComponent = owner;
 
@@ -2957,7 +2971,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        protected virtual PDFGeneratorSettings DoCreateGeneratorSettings(PDFReferenceResolver resolver)
+        protected virtual ParserSettings DoCreateGeneratorSettings(PDFReferenceResolver resolver)
         {
             PDFTraceLog log = this.TraceLog;
             PDFPerformanceMonitor monitor = this.PerformanceMonitor;
@@ -2969,7 +2983,7 @@ namespace Scryber.Components
                 loadtype, log, monitor, controller);
         }
 
-        private static PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver, ParserConformanceMode mode, object controller)
+        private static ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver, ParserConformanceMode mode, object controller)
         {
             ParserConformanceMode conformance = mode;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -2981,10 +2995,10 @@ namespace Scryber.Components
             return CreateGeneratorSettings(resolver, conformance, loadtype, log, perfmon, controller);
         }
 
-        protected static PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver, 
+        protected static ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver, 
             ParserConformanceMode conformance, ParserLoadType loadtype, PDFTraceLog log, PDFPerformanceMonitor perfmon, object controller)
         {
-            PDFGeneratorSettings settings = new PDFGeneratorSettings(typeof(TextLiteral)
+            ParserSettings settings = new ParserSettings(typeof(TextLiteral)
                                                                     , typeof(ParsableTemplateGenerator)
                                                                     , typeof(TemplateInstance),
                                                                     resolver,
@@ -3007,7 +3021,7 @@ namespace Scryber.Components
 
         public static Document ParseDocument(string path)
         {
-            var provider = Scryber.ServiceProvider.GetService<IPDFPathMappingService>();
+            var provider = Scryber.ServiceProvider.GetService<IPathMappingService>();
 
             bool isFile;
             var newPath = provider.MapPath(ParserLoadType.ReflectiveParser, path, null, out isFile);
@@ -3025,7 +3039,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.IO.Stream stream, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
-            IPDFComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
+            IComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -3038,7 +3052,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.IO.TextReader reader, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
-            IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -3051,7 +3065,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(path);
-            IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -3064,7 +3078,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(path);
-            IPDFComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
+            IComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -3077,7 +3091,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type)
         {
             PDFReferenceChecker checker = new PDFReferenceChecker(path);
-            IPDFComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -3095,7 +3109,7 @@ namespace Scryber.Components
 
         #region IPDFRemoteComponent Members
 
-        void Scryber.IPDFRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
+        void Scryber.IRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
         {
             Scryber.Data.XmlNamespaceDeclaration dec = new Data.XmlNamespaceDeclaration()
             {
@@ -3107,7 +3121,7 @@ namespace Scryber.Components
             this._namespaces.Add(dec);
         }
 
-        IDictionary<string, string> Scryber.IPDFRemoteComponent.GetDeclaredNamespaces()
+        IDictionary<string, string> Scryber.IRemoteComponent.GetDeclaredNamespaces()
         {
             Dictionary<string, string> all = new Dictionary<string, string>();
             foreach (Scryber.Data.XmlNamespaceDeclaration dec in this.NamespaceDeclarations)
@@ -3176,7 +3190,7 @@ namespace Scryber.Components
 
             
 
-            public IPDFComponent Resolve(string filepath, string xpathselect, PDFGeneratorSettings settings)
+            public IComponent Resolve(string filepath, string xpathselect, ParserSettings settings)
             {
                 // always clone the settings and reset the controller type for a remote reference.
                 //and keep a copy of the trace record level as it can be adjusted in the processing instructions
@@ -3232,7 +3246,7 @@ namespace Scryber.Components
                     throw RecordAndRaise.ParserException(Errors.CircularReferenceToPath, filepath);
 
                 _route.Push(fullpath);
-                IPDFComponent comp = null;
+                IComponent comp = null;
                 try
                 {
                     if (string.IsNullOrEmpty(xpathselect))
@@ -3278,7 +3292,7 @@ namespace Scryber.Components
             /// <param name="filepath"></param>
             /// <param name="xpathselect"></param>
             /// <returns></returns>
-            private XmlReader GetSelectedPathReader(string filepath, string xpathselect, PDFGeneratorSettings settings)
+            private XmlReader GetSelectedPathReader(string filepath, string xpathselect, ParserSettings settings)
             {
                 XmlDocument doc;
                 doc = new XmlDocument();
@@ -3366,7 +3380,7 @@ namespace Scryber.Components
             /// <param name="doc"></param>
             /// <param name="settings"></param>
             /// <returns></returns>
-            private void MatchProcessingInstructions(XmlDocument doc, PDFGeneratorSettings settings)
+            private void MatchProcessingInstructions(XmlDocument doc, ParserSettings settings)
             {
                 foreach (XmlNode node in doc.ChildNodes)
                 {

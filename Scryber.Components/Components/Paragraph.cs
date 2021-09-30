@@ -48,7 +48,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Paragraph(PDFObjectType type)
+        protected Paragraph(ObjectType type)
             : base(type)
         {
         }

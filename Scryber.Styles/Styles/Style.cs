@@ -36,7 +36,7 @@ namespace Scryber.Styles
     /// </summary>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Style : StyleBase, IPDFBindableComponent
+    public class Style : StyleBase, IBindableComponent
     {
         #region public const string PDFStylesNamespace
 
@@ -925,7 +925,7 @@ namespace Scryber.Styles
         {
         }
 
-        protected Style(PDFObjectType type)
+        protected Style(ObjectType type)
             : base(type)
         {
         }

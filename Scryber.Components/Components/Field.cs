@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -24,7 +25,7 @@ namespace Scryber.Components
 
         }
 
-        public Field(PDFObjectType type) : base(type)
+        public Field(ObjectType type) : base(type)
         {
 
         }

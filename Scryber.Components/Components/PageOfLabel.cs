@@ -20,8 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -35,7 +37,7 @@ namespace Scryber.Components
         private Component _found;
 
         //local reference to the layout document
-        private Layout.PDFLayoutDocument _doc;
+        private PDFLayoutDocument _doc;
 
         //local value for the page index of this label
         private int _componentpageindex = -1;
@@ -154,34 +156,35 @@ namespace Scryber.Components
         //
 
         public PageOfLabel()
-            : base((PDFObjectType)"pgof")
+            : base((ObjectType)"pgof")
         {
         }
 
 
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style fullstyle)
+        protected override Text.PDFTextReader CreateReader(PDFContextBase context, Styles.Style fullstyle)
         {
-            _doc = context.DocumentLayout;
-
-            _found = this.LookupExternalComponent(false, context, this.ComponentName);
-            _componentpageindex = -1;
-            if (null != _found)
+            if (context is PDF.PDFLayoutContext layout)
             {
-                this._componentpageindex = _found.PageLayoutIndex;
+                _doc = layout.DocumentLayout;
+
+                _found = this.LookupExternalComponent(false, layout, this.ComponentName);
+                _componentpageindex = -1;
+                if (null != _found)
+                {
+                    this._componentpageindex = _found.PageLayoutIndex;
+                }
+
+                _fullstyle = fullstyle;
+
+                string text = this.GetDisplayText(_componentpageindex, fullstyle, false);
+                Scryber.Text.PDFTextProxyOp op = new Text.PDFTextProxyOp(this, "PageOf", text);
+                Scryber.Text.PDFArrayTextReader array = new Text.PDFArrayTextReader(new Text.PDFTextOp[] { op });
+                _numberProxy = op;
+
+                return array;
             }
-
-            _fullstyle = fullstyle;
-
-            
-
-            
-
-            string text = this.GetDisplayText(_componentpageindex, fullstyle, false);
-            Scryber.Text.PDFTextProxyOp op = new Text.PDFTextProxyOp(this, "PageOf", text);
-            Scryber.Text.PDFArrayTextReader array = new Text.PDFArrayTextReader(new Text.PDFTextOp[] { op });
-            _numberProxy = op;
-
-            return array;
+            else
+                return null;
         }
 
 
@@ -248,7 +251,7 @@ namespace Scryber.Components
             if (null == this._doc)
                 throw new ArgumentNullException("The PageOfLabel does not have a layout document associated with it, so cannot get the page number in the document");
 
-            PDFPageNumberData nums;
+            PageNumberData nums;
             if (pageIndex < 0)
             {
 

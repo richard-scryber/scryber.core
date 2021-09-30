@@ -26,16 +26,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
-using Scryber.Native;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
     /// <summary>
     /// Base class for all complex pdf Components
     /// </summary>
-    public abstract class Component : PDFObject, IDisposable, IPDFComponent, IPDFBindableComponent, IPDFLoadableComponent
+    public abstract class Component : PDFObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent
     {
         // static event keys for the PDFEventList
 
@@ -53,8 +53,8 @@ namespace Scryber.Components
         // ivars
 
         private Style _appliedStyle = null; //local caching for a the style information on this Component
-        private PDFComponentArrangement _arrange = null; //the arrangement from the layout
-        private PDFEventList _events; //holds any registered events without needing a field for each.
+        private ComponentArrangement _arrange = null; //the arrangement from the layout
+        private ComponentEventList _events; //holds any registered events without needing a field for each.
 
         //
         // Events property and HasRegisteredEvents
@@ -66,12 +66,12 @@ namespace Scryber.Components
         /// Gets the PDFEventList that holds references to all events that 
         /// have been registered on this component for the standard events.
         /// </summary>
-        protected PDFEventList Events
+        protected ComponentEventList Events
         {
             get
             {
                 if (null == _events)
-                    _events = new PDFEventList(this);
+                    _events = new ComponentEventList(this);
                 return _events;
             }
         }
@@ -397,7 +397,7 @@ namespace Scryber.Components
         /// <summary>
         /// Explicit interface implementation
         /// </summary>
-        IPDFComponent IPDFComponent.Parent
+        IComponent IComponent.Parent
         {
             get { return this.Parent; }
             set 
@@ -521,7 +521,7 @@ namespace Scryber.Components
         /// <summary>
         /// Explicit interface implementation
         /// </summary>
-        IPDFDocument IPDFComponent.Document
+        IDocument IComponent.Document
         {
             get { return this.Document; }
         }
@@ -626,7 +626,7 @@ namespace Scryber.Components
 
             while (ppe != null)
             {
-                if (ppe is IPDFNamingContainer)
+                if (ppe is INamingContainer)
                 {
                     names.Push(ppe.ID);
                 }
@@ -815,19 +815,19 @@ namespace Scryber.Components
 
         #region public PDFOutline Outline {get;set;} + bool HasOutline {get;}
 
-        private PDFOutline _outline;
+        private Outline _outline;
 
         /// <summary>
         /// Gets or sets the outline title for this component
         /// </summary>
         [PDFElement("Outline")]
-        public virtual PDFOutline Outline
+        public virtual Outline Outline
         {
             get 
             {
                 if (null == this._outline)
                 {
-                    this._outline = new PDFOutline();
+                    this._outline = new Outline();
                     this._outline.BelongsTo = this;
                 }
                 return this._outline;
@@ -858,7 +858,7 @@ namespace Scryber.Components
 
         #region protected .ctor(PDFObjectType)
 
-        protected Component(PDFObjectType type): base(type)
+        protected Component(ObjectType type): base(type)
         {
         }
 
@@ -1066,7 +1066,7 @@ namespace Scryber.Components
             //if we have a title then register the outline component
             if (registerOutline)
             {
-                outline = context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.Outlines, new PDFOutlineRef(this.Outline, fullstyle.Outline));
+                outline = context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.Outlines, new PDF.PDFOutlineRef(this.Outline, fullstyle.Outline));
                 set.SetArtefact(PDFArtefactTypes.Outlines, outline);
             }
 
@@ -1240,13 +1240,13 @@ namespace Scryber.Components
         /// Searches this components parent hirerachy for the IPDFResourceContainer (usually the page).
         /// </summary>
         /// <returns>The found container or null</returns>
-        protected virtual IPDFResourceContainer GetResourceContainer()
+        protected virtual IResourceContainer GetResourceContainer()
         {
             Component comp = this.Parent;
             while(null != comp)
             {
-                if (comp is IPDFResourceContainer)
-                    return (IPDFResourceContainer)comp;
+                if (comp is IResourceContainer)
+                    return (IResourceContainer)comp;
                 else
                     comp = comp.Parent;
             }
@@ -1315,7 +1315,7 @@ namespace Scryber.Components
         /// <returns>The converted full reference</returns>
         public virtual string MapPath(string source, out bool isfile)
         {
-            var service = ServiceProvider.GetService<IPDFPathMappingService>();
+            var service = ServiceProvider.GetService<IPathMappingService>();
 
             if (!string.IsNullOrEmpty(this.LoadedSource))
             {
@@ -1339,7 +1339,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public virtual string GetIncrementID(PDFObjectType type)
+        public virtual string GetIncrementID(ObjectType type)
         {
             if (this.Parent != null)
                 return this.Parent.GetIncrementID(type);
@@ -1356,7 +1356,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected virtual IPDFComponent ParseComponentAtPath(string path)
+        protected virtual IComponent ParseComponentAtPath(string path)
         {
             if (null == this.Parent)
                 throw RecordAndRaise.NullReference(Errors.ParentDocumentCannotBeNull);
@@ -1372,11 +1372,11 @@ namespace Scryber.Components
         /// Gets the closest parent component that was parsed from a file
         /// </summary>
         /// <returns></returns>
-        protected virtual IPDFRemoteComponent GetParsedParent()
+        protected virtual IRemoteComponent GetParsedParent()
         {
-            if (this is IPDFRemoteComponent)
+            if (this is IRemoteComponent)
             {
-                IPDFRemoteComponent remote = (IPDFRemoteComponent)this;
+                IRemoteComponent remote = (IRemoteComponent)this;
                 if (remote.LoadType != ParserLoadType.None && !string.IsNullOrEmpty(remote.LoadedSource))
                     return remote;
             }
@@ -1403,7 +1403,7 @@ namespace Scryber.Components
 
         public void SetArrangement(PDFRenderContext context, Style style, PDFRect contentBounds)
         {
-            PDFComponentMultiArrangement arrange = new PDFComponentMultiArrangement();
+            ComponentMultiArrangement arrange = new ComponentMultiArrangement();
             arrange.PageIndex = context.PageIndex;
             arrange.RenderBounds = contentBounds;
             arrange.FullStyle = style;
@@ -1415,9 +1415,9 @@ namespace Scryber.Components
         /// Sets an arrangement for this component
         /// </summary>
         /// <param name="arrange"></param>
-        protected virtual void SetArrangement(PDFComponentArrangement arrange)
+        protected virtual void SetArrangement(ComponentArrangement arrange)
         {
-            if (arrange is PDFComponentMultiArrangement)
+            if (arrange is ComponentMultiArrangement)
             {
                 if (_arrange == null)
                 {
@@ -1425,12 +1425,12 @@ namespace Scryber.Components
                     //this.EnsureAllChildrenAreOnThisPage(arrange);
                 }
 
-                else if (_arrange != null && _arrange is PDFComponentMultiArrangement)
+                else if (_arrange != null && _arrange is ComponentMultiArrangement)
                 {
-                    ((PDFComponentMultiArrangement)_arrange).AppendArrangement((PDFComponentMultiArrangement)arrange);
+                    ((ComponentMultiArrangement)_arrange).AppendArrangement((ComponentMultiArrangement)arrange);
                 }
                 else
-                    throw RecordAndRaise.InvalidCast(Errors.CannotConvertObjectToType, typeof(PDFComponentArrangement), typeof(PDFComponentMultiArrangement));
+                    throw RecordAndRaise.InvalidCast(Errors.CannotConvertObjectToType, typeof(ComponentArrangement), typeof(ComponentMultiArrangement));
             }
             else
                 _arrange = arrange;
@@ -1444,7 +1444,7 @@ namespace Scryber.Components
         /// Gets the root arrangement for this component. Use GetArrangement(pageindex) to get the arrangement for a particular page
         /// </summary>
         /// <returns></returns>
-        public virtual PDFComponentArrangement GetFirstArrangement()
+        public virtual ComponentArrangement GetFirstArrangement()
         {
             return _arrange;
         }

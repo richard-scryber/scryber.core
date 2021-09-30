@@ -10,9 +10,12 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Styles.Parsing;
 
-using Scryber.Layout;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
+
 using System.Diagnostics;
 using Scryber.Text;
+using Scryber.PDF.Resources;
 using System.Runtime.ExceptionServices;
 
 namespace Scryber.Core.UnitTests.Html
@@ -593,7 +596,7 @@ body.grey div.reverse{
                 }
 
                 Assert.AreEqual(1, doc.SharedResources.Count, "Remote font not loaded");
-                var fntRsrc = doc.SharedResources[0] as Resources.PDFFontResource;
+                var fntRsrc = doc.SharedResources[0] as PDFFontResource;
                 Assert.IsNotNull(fntRsrc, "The font was not loaded");
                 var name = fntRsrc.FontName;
                 Assert.AreEqual("Roboto Condensed", name, "The font name does not match");

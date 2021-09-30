@@ -45,8 +45,8 @@ namespace Scryber.Styles
         /// Allows for very fast comparison - ideal for dictionary keys
         /// </summary>
         private int _fullhash;
-        private PDFObjectType _item;
-        private PDFObjectType _value;
+        private ObjectType _item;
+        private ObjectType _value;
         private bool _isInherited;
 
         #endregion
@@ -56,7 +56,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Gets the name of the item that this key is associated with 
         /// </summary>
-        public PDFObjectType StyleItemKey { get { return _item; } }
+        public ObjectType StyleItemKey { get { return _item; } }
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Gets the name of the value this key represents
         /// </summary>
-        public PDFObjectType StyleValueKey { get { return _value; } }
+        public ObjectType StyleValueKey { get { return _value; } }
 
         #endregion
 
@@ -91,7 +91,7 @@ namespace Scryber.Styles
         // .ctor
         //
 
-        #region protected PDFStyleKey(int fullhash, PDFObjectType item, PDFObjectType value, bool inherited, bool isItem)
+        #region protected StyleKey(int fullhash, PDFObjectType item, PDFObjectType value, bool inherited, bool isItem)
 
         /// <summary>
         /// Creates a new instance of an immutable style key with the specified values.
@@ -101,7 +101,7 @@ namespace Scryber.Styles
         /// <param name="value">The style key associated with the value in the item</param>
         /// <param name="inherited">True if values for this key should be inherited in children</param>
         /// <param name="isItem">True if this is an item key (rather than a value item key)</param>
-        protected StyleKey(int fullhash, PDFObjectType item, PDFObjectType value, bool inherited, bool isItem)
+        protected StyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, bool isItem)
         {
 
             this._item = item;
@@ -165,7 +165,7 @@ namespace Scryber.Styles
         // comparsion methods
         //
 
-        #region public int CompareTo(PDFStyleKey other)
+        #region public int CompareTo(StyleKey other)
 
         /// <summary>
         /// Compares this StyleKey to another returning 0 if they exactly match.
@@ -179,7 +179,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public bool Equals(PDFStyleKey other)
+        #region public bool Equals(StyleKey other)
 
         /// <summary>
         /// Compares the 2 keys and returns true if they match
@@ -193,7 +193,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public static IEqualityComparer<PDFStyleKey> GetComparer()
+        #region public static IEqualityComparer<StyleKey> GetComparer()
 
         /// <summary>
         /// Public method
@@ -211,7 +211,7 @@ namespace Scryber.Styles
         /// </summary>
         private static IEqualityComparer<StyleKey> _comparer = new StyleKeyHashComparer();
 
-        #region private class StyleKeyHashComparer : IEqualityComparer<PDFStyleKey>
+        #region private class StyleKeyHashComparer : IEqualityComparer<StyleKey>
 
         /// <summary>
         /// Private class that compares 2 StyleKeys based on the full hash value.
@@ -239,7 +239,7 @@ namespace Scryber.Styles
         /// <summary>
         /// The string that identifies a StyleKey as being for an item rather than a value
         /// </summary>
-        public static readonly PDFObjectType StyleItemIdentifier = (PDFObjectType)"ITEM";
+        public static readonly ObjectType StyleItemIdentifier = (ObjectType)"ITEM";
 
         /// <summary>
         /// A dictionary of the integer hash keys for specific keys (based on their string representation.
@@ -265,7 +265,7 @@ namespace Scryber.Styles
         /// <param name="item"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static string GetStyleKeyAsString(PDFObjectType item, PDFObjectType value)
+        private static string GetStyleKeyAsString(ObjectType item, ObjectType value)
         {
             return value.ToString() + "@" + item.ToString();
         }
@@ -325,7 +325,7 @@ namespace Scryber.Styles
         /// <param name="name"></param>
         /// <param name="inherited"></param>
         /// <returns></returns>
-        public static StyleKey CreateStyleItemKey(PDFObjectType item, bool inherited)
+        public static StyleKey CreateStyleItemKey(ObjectType item, bool inherited)
         {
             string full = GetStyleKeyAsString(item, StyleItemIdentifier);
             int hash = GetStyleHash(full);
@@ -335,7 +335,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public static PDFStyleKey<T> CreateStyleValueKey<T>(PDFObjectType name, PDFStyleKey foritem)
+        #region public static StyleKey<T> CreateStyleValueKey<T>(PDFObjectType name, StyleKey foritem)
 
         /// <summary>
         /// Creates a new Value StyleKey based on the item StyleKey and the name of the value
@@ -343,7 +343,7 @@ namespace Scryber.Styles
         /// <param name="name"></param>
         /// <param name="foritem"></param>
         /// <returns></returns>
-        public static PDFStyleKey<T> CreateStyleValueKey<T>(PDFObjectType name, StyleKey foritem)
+        public static StyleKey<T> CreateStyleValueKey<T>(ObjectType name, StyleKey foritem)
         {
             if (foritem.IsItemKey == false)
                 throw new InvalidOperationException("forItem is not an item");
@@ -351,13 +351,13 @@ namespace Scryber.Styles
             string full = GetStyleKeyAsString(foritem.StyleItemKey, name);
             int hash = GetStyleHash(full);
 
-            return new PDFStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, false);
+            return new StyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, false);
             
         }
 
         #endregion
 
-        #region internal static PDFStyleKey InternalCreateStyleItemKey(PDFObjectType item, bool inherited)
+        #region internal static StyleKey InternalCreateStyleItemKey(PDFObjectType item, bool inherited)
 
         /// <summary>
         ///  NOT THREAD SAFE implementation of CreateStyleItemKey that creates a new Item StyleKey.
@@ -366,7 +366,7 @@ namespace Scryber.Styles
         /// <param name="inherited"></param>
         /// <returns></returns>
         /// <remarks>Used by the PDFStyleKeys static type constructor - as we are assured this is threadsafe</remarks>
-        internal static StyleKey InternalCreateStyleItemKey(PDFObjectType item, bool inherited)
+        internal static StyleKey InternalCreateStyleItemKey(ObjectType item, bool inherited)
         {
             string full = GetStyleKeyAsString(item, StyleItemIdentifier);
             int hash = InternalGetStyleHash(full);
@@ -376,7 +376,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region internal static PDFStyleKey<T> InternalCreateStyleValueKey<T>(PDFObjectType name, PDFStyleKey foritem)
+        #region internal static StyleKey<T> InternalCreateStyleValueKey<T>(PDFObjectType name, PDFStyleKey foritem)
 
         /// <summary>
         /// NOT THREAD SAFE implementation of of CreateStyleValueKey that 
@@ -386,7 +386,7 @@ namespace Scryber.Styles
         /// <param name="foritem"></param>
         /// <returns></returns>
         /// <remarks>Used by the PDFStyleKeys style type constructor - as we are assured this is threadsafe</remarks>
-        internal static PDFStyleKey<T> InternalCreateStyleValueKey<T>(PDFObjectType name, StyleKey foritem)
+        internal static StyleKey<T> InternalCreateStyleValueKey<T>(ObjectType name, StyleKey foritem)
         {
             if (foritem.IsItemKey == false)
                 throw new InvalidOperationException("forItem is not an item");
@@ -394,7 +394,7 @@ namespace Scryber.Styles
             string full = GetStyleKeyAsString(foritem.StyleItemKey, name);
             int hash = InternalGetStyleHash(full);
 
-            return new PDFStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, false);
+            return new StyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, false);
 
         }
 
@@ -407,10 +407,10 @@ namespace Scryber.Styles
     /// Strongly Typed key
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PDFStyleKey<T> : StyleKey
+    public class StyleKey<T> : StyleKey
     {
 
-        public PDFStyleKey(int fullhash, PDFObjectType item, PDFObjectType value, bool inherited, bool isItem)
+        public StyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, bool isItem)
             : base(fullhash, item, value, inherited, isItem)
         {
         }
@@ -421,7 +421,7 @@ namespace Scryber.Styles
     /// <summary>
     /// The 
     /// </summary>
-    public class StyleValueDictionary : Dictionary<StyleKey, PDFStyleValueBase>
+    public class StyleValueDictionary : Dictionary<StyleKey, StyleValueBase>
     {
         public StyleValueDictionary()
             : base(StyleKey.GetComparer())
@@ -433,9 +433,9 @@ namespace Scryber.Styles
         {
         }
 
-        public void SetPriorityValue(StyleKey key, PDFStyleValueBase value, int priority)
+        public void SetPriorityValue(StyleKey key, StyleValueBase value, int priority)
         {
-            PDFStyleValueBase exist;
+            StyleValueBase exist;
             if (this.TryGetValue(key, out exist))
             {
                 if (exist.Priority <= priority)

@@ -3,6 +3,7 @@ using Scryber.Components;
 using Scryber.Styles;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
+using Scryber.PDF;
 
 namespace Scryber.Html.Components
 {
@@ -62,7 +63,7 @@ namespace Scryber.Html.Components
         
         
 
-        public HTMLHeadFootContainer() : base((PDFObjectType)"httf")
+        public HTMLHeadFootContainer() : base((ObjectType)"httf")
         {
             
         }
@@ -74,7 +75,7 @@ namespace Scryber.Html.Components
 
 
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(PDF.PDFLayoutContext context)
         {
             this.ArrangeHeadersAndFooters();
             base.OnPreLayout(context);  
@@ -118,7 +119,7 @@ namespace Scryber.Html.Components
 
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEnginePanel(this, parent);
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles.Selectors;
 using Scryber.Styles;
 using Scryber.Components;
@@ -39,7 +39,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
             var defn = new StyleDefn();
-            defn.Match = PDFStyleMatcher.Parse(".red");
+            defn.Match = StyleMatcher.Parse(".red");
 
 
             var div = new Div();
@@ -55,7 +55,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             int priority;
             var defn = new StyleDefn();
-            defn.Match = PDFStyleMatcher.Parse("doc:Div.red");
+            defn.Match = StyleMatcher.Parse("doc:Div.red");
 
 
             var div = new Div();

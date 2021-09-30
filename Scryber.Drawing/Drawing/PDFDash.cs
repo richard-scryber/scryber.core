@@ -19,7 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
+using Scryber.PDF;
 using System.CodeDom;
 using System.ComponentModel;
 
@@ -232,30 +233,5 @@ namespace Scryber.Drawing
         }
 
 
-        #region IPDFSimpleCodeDomValue Members
-        public System.Linq.Expressions.Expression GetConstructorExpression()
-        {
-            throw new NotImplementedException();
-            //TODO: Linq Expression
-        }
-
-        //public CodeExpression GetConstructorExpression()
-        //{
-        //    //new PDFDash([d,d,d],d);
-        //    if (this.Pattern != null && this.Pattern.Length > 0)
-        //    {
-        //        CodeArrayCreateExpression array = new CodeArrayCreateExpression(typeof(PDFNumber));
-        //        foreach (PDFNumber d in this.Pattern)
-        //        {
-        //            array.Initializers.Add(new CodePrimitiveExpression((double)d));
-        //        }
-        //        CodePrimitiveExpression phase = new CodePrimitiveExpression((double)this.Phase);
-        //        return new CodeObjectCreateExpression(typeof(PDFDash), array, phase);
-        //    }
-        //    else
-        //        return new CodeObjectCreateExpression(typeof(PDFDash));
-        //}
-
-        #endregion
     }
 }

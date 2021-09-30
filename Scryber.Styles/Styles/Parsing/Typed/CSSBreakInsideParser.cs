@@ -6,11 +6,11 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public class CSSBreakInsideParser : CSSStyleValueParser
     {
-        public PDFStyleKey<OverflowSplit> SplitKey { get; set; }
+        public StyleKey<OverflowSplit> SplitKey { get; set; }
 
-        public PDFStyleKey<OverflowAction> ActionKey { get; set; }
+        public StyleKey<OverflowAction> ActionKey { get; set; }
 
-        public CSSBreakInsideParser(string cssName, PDFStyleKey<OverflowAction> actionKey, PDFStyleKey<OverflowSplit> splitKey)
+        public CSSBreakInsideParser(string cssName, StyleKey<OverflowAction> actionKey, StyleKey<OverflowSplit> splitKey)
             : base(cssName)
         {
             this.ActionKey = actionKey;

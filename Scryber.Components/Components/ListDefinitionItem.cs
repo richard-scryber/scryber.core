@@ -39,7 +39,7 @@ namespace Scryber.Components
         }
 
 
-        protected ListDefinitionItemBase(PDFObjectType type)
+        protected ListDefinitionItemBase(ObjectType type)
             : base(type)
         {
         }
@@ -62,7 +62,7 @@ namespace Scryber.Components
 
         }
 
-        protected ListDefinitionTerm(PDFObjectType type) : base(type)
+        protected ListDefinitionTerm(ObjectType type) : base(type)
         { }
 
         protected override Style GetBaseStyle()
@@ -82,7 +82,7 @@ namespace Scryber.Components
 
         }
 
-        protected ListDefinitionItem(PDFObjectType type) : base(type)
+        protected ListDefinitionItem(ObjectType type) : base(type)
         { }
 
         protected override Style GetBaseStyle()

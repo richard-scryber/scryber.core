@@ -29,7 +29,7 @@ namespace Scryber
     /// </summary>
     /// <remarks>The object type is castable from a string value for ease of creation, and helps in unique id generation</remarks>
     [StructLayout(LayoutKind.Explicit)]
-    public struct PDFObjectType : IEquatable<PDFObjectType>, IComparable, IComparable<PDFObjectType>
+    public struct ObjectType : IEquatable<ObjectType>, IComparable, IComparable<ObjectType>
     {
 
         #region ivars
@@ -64,7 +64,7 @@ namespace Scryber
         /// Create a new PDFObjectType with the specified string type (must be 4 ANSII string characters long)
         /// </summary>
         /// <param name="type"></param>
-        public PDFObjectType(string type)
+        public ObjectType(string type)
             : this(GetValidType(type))
         {
         }
@@ -77,7 +77,7 @@ namespace Scryber
         /// Creates a new PDFObjectType with the specified 4 length character array
         /// </summary>
         /// <param name="type"></param>
-        public PDFObjectType(char[] type) : this(ConvertToBytes(type))
+        public ObjectType(char[] type) : this(ConvertToBytes(type))
         {
         }
 
@@ -89,7 +89,7 @@ namespace Scryber
         /// Creates a new PDFObjectType with the specified 4 byte characters.
         /// </summary>
         /// <param name="bytes"></param>
-        private PDFObjectType(byte[] bytes)
+        private ObjectType(byte[] bytes)
         {
             this._value = 0;
             this._zero = bytes[0];
@@ -126,10 +126,10 @@ namespace Scryber
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (null == obj || !(obj is PDFObjectType))
+            if (null == obj || !(obj is ObjectType))
                 return false;
             else
-                return this.Equals((PDFObjectType)obj);
+                return this.Equals((ObjectType)obj);
         }
 
         #endregion
@@ -141,7 +141,7 @@ namespace Scryber
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool Equals(PDFObjectType type)
+        public bool Equals(ObjectType type)
         {
             return this._value.Equals(type._value);
         }
@@ -170,10 +170,10 @@ namespace Scryber
         /// <returns></returns>
         int IComparable.CompareTo(object obj)
         {
-            if (null == obj || !(obj is PDFObjectType))
+            if (null == obj || !(obj is ObjectType))
                 return -1;
             else
-                return CompareTo((PDFObjectType)obj);
+                return CompareTo((ObjectType)obj);
         }
 
         #endregion
@@ -185,7 +185,7 @@ namespace Scryber
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public int CompareTo(PDFObjectType other)
+        public int CompareTo(ObjectType other)
         {
             return this._value.CompareTo(other._value);
         }
@@ -249,9 +249,9 @@ namespace Scryber
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static PDFObjectType FromString(string s)
+        public static ObjectType FromString(string s)
         {
-            return new PDFObjectType(s);
+            return new ObjectType(s);
         }
 
         #endregion
@@ -264,7 +264,7 @@ namespace Scryber
         /// <param name="one"></param>
         /// <param name="two"></param>
         /// <returns></returns>
-        public static bool Equals(PDFObjectType one, PDFObjectType two)
+        public static bool Equals(ObjectType one, ObjectType two)
         {
             return one.Equals(two);
         }
@@ -276,7 +276,7 @@ namespace Scryber
         /// <summary>
         /// An empty PDFObjectType
         /// </summary>
-        public static readonly PDFObjectType Empty = new PDFObjectType();
+        public static readonly ObjectType Empty = new ObjectType();
 
         #endregion
 
@@ -292,7 +292,7 @@ namespace Scryber
         /// <param name="one"></param>
         /// <param name="two"></param>
         /// <returns></returns>
-        public static bool operator ==(PDFObjectType one, PDFObjectType two)
+        public static bool operator ==(ObjectType one, ObjectType two)
         {
             return one.Equals(two);
         }
@@ -307,7 +307,7 @@ namespace Scryber
         /// <param name="one"></param>
         /// <param name="two"></param>
         /// <returns></returns>
-        public static bool operator !=(PDFObjectType one, PDFObjectType two)
+        public static bool operator !=(ObjectType one, ObjectType two)
         {
             return one.Equals(two) == false;
         }
@@ -321,9 +321,9 @@ namespace Scryber
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static explicit operator PDFObjectType(string s)
+        public static explicit operator ObjectType(string s)
         {
-            return new PDFObjectType(s);
+            return new ObjectType(s);
         }
 
         #endregion

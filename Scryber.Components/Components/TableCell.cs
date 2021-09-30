@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -133,7 +134,7 @@ namespace Scryber.Components
         /// can use to create an instance of their class using a different ObjectType
         /// </summary>
         /// <param name="type">The type identifier</param>
-        protected TableCell(PDFObjectType type)
+        protected TableCell(ObjectType type)
             : base(type)
         {
         }
@@ -180,7 +181,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEnginePanel(this, parent);
         }
 
         #endregion

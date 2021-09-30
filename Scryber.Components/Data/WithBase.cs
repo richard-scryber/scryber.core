@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Data
 {
@@ -51,7 +52,7 @@ namespace Scryber.Data
 
         #endregion
 
-        public WithBase(PDFObjectType type)
+        public WithBase(ObjectType type)
             :base(type)
         {
         }
@@ -248,7 +249,7 @@ namespace Scryber.Data
 
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new Scryber.Layout.LayoutEnginePanel(this, parent);
+            return new Scryber.PDF.Layout.LayoutEnginePanel(this, parent);
         }
 
         #endregion

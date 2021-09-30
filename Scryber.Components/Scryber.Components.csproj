@@ -90,6 +90,9 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Remove="PDF\" />
+    <None Remove="PDF\Layout\" />
+    <None Remove="PDF\Secure\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -145,6 +148,8 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
   
   <ItemGroup>
     <Folder Include="Svg\Layout\" />
-    <Folder Include="Secure\" />
+    <Folder Include="PDF\" />
+    <Folder Include="PDF\Layout\" />
+    <Folder Include="PDF\Secure\" />
   </ItemGroup>
 </Project>

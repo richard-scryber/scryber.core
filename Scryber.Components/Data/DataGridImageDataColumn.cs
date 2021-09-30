@@ -16,11 +16,11 @@ namespace Scryber.Data
         public string ImageKey { get; set; }
 
         public DataGridImageDataColumn()
-            : this((PDFObjectType)"DgDi")
+            : this((ObjectType)"DgDi")
         {
         }
 
-        protected DataGridImageDataColumn(PDFObjectType type)
+        protected DataGridImageDataColumn(ObjectType type)
             : base(type)
         {
         }

@@ -170,7 +170,7 @@ namespace Scryber.Data
         // .ctor
         //
 
-        protected DataGridColumn(PDFObjectType type)
+        protected DataGridColumn(ObjectType type)
             : base(type)
         {
         }
@@ -425,7 +425,7 @@ namespace Scryber.Data
     {
 
         public PDFDataGridColumnCollection(DataGrid grid)
-            : base(new ComponentList(grid,(PDFObjectType)"DgCo"))
+            : base(new ComponentList(grid,(ObjectType)"DgCo"))
         {
         }
     }

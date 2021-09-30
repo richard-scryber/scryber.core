@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles.Selectors;
 using Scryber.Styles;
 using Scryber.Components;
@@ -40,7 +40,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             string test = ".red";
 
-            var parsed = PDFStyleMatcher.Parse(test);
+            var parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Class Test failed");
@@ -54,7 +54,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "#NewComponentID";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual("NewComponentID", parsed.Selector.AppliedID,"ID Test failed");
@@ -68,7 +68,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Component";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual("doc:Component", parsed.Selector.AppliedElement, "Type Test failed");
@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             string test = "doc:Table.red";
 
-            var parsed = PDFStyleMatcher.Parse(test);
+            var parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Type.Class Test failed");
@@ -100,7 +100,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Div#NewComponentID";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual("NewComponentID", parsed.Selector.AppliedID, "Type.ID Test failed");
@@ -114,7 +114,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = ".red#ComponentID";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.IsNull(parsed.Selector.AppliedElement, "Class.Type Test failed");
@@ -128,7 +128,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = ".red.blue";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.IsNull(parsed.Selector.AppliedElement, "Class.Class Test failed");
@@ -153,7 +153,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             string test = ".blue .red";
 
-            var parsed = PDFStyleMatcher.Parse(test);
+            var parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
 
@@ -176,7 +176,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Table.red doc:Cell.blue";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
 
@@ -199,7 +199,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Table.red.green doc:Cell.blue";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
 
@@ -233,7 +233,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             string test = ".blue > .red";
 
-            var parsed = PDFStyleMatcher.Parse(test);
+            var parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
 
@@ -256,7 +256,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Page.red > doc:Div#MyDiv";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
 
@@ -279,11 +279,11 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Page.red > doc:Table doc:Cell.alt.green doc:Date";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
 
-            PDFStyleSelector match = parsed.Selector;
+            StyleSelector match = parsed.Selector;
 
             //Because these are parsed in reverse order, then they need to be read in that order
 
@@ -335,12 +335,12 @@ namespace Scryber.Core.UnitTests.Styles
         {
             string test = "doc:Table.red, doc:Cell.red";
 
-            var parsed = PDFStyleMatcher.Parse(test);
+            var parsed = StyleMatcher.Parse(test);
 
-            Assert.IsInstanceOfType(parsed, typeof(PDFStyleMultipleMatcher));
+            Assert.IsInstanceOfType(parsed, typeof(StyleMultipleMatcher));
             Assert.AreEqual(test, parsed.ToString(), "ToString did not match");
 
-            var multi = (PDFStyleMultipleMatcher)parsed;
+            var multi = (StyleMultipleMatcher)parsed;
 
             Assert.IsNotNull(multi);
             Assert.IsNotNull(multi.Selector);
@@ -366,7 +366,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             test = "doc:Table.blue, doc:Cell.red, doc:Page.red.green > doc:Div#MyDiv";
 
-            parsed = PDFStyleMatcher.Parse(test);
+            parsed = StyleMatcher.Parse(test);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Selector);
             Assert.AreEqual(test, parsed.ToString(), "ToString did not match");
@@ -390,8 +390,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(parsed.Selector.Ancestor.Placement, StylePlacement.DirectParent, "First Tripple style Test failed");
 
             //Move to the red cell
-            Assert.IsInstanceOfType(parsed, typeof(PDFStyleMultipleMatcher));
-            multi = (PDFStyleMultipleMatcher)parsed;
+            Assert.IsInstanceOfType(parsed, typeof(StyleMultipleMatcher));
+            multi = (StyleMultipleMatcher)parsed;
             parsed = multi.Next;
 
             Assert.AreEqual(".red", parsed.Selector.AppliedClass.ToString(), "Second Tripple style Test failed");
@@ -402,8 +402,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(parsed.Selector.Placement, StylePlacement.Any, "Second Tripple style Test failed");
 
             //Move to the blue table
-            Assert.IsInstanceOfType(parsed, typeof(PDFStyleMultipleMatcher));
-            multi = (PDFStyleMultipleMatcher)parsed;
+            Assert.IsInstanceOfType(parsed, typeof(StyleMultipleMatcher));
+            multi = (StyleMultipleMatcher)parsed;
             parsed = multi.Next;
 
             Assert.AreEqual(".blue", parsed.Selector.AppliedClass.ToString(), "Third Tripple style Test failed");
@@ -419,7 +419,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void StyleMatcherConversion_Test()
         {
-            PDFStyleMatcher matcher;
+            StyleMatcher matcher;
             string test;
 
             test = ".red";
@@ -436,7 +436,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod]
         public void StyleMatcherMultiple_Test()
         {
-            PDFStyleMatcher red = ".red";
+            StyleMatcher red = ".red";
 
             Div div = new Div();
             div.StyleClass = "red";

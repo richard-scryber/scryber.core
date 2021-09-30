@@ -53,7 +53,7 @@ namespace Scryber.Generation
         }
 
 
-        protected override object DoGetValue(System.Xml.XmlReader reader, PDFGeneratorSettings settings)
+        protected override object DoGetValue(System.Xml.XmlReader reader, ParserSettings settings)
         {
             return Converter(reader, this.PropertyInfo.PropertyType, settings);
         }

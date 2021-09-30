@@ -15,7 +15,7 @@ namespace Scryber.Styles
         public StylePageGroup() : base(PDFObjectTypes.Style)
         { }
 
-        public override void MergeInto(Style style, IPDFComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component, ComponentState state)
         {
             if (null == this.Matcher)
                 base.MergeInto(style, Component, state);

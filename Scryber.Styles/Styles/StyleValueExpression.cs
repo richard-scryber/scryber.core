@@ -70,7 +70,7 @@ namespace Scryber.Styles
         /// <param name="key">The style key this expression is assigned for</param>
         /// <param name="expressionString">The exppresion to be evaluated at runtime</param>
         /// <param name="convertor">An otpional convertor to make the result the required type</param>
-        public StyleValueExpression(PDFStyleKey<T> key, string expressionString, StyleValueConvertor<T> convertor)
+        public StyleValueExpression(StyleKey<T> key, string expressionString, StyleValueConvertor<T> convertor)
             : this(key, expressionString, convertor, default)
         {
         }
@@ -87,7 +87,7 @@ namespace Scryber.Styles
         /// <param name="expressionString">The exppresion to be evaluated at runtime</param>
         /// <param name="convertor">An otpional convertor to make the result the required type</param>
         /// <param name="baseValue">An optional base value that will be returned before the expression is bound</param>
-        public StyleValueExpression(PDFStyleKey<T> key, string expressionString, StyleValueConvertor<T> convertor, T baseValue)
+        public StyleValueExpression(StyleKey<T> key, string expressionString, StyleValueConvertor<T> convertor, T baseValue)
             : base(key, baseValue)
         {
             this._expressionString = expressionString ?? throw new ArgumentNullException(nameof(expressionString));

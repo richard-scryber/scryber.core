@@ -20,8 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Scryber.Native;
-using Scryber.Resources;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using System.ComponentModel;
 
 namespace Scryber.Drawing
@@ -130,19 +131,19 @@ namespace Scryber.Drawing
 
         public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
         {
-            Scryber.Resources.PDFImageXObject imagex;
+            Scryber.PDF.Resources.PDFImageXObject imagex;
 
             string fullpath = _source; // g.Container.MapPath(_source) - paths are mapped from the document now.
             //TODO: Add XStep, YStep etc.
             string resourcekey = GetImagePatternKey(fullpath);
 
 
-            PDFResource rsrc = g.Container.Document.GetResource(PDFResource.PatternResourceType, resourcekey, false);
+            PDFResource rsrc = g.Container.Document.GetResource(PDFResource.PatternResourceType, resourcekey, false) as PDFResource;
             if (null == rsrc)
             {
 
                 //Create the image
-                imagex = g.Container.Document.GetResource(Scryber.Resources.PDFResource.XObjectResourceType, fullpath, true) as PDFImageXObject;
+                imagex = g.Container.Document.GetResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, fullpath, true) as PDFImageXObject;
 
                 if (null == imagex)
                 {
@@ -199,9 +200,9 @@ namespace Scryber.Drawing
                 }
                 tile.Start = start;
 
-                PDFName name = g.Container.Register(tile);
+                string name = g.Container.Register(tile);
 
-                g.SetFillPattern(name);
+                g.SetFillPattern((PDFName)name);
                 return true;
             }
             else

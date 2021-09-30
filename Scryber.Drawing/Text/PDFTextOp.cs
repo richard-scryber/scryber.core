@@ -19,7 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Drawing;
 
 namespace Scryber.Text

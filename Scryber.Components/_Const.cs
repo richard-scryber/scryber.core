@@ -110,10 +110,6 @@ namespace Scryber
         public const string PDFStylesNamespace = Scryber.Styles.Style.PDFStylesNamespace;
         
 
-        //public const string PDFDataNamespace = "http://www.scryber.co.uk/schemas/v08/Scryber.Data.xsd";
-        //public const string PDFComponentNamespace = "http://www.scryber.co.uk/schemas/v08/Scryber.Components.xsd";
-        //public const string PDFStylesNamespace = "http://www.scryber.co.uk/schemas/v08/Scryber.Styles.xsd";
-
         //
         // PDF Name constants
         //

@@ -25,19 +25,19 @@ namespace Scryber.Data
 {
     public abstract class ChooseTemplateContainer : Component
     {
-        private IPDFTemplate _template;
+        private ITemplate _template;
 
         [PDFTemplate()]
         [PDFElement("Template")]
         [PDFAttribute("template")]
-        public IPDFTemplate Template
+        public ITemplate Template
         {
             get { return _template; }
             set { _template = value; }
         }
 
         
-        public ChooseTemplateContainer(PDFObjectType type)
+        public ChooseTemplateContainer(ObjectType type)
             : base(type)
         {
         }

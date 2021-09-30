@@ -73,11 +73,11 @@ namespace Scryber.Generation
         {
             this._converter = convert;
             this._customparse = iscustomparsable;
-            this._iscodedom = Array.IndexOf<Type>(info.PropertyType.GetInterfaces(), typeof(IPDFSimpleExpressionValue)) > -1;
+            this._iscodedom = false;
             this._isBindableOnly = isBindOnly;
         }
 
-        protected override object DoGetValue(XmlReader reader, PDFGeneratorSettings settings)
+        protected override object DoGetValue(XmlReader reader, ParserSettings settings)
         {
             return this.Converter(reader, this.PropertyInfo.PropertyType, settings);
         }

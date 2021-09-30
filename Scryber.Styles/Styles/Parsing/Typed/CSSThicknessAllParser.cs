@@ -5,13 +5,13 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public abstract class CSSThicknessAllParser : CSSStyleValueParser
     {
-        private PDFStyleKey<PDFUnit> _all;
-        private PDFStyleKey<PDFUnit> _left;
-        private PDFStyleKey<PDFUnit> _right;
-        private PDFStyleKey<PDFUnit> _top;
-        private PDFStyleKey<PDFUnit> _bottom;
+        private StyleKey<PDFUnit> _all;
+        private StyleKey<PDFUnit> _left;
+        private StyleKey<PDFUnit> _right;
+        private StyleKey<PDFUnit> _top;
+        private StyleKey<PDFUnit> _bottom;
 
-        public CSSThicknessAllParser(string cssAttr, PDFStyleKey<PDFUnit> all, PDFStyleKey<PDFUnit> left, PDFStyleKey<PDFUnit> top, PDFStyleKey<PDFUnit> right, PDFStyleKey<PDFUnit> bottom)
+        public CSSThicknessAllParser(string cssAttr, StyleKey<PDFUnit> all, StyleKey<PDFUnit> left, StyleKey<PDFUnit> top, StyleKey<PDFUnit> right, StyleKey<PDFUnit> bottom)
             : base(cssAttr)
         {
             _all = all;

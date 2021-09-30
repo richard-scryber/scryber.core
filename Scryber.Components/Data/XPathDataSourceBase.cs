@@ -174,7 +174,7 @@ namespace Scryber.Data
 
         #region public PDFXPathDataSourceBase(PDFObjectType type)
 
-        public XPathDataSourceBase(PDFObjectType type)
+        public XPathDataSourceBase(ObjectType type)
             : base(type)
         {
         }
@@ -480,7 +480,7 @@ namespace Scryber.Data
             if(null == doc)
                 throw new NullReferenceException("This data source is not part of the document heirarchy and cannot use the caching capabilities available");
             
-            IPDFCacheProvider cacheProv = doc.CacheProvider;
+            ICacheProvider cacheProv = doc.CacheProvider;
             if (null != cacheProv)
             {
                 if (cacheProv.TryRetrieveFromCache(type, key, out value))
@@ -514,7 +514,7 @@ namespace Scryber.Data
             if(null == doc)
                 throw new NullReferenceException("This data source is not part of the document heirarchy and cannot use the caching capabilities available");
             
-            IPDFCacheProvider cacheProv = doc.CacheProvider;
+            ICacheProvider cacheProv = doc.CacheProvider;
             if (null != cacheProv)
             {
                 DateTime expires = DateTime.Now.AddMinutes(this.CacheDuration);

@@ -20,8 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Scryber.Native;
-using Scryber.Resources;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 
 namespace Scryber
 {
@@ -35,246 +35,38 @@ namespace Scryber
         /// <summary>
         /// Gets the name for the object type
         /// </summary>
-        PDFObjectType Type { get; }
+        ObjectType Type { get; }
 
     }
 
     #endregion
 
-    #region public interface IFileObject : ITypedObject
-
-    /// <summary>
-    /// Base abstract class of all native file objects (PDFBoolean, PDFNumber etc...)
-    /// </summary>
-    public interface IFileObject : ITypedObject
-    {
-        /// <summary>
-        /// Writes the underlying data of the file object to the passed text writer
-        /// </summary>
-        /// <param name="tw">The text writer object to write data to</param>
-        void WriteData(PDFWriter writer);
-
-    }
-
-    #endregion
-
-    #region public interface IIndirectObject : IDisposable
-
-    /// <summary>
-    /// Defines the interface that all indirect objects must adhere to.
-    /// </summary>
-    public interface IIndirectObject : IDisposable
-    {
-        /// <summary>
-        /// Gets the object number of this indirect object
-        /// </summary>
-        int Number { get; set; }
-
-        /// <summary>
-        /// Gets the generation number of this indirect object
-        /// </summary>
-        int Generation { get; set; }
-
-        /// <summary>
-        /// Gets the byte offset of this indirect object in the base stream
-        /// </summary>
-        long Offset { get; set; }
-
-        /// <summary>
-        /// Gets the associated object data for this indirect object
-        /// </summary>
-        PDFStream ObjectData { get; }
-
-        /// <summary>
-        /// Returns true if this indirect object is deleted.
-        /// </summary>
-        bool Deleted { get; }
-
-        /// <summary>
-        /// Returns true if this indirect object has already been written to the base stream
-        /// </summary>
-        bool Written { get; set; }
-
-        /// <summary>
-        /// Returns true if this indirect object has an inner stream data
-        /// </summary>
-        bool HasStream { get; }
-
-        /// <summary>
-        /// Returns the inner stream data for this indirect object
-        /// </summary>
-        PDFStream Stream { get; }
-
-        /// <summary>
-        /// Gets the associated object data as a byte array
-        /// </summary>
-        /// <returns></returns>
-        byte[] GetObjectData();
-
-        /// <summary>
-        /// Gets the associated stream data as a byte array
-        /// </summary>
-        /// <returns></returns>
-        byte[] GetStreamData();
-    }
-
-    #endregion
-
-    #region public interface IParsedIndirectObject : IIndirectObject
-
-    /// <summary>
-    /// Interface for indirect objects that have been parsed from an existing file
-    /// </summary>
-    public interface IParsedIndirectObject : IIndirectObject
-    {
-        /// <summary>
-        /// Returns the parsed object data 
-        /// </summary>
-        /// <returns></returns>
-        IFileObject GetContents();
-    }
-
-    #endregion
-
-    #region public interface IStreamFactory
-
-    /// <summary>
-    /// Interface for instance that creates PDFStreams indirect objects can use
-    /// </summary>
-    public interface IStreamFactory
-    {
-        PDFStream CreateStream(IStreamFilter[] filters, IIndirectObject forObject);
-    }
-
-    #endregion
-
-    #region public interface IStreamFilter
-
-    /// <summary>
-    /// Defines the interface that all Stream Filters must adhere to 
-    /// </summary>
-    public interface IStreamFilter
-    {
-        /// <summary>
-        /// Gets or Sets the name of the filter
-        /// </summary>
-        string FilterName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Filters the stream reading from the TextReader, applying the filter and writing to the TextWriter
-        /// </summary>
-        /// <param name="read"></param>
-        /// <param name="write"></param>
-        void FilterStream(System.IO.Stream read, System.IO.Stream write);
-
-        /// <summary>
-        /// Performs a filter on the original data array, and returns the filtered data as a new byte[]
-        /// </summary>
-        /// <param name="orig"></param>
-        /// <returns></returns>
-        byte[] FilterStream(byte[] orig);
-    }
-
-    #endregion
-
-    #region public interface IObjectContainer
-
-    /// <summary>
-    /// Interface that defines a container of IFileObjects
-    /// </summary>
-    public interface IObjectContainer
-    {
-        void Add(IFileObject obj);
-    }
-
-    #endregion
-
-    #region public interface IPDFObject : ITypedObject
-
-    /// <summary>
-    /// Base interface for all pdf objects
-    /// </summary>
-    public interface IPDFObject : ITypedObject //, IDisposable
-    {
-    }
-
-    #endregion
-
-    #region public interface IPDFResourceContainer
-
-    /// <summary>
-    /// Interface for any items that hold a collection of resources
-    /// </summary>
-    public interface IPDFResourceContainer
-    {
-
-        IPDFDocument Document { get; }
-
-        Scryber.Native.PDFName Register(PDFResource rsrc);
-
-        string MapPath(string source);
-
-    }
-
-    #endregion
-
-    #region public interface IPDFResource
-
-    /// <summary>
-    /// Defines a top level resource that is contained in the PDF Document, and used for rendering the pages - e.g. Font or Image
-    /// </summary>
-    public interface IPDFResource
-    {
-        /// <summary>
-        /// Gets the type of this resource
-        /// </summary>
-        string ResourceType { get; }
-
-        /// <summary>
-        /// Gets the unique key of this resource within the document
-        /// </summary>
-        string ResourceKey { get; }
-
-        /// <summary>
-        /// If this resource has not been previously rendered, then this resource will render its content within the document.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="writer"></param>
-        /// <returns></returns>
-        PDFObjectRef EnsureRendered(PDFContextBase context, PDFWriter writer);
-    }
-
-    #endregion
 
     #region public interface IPDFTemplate
 
     /// <summary>
     /// Interface for a class that supports the instantiation of one or more copies its own content into the container
     /// </summary>
-    public interface IPDFTemplate
+    public interface ITemplate
     {
         /// <summary>
         /// Creates a copy of any content of this template in the specified container
         /// </summary>
         /// <param name="index">The current index of the instantiation</param>
         /// <param name="owner">The owner of this template</param>
-        IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner);
+        IEnumerable<IComponent> Instantiate(int index, IComponent owner);
     }
 
     #endregion
 
     
 
-    #region public interface IPDFComponent : IPDFObject
+    #region public interface IComponent : ITypedObject
 
     /// <summary>
-    /// Interface that complex pdf objects should support, including initialization and disposal
+    /// Interface that complex objects should support, including initialization and disposal
     /// </summary>
-    public interface IPDFComponent : IPDFObject, IDisposable
+    public interface IComponent : ITypedObject, IDisposable
     {
         /// <summary>
         /// Event that is raised when the object is initialized
@@ -310,12 +102,12 @@ namespace Scryber
         /// <summary>
         /// Gets the document that contains this PDFComponent, and forms the root of the PDF Component hierarchy
         /// </summary>
-        IPDFDocument Document { get; }
+        IDocument Document { get; }
 
         /// <summary>
         /// Gets or sets the containing parent of this PDFComponent
         /// </summary>
-        IPDFComponent Parent { get; set; }
+        IComponent Parent { get; set; }
 
         /// <summary>
         /// Returns the full path to a file relative to the component or its contianer(s).
@@ -328,37 +120,37 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFComponentWrappingList
+    #region public interface IComponentWrappingList
 
     /// <summary>
-    /// Interface for lists that wrap IPDFComponentLists for strongly typing
+    /// Interface for lists that wrap IComponentLists for strongly typing
     /// </summary>
-    public interface IPDFComponentWrappingList
+    public interface IComponentWrappingList
     {
-        IPDFComponentList InnerList { get; }
+        IComponentList InnerList { get; }
     }
 
     #endregion
 
-    #region public interface IPDFComponentList : ICollection<IPDFComponent>
+    #region public interface IComponentList : ICollection<IComponent>
 
     /// <summary>
     /// A List of IPDFComponents - ICollection interface and Insert
     /// </summary>
-    public interface IPDFComponentList : ICollection<IPDFComponent>
+    public interface IComponentList : ICollection<IComponent>
     {
-        void Insert(int index, IPDFComponent component);
+        void Insert(int index, IComponent component);
     }
 
     #endregion
 
-    #region public interface IPDFLoadableComponent : IPDFComponent
+    #region public interface ILoadableComponent : IComponent
 
     /// <summary>
     /// Defines a component interface that can be remotely loaded and the FileSource set as 
     /// the path the file was loaded from
     /// </summary>
-    public interface IPDFLoadableComponent : IPDFComponent
+    public interface ILoadableComponent : IComponent
     {
         /// <summary>
         /// Gets or sets the full path to the file the component was loaded from
@@ -373,13 +165,13 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFRemoteComponent : IPDFComponent
+    #region public interface IRemoteComponent : ILoadableComponent
     /// <summary>
     /// Defines a component that can be parsed from a remote XML file, extending the Loadable 
     /// component with the namespace declarations in the XML and any 
     /// parsed items that need to be passed into it.
     /// </summary>
-    public interface IPDFRemoteComponent : IPDFLoadableComponent
+    public interface IRemoteComponent : ILoadableComponent
     {
         /// <summary>
         /// Gets the Items defined and associated with this remote component
@@ -409,12 +201,12 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFBindableComponent
+    #region public interface IBindableComponent
 
     /// <summary>
     /// Interface that identifies the Databinding features of an Component
     /// </summary>
-    public interface IPDFBindableComponent
+    public interface IBindableComponent
     {
         /// <summary>
         /// Event that is raised before an Component is databound
@@ -433,32 +225,32 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFOptimizeComponent 
+    #region public interface IOptimizeComponent 
 
     /// <summary>
     /// Interface for the compression flag
     /// </summary>
-    public interface IPDFOptimizeComponent : IPDFComponent
+    public interface IOptimizeComponent : IComponent
     {
         bool Compress { get; set; }
     }
 
     #endregion
 
-    #region public interface IPDFNamingContainer
+    #region public interface INamingContainer
 
     /// <summary>
     /// Placeholder interface to identify instances that are included in creating a unique ID
     /// </summary>
-    public interface IPDFNamingContainer
+    public interface INamingContainer
     {
     }
 
     #endregion
 
-    #region public interface IPDFPathMappingService
+    #region public interface IPathMappingService
 
-    public interface IPDFPathMappingService
+    public interface IPathMappingService
     {
         string MapPath(ParserLoadType loadtype, string reference, string parent, out bool isFile);
     }
@@ -490,16 +282,16 @@ namespace Scryber
     /// </summary>
     public interface IScryberCachingServiceFactory
     {
-        IPDFCacheProvider GetProvider();
+        ICacheProvider GetProvider();
     }
 
-    #region public interface IPDFCacheProvider
+    #region public interface ICacheProvider
 
     /// <summary>
     /// Defines the contract all CacheProviders must conform to 
     /// in order to support access to the data cache
     /// </summary>
-    public interface IPDFCacheProvider
+    public interface ICacheProvider
     {
         bool TryRetrieveFromCache(string type, string key, out object data);
 
@@ -513,12 +305,12 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFDocument : IPDFLoadableComponent
+    #region public interface IDocument : ILoadableComponent
 
     /// <summary>
     /// Top Level document interface - supports resourses and componentID's
     /// </summary>
-    public interface IPDFDocument : IPDFLoadableComponent
+    public interface IDocument : ILoadableComponent
     {
 
         /// <summary>
@@ -527,7 +319,7 @@ namespace Scryber
         /// <param name="type">The resource type</param>
         /// <param name="key">The resource key </param>
         /// <returns></returns>
-        PDFResource GetResource(string type, string key, bool create);
+        ISharedResource GetResource(string type, string key, bool create);
 
         /// <summary>
         /// Ensures that the provided resource is registered in the documents
@@ -537,18 +329,56 @@ namespace Scryber
         /// <param name="key"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        PDFResource EnsureResource(string type, string key, object resource);
+        ISharedResource EnsureResource(string type, string key, object resource);
 
         /// <summary>
         /// Returns a document unique identifier for a particular object type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        string GetIncrementID(PDFObjectType type);
+        string GetIncrementID(ObjectType type);
 
     }
 
     #endregion
+
+    #region public interface IResourceContainer
+
+    /// <summary>
+    /// Interface for any items that hold a collection of resources
+    /// </summary>
+    public interface IResourceContainer
+    {
+
+        IDocument Document { get; }
+
+        string Register(ISharedResource rsrc);
+
+        string MapPath(string source);
+
+    }
+
+    #endregion
+
+    public interface ISharedResource
+    {
+        /// <summary>
+        /// Gets the type of this resource
+        /// </summary>
+        string ResourceType { get; }
+
+        /// <summary>
+        /// Gets the unique key of this resource within the document
+        /// </summary>
+        string ResourceKey { get; }
+
+        /// <summary>
+        /// Gets the container for this resource
+        /// </summary>
+        IResourceContainer Container { get; }
+
+        bool Registered { get; }
+    }
 
     #region public interface IPDFXMLParsedDocument : IPDFDocument
 
@@ -557,7 +387,7 @@ namespace Scryber
     /// </summary>
     /// <remarks>
     /// During the parsing the XMLParser will encounter pre</remarks>
-    public interface IPDFXMLParsedDocument : IPDFDocument
+    public interface IParsedDocument : IDocument
     {
         /// <summary>
         /// Set to true if the document should append a trace log table after the document has been generated.
@@ -589,7 +419,7 @@ namespace Scryber
     /// <summary>
     /// Defines an interface where the remote component can have a controller assigned, and the XML parser can hook up outlets and actions.
     /// </summary>
-    public interface IPDFControlledComponent : IPDFRemoteComponent
+    public interface IControlledComponent : IRemoteComponent
     {
         /// <summary>
         /// Gets or sets the controller for this remote component.
@@ -599,19 +429,9 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFSimpleExpressionValue
+    
 
-    /// <summary>
-    /// Interface that simple types can implement to return custom construction code expression
-    /// </summary>
-    public interface IPDFSimpleExpressionValue
-    {
-        System.Linq.Expressions.Expression GetConstructorExpression();
-    }
-
-    #endregion
-
-    public interface IPDFDataComponent : IPDFComponent
+    public interface IPDFDataComponent : IComponent
     {
 
     }
@@ -688,11 +508,11 @@ namespace Scryber
     {
         string ID { get; }
 
-        object GetNativeValue(string key, IPDFComponent comp);
+        object GetNativeValue(string key, IComponent comp);
 
-        void SetValue(string key, string value, IPDFComponent owner);
+        void SetValue(string key, string value, IComponent owner);
 
-        void SetNativeValue(string key, object value, IPDFComponent owner);
+        void SetNativeValue(string key, object value, IComponent owner);
 
         void Init();
     }

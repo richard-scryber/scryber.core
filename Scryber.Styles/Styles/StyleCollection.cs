@@ -30,13 +30,13 @@ namespace Scryber.Styles
     /// </summary>
     public class StyleCollection : System.Collections.ObjectModel.Collection<StyleBase>
     {
-        private IPDFComponent _owner;
+        private IComponent _owner;
         private bool _hasowner;
 
         /// <summary>
         /// Gets or sets the owner of this collection
         /// </summary>
-        public IPDFComponent Owner
+        public IComponent Owner
         {
             get { return _owner; }
             set
@@ -60,20 +60,20 @@ namespace Scryber.Styles
             : this(null, false)
         { }
 
-        public StyleCollection(IPDFComponent owner)
+        public StyleCollection(IComponent owner)
             : this(owner, true)
         {
             
         }
 
-        protected StyleCollection(IPDFComponent owner, bool hasowner)
+        protected StyleCollection(IComponent owner, bool hasowner)
         {
             this.Owner = owner;
             this._hasowner = hasowner;
         }
 
 
-        public void MergeInto(Style style, IPDFComponent forComponent, ComponentState state)
+        public void MergeInto(Style style, IComponent forComponent, ComponentState state)
         {
             for (int i = 0; i < this.Count; i++)
             {
@@ -83,13 +83,13 @@ namespace Scryber.Styles
             
         }
 
-        private void UpdateAllParents(IPDFComponent parent)
+        private void UpdateAllParents(IComponent parent)
         {
             foreach (StyleBase item in this)
             {
-                if (item is IPDFComponent)
+                if (item is IComponent)
                 {
-                    ((IPDFComponent)item).Parent = parent;
+                    ((IComponent)item).Parent = parent;
                 }
             }
         }
@@ -102,8 +102,8 @@ namespace Scryber.Styles
         {
             foreach (PDFObject item in this)
             {
-                if (item is IPDFComponent)
-                    (item as IPDFComponent).Init(context);
+                if (item is IComponent)
+                    (item as IComponent).Init(context);
             }
         }
 
@@ -111,8 +111,8 @@ namespace Scryber.Styles
         {
             foreach (PDFObject item in this)
             {
-                if (item is IPDFComponent)
-                    (item as IPDFComponent).Load(context);
+                if (item is IComponent)
+                    (item as IComponent).Load(context);
             }
         }
 
@@ -120,8 +120,8 @@ namespace Scryber.Styles
         {
             foreach (PDFObject item in this)
             {
-                if (item is IPDFBindableComponent)
-                    (item as IPDFBindableComponent).DataBind(context);
+                if (item is IBindableComponent)
+                    (item as IBindableComponent).DataBind(context);
             }
         }
 
@@ -152,8 +152,8 @@ namespace Scryber.Styles
 
             if (HasOwner)
             {
-                if (null != item && item is IPDFComponent)
-                    ((IPDFComponent)item).Parent = this.Owner;
+                if (null != item && item is IComponent)
+                    ((IComponent)item).Parent = this.Owner;
             }
         }
 
@@ -163,8 +163,8 @@ namespace Scryber.Styles
 
             if (HasOwner)
             {
-                if (null != item && item is IPDFComponent)
-                    ((IPDFComponent)item).Parent = this.Owner;
+                if (null != item && item is IComponent)
+                    ((IComponent)item).Parent = this.Owner;
             }
         }
 
@@ -192,9 +192,9 @@ namespace Scryber.Styles
 
             base.RemoveItem(index);
 
-            if (null != removed && removed is IPDFComponent)
+            if (null != removed && removed is IComponent)
             {
-                IPDFComponent comp = removed as IPDFComponent;
+                IComponent comp = removed as IComponent;
                 comp.Parent = null;
             }
         }

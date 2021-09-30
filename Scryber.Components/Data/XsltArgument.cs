@@ -24,7 +24,7 @@ using System.Text;
 namespace Scryber.Data
 {
     
-    public abstract class XsltArgumentBase : IPDFBindableComponent
+    public abstract class XsltArgumentBase : IBindableComponent
     {
 
         //

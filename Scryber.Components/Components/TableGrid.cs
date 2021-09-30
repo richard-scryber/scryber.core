@@ -20,8 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -83,7 +84,7 @@ namespace Scryber.Components
 
         #region .ctor(PDFObjectType)
 
-        protected TableGrid(PDFObjectType type)
+        protected TableGrid(ObjectType type)
             : base(type)
         {
         }
@@ -105,7 +106,7 @@ namespace Scryber.Components
         /// <returns>The required engine</returns>
         IPDFLayoutEngine IPDFViewPortComponent.GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new Layout.LayoutEngineTable(this, parent);
+            return new PDF.Layout.LayoutEngineTable(this, parent);
         }
 
         #endregion

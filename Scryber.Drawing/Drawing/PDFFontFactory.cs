@@ -25,7 +25,9 @@ using System.Linq;
 using System.Text;
 //using System.Drawing;
 using System.Drawing.Text;
-using Scryber.Resources;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using Scryber.Configuration;
 using System.Reflection;
 using Scryber.OpenType;
@@ -1354,7 +1356,7 @@ namespace Scryber.Drawing
         // PDFFontSource ensure methods
         //
 
-        public static bool TryEnsureFont(IPDFComponent mapper, PDFContextBase context, PDFFontSource source, string familyName, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
+        public static bool TryEnsureFont(IComponent mapper, PDFContextBase context, PDFFontSource source, string familyName, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
         {
             AssertInitialized();
 

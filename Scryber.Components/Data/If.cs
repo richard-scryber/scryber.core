@@ -82,7 +82,7 @@ namespace Scryber.Data
 
         #region public virtual IPDFTemplate Template {get;}
 
-        private IPDFTemplate _template;
+        private ITemplate _template;
 
         /// <summary>
         /// Gets or sets the IPDFTemplate used to instantiate child Components
@@ -90,7 +90,7 @@ namespace Scryber.Data
         [PDFTemplate()]
         [PDFElement("Template")]
         [PDFAttribute("template")]
-        public virtual IPDFTemplate Template
+        public virtual ITemplate Template
         {
             get { return _template; }
             set { _template = value; }
@@ -116,7 +116,7 @@ namespace Scryber.Data
         {
         }
 
-        protected If(PDFObjectType type)
+        protected If(ObjectType type)
             : base(type)
         {
         }
@@ -126,7 +126,7 @@ namespace Scryber.Data
         //
 
 
-        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
             return this.Template;
         }

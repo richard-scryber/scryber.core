@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Generation;
 using Scryber.Components;
+using Scryber.PDF.Resources;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -68,7 +69,7 @@ namespace Scryber.Core.UnitTests.Generation
         {
             //Default font is Sans-Serif
             var doc = args.Context.DocumentLayout.DocumentComponent;
-            var rsrc = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Sans-Serif");
+            var rsrc = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Sans-Serif");
 
             Assert.IsNotNull(rsrc);
             
@@ -114,12 +115,12 @@ namespace Scryber.Core.UnitTests.Generation
         {
             //Default font is Sans-Serif
             var doc = args.Context.DocumentLayout.DocumentComponent;
-            var hel = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Helvetica") as Scryber.Resources.PDFFontResource;
-            var times = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Times") as Scryber.Resources.PDFFontResource;
-            var cour = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Courier") as Scryber.Resources.PDFFontResource;
-            var zapf = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Zapf Dingbats") as Scryber.Resources.PDFFontResource;
-            var sym = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Symbol") as Scryber.Resources.PDFFontResource;
-            var timesB = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Times,Bold") as Scryber.Resources.PDFFontResource;
+            var hel = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Helvetica") as PDFFontResource;
+            var times = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times") as PDFFontResource;
+            var cour = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Courier") as PDFFontResource;
+            var zapf = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Zapf Dingbats") as PDFFontResource;
+            var sym = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Symbol") as PDFFontResource;
+            var timesB = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times,Bold") as PDFFontResource;
 
             Assert.IsNotNull(hel, "Helvetica is null");
             Assert.IsNotNull(times, "Times is null");
@@ -180,12 +181,12 @@ that will flow across multiple lines and show the expected default leading for t
             //Default font is Sans-Serif
             var doc = args.Context.DocumentLayout.DocumentComponent;
             
-            var sans = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "Arial") as Scryber.Resources.PDFFontResource;
+            var sans = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Arial") as PDFFontResource;
             
             if (null == sans) //Arial might not be present and if not then should fall back to the sans-serif
-                sans = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "sans-serif") as Scryber.Resources.PDFFontResource;
+                sans = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "sans-serif") as PDFFontResource;
 
-            var serif = doc.SharedResources.GetResource(Scryber.Resources.PDFResource.FontDefnResourceType, "serif") as Scryber.Resources.PDFFontResource;
+            var serif = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "serif") as PDFFontResource;
 
             Assert.IsNotNull(sans, "Sans-Serif is null");
             Assert.IsNotNull(serif, "Serif is null");

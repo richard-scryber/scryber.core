@@ -32,7 +32,7 @@ namespace Scryber
     /// Defines an interface for Components that support the application of state attributes and
     /// can also get the full style defined in the Components document for their type, id, and class
     /// </summary>
-    public interface IPDFStyledComponent : IPDFComponent
+    public interface IPDFStyledComponent : IComponent
     {
         /// <summary>
         /// Gets or sets the class name of styles to apply
@@ -70,9 +70,9 @@ namespace Scryber
 
     public interface IParserComponentFactory
     {
-        IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type);
+        IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type);
 
-        IPDFComponent GetTextComponent(IHtmlContentParser parser, string text);
+        IComponent GetTextComponent(IHtmlContentParser parser, string text);
 
         /// <summary>
         /// Retuns true if the component can contain other components or text
@@ -80,9 +80,9 @@ namespace Scryber
         /// <param name="component"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        bool IsContainerComponent(IHtmlContentParser parser, IPDFComponent component, string name);
+        bool IsContainerComponent(IHtmlContentParser parser, IComponent component, string name);
 
-        void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue);
+        void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue);
     }
 
     public interface IParserStyleFactory

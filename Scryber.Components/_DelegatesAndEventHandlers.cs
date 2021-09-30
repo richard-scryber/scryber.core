@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Scryber.Drawing;
+using Scryber.PDF;
 
 namespace Scryber
 {
@@ -75,10 +76,10 @@ namespace Scryber
     /// </summary>
     public class PDFTemplateItemDataBoundArgs : EventArgs
     {
-        private IPDFComponent _item;
+        private IComponent _item;
         private PDFDataContext _context;
 
-        public IPDFComponent Item
+        public IComponent Item
         {
             get { return _item; }
         }
@@ -88,7 +89,7 @@ namespace Scryber
             get { return _context; }
         }
 
-        public PDFTemplateItemDataBoundArgs(IPDFComponent item, PDFDataContext context)
+        public PDFTemplateItemDataBoundArgs(IComponent item, PDFDataContext context)
         {
             this._item = item;
             this._context = context;
@@ -101,7 +102,7 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="registered"></param>
-    public delegate void ComponentRegisteredHandler(object sender, IPDFComponent registered);
+    public delegate void ComponentRegisteredHandler(object sender, IComponent registered);
 
 
 
@@ -110,9 +111,9 @@ namespace Scryber
 
     public class RemoteFileRequestEventArgs : EventArgs
     {
-        public PDFRemoteFileRequest Request { get; private set; }
+        public RemoteFileRequest Request { get; private set; }
 
-        public RemoteFileRequestEventArgs(PDFRemoteFileRequest request)
+        public RemoteFileRequestEventArgs(RemoteFileRequest request)
         {
             this.Request = request ?? throw new ArgumentNullException(nameof(request));
         }

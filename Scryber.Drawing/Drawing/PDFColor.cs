@@ -19,7 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
+using Scryber.PDF;
 using System.CodeDom;
 using System.ComponentModel;
 using System.Linq.Expressions;
@@ -33,7 +34,7 @@ namespace Scryber.Drawing
     /// <remarks>Note the LAB and HSB are not currently supported</remarks>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class PDFColor : PDFObject, IEquatable<PDFColor>, IPDFSimpleExpressionValue
+    public class PDFColor : PDFObject, IEquatable<PDFColor>
     {
         private ColorSpace _cs;
 
@@ -132,7 +133,7 @@ namespace Scryber.Drawing
             this._c = c;
         }
 
-        protected PDFColor(ColorSpace cs, System.Drawing.Color c, PDFObjectType type)
+        protected PDFColor(ColorSpace cs, System.Drawing.Color c, ObjectType type)
             : base(type)
         {
             if (cs == ColorSpace.LAB || cs == ColorSpace.Custom)
@@ -466,56 +467,5 @@ namespace Scryber.Drawing
             get { return this.Color.IsEmpty || this.IsTransparent; }
         }
 
-        #region IPDFSimpleCodeDomValue Members
-
-        public System.Linq.Expressions.Expression GetConstructorExpression()
-        {
-            Type drawingColor = typeof(System.Drawing.Color);
-            Type pdfColor = typeof(PDFColor);
-            ConstructorInfo ctor = pdfColor.GetConstructor(new Type[] { typeof(ColorSpace), typeof(System.Drawing.Color) });
-
-            Expression colorSpace = Expression.Constant(this._cs);
-            Expression colorCtor;
-
-            if(this._c.IsNamedColor)
-            {
-                //System.Drawing.Color c = System.Drawing.Color.FromName(_c.ToKnownColor());
-                string name = _c.Name;
-                Expression Sname = Expression.Constant(name);
-                MethodInfo fromName = drawingColor.GetMethod("FromName");
-                if (null == fromName)
-                    throw new MissingMethodException("No Method FromName exists on the System.Drawing.Color class");
-                colorCtor = Expression.Call(null, fromName, Sname);
-            }
-            else
-            {
-                //System.Drawing.Color argb = System.Drawing.Color.FromArgb((int)this.Red, (int)this.Green, (int)this.Blue);
-                int red = this._c.R;
-                int green = this._c.G;
-                int blue = this._c.B;
-                MethodInfo fromArgb = drawingColor.GetMethod("FromArgb", new Type[] { typeof(int), typeof(int), typeof(int) });
-                if (null == fromArgb)
-                    throw new MissingMethodException("No Method FromArgb(int,int,int) could be found on the System.Drawing.Color class");
-                colorCtor = Expression.Call(null, fromArgb, Expression.Constant(red), Expression.Constant(green), Expression.Constant(blue));
-            }
-
-            //return new PDFColor(cs, color);
-            Expression create = Expression.New(ctor, colorSpace, colorCtor);
-            return create;
-
-
-        }
-
-        //public CodeExpression GetConstructorExpression()
-        //{
-        //    //new PDFColor(ColorSpace,one,two,three)
-        //    CodePrimitiveExpression one = new CodePrimitiveExpression(this.Red.Value);
-        //    CodePrimitiveExpression two = new CodePrimitiveExpression(this.Green.Value);
-        //    CodePrimitiveExpression three = new CodePrimitiveExpression(this.Blue.Value);
-        //    CodePropertyReferenceExpression cs = new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(ColorSpace)), this.ColorSpace.ToString());
-        //    return new CodeObjectCreateExpression(typeof(PDFColor), cs, one, two, three);
-        //}
-
-        #endregion
     }
 }

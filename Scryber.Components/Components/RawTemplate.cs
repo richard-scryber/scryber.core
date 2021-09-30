@@ -27,17 +27,17 @@ namespace Scryber.Components
     {
 
         public RawTemplate()
-            : base((PDFObjectType)"RawT")
+            : base((ObjectType)"RawT")
         {
         }
 
-        private IPDFTemplate _value = null;
+        private ITemplate _value = null;
         /// <summary>
         /// The actual content of the template to convert to components.
         /// </summary>
         [PDFAttribute("value")]
         [PDFElement("")]
-        public IPDFTemplate Template
+        public ITemplate Template
         {
             get
             {
@@ -49,7 +49,7 @@ namespace Scryber.Components
             }
         }
 
-        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
             return _value;
         }

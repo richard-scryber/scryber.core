@@ -27,7 +27,7 @@ namespace Scryber.Components
     /// whilst ignoring 'invisible' container and including their children
     /// </summary>
     /// <remarks>This non-stongly typed class allows instance variables to hold </remarks>
-    public abstract class ComponentWrappingList : IPDFComponentWrappingList,  System.Collections.IEnumerable
+    public abstract class ComponentWrappingList : IComponentWrappingList,  System.Collections.IEnumerable
     {
 
         #region public PDFComponentList InnerList {get;}
@@ -48,7 +48,7 @@ namespace Scryber.Components
         /// <summary>
         /// IPDFComponentWrappingList implementation of the InnerList get accessor
         /// </summary>
-        IPDFComponentList IPDFComponentWrappingList.InnerList
+        IComponentList IComponentWrappingList.InnerList
         {
             get { return _inner; }
         }

@@ -28,9 +28,9 @@ namespace Scryber.Data
     /// Abstract base class for template elements that instantiate inner contents
     /// when databinding
     /// </summary>
-    public abstract class CodeDomTemplateGenerator : IPDFTemplate
+    public abstract class CodeDomTemplateGenerator : ITemplate
     {
-        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
         {
             //Create the container
             TemplateInstance instance = new TemplateInstance();
@@ -39,7 +39,7 @@ namespace Scryber.Data
             this.InitializeComponents(instance);
 
             //return wrapped in an array
-            return new IPDFComponent[] { instance };
+            return new IComponent[] { instance };
 
         }
 

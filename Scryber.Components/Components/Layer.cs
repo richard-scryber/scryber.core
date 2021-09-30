@@ -41,7 +41,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Layer(PDFObjectType type)
+        protected Layer(ObjectType type)
             : base(type)
         {
         }

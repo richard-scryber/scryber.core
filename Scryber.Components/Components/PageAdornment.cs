@@ -29,7 +29,7 @@ namespace Scryber.Components
     /// </summary>
     public class PageAdornment : LayoutTemplateComponent
     {
-        public PageAdornment(PDFObjectType type)
+        public PageAdornment(ObjectType type)
             : base(type)
         {
         }

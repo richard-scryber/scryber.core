@@ -14,7 +14,7 @@ namespace Scryber.Styles.Selectors
         {
         }
 
-        public bool IsMatchedTo(IPDFComponent component)
+        public bool IsMatchedTo(IComponent component)
         {
             if (null == this.Selectors)
                 return true;

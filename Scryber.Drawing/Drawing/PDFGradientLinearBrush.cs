@@ -1,6 +1,7 @@
 ﻿using System;
-using Scryber.Native;
-using Scryber.Resources;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Drawing
 {
@@ -37,7 +38,7 @@ namespace Scryber.Drawing
             if (null != linear)
             {
                 var name = graphics.Container.Register(linear);
-                graphics.SetFillPattern(name);
+                graphics.SetFillPattern((PDFName)name);
                 return true;
             }
             else

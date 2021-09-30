@@ -5,7 +5,7 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public class CSSBreakBeforeAfterParser : CSSStyleAttributeParser<bool>
     {
-        public CSSBreakBeforeAfterParser(string name, PDFStyleKey<bool> key)
+        public CSSBreakBeforeAfterParser(string name, StyleKey<bool> key)
          : base(name, key)
         {
         }

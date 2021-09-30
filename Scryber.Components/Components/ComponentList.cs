@@ -20,11 +20,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
-using Scryber.Native;
+
 
 namespace Scryber.Components
 {
-    public class ComponentList : PDFObject, ICollection<Component>, IPDFComponentList, IDisposable
+    public class ComponentList : PDFObject, ICollection<Component>, IComponentList, IDisposable
     {
         /// <summary>
         /// Event that is raised when the contents of the collection are changed
@@ -101,7 +101,7 @@ namespace Scryber.Components
             get { return this._items; }
         }
 
-        public ComponentList(Component owner, PDFObjectType Componenttype)
+        public ComponentList(Component owner, ObjectType Componenttype)
             : base(Componenttype)
         {
             this._owner = owner;
@@ -344,8 +344,8 @@ namespace Scryber.Components
             Component[] all = this.Items.ToArray();
             foreach (PDFObject obj in all)
             {
-                if (obj is IPDFBindableComponent)
-                    ((IPDFBindableComponent)obj).DataBind(context);
+                if (obj is IBindableComponent)
+                    ((IBindableComponent)obj).DataBind(context);
             }
         }
 
@@ -353,7 +353,7 @@ namespace Scryber.Components
 
         #region IPDFComponentList Members
 
-        void IPDFComponentList.Insert(int index, IPDFComponent component)
+        void IComponentList.Insert(int index, IComponent component)
         {
             if (component is Component)
             {
@@ -368,9 +368,9 @@ namespace Scryber.Components
 
         #region IEnumerable<IPDFComponent> Members
 
-        IEnumerator<IPDFComponent> IEnumerable<IPDFComponent>.GetEnumerator()
+        IEnumerator<IComponent> IEnumerable<IComponent>.GetEnumerator()
         {
-            List<IPDFComponent> all = new List<IPDFComponent>();
+            List<IComponent> all = new List<IComponent>();
             foreach (Component comp in this)
             {
                 all.Add(comp);
@@ -386,7 +386,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="impl"></param>
         /// <returns></returns>
-        private Component ValidateFullComponent(IPDFComponent impl)
+        private Component ValidateFullComponent(IComponent impl)
         {
             if (null == impl)
                 throw new ArgumentNullException("impl");
@@ -399,24 +399,24 @@ namespace Scryber.Components
 
         #region ICollection<IPDFComponent> Members
 
-        void ICollection<IPDFComponent>.Add(IPDFComponent item)
+        void ICollection<IComponent>.Add(IComponent item)
         {
             Component comp = this.ValidateFullComponent(item);
             this.Add(comp);
         }
 
-        void ICollection<IPDFComponent>.Clear()
+        void ICollection<IComponent>.Clear()
         {
             this.Clear();
         }
 
-        bool ICollection<IPDFComponent>.Contains(IPDFComponent item)
+        bool ICollection<IComponent>.Contains(IComponent item)
         {
             Component comp = this.ValidateFullComponent(item);
             return this.Contains(comp);
         }
 
-        void ICollection<IPDFComponent>.CopyTo(IPDFComponent[] array, int arrayIndex)
+        void ICollection<IComponent>.CopyTo(IComponent[] array, int arrayIndex)
         {
             for (int i = 0; i < this.Count; i++)
             {
@@ -424,17 +424,17 @@ namespace Scryber.Components
             }
         }
 
-        int ICollection<IPDFComponent>.Count
+        int ICollection<IComponent>.Count
         {
             get { return this.Count; }
         }
 
-        bool ICollection<IPDFComponent>.IsReadOnly
+        bool ICollection<IComponent>.IsReadOnly
         {
             get { return this.IsReadOnly; }
         }
 
-        bool ICollection<IPDFComponent>.Remove(IPDFComponent item)
+        bool ICollection<IComponent>.Remove(IComponent item)
         {
             Component comp = this.ValidateFullComponent(item);
             return this.Remove(comp);

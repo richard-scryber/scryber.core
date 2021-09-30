@@ -11,7 +11,7 @@ namespace Scryber.Styles.Parsing.Typed
     {
         protected PDFUnit AutoValue { get; set; }
 
-        public CSSThicknessValueParser(string cssName, PDFStyleKey<PDFUnit> pdfAttr)
+        public CSSThicknessValueParser(string cssName, StyleKey<PDFUnit> pdfAttr)
             : base(cssName, pdfAttr)
         {
             AutoValue = PDFUnit.Zero;

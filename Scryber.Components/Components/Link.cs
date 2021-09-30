@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
+using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
@@ -36,7 +38,7 @@ namespace Scryber.Components
         {
         }
 
-        public Link(PDFObjectType type)
+        public Link(ObjectType type)
             : base(type)
         {
 
@@ -250,7 +252,7 @@ namespace Scryber.Components
         private object[] AddActionAnnotationToChildren(PDFLayoutContext context, Styles.Style style, PDFAction action)
         {
             List<object> entries = new List<object>();
-            Layout.PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
+            PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
 
             FillActionAnnotations(context, style, action, entries, pg, this.Contents);
             return entries.ToArray();
@@ -258,7 +260,7 @@ namespace Scryber.Components
 
         private void FillActionAnnotations(PDFLayoutContext context, Styles.Style style,
                                            PDFAction action, List<object> entries, 
-                                           Layout.PDFLayoutPage pg, ComponentList contents)
+                                           PDFLayoutPage pg, ComponentList contents)
         {
             foreach (Component comp in contents)
             {
@@ -320,7 +322,7 @@ namespace Scryber.Components
             {
                 object[] all = (object[])entries;
                 //TODO: Check the use of a link that flows over more than one page
-                Layout.PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
+                PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
 
                 for (int i = all.Length - 1; i >= 0; i--)
                 {

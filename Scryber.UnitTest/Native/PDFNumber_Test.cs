@@ -1,7 +1,8 @@
-﻿using Scryber.Native;
+﻿using Scryber.PDF.Native;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
+using Scryber.PDF;
 
 namespace Scryber.Core.UnitTests.Native
 {
@@ -573,9 +574,9 @@ namespace Scryber.Core.UnitTests.Native
         public void Type_Test()
         {
             PDFNumber target = new PDFNumber();
-            PDFObjectType expected = PDFObjectTypes.Number;
+            ObjectType expected = PDFObjectTypes.Number;
 
-            PDFObjectType actual;
+            ObjectType actual;
             actual = target.Type;
             Assert.AreEqual(expected, actual);
         }

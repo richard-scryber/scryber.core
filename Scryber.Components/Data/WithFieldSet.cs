@@ -160,11 +160,11 @@ namespace Scryber.Data
 
         
 
-        public WithFieldSet() : this((PDFObjectType)"WtFs")
+        public WithFieldSet() : this((ObjectType)"WtFs")
         {
         }
 
-        protected WithFieldSet(PDFObjectType type) 
+        protected WithFieldSet(ObjectType type) 
             : base(type)
         {
         }

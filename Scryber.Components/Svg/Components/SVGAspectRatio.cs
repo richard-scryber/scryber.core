@@ -9,7 +9,7 @@ namespace Scryber.Svg.Components
     public struct SVGAspectRatio
     {
 
-        public static readonly PDFStyleKey<SVGAspectRatio> AspectRatioStyleKey = StyleKey.CreateStyleValueKey<SVGAspectRatio>((PDFObjectType)"SVar", StyleKeys.PositionItemKey);
+        public static readonly StyleKey<SVGAspectRatio> AspectRatioStyleKey = StyleKey.CreateStyleValueKey<SVGAspectRatio>((ObjectType)"SVar", StyleKeys.PositionItemKey);
 
         public AspectRatioAlign Align { get; set; }
 

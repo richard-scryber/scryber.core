@@ -103,7 +103,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Creates a new empty graphics path, ready to start adding operations to.
         /// </summary>
-        protected PDFGraphicsPath(PDFObjectType type)
+        protected PDFGraphicsPath(ObjectType type)
             : base(type)
         {
             Path p = new Path();

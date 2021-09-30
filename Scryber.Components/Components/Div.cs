@@ -44,7 +44,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Div(PDFObjectType type)
+        protected Div(ObjectType type)
             : base(type)
         {
         }

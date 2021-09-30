@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace Scryber.Generation
 {
     /// <summary>
-    /// Implements the PDF Parser Factory for the XML Reflection parser
+    /// Implements the Parser Factory for the XML Reflection parser
     /// </summary>
-    public class PDFXMLReflectionParserFactory : IPDFParserFactory
+    public class PDFXMLReflectionParserFactory : IParserFactory
     {
         public PDFXMLReflectionParserFactory()
         { }
 
-        public IPDFParser CreateParser(PDFGeneratorSettings settings)
+        public IComponentParser CreateParser(ParserSettings settings)
         {
-            return new PDFXMLParser(settings);
+            return new XMLParser(settings);
         }
     }
 }

@@ -71,7 +71,7 @@ namespace Scryber.Core.UnitTests.Generation
         //
 
 
-        private PDFGeneratorSettings GetSettings()
+        private ParserSettings GetSettings()
         {
             Type literaltype = typeof(Scryber.Components.TextLiteral);
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
@@ -81,7 +81,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PDFPerformanceMonitor perfmon = new PDFPerformanceMonitor(true);
-            PDFGeneratorSettings settings = new PDFGeneratorSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
+            ParserSettings settings = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
 
             return settings;
         }
@@ -120,8 +120,8 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void PDFXMLParserConstructorTest()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
             Assert.IsNotNull(target);
             Assert.AreSame(settings, target.Settings);
         }
@@ -167,13 +167,13 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void Parse_XmlValid1_Test()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
             string source = @"C:\Fake\File\Path.xml";
 
             using (Stream stream = ToStream(xmlValid1))
             {
-                IPDFComponent result;
+                IComponent result;
                 result = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 AssertValidXml1(result as Fakes.ParserRootOne);
@@ -185,7 +185,7 @@ namespace Scryber.Core.UnitTests.Generation
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    IPDFComponent actual;
+                    IComponent actual;
                     actual = target.Parse(source, reader, ParseSourceType.DynamicContent);
 
                     AssertValidXml1(actual as Fakes.ParserRootOne);
@@ -198,7 +198,7 @@ namespace Scryber.Core.UnitTests.Generation
             {
                 using (XmlReader reader = XmlReader.Create(stream))
                 {
-                    IPDFComponent actual;
+                    IComponent actual;
                     actual = target.Parse(source, reader, ParseSourceType.DynamicContent);
 
                     AssertValidXml1(actual as Fakes.ParserRootOne);
@@ -283,14 +283,14 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void Parse_XmlValid2_Test()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
 
             string source = @"C:\Fake\File\Path.xml";
 
             using (Stream stream = ToStream(xmlValid2))
             {
-                IPDFComponent result;
+                IComponent result;
                 result = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 AssertValidXml2(result as Fakes.ParserRootOne);
@@ -320,13 +320,13 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void ParseProcessingInstructionsTest()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
             string source = @"C:\Fake\File\Path.xml";
 
             using (Stream stream = ToStream(xmlValidProcess))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -376,10 +376,10 @@ namespace Scryber.Core.UnitTests.Generation
         /// <param name="xpath"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        IPDFComponent ShimResolver(string filename, string xpath, PDFGeneratorSettings settings)
+        IComponent ShimResolver(string filename, string xpath, ParserSettings settings)
         {
             resolverCallCount++;
-            IPDFComponent resolverReturnValue;
+            IComponent resolverReturnValue;
             Assert.IsNotNull(settings);
 
             if (string.Equals(filename, "ShimFile2.pcfx"))
@@ -443,13 +443,13 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void Parse_XmlValidRemote_Test()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
             string source = @"C:\Fake\File\Path.xml";
 
             using (Stream stream = ToStream(xmlValidRemote))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 resolverCallCount = 0;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
@@ -506,15 +506,15 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void ParseProcessingCultureTest()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
             string source = @"C:\Fake\File\Path.xml";
 
             //Invariant format for dates and numbers
 
             using (Stream stream = ToStream(xmlValidInvariant))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -530,11 +530,11 @@ namespace Scryber.Core.UnitTests.Generation
             //British format for dates and numbers
 
             settings = GetSettings();
-            target = new PDFXMLParser(settings);
+            target = new XMLParser(settings);
 
             using (Stream stream = ToStream(xmlValidExplicitGB))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -550,11 +550,11 @@ namespace Scryber.Core.UnitTests.Generation
             //French format for dates and numbers
 
             settings = GetSettings();
-            target = new PDFXMLParser(settings);
+            target = new XMLParser(settings);
 
             using (Stream stream = ToStream(xmlValidExplicitFR))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -576,11 +576,11 @@ namespace Scryber.Core.UnitTests.Generation
             //Invariant format for dates and numbers
 
             settings = GetSettings();
-            target = new PDFXMLParser(settings);
+            target = new XMLParser(settings);
 
             using (Stream stream = ToStream(xmlValidInvariant))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -596,11 +596,11 @@ namespace Scryber.Core.UnitTests.Generation
             //British format for dates and numbers
 
             settings = GetSettings();
-            target = new PDFXMLParser(settings);
+            target = new XMLParser(settings);
 
             using (Stream stream = ToStream(xmlValidExplicitGB))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -616,11 +616,11 @@ namespace Scryber.Core.UnitTests.Generation
             //French format for dates and numbers
 
             settings = GetSettings();
-            target = new PDFXMLParser(settings);
+            target = new XMLParser(settings);
 
             using (Stream stream = ToStream(xmlValidExplicitFR))
             {
-                IPDFComponent actual;
+                IComponent actual;
                 actual = target.Parse(source, stream, ParseSourceType.DynamicContent);
 
                 Assert.AreEqual(false, target.Settings.LogParserOutput);
@@ -652,10 +652,10 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void RootComponentTest()
         {
-            PDFGeneratorSettings settings = GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
-            IPDFComponent expected = new Fakes.ParserRootOne();
-            IPDFComponent actual;
+            ParserSettings settings = GetSettings();
+            XMLParser target = new XMLParser(settings);
+            IComponent expected = new Fakes.ParserRootOne();
+            IComponent actual;
 
             //
             // if we set it, then it should stay as set
@@ -668,14 +668,14 @@ namespace Scryber.Core.UnitTests.Generation
                 target.Parse(source, stream, ParseSourceType.DynamicContent); //not capturing the output - want to check the RootComponent
             }
 
-            actual = target.RootComponent as IPDFComponent;
+            actual = target.RootComponent as IComponent;
             Assert.AreSame(expected, actual); //Should not have changed
 
             //
             // if we don't set it then it becomes the output
             //
 
-            target = new PDFXMLParser(settings);
+            target = new XMLParser(settings);
             source = @"C:\Fake\File\Path.xml";
             using (Stream stream = ToStream(xmlValid1))
             {
@@ -699,9 +699,9 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Parser")]
         public void SettingsTest()
         {
-            PDFGeneratorSettings settings = this.GetSettings();
-            PDFXMLParser target = new PDFXMLParser(settings);
-            PDFGeneratorSettings actual;
+            ParserSettings settings = this.GetSettings();
+            XMLParser target = new XMLParser(settings);
+            ParserSettings actual;
             actual = target.Settings;
             Assert.AreSame(settings, actual);
         }

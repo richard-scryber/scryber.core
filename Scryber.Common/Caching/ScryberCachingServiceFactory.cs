@@ -8,7 +8,7 @@ namespace Scryber.Caching
         {
         }
 
-        public IPDFCacheProvider GetProvider()
+        public ICacheProvider GetProvider()
         {
             return new PDFStaticCacheProvider();
         }

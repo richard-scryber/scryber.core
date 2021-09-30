@@ -127,7 +127,7 @@ namespace Scryber
             {
                 var initialized = new Dictionary<Type, object>();
 
-                initialized.Add(typeof(IPDFPathMappingService), new Utilities.LocalFilePathMappingService());
+                initialized.Add(typeof(IPathMappingService), new Utilities.LocalFilePathMappingService());
                 initialized.Add(typeof(IScryberConfigurationService), new Utilities.ScryberDefaultConfigurationService());
                 initialized.Add(typeof(IScryberCachingServiceFactory), new Caching.ScryberCachingServiceFactory());
 

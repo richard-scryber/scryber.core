@@ -23,7 +23,7 @@ using Scryber;
 
 namespace Scryber.Caching
 {
-    public class PDFStaticCacheProvider : IPDFCacheProvider
+    public class PDFStaticCacheProvider : ICacheProvider
     {
 
         

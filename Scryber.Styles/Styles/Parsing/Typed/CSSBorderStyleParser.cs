@@ -12,16 +12,16 @@ namespace Scryber.Styles.Parsing.Typed
         public static readonly PDFDash DottedDashPattern = new PDFDash(new int[] { 2 }, 0);
         public static readonly PDFDash DashedDashPattern = new PDFDash(new int[] { 8 }, 0);
 
-        private PDFStyleKey<PDFDash> _dash;
+        private StyleKey<PDFDash> _dash;
 
-        protected PDFStyleKey<PDFDash> DashKey { get { return this._dash; } }
+        protected StyleKey<PDFDash> DashKey { get { return this._dash; } }
 
         public CSSBorderStyleParser()
             : this(CSSStyleItems.BorderStyle, StyleKeys.BorderStyleKey, StyleKeys.BorderDashKey)
         {
         }
 
-        public CSSBorderStyleParser(string attr, PDFStyleKey<LineType> style, PDFStyleKey<PDFDash> dash)
+        public CSSBorderStyleParser(string attr, StyleKey<LineType> style, StyleKey<PDFDash> dash)
             : base(attr, style)
         {
             this._dash = dash;

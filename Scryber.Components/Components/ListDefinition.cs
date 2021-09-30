@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -57,7 +58,7 @@ namespace Scryber.Components
         {
         }
 
-        protected ListDefinition(PDFObjectType type)
+        protected ListDefinition(ObjectType type)
             : base(type)
         {
         }
@@ -72,7 +73,7 @@ namespace Scryber.Components
 
         protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEnginePanel(this, parent);
         }
 
         #endregion

@@ -34,7 +34,7 @@ namespace Scryber.Styles
         private OrphanedStylePool _orphanPool;
 
         internal OrphanedStyle(OrphanedStylePool pool)
-            : base((PDFObjectType)"_ors")
+            : base((ObjectType)"_ors")
         {
             _orphanPool = pool;
         }

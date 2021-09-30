@@ -19,14 +19,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
     /// <summary>
     /// Contains the information about the document
     /// </summary>
-    public class DocumentInfo : IPDFBindableComponent
+    public class DocumentInfo : IBindableComponent
     {
         #region ivars
 

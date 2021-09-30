@@ -23,6 +23,9 @@ using System.Text;
 
 namespace Scryber.Logging
 {
+    /// <summary>
+    /// A TraceLog implementation that writes to System.Diagnostics.Trace
+    /// </summary>
     public class DiagnosticsTraceLog : PDFTraceLog
     {
         public DiagnosticsTraceLog(TraceRecordLevel level, string name)

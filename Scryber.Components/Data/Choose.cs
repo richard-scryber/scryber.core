@@ -94,7 +94,7 @@ namespace Scryber.Data
         {
         }
 
-        public Choose(PDFObjectType type)
+        public Choose(ObjectType type)
             : base(type)
         {
         }
@@ -102,7 +102,7 @@ namespace Scryber.Data
 
         
 
-        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
 
             //If we are not visible then don't do anything and return null
@@ -110,7 +110,7 @@ namespace Scryber.Data
             if (this.Visible == false)
                 return null;
 
-            IPDFTemplate tempate = null;
+            ITemplate tempate = null;
             bool found = false;
 
             foreach (ChooseWhen where in this.Whens)

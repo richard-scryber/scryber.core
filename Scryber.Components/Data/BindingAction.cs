@@ -18,12 +18,12 @@ namespace Scryber.Data
         /// <summary>
         /// Gets or sets the component the data should be bound to.
         /// </summary>
-        public IPDFBindableComponent Component { get; set; }
+        public IBindableComponent Component { get; set; }
 
         public IPDFDataSource Source { get; set; }
 
 
-        public BindingAction(object data, IPDFDataSource source, IPDFBindableComponent comp)
+        public BindingAction(object data, IPDFDataSource source, IBindableComponent comp)
         {
             this.Data = data;
             this.Component = comp;
@@ -33,7 +33,7 @@ namespace Scryber.Data
 
     internal class BindingActionList : List<BindingAction>
     {
-        public void Add(object data, IPDFDataSource source, IPDFBindableComponent comp)
+        public void Add(object data, IPDFDataSource source, IBindableComponent comp)
         {
             BindingAction action = new BindingAction(data, source, comp);
             this.Add(action);

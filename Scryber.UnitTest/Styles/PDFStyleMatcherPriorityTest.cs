@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles.Selectors;
 using Scryber.Styles;
 using Scryber.Components;
@@ -39,7 +39,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void StylePrioritySingle_Test()
         {
 
-            PDFStyleMatcher matcher = "doc:Div";
+            StyleMatcher matcher = "doc:Div";
             Assert.AreEqual(1, matcher.Selector.Priority, "Element on it's own should be 1");
 
             matcher = ".red";
@@ -59,7 +59,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void StylePriorityMultiple_Test()
         {
 
-            PDFStyleMatcher matcher = "doc:Div.red";
+            StyleMatcher matcher = "doc:Div.red";
             Assert.AreEqual(3, matcher.Selector.Priority, "Element and class should be 3");
 
             
@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void StylePriorityCompound_Test()
         {
 
-            PDFStyleMatcher matcher = "doc:Div .red";
+            StyleMatcher matcher = "doc:Div .red";
             Assert.AreEqual(21, matcher.Selector.Priority, "Element and class should be 21");
 
 
@@ -103,7 +103,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Using a direct parent - we double that selector priority
 
-            PDFStyleMatcher matcher = "doc:Div > .red";
+            StyleMatcher matcher = "doc:Div > .red";
             Assert.AreEqual(41, matcher.Selector.Priority, "Element and class should be 41 (20*2+ 1)");
 
 

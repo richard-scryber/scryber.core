@@ -10,7 +10,9 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Styles.Parsing;
 
-using Scryber.Layout;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
+
 using System.Xml.Schema;
 using System.Xml.Linq;
 using System.IO;
@@ -18,7 +20,7 @@ using Scryber.Generation;
 using Scryber.Svg.Components;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
 using NuGet.Frameworks;
 using Scryber.Expressive.Functions;
 using Scryber.Expressive.Expressions;
@@ -1300,7 +1302,7 @@ namespace Scryber.Core.UnitTests.Html
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceFallback.html");
-            StyleFontFace ff;
+
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -1629,7 +1631,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.PasswordProvider = new Scryber.Secure.DocumentPasswordProvider("Password");
+                doc.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password");
                 doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("RestrictedHtml.pdf"))
@@ -1668,7 +1670,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.PasswordProvider = new Scryber.Secure.DocumentPasswordProvider("Password", "Password");
+                doc.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password", "Password");
                 doc.Params["title"] = "Hello World";
                 using (var stream = DocStreams.GetOutputStream("ProtectedHtml.pdf"))
                 {
@@ -1774,7 +1776,7 @@ namespace Scryber.Core.UnitTests.Html
             return new StringReader("<p xmlns='http://www.w3.org/1999/xhtml'>These are my terms</p>");
         }
 
-        private IPDFComponent CustomResolve(string filepath, string xpath, PDFGeneratorSettings settings)
+        private IComponent CustomResolve(string filepath, string xpath, ParserSettings settings)
         {
             if (filepath == "MyTsAndCs")
             {

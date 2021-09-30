@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
 using Scryber.Generation;
 
 namespace Scryber
@@ -30,7 +29,7 @@ namespace Scryber
     /// <summary>
     /// A parser that can read a stream to generate a PDFComponent
     /// </summary>
-    public interface IPDFParser
+    public interface IComponentParser
     {
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace Scryber
         /// <param name="source"></param>
         /// <param name="istemplate">If the source to be parsed is a template (not a physical file) set this to true</param>
         /// <returns></returns>
-        IPDFComponent Parse(string source, System.IO.Stream stream, ParseSourceType type);
+        IComponent Parse(string source, System.IO.Stream stream, ParseSourceType type);
 
         /// <summary>
         /// Parses the specified stream using the resolver to load any referenced files and returns the PDFComponent representation
@@ -56,7 +55,7 @@ namespace Scryber
         /// <param name="reader"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        IPDFComponent Parse(string source, System.IO.TextReader reader, ParseSourceType type);
+        IComponent Parse(string source, System.IO.TextReader reader, ParseSourceType type);
 
         /// <summary>
         /// Parses the specified stream using the resolver to load any referenced files and returns the PDFComponent representation
@@ -65,7 +64,7 @@ namespace Scryber
         /// <param name="reaser"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        IPDFComponent Parse(string source, System.Xml.XmlReader reaser, ParseSourceType type);
+        IComponent Parse(string source, System.Xml.XmlReader reaser, ParseSourceType type);
     }
 
     #endregion
@@ -73,9 +72,9 @@ namespace Scryber
     /// <summary>
     /// Interface for the parser factory
     /// </summary>
-    public interface IPDFParserFactory
+    public interface IParserFactory
     {
-        IPDFParser CreateParser(PDFGeneratorSettings settings);
+        IComponentParser CreateParser(ParserSettings settings);
     }
 
     /// <summary>
@@ -115,7 +114,7 @@ namespace Scryber
     /// <summary>
     /// Interface for a text literal component that will be used by the parse when it encounters general textual content
     /// </summary>
-    public interface IPDFTextLiteral : IPDFComponent
+    public interface IPDFTextLiteral : IComponent
     {
         string Text { get; set; }
         TextFormat ReaderFormat { get; set; }

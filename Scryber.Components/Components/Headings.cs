@@ -97,7 +97,7 @@ namespace Scryber.Components
 
         
 
-        public HeadingBase(PDFObjectType type, int depth)
+        public HeadingBase(ObjectType type, int depth)
             : base(type)
         {
             _headdepth = depth;
@@ -123,9 +123,9 @@ namespace Scryber.Components
             _numbertext = number;
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEngineHeading(this, parent);
+            return new PDF.Layout.LayoutEngineHeading(this, parent);
         }
 
         protected static Style GetBaseStyles(PDFUnit fontsize, bool bold, bool italic, string groupname)
@@ -155,7 +155,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Head1(PDFObjectType type)
+        protected Head1(ObjectType type)
             : base(type, 1)
         {
         }
@@ -175,7 +175,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.H2)
         { }
 
-        protected Head2(PDFObjectType type)
+        protected Head2(ObjectType type)
             : base(type, 2)
         {
         }
@@ -195,7 +195,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.H3)
         { }
 
-        protected Head3(PDFObjectType type)
+        protected Head3(ObjectType type)
             : base(type, 3)
         {
         }
@@ -215,7 +215,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.H4)
         { }
 
-        protected Head4(PDFObjectType type)
+        protected Head4(ObjectType type)
             : base(type, 4)
         {
         }
@@ -235,7 +235,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.H5)
         { }
 
-        protected Head5(PDFObjectType type)
+        protected Head5(ObjectType type)
             : base(type, 5)
         {
         }
@@ -255,7 +255,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.H6)
         { }
 
-        protected Head6(PDFObjectType type)
+        protected Head6(ObjectType type)
             : base(type, 6)
         {
         }

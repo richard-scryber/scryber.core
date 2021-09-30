@@ -19,16 +19,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using System.Drawing;
 using Scryber.Styles;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
-    public abstract class PageBase : VisualComponent, IPDFStyledComponent, IPDFResourceContainer, IPDFViewPortComponent,
-                                                  IPDFRemoteComponent, IPDFControlledComponent, IPDFNamingContainer, IPDFTopAndTailedComponent
+    public abstract class PageBase : VisualComponent, IPDFStyledComponent, IResourceContainer, IPDFViewPortComponent,
+                                                  IRemoteComponent, IControlledComponent, INamingContainer, IPDFTopAndTailedComponent
     {
 
         //inner classes
@@ -81,14 +82,14 @@ namespace Scryber.Components
 
         #region  public IPDFTemplate Header {get;set;}
 
-        private IPDFTemplate _header;
+        private ITemplate _header;
 
         /// <summary>
         /// Gets or sets the header of this Page
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Header")]
-        public virtual IPDFTemplate Header
+        public virtual ITemplate Header
         {
             get { return _header; }
             set { _header = value; }
@@ -98,14 +99,14 @@ namespace Scryber.Components
 
         #region public IPDFTemplate Footer {get;set;}
 
-        private IPDFTemplate _footer;
+        private ITemplate _footer;
 
         /// <summary>
         /// Gets or sets the template for the footer of this Page
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Footer")]
-        public virtual IPDFTemplate Footer
+        public virtual ITemplate Footer
         {
             get { return _footer; }
             set { _footer = value; }
@@ -264,7 +265,7 @@ namespace Scryber.Components
 
         #region IPDFDocument IPDFResourceContainer.Document
         
-        IPDFDocument IPDFResourceContainer.Document
+        IDocument IResourceContainer.Document
         {
             get { return this.Document; }
         }
@@ -407,7 +408,7 @@ namespace Scryber.Components
         /// with a custom type
         /// </summary>
         /// <param name="type">The type name for the Page - usually 'Page'</param>
-        protected PageBase(PDFObjectType type)
+        protected PageBase(ObjectType type)
             : base(type)
         {
             this._resources = null;
@@ -667,6 +668,11 @@ namespace Scryber.Components
 
         #region IResourceContainer Members
 
+        string IResourceContainer.Register(ISharedResource rsrc)
+        {
+            return this.Register((PDFResource)rsrc).Value;
+        }
+
         public PDFName RegisterFont(Scryber.Drawing.PDFFont font)
         {            
             PDFFontResource defn = this.Document.GetFontResource(font, true);
@@ -699,7 +705,7 @@ namespace Scryber.Components
 
         #region IPDFRemoteComponent Members
 
-        void Scryber.IPDFRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
+        void Scryber.IRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
         {
             Scryber.Data.XmlNamespaceDeclaration dec = new Data.XmlNamespaceDeclaration()
             {
@@ -711,7 +717,7 @@ namespace Scryber.Components
             this._namespaces.Add(dec);
         }
 
-        IDictionary<string, string> Scryber.IPDFRemoteComponent.GetDeclaredNamespaces()
+        IDictionary<string, string> Scryber.IRemoteComponent.GetDeclaredNamespaces()
         {
             Dictionary<string, string> all = new Dictionary<string, string>();
             if (null != this.NamespaceDeclarations)

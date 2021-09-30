@@ -281,7 +281,7 @@ namespace Scryber.Html.Parsing
 
             var content = this.Source.Substring(start, len);
 
-            IPDFComponent text = _owner.ComponentFactory.GetTextComponent(this.Parser, content);
+            IComponent text = _owner.ComponentFactory.GetTextComponent(this.Parser, content);
             ((IPDFTextLiteral)text).ReaderFormat = TextFormat.XML;
 
             HTMLParserResult result = new HTMLParserResult(text, HtmlComponentType.Text, null, start, this.Source.Offset - 1, true);
@@ -338,7 +338,7 @@ namespace Scryber.Html.Parsing
             bool autoend;
             bool isEndMarker;
 
-            IPDFComponent com = GetCurrentTag(out name, out type, out autoend, out isEndMarker);
+            IComponent com = GetCurrentTag(out name, out type, out autoend, out isEndMarker);
             
 
             if (null != com)
@@ -422,7 +422,7 @@ namespace Scryber.Html.Parsing
             {
                 string content = this.Buffer.ToString();
 
-                IPDFComponent text = _owner.ComponentFactory.GetTextComponent(this.Parser, this.Buffer.ToString());
+                IComponent text = _owner.ComponentFactory.GetTextComponent(this.Parser, this.Buffer.ToString());
                 HTMLParserResult result = new HTMLParserResult(text, HtmlComponentType.Text, null, start, this.Source.Offset - 1, true);
                 this.TagsToClose.Push(result);
                 this.Current = result;
@@ -715,7 +715,7 @@ namespace Scryber.Html.Parsing
         /// <param name="autoend">Set to true if this tag / component should always end after it has begun (does not contain other components / tags)</param>
         /// <param name="isEndMarker">Set to true if this is the end marker of another tag (&lt;/span&gt; etc)</param>
         /// <returns>The parsed component or null</returns>
-        private IPDFComponent GetCurrentTag(out string name, out HtmlComponentType type, out bool autoend, out bool isEndMarker)
+        private IComponent GetCurrentTag(out string name, out HtmlComponentType type, out bool autoend, out bool isEndMarker)
         {
             autoend = false;
             isEndMarker = false;
@@ -786,7 +786,7 @@ namespace Scryber.Html.Parsing
                 return null;
             }
 
-            IPDFComponent parsed = this._owner.ComponentFactory.GetComponent(this.Parser, name, out type);
+            IComponent parsed = this._owner.ComponentFactory.GetComponent(this.Parser, name, out type);
 
             if (!this.Source.EOS)
             {
@@ -989,7 +989,7 @@ namespace Scryber.Html.Parsing
         /// </summary>
         /// <param name="parsed"></param>
         /// <param name="tagname"></param>
-        private void ReadAttributes(IPDFComponent parsed, string tagname)
+        private void ReadAttributes(IComponent parsed, string tagname)
         {
             //Read to the start of each attribute in turn
             //Then check the current name aginst the Style and Class attribute values (including the equals)

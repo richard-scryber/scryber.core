@@ -31,7 +31,7 @@ namespace Scryber.Components
 
         #region  public IPDFTemplate ContinuationHeader {get;set;}
 
-        private IPDFTemplate _header;
+        private ITemplate _header;
 
         /// <summary>
         /// Gets or sets the template for the continuation footer of this Page 
@@ -39,7 +39,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Continuation-Header")]
-        public virtual IPDFTemplate ContinuationHeader
+        public virtual ITemplate ContinuationHeader
         {
             get { return _header; }
             set { _header = value; }
@@ -49,7 +49,7 @@ namespace Scryber.Components
 
         #region public IPDFTemplate ContinuationFooter {get;set;}
 
-        private IPDFTemplate _footer;
+        private ITemplate _footer;
 
         /// <summary>
         /// Gets or sets the template for the continuation footer of this Page 
@@ -57,7 +57,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Continuation-Footer")]
-        public virtual IPDFTemplate ContinuationFooter
+        public virtual ITemplate ContinuationFooter
         {
             get { return _footer; }
             set { _footer = value; }
@@ -71,15 +71,15 @@ namespace Scryber.Components
         {
         }
 
-        protected Section(PDFObjectType type)
+        protected Section(ObjectType type)
             : base(type)
         {
         }
 
         
-        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEngineSection(this, parent);
+            return new PDF.Layout.LayoutEngineSection(this, parent);
         }
 
         /// <summary>

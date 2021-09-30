@@ -22,7 +22,8 @@ using System.Drawing;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
-using Scryber.Native;
+using Scryber.PDF.Native;
+using Scryber.PDF;
 
 namespace Scryber.Drawing
 {
@@ -545,7 +546,7 @@ namespace Scryber.Drawing
         // static methods
         //
 
-        public static PDFImageData LoadImageFromURI(string uri, IPDFComponent owner = null)
+        public static PDFImageData LoadImageFromURI(string uri, IComponent owner = null)
         {
             //throw new NotSupportedException("Don't use the loading from a remote uri. Use the Document.RegisterRemoteFileRequest");
 
@@ -555,8 +556,8 @@ namespace Scryber.Drawing
 
                 bool compress = false;
 
-                if (owner is IPDFOptimizeComponent)
-                    compress = ((IPDFOptimizeComponent)owner).Compress;
+                if (owner is IOptimizeComponent)
+                    compress = ((IOptimizeComponent)owner).Compress;
 
                 PDFImageData img;
                 byte[] data = wc.GetByteArrayAsync(uri).Result;
@@ -566,14 +567,14 @@ namespace Scryber.Drawing
             }
         }
 
-        public static PDFImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IPDFComponent owner = null)
+        public static PDFImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IComponent owner = null)
         {
             using (System.Drawing.Image bmp = System.Drawing.Image.FromStream(stream))
             {
                 bool compress = false;
 
-                if (null != owner && owner is IPDFOptimizeComponent)
-                    compress = ((IPDFOptimizeComponent)owner).Compress;
+                if (null != owner && owner is IOptimizeComponent)
+                    compress = ((IOptimizeComponent)owner).Compress;
 
                 PDFImageData img;
                 img = InitImageData(sourceKey, bmp, compress);
@@ -581,7 +582,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public static PDFImageData LoadImageFromLocalFile(string path, IPDFComponent owner = null)
+        public static PDFImageData LoadImageFromLocalFile(string path, IComponent owner = null)
         {
             System.IO.FileInfo fi = new System.IO.FileInfo(path);
             if (fi.Exists == false)
@@ -589,8 +590,8 @@ namespace Scryber.Drawing
 
             bool compress = false;
 
-            if (null != owner && owner is IPDFOptimizeComponent)
-                compress = ((IPDFOptimizeComponent)owner).Compress;
+            if (null != owner && owner is IOptimizeComponent)
+                compress = ((IOptimizeComponent)owner).Compress;
 
             using (System.Drawing.Image bmp = System.Drawing.Image.FromFile(path))
             {
@@ -600,7 +601,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public static PDFImageData LoadImageFromUriData(string src, IPDFDocument document, IPDFComponent owner)
+        public static PDFImageData LoadImageFromUriData(string src, IDocument document, IComponent owner)
         {
             if (null == document) throw new ArgumentNullException("document");
             if (null == owner) throw new ArgumentNullException("owner");

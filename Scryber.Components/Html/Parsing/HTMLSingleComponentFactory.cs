@@ -39,11 +39,11 @@ namespace Scryber.Html.Parsing
         /// <param name="parser"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public abstract IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type);
+        public abstract IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type);
 
         #endregion
 
-        public virtual bool IsContainerComponent(IHtmlContentParser parser, IPDFComponent component, string name)
+        public virtual bool IsContainerComponent(IHtmlContentParser parser, IComponent component, string name)
         {
             return true;
         }
@@ -56,7 +56,7 @@ namespace Scryber.Html.Parsing
         /// <param name="parser"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public virtual IPDFComponent GetTextComponent(IHtmlContentParser parser, string text)
+        public virtual IComponent GetTextComponent(IHtmlContentParser parser, string text)
         {
             return new TextLiteral(text);
         }
@@ -73,7 +73,7 @@ namespace Scryber.Html.Parsing
         /// <param name="componentName"></param>
         /// <param name="attrName"></param>
         /// <param name="attrValue"></param>
-        public virtual void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
+        public virtual void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue)
         {
             if (attrName == ClassAttrName && parsed is IPDFStyledComponent)
                 ((IPDFStyledComponent)parsed).StyleClass = attrValue;
@@ -92,7 +92,7 @@ namespace Scryber.Html.Parsing
 
     internal class HTMLBodyFactory : HTMLSingleComponentFactory
     {
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Body;
             HTMLBody body = new HTMLBody();
@@ -108,7 +108,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Panel;
             if (String.Equals("blockquote", name, StringComparison.OrdinalIgnoreCase))
@@ -129,7 +129,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             SpanBase span;
             type = HtmlComponentType.Span;
@@ -164,7 +164,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Table;
             return new HTMLTableGrid();
@@ -178,7 +178,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.TableRow;
             return new HTMLTableRow();
@@ -192,13 +192,13 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.TableCell;
             return new HTMLTableCell();
         }
 
-        public override void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
+        public override void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue)
         {
             if (attrName == "colspan")
             {
@@ -218,7 +218,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.List;
             return new HTMLListUnordered();
@@ -232,7 +232,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.List;
             return new HTMLListOrdered();
@@ -246,7 +246,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.ListItem;
             return new HTMLListItem();
@@ -259,7 +259,7 @@ namespace Scryber.Html.Parsing
             : base()
         {
         }
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.List;
             return new HTMLListDefinition();
@@ -273,7 +273,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.ListItem;
             return new HTMLListDefinitionItem();
@@ -287,7 +287,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Heading;
             HeadingBase head;
@@ -326,7 +326,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Panel;
             return new HTMLParagraph();
@@ -340,7 +340,7 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.TableCell;
             return new HTMLTableHeaderCell();
@@ -355,7 +355,7 @@ namespace Scryber.Html.Parsing
             : base()
         {
         }
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Preformatted;
             return new HTMLPreformatted();
@@ -369,13 +369,13 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.LineBreak;
             return new HTMLLineBreak();
         }
 
-        public override bool IsContainerComponent(IHtmlContentParser parser, IPDFComponent component, string name)
+        public override bool IsContainerComponent(IHtmlContentParser parser, IComponent component, string name)
         {
             return false;
         }
@@ -388,18 +388,18 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Image;
             return new HTMLImage();
         }
 
-        public override bool IsContainerComponent(IHtmlContentParser parser, IPDFComponent component, string name)
+        public override bool IsContainerComponent(IHtmlContentParser parser, IComponent component, string name)
         {
             return false;
         }
 
-        public override void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
+        public override void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue)
         {
             if (attrName == "src")
                ((Image) parsed).Source = attrValue;
@@ -415,13 +415,13 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.HorizontalLine;
             return new HTMLHorizontalRule();
         }
 
-        public override bool IsContainerComponent(IHtmlContentParser parser, IPDFComponent component, string name)
+        public override bool IsContainerComponent(IHtmlContentParser parser, IComponent component, string name)
         {
             return false;
         }
@@ -434,13 +434,13 @@ namespace Scryber.Html.Parsing
         {
         }
 
-        public override IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public override IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
             type = HtmlComponentType.Link;
             return new HTMLAnchor();
         }
 
-        public override void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
+        public override void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue)
         {
             if (attrName == "href")
             {

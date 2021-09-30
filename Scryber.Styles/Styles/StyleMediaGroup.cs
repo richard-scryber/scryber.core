@@ -27,7 +27,7 @@ namespace Scryber.Styles
             base.DoDataBind(context, includechildren);
         }
 
-        public override void MergeInto(Style style, IPDFComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component, ComponentState state)
         {
             if (null == this.Media || this.Media.IsMatchedTo(this._format))
                 base.MergeInto(style, Component, state);

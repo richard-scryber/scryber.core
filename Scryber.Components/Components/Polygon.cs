@@ -75,7 +75,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Polygon(PDFObjectType type)
+        protected Polygon(ObjectType type)
             : base(type)
         {
         }

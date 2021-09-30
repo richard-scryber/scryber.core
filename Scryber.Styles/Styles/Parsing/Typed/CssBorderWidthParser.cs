@@ -19,7 +19,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         }
 
-        public CSSBorderWidthParser(string attr, PDFStyleKey<PDFUnit> styleKey)
+        public CSSBorderWidthParser(string attr, StyleKey<PDFUnit> styleKey)
             : base(attr, styleKey)
         {
 

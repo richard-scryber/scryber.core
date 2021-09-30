@@ -22,8 +22,10 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
-
 using Scryber.Drawing;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Drawing.Imaging
 {

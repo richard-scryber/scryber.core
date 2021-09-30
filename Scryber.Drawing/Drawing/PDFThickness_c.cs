@@ -30,7 +30,7 @@ namespace Scryber.Drawing
     /// </summary>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct PDFThickness : IComparable<PDFThickness>, IEquatable<PDFThickness>, ICloneable, IPDFSimpleExpressionValue
+    public struct PDFThickness : IComparable<PDFThickness>, IEquatable<PDFThickness>, ICloneable
     {
         public const char ThicknessStartChar = '[';
         public const char ThicknessSeparatorChar = ' ';
@@ -442,27 +442,6 @@ namespace Scryber.Drawing
 
         #endregion
 
-        private static System.Reflection.ConstructorInfo singleParam = typeof(PDFThickness).GetConstructor(new Type[] { typeof(PDFUnit) });
-        private static System.Reflection.ConstructorInfo fullParam = typeof(PDFThickness).GetConstructor(new Type[] { typeof(PDFUnit), typeof(PDFUnit), typeof(PDFUnit), typeof(PDFUnit) });
-
-        public Expression GetConstructorExpression()
-        {
-            //new PDFThickness(top, left, bottom, right);
-            if(this.Top == this.Left && this.Left == this.Right && this.Right == this.Bottom)
-            {
-                Expression all = this.Top.GetConstructorExpression();
-                Expression create = Expression.New(singleParam, all);
-                return create;
-            }
-            else
-            {
-                Expression top = this.Top.GetConstructorExpression();
-                Expression left = this.Left.GetConstructorExpression();
-                Expression bottom = this.Bottom.GetConstructorExpression();
-                Expression right = this.Right.GetConstructorExpression();
-                Expression create = Expression.New(fullParam, top, right, bottom, left);
-                return create;
-            }
-        }
+        
     }
 }

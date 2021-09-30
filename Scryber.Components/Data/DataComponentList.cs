@@ -29,7 +29,7 @@ namespace Scryber.Data
         /// <param name="context"></param>
         public void Init(PDFInitContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 comp.Init(context);
             }
@@ -45,7 +45,7 @@ namespace Scryber.Data
         /// <param name="context"></param>
         public void Load(PDFLoadContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 comp.Load(context);
             }
@@ -62,13 +62,13 @@ namespace Scryber.Data
         /// <param name="context"></param>
         public void DataBind(PDFDataContext context)
         {
-            IPDFComponent[] all = this.ToArray();
+            IComponent[] all = this.ToArray();
 
             for (int i = 0; i < all.Length; i++)
             {
-                IPDFComponent comp = all[i];
-                if (comp is IPDFBindableComponent)
-                    ((IPDFBindableComponent)comp).DataBind(context);
+                IComponent comp = all[i];
+                if (comp is IBindableComponent)
+                    ((IBindableComponent)comp).DataBind(context);
             }
         }
 

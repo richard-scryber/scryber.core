@@ -85,7 +85,7 @@ namespace Scryber.Generation
         /// </summary>
         public bool IsParserSourceValue { get; set; }
 
-        public object GetValue(System.Xml.XmlReader reader, PDFGeneratorSettings settings)
+        public object GetValue(System.Xml.XmlReader reader, ParserSettings settings)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Scryber.Generation
             }
         }
 
-        protected virtual object DoGetValue(System.Xml.XmlReader reader, PDFGeneratorSettings settings)
+        protected virtual object DoGetValue(System.Xml.XmlReader reader, ParserSettings settings)
         {
             throw new NotSupportedException("GetValue is not supported on the root property type");
         }

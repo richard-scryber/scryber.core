@@ -28,7 +28,7 @@ namespace Scryber.Generation
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public delegate object PDFXmlConverter(XmlReader reader, Type requiredType, PDFGeneratorSettings settings);
+    public delegate object PDFXmlConverter(XmlReader reader, Type requiredType, ParserSettings settings);
 
     
 }

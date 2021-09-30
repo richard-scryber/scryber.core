@@ -23,7 +23,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Drawing;
-using Scryber.Native;
 using Scryber.Styles;
 
 namespace Scryber.Components
@@ -37,7 +36,7 @@ namespace Scryber.Components
         {
         }
 
-        protected Rectangle(PDFObjectType type)
+        protected Rectangle(ObjectType type)
             : base(type)
         {
             this.Style.Shape.VertexCount = 4;

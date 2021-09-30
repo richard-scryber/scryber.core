@@ -21,7 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber;
-using Scryber.Native;
+using Scryber.PDF.Native;
+using Scryber.PDF;
+
 namespace Scryber.Drawing.Imaging
 {
     internal class PDF32BppARGBImageData : PDFImageData

@@ -87,7 +87,7 @@ namespace Scryber.Components
 
         #region protected PDFNumber(PDFObjectType type)
 
-        protected Number(PDFObjectType type)
+        protected Number(ObjectType type)
             : base(type)
         {
         }
@@ -107,7 +107,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style fullstyle)
+        protected override Text.PDFTextReader CreateReader(PDFContextBase context, Styles.Style fullstyle)
         {
             string val;
             string format = fullstyle.GetValue(StyleKeys.TextNumberFormatKey, string.Empty);

@@ -18,14 +18,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
     [PDFParsableComponent("UserComponent")]
     [PDFRemoteParsableComponent("Component-Ref")]
-    public class UserComponent : Panel, IPDFRemoteComponent, IPDFControlledComponent, IPDFNamingContainer
+    public class UserComponent : Panel, IRemoteComponent, IControlledComponent, INamingContainer
     {
 
         #region public Scryber.Data.PDFXmlNamespaceCollection NamespaceDeclarations
@@ -110,7 +110,7 @@ namespace Scryber.Components
 
         #region protected PDFUserComponent(PDFObjectType type)
 
-        protected UserComponent(PDFObjectType type)
+        protected UserComponent(ObjectType type)
             : base(type)
         {
         }
@@ -119,7 +119,7 @@ namespace Scryber.Components
 
         #region Scryber.IPDFRemoteComponent members
 
-        void Scryber.IPDFRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
+        void Scryber.IRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
         {
             Scryber.Data.XmlNamespaceDeclaration dec = new Data.XmlNamespaceDeclaration(){
                  NamespaceURI = ns,
@@ -130,7 +130,7 @@ namespace Scryber.Components
             this._namespaces.Add(dec);
         }
 
-        IDictionary<string, string> Scryber.IPDFRemoteComponent.GetDeclaredNamespaces()
+        IDictionary<string, string> Scryber.IRemoteComponent.GetDeclaredNamespaces()
         {
             Dictionary<string, string> all = new Dictionary<string, string>();
             foreach (Scryber.Data.XmlNamespaceDeclaration dec in this.NamespaceDeclarations)

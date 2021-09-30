@@ -105,7 +105,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        public HTMLTableSection(PDFObjectType type) : base(type)
+        public HTMLTableSection(ObjectType type) : base(type)
         {
 
         }
@@ -152,7 +152,7 @@ namespace Scryber.Html.Components
         }
 
         public HTMLTableHead()
-            : base((PDFObjectType)"htTH")
+            : base((ObjectType)"htTH")
         { }
 
         protected override Style GetBaseStyle()
@@ -170,7 +170,7 @@ namespace Scryber.Html.Components
     {
 
         public HTMLTableBody()
-            : base((PDFObjectType)"htTB")
+            : base((ObjectType)"htTB")
         { }
 
 
@@ -181,7 +181,7 @@ namespace Scryber.Html.Components
     {
 
         public HTMLTableFooter()
-            : base((PDFObjectType)"htTF")
+            : base((ObjectType)"htTF")
         { }
 
 

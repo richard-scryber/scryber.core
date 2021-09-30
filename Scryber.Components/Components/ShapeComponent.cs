@@ -21,14 +21,16 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
-using Scryber.Native;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+
 
 namespace Scryber.Components
 {
     public abstract class ShapeComponent : VisualComponent, IPDFGraphicPathComponent
     {
 
-        public ShapeComponent(PDFObjectType type) : base(type) { }
+        public ShapeComponent(ObjectType type) : base(type) { }
 
         private PDFGraphicsPath _path;
 
@@ -52,7 +54,7 @@ namespace Scryber.Components
             return this.CreatePath(available, fullstyle);
         }
 
-        public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        public PDFObjectRef OutputToPDF(PDF.PDFRenderContext context, PDFWriter writer)
         {
             Style fullstyle = context.FullStyle;
             if (null == fullstyle)

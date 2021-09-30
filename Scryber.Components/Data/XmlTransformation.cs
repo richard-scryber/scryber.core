@@ -24,7 +24,7 @@ using System.Xml.Xsl;
 
 namespace Scryber.Data
 {
-    public class XmlTransformation : IPDFBindableComponent
+    public class XmlTransformation : IBindableComponent
     {
 
         private const string XSLTCacheType = "Scryber.PDF.XSLT";
@@ -185,7 +185,7 @@ namespace Scryber.Data
                     throw new NullReferenceException(string.Format(Errors.XSLTPathOrTransformerNotSetOnInstance, source.ID));
 
                 path = source.MapPath(path);
-                IPDFCacheProvider cache = ((Scryber.Components.Document)source.Document).CacheProvider;
+                ICacheProvider cache = ((Scryber.Components.Document)source.Document).CacheProvider;
                 System.Xml.Xsl.XslCompiledTransform transformer;
 
                 object found;

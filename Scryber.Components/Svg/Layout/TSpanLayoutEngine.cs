@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using Scryber.Layout;
+using Scryber.PDF.Layout;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Styles;
@@ -15,12 +15,12 @@ namespace Scryber.Svg.Layout
         }
 
 
-        protected override void DoLayoutAChild(IPDFComponent comp, Style full)
+        protected override void DoLayoutAChild(IComponent comp, Style full)
         {
             base.DoLayoutAChild(comp, full);
         }
 
-        protected virtual void AdjustContainerForTextBaseline(PDFPositionOptions pos, IPDFComponent comp, Style full)
+        protected virtual void AdjustContainerForTextBaseline(PDFPositionOptions pos, IComponent comp, Style full)
         {
             var text = full.CreateTextOptions();
 
@@ -55,7 +55,7 @@ namespace Scryber.Svg.Layout
             }
         }
 
-        protected override PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IPDFComponent comp, Style full)
+        protected override PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
         {
             this.AdjustContainerForTextBaseline(pos, comp, full);
             return base.BeginNewRelativeRegionForChild(pos, comp, full);

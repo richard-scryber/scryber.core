@@ -77,8 +77,8 @@ namespace Scryber.Binding
                 catch (Exception ex)
                 {
                     string id;
-                    if (sender is IPDFComponent component)
-                        id = ((IPDFComponent)sender).ID;
+                    if (sender is IComponent component)
+                        id = ((IComponent)sender).ID;
                     else
                         id = "UNKNOWN";
 

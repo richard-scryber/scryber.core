@@ -48,7 +48,7 @@ namespace Scryber.Components
         {
         }
 
-        public Preformatted(PDFObjectType type)
+        public Preformatted(ObjectType type)
             : base(type)
         {
             

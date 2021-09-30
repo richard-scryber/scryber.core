@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void PDFStylesDocumentConstructorTest1()
         {
-            PDFObjectType type = (PDFObjectType)"0000";
+            ObjectType type = (ObjectType)"0000";
             StylesDocument target = new StylesDocument(type);
             Assert.AreEqual(type, target.Type);
         }
@@ -327,7 +327,7 @@ namespace Scryber.Core.UnitTests.Styles
             Document root = new Document();
             root.Styles.Add(target);
 
-            IPDFDocument actual;
+            IDocument actual;
             actual = target.Document;
             Assert.AreEqual(root, actual);
         }
@@ -375,7 +375,7 @@ namespace Scryber.Core.UnitTests.Styles
             expected.Styles.Add(target);
             target.Parent = expected;
 
-            IPDFComponent actual = target.Parent;
+            IComponent actual = target.Parent;
             Assert.AreEqual(expected, actual);
             
         }

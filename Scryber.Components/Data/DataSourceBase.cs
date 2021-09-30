@@ -54,7 +54,7 @@ namespace Scryber.Data
         /// Protected constructor - PDFDataSourceBase is abstract and cannot be directly instaniated.
         /// </summary>
         /// <param name="type"></param>
-        protected DataSourceBase(PDFObjectType type)
+        protected DataSourceBase(ObjectType type)
             : base(type)
         {
         }

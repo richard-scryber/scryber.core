@@ -70,9 +70,9 @@ namespace Scryber.Html.Components
         {
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEngineList2(this, parent);
+            return new PDF.Layout.LayoutEngineList2(this, parent);
         }
     }
 

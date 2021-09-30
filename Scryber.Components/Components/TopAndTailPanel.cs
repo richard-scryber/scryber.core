@@ -32,14 +32,14 @@ namespace Scryber.Components
         
         #region  public IPDFTemplate Header {get;set;}
 
-        private IPDFTemplate _header;
+        private ITemplate _header;
 
         /// <summary>
         /// Gets or sets the template for the header of this Page
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Header")]
-        public IPDFTemplate Header
+        public ITemplate Header
         {
             get { return _header; }
             set { _header = value; }
@@ -49,14 +49,14 @@ namespace Scryber.Components
 
         #region public IPDFTemplate Footer {get;set;}
 
-        private IPDFTemplate _footer;
+        private ITemplate _footer;
 
         /// <summary>
         /// Gets or sets the template for the footer of this Page
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Footer")]
-        public IPDFTemplate Footer
+        public ITemplate Footer
         {
             get { return _footer; }
             set { _footer = value; }

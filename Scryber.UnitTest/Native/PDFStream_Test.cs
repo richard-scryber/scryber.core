@@ -1,4 +1,5 @@
-﻿using Scryber.Native;
+﻿using Scryber.PDF.Native;
+using Scryber.PDF;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -568,9 +569,9 @@ namespace Scryber.Core.UnitTests.Native
             IStreamFilter[] filters = _usefilters;
             PDFIndirectObject indobj = new PDFIndirectObject(this);
             PDFStream target = new StreamProxy(filters, indobj);
-            PDFObjectType actual;
+            ObjectType actual;
             actual = target.Type;
-            PDFObjectType expected = PDFObjectTypes.Stream;
+            ObjectType expected = PDFObjectTypes.Stream;
 
             Assert.AreEqual(expected, actual);
 

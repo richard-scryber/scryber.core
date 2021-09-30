@@ -27,7 +27,7 @@ namespace Scryber.Data
     /// <summary>
     /// Base class for all relations
     /// </summary>
-    public abstract class DataRelation : PDFObject, IPDFBindableComponent
+    public abstract class DataRelation : PDFObject, IBindableComponent
     {
 
         //
@@ -98,7 +98,7 @@ namespace Scryber.Data
         #endregion
         
 
-        public DataRelation(PDFObjectType type)
+        public DataRelation(ObjectType type)
             : base(type)
         {
         }

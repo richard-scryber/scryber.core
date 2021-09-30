@@ -18,13 +18,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Scryber.Native;
-using System.Drawing;
+
+using Scryber.PDF.Native;
 using Scryber.Drawing;
 using Scryber.Components;
-using Scryber.Layout;
+using Scryber.PDF.Layout;
+using Scryber.PDF.Resources;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber
 {
@@ -38,9 +39,9 @@ namespace Scryber
     /// <summary>
     /// Interface that all components must implement if they need to parse template files.
     /// </summary>
-    public interface IPDFTemplateParser : IPDFComponent
+    public interface IPDFTemplateParser : IComponent
     {
-        IPDFComponent ParseTemplate(IPDFRemoteComponent comp, System.IO.TextReader reader);
+        IComponent ParseTemplate(IRemoteComponent comp, System.IO.TextReader reader);
     }
 
     #endregion
@@ -50,7 +51,7 @@ namespace Scryber
     /// <summary>
     /// Interface that identifies a Page Component as a container for multiple child Components
     /// </summary>
-    public interface IPDFContainerComponent : IPDFComponent
+    public interface IPDFContainerComponent : IComponent
     {
         bool HasContent { get; }
         /// <summary>
@@ -66,11 +67,11 @@ namespace Scryber
     /// <summary>
     /// Interface for any text based Component (has visual content displayed as text on a page) 
     /// </summary>
-    public interface IPDFTextComponent : IPDFComponent
+    public interface IPDFTextComponent : IComponent
     {
         //Text.PDFTextLayout TextLayout { get; set; }
 
-        Text.PDFTextReader CreateReader(PDFLayoutContext context, Style fullstyle);
+        Text.PDFTextReader CreateReader(PDFContextBase context, Style fullstyle);
 
         //void ResetTextBlock();
     }
@@ -82,7 +83,7 @@ namespace Scryber
     /// <summary>
     /// Interface for any Component that is displayed as a shape or path
     /// </summary>
-    public interface IPDFGraphicPathComponent : IPDFComponent, IPDFRenderComponent
+    public interface IPDFGraphicPathComponent : IComponent, IPDFRenderComponent
     {
         PDFGraphicsPath CreatePath(PDFSize avail, Styles.Style fullstyle);
 
@@ -96,14 +97,14 @@ namespace Scryber
 
     #region public interface IPDFImageComponent : IPDFComponent
 
-    public interface IPDFImageComponent : IPDFComponent, IPDFVisualRenderComponent
+    public interface IPDFImageComponent : IComponent, IPDFVisualRenderComponent
     {
         /// <summary>
         /// Gets the image resource data associated with this image. 
         /// Returns null if there is no image.
         /// </summary>
         /// <returns></returns>
-        Scryber.Resources.PDFImageXObject GetImageObject(PDFContextBase context, Style imagestyle);
+        PDFImageXObject GetImageObject(PDFContextBase context, Style imagestyle);
 
     }
 
@@ -120,12 +121,12 @@ namespace Scryber
         /// <summary>
         /// Gets or sets the list of Components in the header of this Component
         /// </summary>
-        IPDFTemplate Header { get; set; }
+        ITemplate Header { get; set; }
 
         /// <summary>
         /// Gets or sets the list of Components in the footer of this Component
         /// </summary>
-        IPDFTemplate Footer { get; set; }
+        ITemplate Footer { get; set; }
     }
 
     #endregion
@@ -135,7 +136,7 @@ namespace Scryber
     /// <summary>
     /// A PDF Component that supports rendering
     /// </summary>
-    public interface IPDFRenderComponent : IPDFComponent
+    public interface IPDFRenderComponent : IComponent
     {
         /// <summary>
         /// Event that is raised before the Component is rendered to the document
@@ -244,9 +245,9 @@ namespace Scryber
     /// Any Component that implements the IPDFViewPortComponent interface has it's own layout engine
     /// to arrange its child contents and return the size
     /// </summary>
-    public interface IPDFViewPortComponent : IPDFComponent
+    public interface IPDFViewPortComponent : IComponent
     {
-        IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle);
+        IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style fullstyle);
     }
 
     #endregion
@@ -269,7 +270,7 @@ namespace Scryber
     /// <summary>
     /// Specific interface for a provider command that will populate a dataset table with the data retrieved from a command
     /// </summary>
-    public interface IPDFDataSetProviderCommand : IPDFComponent
+    public interface IPDFDataSetProviderCommand : IComponent
     {
         string GetDataTableName(System.Data.DataSet dataSet);
 
@@ -289,7 +290,7 @@ namespace Scryber
     /// <summary>
     /// Base interface for a break in the layout
     /// </summary>
-    public interface IPDFLayoutBreak : IPDFComponent
+    public interface IPDFLayoutBreak : IComponent
     {
         LayoutBreakType BreakType { get; }
     }
@@ -338,7 +339,7 @@ namespace Scryber
         /// <param name="region"></param>
         /// <param name="block"></param>
         /// <returns></returns>
-        bool MoveToNextPage(IPDFComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block);
+        bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block);
 
         /// <summary>
         /// Request to the engine to close the block and begin in a new region
@@ -362,14 +363,14 @@ namespace Scryber
         /// <summary>
         /// Gets the type of component this pooled engine can layout
         /// </summary>
-        PDFObjectType LayoutType { get; }
+        ObjectType LayoutType { get; }
 
         /// <summary>
         /// (Re)Initializes the pooled layout engine so it can lay out a(nother) component
         /// </summary>
         /// <param name="container"></param>
         /// <param name="parent"></param>
-        void Init(IPDFComponent container, IPDFLayoutEngine parent);
+        void Init(IComponent container, IPDFLayoutEngine parent);
 
     }
 
@@ -448,7 +449,7 @@ namespace Scryber
         /// <param name="writer"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        Scryber.Native.PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer);
+        PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer);
     }
 
     #endregion
@@ -480,7 +481,7 @@ namespace Scryber
     /// <summary>
     /// Defines the contract for form fields
     /// </summary>
-    public interface IPDFFormField : IPDFComponent
+    public interface IPDFFormField : IComponent
     {
         object GetFieldEntry(PDFContextBase context);
     }
@@ -511,9 +512,9 @@ namespace Scryber
     /// <summary>
     /// Interface for XObjects that are rendered into a stream independent of the main page stream of the document.
     /// </summary>
-    public interface IPDFXObjectComponent : IPDFContainerComponent, IPDFResourceContainer, IPDFRenderComponent
+    public interface IPDFXObjectComponent : IPDFContainerComponent, IResourceContainer, IPDFRenderComponent
     {
-        IPDFResourceContainer Resources { get; }
+        IResourceContainer Resources { get; }
     }
 
     #endregion

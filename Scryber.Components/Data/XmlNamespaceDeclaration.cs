@@ -24,7 +24,7 @@ using System.Text;
 namespace Scryber.Data
 {
     [PDFParsableComponent("Xmlns")]
-    public class XmlNamespaceDeclaration : IPDFBindableComponent
+    public class XmlNamespaceDeclaration : IBindableComponent
     {
 
         //

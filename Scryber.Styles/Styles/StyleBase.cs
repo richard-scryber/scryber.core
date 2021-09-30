@@ -153,7 +153,7 @@ namespace Scryber.Styles
 
         #region protected PDFStyleBase()
 
-        protected StyleBase(PDFObjectType type)
+        protected StyleBase(ObjectType type)
             : base(type)
         {
             _isimmutable = false;
@@ -182,7 +182,7 @@ namespace Scryber.Styles
 
             if (null != this._direct && this._direct.Count > 0)
             {
-                foreach (KeyValuePair<StyleKey, PDFStyleValueBase> kvp in this._direct)
+                foreach (KeyValuePair<StyleKey, StyleValueBase> kvp in this._direct)
                 {
                     style.DirectValues.SetPriorityValue(kvp.Key, kvp.Value, priority);
                 }
@@ -190,7 +190,7 @@ namespace Scryber.Styles
 
             if (null != this._inherited && this._inherited.Count > 0)
             {
-                foreach (KeyValuePair<StyleKey, PDFStyleValueBase> kvp in this._inherited)
+                foreach (KeyValuePair<StyleKey, StyleValueBase> kvp in this._inherited)
                 {
                     style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, priority);
                 }
@@ -218,7 +218,7 @@ namespace Scryber.Styles
 
             if (null != this._direct && this._direct.Count > 0)
             {
-                foreach (KeyValuePair<StyleKey, PDFStyleValueBase> kvp in this._direct)
+                foreach (KeyValuePair<StyleKey, StyleValueBase> kvp in this._direct)
                 {
                     style.DirectValues.SetPriorityValue(kvp.Key, kvp.Value, kvp.Value.Priority);
                 }
@@ -226,7 +226,7 @@ namespace Scryber.Styles
 
             if (null != this._inherited && this._inherited.Count > 0)
             {
-                foreach (KeyValuePair<StyleKey, PDFStyleValueBase> kvp in this._inherited)
+                foreach (KeyValuePair<StyleKey, StyleValueBase> kvp in this._inherited)
                 {
                     style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, kvp.Value.Priority);
                 }
@@ -246,7 +246,7 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="Component"></param>
         /// <param name="state"></param>
-        public virtual void MergeInto(Style style, Scryber.IPDFComponent Component, Scryber.ComponentState state)
+        public virtual void MergeInto(Style style, Scryber.IComponent Component, Scryber.ComponentState state)
         {
             this.MergeInto(style, 0);
         }
@@ -272,14 +272,14 @@ namespace Scryber.Styles
             {
                 if (replace)
                 {
-                    foreach (KeyValuePair<StyleKey, PDFStyleValueBase> kvp in this._inherited)
+                    foreach (KeyValuePair<StyleKey, StyleValueBase> kvp in this._inherited)
                     {
                         style.InheritedValues[kvp.Key] = kvp.Value.CloneWithPriority(priority);   
                     }
                 }
                 else
                 {
-                    foreach (KeyValuePair<StyleKey, PDFStyleValueBase> kvp in this._inherited)
+                    foreach (KeyValuePair<StyleKey, StyleValueBase> kvp in this._inherited)
                     {
                         if (!style.InheritedValues.ContainsKey(kvp.Key))
                             style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, priority);
@@ -416,7 +416,7 @@ namespace Scryber.Styles
         /// Adds the value to this style
         /// </summary>
         /// <param name="basevalue"></param>
-        internal void AddValue(PDFStyleValueBase basevalue)
+        internal void AddValue(StyleValueBase basevalue)
         {
             BeginStyleChange();
 
@@ -439,14 +439,14 @@ namespace Scryber.Styles
         /// Adds a range of values to this style
         /// </summary>
         /// <param name="all"></param>
-        internal void AddValueRange(IEnumerable<PDFStyleValueBase> all)
+        internal void AddValueRange(IEnumerable<StyleValueBase> all)
         {
             if (null == all)
                 return;
 
             BeginStyleChange();
 
-            foreach (PDFStyleValueBase item in all)
+            foreach (StyleValueBase item in all)
             {
                 if (item.Key.Inherited)
                     this.InheritedValues.Add(item.Key, item);
@@ -508,7 +508,7 @@ namespace Scryber.Styles
                 if (null != _inherited && _inherited.Count > 0)
                 {
                     List<StyleKey> found = new List<StyleKey>();
-                    foreach (KeyValuePair<StyleKey,PDFStyleValueBase> exist in this._inherited)
+                    foreach (KeyValuePair<StyleKey,StyleValueBase> exist in this._inherited)
                     {
                         if (exist.Key.StyleItemKey == itemkey.StyleItemKey)
                             found.Add(exist.Key);
@@ -528,7 +528,7 @@ namespace Scryber.Styles
                 if (null != _direct && _direct.Count > 0)
                 {
                     List<StyleKey> found = new List<StyleKey>();
-                    foreach (KeyValuePair<StyleKey, PDFStyleValueBase> exist in this._direct)
+                    foreach (KeyValuePair<StyleKey, StyleValueBase> exist in this._direct)
                     {
                         if (exist.Key.StyleItemKey == itemkey.StyleItemKey)
                             found.Add(exist.Key);
@@ -577,7 +577,7 @@ namespace Scryber.Styles
         /// <param name="key"></param>
         /// <param name="found"></param>
         /// <returns></returns>
-        public bool TryGetBaseValue(StyleKey key, out PDFStyleValueBase found)
+        public bool TryGetBaseValue(StyleKey key, out StyleValueBase found)
         {
             if (null == key)
                 throw new ArgumentNullException(nameof(key));
@@ -613,21 +613,21 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="styleKey"></param>
         /// <returns></returns>
-        internal PDFStyleValueBase[] RemoveAndReturnItemStyleValues(StyleItemBase style)
+        internal StyleValueBase[] RemoveAndReturnItemStyleValues(StyleItemBase style)
         {
             List<StyleKey> matching = new List<StyleKey>();
-            List<PDFStyleValueBase> values = new List<PDFStyleValueBase>();
+            List<StyleValueBase> values = new List<StyleValueBase>();
             int count = 0;
             if(null == style)
                 throw new ArgumentNullException("style");
 
-            Scryber.PDFObjectType itemkey = style.ItemKey.StyleItemKey;
+            Scryber.ObjectType itemkey = style.ItemKey.StyleItemKey;
 
             if (null != this._direct && this._direct.Count > 0)
             {
                 //remove all the style values from the direct dictionary
                 //that have the same item key as the provided style item key.
-                foreach (KeyValuePair<StyleKey,PDFStyleValueBase> exist in this._direct)
+                foreach (KeyValuePair<StyleKey,StyleValueBase> exist in this._direct)
                 {
                     if (exist.Key.StyleItemKey == itemkey)
                     {
@@ -652,7 +652,7 @@ namespace Scryber.Styles
                 
                 matching.Clear();
 
-                foreach (KeyValuePair<StyleKey, PDFStyleValueBase> exist in this._inherited)
+                foreach (KeyValuePair<StyleKey, StyleValueBase> exist in this._inherited)
                 {
                     if (exist.Key.StyleItemKey == itemkey)
                     {
@@ -675,7 +675,7 @@ namespace Scryber.Styles
                 return EmptyStyleValueArray;
         }
 
-        private static readonly PDFStyleValueBase[] EmptyStyleValueArray = new PDFStyleValueBase[] { };
+        private static readonly StyleValueBase[] EmptyStyleValueArray = new StyleValueBase[] { };
 
         #endregion
 
@@ -691,13 +691,13 @@ namespace Scryber.Styles
         /// <param name="bottom"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        internal bool TryGetThickness(bool inherited, PDFStyleKey<PDFUnit> all, PDFStyleKey<PDFUnit> top, PDFStyleKey<PDFUnit> left, PDFStyleKey<PDFUnit> bottom, PDFStyleKey<PDFUnit> right, out PDFThickness thickness)
+        internal bool TryGetThickness(bool inherited, StyleKey<PDFUnit> all, StyleKey<PDFUnit> top, StyleKey<PDFUnit> left, StyleKey<PDFUnit> bottom, StyleKey<PDFUnit> right, out PDFThickness thickness)
         {
-            Dictionary<StyleKey, PDFStyleValueBase> lookup = inherited ? _inherited : _direct;
+            Dictionary<StyleKey, StyleValueBase> lookup = inherited ? _inherited : _direct;
 
             thickness = new Scryber.Drawing.PDFThickness();
             bool hasvalues = false;
-            PDFStyleValueBase found;
+            StyleValueBase found;
 
             if(null == lookup || lookup.Count == 0)
             {
@@ -752,9 +752,9 @@ namespace Scryber.Styles
         /// <param name="left"></param>
         /// <param name="bottom"></param>
         /// <param name="right"></param>
-        internal void SetThickness(bool inherited, Scryber.Drawing.PDFThickness thickness, PDFStyleKey<PDFUnit> top, PDFStyleKey<PDFUnit> left, PDFStyleKey<PDFUnit> bottom, PDFStyleKey<PDFUnit> right)
+        internal void SetThickness(bool inherited, Scryber.Drawing.PDFThickness thickness, StyleKey<PDFUnit> top, StyleKey<PDFUnit> left, StyleKey<PDFUnit> bottom, StyleKey<PDFUnit> right)
         {
-            Dictionary<StyleKey, PDFStyleValueBase> lookup = inherited ? this.InheritedValues : this.DirectValues;
+            Dictionary<StyleKey, StyleValueBase> lookup = inherited ? this.InheritedValues : this.DirectValues;
 
             lookup[top] = new StyleValue<PDFUnit>(top, thickness.Top);
             lookup[left] = new StyleValue<Scryber.Drawing.PDFUnit>(left, thickness.Left);
@@ -1320,7 +1320,7 @@ namespace Scryber.Styles
         /// </summary>
         public static readonly PDFUnit RepeatNaturalSize = 0;
 
-        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, PDFStyleKey<PDFColor> sideColor, PDFStyleKey<PDFUnit> sideWidth, PDFStyleKey<LineType> sideLine, PDFStyleKey<PDFDash> sideDash)
+        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<PDFColor> sideColor, StyleKey<PDFUnit> sideWidth, StyleKey<LineType> sideLine, StyleKey<PDFDash> sideDash)
         {
             PDFPen pen = null;
 
@@ -1548,7 +1548,7 @@ namespace Scryber.Styles
                 pen.MitreLimit = mitre.Value(this);
 
             if (this.TryGetValue(StyleKeys.BorderOpacityKey, out opacity))
-                pen.Opacity = (Scryber.Native.PDFReal)opacity.Value(this);
+                pen.Opacity = (Scryber.PDF.Native.PDFReal)opacity.Value(this);
         }
 
         #region internal protected virtual PDFPen DoCreateStrokePen()
@@ -1666,7 +1666,7 @@ namespace Scryber.Styles
                 pen.MitreLimit = mitre.Value(this);
 
             if (this.TryGetValue(StyleKeys.StrokeOpacityKey, out opacity))
-                pen.Opacity = (Scryber.Native.PDFReal)opacity.Value(this);
+                pen.Opacity = (Scryber.PDF.Native.PDFReal)opacity.Value(this);
         }
 
         #region internal protected virtual PDFBrush DoCreateBackgroundBrush()
@@ -1940,9 +1940,9 @@ namespace Scryber.Styles
 
     public static class PDFStyleBaseExtensions
     {
-        public static T GetValue<T>(this StyleBase stylebase, PDFStyleKey<T> key, T defaultValue)
+        public static T GetValue<T>(this StyleBase stylebase, StyleKey<T> key, T defaultValue)
         {
-            PDFStyleValueBase exist;
+            StyleValueBase exist;
             StyleValue<T> found;
             if (stylebase.TryGetBaseValue(key, out exist))
             {
@@ -1953,7 +1953,7 @@ namespace Scryber.Styles
                 return defaultValue;
         }
 
-        public static void SetValue<T>(this StyleBase stylebase, PDFStyleKey<T> key, T value)
+        public static void SetValue<T>(this StyleBase stylebase, StyleKey<T> key, T value)
         {
             StyleValue<T> match;
             if(stylebase.TryGetValue(key,out match))
@@ -1994,9 +1994,9 @@ namespace Scryber.Styles
             }
         }
 
-        public static bool TryGetValue<T>(this StyleBase stylebase, PDFStyleKey<T> key, out StyleValue<T> found)
+        public static bool TryGetValue<T>(this StyleBase stylebase, StyleKey<T> key, out StyleValue<T> found)
         {
-            PDFStyleValueBase exist;
+            StyleValueBase exist;
             if (stylebase.TryGetBaseValue(key, out exist))
             {
                 found = (StyleValue<T>)exist;

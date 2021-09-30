@@ -7,14 +7,14 @@ namespace Scryber.Styles.Parsing
     /// <typeparam name="T"></typeparam>
     public abstract class CSSStyleAttributeParser<T> : CSSStyleValueParser
     {
-        private PDFStyleKey<T> _styleAttr;
+        private StyleKey<T> _styleAttr;
 
-        public PDFStyleKey<T> StyleAttribute
+        public StyleKey<T> StyleAttribute
         {
             get { return _styleAttr; }
         }
 
-        public CSSStyleAttributeParser(string itemName, PDFStyleKey<T> styleAttr)
+        public CSSStyleAttributeParser(string itemName, StyleKey<T> styleAttr)
             : base(itemName)
         {
             _styleAttr = styleAttr ?? throw new ArgumentNullException("styleAttr");

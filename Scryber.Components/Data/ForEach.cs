@@ -82,7 +82,7 @@ namespace Scryber.Data
 
         #region public virtual IPDFTemplate Template {get;}
 
-        private IPDFTemplate _template;
+        private ITemplate _template;
 
         /// <summary>
         /// Gets or sets the IPDFTemplate used to instantiate child Components
@@ -90,7 +90,7 @@ namespace Scryber.Data
         [PDFTemplate()]
         [PDFElement("Template")]
         [PDFAttribute("template")]
-        public virtual IPDFTemplate Template
+        public virtual ITemplate Template
         {
             get { return _template; }
             set { _template = value; }
@@ -112,14 +112,14 @@ namespace Scryber.Data
 
         #region public virtual IPDFTemplate SeparatorTemplate
 
-        private IPDFTemplate _septemplate;
+        private ITemplate _septemplate;
 
         /// <summary>
         /// Gets or sets the IPDFTemplate used to instantiate inbetween each of the created templates
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Separator-Template")]
-        public virtual IPDFTemplate SeparatorTemplate
+        public virtual ITemplate SeparatorTemplate
         {
             get { return _septemplate; }
             set { _septemplate = value; }
@@ -137,7 +137,7 @@ namespace Scryber.Data
         {
         }
 
-        protected ForEach(PDFObjectType type)
+        protected ForEach(ObjectType type)
             : base(type)
         {
             _start = 0;
@@ -153,7 +153,7 @@ namespace Scryber.Data
         }
 
 
-        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
             if(this.Template is IPDFDataTemplateGenerator)
             {

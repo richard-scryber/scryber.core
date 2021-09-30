@@ -1,7 +1,7 @@
 ﻿using System;
 using Scryber.Components;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles;
 
 namespace Scryber.Svg.Components
@@ -89,7 +89,7 @@ namespace Scryber.Svg.Components
         public override double StrokeOpacity { get => base.StrokeOpacity; set => base.StrokeOpacity = value; }
 
         [PDFAttribute("fill-opacity")]
-        public override PDFReal FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
+        public override double FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
 
         // fill
 
@@ -119,7 +119,7 @@ namespace Scryber.Svg.Components
         // font
 
 
-        public SVGBase(PDFObjectType type)
+        public SVGBase(ObjectType type)
             : base(type)
         {
         }

@@ -77,9 +77,9 @@ namespace Scryber.Html.Parsing
         /// <param name="parser"></param>
         /// <param name="name"></param>
         /// <returns>The instaniated component or null if the name is not recognised</returns>
-        public IPDFComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
+        public IComponent GetComponent(IHtmlContentParser parser, string name, out HtmlComponentType type)
         {
-            IPDFComponent proxy = null;
+            IComponent proxy = null;
             IParserComponentFactory innerfact;
             if (null != _last && _lastName == name)
             {
@@ -114,7 +114,7 @@ namespace Scryber.Html.Parsing
         /// <param name="parser"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected virtual IPDFComponent GetUnknownComponent(IHtmlContentParser parser, string name)
+        protected virtual IComponent GetUnknownComponent(IHtmlContentParser parser, string name)
         {
             return null;
         }
@@ -130,7 +130,7 @@ namespace Scryber.Html.Parsing
         /// <param name="component"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public bool IsContainerComponent(IHtmlContentParser parser, IPDFComponent component, string name)
+        public bool IsContainerComponent(IHtmlContentParser parser, IComponent component, string name)
         {
             bool container = false;
             IParserComponentFactory innerfact;
@@ -163,7 +163,7 @@ namespace Scryber.Html.Parsing
         /// <param name="parser"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public virtual IPDFComponent GetTextComponent(IHtmlContentParser parser, string text)
+        public virtual IComponent GetTextComponent(IHtmlContentParser parser, string text)
         {
             _last = null;
             _lastName = null;
@@ -182,7 +182,7 @@ namespace Scryber.Html.Parsing
         /// <param name="componentName"></param>
         /// <param name="attrName"></param>
         /// <param name="attrValue"></param>
-        public void SetAttribute(IHtmlContentParser parser, IPDFComponent parsed, string componentName, string attrName, string attrValue)
+        public void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue)
         {
             IParserComponentFactory innerfact;
 

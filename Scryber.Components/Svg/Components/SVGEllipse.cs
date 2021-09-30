@@ -4,6 +4,7 @@ using System.Text;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Svg.Components
 {
@@ -44,7 +45,7 @@ namespace Scryber.Svg.Components
         protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
 
-            PDFRect rect = this.GetBounds();
+            PDFRect rect = this.GetRectBounds();
             PDFGraphicsPath path = new PDFGraphicsPath();
 
             Ellipse.BuildElipse(path, rect, true, 0);
@@ -52,7 +53,7 @@ namespace Scryber.Svg.Components
             return path;
         }
 
-        protected virtual PDFRect GetBounds()
+        protected virtual PDFRect GetRectBounds()
         {
             var rect = new PDFRect();
             rect.X = this.CentreX - this.RadiusX;

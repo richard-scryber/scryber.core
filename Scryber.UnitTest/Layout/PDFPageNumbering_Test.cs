@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Styles;
-using Scryber.Layout;
-using LD = Scryber.Layout.PDFLayoutDocument;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
+using LD = Scryber.PDF.Layout.PDFLayoutDocument;
 
 namespace Scryber.Core.UnitTests.Layout
 {
@@ -30,8 +31,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void PageRegistrations()
         {
 
-            PDFPageNumberGroup grp = new PDFPageNumberGroup(null, "", PageNumberStyle.Decimals, 1);
-            PDFPageNumberRegistration reg = new PDFPageNumberRegistration(0, 10, grp);
+            PageNumberGroup grp = new PageNumberGroup(null, "", PageNumberStyle.Decimals, 1);
+            PageNumberRegistration reg = new PageNumberRegistration(0, 10, grp);
 
             for (int i = 0; i < 10; i++)
             {
@@ -40,8 +41,8 @@ namespace Scryber.Core.UnitTests.Layout
             }
 
 
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1);
-            reg = new PDFPageNumberRegistration(0, 10, grp);
+            grp = new PageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1);
+            reg = new PageNumberRegistration(0, 10, grp);
 
             for (int i = 0; i < 10; i++)
             {
@@ -52,8 +53,8 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(pg, reg.GetPageLabel(i), "Block 2: Page index " + i + " does not match " + pg);
             }
 
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.Decimals, 1);
-            reg = new PDFPageNumberRegistration(0, 10, grp);
+            grp = new PageNumberGroup(null, "", PageNumberStyle.Decimals, 1);
+            reg = new PageNumberRegistration(0, 10, grp);
             reg.PreviousLinkedRegistrationPageCount = 5;
 
             for (int i = 0; i < 10; i++)
@@ -62,8 +63,8 @@ namespace Scryber.Core.UnitTests.Layout
                 Assert.AreEqual(pg, reg.GetPageLabel(i));
             }
 
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1);
-            reg = new PDFPageNumberRegistration(0, 10, grp);
+            grp = new PageNumberGroup(null, "", PageNumberStyle.LowercaseLetters, 1);
+            reg = new PageNumberRegistration(0, 10, grp);
             reg.PreviousLinkedRegistrationPageCount = 6;
 
             for (int i = 0; i < 10; i++)
@@ -77,8 +78,8 @@ namespace Scryber.Core.UnitTests.Layout
 
             // A registration of UpperCase letter from pg 15 to 25
             // with a previous count of 6 pages
-            grp = new PDFPageNumberGroup(null, "", PageNumberStyle.UppercaseLetters, 1);
-            reg = new PDFPageNumberRegistration(15, 25, grp);
+            grp = new PageNumberGroup(null, "", PageNumberStyle.UppercaseLetters, 1);
+            reg = new PageNumberRegistration(15, 25, grp);
             reg.PreviousLinkedRegistrationPageCount = 6;
 
             for (int i = 0; i < 10; i++)
@@ -102,7 +103,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1    2    3    4    5    6    7    8    9     10    11    12    13    14    15    16    17    18    19
             string[] expected = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             col.StartNumbering(null);
 
             for (int i = 0; i < repeatcount; i++)
@@ -126,7 +127,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1    2    3    4    5    6    7    8    9     10    11    12    13    14    15    16    17    18    19
             string[] expected = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             col.StartNumbering(null);
 
             col.Register(0);
@@ -151,7 +152,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1    2    3    4    5    6    7    8    9     10    11    12    13    14    15    16    17    18    19
             string[] expected = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
 
             PDFPageNumberOptions options = new PDFPageNumberOptions() { NumberStyle = PageNumberStyle.Decimals };
 
@@ -178,7 +179,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1      2      3    4    5      6      7      8     9    10    11      12     13     14    15      16      17      18     19
             string[] expected = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             col.StartNumbering(null);
 
             Style full = new Style();
@@ -210,7 +211,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1     2       3    4    5      6      7      8     9    10    11      12     13     14    15      16      17      18     19
             string[] expected = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             col.StartNumbering(null);
 
             Style full = new Style();
@@ -243,7 +244,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25    26    27    28
             string[] expected = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "bb", "cc" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
 
             Style full = new Style();
 
@@ -273,7 +274,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1    2    3    4    5    6    7    8    9   10    11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26    27    28
             string[] expected = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "BB", "CC" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
 
             Style full = new Style();
             full.PageStyle.NumberStyle = PageNumberStyle.UppercaseLetters;
@@ -302,7 +303,7 @@ namespace Scryber.Core.UnitTests.Layout
         {
             int repeatcount = 20;
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.None;
             col.StartNumbering(style.CreatePageNumberOptions());
@@ -332,7 +333,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0    1      2      3    4    5      6       7     8     9    10     11    12      13     14    15      16      17       18    19
             string[] expected = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
             
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             
             Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
@@ -363,7 +364,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0     1    2      3      4      5     6    7      8      9      10     11    12     13       14      15    16     17      18      19
             string[] expected = { "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             style.PageStyle.NumberStartIndex = startindex;
@@ -394,7 +395,7 @@ namespace Scryber.Core.UnitTests.Layout
             //index                0     1    2      3      4      5     6    7      8      9      10     11    12     13       14      15    16     17      18      19
             string[] expected = { "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII" };
             
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             Style style = new Style();
             style.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
             style.PageStyle.NumberStartIndex = startindex;
@@ -429,7 +430,7 @@ namespace Scryber.Core.UnitTests.Layout
             // page indices                          0,    1,   2,   3,   4,   5,   6,     7,    8,    9,  10,  11 , 12,  13,  14,  15,  16,  17,  18,   19
             string[] expectedlabels = new string[] { "1", "2", "3", "4", "5", "i", "ii", "iii", "iv", "v", "B", "C", "D", "E", "F", "6", "7", "8", "9", "10" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             Style def = new Style();
             
             def.PageStyle.NumberStyle = PageNumberStyle.Decimals;
@@ -451,7 +452,7 @@ namespace Scryber.Core.UnitTests.Layout
             col.Register(3);
             col.Register(4);
 
-            PDFPageNumberGroup grp = col.PushPageNumber(lowRoman.CreatePageNumberOptions());
+            PageNumberGroup grp = col.PushPageNumber(lowRoman.CreatePageNumberOptions());
             col.Register(5);
             col.Register(6);
             col.Register(7);
@@ -495,20 +496,20 @@ namespace Scryber.Core.UnitTests.Layout
             string[] expectedLabels =     { "", "", "", "i", "ii", "iii", "iv", "i",   "ii",    "iii",  "iv",   "v",    "vi",   "vii",  "viii", "v",    "vi",   "vii",  "viii", "", "", "" };
             string[] expectedLastLabels = { "", "", "", "iv", "iv", "iv", "iv", "viii", "viii", "viii", "viii", "viii", "viii", "viii", "viii", "viii", "viii", "viii", "viii", "", "", "" };
 
-            PDFPageNumbers col = new PDFPageNumbers();
+            PageNumbers col = new PageNumbers();
             col.StartNumbering(null);
 
             Style none = new Style();
             none.PageStyle.NumberStyle = PageNumberStyle.None;
 
-            PDFPageNumberGroup noneGrp = col.PushPageNumber(none.CreatePageNumberOptions());
+            PageNumberGroup noneGrp = col.PushPageNumber(none.CreatePageNumberOptions());
             int noneReg = 0;
             col.Register(noneReg);
             //keep none at the top - no unregister
 
             Style intro = new Style();
             intro.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
-            PDFPageNumberGroup introGrp = col.PushPageNumber(intro.CreatePageNumberOptions());
+            PageNumberGroup introGrp = col.PushPageNumber(intro.CreatePageNumberOptions());
 
             int introReg = 3;
             col.Register(introReg);
@@ -518,7 +519,7 @@ namespace Scryber.Core.UnitTests.Layout
             //no style, just start index
             Style resetStartIndex = new Style();
             resetStartIndex.PageStyle.NumberStartIndex = 1;
-            PDFPageNumberGroup resetNumGrp = col.PushPageNumber(resetStartIndex.CreatePageNumberOptions());
+            PageNumberGroup resetNumGrp = col.PushPageNumber(resetStartIndex.CreatePageNumberOptions());
 
             int pgReg = 7;
             int pgUnreg = 14;
@@ -539,7 +540,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             for (int i = 0; i < 21; i++)
             {
-                PDFPageNumberData number = col.GetPageData(i);
+                PageNumberData number = col.GetPageData(i);
                 Assert.AreEqual(expectedLabels[i], number.Label, "Page labels did not match for index " + i);
                 Assert.AreEqual(expectedLastLabels[i], number.LastLabel, "Page Last labels did not match for index " + i);
             }

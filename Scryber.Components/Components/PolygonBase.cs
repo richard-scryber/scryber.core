@@ -85,7 +85,7 @@ namespace Scryber.Components
             set;
         }
 
-        public PolygonBase(PDFObjectType type)
+        public PolygonBase(ObjectType type)
             : base(type)
         {
             this.DefaultRotation = _DefaultRotationAngle;

@@ -21,8 +21,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using Scryber.Styles;
-using Scryber.Native;
 using Scryber.Text;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -77,13 +77,13 @@ namespace Scryber.Components
             this.ReaderFormat = format;
         }
 
-        protected TextLiteral(string text, PDFObjectType type): base(type)
+        protected TextLiteral(string text, ObjectType type): base(type)
         {
             this.Text = text;
         }
 
 
-        public virtual PDFTextReader CreateReader(PDFLayoutContext context, Style fullstyle)
+        public virtual PDFTextReader CreateReader(PDFContextBase context, Style fullstyle)
         {
             if (string.IsNullOrEmpty(this.Text))
                 return null;
@@ -97,7 +97,7 @@ namespace Scryber.Components
         }
 
 
-        protected override void SetArrangement(PDFComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange)
         {
             base.SetArrangement(arrange);
         }

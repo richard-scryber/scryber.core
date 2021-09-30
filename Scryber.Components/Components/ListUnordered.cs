@@ -37,7 +37,7 @@ namespace Scryber.Components
         {
         }
 
-        protected ListUnordered(PDFObjectType type)
+        protected ListUnordered(ObjectType type)
             : base(type)
         {
         }

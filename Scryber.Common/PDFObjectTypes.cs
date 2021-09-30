@@ -30,167 +30,167 @@ namespace Scryber
     {
         //Native
 
-        public static readonly PDFObjectType Number = (PDFObjectType)"NUM ";
-        public static readonly PDFObjectType Array = (PDFObjectType)"ARRY";
-        public static readonly PDFObjectType String = (PDFObjectType)"STR ";
-        public static readonly PDFObjectType Dictionary = (PDFObjectType)"DICT";
-        public static readonly PDFObjectType Object = (PDFObjectType)"OBJ ";
-        public static readonly PDFObjectType ObjectRef = (PDFObjectType)"OREF";
-        public static readonly PDFObjectType Name = (PDFObjectType)"NAME";
-        public static readonly PDFObjectType Real = (PDFObjectType)"REAL";
-        public static readonly PDFObjectType Stream = (PDFObjectType)"STEA";
-        public static readonly PDFObjectType Null = (PDFObjectType)"NULL";
-        public static readonly PDFObjectType Boolean = (PDFObjectType)"BOOL";
-        public static readonly PDFObjectType IndirectObject = (PDFObjectType)"IOBJ";
-        public static readonly PDFObjectType NoOp = (PDFObjectType)"NOOP";
-        public static readonly PDFObjectType File = (PDFObjectType)"FILE";
+        public static readonly ObjectType Number = (ObjectType)"NUM ";
+        public static readonly ObjectType Array = (ObjectType)"ARRY";
+        public static readonly ObjectType String = (ObjectType)"STR ";
+        public static readonly ObjectType Dictionary = (ObjectType)"DICT";
+        public static readonly ObjectType Object = (ObjectType)"OBJ ";
+        public static readonly ObjectType ObjectRef = (ObjectType)"OREF";
+        public static readonly ObjectType Name = (ObjectType)"NAME";
+        public static readonly ObjectType Real = (ObjectType)"REAL";
+        public static readonly ObjectType Stream = (ObjectType)"STEA";
+        public static readonly ObjectType Null = (ObjectType)"NULL";
+        public static readonly ObjectType Boolean = (ObjectType)"BOOL";
+        public static readonly ObjectType IndirectObject = (ObjectType)"IOBJ";
+        public static readonly ObjectType NoOp = (ObjectType)"NOOP";
+        public static readonly ObjectType File = (ObjectType)"FILE";
         
         //Drawing
 
-        public static readonly PDFObjectType Color = (PDFObjectType)"colr";
-        public static readonly PDFObjectType Thickness = (PDFObjectType)"thck";
-        public static readonly PDFObjectType ProcSet = (PDFObjectType)"proc";
-        public static readonly PDFObjectType Font = (PDFObjectType)"font";
-        public static readonly PDFObjectType FontResource = (PDFObjectType)"frsc";
-        public static readonly PDFObjectType FontWidths = (PDFObjectType)"fwdt";
-        public static readonly PDFObjectType FontDescriptor = (PDFObjectType)"fdec";
-        public static readonly PDFObjectType ImageXObject = (PDFObjectType)"imgx";
-        public static readonly PDFObjectType CanvasXObject = (PDFObjectType)"canx";
-        public static readonly PDFObjectType ExtGState = (PDFObjectType)"gxst";
-        public static readonly PDFObjectType GraphicsPath = (PDFObjectType)"gpth";
-        public static readonly PDFObjectType Pattern = (PDFObjectType)"patt";
+        public static readonly ObjectType Color = (ObjectType)"colr";
+        public static readonly ObjectType Thickness = (ObjectType)"thck";
+        public static readonly ObjectType ProcSet = (ObjectType)"proc";
+        public static readonly ObjectType Font = (ObjectType)"font";
+        public static readonly ObjectType FontResource = (ObjectType)"frsc";
+        public static readonly ObjectType FontWidths = (ObjectType)"fwdt";
+        public static readonly ObjectType FontDescriptor = (ObjectType)"fdec";
+        public static readonly ObjectType ImageXObject = (ObjectType)"imgx";
+        public static readonly ObjectType CanvasXObject = (ObjectType)"canx";
+        public static readonly ObjectType ExtGState = (ObjectType)"gxst";
+        public static readonly ObjectType GraphicsPath = (ObjectType)"gpth";
+        public static readonly ObjectType Pattern = (ObjectType)"patt";
 
         //Components
 
-        public static readonly PDFObjectType Document = (PDFObjectType)"doc ";
-        public static readonly PDFObjectType Text = (PDFObjectType)"text";
-        public static readonly PDFObjectType Label = (PDFObjectType)"labl";
-        public static readonly PDFObjectType Field = (PDFObjectType)"fild";
-        public static readonly PDFObjectType Page = (PDFObjectType)"page";
-        public static readonly PDFObjectType PageGroup = (PDFObjectType)"pggp";
-        public static readonly PDFObjectType Section = (PDFObjectType)"sect";
-        public static readonly PDFObjectType PageBreak = (PDFObjectType)"pgbk";
-        public static readonly PDFObjectType ColumnBreak = (PDFObjectType)"clbr";
-        public static readonly PDFObjectType LineBreak = (PDFObjectType)"lnbr";
-        public static readonly PDFObjectType PageSize = (PDFObjectType)"pgsz";
-        public static readonly PDFObjectType Image = (PDFObjectType)"img ";
-        public static readonly PDFObjectType ImageData = (PDFObjectType)"imgd";
-        public static readonly PDFObjectType GraphicsPathData = (PDFObjectType)"gphd";
-        public static readonly PDFObjectType Table = (PDFObjectType)"tble";
+        public static readonly ObjectType Document = (ObjectType)"doc ";
+        public static readonly ObjectType Text = (ObjectType)"text";
+        public static readonly ObjectType Label = (ObjectType)"labl";
+        public static readonly ObjectType Field = (ObjectType)"fild";
+        public static readonly ObjectType Page = (ObjectType)"page";
+        public static readonly ObjectType PageGroup = (ObjectType)"pggp";
+        public static readonly ObjectType Section = (ObjectType)"sect";
+        public static readonly ObjectType PageBreak = (ObjectType)"pgbk";
+        public static readonly ObjectType ColumnBreak = (ObjectType)"clbr";
+        public static readonly ObjectType LineBreak = (ObjectType)"lnbr";
+        public static readonly ObjectType PageSize = (ObjectType)"pgsz";
+        public static readonly ObjectType Image = (ObjectType)"img ";
+        public static readonly ObjectType ImageData = (ObjectType)"imgd";
+        public static readonly ObjectType GraphicsPathData = (ObjectType)"gphd";
+        public static readonly ObjectType Table = (ObjectType)"tble";
 
-        public static readonly PDFObjectType TableRow = (PDFObjectType)"trow";
-        public static readonly PDFObjectType TableHeaderRow = (PDFObjectType)"thrw";
-        public static readonly PDFObjectType TableFooterRow = (PDFObjectType)"tfrw";
+        public static readonly ObjectType TableRow = (ObjectType)"trow";
+        public static readonly ObjectType TableHeaderRow = (ObjectType)"thrw";
+        public static readonly ObjectType TableFooterRow = (ObjectType)"tfrw";
 
-        public static readonly PDFObjectType List = (PDFObjectType)"list";
-        public static readonly PDFObjectType OrderedList = (PDFObjectType)"orli";
-        public static readonly PDFObjectType UnorderedList = (PDFObjectType)"unli";
-        public static readonly PDFObjectType DefinitionList = (PDFObjectType)"dfli";
-        public static readonly PDFObjectType ListItem = (PDFObjectType)"litm";
-        public static readonly PDFObjectType ListItemTitle = (PDFObjectType)"liti";
-        public static readonly PDFObjectType DefinitionListItem = (PDFObjectType)"dlii";
-        public static readonly PDFObjectType DefinitionListTerm = (PDFObjectType)"dlit";
+        public static readonly ObjectType List = (ObjectType)"list";
+        public static readonly ObjectType OrderedList = (ObjectType)"orli";
+        public static readonly ObjectType UnorderedList = (ObjectType)"unli";
+        public static readonly ObjectType DefinitionList = (ObjectType)"dfli";
+        public static readonly ObjectType ListItem = (ObjectType)"litm";
+        public static readonly ObjectType ListItemTitle = (ObjectType)"liti";
+        public static readonly ObjectType DefinitionListItem = (ObjectType)"dlii";
+        public static readonly ObjectType DefinitionListTerm = (ObjectType)"dlit";
 
-        public static readonly PDFObjectType TopAndTail = (PDFObjectType)"tatp";
-        public static readonly PDFObjectType TableCell = (PDFObjectType)"tcel";
-        public static readonly PDFObjectType TableHeaderCell = (PDFObjectType)"thcl";
-        public static readonly PDFObjectType TableFooterCell = (PDFObjectType)"tfcl";
+        public static readonly ObjectType TopAndTail = (ObjectType)"tatp";
+        public static readonly ObjectType TableCell = (ObjectType)"tcel";
+        public static readonly ObjectType TableHeaderCell = (ObjectType)"thcl";
+        public static readonly ObjectType TableFooterCell = (ObjectType)"tfcl";
 
-        public static readonly PDFObjectType Canvas = (PDFObjectType)"canv";
-        public static readonly PDFObjectType Panel = (PDFObjectType)"panl";
-        public static readonly PDFObjectType Span = (PDFObjectType)"span";
-        public static readonly PDFObjectType Div = (PDFObjectType)"div ";
-        public static readonly PDFObjectType BlockQuote = (PDFObjectType)"bkqu";
-        public static readonly PDFObjectType Paragraph = (PDFObjectType)"para";
-        public static readonly PDFObjectType Layer = (PDFObjectType)"layr";
-        public static readonly PDFObjectType LayerGroup = (PDFObjectType)"lygp";
-        public static readonly PDFObjectType UserComponent = (PDFObjectType)"ucmp";
-        public static readonly PDFObjectType Link = (PDFObjectType)"link";
-        public static readonly PDFObjectType Template = (PDFObjectType)"temp";
-        public static readonly PDFObjectType DataOtherwise = (PDFObjectType)"doth";
-        public static readonly PDFObjectType DataWhen = (PDFObjectType)"dwhn";
-        public static readonly PDFObjectType PageHeader = (PDFObjectType)"pghd";
-        public static readonly PDFObjectType PageFooter = (PDFObjectType)"pgft";
-        public static readonly PDFObjectType Preformatted = (PDFObjectType)"pred";
-        public static readonly PDFObjectType DateComp = (PDFObjectType)"date";
-        public static readonly PDFObjectType NumberComp = (PDFObjectType)"numb";
-        public static readonly PDFObjectType Barcode = (PDFObjectType)"barc";
-        public static readonly PDFObjectType PlaceHolder = (PDFObjectType)"plac";
+        public static readonly ObjectType Canvas = (ObjectType)"canv";
+        public static readonly ObjectType Panel = (ObjectType)"panl";
+        public static readonly ObjectType Span = (ObjectType)"span";
+        public static readonly ObjectType Div = (ObjectType)"div ";
+        public static readonly ObjectType BlockQuote = (ObjectType)"bkqu";
+        public static readonly ObjectType Paragraph = (ObjectType)"para";
+        public static readonly ObjectType Layer = (ObjectType)"layr";
+        public static readonly ObjectType LayerGroup = (ObjectType)"lygp";
+        public static readonly ObjectType UserComponent = (ObjectType)"ucmp";
+        public static readonly ObjectType Link = (ObjectType)"link";
+        public static readonly ObjectType Template = (ObjectType)"temp";
+        public static readonly ObjectType DataOtherwise = (ObjectType)"doth";
+        public static readonly ObjectType DataWhen = (ObjectType)"dwhn";
+        public static readonly ObjectType PageHeader = (ObjectType)"pghd";
+        public static readonly ObjectType PageFooter = (ObjectType)"pgft";
+        public static readonly ObjectType Preformatted = (ObjectType)"pred";
+        public static readonly ObjectType DateComp = (ObjectType)"date";
+        public static readonly ObjectType NumberComp = (ObjectType)"numb";
+        public static readonly ObjectType Barcode = (ObjectType)"barc";
+        public static readonly ObjectType PlaceHolder = (ObjectType)"plac";
 
         // Data Sources
 
-        public static readonly PDFObjectType XmlData = (PDFObjectType)"xdat";
-        public static readonly PDFObjectType SqlCommandType = (PDFObjectType)"sqlc";
-        public static readonly PDFObjectType SqlDataSourceType = (PDFObjectType)"sqld";
-        public static readonly PDFObjectType SourceDataStyleType = (PDFObjectType)"dsty";
-        public static readonly PDFObjectType SqlParameterType = (PDFObjectType)"sqlp";
-        public static readonly PDFObjectType SqlParameterValueType = (PDFObjectType)"sqlv";
-        public static readonly PDFObjectType SqlNestedRelationType = (PDFObjectType)"sqln";
-        public static readonly PDFObjectType SqlRelationMappingType = (PDFObjectType)"sqlm";
-        public static readonly PDFObjectType ObjectCommandType = (PDFObjectType)"objc";
-        public static readonly PDFObjectType DataWith = (PDFObjectType)"with";
+        public static readonly ObjectType XmlData = (ObjectType)"xdat";
+        public static readonly ObjectType SqlCommandType = (ObjectType)"sqlc";
+        public static readonly ObjectType SqlDataSourceType = (ObjectType)"sqld";
+        public static readonly ObjectType SourceDataStyleType = (ObjectType)"dsty";
+        public static readonly ObjectType SqlParameterType = (ObjectType)"sqlp";
+        public static readonly ObjectType SqlParameterValueType = (ObjectType)"sqlv";
+        public static readonly ObjectType SqlNestedRelationType = (ObjectType)"sqln";
+        public static readonly ObjectType SqlRelationMappingType = (ObjectType)"sqlm";
+        public static readonly ObjectType ObjectCommandType = (ObjectType)"objc";
+        public static readonly ObjectType DataWith = (ObjectType)"with";
 
         //Forms
 
-        public static readonly PDFObjectType Form = (PDFObjectType)"form";
-        public static readonly PDFObjectType FormInputField = (PDFObjectType)"inpt";
+        public static readonly ObjectType Form = (ObjectType)"form";
+        public static readonly ObjectType FormInputField = (ObjectType)"inpt";
 
         //Headings
 
-        public static readonly PDFObjectType H1 = (PDFObjectType)"txh1";
-        public static readonly PDFObjectType H2 = (PDFObjectType)"txh2";
-        public static readonly PDFObjectType H3 = (PDFObjectType)"txh3";
-        public static readonly PDFObjectType H4 = (PDFObjectType)"txh4";
-        public static readonly PDFObjectType H5 = (PDFObjectType)"txh5";
-        public static readonly PDFObjectType H6 = (PDFObjectType)"txh6";
+        public static readonly ObjectType H1 = (ObjectType)"txh1";
+        public static readonly ObjectType H2 = (ObjectType)"txh2";
+        public static readonly ObjectType H3 = (ObjectType)"txh3";
+        public static readonly ObjectType H4 = (ObjectType)"txh4";
+        public static readonly ObjectType H5 = (ObjectType)"txh5";
+        public static readonly ObjectType H6 = (ObjectType)"txh6";
 
         //Styles
 
-        public static readonly PDFObjectType StyleMargins = (PDFObjectType)"smar";
-        public static readonly PDFObjectType StyleFill = (PDFObjectType)"sfil";
-        public static readonly PDFObjectType StyleBackground = (PDFObjectType)"sbak";
-        public static readonly PDFObjectType StyleBorder = (PDFObjectType)"sbdr";
-        public static readonly PDFObjectType StyleBorderTop = (PDFObjectType)"sbdT";
-        public static readonly PDFObjectType StyleBorderLeft = (PDFObjectType)"sbdL";
-        public static readonly PDFObjectType StyleBorderBottom = (PDFObjectType)"sbdB";
-        public static readonly PDFObjectType StyleBorderRight = (PDFObjectType)"sbdR";
+        public static readonly ObjectType StyleMargins = (ObjectType)"smar";
+        public static readonly ObjectType StyleFill = (ObjectType)"sfil";
+        public static readonly ObjectType StyleBackground = (ObjectType)"sbak";
+        public static readonly ObjectType StyleBorder = (ObjectType)"sbdr";
+        public static readonly ObjectType StyleBorderTop = (ObjectType)"sbdT";
+        public static readonly ObjectType StyleBorderLeft = (ObjectType)"sbdL";
+        public static readonly ObjectType StyleBorderBottom = (ObjectType)"sbdB";
+        public static readonly ObjectType StyleBorderRight = (ObjectType)"sbdR";
 
-        public static readonly PDFObjectType StyleClip = (PDFObjectType)"sclp";
-        public static readonly PDFObjectType StyleDocument = (PDFObjectType)"sdoc";
-        public static readonly PDFObjectType StyleText = (PDFObjectType)"stxt";
-        public static readonly PDFObjectType StyleTable = (PDFObjectType)"stbl";
-        public static readonly PDFObjectType StyleTransform = (PDFObjectType)"stra";
-        public static readonly PDFObjectType StyleStroke = (PDFObjectType)"sstk";
-        public static readonly PDFObjectType StylePage = (PDFObjectType)"spag";
-        public static readonly PDFObjectType StyleOverflow = (PDFObjectType)"sovr";
-        public static readonly PDFObjectType StylePosition = (PDFObjectType)"spos";
-        public static readonly PDFObjectType StyleSize = (PDFObjectType)"ssiz";
-        public static readonly PDFObjectType StyleFont = (PDFObjectType)"sfnt";
-        public static readonly PDFObjectType StyleOutline = (PDFObjectType)"sout";
-        public static readonly PDFObjectType Style = (PDFObjectType)"styl";
-        public static readonly PDFObjectType StyleColumns = (PDFObjectType)"scol";
-        public static readonly PDFObjectType StylePadding = (PDFObjectType)"spad";
-        public static readonly PDFObjectType StyleGroup = (PDFObjectType)"sgrp";
-        public static readonly PDFObjectType StyleRef = (PDFObjectType)"sref";
-        public static readonly PDFObjectType StyleOverlayGrid = (PDFObjectType)"grid";
-        public static readonly PDFObjectType StyleBadge = (PDFObjectType)"badg";
-        public static readonly PDFObjectType StyleBarcode = (PDFObjectType)"sbar";
-        public static readonly PDFObjectType StyleList = (PDFObjectType)"slst";
-        public static readonly PDFObjectType StyleListItem = (PDFObjectType)"slli";
-        public static PDFObjectType StyleModify = (PDFObjectType)"smod";
+        public static readonly ObjectType StyleClip = (ObjectType)"sclp";
+        public static readonly ObjectType StyleDocument = (ObjectType)"sdoc";
+        public static readonly ObjectType StyleText = (ObjectType)"stxt";
+        public static readonly ObjectType StyleTable = (ObjectType)"stbl";
+        public static readonly ObjectType StyleTransform = (ObjectType)"stra";
+        public static readonly ObjectType StyleStroke = (ObjectType)"sstk";
+        public static readonly ObjectType StylePage = (ObjectType)"spag";
+        public static readonly ObjectType StyleOverflow = (ObjectType)"sovr";
+        public static readonly ObjectType StylePosition = (ObjectType)"spos";
+        public static readonly ObjectType StyleSize = (ObjectType)"ssiz";
+        public static readonly ObjectType StyleFont = (ObjectType)"sfnt";
+        public static readonly ObjectType StyleOutline = (ObjectType)"sout";
+        public static readonly ObjectType Style = (ObjectType)"styl";
+        public static readonly ObjectType StyleColumns = (ObjectType)"scol";
+        public static readonly ObjectType StylePadding = (ObjectType)"spad";
+        public static readonly ObjectType StyleGroup = (ObjectType)"sgrp";
+        public static readonly ObjectType StyleRef = (ObjectType)"sref";
+        public static readonly ObjectType StyleOverlayGrid = (ObjectType)"grid";
+        public static readonly ObjectType StyleBadge = (ObjectType)"badg";
+        public static readonly ObjectType StyleBarcode = (ObjectType)"sbar";
+        public static readonly ObjectType StyleList = (ObjectType)"slst";
+        public static readonly ObjectType StyleListItem = (ObjectType)"slli";
+        public static ObjectType StyleModify = (ObjectType)"smod";
 
 
         //Shapes
 
-        public static readonly PDFObjectType ShapeStyle = (PDFObjectType)"sshp";
-        public static readonly PDFObjectType ShapeLine = (PDFObjectType)"line";
-        public static readonly PDFObjectType ShapeCircle = (PDFObjectType)"circ";
-        public static readonly PDFObjectType ShapeElipse = (PDFObjectType)"elps";
-        public static readonly PDFObjectType ShapePath = (PDFObjectType)"path";
-        public static readonly PDFObjectType ShapePolygon = (PDFObjectType)"poly";
-        public static readonly PDFObjectType ShapePolygram = (PDFObjectType)"polg";
-        public static readonly PDFObjectType ShapeTriangle = (PDFObjectType)"tria";
-        public static readonly PDFObjectType ShapeRectangle = (PDFObjectType)"rect";
+        public static readonly ObjectType ShapeStyle = (ObjectType)"sshp";
+        public static readonly ObjectType ShapeLine = (ObjectType)"line";
+        public static readonly ObjectType ShapeCircle = (ObjectType)"circ";
+        public static readonly ObjectType ShapeElipse = (ObjectType)"elps";
+        public static readonly ObjectType ShapePath = (ObjectType)"path";
+        public static readonly ObjectType ShapePolygon = (ObjectType)"poly";
+        public static readonly ObjectType ShapePolygram = (ObjectType)"polg";
+        public static readonly ObjectType ShapeTriangle = (ObjectType)"tria";
+        public static readonly ObjectType ShapeRectangle = (ObjectType)"rect";
 
 
 

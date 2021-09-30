@@ -63,7 +63,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToType(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToType(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             string prefix;
@@ -130,7 +130,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToInt32(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToInt32(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -154,7 +154,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToInt16(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToInt16(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -178,7 +178,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToInt64(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToInt64(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -202,7 +202,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToUInt32(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToUInt32(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -226,7 +226,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToUInt16(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToUInt16(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -250,7 +250,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToUInt64(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToUInt64(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -274,7 +274,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToFloat(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToFloat(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -298,7 +298,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToDouble(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToDouble(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -322,7 +322,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToDecimal(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToDecimal(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
 
@@ -346,7 +346,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToString(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToString(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             return GetReaderValue(reader);
         }
@@ -362,7 +362,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToDateTime(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToDateTime(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -385,7 +385,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToTimeSpan(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToTimeSpan(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -408,7 +408,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToEnum(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToEnum(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -439,7 +439,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToByte(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToByte(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -462,7 +462,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToSByte(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToSByte(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -485,7 +485,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToChar(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToChar(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -505,7 +505,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToGuid(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToGuid(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -528,7 +528,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToBool(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToBool(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -548,7 +548,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToDBNull(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToDBNull(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader); //still need to read ahead
             return DBNull.Value;
@@ -565,7 +565,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToUri(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToUri(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             string value = GetReaderValue(reader);
             if (string.IsNullOrEmpty(value))
@@ -585,7 +585,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToXPathNavigable(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToXPathNavigable(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             while (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.Comment)
                 reader.Read();
@@ -607,7 +607,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToXPathNavigator(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToXPathNavigator(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             while (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.Comment)
                 reader.Read();
@@ -628,7 +628,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="setting"></param>
         /// <returns></returns>
-        internal static object ToXmlNode(XmlReader reader, Type requiredType, PDFGeneratorSettings setting)
+        internal static object ToXmlNode(XmlReader reader, Type requiredType, ParserSettings setting)
         {
             while (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.Comment)
                 reader.Read();
@@ -656,7 +656,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        internal static object ToPDFTemplate(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+        internal static object ToPDFTemplate(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             object obj = Activator.CreateInstance(settings.TempateGeneratorType);
             IPDFTemplateGenerator gen = (IPDFTemplateGenerator)obj;
@@ -676,7 +676,7 @@ namespace Scryber.Generation
         /// <param name="requiredType"></param>
         /// <param name="setting"></param>
         /// <returns></returns>
-        internal static object ToXmlDocument(XmlReader reader, Type requiredType, PDFGeneratorSettings setting)
+        internal static object ToXmlDocument(XmlReader reader, Type requiredType, ParserSettings setting)
         {
             XmlReader inner = reader.ReadSubtree();
             System.Xml.XmlDocument doc = new XmlDocument();
@@ -892,7 +892,7 @@ namespace Scryber.Generation
             /// <param name="requiredType"></param>
             /// <param name="settings"></param>
             /// <returns></returns>
-            internal abstract object ConvertXml(XmlReader reader, Type requiredType, PDFGeneratorSettings settings);
+            internal abstract object ConvertXml(XmlReader reader, Type requiredType, ParserSettings settings);
 
             /// <summary>
             /// Method so they convert from the current string value to the required type. Inheritors must override
@@ -1045,7 +1045,7 @@ namespace Scryber.Generation
             /// <param name="requiredType"></param>
             /// <param name="settings"></param>
             /// <returns></returns>
-            internal override object ConvertXml(XmlReader reader, Type requiredType, PDFGeneratorSettings settings)
+            internal override object ConvertXml(XmlReader reader, Type requiredType, ParserSettings settings)
             {
                 
                 if(null != _parseXmlWithFormat)

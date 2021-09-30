@@ -239,7 +239,7 @@ namespace Scryber.Svg.Components
 
 
 
-        protected override IEnumerable<IPDFComponent> DoParseContents(PDFContextBase context)
+        protected override IEnumerable<IComponent> DoParseContents(PDFContextBase context)
         {
             if (!string.IsNullOrEmpty(this.HRef))
             {
@@ -249,7 +249,7 @@ namespace Scryber.Svg.Components
                 return base.DoParseContents(context);
         }
 
-        protected virtual IEnumerable<IPDFComponent> GetContentFromHRef(string href, PDFContextBase context)
+        protected virtual IEnumerable<IComponent> GetContentFromHRef(string href, PDFContextBase context)
         {
             if (string.IsNullOrEmpty(href))
                 throw new ArgumentNullException(nameof(href));
@@ -260,7 +260,7 @@ namespace Scryber.Svg.Components
                 var parent = this.Parent;
                 while (null != parent)
                 {
-                    IPDFComponent found;
+                    IComponent found;
                     if (parent is SVGCanvas && (parent as SVGCanvas).TryFindComponentByID(id, out found))
                     {
                         return this.GetClonedContent(found);
@@ -274,22 +274,22 @@ namespace Scryber.Svg.Components
                     return GetClonedContent(comp);
                 }
 
-                return new IPDFComponent[] { };
+                return new IComponent[] { };
             }
             else throw new NotSupportedException("Full or relative URLs are not currently supported on the SVG Use component");
         }
 
 
-        protected IEnumerable<IPDFComponent> GetClonedContent(IPDFComponent found)
+        protected IEnumerable<IComponent> GetClonedContent(IComponent found)
         {
             if (found is ICloneable)
-                found = (found as ICloneable).Clone() as IPDFComponent;
+                found = (found as ICloneable).Clone() as IComponent;
 
             if(found is IPDFStyledComponent)
             this.ApplySizeStyle(found as IPDFStyledComponent);
             
             
-            return new IPDFComponent[] { found };
+            return new IComponent[] { found };
         }
 
         private void ApplySizeStyle(IPDFStyledComponent found)

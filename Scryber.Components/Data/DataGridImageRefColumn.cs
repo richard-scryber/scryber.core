@@ -23,11 +23,11 @@ namespace Scryber.Data
         }
 
         public DataGridImageRefColumn()
-            : this((PDFObjectType)"DgIr")
+            : this((ObjectType)"DgIr")
         {
         }
 
-        protected DataGridImageRefColumn(PDFObjectType type)
+        protected DataGridImageRefColumn(ObjectType type)
             : base(type)
         {
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Scryber.Utilities
 {
-    public class LocalFilePathMappingService : IPDFPathMappingService
+    public class LocalFilePathMappingService : IPathMappingService
     {
         public LocalFilePathMappingService()
         {

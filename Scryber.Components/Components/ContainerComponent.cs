@@ -22,7 +22,7 @@ using System.Text;
 using System.Drawing;
 using Scryber.Styles;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -93,7 +93,7 @@ namespace Scryber.Components
         /// Creates a new instance of the PDFContainerComponent
         /// </summary>
         /// <param name="type"></param>
-        public ContainerComponent(PDFObjectType type)
+        public ContainerComponent(ObjectType type)
             : base(type)
         {
         }

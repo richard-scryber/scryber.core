@@ -15,7 +15,7 @@ namespace Scryber.Components
     public class HtmlFragment : Scryber.Components.VisualComponent
     {
 
-        private List<IPDFComponent> _added = null;
+        private List<IComponent> _added = null;
         private bool _parsed = false;
         private bool _unencode = false;
 
@@ -75,11 +75,11 @@ namespace Scryber.Components
 
 
         public HtmlFragment()
-            : this((PDFObjectType)"htmF")
+            : this((ObjectType)"htmF")
         {
         }
 
-        protected HtmlFragment(PDFObjectType type)
+        protected HtmlFragment(ObjectType type)
             : base(type)
         {
         }
@@ -93,7 +93,7 @@ namespace Scryber.Components
             base.OnLoaded(context);
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(PDF.PDFLayoutContext context)
         {
             bool performload = true;
             this.EnsureContentsParsed(context, performload);
@@ -113,7 +113,7 @@ namespace Scryber.Components
             {
                 if (_added != null && _added.Count > 0)
                 {
-                    foreach (IPDFComponent prev in _added)
+                    foreach (IComponent prev in _added)
                     {
                         container.Content.Remove(prev as Component);
                     }
@@ -178,7 +178,7 @@ namespace Scryber.Components
             if (!string.IsNullOrEmpty(this._contentsAsString))
             {
                 if (null == this._added)
-                    _added = new List<IPDFComponent>();
+                    _added = new List<IComponent>();
 
                 try
                 {
@@ -207,7 +207,7 @@ namespace Scryber.Components
                         PDFLoadContext loadContext = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                         for (int i = 0; i < _added.Count; i++)
                         {
-                            IPDFComponent comp = _added[i];
+                            IComponent comp = _added[i];
                             if (comp is VisualComponent)
                                 (comp as VisualComponent).Load(loadContext);
                         }
@@ -250,15 +250,15 @@ namespace Scryber.Components
             }
             HTMLParser parser = new HTMLParser(html, settings);
 
-            Stack<IPDFComponent> route = new Stack<IPDFComponent>();
+            Stack<IComponent> route = new Stack<IComponent>();
 
-            IPDFComponentList contents = container.Content;
+            IComponentList contents = container.Content;
             //int codeDepth = 0;
             foreach (Scryber.Html.Parsing.HTMLParserResult result in parser)
             {
                 if (result.Valid && null != result.Parsed)
                 {
-                    IPDFComponent parsed = result.Parsed;
+                    IComponent parsed = result.Parsed;
 
                     if (result.IsEnd)
                         route.Pop();
@@ -269,15 +269,15 @@ namespace Scryber.Components
                             _added.Add(parsed);
                             contents.Insert(insertIndex, parsed);
                             insertIndex++;
-                            if (parsed is IPDFLoadableComponent)
+                            if (parsed is ILoadableComponent)
                             {
-                                ((IPDFLoadableComponent)parsed).LoadedSource = source;
+                                ((ILoadableComponent)parsed).LoadedSource = source;
                             }
                         }
                         else
                         {
                             IPDFContainerComponent parent = (IPDFContainerComponent)route.Peek();
-                            ((IPDFComponentList)parent.Content).Add(parsed);
+                            ((IComponentList)parent.Content).Add(parsed);
                         }
                         route.Push(result.Parsed);
                     }

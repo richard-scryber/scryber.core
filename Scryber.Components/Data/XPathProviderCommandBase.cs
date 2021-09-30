@@ -33,7 +33,7 @@ namespace Scryber.Data
         //
         
 
-        public XPathProviderCommandBase(PDFObjectType type)
+        public XPathProviderCommandBase(ObjectType type)
             : base(type)
         {
         }

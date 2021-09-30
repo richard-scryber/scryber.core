@@ -20,11 +20,11 @@ namespace Scryber.Data
 
 
         public DataGridHtmlColumn()
-            : this((PDFObjectType)"DgLk")
+            : this((ObjectType)"DgLk")
         {
         }
 
-        protected DataGridHtmlColumn(PDFObjectType type)
+        protected DataGridHtmlColumn(ObjectType type)
             : base(type)
         {
         }

@@ -3,9 +3,9 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public class CSSStringParser : CSSStyleValueParser
     {
-        public PDFStyleKey<string> StyleKey { get; protected set; }
+        public StyleKey<string> StyleKey { get; protected set; }
 
-        public CSSStringParser(string name, PDFStyleKey<string> styleKey)
+        public CSSStringParser(string name, StyleKey<string> styleKey)
             : base(name)
         {
             this.StyleKey = styleKey;

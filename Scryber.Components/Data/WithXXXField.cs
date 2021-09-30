@@ -25,12 +25,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithTextField():
-            this((PDFObjectType)"WtTf")
+            this((ObjectType)"WtTf")
         {
 
         }
 
-        public WithTextField(PDFObjectType type) : base(type)
+        public WithTextField(ObjectType type) : base(type)
         {
 
         }
@@ -90,12 +90,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithDateField() :
-            this((PDFObjectType)"WtDf")
+            this((ObjectType)"WtDf")
         {
 
         }
 
-        public WithDateField(PDFObjectType type) : base(type)
+        public WithDateField(ObjectType type) : base(type)
         {
 
         }
@@ -167,12 +167,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithNumberField() :
-            this((PDFObjectType)"WtNf")
+            this((ObjectType)"WtNf")
         {
 
         }
 
-        public WithNumberField(PDFObjectType type) : base(type)
+        public WithNumberField(ObjectType type) : base(type)
         {
 
         }
@@ -227,12 +227,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithBooleanField() :
-            this((PDFObjectType)"WtNf")
+            this((ObjectType)"WtNf")
         {
 
         }
 
-        public WithBooleanField(PDFObjectType type) : base(type)
+        public WithBooleanField(ObjectType type) : base(type)
         {
 
         }
@@ -298,12 +298,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithUrlField() :
-            this((PDFObjectType)"WtUf")
+            this((ObjectType)"WtUf")
         {
 
         }
 
-        public WithUrlField(PDFObjectType type) : base(type)
+        public WithUrlField(ObjectType type) : base(type)
         {
             
         }
@@ -363,12 +363,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithImageField() :
-            this((PDFObjectType)"WtIf")
+            this((ObjectType)"WtIf")
         {
 
         }
 
-        public WithImageField(PDFObjectType type) : base(type)
+        public WithImageField(ObjectType type) : base(type)
         {
 
         }
@@ -429,12 +429,12 @@ namespace Scryber.Data
         private string _autobindValue;
 
         public WithHtmlField() :
-            this((PDFObjectType)"WtHf")
+            this((ObjectType)"WtHf")
         {
 
         }
 
-        public WithHtmlField(PDFObjectType type) : base(type)
+        public WithHtmlField(ObjectType type) : base(type)
         {
 
         }

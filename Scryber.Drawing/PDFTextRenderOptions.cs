@@ -43,7 +43,6 @@ namespace Scryber
             set
             {
                 _font = value;
-                _sysfont = null;
             }
         }
 
@@ -141,29 +140,7 @@ namespace Scryber
 
         #endregion
 
-        #region public System.Drawing.Font SystemFont {get;}
-
-        private System.Drawing.Font _sysfont;
-
-        /// <summary>
-        /// Gets the System.Drawing.Font font that is representative of the Scyber font in these rending options
-        /// </summary>
-        [Obsolete("No longer using system fonts", true)]
-        public System.Drawing.Font SystemFont
-        {
-            get
-            {
-                //if (null == _sysfont)
-                //{
-                //    if (null == _font)
-                //        return null;
-                //    _sysfont = _font.GetSystemFont();
-                //}
-                return _sysfont;
-            }
-        }
-
-        #endregion
+        
 
         #region public double? WordSpacing {get;set;}
 

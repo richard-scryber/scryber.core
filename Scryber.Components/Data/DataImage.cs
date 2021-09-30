@@ -5,9 +5,8 @@ using System.Text;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Drawing.Imaging;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
 using Scryber.Styles;
-using Scryber.Native;
 using System.Drawing;
 using System.ComponentModel;
 
@@ -17,7 +16,7 @@ namespace Scryber.Data
     [PDFParsableComponent("DataImage")]
     public class DataImage : ImageBase
     {
-        public static readonly PDFObjectType DataImageType = (PDFObjectType)"DImg";
+        public static readonly ObjectType DataImageType = (ObjectType)"DImg";
         
 
         [PDFElement("Data")]
@@ -34,7 +33,7 @@ namespace Scryber.Data
         {
         }
 
-        protected DataImage(PDFObjectType type)
+        protected DataImage(ObjectType type)
             : base(type)
         {
         }
@@ -42,7 +41,7 @@ namespace Scryber.Data
         private PDFImageXObject _xobj;
 
        
-        protected override Resources.PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
+        protected override PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
         {
             Document doc = this.Document;
             if (null == doc)
@@ -77,108 +76,5 @@ namespace Scryber.Data
             return _xobj;
         }
 
-        #region Legacy Code
-
-        //protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, PDFStyle fullstyle)
-        //{
-        //    IPDFResourceContainer resources = this.GetResourceContainer();
-        //    if (null == resources)
-        //        throw new NullReferenceException(string.Format(Errors.ResourceContainerOfComponentNotFound, "Image", this.ID));
-        //    PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
-
-        //    if (null != xobj)
-        //        resources.Register(xobj);
-
-        //    base.DoRegisterArtefacts(context, set, fullstyle);
-        //}
-
-        //internal static PDFSize AdjustImageSize(PDFStyle style, PDFSize imgsize)
-        //{
-        //    PDFSize rendersize = imgsize;
-
-        //    PDFStyleValue<PDFUnit> width;
-        //    bool scaleWidth = style.TryGetValue(PDFStyleKeys.SizeWidthKey, out width);
-
-        //    PDFStyleValue<PDFUnit> height;
-        //    bool scaleHeight = style.TryGetValue(PDFStyleKeys.SizeHeightKey, out height);
-
-        //    if (scaleWidth || scaleHeight)
-        //    {
-
-        //        if (scaleWidth)
-        //        {
-        //            rendersize.Width = width.Value;
-        //        }
-        //        if (scaleHeight)
-        //        {
-        //            rendersize.Height = height.Value;
-        //        }
-
-
-        //        if (scaleWidth && scaleHeight)
-        //        {
-        //            //Do nothing as the size is set for both height and width.
-        //        }
-        //        else if (scaleWidth)
-        //        {
-        //            double val = rendersize.Width.PointsValue;
-        //            double scale = rendersize.Height.PointsValue / imgsize.Height.PointsValue;
-        //            rendersize.Width = (PDFUnit)(val * scale);
-        //        }
-        //        else if (scaleHeight)
-        //        {
-        //            double val = rendersize.Height.PointsValue;
-        //            double scale = rendersize.Width.PointsValue / imgsize.Width.PointsValue;
-        //            rendersize.Height = (PDFUnit)(val * scale);
-        //        }
-
-        //        imgsize = rendersize;
-        //    }
-        //    return imgsize;
-        //}
-
-
-
-
-
-        //public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
-        //{
-        //    PDFGraphics graphics = context.Graphics;
-        //    PDFStyle style;
-        //    PDFComponentArrangement arrange = this.GetFirstArrangement();
-        //    if (null != arrange)
-        //        style = arrange.FullStyle;
-        //    else
-        //        style = null;
-
-        //    PDFImageXObject img = this.GetImageObject(context, style);
-        //    if (img != null)
-        //    {
-        //        PDFPoint pos = context.Offset;
-
-
-        //        PDFSize imgsize = context.Space;
-
-        //        //the pictures are drawn from their bottom left corner, so take off the height.
-        //        //if (context.DrawingOrigin == DrawingOrigin.TopLeft)
-        //        //    pos.Y = pos.Y + imgsize.Height;
-
-        //        graphics.SaveGraphicsState();
-
-        //        PDFStyleValue<double> op;
-        //        if (null != style && style.TryGetValue(PDFStyleKeys.FillOpacityKey,out op) && op.Value < 1.0)
-        //        {
-        //            graphics.SetFillOpacity(op.Value);
-        //        }
-        //        PDFObjectRef imgref = img.EnsureRendered(context, writer);
-        //        graphics.PaintImageRef(img, imgsize, pos);
-        //        graphics.RestoreGraphicsState();
-        //        return imgref;
-        //    }
-        //    else
-        //        return null;// base.DoRenderToPDF(context, fullstyle, graphics, writer);
-        //}
-
-        #endregion
     }
 }

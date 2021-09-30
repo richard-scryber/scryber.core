@@ -40,6 +40,8 @@
     <Folder Include="Text\_FontResources\Courier\" />
     <Folder Include="Text\_FontResources\Zaph\" />
     <Folder Include="Text\_FontResources\Symbol\" />
+    <Folder Include="PDF\" />
+    <Folder Include="PDF\Resources\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Text\_FontResources\Helvetica\Helvetica.ttf" />
@@ -56,6 +58,8 @@
     <None Remove="Text\_FontResources\Times\timesNewRomanBold.ttf" />
     <None Remove="Text\_FontResources\Times\timesNewRomanBoldItalic.ttf" />
     <None Remove="Text\_FontResources\Times\timesNewRomanItalic.ttf" />
+    <None Remove="PDF\" />
+    <None Remove="PDF\Resources\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />

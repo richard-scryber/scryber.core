@@ -13,7 +13,7 @@ namespace Scryber.Styles.Parsing.Typed
         private const bool IgnoreCase = true;
         private Type _enumType;
 
-        public CSSEnumStyleParser(string styleItemKey, PDFStyleKey<T> pdfAttr)
+        public CSSEnumStyleParser(string styleItemKey, StyleKey<T> pdfAttr)
             : base(styleItemKey, pdfAttr)
         {
             _enumType = typeof(T);

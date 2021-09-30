@@ -163,7 +163,7 @@ namespace Scryber.Data
 
         #region public IPDFTemplate EmptyTemplate {get;set;}
 
-        private IPDFTemplate _empty;
+        private ITemplate _empty;
 
         /// <summary>
         /// Gets or sets the template to be used if this grid has no columns or rows
@@ -172,7 +172,7 @@ namespace Scryber.Data
         [PDFAttribute("empty-template")]
         [PDFTemplate()]
         [PDFDesignable("Empty Template", Ignore =true)]
-        public IPDFTemplate EmptyTemplate
+        public ITemplate EmptyTemplate
         {
             get { return _empty; }
             set { _empty = value; }
@@ -216,7 +216,7 @@ namespace Scryber.Data
         /// 
         /// </summary>
         public DataGrid()
-            : this((PDFObjectType)"DGrd")
+            : this((ObjectType)"DGrd")
         {
         }
 
@@ -228,7 +228,7 @@ namespace Scryber.Data
         /// 
         /// </summary>
         /// <param name="type"></param>
-        protected DataGrid(PDFObjectType type)
+        protected DataGrid(ObjectType type)
             : base(type)
         {
         }
@@ -299,7 +299,7 @@ namespace Scryber.Data
            
         }
 
-        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
             throw new NotSupportedException("We don't support this on a data grid - it works differently");
         }
@@ -708,7 +708,7 @@ namespace Scryber.Data
                     context.DataStack.Push(action.Data, action.Source);
                     action.Component.DataBind(context);
 
-                    this.OnItemDataBound(context, (IPDFComponent)action.Component);
+                    this.OnItemDataBound(context, (IComponent)action.Component);
 
                     context.DataStack.Pop();
                     

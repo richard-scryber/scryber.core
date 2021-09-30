@@ -20,9 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using System.Drawing;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
+using Scryber.PDF;
 using System.Runtime.CompilerServices;
 
 namespace Scryber.Drawing
@@ -113,12 +114,12 @@ namespace Scryber.Drawing
             if (null == rsrc)
                 throw new NullReferenceException(String.Format("The font resource has not bee set on '{0}'", font.FullName));
 
-            PDFName name = this.Container.Register(rsrc);
+            string name = this.Container.Register(rsrc);
             this.CurrentFontResource = (PDFFontResource)rsrc;
             this.CurrentFont = font;
 
             if(null != this.Writer)
-                this.Writer.WriteOpCodeS(PDFOpCode.TxtFont, name, font.Size.RealValue);
+                this.Writer.WriteOpCodeS(PDFOpCode.TxtFont, (PDFName)name, font.Size.RealValue);
             
         }
 

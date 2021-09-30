@@ -19,7 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Drawing
 {
@@ -78,8 +80,8 @@ namespace Scryber.Drawing
 
         #region public IPDFResourceContainer Container{get;}
 
-        private IPDFResourceContainer _rsrc;
-        public IPDFResourceContainer Container
+        private IResourceContainer _rsrc;
+        public IResourceContainer Container
         {
             get { return _rsrc; }
         }
@@ -124,7 +126,7 @@ namespace Scryber.Drawing
 
         #region protected .ctor(writer, size, container)
 
-        protected PDFGraphics(PDFWriter writer, PDFSize size, IPDFResourceContainer container)
+        protected PDFGraphics(PDFWriter writer, PDFSize size, IResourceContainer container)
         {
             this._writer = writer;
             this._pageSize = size;
@@ -136,7 +138,7 @@ namespace Scryber.Drawing
 
         #region internal static PDFGraphics Create(writer, ownswriter, container, origin, size)
 
-        public static PDFGraphics Create(PDFWriter writer, bool ownswriter, IPDFResourceContainer rsrc, DrawingOrigin origin, PDFSize size, PDFContextBase context)
+        public static PDFGraphics Create(PDFWriter writer, bool ownswriter, IResourceContainer rsrc, DrawingOrigin origin, PDFSize size, PDFContextBase context)
         {
             if (origin == DrawingOrigin.BottomLeft)
                 throw new ArgumentException(Errors.GraphicsOnlySupportsTopDownDrawing, "origin");
@@ -176,7 +178,7 @@ namespace Scryber.Drawing
 
         //private Resources.PDFExtGSState _currState;
 
-        protected Resources.PDFExtGSState EnsureExternalState()
+        protected PDFExtGSState EnsureExternalState()
         {
             return null;
             //this.ExternalState.EnsureState();
@@ -661,9 +663,9 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public void PaintXObject(Scryber.Resources.PDFResource rsrc)
+        #region public void PaintXObject(Scryber.PDF.Resources.PDFResource rsrc)
 
-        public void PaintXObject(Scryber.Resources.PDFResource rsrc)
+        public void PaintXObject(Scryber.PDF.Resources.PDFResource rsrc)
         {
             if (null == rsrc )
                 throw new ArgumentNullException("The resource cannot be null");
@@ -691,7 +693,7 @@ namespace Scryber.Drawing
         /// <param name="imgsize"></param>
         /// <param name="pos"></param>
         /// <remarks>This does not include the image within the document or ensure that it is available</remarks>
-        public void PaintImageRef(Scryber.Resources.PDFImageXObject img, PDFSize imgsize, PDFPoint pos)
+        public void PaintImageRef(Scryber.PDF.Resources.PDFImageXObject img, PDFSize imgsize, PDFPoint pos)
         {
             if (string.IsNullOrEmpty(img.Name.Value))
                 throw new ArgumentNullException("img.Name");

@@ -20,10 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
-using Scryber.Resources;
 using Scryber.Text;
 using Scryber.Drawing;
-using Scryber.Native;
 
 namespace Scryber.Components
 {
@@ -48,7 +46,7 @@ namespace Scryber.Components
 
         #region protected .ctor(type)
 
-        protected TextBase(PDFObjectType type)
+        protected TextBase(ObjectType type)
             : base(type)
         {
         }
@@ -57,7 +55,7 @@ namespace Scryber.Components
 
         #region protected virtual PDFTextReader CreateReader() + Interface implementation
 
-        protected virtual PDFTextReader CreateReader(PDFLayoutContext context, Style fullstyle)
+        protected virtual PDFTextReader CreateReader(PDFContextBase context, Style fullstyle)
         {
             TextFormat format = TextFormat.Plain;
             bool preserveWhitespace = fullstyle.GetValue(StyleKeys.TextWhitespaceKey, false);
@@ -69,7 +67,7 @@ namespace Scryber.Components
             return PDFTextReader.Create(this.BaseText, format, preserveWhitespace, context.TraceLog);
         }
 
-        PDFTextReader IPDFTextComponent.CreateReader(PDFLayoutContext context, Style fullstyle)
+        PDFTextReader IPDFTextComponent.CreateReader(PDFContextBase context, Style fullstyle)
         {
             return this.CreateReader(context, fullstyle);
         }
@@ -100,9 +98,9 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
+        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style fullstyle)
         {
-            return new Layout.LayoutEngineText(this, parent);
+            return new PDF.Layout.LayoutEngineText(this, parent);
         }
     }
 }

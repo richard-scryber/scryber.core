@@ -8,7 +8,7 @@ namespace Scryber.Styles.Parsing.Typed
     {
         private bool _allowGradients;
 
-        public CSSUrlStyleParser(string styleItemKey, PDFStyleKey<string> pdfAttr, bool allowGradients = true)
+        public CSSUrlStyleParser(string styleItemKey, StyleKey<string> pdfAttr, bool allowGradients = true)
             : base(styleItemKey, pdfAttr)
         {
             _allowGradients = allowGradients;

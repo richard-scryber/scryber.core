@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Mocks
             Results.Add("Controller ForEach Label " + args.Context.CurrentIndex + " Databound");
         }
 
-        public IPDFComponent PartialView(Document doc, PDFInitContext context)
+        public IComponent PartialView(Document doc, PDFInitContext context)
         {
             var str = "";
 

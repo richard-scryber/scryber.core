@@ -56,7 +56,7 @@ namespace Scryber.Binding
             catch(Exception ex)
             {
                 string id;
-                if (owner is IPDFComponent component)
+                if (owner is IComponent component)
                     id = component.ID;
                 else
                     id = "";

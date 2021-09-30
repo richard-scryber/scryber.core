@@ -42,7 +42,7 @@ namespace Scryber.Components
         {
         }
 
-        protected LineBreak(PDFObjectType type)
+        protected LineBreak(ObjectType type)
             : base(type)
         {
         }

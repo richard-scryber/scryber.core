@@ -1,4 +1,5 @@
-﻿using Scryber.Native;
+﻿using Scryber.PDF.Native;
+using Scryber.PDF;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;

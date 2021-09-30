@@ -29,7 +29,7 @@ namespace Scryber.Html.Components
 
         }
 
-        public static IPDFTemplate GetDataContent(this ContainerComponent container, string dataContent, PDFContextBase context)
+        public static ITemplate GetDataContent(this ContainerComponent container, string dataContent, PDFContextBase context)
         {
             if (string.IsNullOrEmpty(dataContent))
                 return null;
@@ -50,7 +50,7 @@ namespace Scryber.Html.Components
 
                 return null;
             }
-            else if (!(found is IPDFTemplate))
+            else if (!(found is ITemplate))
             {
                 if (context.Conformance == ParserConformanceMode.Strict)
                     throw new PDFParserException("Could not load the data-content, the element with ID or name " + dataContent + " does not support template creation");
@@ -61,7 +61,7 @@ namespace Scryber.Html.Components
             }
             else
             {
-                return (found as IPDFTemplate);
+                return (found as ITemplate);
             }
 
         }

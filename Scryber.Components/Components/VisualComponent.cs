@@ -19,10 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
 using System.Drawing;
 using Scryber.Styles;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
 using Scryber.Drawing;
 
 namespace Scryber.Components
@@ -520,7 +519,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public PDFReal BackgroundOpacity
+        #region public double BackgroundOpacity
 
         /// <summary>
         /// Gets or sets the background fill color opacity of this component
@@ -528,18 +527,18 @@ namespace Scryber.Components
         [PDFAttribute("bg-opacity", Const.PDFStylesNamespace)]
         [PDFDesignable("Opacity", Ignore = true, Category = "Background", Priority = 3, Type = "Percent")]
         [PDFJSConvertor("scryber.studio.design.convertors.opacity_css", JSParams = "\"bg-opacity\"")]
-        public PDFReal BackgroundOpacity
+        public double BackgroundOpacity
         {
             get
             {
                 if (this.HasStyle)
-                    return (PDFReal)this.Style.GetValue(StyleKeys.BgOpacityKey, 0.0);
+                    return this.Style.GetValue(StyleKeys.BgOpacityKey, 0.0);
                else
-                    return PDFReal.Zero;
+                    return 0;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.BgOpacityKey, value.Value);
+                this.Style.SetValue(StyleKeys.BgOpacityKey, value);
             }
         }
 
@@ -804,18 +803,18 @@ namespace Scryber.Components
         [PDFAttribute("fill-opacity", Const.PDFStylesNamespace)]
         [PDFDesignable("Opacity", Category = "Fill", Priority = 1, Type = "Percent")]
         [PDFJSConvertor("scryber.studio.design.convertors.opacity_css", JSParams = "\"opacity\"")]
-        public virtual PDFReal FillOpacity
+        public virtual double FillOpacity
         {
             get
             {
                 if (this.HasStyle)
-                    return (PDFReal)this.Style.GetValue(StyleKeys.FillOpacityKey, 0.0);
+                    return this.Style.GetValue(StyleKeys.FillOpacityKey, 0.0);
                 else
-                    return PDFReal.Zero;
+                    return 0.0;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.FillOpacityKey, value.Value);
+                this.Style.SetValue(StyleKeys.FillOpacityKey, value);
             }
         }
 
@@ -1614,7 +1613,7 @@ namespace Scryber.Components
         // ctor
         //
 
-        protected VisualComponent(PDFObjectType type)
+        protected VisualComponent(ObjectType type)
             : base(type)
         {
             

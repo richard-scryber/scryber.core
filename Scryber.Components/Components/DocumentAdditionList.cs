@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -14,11 +15,11 @@ namespace Scryber.Components
     /// and it will inturn call that stage on
     /// each of the contained components if they support it.
     /// </remarks>
-    public class DocumentAdditionList : IList<IPDFComponent>
+    public class DocumentAdditionList : IList<IComponent>
     {
 
         private Document _doc;
-        private List<IPDFComponent> _inner;
+        private List<IComponent> _inner;
 
         #region public PDFDocument Owner {get;set;}
 
@@ -32,7 +33,7 @@ namespace Scryber.Components
             {
                 _doc = value;
 
-                foreach (IPDFComponent comp in this)
+                foreach (IComponent comp in this)
                 {
                     comp.Parent = value;
                 }
@@ -58,9 +59,9 @@ namespace Scryber.Components
         /// <summary>
         /// Returns false
         /// </summary>
-        bool ICollection<IPDFComponent>.IsReadOnly
+        bool ICollection<IComponent>.IsReadOnly
         {
-            get { return ((ICollection<IPDFComponent>)_inner).IsReadOnly; }
+            get { return ((ICollection<IComponent>)_inner).IsReadOnly; }
         }
 
         #endregion
@@ -73,12 +74,12 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public IPDFComponent this[int index]
+        public IComponent this[int index]
         {
             get { return this._inner[index]; }
             set
             {
-                IPDFComponent orig = this._inner[index];
+                IComponent orig = this._inner[index];
                 this._inner[index] = value;
 
                 if (null != orig)
@@ -104,7 +105,7 @@ namespace Scryber.Components
         public DocumentAdditionList(Document parent)
         {
             _doc = parent;
-            _inner = new List<IPDFComponent>();
+            _inner = new List<IComponent>();
         }
 
         #endregion
@@ -119,7 +120,7 @@ namespace Scryber.Components
         /// Adds a component to the end of the list and sets it's parent to the document
         /// </summary>
         /// <param name="comp"></param>
-        public void Add(IPDFComponent comp)
+        public void Add(IComponent comp)
         {
             comp.Parent = _doc;
             _inner.Add(comp);
@@ -134,7 +135,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="comp"></param>
         /// <returns></returns>
-        public bool Remove(IPDFComponent comp)
+        public bool Remove(IComponent comp)
         {
             if (_inner.Remove(comp))
             {
@@ -157,7 +158,7 @@ namespace Scryber.Components
         /// <param name="index"></param>
         public void RemoveAt(int index)
         {
-            IPDFComponent removed = this._inner[index];
+            IComponent removed = this._inner[index];
             this._inner.RemoveAt(index);
             if (removed.Parent == this._doc)
                 removed.Parent = null;
@@ -172,7 +173,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="comp"></param>
         /// <returns></returns>
-        public int IndexOf(IPDFComponent comp)
+        public int IndexOf(IComponent comp)
         {
             return this._inner.IndexOf(comp);
         }
@@ -186,7 +187,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="index"></param>
         /// <param name="comp"></param>
-        public void Insert(int index, IPDFComponent comp)
+        public void Insert(int index, IComponent comp)
         {
             this._inner.Insert(index, comp);
             comp.Parent = this._doc;
@@ -201,7 +202,7 @@ namespace Scryber.Components
         /// </summary>
         public void Clear()
         {
-            IPDFComponent[] all = this._inner.ToArray();
+            IComponent[] all = this._inner.ToArray();
             this._inner.Clear();
             for (int i = 0; i < all.Length; i++)
             {
@@ -220,7 +221,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="comp"></param>
         /// <returns></returns>
-        public bool Contains(IPDFComponent comp)
+        public bool Contains(IComponent comp)
         {
             return this._inner.Contains(comp);
         }
@@ -233,7 +234,7 @@ namespace Scryber.Components
         /// Copies all the components into the array
         /// </summary>
         /// <param name="all"></param>
-        public void CopyTo(IPDFComponent[] all)
+        public void CopyTo(IComponent[] all)
         {
             this._inner.CopyTo(all);
         }
@@ -247,7 +248,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="all"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(IPDFComponent[] all, int arrayIndex)
+        public void CopyTo(IComponent[] all, int arrayIndex)
         {
             this._inner.CopyTo(all, arrayIndex);
         }
@@ -260,7 +261,7 @@ namespace Scryber.Components
         /// Returns an enumerator that itterates through the list
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<IPDFComponent> GetEnumerator()
+        public IEnumerator<IComponent> GetEnumerator()
         {
             return this._inner.GetEnumerator();
         }
@@ -279,7 +280,7 @@ namespace Scryber.Components
         /// Copies the elements of the list to a new array and returns it
         /// </summary>
         /// <returns></returns>
-        public IPDFComponent[] ToArray()
+        public IComponent[] ToArray()
         {
             return _inner.ToArray();
         }
@@ -298,7 +299,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         public void Init(PDFInitContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 comp.Init(context);
             }
@@ -314,7 +315,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         public void Load(PDFLoadContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 comp.Load(context);
             }
@@ -331,13 +332,13 @@ namespace Scryber.Components
         /// <param name="context"></param>
         public void DataBind(PDFDataContext context)
         {
-            IPDFComponent[] all = this.ToArray();
+            IComponent[] all = this.ToArray();
 
             for (int i = 0; i < all.Length; i++)
             {
-                IPDFComponent comp = all[i];
-                if (comp is IPDFBindableComponent)
-                    ((IPDFBindableComponent)comp).DataBind(context);
+                IComponent comp = all[i];
+                if (comp is IBindableComponent)
+                    ((IBindableComponent)comp).DataBind(context);
             }
         }
 
@@ -345,7 +346,7 @@ namespace Scryber.Components
 
         public void RegisterPreLayout(PDFLayoutContext context)
         {
-            foreach(IPDFComponent com in this)
+            foreach(IComponent com in this)
             {
                 if (com is Component)
                     ((Component)com).RegisterPreLayout(context);
@@ -355,7 +356,7 @@ namespace Scryber.Components
         
         public void RegisterLayoutComplete(PDFLayoutContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 if (comp is Component)
                     ((Component)comp).RegisterLayoutComplete(context);
@@ -366,7 +367,7 @@ namespace Scryber.Components
         
         public void RegisterPreRender(PDFRenderContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 if (comp is Component)
                     ((Component)comp).RegisterPreRender(context);
@@ -383,7 +384,7 @@ namespace Scryber.Components
         /// <param name="writer"></param>
         public void OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 if (comp is IPDFRenderComponent)
                     ((IPDFRenderComponent)comp).OutputToPDF(context, writer);
@@ -395,7 +396,7 @@ namespace Scryber.Components
 
         public void RegisterPostRender(PDFRenderContext context)
         {
-            foreach (IPDFComponent comp in this)
+            foreach (IComponent comp in this)
             {
                 if (comp is Component)
                     ((Component)comp).RegisterPostRender(context);

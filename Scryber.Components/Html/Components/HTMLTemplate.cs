@@ -6,7 +6,7 @@ namespace Scryber.Html.Components
     {
         [PDFTemplate()]
         [PDFElement()]
-        public IPDFTemplate TemplateContent
+        public ITemplate TemplateContent
         {
             get { return base.Template; }
             set { base.Template =value; }
@@ -75,7 +75,7 @@ namespace Scryber.Html.Components
         {
         }
 
-        protected override IPDFTemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
         {
             if(null != this.DataContent)
             {

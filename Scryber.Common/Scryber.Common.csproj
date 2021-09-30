@@ -24,5 +24,13 @@
   <ItemGroup>
     <Folder Include="Options\" />
     <Folder Include="Caching\" />
+    <Folder Include="PDF\" />
+    <Folder Include="PDF\Resources\" />
+    <Folder Include="PDF\Native\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="PDF\" />
+    <None Remove="PDF\Resources\" />
+    <None Remove="PDF\Native\" />
   </ItemGroup>
 </Project>

@@ -27,13 +27,13 @@ namespace Scryber.Styles
     /// <summary>
     /// Abstract base class for all style values. The generic type PDFStyeValue&lt;T&gt; is the concrete implementation for strongly typed values
     /// </summary>
-    public abstract class PDFStyleValueBase
+    public abstract class StyleValueBase
     {
         public StyleKey Key { get; set; }
 
         public int Priority { get; set; }
 
-        protected PDFStyleValueBase(StyleKey key)
+        protected StyleValueBase(StyleKey key)
         {
             this.Key = key;
         }
@@ -41,9 +41,9 @@ namespace Scryber.Styles
         public abstract object GetValue(Style forStyle);
 
 
-        public PDFStyleValueBase CloneWithPriority(int priority)
+        public StyleValueBase CloneWithPriority(int priority)
         {
-            var instance = this.MemberwiseClone() as PDFStyleValueBase;
+            var instance = this.MemberwiseClone() as StyleValueBase;
             instance.Priority = priority;
             return instance;
         }
@@ -56,12 +56,12 @@ namespace Scryber.Styles
     /// Strongly typed style value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class StyleValue<T> : PDFStyleValueBase
+    public class StyleValue<T> : StyleValueBase
     {
 
         private T _value;
 
-        public StyleValue(PDFStyleKey<T> key, T value)
+        public StyleValue(StyleKey<T> key, T value)
             : base(key)
         {
             this._value = value;

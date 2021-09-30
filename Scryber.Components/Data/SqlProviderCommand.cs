@@ -153,7 +153,7 @@ namespace Scryber.Data
 
         #region protected PDFSqlCommand(PDFObjectType type)
 
-        protected SqlProviderCommand(PDFObjectType type)
+        protected SqlProviderCommand(ObjectType type)
             : base(type)
         {
         }

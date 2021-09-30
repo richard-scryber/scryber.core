@@ -163,24 +163,24 @@ namespace Scryber.Core.UnitTests.Binding
         private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
         {
             var layoutPg = args.Context.DocumentLayout.AllPages[0];
-            var layoutLine1 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.Layout.PDFLayoutLine;
+            var layoutLine1 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.PDF.Layout.PDFLayoutLine;
 
             Assert.IsNotNull(layoutLine1);
             Assert.AreEqual(1, layoutLine1.Runs.Count);
 
-            var compRun1 = layoutLine1.Runs[0] as Scryber.Layout.PDFLayoutComponentRun;
+            var compRun1 = layoutLine1.Runs[0] as Scryber.PDF.Layout.PDFLayoutComponentRun;
             Assert.IsNotNull(compRun1);
 
             Assert.IsNotNull(compRun1.Owner);
             Assert.AreEqual("LoadedImage1", compRun1.Owner.ID);
 
             layoutPg = args.Context.DocumentLayout.AllPages[1];
-            var layoutLine2 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.Layout.PDFLayoutLine;
+            var layoutLine2 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.PDF.Layout.PDFLayoutLine;
 
             Assert.IsNotNull(layoutLine2);
             Assert.AreEqual(1, layoutLine2.Runs.Count);
 
-            var compRun2= layoutLine2.Runs[0] as Scryber.Layout.PDFLayoutComponentRun;
+            var compRun2= layoutLine2.Runs[0] as Scryber.PDF.Layout.PDFLayoutComponentRun;
             Assert.IsNotNull(compRun2);
 
             Assert.IsNotNull(compRun2.Owner);

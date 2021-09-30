@@ -14,7 +14,7 @@ namespace Scryber.Html.Components
         [PDFTemplate]
         [PDFElement("")]
         [PDFAttribute("data-template")]
-        public override IPDFTemplate Template { get => base.Template; set => base.Template = value; }
+        public override ITemplate Template { get => base.Template; set => base.Template = value; }
 
 
         public HTMLIf() : base()

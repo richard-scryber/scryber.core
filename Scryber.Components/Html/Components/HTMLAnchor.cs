@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Html.Components
 {

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -56,7 +57,7 @@ namespace Scryber.Components
         {
         }
 
-        public LayerGroup(PDFObjectType type)
+        public LayerGroup(ObjectType type)
             : base(type)
         {
         }
@@ -67,7 +68,7 @@ namespace Scryber.Components
 
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new Layout.LayoutEngineCanvas(this, parent);
+            return new PDF.Layout.LayoutEngineCanvas(this, parent);
         }
 
         #endregion

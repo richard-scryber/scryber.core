@@ -59,7 +59,7 @@ namespace Scryber.Core.UnitTests.Styles
                 using (var stream = DocStreams.GetOutputStream("PageBreaksInline.pdf"))
                     doc.SaveAsPDF(stream);
 
-                var arrange = doc.Pages[0].GetFirstArrangement() as PDFComponentMultiArrangement;
+                var arrange = doc.Pages[0].GetFirstArrangement() as ComponentMultiArrangement;
                 Assert.IsNotNull(arrange, "The page arrangement should be a multi page arrangement");
                 Assert.AreEqual(0, arrange.PageIndex, "First arrangement should be on page 0");
                 
@@ -129,7 +129,7 @@ namespace Scryber.Core.UnitTests.Styles
                 using (var stream = DocStreams.GetOutputStream("PageBreaksCSS.pdf"))
                     doc.SaveAsPDF(stream);
 
-                var arrange = doc.Pages[0].GetFirstArrangement() as PDFComponentMultiArrangement;
+                var arrange = doc.Pages[0].GetFirstArrangement() as ComponentMultiArrangement;
                 Assert.IsNotNull(arrange, "The page arrangement should be a multi page arrangement");
                 Assert.AreEqual(0, arrange.PageIndex, "First arrangement should be on page 0");
 

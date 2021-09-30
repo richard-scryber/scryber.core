@@ -107,11 +107,11 @@ namespace Scryber.Data
 
 
         public DataGridLinkColumn()
-            : this((PDFObjectType)"DgLk")
+            : this((ObjectType)"DgLk")
         {
         }
 
-        protected DataGridLinkColumn(PDFObjectType type)
+        protected DataGridLinkColumn(ObjectType type)
             : base(type)
         {
         }

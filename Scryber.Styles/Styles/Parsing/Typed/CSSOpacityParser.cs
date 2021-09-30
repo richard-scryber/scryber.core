@@ -11,7 +11,7 @@ namespace Scryber.Styles.Parsing.Typed
         {
         }
 
-        public CSSOpacityParser(string css, PDFStyleKey<double> key)
+        public CSSOpacityParser(string css, StyleKey<double> key)
             : base(css, key)
         {
 

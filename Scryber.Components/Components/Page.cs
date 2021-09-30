@@ -61,7 +61,7 @@ namespace Scryber.Components
             this.Controller = null;
         }
 
-        protected Page(PDFObjectType type)
+        protected Page(ObjectType type)
             : base(type)
         {
         }
@@ -75,9 +75,9 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEnginePage(this, parent);
+            return new PDF.Layout.LayoutEnginePage(this, parent);
         }
 
         #endregion

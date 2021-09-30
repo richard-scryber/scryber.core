@@ -25,7 +25,7 @@ namespace Scryber.Data
 {
     [PDFParsableComponent("Parameter")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_dataParameter")]
-    public class DataParameter : IPDFBindableComponent
+    public class DataParameter : IBindableComponent
     {
 
         #region ivars

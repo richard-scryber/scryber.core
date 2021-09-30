@@ -19,8 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
@@ -84,7 +85,7 @@ namespace Scryber.Components
         #endregion
 
         //local reference to the layout document
-        private Layout.PDFLayoutDocument _doc;
+        private PDFLayoutDocument _doc;
 
         //local value for the page index of this label
         private int _renderpageindex = -1;
@@ -149,31 +150,36 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style style)
+        protected override Text.PDFTextReader CreateReader(PDFContextBase context, Styles.Style style)
         {
-            _doc = context.DocumentLayout;
-            _renderpageindex = _doc.CurrentPageIndex;
-            _fullstyle = style;
-            _pgstyle = context.DocumentLayout.CurrentPage.FullStyle;
+            if (context is PDF.PDFLayoutContext layout)
+            {
+                _doc = layout.DocumentLayout;
+                _renderpageindex = _doc.CurrentPageIndex;
+                _fullstyle = style;
+                _pgstyle = layout.DocumentLayout.CurrentPage.FullStyle;
 
-            string text = this.GetDisplayText(_renderpageindex, style, false);
-            Scryber.Text.PDFTextProxyOp op = new Text.PDFTextProxyOp(this, "PageNumber", text);
-            Scryber.Text.PDFArrayTextReader array = new Text.PDFArrayTextReader(new Text.PDFTextOp[] { op });
-            _numberProxy = op;
-            
+                string text = this.GetDisplayText(_renderpageindex, style, false);
+                Scryber.Text.PDFTextProxyOp op = new Text.PDFTextProxyOp(this, "PageNumber", text);
+                Scryber.Text.PDFArrayTextReader array = new Text.PDFArrayTextReader(new Text.PDFTextOp[] { op });
+                _numberProxy = op;
 
-            return array;
+
+                return array;
+            }
+            else
+                return null;
         }
 
         /// <summary>
         /// Once layout is comlete then we can replace the text that was used when not rendering
         /// with the text that was.
         /// </summary>
-        internal override void RegisterLayoutComplete(PDFLayoutContext context)
+        internal override void RegisterLayoutComplete(PDF.PDFLayoutContext context)
         {
             base.RegisterLayoutComplete(context);
 
-            PDFComponentArrangement arrange = this.GetFirstArrangement();
+            ComponentArrangement arrange = this.GetFirstArrangement();
             if (null != arrange)
             {
                 this._renderpageindex = arrange.PageIndex;
@@ -220,7 +226,7 @@ namespace Scryber.Components
             if (null == this._doc)
                 throw new ArgumentNullException("The PageNumberLabel does not have a layout document associated with it, so cannot get the page number in the document");
 
-            PDFPageNumberData num = this._doc.GetNumbering(pageindex);
+            PageNumberData num = this._doc.GetNumbering(pageindex);
 
             if (null == num)
                 throw new NullReferenceException("No numbering data was returned for the specified page index '" + pageindex + "'");

@@ -28,7 +28,7 @@ namespace Scryber.Styles
     /// <summary>
     /// Abstract base class for all style items. Items act as a grouping for style values.
     /// </summary>
-    public abstract class StyleItemBase : Scryber.PDFObject, IPDFBindableComponent
+    public abstract class StyleItemBase : Scryber.PDFObject, IBindableComponent
     {
 
         #region public event PDFDataBindEventHandler DataBinding + OnDataBinding(context)
@@ -192,7 +192,7 @@ namespace Scryber.Styles
         /// Removes all the values associated with this item from it's style, and returns an array of all the values that were removed
         /// </summary>
         /// <returns></returns>
-        public PDFStyleValueBase[] RemoveAndReturnAllValues()
+        public StyleValueBase[] RemoveAndReturnAllValues()
         {
             return this.AssertOwner().RemoveAndReturnItemStyleValues(this);
         }
@@ -217,7 +217,7 @@ namespace Scryber.Styles
         /// Internal method to add a specific value (of any type) to this item
         /// </summary>
         /// <param name="valuebase"></param>
-        internal void AddBaseValue(PDFStyleValueBase valuebase)
+        internal void AddBaseValue(StyleValueBase valuebase)
         {
             this.AssertOwner().AddValue(valuebase);
         }
@@ -259,7 +259,7 @@ namespace Scryber.Styles
         /// <param name="key">The style key of the value to retrieve</param>
         /// <param name="found">Set to the value of any found item, or default value.</param>
         /// <returns>True if the item has a reference to the value required, otherwise false.</returns>
-        public static bool TryGetValue<T>(this StyleItemBase itembase, PDFStyleKey<T> key, out T found)
+        public static bool TryGetValue<T>(this StyleItemBase itembase, StyleKey<T> key, out T found)
         {
             StyleValue<T> exist;
             if (itembase.AssertOwner().TryGetValue(key, out exist))
@@ -285,7 +285,7 @@ namespace Scryber.Styles
         /// <param name="itembase"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public static void SetValue<T>(this StyleItemBase itembase, PDFStyleKey<T> key, T value)
+        public static void SetValue<T>(this StyleItemBase itembase, StyleKey<T> key, T value)
         {
             StyleValue<T> found;
             if (itembase.AssertOwner().TryGetValue(key, out found))

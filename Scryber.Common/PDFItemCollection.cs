@@ -29,9 +29,9 @@ namespace Scryber
     [Serializable()]
     public class PDFItemCollection : System.Collections.Specialized.NameObjectCollectionBase, ICloneable
     {
-        private IPDFComponent _ownercomp;
+        private IComponent _ownercomp;
 
-        public IPDFComponent OwnerComponent
+        public IComponent OwnerComponent
         {
             get { return this._ownercomp; }
         }
@@ -39,7 +39,7 @@ namespace Scryber
         /// <summary>
         /// Creates a new empty instance of the PDFItemCollection
         /// </summary>
-        public PDFItemCollection(IPDFComponent owner)
+        public PDFItemCollection(IComponent owner)
         {
             this._ownercomp = owner;
         }
@@ -49,7 +49,7 @@ namespace Scryber
         /// </summary>
         /// <param name="contents"></param>
         /// <param name="doc">The document that owns this item collection</param>
-        public PDFItemCollection(IDictionary<string, object> contents, IPDFDocument doc)
+        public PDFItemCollection(IDictionary<string, object> contents, IDocument doc)
             : this(doc)
         {
             if (null != contents)

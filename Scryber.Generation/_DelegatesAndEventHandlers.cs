@@ -29,7 +29,7 @@ namespace Scryber
     /// </summary>
     /// <param name="path">The path to resolve and parse</param>
     /// <returns>The parsed component from the specified path</returns>
-    public delegate IPDFComponent PDFReferenceResolver(string filename, string xpath, Generation.PDFGeneratorSettings settings);
+    public delegate IComponent PDFReferenceResolver(string filename, string xpath, Generation.ParserSettings settings);
 
     
 }

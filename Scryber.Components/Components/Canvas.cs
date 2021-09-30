@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Drawing;
-using Scryber.Native;
 using Scryber.Styles;
 
 namespace Scryber.Components
@@ -46,7 +45,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.Canvas)
         { }
 
-        protected Canvas(PDFObjectType type)
+        protected Canvas(ObjectType type)
             : base(type)
         {
         }
@@ -58,9 +57,9 @@ namespace Scryber.Components
             return style;
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEngineCanvas(this, parent);
+            return new PDF.Layout.LayoutEngineCanvas(this, parent);
         }
 
     }

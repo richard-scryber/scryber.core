@@ -205,11 +205,11 @@ namespace Scryber.UnitSamples
         /// <summary>
         /// IPDFTemplate for the header
         /// </summary>
-        private class CodedHeader : IPDFTemplate
+        private class CodedHeader : ITemplate
         {
-            public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+            public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
             {
-                return new IPDFComponent[]
+                return new IComponent[]
                 {
                     new Head4(){
                         Text = "This is the header",
@@ -225,9 +225,9 @@ namespace Scryber.UnitSamples
         /// <summary>
         /// IPDFTemplate for the footer
         /// </summary>
-        private class CodedFooter : IPDFTemplate
+        private class CodedFooter : ITemplate
         {
-            public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+            public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
             {
                 var div = new Div() {
                     BackgroundColor = PDFColors.Silver,
@@ -238,7 +238,7 @@ namespace Scryber.UnitSamples
                 };
                 div.Contents.Add(new PageNumberLabel() { DisplayFormat = "{0} of {1}" });
 
-                return new IPDFComponent[] { div };
+                return new IComponent[] { div };
             }
         }
     }

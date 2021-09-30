@@ -38,260 +38,260 @@ namespace Scryber.Styles
 
         // Background
         public static readonly StyleKey BgItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBackground, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFColor> BgColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BgItemKey);
-        public static readonly PDFStyleKey<string> BgImgSrcKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"imgs", BgItemKey);
-        public static readonly PDFStyleKey<PatternRepeat> BgRepeatKey = StyleKey.InternalCreateStyleValueKey<PatternRepeat>((PDFObjectType)"rept", BgItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BgXPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xpos", BgItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BgYPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ypos", BgItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BgXStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xstp", BgItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BgYStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ystp", BgItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BgXSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xsiz", BgItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BgYSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ysiz", BgItemKey);
-        public static readonly PDFStyleKey<Drawing.FillType> BgStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FillType>((PDFObjectType)"styl", BgItemKey);
-        public static readonly PDFStyleKey<double> BgOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"opac", BgItemKey);
+        public static readonly StyleKey<PDFColor> BgColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BgItemKey);
+        public static readonly StyleKey<string> BgImgSrcKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"imgs", BgItemKey);
+        public static readonly StyleKey<PatternRepeat> BgRepeatKey = StyleKey.InternalCreateStyleValueKey<PatternRepeat>((ObjectType)"rept", BgItemKey);
+        public static readonly StyleKey<PDFUnit> BgXPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xpos", BgItemKey);
+        public static readonly StyleKey<PDFUnit> BgYPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ypos", BgItemKey);
+        public static readonly StyleKey<PDFUnit> BgXStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xstp", BgItemKey);
+        public static readonly StyleKey<PDFUnit> BgYStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ystp", BgItemKey);
+        public static readonly StyleKey<PDFUnit> BgXSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xsiz", BgItemKey);
+        public static readonly StyleKey<PDFUnit> BgYSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ysiz", BgItemKey);
+        public static readonly StyleKey<Drawing.FillType> BgStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FillType>((ObjectType)"styl", BgItemKey);
+        public static readonly StyleKey<double> BgOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"opac", BgItemKey);
 
         //Border
         public static readonly StyleKey BorderItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorder, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFColor> BorderColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BorderCornerRadiusKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"crad", BorderItemKey);
-        public static readonly PDFStyleKey<PDFDash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemKey);
-        public static readonly PDFStyleKey<LineCaps> BorderEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((PDFObjectType)"endg", BorderItemKey);
-        public static readonly PDFStyleKey<LineJoin> BorderJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((PDFObjectType)"join", BorderItemKey);
-        public static readonly PDFStyleKey<float> BorderMitreKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"mitr", BorderItemKey);
-        public static readonly PDFStyleKey<double> BorderOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"opac", BorderItemKey);
-        public static readonly PDFStyleKey<Sides> BorderSidesKey = StyleKey.InternalCreateStyleValueKey<Sides>((PDFObjectType)"side", BorderItemKey);
-        public static readonly PDFStyleKey<LineType> BorderStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BorderWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemKey);
+        public static readonly StyleKey<PDFColor> BorderColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemKey);
+        public static readonly StyleKey<PDFUnit> BorderCornerRadiusKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"crad", BorderItemKey);
+        public static readonly StyleKey<PDFDash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemKey);
+        public static readonly StyleKey<LineCaps> BorderEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", BorderItemKey);
+        public static readonly StyleKey<LineJoin> BorderJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((ObjectType)"join", BorderItemKey);
+        public static readonly StyleKey<float> BorderMitreKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"mitr", BorderItemKey);
+        public static readonly StyleKey<double> BorderOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"opac", BorderItemKey);
+        public static readonly StyleKey<Sides> BorderSidesKey = StyleKey.InternalCreateStyleValueKey<Sides>((ObjectType)"side", BorderItemKey);
+        public static readonly StyleKey<LineType> BorderStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemKey);
+        public static readonly StyleKey<PDFUnit> BorderWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemKey);
 
         //Border Top
         public static readonly StyleKey BorderItemTopKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderTop, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFColor> BorderTopColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemTopKey);
-        public static readonly PDFStyleKey<LineType> BorderTopStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemTopKey);
-        public static readonly PDFStyleKey<PDFUnit> BorderTopWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemTopKey);
-        public static readonly PDFStyleKey<PDFDash> BorderTopDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemTopKey);
+        public static readonly StyleKey<PDFColor> BorderTopColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemTopKey);
+        public static readonly StyleKey<LineType> BorderTopStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemTopKey);
+        public static readonly StyleKey<PDFUnit> BorderTopWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemTopKey);
+        public static readonly StyleKey<PDFDash> BorderTopDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemTopKey);
 
         //Border Top
         public static readonly StyleKey BorderItemLeftKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderLeft, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFColor> BorderLeftColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemLeftKey);
-        public static readonly PDFStyleKey<LineType> BorderLeftStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemLeftKey);
-        public static readonly PDFStyleKey<PDFUnit> BorderLeftWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemLeftKey);
-        public static readonly PDFStyleKey<PDFDash> BorderLeftDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemLeftKey);
+        public static readonly StyleKey<PDFColor> BorderLeftColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemLeftKey);
+        public static readonly StyleKey<LineType> BorderLeftStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemLeftKey);
+        public static readonly StyleKey<PDFUnit> BorderLeftWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemLeftKey);
+        public static readonly StyleKey<PDFDash> BorderLeftDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemLeftKey);
 
         //Border Top
         public static readonly StyleKey BorderItemBottomKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderBottom, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFColor> BorderBottomColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemBottomKey);
-        public static readonly PDFStyleKey<LineType> BorderBottomStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemBottomKey);
-        public static readonly PDFStyleKey<PDFUnit> BorderBottomWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemBottomKey);
-        public static readonly PDFStyleKey<PDFDash> BorderBottomDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemBottomKey);
+        public static readonly StyleKey<PDFColor> BorderBottomColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemBottomKey);
+        public static readonly StyleKey<LineType> BorderBottomStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemBottomKey);
+        public static readonly StyleKey<PDFUnit> BorderBottomWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemBottomKey);
+        public static readonly StyleKey<PDFDash> BorderBottomDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemBottomKey);
 
         //Border Top
         public static readonly StyleKey BorderItemRightKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBorderRight, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFColor> BorderRightColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", BorderItemRightKey);
-        public static readonly PDFStyleKey<LineType> BorderRightStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", BorderItemRightKey);
-        public static readonly PDFStyleKey<PDFUnit> BorderRightWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", BorderItemRightKey);
-        public static readonly PDFStyleKey<PDFDash> BorderRightDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", BorderItemRightKey);
+        public static readonly StyleKey<PDFColor> BorderRightColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemRightKey);
+        public static readonly StyleKey<LineType> BorderRightStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemRightKey);
+        public static readonly StyleKey<PDFUnit> BorderRightWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemRightKey);
+        public static readonly StyleKey<PDFDash> BorderRightDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemRightKey);
 
         // Padding
         public static readonly StyleKey PaddingItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StylePadding, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> PaddingTopKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"top ", PaddingItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PaddingBottomKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"botm", PaddingItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PaddingLeftKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"left", PaddingItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PaddingRightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"righ", PaddingItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PaddingAllKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"all ", PaddingItemKey);
+        public static readonly StyleKey<PDFUnit> PaddingTopKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"top ", PaddingItemKey);
+        public static readonly StyleKey<PDFUnit> PaddingBottomKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"botm", PaddingItemKey);
+        public static readonly StyleKey<PDFUnit> PaddingLeftKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"left", PaddingItemKey);
+        public static readonly StyleKey<PDFUnit> PaddingRightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"righ", PaddingItemKey);
+        public static readonly StyleKey<PDFUnit> PaddingAllKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"all ", PaddingItemKey);
 
         // Margins
         public static readonly StyleKey MarginsItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleMargins, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> MarginsTopKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"top ", MarginsItemKey);
-        public static readonly PDFStyleKey<PDFUnit> MarginsBottomKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"botm", MarginsItemKey);
-        public static readonly PDFStyleKey<PDFUnit> MarginsLeftKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"left", MarginsItemKey);
-        public static readonly PDFStyleKey<PDFUnit> MarginsRightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"righ", MarginsItemKey);
-        public static readonly PDFStyleKey<PDFUnit> MarginsAllKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"all ", MarginsItemKey);
+        public static readonly StyleKey<PDFUnit> MarginsTopKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"top ", MarginsItemKey);
+        public static readonly StyleKey<PDFUnit> MarginsBottomKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"botm", MarginsItemKey);
+        public static readonly StyleKey<PDFUnit> MarginsLeftKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"left", MarginsItemKey);
+        public static readonly StyleKey<PDFUnit> MarginsRightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"righ", MarginsItemKey);
+        public static readonly StyleKey<PDFUnit> MarginsAllKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"all ", MarginsItemKey);
 
         // Clip
         public static readonly StyleKey ClipItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleClip, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> ClipLeftKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"left", ClipItemKey);
-        public static readonly PDFStyleKey<PDFUnit> ClipRightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"righ", ClipItemKey);
-        public static readonly PDFStyleKey<PDFUnit> ClipTopKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"top ", ClipItemKey);
-        public static readonly PDFStyleKey<PDFUnit> ClipBottomKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"botm", ClipItemKey);
-        public static readonly PDFStyleKey<PDFUnit> ClipAllKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"all ", ClipItemKey);
+        public static readonly StyleKey<PDFUnit> ClipLeftKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"left", ClipItemKey);
+        public static readonly StyleKey<PDFUnit> ClipRightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"righ", ClipItemKey);
+        public static readonly StyleKey<PDFUnit> ClipTopKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"top ", ClipItemKey);
+        public static readonly StyleKey<PDFUnit> ClipBottomKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"botm", ClipItemKey);
+        public static readonly StyleKey<PDFUnit> ClipAllKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"all ", ClipItemKey);
 
         // Columns
         public static readonly StyleKey ColumnItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleColumns, NOT_INHERITED);
-        public static readonly PDFStyleKey<int> ColumnCountKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"cont", ColumnItemKey);
-        public static readonly PDFStyleKey<PDFUnit> ColumnAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ally", ColumnItemKey);
-        public static readonly PDFStyleKey<bool> ColumnFlowKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"flow", ColumnItemKey);
-        public static readonly PDFStyleKey<PDFColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<PDFColumnWidths>((PDFObjectType)"cwid", ColumnItemKey);
-        public static readonly PDFStyleKey<bool> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"brcb", ColumnItemKey);
-        public static readonly PDFStyleKey<bool> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"brca", ColumnItemKey);
+        public static readonly StyleKey<int> ColumnCountKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cont", ColumnItemKey);
+        public static readonly StyleKey<PDFUnit> ColumnAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ally", ColumnItemKey);
+        public static readonly StyleKey<bool> ColumnFlowKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"flow", ColumnItemKey);
+        public static readonly StyleKey<PDFColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<PDFColumnWidths>((ObjectType)"cwid", ColumnItemKey);
+        public static readonly StyleKey<bool> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brcb", ColumnItemKey);
+        public static readonly StyleKey<bool> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brca", ColumnItemKey);
 
         //Fill
         public static readonly StyleKey FillItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleFill, INHERITED);
-        public static readonly PDFStyleKey<PDFColor> FillColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", FillItemKey);
-        public static readonly PDFStyleKey<string> FillImgSrcKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"imgs", FillItemKey);
-        public static readonly PDFStyleKey<PatternRepeat> FillRepeatKey = StyleKey.InternalCreateStyleValueKey<PatternRepeat>((PDFObjectType)"rept", FillItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FillXPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xpos", FillItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FillYPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ypos", FillItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FillXStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xstp", FillItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FillYStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ystp", FillItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FillXSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xsiz", FillItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FillYSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ysiz", FillItemKey);
-        public static readonly PDFStyleKey<Drawing.FillType> FillStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FillType>((PDFObjectType)"styl", FillItemKey);
-        public static readonly PDFStyleKey<double> FillOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"opac", FillItemKey);
+        public static readonly StyleKey<PDFColor> FillColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", FillItemKey);
+        public static readonly StyleKey<string> FillImgSrcKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"imgs", FillItemKey);
+        public static readonly StyleKey<PatternRepeat> FillRepeatKey = StyleKey.InternalCreateStyleValueKey<PatternRepeat>((ObjectType)"rept", FillItemKey);
+        public static readonly StyleKey<PDFUnit> FillXPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xpos", FillItemKey);
+        public static readonly StyleKey<PDFUnit> FillYPosKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ypos", FillItemKey);
+        public static readonly StyleKey<PDFUnit> FillXStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xstp", FillItemKey);
+        public static readonly StyleKey<PDFUnit> FillYStepKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ystp", FillItemKey);
+        public static readonly StyleKey<PDFUnit> FillXSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xsiz", FillItemKey);
+        public static readonly StyleKey<PDFUnit> FillYSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ysiz", FillItemKey);
+        public static readonly StyleKey<Drawing.FillType> FillStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FillType>((ObjectType)"styl", FillItemKey);
+        public static readonly StyleKey<double> FillOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"opac", FillItemKey);
 
         //Font
         public static readonly StyleKey FontItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleFont, INHERITED);
-        public static readonly PDFStyleKey<PDFFontSelector> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<PDFFontSelector>((PDFObjectType)"faml", FontItemKey);
-        public static readonly PDFStyleKey<int> FontWeightKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"weig", FontItemKey);
-        public static readonly PDFStyleKey<Drawing.FontStyle> FontStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((PDFObjectType)"styl", FontItemKey);
-        public static readonly PDFStyleKey<PDFUnit> FontSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"size", FontItemKey);
+        public static readonly StyleKey<PDFFontSelector> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<PDFFontSelector>((ObjectType)"faml", FontItemKey);
+        public static readonly StyleKey<int> FontWeightKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"weig", FontItemKey);
+        public static readonly StyleKey<Drawing.FontStyle> FontStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((ObjectType)"styl", FontItemKey);
+        public static readonly StyleKey<PDFUnit> FontSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"size", FontItemKey);
 
         //Overflow
         public static readonly StyleKey OverflowItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleOverflow, INHERITED);
-        public static readonly PDFStyleKey<OverflowAction> OverflowActionKey = StyleKey.InternalCreateStyleValueKey<OverflowAction>((PDFObjectType)"actn", OverflowItemKey);
-        public static readonly PDFStyleKey<OverflowSplit> OverflowSplitKey = StyleKey.InternalCreateStyleValueKey<OverflowSplit>((PDFObjectType)"splt", OverflowItemKey);
+        public static readonly StyleKey<OverflowAction> OverflowActionKey = StyleKey.InternalCreateStyleValueKey<OverflowAction>((ObjectType)"actn", OverflowItemKey);
+        public static readonly StyleKey<OverflowSplit> OverflowSplitKey = StyleKey.InternalCreateStyleValueKey<OverflowSplit>((ObjectType)"splt", OverflowItemKey);
 
         //Position
         public static readonly StyleKey PositionItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StylePosition, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> PositionXKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xpos", PositionItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PositionYKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ypos", PositionItemKey);
-        public static readonly PDFStyleKey<PositionMode> PositionModeKey = StyleKey.InternalCreateStyleValueKey<PositionMode>((PDFObjectType)"mode", PositionItemKey);
-        public static readonly PDFStyleKey<PDFRect> PositionViewPort = StyleKey.InternalCreateStyleValueKey<PDFRect>((PDFObjectType)"vwpt", PositionItemKey);
-        public static readonly PDFStyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((PDFObjectType)"flot", PositionItemKey);
+        public static readonly StyleKey<PDFUnit> PositionXKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xpos", PositionItemKey);
+        public static readonly StyleKey<PDFUnit> PositionYKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ypos", PositionItemKey);
+        public static readonly StyleKey<PositionMode> PositionModeKey = StyleKey.InternalCreateStyleValueKey<PositionMode>((ObjectType)"mode", PositionItemKey);
+        public static readonly StyleKey<PDFRect> PositionViewPort = StyleKey.InternalCreateStyleValueKey<PDFRect>((ObjectType)"vwpt", PositionItemKey);
+        public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
         //Size
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleSize, NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> SizeWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", SizeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> SizeHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"heit", SizeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> SizeMinimumWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"minw", SizeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> SizeMinimumHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"minh", SizeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> SizeMaximumWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"maxw", SizeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> SizeMaximumHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"maxh", SizeItemKey);
-        public static readonly PDFStyleKey<bool> SizeFullWidthKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"fulw", SizeItemKey);
+        public static readonly StyleKey<PDFUnit> SizeWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", SizeItemKey);
+        public static readonly StyleKey<PDFUnit> SizeHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"heit", SizeItemKey);
+        public static readonly StyleKey<PDFUnit> SizeMinimumWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"minw", SizeItemKey);
+        public static readonly StyleKey<PDFUnit> SizeMinimumHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"minh", SizeItemKey);
+        public static readonly StyleKey<PDFUnit> SizeMaximumWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"maxw", SizeItemKey);
+        public static readonly StyleKey<PDFUnit> SizeMaximumHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"maxh", SizeItemKey);
+        public static readonly StyleKey<bool> SizeFullWidthKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"fulw", SizeItemKey);
 
         //Stroke
         public static readonly StyleKey StrokeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleStroke, INHERITED);
-        public static readonly PDFStyleKey<PDFColor> StrokeColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", StrokeItemKey);
-        public static readonly PDFStyleKey<PDFDash> StrokeDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((PDFObjectType)"dash", StrokeItemKey);
-        public static readonly PDFStyleKey<LineCaps> StrokeEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((PDFObjectType)"endg", StrokeItemKey);
-        public static readonly PDFStyleKey<LineJoin> StrokeJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((PDFObjectType)"join", StrokeItemKey);
-        public static readonly PDFStyleKey<float> StrokeMitreKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"mitr", StrokeItemKey);
-        public static readonly PDFStyleKey<double> StrokeOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"opac", StrokeItemKey);
-        public static readonly PDFStyleKey<LineType> StrokeStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((PDFObjectType)"styl", StrokeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> StrokeWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widt", StrokeItemKey);
+        public static readonly StyleKey<PDFColor> StrokeColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", StrokeItemKey);
+        public static readonly StyleKey<PDFDash> StrokeDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", StrokeItemKey);
+        public static readonly StyleKey<LineCaps> StrokeEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", StrokeItemKey);
+        public static readonly StyleKey<LineJoin> StrokeJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((ObjectType)"join", StrokeItemKey);
+        public static readonly StyleKey<float> StrokeMitreKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"mitr", StrokeItemKey);
+        public static readonly StyleKey<double> StrokeOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"opac", StrokeItemKey);
+        public static readonly StyleKey<LineType> StrokeStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", StrokeItemKey);
+        public static readonly StyleKey<PDFUnit> StrokeWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", StrokeItemKey);
 
         //Text
         public static readonly StyleKey TextItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleText, INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> TextFirstLineIndentKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"indt", TextItemKey);
-        public static readonly PDFStyleKey<PDFUnit> TextLeadingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"lead", TextItemKey);
-        public static readonly PDFStyleKey<bool> TextWhitespaceKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"whit", TextItemKey);
-        public static readonly PDFStyleKey<string> TextDateFormatKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"datf", TextItemKey);
-        public static readonly PDFStyleKey<string> TextNumberFormatKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"numf", TextItemKey);
-        public static readonly PDFStyleKey<PDFUnit> TextWordSpacingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"wspc", TextItemKey);
-        public static readonly PDFStyleKey<PDFUnit> TextCharSpacingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"cspc", TextItemKey);
-        public static readonly PDFStyleKey<double> TextHorizontalScaling = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"thsc", TextItemKey);
-        public static readonly PDFStyleKey<TextDirection> TextDirectionKey = StyleKey.InternalCreateStyleValueKey<TextDirection>((PDFObjectType)"tdir", TextItemKey);
-        public static readonly PDFStyleKey<Scryber.Text.WordWrap> TextWordWrapKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.WordWrap>((PDFObjectType)"wrap", TextItemKey);
-        public static readonly PDFStyleKey<Scryber.Text.TextDecoration> TextDecorationKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecoration>((PDFObjectType)"decr", TextItemKey);
-        public static readonly PDFStyleKey<bool> TextPositionFromBaseline = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"tbse", TextItemKey);
-        public static readonly PDFStyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((PDFObjectType)"vlgn", TextItemKey);
-        public static readonly PDFStyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"hlgn", TextItemKey);
+        public static readonly StyleKey<PDFUnit> TextFirstLineIndentKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"indt", TextItemKey);
+        public static readonly StyleKey<PDFUnit> TextLeadingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"lead", TextItemKey);
+        public static readonly StyleKey<bool> TextWhitespaceKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"whit", TextItemKey);
+        public static readonly StyleKey<string> TextDateFormatKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"datf", TextItemKey);
+        public static readonly StyleKey<string> TextNumberFormatKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"numf", TextItemKey);
+        public static readonly StyleKey<PDFUnit> TextWordSpacingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"wspc", TextItemKey);
+        public static readonly StyleKey<PDFUnit> TextCharSpacingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"cspc", TextItemKey);
+        public static readonly StyleKey<double> TextHorizontalScaling = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"thsc", TextItemKey);
+        public static readonly StyleKey<TextDirection> TextDirectionKey = StyleKey.InternalCreateStyleValueKey<TextDirection>((ObjectType)"tdir", TextItemKey);
+        public static readonly StyleKey<Scryber.Text.WordWrap> TextWordWrapKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.WordWrap>((ObjectType)"wrap", TextItemKey);
+        public static readonly StyleKey<Scryber.Text.TextDecoration> TextDecorationKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecoration>((ObjectType)"decr", TextItemKey);
+        public static readonly StyleKey<bool> TextPositionFromBaseline = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"tbse", TextItemKey);
+        public static readonly StyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((ObjectType)"vlgn", TextItemKey);
+        public static readonly StyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((ObjectType)"hlgn", TextItemKey);
 
         //List
         public static readonly StyleKey ListKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleList, NOT_INHERITED);
-        public static readonly PDFStyleKey<string> ListLabelKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"labl", ListKey);
-        public static readonly PDFStyleKey<string> ListGroupKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"grup", ListKey);
-        public static readonly PDFStyleKey<bool> ListConcatKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"conc", ListKey);
-        public static readonly PDFStyleKey<string> ListPrefixKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"pref", ListKey);
-        public static readonly PDFStyleKey<string> ListPostfixKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"post", ListKey);
-        public static readonly PDFStyleKey<ListNumberingGroupStyle> ListNumberStyleKey = StyleKey.InternalCreateStyleValueKey<ListNumberingGroupStyle>((PDFObjectType)"styl", ListKey);
+        public static readonly StyleKey<string> ListLabelKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"labl", ListKey);
+        public static readonly StyleKey<string> ListGroupKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"grup", ListKey);
+        public static readonly StyleKey<bool> ListConcatKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"conc", ListKey);
+        public static readonly StyleKey<string> ListPrefixKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"pref", ListKey);
+        public static readonly StyleKey<string> ListPostfixKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"post", ListKey);
+        public static readonly StyleKey<ListNumberingGroupStyle> ListNumberStyleKey = StyleKey.InternalCreateStyleValueKey<ListNumberingGroupStyle>((ObjectType)"styl", ListKey);
 
 
         public static readonly StyleKey ListItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleListItem, INHERITED);
-        public static readonly PDFStyleKey<PDFUnit> ListInsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"inst", ListItemKey);
-        public static readonly PDFStyleKey<HorizontalAlignment> ListAlignmentKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((PDFObjectType)"alig", ListItemKey);
-        public static readonly PDFStyleKey<PDFUnit> ListAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"ally", ListItemKey);
+        public static readonly StyleKey<PDFUnit> ListInsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"inst", ListItemKey);
+        public static readonly StyleKey<HorizontalAlignment> ListAlignmentKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((ObjectType)"alig", ListItemKey);
+        public static readonly StyleKey<PDFUnit> ListAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ally", ListItemKey);
 
         
 
         //Outline
         public static readonly StyleKey OutlineItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleOutline, NOT_INHERITED);
-        public static readonly PDFStyleKey<bool> OutlineIsOutlinedKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"outl", OutlineItemKey);
-        public static readonly PDFStyleKey<PDFColor> OutlineColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", OutlineItemKey);
-        public static readonly PDFStyleKey<bool> OutlineBoldKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bold", OutlineItemKey);
-        public static readonly PDFStyleKey<bool> OutlineItalicKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"ital", OutlineItemKey);
-        public static readonly PDFStyleKey<bool> OutlineOpenKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"open", OutlineItemKey);
+        public static readonly StyleKey<bool> OutlineIsOutlinedKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"outl", OutlineItemKey);
+        public static readonly StyleKey<PDFColor> OutlineColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", OutlineItemKey);
+        public static readonly StyleKey<bool> OutlineBoldKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"bold", OutlineItemKey);
+        public static readonly StyleKey<bool> OutlineItalicKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"ital", OutlineItemKey);
+        public static readonly StyleKey<bool> OutlineOpenKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"open", OutlineItemKey);
 
         //Overlay Grid
         public static readonly StyleKey OverlayItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleOverlayGrid, NOT_INHERITED);
-        public static readonly PDFStyleKey<bool> OverlayShowGridKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"show", OverlayItemKey);
-        public static readonly PDFStyleKey<PDFUnit> OverlaySpacingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"spac", OverlayItemKey);
-        public static readonly PDFStyleKey<PDFColor> OverlayColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((PDFObjectType)"colr", OverlayItemKey);
-        public static readonly PDFStyleKey<double> OverlayOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"opac", OverlayItemKey);
-        public static readonly PDFStyleKey<PDFUnit> OverlayXOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xoff", OverlayItemKey);
-        public static readonly PDFStyleKey<PDFUnit> OverlayYOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"yoff", OverlayItemKey);
-        public static readonly PDFStyleKey<bool> OverlayShowColumnsKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"colm", OverlayItemKey);
+        public static readonly StyleKey<bool> OverlayShowGridKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"show", OverlayItemKey);
+        public static readonly StyleKey<PDFUnit> OverlaySpacingKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"spac", OverlayItemKey);
+        public static readonly StyleKey<PDFColor> OverlayColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", OverlayItemKey);
+        public static readonly StyleKey<double> OverlayOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"opac", OverlayItemKey);
+        public static readonly StyleKey<PDFUnit> OverlayXOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xoff", OverlayItemKey);
+        public static readonly StyleKey<PDFUnit> OverlayYOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"yoff", OverlayItemKey);
+        public static readonly StyleKey<bool> OverlayShowColumnsKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"colm", OverlayItemKey);
 
         //Page
         public static readonly StyleKey PageItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StylePage, NOT_INHERITED);
-        public static readonly PDFStyleKey<PaperSize> PagePaperSizeKey = StyleKey.InternalCreateStyleValueKey<PaperSize>((PDFObjectType)"papr", PageItemKey);
-        public static readonly PDFStyleKey<PaperOrientation> PageOrientationKey = StyleKey.InternalCreateStyleValueKey<PaperOrientation>((PDFObjectType)"orit", PageItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PageWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"widh", PageItemKey);
-        public static readonly PDFStyleKey<PDFUnit> PageHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"heit", PageItemKey);
-        public static readonly PDFStyleKey<int> PageAngle = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"angl", PageItemKey);
-        public static readonly PDFStyleKey<PageNumberStyle> PageNumberStyleKey = StyleKey.InternalCreateStyleValueKey<PageNumberStyle>((PDFObjectType)"styl", PageItemKey);
-        public static readonly PDFStyleKey<int> PageNumberStartKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"strt", PageItemKey);
-        public static readonly PDFStyleKey<string> PageNumberGroupKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"grup", PageItemKey);
-        public static readonly PDFStyleKey<string> PageNumberFormatKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"fomt", PageItemKey);
-        public static readonly PDFStyleKey<int> PageNumberGroupHintKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"ghnt", PageItemKey);
-        public static readonly PDFStyleKey<int> PageNumberTotalHintKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"thnt", PageItemKey);
-        public static readonly PDFStyleKey<bool> PageBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bkpb", PageItemKey);
-        public static readonly PDFStyleKey<bool> PageBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"bkpa", PageItemKey);
-        public static readonly PDFStyleKey<string> PageNameGroupKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"pgnm", PageItemKey);
+        public static readonly StyleKey<PaperSize> PagePaperSizeKey = StyleKey.InternalCreateStyleValueKey<PaperSize>((ObjectType)"papr", PageItemKey);
+        public static readonly StyleKey<PaperOrientation> PageOrientationKey = StyleKey.InternalCreateStyleValueKey<PaperOrientation>((ObjectType)"orit", PageItemKey);
+        public static readonly StyleKey<PDFUnit> PageWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widh", PageItemKey);
+        public static readonly StyleKey<PDFUnit> PageHeightKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"heit", PageItemKey);
+        public static readonly StyleKey<int> PageAngle = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"angl", PageItemKey);
+        public static readonly StyleKey<PageNumberStyle> PageNumberStyleKey = StyleKey.InternalCreateStyleValueKey<PageNumberStyle>((ObjectType)"styl", PageItemKey);
+        public static readonly StyleKey<int> PageNumberStartKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"strt", PageItemKey);
+        public static readonly StyleKey<string> PageNumberGroupKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"grup", PageItemKey);
+        public static readonly StyleKey<string> PageNumberFormatKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"fomt", PageItemKey);
+        public static readonly StyleKey<int> PageNumberGroupHintKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"ghnt", PageItemKey);
+        public static readonly StyleKey<int> PageNumberTotalHintKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"thnt", PageItemKey);
+        public static readonly StyleKey<bool> PageBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"bkpb", PageItemKey);
+        public static readonly StyleKey<bool> PageBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"bkpa", PageItemKey);
+        public static readonly StyleKey<string> PageNameGroupKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"pgnm", PageItemKey);
 
         //Shape
         public static readonly StyleKey ShapeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.ShapeStyle, NOT_INHERITED);
-        public static readonly PDFStyleKey<int> ShapeVertexCountKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"vrtx", ShapeItemKey);
-        public static readonly PDFStyleKey<int> ShapeVertexStepKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"step", ShapeItemKey);
-        public static readonly PDFStyleKey<bool> ShapeClosedKey = StyleKey.InternalCreateStyleValueKey<bool>((PDFObjectType)"clos", ShapeItemKey);
-        public static readonly PDFStyleKey<double> ShapeRotationKey = StyleKey.InternalCreateStyleValueKey<double>((PDFObjectType)"rotn", ShapeItemKey);
+        public static readonly StyleKey<int> ShapeVertexCountKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"vrtx", ShapeItemKey);
+        public static readonly StyleKey<int> ShapeVertexStepKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"step", ShapeItemKey);
+        public static readonly StyleKey<bool> ShapeClosedKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"clos", ShapeItemKey);
+        public static readonly StyleKey<double> ShapeRotationKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"rotn", ShapeItemKey);
 
         //Table
         public static readonly StyleKey TableItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleTable, NOT_INHERITED);
-        public static readonly PDFStyleKey<int> TableCellColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"cols", TableItemKey);
-        public static readonly PDFStyleKey<TableRowRepeat> TableRowRepeatKey = StyleKey.InternalCreateStyleValueKey<TableRowRepeat>((PDFObjectType)"rowr", TableItemKey);
+        public static readonly StyleKey<int> TableCellColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cols", TableItemKey);
+        public static readonly StyleKey<TableRowRepeat> TableRowRepeatKey = StyleKey.InternalCreateStyleValueKey<TableRowRepeat>((ObjectType)"rowr", TableItemKey);
 
         //Badge
         public static readonly StyleKey BadgeItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleBadge, NOT_INHERITED);
-        public static readonly PDFStyleKey<Corner> BadgeCornerKey = StyleKey.InternalCreateStyleValueKey<Corner>((PDFObjectType)"corn", BadgeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BadgeXOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"xoff", BadgeItemKey);
-        public static readonly PDFStyleKey<PDFUnit> BadgeYOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((PDFObjectType)"yoff", BadgeItemKey);
-        public static readonly PDFStyleKey<BadgeType> BadgeDisplayKey = StyleKey.InternalCreateStyleValueKey<BadgeType>((PDFObjectType)"disp", BadgeItemKey);
+        public static readonly StyleKey<Corner> BadgeCornerKey = StyleKey.InternalCreateStyleValueKey<Corner>((ObjectType)"corn", BadgeItemKey);
+        public static readonly StyleKey<PDFUnit> BadgeXOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"xoff", BadgeItemKey);
+        public static readonly StyleKey<PDFUnit> BadgeYOffsetKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"yoff", BadgeItemKey);
+        public static readonly StyleKey<BadgeType> BadgeDisplayKey = StyleKey.InternalCreateStyleValueKey<BadgeType>((ObjectType)"disp", BadgeItemKey);
 
         //Modify
         public static readonly StyleKey ModifyPageItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleModify, NOT_INHERITED);
-        public static readonly PDFStyleKey<ModificationType> ModifyPageTypeKey = StyleKey.InternalCreateStyleValueKey<ModificationType>((PDFObjectType)"type", ModifyPageItemKey);
-        public static readonly PDFStyleKey<ModifiedContentAction> ModifyPageActionKey = StyleKey.InternalCreateStyleValueKey<ModifiedContentAction>((PDFObjectType)"actn", ModifyPageItemKey);
-        public static readonly PDFStyleKey<int> ModifyPageStartIndexKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"strt", ModifyPageItemKey);
-        public static readonly PDFStyleKey<int> ModifyPageCountKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"cont", ModifyPageItemKey);
+        public static readonly StyleKey<ModificationType> ModifyPageTypeKey = StyleKey.InternalCreateStyleValueKey<ModificationType>((ObjectType)"type", ModifyPageItemKey);
+        public static readonly StyleKey<ModifiedContentAction> ModifyPageActionKey = StyleKey.InternalCreateStyleValueKey<ModifiedContentAction>((ObjectType)"actn", ModifyPageItemKey);
+        public static readonly StyleKey<int> ModifyPageStartIndexKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"strt", ModifyPageItemKey);
+        public static readonly StyleKey<int> ModifyPageCountKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cont", ModifyPageItemKey);
 
 
         //Transform
         public static readonly StyleKey TransformItemKey = StyleKey.InternalCreateStyleItemKey(PDFObjectTypes.StyleTransform, NOT_INHERITED);
-        public static readonly PDFStyleKey<float> TransformRotateKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"rote", TransformItemKey);
-        public static readonly PDFStyleKey<float> TransformXScaleKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"xscl", TransformItemKey);
-        public static readonly PDFStyleKey<float> TransformXSkewKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"xskw", TransformItemKey);
-        public static readonly PDFStyleKey<float> TransformXOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"xoff", TransformItemKey);
-        public static readonly PDFStyleKey<float> TransformYScaleKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"yscl", TransformItemKey);
-        public static readonly PDFStyleKey<float> TransformYSkewKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"yskw", TransformItemKey);
-        public static readonly PDFStyleKey<float> TransformYOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((PDFObjectType)"yoff", TransformItemKey);
-        public static readonly PDFStyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((PDFObjectType)"orig", TransformItemKey);
+        public static readonly StyleKey<float> TransformRotateKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"rote", TransformItemKey);
+        public static readonly StyleKey<float> TransformXScaleKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xscl", TransformItemKey);
+        public static readonly StyleKey<float> TransformXSkewKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xskw", TransformItemKey);
+        public static readonly StyleKey<float> TransformXOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xoff", TransformItemKey);
+        public static readonly StyleKey<float> TransformYScaleKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yscl", TransformItemKey);
+        public static readonly StyleKey<float> TransformYSkewKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yskw", TransformItemKey);
+        public static readonly StyleKey<float> TransformYOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yoff", TransformItemKey);
+        public static readonly StyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((ObjectType)"orig", TransformItemKey);
 
         //FontFace
-        public static readonly StyleKey FontFaceItemKey = StyleKey.InternalCreateStyleItemKey((PDFObjectType)"csff", NOT_INHERITED);
-        public static readonly PDFStyleKey<PDFFontSource> FontFaceSrcKey = StyleKey.InternalCreateStyleValueKey<PDFFontSource>((PDFObjectType)"fsrc", FontFaceItemKey);
-        public static readonly PDFStyleKey<string> FontFaceFamilyKey = StyleKey.InternalCreateStyleValueKey<string>((PDFObjectType)"ffam", FontFaceItemKey);
-        public static readonly PDFStyleKey<int> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<int>((PDFObjectType)"fwgt", FontFaceItemKey);
-        public static readonly PDFStyleKey<Drawing.FontStyle> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((PDFObjectType)"fsyl", FontFaceItemKey);
+        public static readonly StyleKey FontFaceItemKey = StyleKey.InternalCreateStyleItemKey((ObjectType)"csff", NOT_INHERITED);
+        public static readonly StyleKey<PDFFontSource> FontFaceSrcKey = StyleKey.InternalCreateStyleValueKey<PDFFontSource>((ObjectType)"fsrc", FontFaceItemKey);
+        public static readonly StyleKey<string> FontFaceFamilyKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"ffam", FontFaceItemKey);
+        public static readonly StyleKey<int> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"fwgt", FontFaceItemKey);
+        public static readonly StyleKey<Drawing.FontStyle> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((ObjectType)"fsyl", FontFaceItemKey);
 
 
 

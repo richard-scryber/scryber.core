@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 
 namespace Scryber.Components
 {
@@ -793,7 +793,7 @@ namespace Scryber.Components
         /// can use to create an instance of their class using a different ObjectType
         /// </summary>
         /// <param name="type">The type identifier</param>
-        protected TableRow(PDFObjectType type)
+        protected TableRow(ObjectType type)
             : base(type)
         {
 
@@ -915,7 +915,7 @@ namespace Scryber.Components
         /// Creates a new header row with the specified object type value
         /// </summary>
         /// <param name="type"></param>
-        public TableHeaderRow(PDFObjectType type)
+        public TableHeaderRow(ObjectType type)
             : base(type)
         {
             
@@ -964,7 +964,7 @@ namespace Scryber.Components
         /// Creates a new instance of a table row with the specified object type
         /// </summary>
         /// <param name="type">The object type of this instance</param>
-        public TableFooterRow(PDFObjectType type)
+        public TableFooterRow(ObjectType type)
             : base(type)
         {
         }

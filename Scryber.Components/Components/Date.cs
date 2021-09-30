@@ -85,7 +85,7 @@ namespace Scryber.Components
 
         #region protected PDFDate(PDFObjectType type)
 
-        protected Date(PDFObjectType type)
+        protected Date(ObjectType type)
             : base(type)
         {
             this.Value = DateTime.Now;
@@ -105,7 +105,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFLayoutContext context, Styles.Style fullstyle)
+        protected override Text.PDFTextReader CreateReader(PDFContextBase context, Styles.Style fullstyle)
         {
             string val;
             string format = fullstyle.GetValue(StyleKeys.TextDateFormatKey, string.Empty);

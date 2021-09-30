@@ -1,5 +1,6 @@
 ﻿using System;
 using Scryber.OpenType.SubTables;
+using Scryber.PDF.Native;
 
 namespace Scryber.Drawing
 {
@@ -34,7 +35,7 @@ namespace Scryber.Drawing
             if (null != linear)
             {
                 var name = graphics.Container.Register(linear);
-                graphics.SetFillPattern(name);
+                graphics.SetFillPattern((PDFName)name);
                 return true;
             }
             else

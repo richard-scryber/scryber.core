@@ -10,7 +10,8 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Styles.Parsing;
 
-using Scryber.Layout;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
 using System.Xml.Schema;
 
 namespace Scryber.Core.UnitTests.Html

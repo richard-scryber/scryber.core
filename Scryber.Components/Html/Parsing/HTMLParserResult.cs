@@ -15,7 +15,7 @@ namespace Scryber.Html.Parsing
         private int _start;
         private int _end;
         private bool _isStart;
-        private IPDFComponent _parsed;
+        private IComponent _parsed;
         private string _value;
         private HtmlComponentType _type;
 
@@ -47,7 +47,7 @@ namespace Scryber.Html.Parsing
         /// <summary>
         /// Gets a reference to the component that has been parsed. If there is no component, then the Valid flag will be false.
         /// </summary>
-        public IPDFComponent Parsed { get { return _parsed; } }
+        public IComponent Parsed { get { return _parsed; } }
 
         /// <summary>
         /// Gets the name of the tag for this result
@@ -63,7 +63,7 @@ namespace Scryber.Html.Parsing
         /// <param name="offsetStart"></param>
         /// <param name="offsetEnd"></param>
         /// <param name="start"></param>
-        public HTMLParserResult(IPDFComponent parsed, HtmlComponentType type, string value, int offsetStart, int offsetEnd, bool start)
+        public HTMLParserResult(IComponent parsed, HtmlComponentType type, string value, int offsetStart, int offsetEnd, bool start)
         {
             _value = value;
             _parsed = parsed;

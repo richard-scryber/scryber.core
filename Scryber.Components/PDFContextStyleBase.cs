@@ -42,7 +42,7 @@ namespace Scryber
 
 
 
-        internal PDFContextStyleBase(Styles.StyleStack stylesstack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IPDFDocument document)
+        internal PDFContextStyleBase(Styles.StyleStack stylesstack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
             : base(items, log, perfmon, document)
         {
             this._stylestack = stylesstack;

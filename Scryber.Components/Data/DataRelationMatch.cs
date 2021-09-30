@@ -72,7 +72,7 @@ namespace Scryber.Data
         {
         }
 
-        protected DataRelationMatch(PDFObjectType type)
+        protected DataRelationMatch(ObjectType type)
             : base(type)
         {
         }

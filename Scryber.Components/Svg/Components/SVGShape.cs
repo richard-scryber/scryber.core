@@ -1,8 +1,9 @@
 ﻿using System;
 using Scryber.Components;
 using Scryber.Drawing;
-using Scryber.Native;
+using Scryber.PDF.Native;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Svg.Components
 {
@@ -11,7 +12,7 @@ namespace Scryber.Svg.Components
 
 
 
-        public SVGShape(PDFObjectType type)
+        public SVGShape(ObjectType type)
             : base(type)
         {
         }

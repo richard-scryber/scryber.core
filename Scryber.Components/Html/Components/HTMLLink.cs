@@ -12,7 +12,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("link")]
-    public class HTMLLink : Scryber.Components.Component, IPDFTemplate
+    public class HTMLLink : Scryber.Components.Component, ITemplate
     {
         internal enum HTMLLinkType
         {
@@ -52,7 +52,7 @@ namespace Scryber.Html.Components
 
             }
 
-            public virtual IEnumerable<IPDFComponent> GetContent(IPDFComponent owner, PDFContextBase context)
+            public virtual IEnumerable<IComponent> GetContent(IComponent owner, PDFContextBase context)
             {
                 return null;
             }
@@ -73,16 +73,16 @@ namespace Scryber.Html.Components
         internal class LinkContentHtml : LinkContentBase
         {
             
-            private IPDFTemplate _gen = null;
+            private ITemplate _gen = null;
             private int _index;
             
-            public LinkContentHtml(IPDFTemplate gen, string path) : base(HTMLLinkType.Html, path)
+            public LinkContentHtml(ITemplate gen, string path) : base(HTMLLinkType.Html, path)
             {
                 this._gen = gen;
                 this._index = 0;
             }
 
-            public override IEnumerable<IPDFComponent> GetContent(IPDFComponent owner, PDFContextBase context)
+            public override IEnumerable<IComponent> GetContent(IComponent owner, PDFContextBase context)
             {
                 if (null != this._gen)
                     return this._gen.Instantiate(_index, owner);
@@ -147,7 +147,7 @@ namespace Scryber.Html.Components
         private string _href;
         private string _relationship;
         private LinkContentBase _content;
-        private PDFRemoteFileRequest _request;
+        private RemoteFileRequest _request;
 
         internal LinkContentBase InnerContent
         {
@@ -231,7 +231,7 @@ namespace Scryber.Html.Components
         }
 
         public HTMLLink()
-            : base((PDFObjectType)"htmL")
+            : base((ObjectType)"htmL")
         {
             
         }
@@ -267,7 +267,7 @@ namespace Scryber.Html.Components
             
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(PDF.PDFLayoutContext context)
         {
             base.OnPreLayout(context);
 
@@ -546,7 +546,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
         {
             if (this.IsContentLoaded)
             {

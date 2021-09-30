@@ -56,12 +56,12 @@ namespace Scryber.Generation
             {
                 ((System.Collections.IList)collection).Add(inner);
             }
-            else if (collection is IPDFComponentWrappingList)
+            else if (collection is IComponentWrappingList)
             {
-                IPDFComponentList list = ((IPDFComponentWrappingList)collection).InnerList;
-                if (!(inner is IPDFComponent))
-                    throw new InvalidCastException(string.Format(Errors.CannotConvertObjectToType, inner.GetType(), typeof(IPDFComponent)));
-                list.Add((IPDFComponent)inner);
+                IComponentList list = ((IComponentWrappingList)collection).InnerList;
+                if (!(inner is IComponent))
+                    throw new InvalidCastException(string.Format(Errors.CannotConvertObjectToType, inner.GetType(), typeof(IComponent)));
+                list.Add((IComponent)inner);
             }
             else
             {

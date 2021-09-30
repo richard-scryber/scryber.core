@@ -52,7 +52,7 @@ namespace Scryber.Html.Components
         }
 
 
-        public HTMLEmbed() : base((PDFObjectType)"htem")
+        public HTMLEmbed() : base((ObjectType)"htem")
         {
         }
     }

@@ -125,12 +125,12 @@ namespace Scryber.Components
             this.QueryStringOverrides = false;
         }
 
-        public object GetNativeValue(string key, IPDFComponent comp)
+        public object GetNativeValue(string key, IComponent comp)
         { 
             return this.DoGetNativeValue(key, null, comp);
         }
 
-        protected abstract object DoGetNativeValue(string key, string qsValue, IPDFComponent comp);
+        protected abstract object DoGetNativeValue(string key, string qsValue, IComponent comp);
         
         
         public void Init()
@@ -138,7 +138,7 @@ namespace Scryber.Components
             
         }
 
-        public void SetNativeValue(string key, object value, IPDFComponent owner)
+        public void SetNativeValue(string key, object value, IComponent owner)
         {
             if (key != this.ID)
                 throw new InvalidOperationException("The keys do not match");
@@ -156,7 +156,7 @@ namespace Scryber.Components
             }
         }
 
-        public void SetValue(string key, string value, IPDFComponent owner)
+        public void SetValue(string key, string value, IComponent owner)
         {
             if (key != this.ID)
                 throw new InvalidOperationException("The keys do not match");
@@ -164,9 +164,9 @@ namespace Scryber.Components
             this.DoSetNativeValueFromString(value, owner);
         }
 
-        protected abstract void DoSetNativeValueFromString(string value, IPDFComponent owner);
+        protected abstract void DoSetNativeValueFromString(string value, IComponent owner);
 
-        protected abstract void DoSetNativeValue(object value, IPDFComponent owner);
+        protected abstract void DoSetNativeValue(object value, IComponent owner);
 
     }
 
@@ -186,7 +186,7 @@ namespace Scryber.Components
             this.Value = 0;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             int val;
             if (string.IsNullOrEmpty(qsValue) || !TryParse(qsValue, out val))
@@ -212,7 +212,7 @@ namespace Scryber.Components
         }
 
         
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             int val;
             if (int.TryParse(value, out val))
@@ -221,7 +221,7 @@ namespace Scryber.Components
                 this.Value = 0;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = 0;
@@ -253,19 +253,19 @@ namespace Scryber.Components
             this.Value = string.Empty;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             if (!string.IsNullOrEmpty(qsValue))
                 return qsValue;
             else
                 return this.Value;
         }
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             this.Value = value;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = null;
@@ -290,7 +290,7 @@ namespace Scryber.Components
             this.Value = Guid.Empty;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             Guid val;
             if (string.IsNullOrEmpty(qsValue) || !Guid.TryParse(qsValue, out val))
@@ -298,7 +298,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             Guid val;
             if (Guid.TryParse(value, out val))
@@ -307,7 +307,7 @@ namespace Scryber.Components
                 this.Value = Guid.Empty;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = Guid.Empty;
@@ -333,7 +333,7 @@ namespace Scryber.Components
             this.Value = 0.0;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             double val;
             if (string.IsNullOrEmpty(qsValue) || !double.TryParse(qsValue, out val))
@@ -341,7 +341,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             double val;
             if (double.TryParse(value, out val))
@@ -350,7 +350,7 @@ namespace Scryber.Components
                 this.Value = 0;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = 0;
@@ -375,7 +375,7 @@ namespace Scryber.Components
             this.Value = false;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             bool val;
             if (string.IsNullOrEmpty(qsValue) || !bool.TryParse(qsValue, out val))
@@ -383,7 +383,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             bool val;
             if (bool.TryParse(value, out val))
@@ -392,7 +392,7 @@ namespace Scryber.Components
                 this.Value = false;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = false;
@@ -417,7 +417,7 @@ namespace Scryber.Components
             this.Value = DateTime.Now;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             DateTime val;
             if (string.IsNullOrEmpty(qsValue) || !DateTime.TryParse(qsValue, out val))
@@ -425,7 +425,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             DateTime val;
             if (DateTime.TryParse(value, out val))
@@ -434,7 +434,7 @@ namespace Scryber.Components
                 this.Value = DateTime.MinValue;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = DateTime.MinValue;
@@ -459,7 +459,7 @@ namespace Scryber.Components
             this.Value = PDFUnit.Empty;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             PDFUnit val;
             if (string.IsNullOrEmpty(qsValue) || !PDFUnit.TryParse(qsValue, out val))
@@ -467,7 +467,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             PDFUnit val;
             if (PDFUnit.TryParse(value, out val))
@@ -476,7 +476,7 @@ namespace Scryber.Components
                 this.Value = PDFUnit.Empty;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = PDFUnit.Empty;
@@ -501,7 +501,7 @@ namespace Scryber.Components
             this.Value = null;
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             PDFColor val;
             if (string.IsNullOrEmpty(qsValue) || !PDFColor.TryParse(qsValue, out val))
@@ -509,7 +509,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             PDFColor val;
             if (string.IsNullOrEmpty(value))
@@ -521,7 +521,7 @@ namespace Scryber.Components
                 throw new InvalidCastException("Could not parse the value '" + value + "' to a PDFColor");
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = PDFColor.Transparent;
@@ -546,7 +546,7 @@ namespace Scryber.Components
             this.Value = PDFThickness.Empty();
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             PDFThickness val;
             if (string.IsNullOrEmpty(qsValue) || !PDFThickness.TryParse(qsValue, out val))
@@ -554,7 +554,7 @@ namespace Scryber.Components
             return val;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             PDFThickness val;
             if (PDFThickness.TryParse(value, out val))
@@ -563,7 +563,7 @@ namespace Scryber.Components
                 this.Value = PDFThickness.Empty();
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.Value = PDFThickness.Empty();
@@ -591,7 +591,7 @@ namespace Scryber.Components
         }
 
         
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             string val = null;
             if (string.IsNullOrEmpty(qsValue))
@@ -620,12 +620,12 @@ namespace Scryber.Components
             }
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             this.EnumValue = value;
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.EnumValue = null;
@@ -656,12 +656,12 @@ namespace Scryber.Components
         {
         }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             return this.XmlData;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             if (string.IsNullOrEmpty(value))
                 this.XmlData = null;
@@ -673,7 +673,7 @@ namespace Scryber.Components
             }
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
                 this.XmlData = null;
@@ -712,39 +712,39 @@ namespace Scryber.Components
     {
         [PDFElement()]
         [PDFTemplate()]
-        public IPDFTemplate Template
+        public ITemplate Template
         {
             get;
             set;
         }
 
         public TemplateItemValue()
-            : base(typeof(IPDFTemplate))
+            : base(typeof(ITemplate))
         {
 
         }
 
-        protected override object DoGetNativeValue(string key, string sqValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string sqValue, IComponent comp)
         {
             return this.Template;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             var namespaceManager = GetNamespaceManager(owner);
             this.Template = new Data.ParsableTemplateGenerator(value, namespaceManager);
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
-            this.Template = (IPDFTemplate)value;
+            this.Template = (ITemplate)value;
         }
 
-        protected virtual XmlNamespaceManager GetNamespaceManager(IPDFComponent owner)
+        protected virtual XmlNamespaceManager GetNamespaceManager(IComponent owner)
         {
             System.Xml.NameTable nt = new System.Xml.NameTable();
             System.Xml.XmlNamespaceManager mgr = new System.Xml.XmlNamespaceManager(nt);
-            IPDFRemoteComponent parsed = this.GetParsedParent(owner);
+            IRemoteComponent parsed = this.GetParsedParent(owner);
             IDictionary<string, string> parsedNamespaces = null;
 
             //add the namespaces of the last parsed document so we can infer any declarations
@@ -764,11 +764,11 @@ namespace Scryber.Components
             return mgr;
         }
 
-        protected IPDFRemoteComponent GetParsedParent(IPDFComponent component)
+        protected IRemoteComponent GetParsedParent(IComponent component)
         {
-            if (component is IPDFRemoteComponent)
+            if (component is IRemoteComponent)
             {
-                IPDFRemoteComponent remote = (IPDFRemoteComponent)component;
+                IRemoteComponent remote = (IRemoteComponent)component;
                 return remote;
             }
 
@@ -800,17 +800,17 @@ namespace Scryber.Components
         public ObjectItemValue() : base(typeof(Object))
         { }
 
-        protected override object DoGetNativeValue(string key, string qsValue, IPDFComponent comp)
+        protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
             return this.Value;
         }
 
-        protected override void DoSetNativeValueFromString(string value, IPDFComponent owner)
+        protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
             throw new NotSupportedException();
         }
 
-        protected override void DoSetNativeValue(object value, IPDFComponent owner)
+        protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (!string.IsNullOrEmpty(this.ObjectType))
             {

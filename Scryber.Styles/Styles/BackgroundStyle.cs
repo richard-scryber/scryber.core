@@ -23,7 +23,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Drawing;
 using Scryber;
-using Scryber.Native;
 using System.ComponentModel;
 
 namespace Scryber.Styles

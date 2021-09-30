@@ -20,14 +20,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Scryber.Resources;
-using Scryber.Native;
+using Scryber.PDF.Resources;
+using Scryber.PDF.Native;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
-    public abstract class ImageBase : VisualComponent, IPDFImageComponent, IPDFOptimizeComponent
+    public abstract class ImageBase : VisualComponent, IPDFImageComponent, IOptimizeComponent
     {
 
         private PDFImageXObject _xobj = null;
@@ -72,7 +73,7 @@ namespace Scryber.Components
         }
 
 
-        protected ImageBase(PDFObjectType type)
+        protected ImageBase(ObjectType type)
             : base(type)
         {
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
@@ -152,7 +153,7 @@ namespace Scryber.Components
         /// Inheritors must implement this method to actually load the required image data.
         /// </summary>
         /// <returns></returns>
-        protected abstract Resources.PDFImageXObject InitImageXObject(PDFContextBase context, Style fullstyle);
+        protected abstract PDFImageXObject InitImageXObject(PDFContextBase context, Style fullstyle);
 
         /// <summary>
         /// Overrides the base implementation to specify that images are by default blocks.
@@ -172,9 +173,9 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="set"></param>
         /// <param name="fullstyle"></param>
-        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDF.PDFArtefactRegistrationSet set, Style fullstyle)
         {
-            IPDFResourceContainer resources = this.GetResourceContainer();
+            IResourceContainer resources = this.GetResourceContainer();
             if (null == resources)
                 throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
             PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
@@ -191,7 +192,7 @@ namespace Scryber.Components
             PDFGraphics graphics = context.Graphics;
             Style full = null;
 
-            PDFComponentArrangement arrange = this.GetFirstArrangement();
+            ComponentArrangement arrange = this.GetFirstArrangement();
             if (null != arrange)
                 full = arrange.FullStyle;
 

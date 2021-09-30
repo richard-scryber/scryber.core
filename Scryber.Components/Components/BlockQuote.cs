@@ -43,7 +43,7 @@ namespace Scryber.Components
         {
         }
 
-        protected BlockQuote(PDFObjectType type)
+        protected BlockQuote(ObjectType type)
             : base(type)
         {
         }

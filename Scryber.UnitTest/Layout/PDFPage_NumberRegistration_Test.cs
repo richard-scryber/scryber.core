@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
-using Scryber.Layout;
+using Scryber.PDF.Layout;
+using Scryber.PDF;
 using Scryber.Styles;
 
 namespace Scryber.Core.UnitTests.Layout
@@ -13,7 +14,7 @@ namespace Scryber.Core.UnitTests.Layout
     [TestClass()]
     public class PDFPage_NumberRegistration_Test
     {
-        private Scryber.Layout.PDFLayoutDocument _layout;
+        private PDFLayoutDocument _layout;
 
         private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
         {
@@ -49,7 +50,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             for (int i = 0; i < 20; i++)
             {
-                PDFPageNumberData num = ldoc.GetNumbering(i);
+                PageNumberData num = ldoc.GetNumbering(i);
                 Assert.AreEqual(i + 1, num.GroupNumber);
                 Assert.AreEqual(i + 1, num.PageNumber);
                 Assert.AreEqual(20, num.LastPageNumber);
@@ -60,12 +61,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             int last = -1;
 
-            foreach (Scryber.Layout.PDFLayoutPage pg in ldoc.AllPages)
+            foreach (PDFLayoutPage pg in ldoc.AllPages)
             {
                 int index = pg.PageIndex;
                 Assert.AreEqual(last + 1, index);
                 last = index;
-                PDFPageNumberData num = pg.GetPageNumber();
+                PageNumberData num = pg.GetPageNumber();
 
                 Assert.AreEqual(index + 1, num.GroupNumber);
                 Assert.AreEqual(index + 1, num.PageNumber);
@@ -103,14 +104,14 @@ namespace Scryber.Core.UnitTests.Layout
             var ldoc = this._layout;
             int last = -1;
 
-            foreach (Scryber.Layout.PDFLayoutPage pg in ldoc.AllPages)
+            foreach (PDFLayoutPage pg in ldoc.AllPages)
             {
                 int index = pg.PageIndex;
                 Assert.AreEqual(last + 1, index);
                 last = index;
 
                 //Get the page number details for the page
-                PDFPageNumberData num = pg.GetPageNumber();
+                PageNumberData num = pg.GetPageNumber();
 
                 Assert.AreEqual(index + 1, num.GroupNumber, "Group number of page was not correct");
                 Assert.AreEqual(index + 1, num.PageNumber, "Page number was not correct");
@@ -170,14 +171,14 @@ namespace Scryber.Core.UnitTests.Layout
             
 
             int last = -1;
-            foreach (Scryber.Layout.PDFLayoutPage pg in ldoc.AllPages)
+            foreach (PDFLayoutPage pg in ldoc.AllPages)
             {
                 index = pg.PageIndex;
                 Assert.AreEqual(last + 1, index, "Page numbers are not in synch");
                 last = index;
 
                 //Get the page number details for the page
-                PDFPageNumberData num = pg.GetPageNumber();
+                PageNumberData num = pg.GetPageNumber();
                 actuallabels.Add(num.Label);
 
                 if (index < 5)
@@ -236,12 +237,12 @@ namespace Scryber.Core.UnitTests.Layout
             // numbering                           | Default                 | Lower roman                | Upper letter with prefix        | Back to default
             // page indices                          0,    1,   2,   3,   4,   5,   6,     7,    8,    9,   10,    11 ,   12,    13,    14,   15,  16,  17,  18,   19
 
-            PDFPageNumbers nums = ldoc.Numbers;
+            PageNumbers nums = ldoc.Numbers;
 
             Assert.AreEqual(4, nums.Registrations.Count);
 
             //Default 1-4
-            PDFPageNumberRegistration reg = nums.Registrations[0];
+            PageNumberRegistration reg = nums.Registrations[0];
             Assert.AreEqual(0, reg.FirstPageIndex);
             Assert.AreEqual(4, reg.LastPageIndex);
             Assert.AreEqual(0, reg.PreviousLinkedRegistrationPageCount);
@@ -325,14 +326,14 @@ namespace Scryber.Core.UnitTests.Layout
 
             Assert.AreEqual(20, ldoc.AllPages.Count);
             int last = -1;
-            foreach (Scryber.Layout.PDFLayoutPage pg in ldoc.AllPages)
+            foreach (PDFLayoutPage pg in ldoc.AllPages)
             {
                 index = pg.PageIndex;
                 Assert.AreEqual(last + 1, index, "Page numbers are not in synch");
                 last = index;
 
                 //Get the page number details for the page
-                PDFPageNumberData num = pg.GetPageNumber();
+                PageNumberData num = pg.GetPageNumber();
                 actuallabels.Add(num.Label);
 
                 if (index < 5)

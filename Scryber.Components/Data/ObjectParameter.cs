@@ -24,7 +24,7 @@ using System.Text;
 namespace Scryber.Data
 {
     [PDFParsableComponent("ObjectParameter")]
-    public class ObjectParameter : IPDFBindableComponent
+    public class ObjectParameter : IBindableComponent
     {
         //
         // events to support databinding

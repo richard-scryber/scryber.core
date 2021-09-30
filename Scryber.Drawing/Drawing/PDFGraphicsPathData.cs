@@ -1,6 +1,7 @@
 ﻿using System;
-using Scryber.Resources;
-using Scryber.Native;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using Scryber.OpenType.SubTables;
 
 namespace Scryber.Drawing

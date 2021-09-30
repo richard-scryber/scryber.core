@@ -24,7 +24,7 @@ namespace Scryber.Styles
 {
     [PDFParsableComponent("Styles")]
     [PDFRemoteParsableComponent("Styles-Ref")]
-    public class StylesDocument : StyleBase, IPDFComponent, IPDFBindableComponent, IPDFRemoteComponent
+    public class StylesDocument : StyleBase, IComponent, IBindableComponent, IRemoteComponent
     {
 
         public event PDFInitializedEventHandler Initialized;
@@ -99,7 +99,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Gets the PDF Document that holds this Styles document (if any)
         /// </summary>
-        public IPDFDocument Document
+        public IDocument Document
         {
             get { return (null == _parent) ? null : _parent.Document; }
         }
@@ -108,12 +108,12 @@ namespace Scryber.Styles
 
         #region public IPDFComponent Parent {get;set;}
 
-        private IPDFComponent _parent;
+        private IComponent _parent;
 
         /// <summary>
         /// Gets or sets the parent owner of this styles document
         /// </summary>
-        public IPDFComponent Parent
+        public IComponent Parent
         {
             get
             {
@@ -187,8 +187,8 @@ namespace Scryber.Styles
         {
             get
             {
-                if (this._loadtype == ParserLoadType.None && this.Parent != null && this.Parent is IPDFRemoteComponent)
-                    return ((IPDFRemoteComponent)this.Parent).LoadType;
+                if (this._loadtype == ParserLoadType.None && this.Parent != null && this.Parent is IRemoteComponent)
+                    return ((IRemoteComponent)this.Parent).LoadType;
                 else
                     return _loadtype;
             }
@@ -250,7 +250,7 @@ namespace Scryber.Styles
         {
         }
 
-        public StylesDocument(PDFObjectType type)
+        public StylesDocument(ObjectType type)
             : base(type)
         {
         }
@@ -281,7 +281,7 @@ namespace Scryber.Styles
 
         public virtual string MapPath(string source, out bool isfile)
         {
-            var service = ServiceProvider.GetService<IPDFPathMappingService>();
+            var service = ServiceProvider.GetService<IPathMappingService>();
 
             if (!string.IsNullOrEmpty(this.LoadedSource))
             {
@@ -301,7 +301,7 @@ namespace Scryber.Styles
         /// <param name="style">The style to populate with items</param>
         /// <param name="Component">The component the styles should be associated with.</param>
         /// <param name="state">The state of the component - not used</param>
-        public override void MergeInto(Scryber.Styles.Style style, IPDFComponent Component, ComponentState state)
+        public override void MergeInto(Scryber.Styles.Style style, IComponent Component, ComponentState state)
         {
             this.Styles.MergeInto(style, Component, state);
         }
@@ -357,7 +357,7 @@ namespace Scryber.Styles
         }
 
 
-        void Scryber.IPDFRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
+        void Scryber.IRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
         {
             if (null == this._namespaces)
                 this._namespaces = new System.Collections.Specialized.NameValueCollection();
@@ -365,7 +365,7 @@ namespace Scryber.Styles
         }
 
 
-        IDictionary<string, string> Scryber.IPDFRemoteComponent.GetDeclaredNamespaces()
+        IDictionary<string, string> Scryber.IRemoteComponent.GetDeclaredNamespaces()
         {
             Dictionary<string, string> all = new Dictionary<string, string>();
             if (null != this._namespaces)

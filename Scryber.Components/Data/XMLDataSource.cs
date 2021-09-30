@@ -124,7 +124,7 @@ namespace Scryber.Data
 
         #region protected PDFXMLDataSource(PDFObjectType type)
 
-        protected XMLDataSource(PDFObjectType type)
+        protected XMLDataSource(ObjectType type)
             : base(type)
         {
         }

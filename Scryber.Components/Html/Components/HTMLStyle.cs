@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Styles.Parsing.Typed;
+using Scryber.PDF;
 
 namespace Scryber.Html.Components
 {
@@ -94,7 +95,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        public HTMLStyle() : base((PDFObjectType)"htmS")
+        public HTMLStyle() : base((ObjectType)"htmS")
         {
             
         }

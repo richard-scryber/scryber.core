@@ -431,7 +431,7 @@ namespace Scryber.Core.UnitTests.Configuration
             /// <param name="owner"></param>
             /// <param name="path"></param>
             /// <returns></returns>
-            public Scryber.Drawing.PDFImageData LoadImageData(IPDFDocument document, IPDFComponent owner, string path)
+            public Scryber.Drawing.PDFImageData LoadImageData(IDocument document, IComponent owner, string path)
             {
                 path = GetBase64FromPath(path);
 

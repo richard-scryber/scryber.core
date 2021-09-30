@@ -31,10 +31,10 @@ namespace Scryber.Styles
     {
         //The instance style keys
 
-        private PDFStyleKey<LineType> _line;
-        private PDFStyleKey<PDFColor> _color;
-        private PDFStyleKey<PDFUnit> _width;
-        private PDFStyleKey<PDFDash> _dash;
+        private StyleKey<LineType> _line;
+        private StyleKey<PDFColor> _color;
+        private StyleKey<PDFUnit> _width;
+        private StyleKey<PDFDash> _dash;
 
         //Actual side we are
         private Sides _side;
@@ -170,7 +170,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Creates a new Border style
         /// </summary>
-        public BorderSideStyle(Sides forSide, StyleKey forKey, PDFStyleKey<PDFColor> colorKey, PDFStyleKey<PDFUnit> widthkey, PDFStyleKey<LineType> lineStyleKey, PDFStyleKey<PDFDash> dashkey): 
+        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<PDFColor> colorKey, StyleKey<PDFUnit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<PDFDash> dashkey): 
             base(forKey)
         {
             _side = forSide;

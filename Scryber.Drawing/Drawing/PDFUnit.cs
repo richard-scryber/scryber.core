@@ -19,13 +19,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Native;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using System.CodeDom;
 
 namespace Scryber.Drawing
 {
     [PDFParsableValue()]
-    public struct PDFUnit : IComparable, IComparable<PDFUnit>, IEquatable<PDFUnit>, IPDFSimpleExpressionValue
+    public struct PDFUnit : IComparable, IComparable<PDFUnit>, IEquatable<PDFUnit>
     {
         /// <summary>
         /// Stores the actual value of the units in Points measurement
@@ -65,7 +67,7 @@ namespace Scryber.Drawing
         /// </summary>
         public PDFReal RealValue
         {
-            get { return new Scryber.Native.PDFReal(this._val); }
+            get { return new PDFReal(this._val); }
         }
 
         
@@ -696,30 +698,5 @@ namespace Scryber.Drawing
         public const string PointPostFix = "pt";
 
 
-
-        #region IPDFSimpleCodeDomValue Members
-
-        private static readonly System.Reflection.ConstructorInfo ctorRef = typeof(PDFUnit).GetConstructor(new Type[] { typeof(double), typeof(PageUnits) });
-
-        public System.Linq.Expressions.Expression GetConstructorExpression()
-        {
-            System.Linq.Expressions.ConstantExpression value = System.Linq.Expressions.Expression.Constant(this.Value, typeof(double));
-            System.Linq.Expressions.ConstantExpression units = System.Linq.Expressions.Expression.Constant(this.Units, typeof(PageUnits));
-            System.Linq.Expressions.NewExpression ctor = System.Linq.Expressions.Expression.New(ctorRef, value, units);
-            return ctor;
-        }
-
-        //public System.CodeDom.CodeExpression GetConstructorExpression()
-        //{
-        //    //new PDFUnit(PageUnits.Units,double);
-
-        //    return new CodeObjectCreateExpression(typeof(PDFUnit),
-        //        new CodePrimitiveExpression(this.Value), 
-        //        new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(PageUnits)),this.Units.ToString())
-        //        );
-
-        //}
-
-        #endregion
     }
 }

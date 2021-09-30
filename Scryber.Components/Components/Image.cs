@@ -21,8 +21,7 @@ using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Text;
 using Scryber.Drawing;
-using Scryber.Native;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
 using Scryber.Styles;
 
 namespace Scryber.Components
@@ -74,13 +73,13 @@ namespace Scryber.Components
         {
         }
 
-        protected Image(PDFObjectType type)
+        protected Image(ObjectType type)
             : base(type)
         {
         }
 
 
-        protected override Resources.PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
+        protected override PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
         {
             Document doc = this.Document;
             if (null == doc)

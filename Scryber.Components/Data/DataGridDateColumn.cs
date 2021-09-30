@@ -44,11 +44,11 @@ namespace Scryber.Data
         #endregion
 
         public DataGridDateColumn()
-            : this((PDFObjectType)"DgDc")
+            : this((ObjectType)"DgDc")
         {
         }
 
-        protected DataGridDateColumn(PDFObjectType type)
+        protected DataGridDateColumn(ObjectType type)
             : base(type)
         {
         }

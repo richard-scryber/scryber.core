@@ -32,7 +32,7 @@ namespace Scryber
         private PDFTraceLog _log;
         private PDFPerformanceMonitor _perfmon;
         private ParserConformanceMode _conformance;
-        private IPDFDocument _doc;
+        private IDocument _doc;
         private bool _shouldLogDebug;
         private bool _shouldLogVerbose;
         private bool _shouldLogMessage;
@@ -92,7 +92,7 @@ namespace Scryber
             get { return _shouldLogMessage; }
         }
 
-        public IPDFDocument Document
+        public IDocument Document
         {
             get { return this._doc; }
         }
@@ -113,7 +113,7 @@ namespace Scryber
 
         #endregion
 
-        public PDFContextBase(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IPDFDocument document)
+        public PDFContextBase(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
         {
             this._format = OutputFormat.PDF;
 

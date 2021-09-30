@@ -1,5 +1,6 @@
 ﻿using System;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Html.Components
 {

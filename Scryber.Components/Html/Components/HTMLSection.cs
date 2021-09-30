@@ -20,11 +20,11 @@ namespace Scryber.Html.Components
 
         [PDFElement("header")]
         [PDFTemplate()]
-        public override IPDFTemplate Header { get => base.Header; set => base.Header = value; }
+        public override ITemplate Header { get => base.Header; set => base.Header = value; }
 
         [PDFElement("footer")]
         [PDFTemplate()]
-        public override IPDFTemplate Footer { get => base.Footer; set => base.Footer = value; }
+        public override ITemplate Footer { get => base.Footer; set => base.Footer = value; }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'

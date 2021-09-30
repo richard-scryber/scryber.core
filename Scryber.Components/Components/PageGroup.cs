@@ -35,7 +35,7 @@ namespace Scryber.Components
 
         #region  public IPDFTemplate ContinuationHeader {get;set;}
 
-        private IPDFTemplate _header;
+        private ITemplate _header;
 
         /// <summary>
         /// Gets or sets the template for the continuation footer of this Page Group
@@ -43,7 +43,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Continuation-Header")]
-        public IPDFTemplate ContinuationHeader
+        public ITemplate ContinuationHeader
         {
             get { return _header; }
             set { _header = value; }
@@ -53,7 +53,7 @@ namespace Scryber.Components
 
         #region public IPDFTemplate ContinuationFooter {get;set;}
 
-        private IPDFTemplate _footer;
+        private ITemplate _footer;
 
         /// <summary>
         /// Gets or sets the template for the continuation footer of this Page Group 
@@ -61,7 +61,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFTemplate()]
         [PDFElement("Continuation-Footer")]
-        public IPDFTemplate ContinuationFooter
+        public ITemplate ContinuationFooter
         {
             get { return _footer; }
             set { _footer = value; }
@@ -105,7 +105,7 @@ namespace Scryber.Components
 
         #region protected PDFPageGroup(PDFObjectType type)
 
-        protected PageGroup(PDFObjectType type)
+        protected PageGroup(ObjectType type)
             : base(type)
         {
         }
@@ -125,9 +125,9 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Styles.Style style)
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Styles.Style style)
         {
-            return new Layout.LayoutEnginePageGroup(this, parent, context, style);
+            return new PDF.Layout.LayoutEnginePageGroup(this, parent, context, style);
         }
 
         #endregion
@@ -138,7 +138,7 @@ namespace Scryber.Components
         /// Override the GetFirstArrangement to return the arrangement of the first page
         /// </summary>
         /// <returns></returns>
-        public override PDFComponentArrangement GetFirstArrangement()
+        public override ComponentArrangement GetFirstArrangement()
         {
             if (this.Pages.Count > 0)
                 return this.Pages[0].GetFirstArrangement();

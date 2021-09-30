@@ -55,7 +55,7 @@ namespace Scryber.Components
             : this(PDFObjectTypes.ShapePath)
         { }
 
-        protected Path(PDFObjectType type)
+        protected Path(ObjectType type)
             : base(type)
         {
         }

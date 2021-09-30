@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Net.Sockets;
 using Scryber.Drawing;
-using Scryber.Resources;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Styles
 {
@@ -148,7 +148,7 @@ namespace Scryber.Styles
         // override methods
         //
 
-        public override void MergeInto(Style style, IPDFComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component, ComponentState state)
         {
             //Don't merge this one as any styles declared are for the font face not components.
         }
@@ -186,7 +186,7 @@ namespace Scryber.Styles
         
 
         
-        private bool TryGetFont(IPDFDocument doc, PDFContextBase context, out PDFFontDefinition definition)
+        private bool TryGetFont(IDocument doc, PDFContextBase context, out PDFFontDefinition definition)
         {
             Drawing.FontStyle style = this.FontStyle;
             int weight = this.FontWeight;

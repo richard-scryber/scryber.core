@@ -20,8 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Scryber.Native;
-using Scryber.Resources;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Drawing
 {
@@ -75,7 +76,7 @@ namespace Scryber.Drawing
 
         private Stack<StateInfo> _states;
         private StateInfo _identity;
-        private IPDFResourceContainer _container;
+        private IResourceContainer _container;
         private PDFWriter _writer;
 
         private StateInfo CurrentState
@@ -90,7 +91,7 @@ namespace Scryber.Drawing
 
         }
 
-        public PDFExternalGraphicsState(IPDFResourceContainer container, PDFWriter writer)
+        public PDFExternalGraphicsState(IResourceContainer container, PDFWriter writer)
         {
             _states = new Stack<StateInfo>();
             _identity = new StateInfo(1.0, 1.0);
@@ -137,7 +138,7 @@ namespace Scryber.Drawing
                     info.ExtState = state;
                     info.Registered = true;
                 }
-                info.ExtState.States[Resources.PDFExtGSState.ColorStrokeOpacity] = opacity;
+                info.ExtState.States[PDF.Resources.PDFExtGSState.ColorStrokeOpacity] = opacity;
                 info.Stroke = opacity.Value;
             }
         }
@@ -159,7 +160,7 @@ namespace Scryber.Drawing
                     info.ExtState = state;
                     info.Registered = true;
                 }
-                info.ExtState.States[Resources.PDFExtGSState.ColorFillOpactity] = opacity;
+                info.ExtState.States[PDF.Resources.PDFExtGSState.ColorFillOpactity] = opacity;
                 info.Fill = opacity.Value;
             }
         }

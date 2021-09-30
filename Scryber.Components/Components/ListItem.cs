@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
-using Scryber.Layout;
+using Scryber.PDF.Layout;
 using Scryber.Styles;
 
 namespace Scryber.Components
@@ -119,7 +119,7 @@ namespace Scryber.Components
         {
         }
 
-        protected ListItem(PDFObjectType type)
+        protected ListItem(ObjectType type)
             : base(type)
         {
             
@@ -133,7 +133,7 @@ namespace Scryber.Components
         }
 
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
             if (parent is LayoutEngineList2)
                 return new LayoutEngineListItem2(this, parent as LayoutEngineList2);

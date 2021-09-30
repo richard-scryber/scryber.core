@@ -43,7 +43,7 @@ namespace Scryber.Html.Components
 
         
 
-        public HTMLMeta() : base((PDFObjectType)"htmM")
+        public HTMLMeta() : base((ObjectType)"htmM")
         { }
     }
 }

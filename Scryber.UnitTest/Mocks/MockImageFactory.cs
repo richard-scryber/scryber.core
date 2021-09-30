@@ -9,7 +9,7 @@ namespace Scryber.UnitTests.Mocks
             
         public bool ShouldCache { get { return false; } }
 
-        public PDFImageData LoadImageData(IPDFDocument document, IPDFComponent owner, string path)
+        public PDFImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
             
             try

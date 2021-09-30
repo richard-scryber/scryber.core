@@ -31,7 +31,7 @@ namespace Scryber.Styles
     /// </summary>
     [PDFParsableComponent("Style")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class StyleDefn : Style, IPDFNamingContainer
+    public class StyleDefn : Style, INamingContainer
     {
         /// <summary>
         /// If true then the match has been built from the applied-xxx attributes.
@@ -126,13 +126,13 @@ namespace Scryber.Styles
 
         #region public PDFStyleMatcher Match {get; set;}
 
-        private PDFStyleMatcher _match;
+        private StyleMatcher _match;
 
         /// <summary>
         /// Gets or sets the selector to match this style on. Supports parsing or implicit conversion from a css style selector
         /// </summary>
         [PDFAttribute("match")]
-        public PDFStyleMatcher Match
+        public StyleMatcher Match
         {
             get { return _match; }
             set {
@@ -175,7 +175,7 @@ namespace Scryber.Styles
         }
         #region protected PDFStyleDefn(PDFObjectType type)
 
-        protected StyleDefn(PDFObjectType type)
+        protected StyleDefn(ObjectType type)
             : base(type)
         {
         }
@@ -195,7 +195,7 @@ namespace Scryber.Styles
         public bool IsCatchAllStyle()
         {
             var match = this.AssertMatcher();
-            return (match is PDFStyleCatchAllMatcher);
+            return (match is StyleCatchAllMatcher);
             
         }
 
@@ -262,7 +262,7 @@ namespace Scryber.Styles
         /// <returns></returns>
         /// <remarks>There is one exception to the rule. If this is a catch all style (no applied-xxx) then 
         /// it is applied to the top level document only</remarks>
-        public virtual bool IsMatchedTo(IPDFComponent component, ComponentState state, out int priority)
+        public virtual bool IsMatchedTo(IComponent component, ComponentState state, out int priority)
         {
             
             if (null == component)
@@ -286,7 +286,7 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="forComponent"></param>
         /// <param name="state"></param>
-        public override void MergeInto(Style style, IPDFComponent forComponent, ComponentState state)
+        public override void MergeInto(Style style, IComponent forComponent, ComponentState state)
         {
             int priority;
 
@@ -318,22 +318,22 @@ namespace Scryber.Styles
 
         #region protected virtual PDFStyleMatcher AssertMatcher()
 
-        protected virtual PDFStyleMatcher AssertMatcher()
+        protected virtual StyleMatcher AssertMatcher()
         {
             if(null == this._match)
             {
                 this._fromApplied = true;
                 if (string.IsNullOrEmpty(this.AppliedID) && string.IsNullOrEmpty(this.AppliedClass)
                     && (null == this.AppliedType))
-                    return new PDFStyleCatchAllMatcher();
+                    return new StyleCatchAllMatcher();
 
-                var stack = new PDFStyleSelector() { AppliedClass = string.IsNullOrEmpty(this.AppliedClass) ? null : new PDFStyleClassSelector(this.AppliedClass), 
+                var stack = new StyleSelector() { AppliedClass = string.IsNullOrEmpty(this.AppliedClass) ? null : new StyleClassSelector(this.AppliedClass), 
                                                   AppliedID = this.AppliedID, 
                                                   AppliedType = this.AppliedType, 
                                                   AppliedState = this.AppliedState, 
                                                   Placement = StylePlacement.Any };
 
-                this._match = new PDFStyleMatcher(stack);
+                this._match = new StyleMatcher(stack);
             }
             return this._match;
         }

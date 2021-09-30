@@ -13,7 +13,7 @@ namespace Scryber.Styles
         [PDFAttribute("source")]
         public string Source { get; set; }
 
-        public StylesCssDocument() : base((PDFObjectType)"Scss")
+        public StylesCssDocument() : base((ObjectType)"Scss")
         {
 
         }

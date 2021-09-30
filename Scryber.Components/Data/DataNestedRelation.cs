@@ -38,7 +38,7 @@ namespace Scryber.Data
         {
         }
 
-        protected DataNestedRelation(PDFObjectType type)
+        protected DataNestedRelation(ObjectType type)
             : base(type)
         {
         }

@@ -51,7 +51,7 @@ namespace Scryber.Components
         }
 
 
-        protected Triangle(PDFObjectType type)
+        protected Triangle(ObjectType type)
             : base(type)
         {
             this.Style.SetValue(StyleKeys.ShapeVertexCountKey, 3);

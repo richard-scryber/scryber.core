@@ -111,7 +111,7 @@ namespace Scryber.Data
         /// Protected constructor inheritors can use to provide their own object type
         /// </summary>
         /// <param name="type"></param>
-        protected ObjectProviderCommand(PDFObjectType type)
+        protected ObjectProviderCommand(ObjectType type)
             : base(type)
         {
         }

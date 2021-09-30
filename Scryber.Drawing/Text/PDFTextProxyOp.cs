@@ -50,7 +50,7 @@ namespace Scryber.Text
         /// <summary>
         /// Gets the component that this replacement operation relies on
         /// </summary>
-        public IPDFComponent Owner
+        public IComponent Owner
         {
             get;
             private set;
@@ -71,7 +71,7 @@ namespace Scryber.Text
         /// <param name="owner"></param>
         /// <param name="key"></param>
         /// <param name="text"></param>
-        public PDFTextProxyOp(IPDFComponent owner, string key, string text)
+        public PDFTextProxyOp(IComponent owner, string key, string text)
             : base()
         {
             this.Owner = owner;

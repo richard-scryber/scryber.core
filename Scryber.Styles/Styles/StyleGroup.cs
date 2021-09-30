@@ -114,7 +114,7 @@ namespace Scryber.Styles
         /// Protected constructor that allows pass through of the object type
         /// </summary>
         /// <param name="type"></param>
-        protected StyleGroup(PDFObjectType type)
+        protected StyleGroup(ObjectType type)
             : base(type)
         {
         }
@@ -182,7 +182,7 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="Component"></param>
         /// <param name="state"></param>
-        public override void MergeInto(Style style, IPDFComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component, ComponentState state)
         {
             foreach (StyleBase def in this.InnerItems)
             {
@@ -220,8 +220,8 @@ namespace Scryber.Styles
             {
                 foreach (StyleBase sb in this.InnerItems)
                 {
-                    if (sb is IPDFBindableComponent)
-                        ((IPDFBindableComponent)sb).DataBind(context);
+                    if (sb is IBindableComponent)
+                        ((IBindableComponent)sb).DataBind(context);
                 }
             }
         }

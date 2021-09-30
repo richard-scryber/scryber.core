@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -33,7 +34,7 @@ namespace Scryber.Components
     public abstract class LayoutTemplateComponent : VisualComponent, IPDFViewPortComponent
     {
 
-        public LayoutTemplateComponent(PDFObjectType type) : base(type)
+        public LayoutTemplateComponent(ObjectType type) : base(type)
         {
         }
 
@@ -45,14 +46,14 @@ namespace Scryber.Components
             set { _generationIndex = value; }
         }
 
-        public void InstantiateTemplate(IPDFTemplate template, PDFLayoutContext context, PDFRect available, int pageindex)
+        public void InstantiateTemplate(ITemplate template, PDFLayoutContext context, PDFRect available, int pageindex)
         {
             if (null == template)
                 throw new ArgumentNullException("template");
             if (null == context)
                 throw new ArgumentNullException("context");
 
-            List<IPDFComponent> generated = new List<IPDFComponent>(template.Instantiate(GeneratedCount, this));
+            List<IComponent> generated = new List<IComponent>(template.Instantiate(GeneratedCount, this));
 
             if (generated.Count == 0)
                 return;
@@ -80,23 +81,23 @@ namespace Scryber.Components
 
 
             IPDFContainerComponent container = this;
-            IPDFComponentList components = container.Content as IPDFComponentList;
+            IComponentList components = container.Content as IComponentList;
 
             for (int index = 0; index < generated.Count; index++)
             {
-                IPDFComponent comp = generated[index];
+                IComponent comp = generated[index];
                 components.Insert(index, comp);
                 comp.Init(init);
             }
 
-            foreach (IPDFComponent comp in generated)
+            foreach (IComponent comp in generated)
             {
                 comp.Load(load);
             }
-            foreach (IPDFComponent comp in generated)
+            foreach (IComponent comp in generated)
             {
-                if (comp is IPDFBindableComponent)
-                    (comp as IPDFBindableComponent).DataBind(data);
+                if (comp is IBindableComponent)
+                    (comp as IBindableComponent).DataBind(data);
             }
             this.GeneratedCount++;
         }
@@ -107,7 +108,7 @@ namespace Scryber.Components
 
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEnginePanel(this, parent);
         }
 
         #endregion

@@ -155,7 +155,7 @@ namespace Scryber.Data
 
         #region public PDFDataTableProviderCommandBase(PDFObjectType type) : base(type)
 
-        public DataTableProviderCommandBase(PDFObjectType type) : base(type)
+        public DataTableProviderCommandBase(ObjectType type) : base(type)
         {
 
         }

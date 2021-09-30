@@ -36,7 +36,7 @@ namespace Scryber.Components
         {
         }
 
-        public Ellipse(PDFObjectType type)
+        public Ellipse(ObjectType type)
             : base(type)
         {
             this.DefaultRotation = 0;

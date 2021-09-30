@@ -8,9 +8,9 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSColorStyleParser : CSSStyleAttributeParser<PDFColor>
     {
-        private PDFStyleKey<double> _opacity;
+        private StyleKey<double> _opacity;
 
-        public PDFStyleKey<double> OpacityStyleKey
+        public StyleKey<double> OpacityStyleKey
         {
             get { return _opacity; }
             protected set { _opacity = value; }
@@ -18,7 +18,7 @@ namespace Scryber.Styles.Parsing.Typed
 
 
 
-        public CSSColorStyleParser(string styleItemKey, PDFStyleKey<PDFColor> pdfAttr, PDFStyleKey<double> opacity)
+        public CSSColorStyleParser(string styleItemKey, StyleKey<PDFColor> pdfAttr, StyleKey<double> opacity)
             : base(styleItemKey, pdfAttr)
         {
             _opacity = opacity;

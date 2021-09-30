@@ -24,7 +24,7 @@ using Scryber.Components;
 
 namespace Scryber.Data
 {
-    public class ParsableTemplateGenerator : IPDFTemplate, IPDFTemplateGenerator, IPDFDataTemplateGenerator
+    public class ParsableTemplateGenerator : ITemplate, IPDFTemplateGenerator, IPDFDataTemplateGenerator
     {
         
         private string _toparse;
@@ -231,7 +231,7 @@ namespace Scryber.Data
         // IPDFTemplate Instantiate method.
         //
 
-        public IEnumerable<IPDFComponent> Instantiate(int index, IPDFComponent owner)
+        public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
         {
 
             if (!_initialised)
@@ -243,9 +243,9 @@ namespace Scryber.Data
             using (System.IO.StringReader sr = new System.IO.StringReader(this._toparse))
             {
                 //Get the closest remote component
-                IPDFRemoteComponent remote = this.GetRemoteComponent(owner);
-                IPDFDocument doc = owner.Document;
-                IPDFComponent comp;
+                IRemoteComponent remote = this.GetRemoteComponent(owner);
+                IDocument doc = owner.Document;
+                IComponent comp;
                 if (doc is IPDFTemplateParser)
                 {
                     comp = ((IPDFTemplateParser)doc).ParseTemplate(remote,sr);
@@ -290,7 +290,7 @@ namespace Scryber.Data
                     visitor.PushToComponents(comp as Component);
                 }
 
-                List<IPDFComponent> all = new List<IPDFComponent>(1);
+                List<IComponent> all = new List<IComponent>(1);
 
                 all.Add(comp);
                 return all;
@@ -298,22 +298,22 @@ namespace Scryber.Data
             
         }
 
-        protected IPDFRemoteComponent GetRemoteComponent(IPDFComponent owner)
+        protected IRemoteComponent GetRemoteComponent(IComponent owner)
         {
-            IPDFComponent comp = owner;
+            IComponent comp = owner;
             while (null != comp)
             {
-                if (comp is IPDFRemoteComponent && !String.IsNullOrEmpty(((IPDFRemoteComponent)comp).LoadedSource))
+                if (comp is IRemoteComponent && !String.IsNullOrEmpty(((IRemoteComponent)comp).LoadedSource))
                 {
-                    return ((IPDFRemoteComponent)comp);
+                    return ((IRemoteComponent)comp);
                 }
                 else
                     comp = comp.Parent;
             }
             
-            IPDFDocument doc = owner.Document;
-            if (doc is IPDFRemoteComponent)
-                return ((IPDFRemoteComponent)doc);
+            IDocument doc = owner.Document;
+            if (doc is IRemoteComponent)
+                return ((IRemoteComponent)doc);
             else
                 return null;
         }

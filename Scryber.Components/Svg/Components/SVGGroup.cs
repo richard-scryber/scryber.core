@@ -1,6 +1,6 @@
 ﻿using System;
 using Scryber.Components;
-using Scryber.Layout;
+using Scryber.PDF.Layout;
 using Scryber.Styles;
 
 namespace Scryber.Svg.Components
@@ -38,7 +38,7 @@ namespace Scryber.Svg.Components
             return style;
         }
 
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
+        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style fullstyle)
         {
             return new LayoutEngineCanvas(this, parent);
         }

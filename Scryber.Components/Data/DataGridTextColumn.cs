@@ -21,10 +21,10 @@ namespace Scryber.Data
 
 
         public DataGridTextColumn()
-            : this((PDFObjectType)"DgTc")
+            : this((ObjectType)"DgTc")
         { }
 
-        protected DataGridTextColumn(PDFObjectType type)
+        protected DataGridTextColumn(ObjectType type)
             : base(type)
         {
         }
