@@ -1453,7 +1453,7 @@ namespace Scryber.Components
 
         ISharedResource IDocument.EnsureResource(string type, string key, object resource)
         {
-            return this.EnsureResource(type, Name, resource);
+            return this.EnsureResource(type, key, resource);
         }
 
         public PDFResource EnsureResource(string type, string fullname, object resource)
