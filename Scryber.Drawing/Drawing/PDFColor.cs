@@ -25,141 +25,298 @@ using System.CodeDom;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Globalization;
+
 
 namespace Scryber.Drawing
 {
     /// <summary>
-    /// Defines a colour in one of the known PDF colourspaces - G, RGB, LAB, HSB.
+    /// Defines an immutable colour in one of the known PDF colourspaces - G, RGB, CMYK.
     /// </summary>
     /// <remarks>Note the LAB and HSB are not currently supported</remarks>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class PDFColor : PDFObject, IEquatable<PDFColor>
+    public struct PDFColor : ITypedObject, IEquatable<PDFColor>
     {
+        internal const float UnassignedFloat = -1;
+        internal const int UnassignedByte = -1;
+
         private ColorSpace _cs;
 
+        private byte _one;
+
+        private byte _two;
+
+        private byte _three;
+
+        private byte _four;
+
+
         /// <summary>
-        /// Gets or sets the current colorspace.
+        /// Gets or sets the colorspace for this color.
         /// </summary>
         public ColorSpace ColorSpace
         {
             get { return _cs; }
         }
 
-        private System.Drawing.Color _c;
+
+        //RGB properties
+
         /// <summary>
-        /// Gets the internal color of the item
+        /// Gets the red component for an RGB color (in the range 0.0 to 1.0) or -1.0 if not an RGB color.
         /// </summary>
-        public System.Drawing.Color Color
+        public float Red
         {
-            get { return _c; }
+            get { return this._cs == ColorSpace.RGB ? GetPDFColorComponent(_one) : UnassignedFloat; }
         }
 
-        public PDFReal Red
+        /// <summary>
+        /// Gets the green component for an RGB color (in the range 0.0 to 1.0) or -1.0 if not an RGB color.
+        /// </summary>
+        public float Green
         {
-            get { return new PDFReal(GetPDFColorComponent(Color.R)); }
+            get { return this._cs == ColorSpace.RGB ? GetPDFColorComponent(_two) : UnassignedFloat; ; }
         }
 
-        public PDFReal Green
+        /// <summary>
+        /// Gets the blue component for an RGB color (in the range 0.0 to 1.0) or -1.0 if not an RGB color.
+        /// </summary>
+        public float Blue
         {
-            get { return new PDFReal(GetPDFColorComponent(Color.G)); }
+            get { return this._cs == ColorSpace.RGB ? GetPDFColorComponent(_three) : UnassignedFloat; ; }
         }
 
-        public PDFReal Blue
-        {
-            get { return new PDFReal(GetPDFColorComponent(Color.B)); }
-        }
-
-        public PDFReal Gray
+        /// <summary>
+        /// Gets the red component for an RGB color (in the range 0 to 255) or -1 if not an RGB color.
+        /// </summary>
+        public int Red255
         {
             get
             {
-                PDFReal val = this.Red + this.Green + this.Blue;
-                val = new PDFReal(val.Value / 3.0);
-                return val;
+                return this._cs == ColorSpace.RGB ? _one : UnassignedByte;
             }
         }
 
-        #region Constructors
-
         /// <summary>
-        /// 
+        /// Gets the green component for an RGB color (in the range 0 to 255) or -1 if not an RGB color.
         /// </summary>
-        /// <param name="cs"></param>
-        /// <param name="one"></param>
-        /// <param name="two"></param>
-        /// <param name="three"></param>
-        public PDFColor(ColorSpace cs, double one, double two, double three)
-            : this(cs, System.Drawing.Color.FromArgb(
-                                            GetSystemColorComponent(one),
-                                            GetSystemColorComponent(two),
-                                            GetSystemColorComponent(three)))
+        public int Green255
         {
-            if (cs != ColorSpace.RGB && cs != ColorSpace.RGB)
-                throw new ArgumentOutOfRangeException(String.Format(Errors.ColorValueIsNotCurrentlySupported, this.ColorSpace.ToString()), "cs");
-        }
-
-
-        public PDFColor(double gray)
-            : this(ColorSpace.G, System.Drawing.Color.FromArgb(
-                                            GetSystemColorComponent(gray),
-                                            GetSystemColorComponent(gray),
-                                            GetSystemColorComponent(gray)))
-        {
-
+            get
+            {
+                return this._cs == ColorSpace.RGB ? _two : UnassignedByte;
+            }
         }
 
         /// <summary>
-        /// Creates a new instance of the PDF Color with an RGB Color Space and Transparent colors
+        /// Gets the blue component for an RGB color (in the range 0 to 255) or -1 if not an RGB color.
         /// </summary>
-        public PDFColor(double red, double green, double blue)
-            : this(ColorSpace.RGB, 
-                    System.Drawing.Color.FromArgb(
-                            GetSystemColorComponent(red), 
-                            GetSystemColorComponent(green), 
-                            GetSystemColorComponent(blue)))
+        public int Blue255
         {
+            get
+            {
+                return this._cs == ColorSpace.RGB ? _three : UnassignedByte;
+            }
+        }
+
+        //Gray properties
+
+        /// <summary>
+        /// Gets the Gray component for an Grayscale color (in the range 0.0 to 1.0) or -1.0 if not an Grayscale color.
+        /// </summary>
+        public float Gray
+        {
+            get { return this._cs == ColorSpace.G ? GetPDFColorComponent(_one) : UnassignedFloat; ; }
         }
 
         /// <summary>
-        /// Creates a new instance of the PDF Color with the specified Color Space and Color
+        /// Gets the Gray component for an Grayscale color (in the range 0 to 255) or -1 if not an Grayscale color.
         /// </summary>
-        /// <param name="cs">The color space to use</param>
-        /// <param name="c">The specific color</param>
-        public PDFColor(ColorSpace cs, System.Drawing.Color c)
-            : this(cs,c,PDFObjectTypes.Color)
+        public int Gray255
+        {
+            get { return this._cs == ColorSpace.G ? _one : UnassignedByte; ; }
+        }
+
+        //CMYK Properties
+
+        /// <summary>
+        /// Gets the Cyan component for a CMYK color (in the range 0.0 to 1.0) or -1.0 if not a CMYK color.
+        /// </summary>
+        public float Cyan
+        {
+            get { return this._cs == ColorSpace.CMYK ? GetPDFColorComponent(_one) : UnassignedFloat; }
+        }
+
+        /// <summary>
+        /// Gets the Magenta component for a CMYK color (in the range 0.0 to 1.0) or -1.0 if not a CMYK color.
+        /// </summary>
+        public float Magenta
+        {
+            get { return this._cs == ColorSpace.CMYK ? GetPDFColorComponent(_two) : UnassignedFloat; }
+        }
+
+        /// <summary>
+        /// Gets the Yellow component for a CMYK color (in the range 0.0 to 1.0) or -1.0 if not a CMYK color.
+        /// </summary>
+        public float Yellow
+        {
+            get { return this._cs == ColorSpace.CMYK ? GetPDFColorComponent(_three) : UnassignedFloat; }
+        }
+
+        /// <summary>
+        /// Gets the Black component for a CMYK color (in the range 0.0 to 1.0) or -1.0 if not a CMYK color.
+        /// </summary>
+        public float Black
+        {
+            get { return this._cs == ColorSpace.CMYK ? GetPDFColorComponent(_four) : UnassignedFloat; }
+        }
+
+        /// <summary>
+        /// Gets the Cyan component for a CMYK color (in the range 0 to 255) or -1 if not a CMYK color.
+        /// </summary>
+        public int Cyan255
+        {
+            get { return this._cs == ColorSpace.CMYK ? _one : UnassignedByte; }
+        }
+
+        /// <summary>
+        /// Gets the Magenta component for a CMYK color (in the range 0 to 255) or -1 if not a CMYK color.
+        /// </summary>
+        public int Magenta255
+        {
+            get { return this._cs == ColorSpace.CMYK ? _two : UnassignedByte; }
+        }
+
+        /// <summary>
+        /// Gets the Yellow component for a CMYK color (in the range 0 to 255) or -1 if not a CMYK color.
+        /// </summary>
+        public int Yellow255
+        {
+            get { return this._cs == ColorSpace.CMYK ? _three : UnassignedByte; }
+        }
+
+        /// <summary>
+        /// Gets the Black component for a CMYK color (in the range 0 to 255) or -1 if not a CMYK color.
+        /// </summary>
+        public int Black255
+        {
+            get { return this._cs == ColorSpace.CMYK ? _four : UnassignedByte; }
+        }
+
+        // Object type
+
+        public ObjectType Type
+        {
+            get { return ObjectTypes.Color; }
+        }
+
+        public bool IsTransparent
+        {
+            get { return this._cs == ColorSpace.None; }
+        }
+
+        public bool IsEmpty
+        {
+            get { return this.IsTransparent; }
+        }
+
+        private PDFColor(ColorSpace cs, byte one, byte two, byte three, byte four)
         {
             this._cs = cs;
-            this._c = c;
+            if (this._cs == ColorSpace.None)
+            {
+                this._one = 0;
+                this._two = 0;
+                this._three = 0;
+                this._four = 0;
+            }
+            else if (this._cs == ColorSpace.G)
+            {
+                this._one = one;
+                this._two = 0;
+                this._three = 0;
+                this._four = 0;
+            }
+            else if (cs == ColorSpace.RGB)
+            {
+                this._one = one;
+                this._two = two;
+                this._three = three;
+                this._four = 0;
+            }
+            else if (cs == ColorSpace.CMYK)
+            {
+                this._one = one;
+                this._two = two;
+                this._three = three;
+                this._four = four;
+            }
+            else
+                throw new ArgumentOutOfRangeException(String.Format(Errors.ColorValueIsNotCurrentlySupported, cs.ToString()), "cs");
         }
+        
 
-        protected PDFColor(ColorSpace cs, System.Drawing.Color c, ObjectType type)
-            : base(type)
+        /// <summary>
+        /// Creates a new Gray color
+        /// </summary>
+        /// <param name="gray"></param>
+        public PDFColor(int gray)
+            : this(ColorSpace.G, ValidateColorRange(gray, "gray"), 0 ,0 ,0)
         {
-            if (cs == ColorSpace.LAB || cs == ColorSpace.Custom)
-                throw new ArgumentOutOfRangeException(String.Format(Errors.ColorValueIsNotCurrentlySupported, this.ColorSpace.ToString()), "cs");
-            this._cs = cs;
-            this._c = c;
         }
 
-        #endregion
+        /// <summary>
+        /// Creates a new instance of the PDF Color with an RGB Color Space and specified colors
+        /// </summary>
+        public PDFColor(int red, int green, int blue)
+            : this(ColorSpace.RGB,
+                  ValidateColorRange(red, "red"),
+                  ValidateColorRange(green, "green"),
+                  ValidateColorRange(blue, "blue"),
+                  0)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of the PDF Color with a CMYK Color Space and specified colors
+        /// </summary>
+        public PDFColor(int cyan, int magenta, int yellow, int black)
+            : this(ColorSpace.CMYK,
+                  ValidateColorRange(cyan, "cyan"),
+                  ValidateColorRange(magenta, "magenta"),
+                  ValidateColorRange(yellow, "yellow"),
+                  ValidateColorRange(black, "black"))
+        {
+        }
+
+        private static byte ValidateColorRange(int value, string errorParam = "value")
+        {
+            if (value < 0 || value > 255)
+                throw new ArgumentOutOfRangeException(errorParam, "The value " + value + "' for " + errorParam + " must be in the range of 0 to 255");
+            return Convert.ToByte(value);
+        }
+
+        private static float ValidateColorRange(float value, string color)
+        {
+            if (value < 0.0 || value > 1.0)
+                throw new ArgumentOutOfRangeException("The value '" + value.ToString() + "' for '" + color + "' was not in the range 0 to 1");
+
+            return value;
+        }
+
+        private static bool IsUnassigned(float value)
+        {
+            return value == UnassignedFloat;
+        }
 
         public bool Equals(PDFColor other)
         {
-            if (null == other)
-                return false;
-            else if (this.ColorSpace != other.ColorSpace)
-                return false;
-            else if (this.Color.A != other.Color.A)
-                return false;
-            else if (this.Color.R != other.Color.R)
-                return false;
-            else if (this.Color.G != other.Color.G)
-                return false;
-            else if (this.Color.B != other.Color.B)
-                return false;
-            else
-                return true;
+            return other._cs == this._cs
+                && other._one == this._one
+                && other._two == this._two
+                && other._three == this._three
+                && other._four == this._four;
         }
 
         public override bool Equals(object obj)
@@ -172,36 +329,130 @@ namespace Scryber.Drawing
 
         public override int GetHashCode()
         {
-            return (int)this._cs ^ this._c.GetHashCode();
+            int val = (_one << 24);
+            val += (_two << 16);
+            val += (_three << 8);
+            val += _four;
+            val = val * (int)_cs;
+            return val;
         }
+
+
+        public PDFColor ToGray()
+        {
+            switch (this._cs)
+            {
+                case ColorSpace.None:
+                    return PDFColors.Transparent;
+
+                case ColorSpace.G:
+                    return this;
+
+                case ColorSpace.RGB:
+                    float all = (this._one * 0.3F) + (this._two * 0.59F) + (this._three * 0.11F);
+                    int val = all < 0 ? 0 : (all > 255 ? 255 : Convert.ToInt32(all));
+                    return new PDFColor(val);
+
+                case ColorSpace.CMYK:
+                    var rgb = this.ToRGB();
+                    return rgb.ToGray();
+
+                default:
+                    throw new NotSupportedException("Cannot convert colorspace " + this._cs + " to gray");
+            } 
+        }
+
+        public PDFColor ToCMYK()
+        {
+            switch (this._cs)
+            {
+                case ColorSpace.None:
+                    return PDFColors.Transparent;
+
+                case ColorSpace.G:
+                    return new PDFColor(ColorSpace.RGB, this._one, this._one, this._one, 0).ToCMYK();
+
+                case ColorSpace.RGB:
+
+                    var k = FitsByte(255 - Math.Max(Math.Max(_one, _two), _three)); //1 - max(R, G, B)
+                    var c = FitsByte((255.0 - _one - k) / (255.0 - k)); //(1-R-K) / (1-K)
+                    var m = FitsByte((255.0 - _two - k) / (255.0 - k)); //(1-G-K) / (1-K)
+                    var y = FitsByte((255.0 - _three - k) / (255.0 - k)); //(1-B-K) / (1-K)
+
+                    return new PDFColor(c, m, y, k);
+
+                case ColorSpace.CMYK:
+
+                    return this;
+                default:
+                    throw new NotSupportedException("Cannot convert colorspace " + this._cs + " to CMYK");
+            }
+        }
+
+        public PDFColor ToRGB()
+        {
+            if (this._cs == ColorSpace.G)
+            {
+                return new PDFColor(this._one, this._one, this._one);
+            }
+            else if (this._cs == ColorSpace.RGB)
+            {
+                return this;
+            }
+            else if (this._cs == ColorSpace.CMYK)
+            {
+                int r = FitsByte((255.0 - _one) * (255.0 - _four)); // 1-C * 1-K
+                int g = FitsByte((255.0 - _two) * (255.0 - _four)); // 1-M * 1-K
+                int b = FitsByte((255.0 - _three) * (255.0 - _four)); // 1-Y * 1-K
+
+                return new PDFColor(r, g, b);
+            }
+            else
+                throw new NotSupportedException("Cannot convert colorspace " + this._cs + " to RGB");
+        }
+
+        private int FitsByte(double v)
+        {
+            return Convert.ToInt32(v < 0.0 ? 0.0 : (v > 255.0 ? 255.0 : v));
+        }
+
+        private int FitsByte(int v)
+        {
+            return v < 0 ? 0 : (v > 255 ? 255 : v);
+        }
+
+        
 
         #region public override string ToString()
 
         public override string ToString()
         {
-            System.Text.StringBuilder sb = new StringBuilder(20);
+            System.Text.StringBuilder sb = new StringBuilder(20); //CMYK(3,3,3,3)
             sb.Append(this.ColorSpace.ToString().ToLower());
             sb.Append("(");
             switch (this.ColorSpace)
             {
                 case ColorSpace.G:
-                    sb.Append(this.Gray.Value.ToString());
+                    sb.Append(this._one) ;
                     break;
-                case ColorSpace.HSL:
-                    sb.Append(this.Color.GetHue());
+                case ColorSpace.CMYK:
+                    sb.Append(this._one);
                     sb.Append(",");
-                    sb.Append(this.Color.GetSaturation());
+                    sb.Append(this._two);
                     sb.Append(",");
-                    sb.Append(this.Color.GetBrightness());
+                    sb.Append(this._three);
+                    sb.Append(",");
+                    sb.Append(this._four);
                     break;
                 case ColorSpace.RGB:
-                    sb.Append(this.Color.R);
-                    sb.Append(",");
-                    sb.Append(this.Color.G);
-                    sb.Append(",");
-                    sb.Append(this.Color.B);
-                    break;
+                case ColorSpace.HSL:
                 case ColorSpace.LAB:
+                    sb.Append(this._one);
+                    sb.Append(",");
+                    sb.Append(this._two);
+                    sb.Append(",");
+                    sb.Append(this._three);
+                    break;
                 case ColorSpace.Custom:
                 default:
                     throw new ArgumentOutOfRangeException("this.ColorSpace",String.Format(Errors.ColorValueIsNotCurrentlySupported,this.ColorSpace.ToString()));
@@ -218,6 +469,7 @@ namespace Scryber.Drawing
         public static PDFColor Parse(string value)
         {
             PDFColor color;
+
             if(!TryParse(value,out color))
                 throw new FormatException("The color string '" + (String.IsNullOrEmpty(value) ? "" : value) + "' was in the incorrect format");
             return color;
@@ -231,7 +483,8 @@ namespace Scryber.Drawing
         public static bool TryParse(string value, out PDFColor color)
         {
             ColorSpace cs = ColorSpace.RGB;
-            color = null;
+            color = PDFColor.Transparent;
+
             if (string.IsNullOrEmpty(value))
                 return false;
 
@@ -251,13 +504,13 @@ namespace Scryber.Drawing
                     cs = (ColorSpace)parsedCs;
 
                 string[] vals = value.Split(',');
-                int[] rgbs = new int[3];
-                for (int i = 0; i < 3; i++)
+                byte[] rgbs = new byte[4];
+                for (int i = 0; i < 4; i++)
                 {
                     if (i < vals.Length)
                     {
-                        int parsed;
-                        if (!int.TryParse(vals[i], out parsed) || parsed > 255 || parsed < 0)
+                        byte parsed;
+                        if (!byte.TryParse(vals[i], out parsed))
                             return false;
 
                         rgbs[i] = parsed;
@@ -267,25 +520,29 @@ namespace Scryber.Drawing
                         rgbs[i] = 0;
                     }
                 }
+                switch (cs)
+                {
+                    case ColorSpace.G:
+                        if (vals.Length != 1)
+                            return false;
+                        color = new PDFColor(cs, rgbs[0], 0, 0, 0);
+                        return true;
 
-                if (cs == ColorSpace.G)
-                {
-                    color = new PDFColor(cs, System.Drawing.Color.FromArgb(rgbs[0], rgbs[0], rgbs[0]));
-                    return true;
-                }
-                else if (cs == ColorSpace.RGB)
-                {
-                    color = new PDFColor(cs, System.Drawing.Color.FromArgb(rgbs[0], rgbs[1], rgbs[2]));
-                    return true;
-                }
-                else if (cs == ColorSpace.HSL)
-                {
-                    color = new PDFColor(cs, rgbs[0], rgbs[1], rgbs[2]);
-                    return true;
-                }
-                else
-                    return false;
+                    case ColorSpace.RGB:
+                        if (vals.Length != 3)
+                            return false;
+                        color = new PDFColor(cs, rgbs[0], rgbs[1], rgbs[2], 0);
+                        return true;
 
+                    case ColorSpace.CMYK:
+                        if (vals.Length != 4)
+                            return false;
+
+                        color = new PDFColor(cs, rgbs[0], rgbs[1], rgbs[2], rgbs[3]);
+                        return true;
+                    default:
+                        return false;
+                }
             }
             else if (value.StartsWith("#"))
             {
@@ -295,8 +552,8 @@ namespace Scryber.Drawing
                 string r;
                 string g;
                 string b;
-                string a = "FF";
-                if (value.Length == 2)
+
+                if (value.Length == 2) //#G
                 {
                     cs = ColorSpace.G;
                     r = value.Substring(1, 1);
@@ -304,14 +561,14 @@ namespace Scryber.Drawing
                     g = r;
                     b = r;
                 }
-                else if (value.Length == 3)
+                else if (value.Length == 3) //#GG
                 {
                     cs = ColorSpace.G;
                     r = value.Substring(1, 2);
                     g = r;
                     b = r;
                 }
-                else if (value.Length == 4)
+                else if (value.Length == 4) //#RGB
                 {
                     r = value.Substring(1, 1);
                     r = r + r;
@@ -320,7 +577,7 @@ namespace Scryber.Drawing
                     b = value.Substring(3, 1);
                     b = b + b;
                 }
-                else if (value.Length == 7)
+                else if (value.Length == 7) //#RRGGBB
                 {
                     r = value.Substring(1, 2);
                     g = value.Substring(3, 2);
@@ -329,35 +586,43 @@ namespace Scryber.Drawing
                 else
                     return false;
 
-                byte ab, rb, gb, bb;
+                byte rb, gb, bb;
 
-                if (!byte.TryParse(a, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out ab))
-                    return false;
-                if (!byte.TryParse(r, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out rb))
-                    return false;
-                if (!byte.TryParse(g, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out gb))
-                    return false;
-                if (!byte.TryParse(b, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out bb))
-                    return false;
+                if (cs == ColorSpace.G)
+                {
+                    if (!byte.TryParse(r, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out rb))
+                        return false;
 
-                color = new PDFColor(cs, System.Drawing.Color.FromArgb((int)ab, System.Drawing.Color.FromArgb((int)rb, (int)gb, (int)bb)));
+                    color = new PDFColor(cs, rb, 0, 0, 0);
+                }
+                else if (cs == ColorSpace.RGB)
+                {
+                    if (!byte.TryParse(r, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out rb))
+                        return false;
+                    if (!byte.TryParse(g, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out gb))
+                        return false;
+                    if (!byte.TryParse(b, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out bb))
+                        return false;
+
+                    color = new PDFColor(cs, rb, gb, bb, 0);
+                }
                 return true;
 
             }
             else if (value.Equals("inherit", StringComparison.CurrentCultureIgnoreCase))
                 return false;
+
             else if (value.Equals("none", StringComparison.CurrentCultureIgnoreCase))
             {
                 color = PDFColors.Transparent;
                 return true;
             }
-            else
+            else if (PDFColors.TryGetColorFromName(value, out color))
             {
-                if (PDFColors.TryGetColorFromName(value, out color))
-                    return true;
-                else
-                    return false;
+                return true;
             }
+            else
+                return false;
         }
 
         #endregion
@@ -369,7 +634,7 @@ namespace Scryber.Drawing
         /// <returns>A new instance of the PDF Color</returns>
         public static bool TryParseRGBA(string value, out PDFColor color, out double? opacity)
         {
-            color = null;
+            color = PDFColors.Transparent;
             opacity = null;
 
             if (string.IsNullOrEmpty(value))
@@ -387,16 +652,16 @@ namespace Scryber.Drawing
                 
 
                 string[] vals = value.Split(',');
-                int[] rgbs = new int[3];
-                int parsed;
+                byte[] rgbs = new byte[3];
+                byte parsed;
                 for (int i = 0; i < 3; i++)
                 {
                     if (i < vals.Length)
                     {
-                        if (!int.TryParse(vals[i], out parsed) || parsed > 255 || parsed < 0)
+                        if (!byte.TryParse(vals[i], out parsed))
                             return false;
 
-                        rgbs[i] = parsed;
+                        rgbs[i] = (byte)parsed;
                     }
                     else
                     {
@@ -413,59 +678,46 @@ namespace Scryber.Drawing
                     else
                         return false;
                 }
-                color = new PDFColor(ColorSpace.RGB, System.Drawing.Color.FromArgb(rgbs[0], rgbs[1], rgbs[2]));
+                color = new PDFColor(ColorSpace.RGB,
+                        rgbs[0],
+                        rgbs[1],
+                        rgbs[2],
+                        0);
                 return true;
 
             }
             else 
             {
+                opacity = 1.0;
                 return false;
             }
         }
 
-        private static float GetPDFColorComponent(byte p)
+        private const float ByteToFloatFactor = (1.0F / 255.0F);
+
+        public static float GetPDFColorComponent(byte b)
         {
-            return GetPDFColorComponent(Convert.ToSingle(p));
+            return ByteToFloatFactor * Convert.ToSingle(b);
         }
 
-        private static float GetPDFColorComponent(float val)
-        {
-            return (1.0F / 255.0F) * val;
-        }
 
-        private static int GetSystemColorComponent(double val)
-        {
-            if (val > 1.0 || val < 0.0)
-                throw new ArgumentOutOfRangeException("val", String.Format(Errors.ColorComponentMustBeBetweenZeroAndOne, val));
-            val = 255.0 * val;
-            return (int)val;
-        }
-
-        public static implicit operator PDFColor(System.Drawing.Color rgbcolor)
-        {
-            return new PDFColor(ColorSpace.RGB, rgbcolor);
-        }
-
-        public static implicit operator PDFColor(string color)
+        public static explicit operator PDFColor(string color)
         {
             return PDFColor.Parse(color);
         }
 
-
+        
         public static PDFColor Transparent
         {
             get { return PDFColors.Transparent; }
         }
 
-        public bool IsTransparent
-        {
-            get { return this.Color == System.Drawing.Color.Transparent; }
-        }
 
-        public bool IsEmpty
+        public static PDFColor Empty
         {
-            get { return this.Color.IsEmpty || this.IsTransparent; }
+            get { return PDFColors.Transparent; }
         }
+        
 
     }
 }

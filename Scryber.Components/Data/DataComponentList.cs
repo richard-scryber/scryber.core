@@ -10,7 +10,7 @@ namespace Scryber.Data
     public class DataComponentList : ComponentWrappingList<DataComponentBase>
     {
 
-        public DataComponentList(Document owner) : this(new ComponentList(owner, PDFObjectTypes.XmlData))
+        public DataComponentList(Document owner) : this(new ComponentList(owner, ObjectTypes.XmlData))
         {
         }
 

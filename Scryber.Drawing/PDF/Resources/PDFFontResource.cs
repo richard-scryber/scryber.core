@@ -166,7 +166,7 @@ namespace Scryber.PDF.Resources
         #region private PDFFontResource(PDFFontDefinition defn, string resourceName)
 
         private PDFFontResource(PDFFontDefinition defn, PDFFontWidths widths, string resourceName)
-            : base(PDFObjectTypes.FontResource)
+            : base(ObjectTypes.FontResource)
         {
             if (null == defn)
                 throw new ArgumentNullException("defn");

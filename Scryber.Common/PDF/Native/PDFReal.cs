@@ -25,7 +25,7 @@ namespace Scryber.PDF.Native
     [PDFParsableValue()]
     public struct PDFReal : IFileObject, IEquatable<PDFReal>
     {
-        public ObjectType Type { get { return PDFObjectTypes.Real; } }
+        public ObjectType Type { get { return ObjectTypes.Real; } }
 
         private double _value;
         /// <summary>
@@ -97,9 +97,9 @@ namespace Scryber.PDF.Native
         {
             IFileObject obj = PDFParserHelper.ParseNumericValue(value, offset, out end);
 
-            if (obj.Type == PDFObjectTypes.Real)
+            if (obj.Type == ObjectTypes.Real)
                 return (PDFReal)obj;
-            else if (obj.Type == PDFObjectTypes.Number)
+            else if (obj.Type == ObjectTypes.Number)
                 return new PDFReal(((PDFNumber)obj).Value);
             else
                 throw new PDFNativeParserException(CommonErrors.ParsedValueWasNotANumericValue);

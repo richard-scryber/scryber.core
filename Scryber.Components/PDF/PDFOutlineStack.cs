@@ -220,11 +220,11 @@ namespace Scryber.PDF
             writer.WriteDictionaryObjectRefEntry("Parent", parent);
             writer.WriteDictionaryStringEntry("Title", outline.Title);
             writer.WriteDictionaryStringEntry("Dest", outline.DestinationName);
-            if (null != c)
+            if (!c.IsEmpty)
             {
                 writer.BeginDictionaryEntry("C");
                 writer.BeginArray();
-                writer.WriteRealS(c.Red.Value, c.Green.Value, c.Blue.Value);
+                writer.WriteRealS(c.Red, c.Green, c.Blue);
                 writer.EndArray();
                 writer.EndDictionaryEntry();
             }
@@ -335,11 +335,9 @@ namespace Scryber.PDF
         {
             var c = this.Outline.Color;
 
-            if (c == null || c == Scryber.Drawing.PDFColors.Transparent)
+            if (c.IsTransparent)
             {
-                c = (null == this.Style) ? null : this.Style.Color;
-                if (c == Scryber.Drawing.PDFColors.Transparent)
-                    c = null;
+                c = (null == this.Style) ? PDFColor.Transparent : this.Style.Color;
             }
 
             return c;

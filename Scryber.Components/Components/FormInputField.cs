@@ -55,7 +55,7 @@ namespace Scryber.Components
 
         public PDFAcrobatFormFieldWidget Widget { get; private set; }
 
-        public FormInputField() : this(PDFObjectTypes.FormInputField)
+        public FormInputField() : this(ObjectTypes.FormInputField)
         { }
 
         protected FormInputField(ObjectType type) : base(type)

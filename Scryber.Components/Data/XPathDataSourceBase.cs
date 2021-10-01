@@ -82,7 +82,7 @@ namespace Scryber.Data
         {
             get {
                 if (null == _contents)
-                    _contents = new ComponentList(this, PDFObjectTypes.XmlData);
+                    _contents = new ComponentList(this, ObjectTypes.XmlData);
                 return _contents;
             }
         }

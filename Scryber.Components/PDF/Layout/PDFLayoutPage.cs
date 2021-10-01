@@ -550,7 +550,7 @@ namespace Scryber.PDF.Layout
 
                 PDFImageData data = PDFImageData.LoadImageFromBitmap(rsrcName, bmp, false);
 
-                string name = doc.GetIncrementID(PDFObjectTypes.ImageXObject);
+                string name = doc.GetIncrementID(ObjectTypes.ImageXObject);
 
                 _badgexobj = PDFImageXObject.Load(data, name);
                 doc.SharedResources.Add(_badgexobj);

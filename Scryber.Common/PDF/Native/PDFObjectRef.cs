@@ -30,7 +30,7 @@ namespace Scryber.PDF.Native
     {
         private int _num, _gen;
 
-        public ObjectType Type { get { return PDFObjectTypes.ObjectRef; } }
+        public ObjectType Type { get { return ObjectTypes.ObjectRef; } }
 
 
         /// <summary>

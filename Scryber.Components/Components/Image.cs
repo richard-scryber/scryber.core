@@ -69,7 +69,7 @@ namespace Scryber.Components
         
         
         public Image()
-            : this(PDFObjectTypes.Image)
+            : this(ObjectTypes.Image)
         {
         }
 
@@ -92,7 +92,7 @@ namespace Scryber.Components
                 xobj = this.Document.GetImageResource(this.Data.SourcePath, this, false);
                 if (null == xobj)
                 {
-                    string name = this.Document.GetIncrementID(PDFObjectTypes.ImageXObject);
+                    string name = this.Document.GetIncrementID(ObjectTypes.ImageXObject);
                     xobj = PDFImageXObject.Load(this.Data, name);
                     this.Document.SharedResources.Add(xobj);
                 }

@@ -77,7 +77,7 @@ namespace Scryber.Components
         #region public PDFDate()
 
         public Date()
-            : this(PDFObjectTypes.DateComp)
+            : this(ObjectTypes.DateComp)
         {
         }
 

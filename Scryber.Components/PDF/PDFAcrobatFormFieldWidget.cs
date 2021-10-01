@@ -157,10 +157,11 @@ namespace Scryber.PDF
         private void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, PDFColor color)
         {
             writer.BeginDictionaryEntry(key);
+
             if (color.ColorSpace == ColorSpace.RGB)
-                writer.WriteArrayRealEntries(true, color.Red.Value, color.Green.Value, color.Blue.Value);
+                writer.WriteArrayRealEntries(true, color.Red, color.Green, color.Blue);
             else if (color.ColorSpace == ColorSpace.G)
-                writer.WriteArrayRealEntries(true, color.Gray.Value);
+                writer.WriteArrayRealEntries(true, color.Gray);
             else
             {
                 writer.BeginArray();

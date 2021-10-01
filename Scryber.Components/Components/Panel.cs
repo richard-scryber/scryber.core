@@ -112,7 +112,7 @@ namespace Scryber.Components
         //
 
         public Panel()
-            : this(PDFObjectTypes.Panel)
+            : this(ObjectTypes.Panel)
         {
         }
 

@@ -498,7 +498,7 @@ namespace Scryber.Components
         public ColorItemValue()
             : base(typeof(PDFColor))
         {
-            this.Value = null;
+            this.Value = PDFColor.Transparent;
         }
 
         protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)

@@ -67,7 +67,7 @@ namespace Scryber.PDF.Resources
             get { return (this.ImageData == null) ? "" : this.ImageData.SourcePath; }
         }
 
-        private PDFImageXObject() :this(PDFObjectTypes.ImageXObject)
+        private PDFImageXObject() :this(ObjectTypes.ImageXObject)
         {
             
         }

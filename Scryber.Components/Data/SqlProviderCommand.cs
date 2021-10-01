@@ -145,7 +145,7 @@ namespace Scryber.Data
         #region public PDFSqlCommand()
 
         public SqlProviderCommand()
-            : this(PDFObjectTypes.SqlCommandType)
+            : this(ObjectTypes.SqlCommandType)
         {
         }
 

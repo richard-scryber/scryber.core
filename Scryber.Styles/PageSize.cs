@@ -134,7 +134,7 @@ namespace Scryber
         /// <param name="paper">The specified paper size</param>
         /// <param name="orientation">The paper orientation</param>
         public PageSize(PaperSize paper, PaperOrientation orientation) 
-            : base(PDFObjectTypes.PageSize)
+            : base(ObjectTypes.PageSize)
         {
             this.PaperSize = paper;
             this.Orientation = orientation;
@@ -146,7 +146,7 @@ namespace Scryber
         /// </summary>
         /// <param name="size">The width and height of the page</param>
         public PageSize(PDFSize size)
-            : base(PDFObjectTypes.PageSize)
+            : base(ObjectTypes.PageSize)
         {
             this._size = size;
             this.UpdatePage();

@@ -27,7 +27,7 @@ namespace Scryber.PDF.Native
     /// </summary>
     public class PDFArray : IFileObject, ICollection<IFileObject>, IObjectContainer
     {
-        public ObjectType Type { get { return PDFObjectTypes.Array; } }
+        public ObjectType Type { get { return ObjectTypes.Array; } }
 
         /// <summary>
         /// Initializes a new empty PDFArray

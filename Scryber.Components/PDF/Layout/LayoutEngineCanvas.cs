@@ -68,7 +68,7 @@ namespace Scryber.PDF.Layout
 
                 this.CloseCurrentLine();
 
-                canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(PDFObjectTypes.CanvasXObject);
+                canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(ObjectTypes.CanvasXObject);
                 var rsrc = new PDFCanvasResource(this.Component as Canvas, canvas, position.ViewPort.Value);
                 var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
 
@@ -229,7 +229,7 @@ namespace Scryber.PDF.Layout
             private Canvas _component;
 
             public PDFCanvasResource(Canvas component, PDFLayoutXObject layout, PDFRect viewPort)
-                : base(PDFObjectTypes.CanvasXObject)
+                : base(ObjectTypes.CanvasXObject)
             {
                 this._layout = layout;
                 this._component = component;

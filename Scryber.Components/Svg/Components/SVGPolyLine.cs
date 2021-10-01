@@ -12,7 +12,7 @@ namespace Scryber.Svg.Components
         public PDFPointList Points { get; set; }
 
         public SVGPolyLine()
-            : base(PDFObjectTypes.ShapePolygon)
+            : base(ObjectTypes.ShapePolygon)
         {
         }
 

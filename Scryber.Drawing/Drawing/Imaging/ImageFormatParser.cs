@@ -851,10 +851,32 @@ namespace Scryber.Drawing.Imaging
                 throw new ArgumentNullException("colors");
             PDFColor[] all = new PDFColor[colors.Length];
 
-            for (int i = 0; i < colors.Length; i++)
+            if (cspace == ColorSpace.G)
             {
-                all[i] = new PDFColor(cspace, colors[i]);
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    var c = colors[i];
+                    all[i] = new PDFColor(c.R, c.G, c.B).ToGray();
+                }
             }
+            else if (cspace == ColorSpace.CMYK)
+            {
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    var c = colors[i];
+                    all[i] = new PDFColor(c.R, c.G, c.B).ToCMYK();
+                }
+            }
+            else if (cspace == ColorSpace.RGB)
+            {
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    var c = colors[i];
+                    all[i] = new PDFColor(c.R, c.G, c.B);
+                }
+            }
+            else
+                throw new ArgumentOutOfRangeException(nameof(cspace));
             
             return all;
         }

@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFSolidPen target = new PDFSolidPen();
 
             Assert.IsNotNull(target);
-            Assert.IsNull(target.Color);
+            Assert.IsTrue(target.Color.IsEmpty);
             Assert.AreEqual(target.Width, PDFUnit.Zero);
         }
 

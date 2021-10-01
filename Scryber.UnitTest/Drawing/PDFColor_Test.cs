@@ -75,44 +75,38 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFColorConstructor_Test()
         {
-            ColorSpace cs = ColorSpace.RGB;
-            Color c = Color.Red;
-            PDFColor target = new PDFColor(cs, c);
 
-            Assert.AreEqual(c, target.Color);
-            Assert.AreEqual(cs, target.ColorSpace);
-            Assert.AreEqual(1.0, Math.Round(target.Red.Value,2));
-            Assert.AreEqual(0.0, Math.Round(target.Green.Value,2));
-            Assert.AreEqual(0.0, Math.Round(target.Blue.Value,2));
+            PDFColor target = new PDFColor(255, 0, 0);
+
+            Assert.AreEqual(ColorSpace.RGB, target.ColorSpace);
+            Assert.AreEqual(1.0, target.Red);
+            Assert.AreEqual(0.0, target.Green);
+            Assert.AreEqual(0.0, target.Blue);
             
 
-            cs = ColorSpace.G;
-            c = Color.Gray;
-
-            target = new PDFColor(cs, c);
-            Assert.AreEqual(cs, target.ColorSpace);
-            Assert.AreEqual(c, target.Color);
-
-            try
-            {
-                target = new PDFColor(ColorSpace.LAB, c);
-                Assert.Fail("LAB colour space is not supported");
-            }
-            catch(ArgumentException)
-            {
-                TestContext.WriteLine("Successfully caught the exception for the HSL Color space");
-            }
-
-            try
-            {
-                target = new PDFColor(ColorSpace.Custom, c);
-                Assert.Fail("Custom colour space is not supported");
-            }
-            catch (ArgumentException)
-            {
-                TestContext.WriteLine("Successfully caught the exception for the HSL Color space");
-            }
             
+            
+            target = new PDFColor(128);
+            Assert.AreEqual(ColorSpace.G, target.ColorSpace);
+            Assert.AreEqual(Math.Round(0.5, 2), Math.Round(target.Gray, 2));
+            Assert.AreEqual(128, target.Gray255);
+
+
+            target = new PDFColor();
+
+            Assert.AreEqual(ColorSpace.None, target.ColorSpace);
+            Assert.IsTrue(target.IsEmpty);
+            Assert.IsTrue(target.IsTransparent);
+
+            Assert.AreEqual(-1.0F, target.Red);
+            Assert.AreEqual(-1.0F, target.Green);
+            Assert.AreEqual(-1.0F, target.Blue);
+            Assert.AreEqual(-1.0F, target.Gray);
+
+            Assert.AreEqual(-1.0F, target.Cyan);
+            Assert.AreEqual(-1.0F, target.Magenta);
+            Assert.AreEqual(-1.0F, target.Yellow);
+            Assert.AreEqual(-1.0F, target.Black);
         }
 
         
@@ -124,16 +118,36 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFColorConstructor_Test2()
         {
-            double red = 1.0;
-            double green = 0.0;
-            double blue = 0.0;
+            int red = 255;
+            int green = 0;
+            int blue = 0;
             PDFColor target = new PDFColor(red, green, blue);
 
             Assert.AreEqual(ColorSpace.RGB, target.ColorSpace);
-            Assert.AreEqual(red, Math.Round(target.Red.Value, 2));
-            Assert.AreEqual(green, Math.Round(target.Green.Value, 2));
-            Assert.AreEqual(blue, Math.Round(target.Blue.Value, 2));
 
+            Assert.AreEqual(red, target.Red255);
+            Assert.AreEqual(green, target.Green255);
+            Assert.AreEqual(blue, target.Blue255);
+
+            Assert.AreEqual(1.0F, target.Red);
+            Assert.AreEqual(0.0F, target.Green);
+            Assert.AreEqual(0.0F, target.Blue);
+
+            Assert.AreEqual(-1.0F, target.Gray);
+
+            Assert.AreEqual(-1.0F, target.Cyan);
+            Assert.AreEqual(-1.0F, target.Magenta);
+            Assert.AreEqual(-1.0F, target.Yellow);
+            Assert.AreEqual(-1.0F, target.Black);
+
+            
+
+            Assert.AreEqual(-1, target.Gray255);
+
+            Assert.AreEqual(-1, target.Cyan255);
+            Assert.AreEqual(-1, target.Magenta255);
+            Assert.AreEqual(-1, target.Yellow255);
+            Assert.AreEqual(-1, target.Black255);
         }
 
         /// <summary>
@@ -143,18 +157,30 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFColorConstructor_Test3()
         {
-            ColorSpace cs = ColorSpace.RGB;
-            double one = 0.2;
-            double two = 1.0;
-            double three = 0.5;
-            PDFColor target = new PDFColor(cs, one, two, three);
+            ColorSpace cs = ColorSpace.CMYK;
+            int one = 51;
+            int two = 255;
+            int three = 128;
+            int black = 255;
+
+            PDFColor target = new PDFColor(one, two, three, black);
 
             Assert.AreEqual(cs, target.ColorSpace);
-            Assert.AreEqual(one, Math.Round(target.Red.Value,1));
-            Assert.AreEqual(two, Math.Round(target.Green.Value,1));
-            Assert.AreEqual(three, Math.Round(target.Blue.Value, 1));
+            Assert.AreEqual(one, target.Cyan255);
+            Assert.AreEqual(two, target.Magenta255);
+            Assert.AreEqual(three, target.Yellow255);
+            Assert.AreEqual(black, target.Black255);
 
+            Assert.AreEqual(Math.Round(one / 255.0F, 2), Math.Round(target.Cyan, 2));
+            Assert.AreEqual(Math.Round(two / 255.0F, 2), target.Magenta);
+            Assert.AreEqual(Math.Round(three / 255.0F, 2), Math.Round(target.Yellow, 2));
+            Assert.AreEqual(Math.Round(black / 255.0F, 2), target.Black);
             
+            Assert.AreEqual(-1.0F, target.Gray);
+
+            Assert.AreEqual(-1.0F, target.Red);
+            Assert.AreEqual(-1.0F, target.Green);
+            Assert.AreEqual(-1.0F, target.Blue);
         }
 
         /// <summary>
@@ -165,13 +191,22 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFColorConstructor_Test4()
         {
 
-            double gray = 0.5;
+            int gray = 128;
             PDFColor target = new PDFColor(gray);
 
             Assert.AreEqual(ColorSpace.G, target.ColorSpace);
-            double expected = Math.Round(gray, 1);
-            double actual = Math.Round(target.Gray.Value, 1);
+            int expected = gray;
+            int actual = target.Gray255;
             Assert.AreEqual(expected, actual);
+
+            Assert.AreEqual(-1.0F, target.Red);
+            Assert.AreEqual(-1.0F, target.Green);
+            Assert.AreEqual(-1.0F, target.Blue);
+
+            Assert.AreEqual(-1.0F, target.Cyan);
+            Assert.AreEqual(-1.0F, target.Magenta);
+            Assert.AreEqual(-1.0F, target.Yellow);
+            Assert.AreEqual(-1.0F, target.Black);
 
         }
 
@@ -185,15 +220,36 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Parse_Test()
         {
             string color = "#FF00FF";
-            PDFColor expected = new PDFColor(1.0, 0.0, 1.0);
+            PDFColor expected = new PDFColor(255, 0, 255);
             PDFColor actual;
+
             actual = PDFColor.Parse(color);
             Assert.AreEqual(expected, actual);
+
+            Assert.AreEqual(255, actual.Red255);
+            Assert.AreEqual(0, actual.Green255);
+            Assert.AreEqual(255, actual.Blue255);
+
+            Assert.AreEqual(1.0F, actual.Red);
+            Assert.AreEqual(0.0F, actual.Green);
+            Assert.AreEqual(1.0F, actual.Blue);
 
             color = "rgb(255,0,255)";
             actual = PDFColor.Parse(color);
             Assert.AreEqual(expected, actual);
-            
+
+            Assert.AreEqual(1.0F, actual.Red);
+            Assert.AreEqual(0.0F, actual.Green);
+            Assert.AreEqual(1.0F, actual.Blue);
+
+            color = "#F0F";
+            actual = PDFColor.Parse(color);
+            Assert.AreEqual(expected, actual);
+
+            Assert.AreEqual(1.0F, actual.Red);
+            Assert.AreEqual(0.0F, actual.Green);
+            Assert.AreEqual(1.0F, actual.Blue);
+
         }
 
         /// <summary>
@@ -203,28 +259,95 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToString_Test()
         {
-            ColorSpace cs = ColorSpace.RGB;
-            Color c = Color.FromArgb(255, 255, 255);
-            PDFColor target = new PDFColor(cs, c);
-            string expected = "rgb(255,255,255)"; 
+            PDFColor target = new PDFColor(255, 0, 128);
+            string expected = "rgb(255,0,128)"; 
             string actual;
             actual = target.ToString();
+
             Assert.AreEqual(expected, actual);
         }
 
+        #region RGB values
+
         /// <summary>
-        ///A test for op_Implicit
+        ///A test for Red
         ///</summary>
         [TestMethod()]
         [TestCategory("Drawing Structures")]
-        public void op_Implicit_Test()
+        public void Red_Test()
         {
-            Color rgbcolor = Color.FromArgb(255, 255, 255);
-            PDFColor expected = new PDFColor(1, 1, 1);
-            PDFColor actual;
-            actual = rgbcolor;
-            Assert.AreEqual(expected, actual);
-            
+            PDFColor target = new PDFColor(255, 255, 255);
+            float actual;
+            actual = target.Red;
+            Assert.AreEqual(actual, 1.0F);
+
+            target = new PDFColor(128, 255, 0);
+            actual = target.Red;
+            Assert.AreEqual(Math.Round(actual, 2), 0.5F);
+        }
+
+        /// <summary>
+        ///A test for Red
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void Red255_Test()
+        {
+            PDFColor target = new PDFColor(255, 255, 255);
+            int actual;
+            actual = target.Red255;
+            Assert.AreEqual(actual, 255);
+
+            target = new PDFColor(128, 255, 255);
+            actual = target.Red255;
+            Assert.AreEqual(actual, 128);
+
+            //Gray should not have a red component
+            target = new PDFColor(128);
+            actual = target.Red255;
+            Assert.AreEqual(actual, -1);
+        }
+
+        /// <summary>
+        ///A test for Green
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void Green_Test()
+        {
+            PDFColor target = new PDFColor(255, 255, 255);
+            float actual;
+            actual = target.Green;
+            Assert.AreEqual(actual, 1.0F);
+
+            target = new PDFColor(255, 128, 0);
+            actual = target.Green;
+            Assert.AreEqual(Math.Round(actual, 2), 0.5);
+
+            target = new PDFColor(255);
+            actual = target.Green;
+            Assert.AreEqual(actual, -1.0F);
+        }
+
+        /// <summary>
+        ///A test for Green
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void Green255_Test()
+        {
+            PDFColor target = new PDFColor(255, 255, 255);
+            int actual;
+            actual = target.Green255;
+            Assert.AreEqual(actual, 255);
+
+            target = new PDFColor(255, 128, 0);
+            actual = target.Green255;
+            Assert.AreEqual(actual, 128);
+
+            target = new PDFColor(255);
+            actual = target.Green255;
+            Assert.AreEqual(actual, -1);
         }
 
 
@@ -235,31 +358,59 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Blue_Test()
         {
-            ColorSpace cs = ColorSpace.RGB;
-            PDFColor target = new PDFColor(cs, 1.0, 1.0, 1.0); 
-            PDFReal actual;
+            PDFColor target = new PDFColor(255, 255, 255); 
+            float actual;
             actual = target.Blue;
-            Assert.AreEqual(Math.Round(actual.Value,1), 1.0);
+            Assert.AreEqual(Math.Round(actual, 2), 1.0F);
 
-            target = new PDFColor(cs, 1.0, 0, 0.5);
+            target = new PDFColor(255, 0, 128);
             actual = target.Blue;
-            Assert.AreEqual(Math.Round(actual.Value, 1), 0.5);
+            Assert.AreEqual(Math.Round(actual, 2), 0.5);
+
+            target = new PDFColor(255);
+            actual = target.Blue;
+
+            Assert.AreEqual(actual, -1.0F);
         }
 
         /// <summary>
-        ///A test for Color
+        ///A test for Blue255
         ///</summary>
         [TestMethod()]
         [TestCategory("Drawing Structures")]
-        public void Color_Test()
+        public void Blue255_Test()
         {
-            ColorSpace cs = ColorSpace.RGB;
-            PDFColor target = new PDFColor(cs, 1.0, 1.0, 1.0);
-            Color actual;
-            actual = target.Color;
-            Assert.AreEqual(actual.R, 255);
-            Assert.AreEqual(actual.G, 255);
-            Assert.AreEqual(actual.B, 255);
+            PDFColor target = new PDFColor(255, 255, 255);
+            int actual;
+            actual = target.Blue255;
+            Assert.AreEqual(actual, 255);
+
+            target = new PDFColor(255, 0, 128);
+            actual = target.Blue255;
+            Assert.AreEqual(actual, 128);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///A test for Gray
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void Gray_Test()
+        {
+            ColorSpace cs = ColorSpace.G;
+            PDFColor target = new PDFColor(255);
+            float actual;
+            actual = target.Gray;
+            Assert.AreEqual(target.ColorSpace, cs);
+            Assert.AreEqual(actual, 1.0F);
+
+            cs = ColorSpace.G;
+            target = new PDFColor(128);
+            actual = target.Gray;
+            Assert.AreEqual(target.ColorSpace, cs);
+            Assert.AreEqual(Math.Round(actual, 2), 0.5);
         }
 
         /// <summary>
@@ -270,48 +421,30 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColorSpace_Test()
         {
             ColorSpace cs = ColorSpace.RGB;
-            PDFColor target = new PDFColor(cs, 1.0, 1.0, 1.0);
+            PDFColor target = new PDFColor(255, 255, 255);
             ColorSpace actual;
+            actual = target.ColorSpace;
+            Assert.AreEqual(actual, cs);
+
+            cs = ColorSpace.CMYK;
+            target = new PDFColor(255, 255, 255, 255);
+            actual = target.ColorSpace;
+            Assert.AreEqual(actual, cs);
+
+            cs = ColorSpace.G;
+            target = new PDFColor(255);
+            actual = target.ColorSpace;
+            Assert.AreEqual(actual, cs);
+
+            cs = ColorSpace.None;
+            target = new PDFColor();
             actual = target.ColorSpace;
             Assert.AreEqual(actual, cs);
         }
 
-        /// <summary>
-        ///A test for Gray
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Drawing Structures")]
-        public void Gray_Test()
-        {
-            ColorSpace cs = ColorSpace.RGB;
-            PDFColor target = new PDFColor(cs, 1.0, 1.0, 1.0);
-            PDFReal actual;
-            actual = target.Gray;
-            Assert.AreEqual(Math.Round(actual.Value, 1), 1.0);
+        
 
-            cs = ColorSpace.G;
-            target = new PDFColor(0.5);
-            actual = target.Gray;
-            Assert.AreEqual(Math.Round(actual.Value, 1), 0.5);
-        }
-
-        /// <summary>
-        ///A test for Green
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Drawing Structures")]
-        public void Green_Test()
-        {
-            ColorSpace cs = ColorSpace.RGB;
-            PDFColor target = new PDFColor(cs, 1.0, 1.0, 1.0);
-            PDFReal actual;
-            actual = target.Green;
-            Assert.AreEqual(Math.Round(actual.Value, 2), 1.0);
-
-            target = new PDFColor(cs, 1.0, 0.5, 0);
-            actual = target.Green;
-            Assert.AreEqual(Math.Round(actual.Value,1), 0.5);
-        }
+        
 
         /// <summary>
         ///A test for IsEmpty
@@ -320,34 +453,18 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void IsEmpty_Test()
         {
-            ColorSpace cs = ColorSpace.RGB;
-            Color c = new Color();//Empty System.Drawing.Color
-            PDFColor target = new PDFColor(cs, c);
+            PDFColor target = new PDFColor();
 
             Assert.IsTrue(target.IsEmpty);
-            
-            c = Color.FromArgb(255, 0, 0);
-            target = new PDFColor(cs, c);
+            Assert.IsTrue(target.IsTransparent);
+
+
+            target = new PDFColor(255);
             Assert.IsFalse(target.IsEmpty);
+            Assert.IsFalse(target.IsTransparent);
         }
 
-        /// <summary>
-        ///A test for Red
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Drawing Structures")]
-        public void Red_Test()
-        {
-            ColorSpace cs = ColorSpace.RGB;
-            PDFColor target = new PDFColor(cs, 1.0, 1.0, 1.0);
-            PDFReal actual;
-            actual = target.Red;
-            Assert.AreEqual(Math.Round(actual.Value,2), 1.0);
-
-            target = new PDFColor(cs, 0.5, 1.0, 0);
-            actual = target.Red;
-            Assert.AreEqual(Math.Round(actual.Value, 1), 0.5);
-        }
+        
 
         /// <summary>
         ///A test for Transparent
@@ -358,11 +475,11 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             PDFColor actual;
             actual = PDFColor.Transparent;
-            Assert.IsNotNull(actual, "actual was null");
-            Assert.IsNotNull(actual.Color, "actual.Color was null");
-            Assert.IsNotNull(Color.Transparent, "Color.Transparent was null");
+            Assert.IsTrue(actual.IsEmpty, "actual was not empty");
+            Assert.IsTrue(actual.IsTransparent, "actual was not transparent");
+            Assert.IsTrue(PDFColor.Transparent.IsTransparent, "Color.Transparent was null");
 
-            Assert.IsTrue(actual.Color == Color.Transparent,"Colors are not equal");
+            Assert.IsTrue(actual.Equals(PDFColor.Transparent),"Colors are not equal");
         }
     }
 }

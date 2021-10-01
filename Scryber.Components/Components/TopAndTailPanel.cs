@@ -65,7 +65,7 @@ namespace Scryber.Components
         #endregion
 
         public TopAndTailPanel()
-            : base(PDFObjectTypes.TopAndTail)
+            : base(ObjectTypes.TopAndTail)
         {
         }
     }

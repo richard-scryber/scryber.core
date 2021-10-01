@@ -530,7 +530,7 @@ namespace Scryber.Core.UnitTests.Native
         public void Type_Test()
         {
             PDFDictionary target = new PDFDictionary();
-            ObjectType expected = PDFObjectTypes.Dictionary;
+            ObjectType expected = ObjectTypes.Dictionary;
 
             ObjectType actual;
             actual = target.Type;

@@ -27,7 +27,7 @@ namespace Scryber.Styles
         private StyleItemFontFace _ff;
 
 
-        public StyleFontFace() : base(PDFObjectTypes.Style)
+        public StyleFontFace() : base(ObjectTypes.Style)
         {
             _ff = new StyleItemFontFace();
             this.AddItem(_ff);

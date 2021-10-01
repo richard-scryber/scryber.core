@@ -408,7 +408,7 @@ namespace Scryber.Core.UnitTests.Native
             PDFArray target = new PDFArray();
             ObjectType actual;
             actual = target.Type;
-            ObjectType expected = PDFObjectTypes.Array;
+            ObjectType expected = ObjectTypes.Array;
             Assert.AreEqual(expected, actual);
         }
     }

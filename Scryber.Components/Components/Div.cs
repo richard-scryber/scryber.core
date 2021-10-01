@@ -40,7 +40,7 @@ namespace Scryber.Components
         }
 
         public Div()
-            : this(PDFObjectTypes.Div)
+            : this(ObjectTypes.Div)
         {
         }
 

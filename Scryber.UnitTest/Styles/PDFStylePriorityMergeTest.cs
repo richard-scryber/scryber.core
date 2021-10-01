@@ -50,7 +50,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn = new StyleDefn();
             defn.Match = ".red";
-            defn.Border.Color = "#FF0000";
+            defn.Border.Color = (PDFColor)"#FF0000";
             defn.Border.Width = 3; //overriden by doc:Div.red
             doc.Styles.Add(defn);
 
@@ -59,8 +59,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div";
             defn.Margins.Left = 10;
             defn.Margins.All = 20;
-            defn.Fill.Color = "#00FF00";
-            defn.Border.Color = "#0000FF"; //Overriden by .red
+            defn.Fill.Color = (PDFColor)"#00FF00";
+            defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by .red
             defn.Border.Width = 1;
             defn.Border.LineStyle = LineType.Dash; //Overriden by doc:Div.red
             defn.Border.Dash = PDFDashes.Dot;
@@ -104,7 +104,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn = new StyleDefn();
             defn.Match = ".red";
-            defn.Border.Color = "#FF0000";
+            defn.Border.Color = (PDFColor)"#FF0000";
             defn.Border.Width = 3; //overriden by doc:Div.red
             doc.Styles.Add(defn);
 
@@ -113,8 +113,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div";
             defn.Margins.Left = 10;
             defn.Margins.All = 20;
-            defn.Fill.Color = "#00FF00";
-            defn.Border.Color = "#0000FF"; //Overriden by .red
+            defn.Fill.Color = (PDFColor)"#00FF00";
+            defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by .red
             defn.Border.Width = 1;
             defn.Border.LineStyle = LineType.Dash; //Overriden by doc:Div.red
             defn.Border.Dash = PDFDashes.Dot;
@@ -153,21 +153,21 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn = new StyleDefn();
             defn.Match = "doc:Div.red"; //higher priority
-            defn.Border.Color = "#00FFFF";
+            defn.Border.Color = (PDFColor)"#00FFFF";
             defn.Margins.Top = 20;
             defn.Margins.Left = 20;
             doc.Styles.Add(defn);
 
             defn = new StyleDefn();
             defn.Match = "doc:Page.green .red"; //highest style priority
-            defn.Border.Color = "#FF0000"; 
+            defn.Border.Color = (PDFColor)"#FF0000"; 
             defn.Border.Width = 3; 
             defn.Margins.Left = 30;
             doc.Styles.Add(defn);
 
             defn = new StyleDefn();
             defn.Match = "doc:Page.blue .red"; //should be ignored
-            defn.Border.Color = "#FFFFFF";
+            defn.Border.Color = (PDFColor)"#FFFFFF";
             defn.Border.Width = 10;
             defn.Margins.Left = 10;
             doc.Styles.Add(defn);
@@ -176,8 +176,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div";
             defn.Margins.Left = 10;
             defn.Margins.All = 20;
-            defn.Fill.Color = "#00FF00";
-            defn.Border.Color = "#0000FF"; //Overriden by both
+            defn.Fill.Color = (PDFColor)"#00FF00";
+            defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by both
             
             doc.Styles.Add(defn);
 

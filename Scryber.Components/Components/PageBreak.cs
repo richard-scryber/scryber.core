@@ -34,7 +34,7 @@ namespace Scryber.Components
         }
 
         public PageBreak()
-            : base(PDFObjectTypes.PageBreak)
+            : base(ObjectTypes.PageBreak)
         {
         }
 

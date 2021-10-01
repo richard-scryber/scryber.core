@@ -115,7 +115,7 @@ namespace Scryber.Components
 
 
         public ListItem()
-            : this(PDFObjectTypes.ListItem)
+            : this(ObjectTypes.ListItem)
         {
         }
 

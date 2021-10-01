@@ -67,7 +67,7 @@ namespace Scryber.Components
 
 
         public Section()
-            : this(PDFObjectTypes.Section)
+            : this(ObjectTypes.Section)
         {
         }
 

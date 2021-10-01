@@ -158,7 +158,7 @@ namespace Scryber.PDF.Native
         //
 
         protected PDFFile()
-            : this(PDFObjectTypes.File)
+            : this(ObjectTypes.File)
         {
         }
 

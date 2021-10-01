@@ -125,7 +125,7 @@ namespace Scryber.Components
         /// Creates a new instance of the PDFTableCell
         /// </summary>
         public TableCell()
-            : this(PDFObjectTypes.TableCell)
+            : this(ObjectTypes.TableCell)
         {
         }
         
@@ -158,7 +158,7 @@ namespace Scryber.Components
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
             style.Padding.All = (PDFUnit)4;
-            style.Border.Color = new PDFColor(0.65,0.65,0.65);
+            style.Border.Color = new PDFColor(153);
             style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (PDFUnit)1;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row
@@ -193,7 +193,7 @@ namespace Scryber.Components
     public class TableHeaderCell : TableCell
     {
         public TableHeaderCell()
-            : base(PDFObjectTypes.TableHeaderCell)
+            : base(ObjectTypes.TableHeaderCell)
         { }
 
         
@@ -203,7 +203,7 @@ namespace Scryber.Components
     public class TableFooterCell : TableCell
     {
         public TableFooterCell()
-            : base(PDFObjectTypes.TableFooterCell)
+            : base(ObjectTypes.TableFooterCell)
         { }
 
 

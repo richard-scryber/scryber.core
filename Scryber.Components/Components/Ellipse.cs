@@ -32,7 +32,7 @@ namespace Scryber.Components
     {
 
         public Ellipse()
-            : this(PDFObjectTypes.ShapeElipse)
+            : this(ObjectTypes.ShapeElipse)
         {
         }
 

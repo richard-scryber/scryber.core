@@ -100,7 +100,7 @@ namespace Scryber.Components
         /// Default constructor - creates a new instance of the document
         /// </summary>
         public Document()
-            : this(PDFObjectTypes.Document)
+            : this(ObjectTypes.Document)
         {
 
         }
@@ -947,7 +947,7 @@ namespace Scryber.Components
             //style.Items.Add(new PDFStrokeStyle());
             Styles.FillStyle fill = new Styles.FillStyle();
             style.StyleItems.Add(fill);
-            fill.Color = new PDFColor(ColorSpace.RGB, System.Drawing.Color.Black);
+            fill.Color = PDFColors.Black;
 
 
             PageStyle defpaper = new PageStyle();
@@ -1493,7 +1493,7 @@ namespace Scryber.Components
             if (resource is PDFImageData)
             {
                 PDFImageData data = resource as PDFImageData;
-                string id = this.GetIncrementID(PDFObjectTypes.ImageXObject);
+                string id = this.GetIncrementID(ObjectTypes.ImageXObject);
                 PDFImageXObject img = PDFImageXObject.Load(data, id);
                 resource = img;
             }
@@ -1522,7 +1522,7 @@ namespace Scryber.Components
             if (resource is PDFFontDefinition)
             {
                 PDFFontDefinition defn = (PDFFontDefinition)resource;
-                string id = this.GetIncrementID(PDFObjectTypes.FontResource);
+                string id = this.GetIncrementID(ObjectTypes.FontResource);
                 resource = PDFFontResource.Load(defn, id);
             }
             if (resource is PDFFontResource)
@@ -2459,7 +2459,7 @@ namespace Scryber.Components
                 if (this.ImageFactories.TryGetMatch(src, out factory))
                 {
                     data = LoadImageDataFromFactory(owner, factory, src);
-                    key = GetIncrementID(PDFObjectTypes.ImageXObject);
+                    key = GetIncrementID(ObjectTypes.ImageXObject);
                 }
                 else
                 {
@@ -2482,7 +2482,7 @@ namespace Scryber.Components
                     if (isInlineData)
                     {
                         data = PDFImageData.LoadImageFromUriData(src, this, owner);
-                        key = GetIncrementID(PDFObjectTypes.ImageXObject); ;
+                        key = GetIncrementID(ObjectTypes.ImageXObject); ;
                     }
                     else
                     {
@@ -2490,7 +2490,7 @@ namespace Scryber.Components
                         if (exists != null)
                             return exists;
 
-                        if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), src, out cached))
+                        if (!this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out cached))
                         {
                             IPDFDataProvider prov;
                             if (isfile)
@@ -2517,9 +2517,9 @@ namespace Scryber.Components
 
                             if (null != data)
                             {
-                                key = GetIncrementID(PDFObjectTypes.ImageXObject);
+                                key = GetIncrementID(ObjectTypes.ImageXObject);
                                 DateTime expires = this.GetImageCacheExpires();
-                                this.CacheProvider.AddToCache(PDFObjectTypes.ImageData.ToString(), key, data, expires);
+                                this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), key, data, expires);
                             }
                         }
                         else
@@ -2581,14 +2581,14 @@ namespace Scryber.Components
             if (factory.ShouldCache)
             {
                 object cached;
-                if (!this.CacheProvider.TryRetrieveFromCache(PDFObjectTypes.ImageData.ToString(), path, out cached))
+                if (!this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), path, out cached))
                 {
                     data = factory.LoadImageData(this, owner, path);
 
                     if (null != data)
                     {
                         DateTime expires = this.GetImageCacheExpires();
-                        this.CacheProvider.AddToCache(PDFObjectTypes.ImageData.ToString(), path, data, expires);
+                        this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), path, data, expires);
                     }
                 }
                 else

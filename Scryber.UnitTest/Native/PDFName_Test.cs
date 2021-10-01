@@ -304,7 +304,7 @@ namespace Scryber.Core.UnitTests.Native
             PDFName target = new PDFName(name); 
             ObjectType actual;
             actual = target.Type;
-            ObjectType expected = PDFObjectTypes.Name;
+            ObjectType expected = ObjectTypes.Name;
             Assert.AreEqual(expected, actual);
         }
 

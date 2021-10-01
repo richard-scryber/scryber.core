@@ -265,7 +265,7 @@ namespace Scryber.Html.Components
 
         }
 
-        public HTMLHead() : this(PDFObjectTypes.NoOp)
+        public HTMLHead() : this(ObjectTypes.NoOp)
         {
 
         }

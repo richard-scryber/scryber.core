@@ -23,7 +23,7 @@ namespace Scryber.Svg.Components
 
 
         public SVGCircle()
-            : base(PDFObjectTypes.ShapeCircle)
+            : base(ObjectTypes.ShapeCircle)
         {
 
         }

@@ -69,7 +69,7 @@ namespace Scryber.Data
         }
 
         public ChooseWhen()
-            : base(PDFObjectTypes.DataWhen)
+            : base(ObjectTypes.DataWhen)
         {
         }
 

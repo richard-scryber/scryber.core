@@ -20,7 +20,7 @@ namespace Scryber.Core.UnitTests.Styles
         public const VerticalAlignment DefaultVerticalAlign = VerticalAlignment.Top;
         public const string DefaultFontFamily = "Helvetica";
         public const float DefaultFontSize = 12.0F;
-        public static readonly PDFColor DefaultFillColor = new PDFColor(ColorSpace.RGB, System.Drawing.Color.Black);
+        public static readonly PDFColor DefaultFillColor = PDFColors.Black;
 
         public static readonly PDFUnit DefaultListNumberInset = 30;
         public static readonly PDFUnit DefaultDefinitionListInset = 100;

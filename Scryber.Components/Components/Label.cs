@@ -42,7 +42,7 @@ namespace Scryber.Components
         
 
         public Label()
-            : this(PDFObjectTypes.Label)
+            : this(ObjectTypes.Label)
         {
         }
 

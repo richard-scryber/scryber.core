@@ -39,7 +39,7 @@ namespace Scryber.Components
         }
 
         public BlockQuote()
-            : this(PDFObjectTypes.BlockQuote)
+            : this(ObjectTypes.BlockQuote)
         {
         }
 

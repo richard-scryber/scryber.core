@@ -452,7 +452,7 @@ namespace Scryber.PDF.Native
 
                     IFileObject num = ParseNumericValue(value, offset, out end);
 
-                    if (end >= value.Length || num.Type == PDFObjectTypes.Real)
+                    if (end >= value.Length || num.Type == ObjectTypes.Real)
                         return num;
 
                     if (char.IsWhiteSpace(value, end) && char.IsDigit(value[end + 1]))
@@ -461,7 +461,7 @@ namespace Scryber.PDF.Native
                         int tempend;
 
                         IFileObject num2 = ParseNumericValue(value, tempoffset, out tempend);
-                        if (num2.Type == PDFObjectTypes.Number && char.IsWhiteSpace(value, tempend) && value[tempend + 1] == 'R')
+                        if (num2.Type == ObjectTypes.Number && char.IsWhiteSpace(value, tempend) && value[tempend + 1] == 'R')
                         {
                             return ParseObjectRef(value, offset, out end);
                         }

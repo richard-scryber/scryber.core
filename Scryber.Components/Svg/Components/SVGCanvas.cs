@@ -56,7 +56,7 @@ namespace Scryber.Svg.Components
             get
             {
                 if (_definitions == null)
-                    _definitions = new ComponentList(this, PDFObjectTypes.ShapePath);
+                    _definitions = new ComponentList(this, ObjectTypes.ShapePath);
                 return _definitions;
             }
         }

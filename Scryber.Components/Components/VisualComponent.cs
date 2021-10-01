@@ -866,7 +866,7 @@ namespace Scryber.Components
             }
             set
             {
-                if (null == value)
+                if (value.IsEmpty)
                     this.Style.RemoveValue(StyleKeys.StrokeColorKey);
                 else
                     this.Style.SetValue(StyleKeys.StrokeColorKey, value);

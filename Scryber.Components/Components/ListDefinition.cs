@@ -54,7 +54,7 @@ namespace Scryber.Components
         #endregion
 
         public ListDefinition()
-            : this(PDFObjectTypes.DefinitionList)
+            : this(ObjectTypes.DefinitionList)
         {
         }
 

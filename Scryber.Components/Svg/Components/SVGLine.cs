@@ -21,7 +21,7 @@ namespace Scryber.Svg.Components
         [PDFAttribute("y2")]
         public PDFUnit Y2 { get; set; }
 
-        public SVGLine() : base(PDFObjectTypes.ShapeLine)
+        public SVGLine() : base(ObjectTypes.ShapeLine)
         {
         }
 

@@ -71,7 +71,7 @@ namespace Scryber.Components
 
 
         public Polygon()
-            : this(PDFObjectTypes.ShapePolygon)
+            : this(ObjectTypes.ShapePolygon)
         {
         }
 

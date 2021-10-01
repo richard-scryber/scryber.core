@@ -81,7 +81,7 @@ namespace Scryber.Drawing
         public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
         {
             g.SetFillOpacity(this.Opacity);
-            if (this.Color != null && this.Color.IsEmpty == false)
+            if (this.Color.IsEmpty == false)
             {
                 g.SetFillColor(this.Color);
                 return true;

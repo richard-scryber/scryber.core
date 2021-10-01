@@ -58,7 +58,7 @@ namespace Scryber.Data
 
                     string name;
                     if (string.IsNullOrEmpty(this.ImageKey))
-                        name = "DataImage_" + this.Document.GetIncrementID(PDFObjectTypes.ImageXObject);
+                        name = "DataImage_" + this.Document.GetIncrementID(ObjectTypes.ImageXObject);
                     else
                         name = this.ImageKey;
 

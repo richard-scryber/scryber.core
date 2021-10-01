@@ -585,7 +585,7 @@ namespace Scryber.Core.UnitTests.Native
         public void Type_Test()
         {
             PDFReal target = new PDFReal();
-            ObjectType expected = PDFObjectTypes.Real;
+            ObjectType expected = ObjectTypes.Real;
             ObjectType actual;
             actual = target.Type;
             Assert.AreEqual(expected, actual);

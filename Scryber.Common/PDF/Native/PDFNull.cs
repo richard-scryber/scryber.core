@@ -24,7 +24,7 @@ namespace Scryber.PDF.Native
 {
     public sealed class PDFNull : IFileObject
     {
-        public ObjectType Type { get { return PDFObjectTypes.Null; } }
+        public ObjectType Type { get { return ObjectTypes.Null; } }
 
         private PDFNull()
         {

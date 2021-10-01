@@ -28,7 +28,7 @@ namespace Scryber.PDF.Native
     public class PDFStream : IFileObject, IDisposable
     {
 
-        public ObjectType Type { get { return PDFObjectTypes.Stream; } }
+        public ObjectType Type { get { return ObjectTypes.Stream; } }
         private System.IO.Stream _ms = null;
         private System.IO.MemoryStream _filtered;
         bool _ownsstream;

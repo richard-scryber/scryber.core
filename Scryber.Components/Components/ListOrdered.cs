@@ -33,7 +33,7 @@ namespace Scryber.Components
     {
 
         public ListOrdered()
-            : this(PDFObjectTypes.OrderedList)
+            : this(ObjectTypes.OrderedList)
         {
         }
 

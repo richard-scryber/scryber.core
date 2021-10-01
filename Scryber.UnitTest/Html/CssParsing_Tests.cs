@@ -1137,7 +1137,7 @@ body.grey div.reverse{
             Assert.AreEqual("12pt", applied.Background.PatternXSize.ToString(), "Pattern X Size not set");
             Assert.AreEqual("7.5pt", applied.Background.PatternYSize.ToString(), "Pattern Y Size not set");
 
-            Assert.AreEqual("rgb(255,0,255)", applied.Border.Color, "Border color not set");
+            Assert.AreEqual("rgb(255,0,255)", applied.Border.Color.ToString(), "Border color not set");
             Assert.AreEqual(LineType.Dash, applied.Border.LineStyle, "Border line style not set");
             Assert.AreEqual("[2] 0", applied.Border.Dash.ToString(), "Border dash not set");
             Assert.AreEqual("1.2pt", applied.Border.Width.ToString(), "Border width not set");
@@ -1165,7 +1165,7 @@ body.grey div.reverse{
             Assert.AreEqual(FloatMode.Right, applied.Position.Float, "Float was not set");
             Assert.AreEqual(PositionMode.Absolute, applied.Position.PositionMode, "Position mode was not set");
 
-            Assert.AreEqual("rgb(255,0,255)", applied.Stroke.Color, "Stroke color was not set");
+            Assert.AreEqual("rgb(255,0,255)", applied.Stroke.Color.ToString(), "Stroke color was not set");
             Assert.AreEqual("[1 0 2 1] 0", applied.Stroke.Dash.ToString(), "Stroke dashes were not set");
             Assert.AreEqual(LineCaps.Round, applied.Stroke.LineCap, "Stroke line caps were not set");
             Assert.AreEqual(LineJoin.Mitre, applied.Stroke.LineJoin, "Stroke line join was not set");

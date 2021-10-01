@@ -133,7 +133,7 @@ namespace Scryber.Data
         #endregion
 
         public ForEach()
-            : this(PDFObjectTypes.NoOp)
+            : this(ObjectTypes.NoOp)
         {
         }
 

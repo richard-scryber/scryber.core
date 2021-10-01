@@ -1409,7 +1409,7 @@ namespace Scryber.Styles
             }
 
 
-            if (line == LineType.None || col == PDFColors.Transparent || width <= 0)
+            if (line == LineType.None || col.IsTransparent || width <= 0)
                 pen = null; //This is an explicit pen that will not draw anything.
 
             else if (line == LineType.Dash)
@@ -1448,7 +1448,7 @@ namespace Scryber.Styles
 
                 //Check the color and width
 
-                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value(this) == PDFColors.Transparent)
+                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value(this).IsTransparent)
                     return null;
 
                 if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value(this) <= 0)
@@ -1481,7 +1481,7 @@ namespace Scryber.Styles
             }
             else if (this.TryGetValue(StyleKeys.BorderDashKey, out dash))
             {
-                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value(this) == PDFColors.Transparent)
+                if (this.TryGetValue(StyleKeys.BorderColorKey, out c) && c.Value(this).IsTransparent)
                     return null;
                 if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value(this) <= 0)
                     return null;
@@ -1495,7 +1495,7 @@ namespace Scryber.Styles
             }
             else if (this.TryGetValue(StyleKeys.BorderColorKey, out c))
             {
-                if (c.Value(this) == PDFColors.Transparent)
+                if (c.Value(this).IsTransparent)
                     return null;
 
                 if (this.TryGetValue(StyleKeys.BorderWidthKey, out width) && width.Value(this) <= 0)
@@ -1504,7 +1504,7 @@ namespace Scryber.Styles
 
                 pen = new PDFSolidPen()
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Color = (c == null) ? PDFColors.Black : c.Value(this),
                     Width = (null == width) ? DefaultWidth : width.Value(this)
                 };
             }

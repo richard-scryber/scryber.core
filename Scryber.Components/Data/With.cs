@@ -47,7 +47,7 @@ namespace Scryber.Data
         //
 
         public With()
-            : this(PDFObjectTypes.DataWith)
+            : this(ObjectTypes.DataWith)
         {
         }
 

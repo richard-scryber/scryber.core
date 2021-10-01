@@ -1,5 +1,5 @@
 =============
-Scryber 5.1
+Scryber 6
 =============
 
 .. figure:: ./images/samples_pageSizes.png

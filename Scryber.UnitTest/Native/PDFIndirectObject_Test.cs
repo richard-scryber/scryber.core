@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Native
             Assert.IsNotNull(target.ObjectData);
             Assert.IsFalse(target.HasStream);
             Assert.IsNull(target.Stream);
-            Assert.AreEqual(PDFObjectTypes.IndirectObject, target.Type);
+            Assert.AreEqual(ObjectTypes.IndirectObject, target.Type);
             Assert.IsFalse(target.Deleted);
 
             target.Dispose();
@@ -313,7 +313,7 @@ namespace Scryber.Core.UnitTests.Native
             PDFStream actual;
             actual = target.ObjectData;
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Type == PDFObjectTypes.Stream);
+            Assert.IsTrue(actual.Type == ObjectTypes.Stream);
 
             target.Dispose();
         }
@@ -356,7 +356,7 @@ namespace Scryber.Core.UnitTests.Native
             target.InitStream(null);
             actual = target.Stream;
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Type == PDFObjectTypes.Stream);
+            Assert.IsTrue(actual.Type == ObjectTypes.Stream);
 
             target.Dispose();
         }
@@ -371,7 +371,7 @@ namespace Scryber.Core.UnitTests.Native
             PDFIndirectObject target = new PDFIndirectObject(this);
             ObjectType actual;
             actual = target.Type;
-            Assert.AreEqual(actual, PDFObjectTypes.IndirectObject);
+            Assert.AreEqual(actual, ObjectTypes.IndirectObject);
         }
     }
 }

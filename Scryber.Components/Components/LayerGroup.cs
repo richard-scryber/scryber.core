@@ -53,7 +53,7 @@ namespace Scryber.Components
 
 
         public LayerGroup()
-            : this(PDFObjectTypes.LayerGroup)
+            : this(ObjectTypes.LayerGroup)
         {
         }
 

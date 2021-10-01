@@ -57,7 +57,7 @@ namespace Scryber.Components
     public class ListDefinitionTerm : ListDefinitionItemBase
     {
 
-        public ListDefinitionTerm() : this(PDFObjectTypes.DefinitionListTerm)
+        public ListDefinitionTerm() : this(ObjectTypes.DefinitionListTerm)
         {
 
         }
@@ -77,7 +77,7 @@ namespace Scryber.Components
     public class ListDefinitionItem : ListDefinitionItemBase
     {
 
-        public ListDefinitionItem() : this(PDFObjectTypes.DefinitionListItem)
+        public ListDefinitionItem() : this(ObjectTypes.DefinitionListItem)
         {
 
         }

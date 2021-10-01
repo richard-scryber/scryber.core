@@ -43,13 +43,13 @@ namespace Scryber.Drawing
             writer.BeginDictionaryEntry("Domain");
             writer.WriteArrayRealEntries(this.DomainStart, this.DomainEnd);
             writer.EndDictionaryEntry();
-
+            var c0 = this.ColorZero.ToRGB();
             writer.BeginDictionaryEntry("C0");
-            writer.WriteArrayRealEntries(this.ColorZero.Red.Value, this.ColorZero.Green.Value, this.ColorZero.Blue.Value);
+            writer.WriteArrayRealEntries(c0.Red, c0.Green, c0.Blue);
             writer.EndDictionaryEntry();
-
+            var c1 = this.ColorOne.ToRGB();
             writer.BeginDictionaryEntry("C1");
-            writer.WriteArrayRealEntries(this.ColorOne.Red.Value, this.ColorOne.Green.Value, this.ColorOne.Blue.Value);
+            writer.WriteArrayRealEntries(c1.Red, c1.Green, c1.Blue);
             writer.EndDictionaryEntry();
 
             writer.WriteDictionaryRealEntry("N", this.Exponent);

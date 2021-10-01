@@ -511,7 +511,7 @@ namespace Scryber.PDF.Native
             if (!dict.TryGetValue(entry, out found))
                 throw new PDFNativeParserException(errorMessage);
 
-            if (found.Type != PDFObjectTypes.ObjectRef)
+            if (found.Type != ObjectTypes.ObjectRef)
                 throw new PDFNativeParserException(errorMessage);
 
             return (PDFObjectRef)found;

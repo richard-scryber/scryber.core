@@ -61,18 +61,18 @@ namespace Scryber.Components
         }
 
         public TextLiteral()
-            : this(null, PDFObjectTypes.Text)
+            : this(null, ObjectTypes.Text)
         {
 
         }
 
         public TextLiteral(string text)
-            : this(text, PDFObjectTypes.Text)
+            : this(text, ObjectTypes.Text)
         {
         }
 
         public TextLiteral(string text, TextFormat format) 
-            : this(text, PDFObjectTypes.Text)
+            : this(text, ObjectTypes.Text)
         {
             this.ReaderFormat = format;
         }

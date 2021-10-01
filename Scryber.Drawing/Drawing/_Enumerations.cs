@@ -27,8 +27,9 @@ namespace Scryber.Drawing
     /// <summary>
     /// Defines the type of Color - Gray, RGB etc.
     /// </summary>
-    public enum ColorSpace
+    public enum ColorSpace : byte
     {
+        None = 0,
         G,
         RGB,
         HSL,

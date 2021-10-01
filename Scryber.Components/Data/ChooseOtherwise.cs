@@ -28,7 +28,7 @@ namespace Scryber.Data
     {
 
         public ChooseOtherwise()
-            : base(PDFObjectTypes.DataOtherwise)
+            : base(ObjectTypes.DataOtherwise)
         {
         }
     }

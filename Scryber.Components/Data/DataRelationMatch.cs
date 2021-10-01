@@ -68,7 +68,7 @@ namespace Scryber.Data
         //
 
         public DataRelationMatch()
-            : this(PDFObjectTypes.SqlRelationMappingType)
+            : this(ObjectTypes.SqlRelationMappingType)
         {
         }
 

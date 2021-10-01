@@ -55,7 +55,7 @@ namespace Scryber.Components
 
         private Component _belongs;
         private string _title = string.Empty;
-        private PDFColor _col = null;
+        private PDFColor _col = PDFColor.Transparent;
         private bool? _boldstyle = null;
         private bool? _italicstyle = null;
         private bool? _open = null;

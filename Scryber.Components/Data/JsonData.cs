@@ -103,8 +103,8 @@ namespace Scryber.Data
             baseStyle.Overflow.Split = Drawing.OverflowSplit.Any;
             baseStyle.Size.FullWidth = true;
             baseStyle.Padding.All = 5;
-            baseStyle.Border.Color = System.Drawing.Color.Coral;
-            baseStyle.Background.Color = System.Drawing.Color.Cornsilk;
+            baseStyle.Border.Color = new Drawing.PDFColor(255, 127, 80); //System.Drawing.Color.Coral;
+            baseStyle.Background.Color = new Drawing.PDFColor(255, 248, 220);
             baseStyle.Font.FontSize = 10;
 
             return baseStyle;

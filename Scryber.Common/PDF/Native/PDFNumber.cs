@@ -25,7 +25,7 @@ namespace Scryber.PDF.Native
     public struct PDFNumber : IFileObject
     {
 
-        public ObjectType Type { get { return PDFObjectTypes.Number; } }
+        public ObjectType Type { get { return ObjectTypes.Number; } }
 
         private long _value;
 
@@ -104,7 +104,7 @@ namespace Scryber.PDF.Native
         public static PDFNumber Parse(string value, int offset, out int end)
         {
             IFileObject obj = PDFParserHelper.ParseNumericValue(value, offset, out end);
-            if (obj.Type == PDFObjectTypes.Number)
+            if (obj.Type == ObjectTypes.Number)
                 return (PDFNumber)obj;
             else
                 throw new PDFNativeParserException(CommonErrors.ParsedValueWasNotAnItegralNumber);

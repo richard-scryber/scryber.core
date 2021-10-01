@@ -116,7 +116,7 @@ namespace Scryber.Data
         /// Creates a new PDFXMLDatasource 
         /// </summary>
         public XMLDataSource()
-            : this(PDFObjectTypes.XmlData)
+            : this(ObjectTypes.XmlData)
         {
         }
 

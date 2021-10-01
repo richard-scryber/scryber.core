@@ -33,7 +33,7 @@ namespace Scryber.Data
     public class TemplateInstance : ContainerComponent, INamingContainer, IPDFInvisibleContainer
     {
         public TemplateInstance()
-            : base(PDFObjectTypes.Template)
+            : base(ObjectTypes.Template)
         {
         }
 
@@ -54,7 +54,7 @@ namespace Scryber.Data
     public class TemplateBlockInstance : Panel, INamingContainer
     {
         public TemplateBlockInstance()
-            : base(PDFObjectTypes.Template)
+            : base(ObjectTypes.Template)
         {
         }
 

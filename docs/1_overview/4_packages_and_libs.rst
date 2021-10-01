@@ -38,8 +38,12 @@ Within the core package are 6 main libraries with the top level library Scryber.
 `Full size version <../_images/dll_references.png>`_
 
 
-1.4.4 Assemblies and Namespaces
+1.4.4 Useful Namespaces
 --------------------------------
+
+When building documents, knowing the namespaces for Components and content is useful. 
+As an overview these are the main namespaces in each of the libraries, anong with the purpose
+of the classes in that namespace.
 
 **The Scryber.Common library**
 
@@ -54,7 +58,44 @@ The base library for all other libraries
 
 **The Scryber.Drawing library**
 
-Contains all the drawing structures and classes for units, points, rects, thicknesses and colors.
+Contains all the drawing structures and classes for units, points, rects, thicknesses and colors, along with text, imaging and resources.
 
+1. Scryber - The interfaces specific to drawing, and the PDFxxxOptions that are built from styles.
+2. Scryber.Drawing - THe main graphics classes with units, points, rects, thicknesses, colors, gradients, dashes, fonts, brushes and pens.
+3. Scryber.Drawing.Imaging - The classes that understand different pixel image formats.
+4. Scryber.Options - Classes for configuration of the drawing library.
+5. Scryber.Resources - Classes that are shared resources in a document.
+6. Scryber.Text - Classes associated with reading textual content and encodings.
+   
+**The Scryber.Expressive library**
+
+Contains all the expression parsing and evaluation classes for the {{handlebars}} syntax.
+This is based on the source from Shaun Lawrence in the `https://github.com/bijington/expressive`_ repository
+
+1. Scryber.Expressive - Root namespace for the parsers, top expression class.
+2. Scryber.Expressive.Tokenisation - Conversion of expression strings to tokens.
+3. Scryber.Expressive.Funtions - All available function classes.
+4. Scryber.Expressive.Operators - All available operator classes.
+5. Scryber.Expressive.Expressions - All expression classes that operators build.
+6. Scryber.Expressive.Helpers - Type conversion and number calculation methods.
+
+**The Scryber.Generation library**
+
+Contains all functionality to read from streams and files and parse into instances and objects.
+
+1. Scryber - Interfaces, enumerations and delegates that are commonly used for generation.
+2. Scryber.Generation - The main classes for parsing content and building instances based on reflection of attributes.
+3. Scryber.Binding - The factories and classes for creating the expressions for binding in a document.
+
+**The Scryber.Styles library**
+
+Contains all functionality for parsing, building, merging and referencing styles.
+
+1. Scryber - Interfaces, enumerations and delegates that are commonly used for styles.
+2. Scryber.Styles - The main classes for style properties, the keys they are stored with and values assigned to them.
+3. Scryber.Styles.Parsing - The classes for converting css to styles and their definitions.
+4. Scryber.Styles.Selectors - The classes for css Selectors and matching to components.
+
+**The Scryber.Components library**
 
 

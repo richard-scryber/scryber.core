@@ -102,7 +102,7 @@ namespace Scryber.Components
         #region public PDFUserComponent()
 
         public UserComponent()
-            : this(PDFObjectTypes.UserComponent)
+            : this(ObjectTypes.UserComponent)
         {
         }
 

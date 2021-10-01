@@ -242,7 +242,7 @@ namespace Scryber.PDF.Resources
             set { _ftype = value; }
         }
         
-        public PDFFontDescriptor() : base(PDFObjectTypes.FontDescriptor)
+        public PDFFontDescriptor() : base(ObjectTypes.FontDescriptor)
         {
             this.BoundingBox = null;
             this.FontStretch = FontStretch.Normal;

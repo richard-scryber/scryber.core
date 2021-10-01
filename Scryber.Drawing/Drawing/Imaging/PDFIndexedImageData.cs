@@ -115,9 +115,10 @@ namespace Scryber.Drawing.Imaging
                 {
                     if (bytes.Length > 0)
                         bytes.Append(" ");
-                    byte r = (byte)c.Color.R;
-                    byte g = (byte)c.Color.G;
-                    byte b = (byte)c.Color.B;
+                    var rgb = c.ToRGB();
+                    byte r = (byte)c.Red255;
+                    byte g = (byte)c.Green255;
+                    byte b = (byte)c.Blue255;
                     bytes.Append(r.ToString("X2"));
                     bytes.Append(g.ToString("X2"));
                     bytes.Append(b.ToString("X2"));

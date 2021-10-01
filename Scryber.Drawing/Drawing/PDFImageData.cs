@@ -253,7 +253,7 @@ namespace Scryber.Drawing
         /// <param name="w"></param>
         /// <param name="h"></param>
         protected PDFImageData(string source, int w, int h)
-            : base(PDFObjectTypes.ImageData)
+            : base(ObjectTypes.ImageData)
         {
             this._path = source;
             this._w = w;

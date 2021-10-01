@@ -102,7 +102,7 @@ namespace Scryber.Styles
         /// Creates a new instance of the style group
         /// </summary>
         public StyleGroup()
-            : this(PDFObjectTypes.StyleGroup)
+            : this(ObjectTypes.StyleGroup)
         {
         }
 

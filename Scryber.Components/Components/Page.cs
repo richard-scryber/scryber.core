@@ -56,7 +56,7 @@ namespace Scryber.Components
 
 
         public Page()
-            : this(PDFObjectTypes.Page)
+            : this(ObjectTypes.Page)
         {
             this.Controller = null;
         }

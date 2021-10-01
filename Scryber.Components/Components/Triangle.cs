@@ -46,7 +46,7 @@ namespace Scryber.Components
         }
 
         public Triangle()
-            : this(PDFObjectTypes.ShapeTriangle)
+            : this(ObjectTypes.ShapeTriangle)
         {
         }
 

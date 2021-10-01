@@ -95,7 +95,7 @@ namespace Scryber.PDF.Resources
         /// <param name="type"></param>
         /// <param name="fullkey"></param>
         protected PDFPattern(IComponent owner, PatternType type, string fullkey)
-            : base(PDFObjectTypes.Pattern)
+            : base(ObjectTypes.Pattern)
         {
             if (null == owner)
                 throw new ArgumentNullException("owner");

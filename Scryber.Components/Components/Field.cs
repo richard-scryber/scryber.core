@@ -20,7 +20,7 @@ namespace Scryber.Components
         [PDFDesignable("Format", Category = "General", Priority = 4, Type = "AnyFormat")]
         public string Format { get; set; }
 
-        public Field() : this(PDFObjectTypes.Field)
+        public Field() : this(ObjectTypes.Field)
         {
 
         }

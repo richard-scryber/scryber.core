@@ -151,7 +151,7 @@ namespace Scryber.Components
     {
 
         public Head1()
-            : this(PDFObjectTypes.H1)
+            : this(ObjectTypes.H1)
         {
         }
 
@@ -172,7 +172,7 @@ namespace Scryber.Components
     {
 
         public Head2()
-            : this(PDFObjectTypes.H2)
+            : this(ObjectTypes.H2)
         { }
 
         protected Head2(ObjectType type)
@@ -192,7 +192,7 @@ namespace Scryber.Components
     {
 
         public Head3()
-            : this(PDFObjectTypes.H3)
+            : this(ObjectTypes.H3)
         { }
 
         protected Head3(ObjectType type)
@@ -212,7 +212,7 @@ namespace Scryber.Components
     {
 
         public Head4()
-            : this(PDFObjectTypes.H4)
+            : this(ObjectTypes.H4)
         { }
 
         protected Head4(ObjectType type)
@@ -232,7 +232,7 @@ namespace Scryber.Components
     {
 
         public Head5()
-            : this(PDFObjectTypes.H5)
+            : this(ObjectTypes.H5)
         { }
 
         protected Head5(ObjectType type)
@@ -252,7 +252,7 @@ namespace Scryber.Components
     {
 
         public Head6()
-            : this(PDFObjectTypes.H6)
+            : this(ObjectTypes.H6)
         { }
 
         protected Head6(ObjectType type)

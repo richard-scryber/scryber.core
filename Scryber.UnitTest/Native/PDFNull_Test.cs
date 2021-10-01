@@ -151,7 +151,7 @@ namespace Scryber.Core.UnitTests.Native
         public void Type_Test()
         {
             PDFNull target = PDFNull.Value;
-            ObjectType expected = PDFObjectTypes.Null;
+            ObjectType expected = ObjectTypes.Null;
             ObjectType actual;
             actual = target.Type;
             Assert.AreEqual(expected, actual);

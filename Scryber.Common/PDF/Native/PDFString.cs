@@ -24,7 +24,7 @@ namespace Scryber.PDF.Native
 {
     public class PDFString : IFileObject, IEquatable<PDFString>
     {
-        public ObjectType Type { get { return PDFObjectTypes.String; } }
+        public ObjectType Type { get { return ObjectTypes.String; } }
 
         private string _value;
         /// <summary>

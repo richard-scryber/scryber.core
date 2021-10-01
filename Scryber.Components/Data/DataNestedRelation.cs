@@ -34,7 +34,7 @@ namespace Scryber.Data
     {
         
         public DataNestedRelation()
-            : this(PDFObjectTypes.SqlNestedRelationType)
+            : this(ObjectTypes.SqlNestedRelationType)
         {
         }
 

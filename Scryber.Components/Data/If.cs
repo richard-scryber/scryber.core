@@ -112,7 +112,7 @@ namespace Scryber.Data
         /// Use the NoOp opbject type so that inner content is not generated
         /// </summary>
         public If()
-            : this(PDFObjectTypes.NoOp)
+            : this(ObjectTypes.NoOp)
         {
         }
 

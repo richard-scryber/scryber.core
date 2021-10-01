@@ -97,7 +97,7 @@ namespace Scryber.Components
         #region public PDFPageGroup()
 
         public PageGroup()
-            : this(PDFObjectTypes.PageGroup)
+            : this(ObjectTypes.PageGroup)
         {
         }
 

@@ -17,7 +17,7 @@ namespace Scryber.Drawing
             set { this._size = value; }
         }
 
-        public PDFGraphicsPathData(PDFSize size) : base(PDFObjectTypes.GraphicsPathData)
+        public PDFGraphicsPathData(PDFSize size) : base(ObjectTypes.GraphicsPathData)
         {
             this._size = size;
         }

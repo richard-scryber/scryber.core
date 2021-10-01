@@ -44,7 +44,7 @@ namespace Scryber.Components
         }
 
         public Preformatted()
-            : this(PDFObjectTypes.Preformatted)
+            : this(ObjectTypes.Preformatted)
         {
         }
 

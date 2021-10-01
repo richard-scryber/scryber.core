@@ -28,7 +28,7 @@ namespace Scryber.Components
     {
 
         public Line()
-            : base(PDFObjectTypes.ShapeLine)
+            : base(ObjectTypes.ShapeLine)
         {
         }
 

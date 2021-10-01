@@ -163,7 +163,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(linear.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
 
             //Final color
-            Assert.AreEqual(new PDFColor(ColorSpace.RGB, Color.FromArgb(200,200,200)), linear.Colors[2].Color, "Third colour value for " + value + " was not correct");
+            Assert.AreEqual(new PDFColor(200,200,200), linear.Colors[2].Color, "Third colour value for " + value + " was not correct");
             Assert.IsTrue(linear.Colors[2].Distance.HasValue, "Third colour distance for " + value + " was null");
             Assert.AreEqual(50, linear.Colors[2].Distance.Value, "Third colour distance for " + value + " was not correct");
             Assert.IsTrue(linear.Colors[2].Opacity.HasValue, "Third colour opacity for " + value + " was not null");

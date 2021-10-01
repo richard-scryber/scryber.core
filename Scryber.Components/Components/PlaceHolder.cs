@@ -108,7 +108,7 @@ namespace Scryber.Components
 
 
         public PlaceHolder()
-            : this(Scryber.PDFObjectTypes.PlaceHolder)
+            : this(Scryber.ObjectTypes.PlaceHolder)
         {
         }
 

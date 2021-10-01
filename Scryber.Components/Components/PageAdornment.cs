@@ -51,7 +51,7 @@ namespace Scryber.Components
     [PDFParsableComponent("PageHeader")]
     public class PDFPageHeader : PageAdornment
     {
-        public PDFPageHeader() : base(PDFObjectTypes.PageHeader) { }
+        public PDFPageHeader() : base(ObjectTypes.PageHeader) { }
 
     }
 
@@ -62,6 +62,6 @@ namespace Scryber.Components
     [PDFParsableComponent("PageFooter")]
     public class PDFPageFooter : PageAdornment
     {
-        public PDFPageFooter() : base(PDFObjectTypes.PageFooter) { }
+        public PDFPageFooter() : base(ObjectTypes.PageFooter) { }
     }
 }

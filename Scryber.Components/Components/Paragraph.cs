@@ -44,7 +44,7 @@ namespace Scryber.Components
         }
 
         public Paragraph()
-            : this(PDFObjectTypes.Paragraph)
+            : this(ObjectTypes.Paragraph)
         {
         }
 

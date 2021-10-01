@@ -28,7 +28,7 @@ namespace Scryber.Components
     public class SpanBase : Panel
     {
         public SpanBase()
-            : this(PDFObjectTypes.Span)
+            : this(ObjectTypes.Span)
         {
         }
 

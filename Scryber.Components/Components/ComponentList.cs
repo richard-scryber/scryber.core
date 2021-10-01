@@ -144,7 +144,7 @@ namespace Scryber.Components
         {
             this.Items.Insert(index, Component);
             Component.Parent = this.Owner;
-            if (Component.Type == PDFObjectTypes.NoOp)
+            if (Component.Type == ObjectTypes.NoOp)
                 this.IncrementNoOps();
             this.OnCollectionChanged();
         }
@@ -157,7 +157,7 @@ namespace Scryber.Components
                 throw new ArgumentNullException("item");
             item.Parent = this.Owner;
             this.Items.Add(item);
-            if (item.Type == PDFObjectTypes.NoOp)
+            if (item.Type == ObjectTypes.NoOp)
                 this.IncrementNoOps();
             this.OnCollectionChanged();
         }
@@ -203,7 +203,7 @@ namespace Scryber.Components
                 {
                     item.Parent = null;
                 }
-                if (item.Type == PDFObjectTypes.NoOp)
+                if (item.Type == ObjectTypes.NoOp)
                     this.DecrementNoOps();
 
                 this.OnCollectionChanged();
@@ -220,7 +220,7 @@ namespace Scryber.Components
             {
                 if (this.Owner.Equals(item.Parent))
                     item.Parent = null;
-                if (item.Type == PDFObjectTypes.NoOp)
+                if (item.Type == ObjectTypes.NoOp)
                     this.DecrementNoOps();
             }
 

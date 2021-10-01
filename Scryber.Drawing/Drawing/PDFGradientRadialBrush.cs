@@ -27,7 +27,7 @@ namespace Scryber.Drawing
         public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             var doc = graphics.Container.Document;
-            var id = doc.GetIncrementID(PDFObjectTypes.Pattern);
+            var id = doc.GetIncrementID(ObjectTypes.Pattern);
 
             bounds = ConvertToPageRect(graphics, bounds);
 

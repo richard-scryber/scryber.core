@@ -150,7 +150,7 @@ namespace Scryber.Styles
         #region public PDFStyleDefn()
 
         public StyleDefn()
-            : this(PDFObjectTypes.Style)
+            : this(ObjectTypes.Style)
         {
         }
 

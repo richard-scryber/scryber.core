@@ -12,7 +12,7 @@ namespace Scryber.Styles
             this.Matcher = matcher;
         }
 
-        public StylePageGroup() : base(PDFObjectTypes.Style)
+        public StylePageGroup() : base(ObjectTypes.Style)
         { }
 
         public override void MergeInto(Style style, IComponent Component, ComponentState state)

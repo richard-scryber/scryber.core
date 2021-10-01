@@ -79,7 +79,7 @@ namespace Scryber.Components
         #region public PDFNumber()
 
         public Number()
-            : this(PDFObjectTypes.NumberComp)
+            : this(ObjectTypes.NumberComp)
         {
         }
 

@@ -76,7 +76,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             Style target = new Style();
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFObjectTypes.Style, target.Type);
+            Assert.AreEqual(ObjectTypes.Style, target.Type);
             
         }
 
@@ -516,7 +516,7 @@ namespace Scryber.Core.UnitTests.Styles
             bool found = target.TryGetItem<TextStyle>(StyleKeys.TextItemKey, out text);
             Assert.IsTrue(found);
             Assert.IsNotNull(text);
-            Assert.AreEqual(text.Type, PDFObjectTypes.StyleText);
+            Assert.AreEqual(text.Type, ObjectTypes.StyleText);
 
             
 

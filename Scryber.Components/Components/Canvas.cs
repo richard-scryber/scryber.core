@@ -42,7 +42,7 @@ namespace Scryber.Components
         }
 
         public Canvas()
-            : this(PDFObjectTypes.Canvas)
+            : this(ObjectTypes.Canvas)
         { }
 
         protected Canvas(ObjectType type)

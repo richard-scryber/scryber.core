@@ -15,7 +15,7 @@ namespace Scryber.Svg.Components
             get { return this.InnerContent; }
         }
    
-        public SVGGroup() : base(PDFObjectTypes.Panel)
+        public SVGGroup() : base(ObjectTypes.Panel)
         {
         }
 

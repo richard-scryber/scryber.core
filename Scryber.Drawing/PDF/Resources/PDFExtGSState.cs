@@ -49,7 +49,7 @@ namespace Scryber.PDF.Resources
         }
 
         public PDFExtGSState()
-            : base(PDFObjectTypes.ExtGState)
+            : base(ObjectTypes.ExtGState)
         {
             
         }

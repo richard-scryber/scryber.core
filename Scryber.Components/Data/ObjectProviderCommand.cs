@@ -99,7 +99,7 @@ namespace Scryber.Data
         /// Creates a new instance of the PDFObjectProviderCommand
         /// </summary>
         public ObjectProviderCommand()
-            : this(PDFObjectTypes.ObjectCommandType)
+            : this(ObjectTypes.ObjectCommandType)
         {
         }
 

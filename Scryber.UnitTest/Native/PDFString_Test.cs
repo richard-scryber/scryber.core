@@ -242,7 +242,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFString target = new PDFString();
 
-            ObjectType expected = PDFObjectTypes.String;
+            ObjectType expected = ObjectTypes.String;
             ObjectType actual;
             actual = target.Type;
             Assert.AreEqual(expected, actual);

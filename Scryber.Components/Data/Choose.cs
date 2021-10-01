@@ -90,7 +90,7 @@ namespace Scryber.Data
         }
 
         public Choose()
-            : this(PDFObjectTypes.NoOp)
+            : this(ObjectTypes.NoOp)
         {
         }
 

@@ -23,10 +23,10 @@ using System.Text;
 namespace Scryber
 {
     /// <summary>
-    /// Standard PDFObjectType values. Full uppercase are reserved for native objects (Number, Array, etc).
+    /// Standard ObjectType values. Full uppercase are reserved for native objects (Number, Array, etc).
     /// Full lower case are reserved for internal known types.
     /// </summary>
-    public static class PDFObjectTypes
+    public static class ObjectTypes
     {
         //Native
 

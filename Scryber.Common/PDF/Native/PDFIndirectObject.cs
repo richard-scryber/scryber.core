@@ -41,7 +41,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         public ObjectType Type 
         { 
-            get { return PDFObjectTypes.IndirectObject; }
+            get { return ObjectTypes.IndirectObject; }
         }
 
         #endregion

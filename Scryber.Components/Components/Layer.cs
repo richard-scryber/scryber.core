@@ -37,7 +37,7 @@ namespace Scryber.Components
         }
 
         public Layer()
-            : this(PDFObjectTypes.Layer)
+            : this(ObjectTypes.Layer)
         {
         }
 

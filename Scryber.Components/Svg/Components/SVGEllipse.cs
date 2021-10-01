@@ -26,7 +26,7 @@ namespace Scryber.Svg.Components
 
 
         public SVGEllipse()
-            : base(PDFObjectTypes.ShapeElipse)
+            : base(ObjectTypes.ShapeElipse)
         {
         }
 

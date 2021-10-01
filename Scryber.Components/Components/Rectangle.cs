@@ -32,7 +32,7 @@ namespace Scryber.Components
     {
 
         public Rectangle()
-            : this(PDFObjectTypes.ShapeRectangle)
+            : this(ObjectTypes.ShapeRectangle)
         {
         }
 

@@ -27,7 +27,7 @@ namespace Scryber.PDF.Native
     /// </summary>
     public struct PDFBoolean : IFileObject
     {
-        public ObjectType Type { get { return PDFObjectTypes.Boolean; } }
+        public ObjectType Type { get { return ObjectTypes.Boolean; } }
         
         private bool _val;
 

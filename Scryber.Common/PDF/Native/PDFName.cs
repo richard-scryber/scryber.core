@@ -25,7 +25,7 @@ namespace Scryber.PDF.Native
     public class PDFName : IFileObject, IEquatable<PDFName>
     {
 
-        public ObjectType Type { get { return PDFObjectTypes.Name; } }
+        public ObjectType Type { get { return ObjectTypes.Name; } }
 
 
         private string _name = String.Empty;

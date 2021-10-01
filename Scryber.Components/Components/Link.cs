@@ -34,7 +34,7 @@ namespace Scryber.Components
         public const string ComponentIDPrefix = "#";
 
         public Link()
-            : this(PDFObjectTypes.Link)
+            : this(ObjectTypes.Link)
         {
         }
 

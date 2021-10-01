@@ -95,7 +95,7 @@ namespace Scryber.PDF.Resources
         //
         
 
-        public PDFFontWidths() : base(PDFObjectTypes.FontWidths)
+        public PDFFontWidths() : base(ObjectTypes.FontWidths)
         {
         }
 

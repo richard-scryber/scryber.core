@@ -38,7 +38,7 @@ namespace Scryber.Components
 
 
         public LineBreak()
-            : this(PDFObjectTypes.LineBreak)
+            : this(ObjectTypes.LineBreak)
         {
         }
 

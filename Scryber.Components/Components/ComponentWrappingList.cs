@@ -337,7 +337,7 @@ namespace Scryber.Components
                 {
                     continue;
                 }
-                else if (comp.Type != PDFObjectTypes.NoOp)
+                else if (comp.Type != ObjectTypes.NoOp)
                 {
                     if (comp is T)
                         found.Add(comp as T);

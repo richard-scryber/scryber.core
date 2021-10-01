@@ -27,7 +27,7 @@ namespace Scryber.PDF.Native
     /// </summary>
     public class PDFDictionary : IFileObject, IDictionary<PDFName,IFileObject>, ICloneable
     {
-        public ObjectType Type { get { return PDFObjectTypes.Dictionary; } }
+        public ObjectType Type { get { return ObjectTypes.Dictionary; } }
  
         /// <summary>
         /// Initializes a new Empty PDFDictionary

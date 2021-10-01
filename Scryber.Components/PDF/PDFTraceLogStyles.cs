@@ -30,14 +30,14 @@ namespace Scryber.PDF
             this.Styles.Add(traceSect);
 
             StyleDefn h1 = new StyleDefn() { AppliedType = typeof(Head1) };
-            h1.Background.Color = new PDFColor(0.6);
+            h1.Background.Color = new PDFColor(153);
             h1.Size.FullWidth = true;
             h1.Fill.Color = PDFColors.White;
             h1.Padding.All = 5;
             this.Styles.Add(h1);
 
             StyleDefn h3 = new StyleDefn() { AppliedType = typeof(Head3) };
-            h3.Background.Color = new PDFColor(0.9);
+            h3.Background.Color = new PDFColor(229);
             h3.Size.FullWidth = true;
             h3.Padding.All = 5;
             this.Styles.Add(h3);
@@ -119,7 +119,7 @@ namespace Scryber.PDF
             {
                 AppliedClass = "Debug"
             };
-            logDebug.Fill.Color = new PDFColor(0.4, 0.4, 0.4);
+            logDebug.Fill.Color = new PDFColor(102);
             logDebug.Font.FontItalic = true;
             this.Styles.Add(logDebug);
 

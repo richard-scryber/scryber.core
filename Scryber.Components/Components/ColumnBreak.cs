@@ -41,7 +41,7 @@ namespace Scryber.Components
         /// Creates a new instance of the PDFColumnBreak
         /// </summary>
         public ColumnBreak()
-            : base(PDFObjectTypes.ColumnBreak)
+            : base(ObjectTypes.ColumnBreak)
         {
         }
 

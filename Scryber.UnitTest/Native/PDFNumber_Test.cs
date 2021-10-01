@@ -574,7 +574,7 @@ namespace Scryber.Core.UnitTests.Native
         public void Type_Test()
         {
             PDFNumber target = new PDFNumber();
-            ObjectType expected = PDFObjectTypes.Number;
+            ObjectType expected = ObjectTypes.Number;
 
             ObjectType actual;
             actual = target.Type;

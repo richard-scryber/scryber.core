@@ -35,7 +35,7 @@ namespace Scryber.PDF.Resources
             get { return ResourceType; }
         }
 
-        public PDFProcSet(params string[] names) : base(PDFObjectTypes.ProcSet)
+        public PDFProcSet(params string[] names) : base(ObjectTypes.ProcSet)
         {
             this.Names = names;
         }

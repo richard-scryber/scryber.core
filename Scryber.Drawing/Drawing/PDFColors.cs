@@ -75,7 +75,7 @@ namespace Scryber.Drawing
         public static readonly PDFColor Yellow = PDFColor.Parse("#FFFF00");
 
         [System.Xml.Serialization.XmlAttribute("Transparent")]
-        public static readonly PDFColor Transparent = new PDFColor(ColorSpace.RGB, System.Drawing.Color.Transparent);
+        public static readonly PDFColor Transparent = new PDFColor();
 
         private static Dictionary<string, PDFColor> _named;
 
@@ -115,7 +115,8 @@ namespace Scryber.Drawing
 
         public static bool TryGetColorFromName(string name, out PDFColor color)
         {
-            color = null;
+            color = PDFColor.Transparent;
+            bool known = false;
 
             if (string.IsNullOrEmpty(name))
                 return false;
@@ -125,59 +126,76 @@ namespace Scryber.Drawing
             {
                 case ("aqua"):
                     color = PDFColors.Aqua;
+                    known = true;
                     break;
                 case ("black"):
                     color = PDFColors.Black;
+                    known = true;
                     break;
                 case ("blue"):
                     color = PDFColors.Blue;
+                    known = true;
                     break;
                 case ("fuchsia"):
                     color = PDFColors.Fuchsia;
+                    known = true;
                     break;
                 case ("gray"):
                     color = PDFColors.Gray;
+                    known = true;
                     break;
                 case ("green"):
                     color = PDFColors.Green;
+                    known = true;
                     break;
                 case ("lime"):
                     color = PDFColors.Lime;
+                    known = true;
                     break;
                 case ("maroon"):
                     color = PDFColors.Maroon;
+                    known = true;
                     break;
                 case ("navy"):
                     color = PDFColors.Navy;
+                    known = true;
                     break;
                 case ("olive"):
                     color = PDFColors.Olive;
+                    known = true;
                     break;
                 case ("purple"):
                     color = PDFColors.Purple;
+                    known = true;
                     break;
                 case ("red"):
                     color = PDFColors.Red;
+                    known = true;
                     break;
                 case ("silver"):
                     color = PDFColors.Silver;
+                    known = true;
                     break;
                 case ("teal"):
                     color = PDFColors.Teal;
+                    known = true;
                     break;
                 case ("white"):
                     color = PDFColors.White;
+                    known = true;
                     break;
                 case ("yellow"):
                     color = PDFColors.Yellow;
+                    known = true;
                     break;
                 case ("transparent"):
                     color = PDFColors.Transparent;
+                    known = true;
                     break;
                 default:
                     break;
             }
-            return null != color;
+            return known;
         }
 
         public static PDFColor FromName(string name)

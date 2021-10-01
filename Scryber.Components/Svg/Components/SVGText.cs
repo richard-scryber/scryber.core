@@ -37,7 +37,7 @@ namespace Scryber.Svg.Components
         }
 
 
-        public SVGText() : base(PDFObjectTypes.Text)
+        public SVGText() : base(ObjectTypes.Text)
         {
         }
 

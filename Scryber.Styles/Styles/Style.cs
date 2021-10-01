@@ -921,7 +921,7 @@ namespace Scryber.Styles
         //
 
         public Style()
-            : this(PDFObjectTypes.Style)
+            : this(ObjectTypes.Style)
         {
         }
 

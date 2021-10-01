@@ -140,7 +140,7 @@ namespace Scryber.Components
 
 
         public PageNumberLabel()
-            : base(PDFObjectTypes.Text)
+            : base(ObjectTypes.Text)
         {
         }
 

@@ -195,7 +195,7 @@ namespace Scryber.Drawing
             set 
             {
                 _col = value;
-                if (value == null)
+                if (value.IsEmpty)
                     this.ClearValue(SetValues.Color);
                 else
                     this.SetValue(SetValues.Color); ;

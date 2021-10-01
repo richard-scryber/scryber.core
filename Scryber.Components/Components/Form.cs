@@ -24,7 +24,7 @@ namespace Scryber.Components
 
         protected PDFAcrobatFormEntry FormEntry { get; set; }
 
-        public Form() : this(PDFObjectTypes.Form)
+        public Form() : this(ObjectTypes.Form)
         {
 
         }

@@ -173,7 +173,7 @@ namespace Scryber.Components
             }
             set
             {
-                if (null == value)
+                if (value.IsEmpty)
                     this.Style.RemoveValue(StyleKeys.BorderColorKey);
                 else
                     this.Style.SetValue(StyleKeys.BorderColorKey, value);
@@ -294,7 +294,7 @@ namespace Scryber.Components
             }
             set
             {
-                if (null == value)
+                if (value.IsEmpty)
                     this.Style.RemoveValue(StyleKeys.FillColorKey);
                 else
                     this.Style.SetValue(StyleKeys.FillColorKey, value);
@@ -415,7 +415,7 @@ namespace Scryber.Components
             }
             set
             {
-                if (null == value)
+                if (value.IsEmpty)
                     this.Style.RemoveValue(StyleKeys.StrokeColorKey);
                 else
                     this.Style.SetValue(StyleKeys.StrokeColorKey, value);
@@ -783,7 +783,7 @@ namespace Scryber.Components
         /// Creates a new instance of the table row
         /// </summary>
         public TableRow()
-            : this(PDFObjectTypes.TableRow)
+            : this(ObjectTypes.TableRow)
         {
         }
 
@@ -907,7 +907,7 @@ namespace Scryber.Components
         /// Creates a new header row
         /// </summary>
         public TableHeaderRow()
-            : this(PDFObjectTypes.TableHeaderRow)
+            : this(ObjectTypes.TableHeaderRow)
         {
         }
 
@@ -956,7 +956,7 @@ namespace Scryber.Components
         /// Creates a new instance of a table row
         /// </summary>
         public TableFooterRow()
-            : this(PDFObjectTypes.TableFooterRow)
+            : this(ObjectTypes.TableFooterRow)
         {
         }
 

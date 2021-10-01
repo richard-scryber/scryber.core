@@ -518,7 +518,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             var color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb(255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color.ToString());
 
             //Second page check
 
@@ -555,13 +555,13 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb(255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color.ToString());
 
             // Performance check
             using (var doc = Document.ParseDocument(path))
             {
                 
-                using (var stream = DocStreams.GetOutputStream("bodyWithBinding.pdf"))
+                using (var stream = DocStreams.GetOutputStream("bodyWithBinding_performance.pdf"))
                 {
                     doc.Params["model"] = model;
                     doc.AutoBind = true;
@@ -752,7 +752,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             var color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb(255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color.ToString());
 
             //Second page check
 
@@ -789,7 +789,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("rgb(255,0,0)", bgColor.ToString()); //Red Background
 
             color = pBlock.FullStyle.Fill.Color;
-            Assert.AreEqual("rgb(255,255,255)", color);
+            Assert.AreEqual("rgb(255,255,255)", color.ToString());
         }
 
 

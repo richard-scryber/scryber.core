@@ -76,7 +76,7 @@ namespace Scryber.Components
         /// Creates a new instance of the PDFTable
         /// </summary>
         public TableGrid()
-            : this(PDFObjectTypes.Table)
+            : this(ObjectTypes.Table)
         {
         }
 

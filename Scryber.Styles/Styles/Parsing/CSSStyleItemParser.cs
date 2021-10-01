@@ -164,7 +164,8 @@ namespace Scryber.Styles.Parsing
         public static bool ParseCSSColor(string part, out PDFColor color, out double? opacity)
         {
             bool result = false;
-            color = null;
+            color = PDFColor.Transparent;
+
             opacity = null;
             if (string.IsNullOrEmpty(part) == false)
             {

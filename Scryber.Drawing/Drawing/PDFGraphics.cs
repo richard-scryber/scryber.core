@@ -221,10 +221,12 @@ namespace Scryber.Drawing
             switch (color.ColorSpace)
             {
                 case ColorSpace.G:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeGrayscaleSpace, color.Gray);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeGrayscaleSpace, (PDFReal)color.Gray);
                     break;
+                case ColorSpace.CMYK:
                 case ColorSpace.RGB:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeRGBSpace, color.Red, color.Green, color.Blue);
+                    color = color.ToRGB();
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeRGBSpace, (PDFReal)color.Red, (PDFReal)color.Green, (PDFReal)color.Blue);
                     break;
                 case ColorSpace.HSL:
                 case ColorSpace.LAB:
@@ -240,10 +242,12 @@ namespace Scryber.Drawing
             switch (color.ColorSpace)
             {
                 case ColorSpace.G:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillGrayscaleSpace, color.Gray);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillGrayscaleSpace, (PDFReal)color.Gray);
                     break;
+                case ColorSpace.CMYK:
                 case ColorSpace.RGB:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillRGBSpace, color.Red, color.Green, color.Blue);
+                    color = color.ToRGB();
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillRGBSpace, (PDFReal)color.Red, (PDFReal)color.Green, (PDFReal)color.Blue);
                     break;
                 case ColorSpace.HSL:
                 case ColorSpace.LAB:

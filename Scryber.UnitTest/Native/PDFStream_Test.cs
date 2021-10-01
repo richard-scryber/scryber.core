@@ -571,7 +571,7 @@ namespace Scryber.Core.UnitTests.Native
             PDFStream target = new StreamProxy(filters, indobj);
             ObjectType actual;
             actual = target.Type;
-            ObjectType expected = PDFObjectTypes.Stream;
+            ObjectType expected = ObjectTypes.Stream;
 
             Assert.AreEqual(expected, actual);
 
