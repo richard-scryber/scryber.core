@@ -41,7 +41,7 @@ namespace Scryber.PDF.Resources
 
             public FontResourceMatch Next;
 
-            public bool IsMatch(string family, int weight, bool italic)
+            public bool IsMatch(string family, int weight, bool italic, bool matchChildren)
             {
                 if(string.Equals(this.FamilyName, family, StringComparison.OrdinalIgnoreCase))
                 {
@@ -52,15 +52,18 @@ namespace Scryber.PDF.Resources
                     }
                 }
 
-                if (null != Next)
-                    return Next.IsMatch(family, weight, italic);
+                if (null != Next && matchChildren)
+                    return Next.IsMatch(family, weight, italic, matchChildren);
                 else
                     return false;
             }
 
             public bool AddMatch(string family, int weight, bool italic)
             {
-                if (null != Next)
+                if (this.FamilyName == family && this.Weight == weight && this.Italic == italic)
+                    return true; //Already registered
+
+                else if (null != Next)
                     return Next.AddMatch(family, weight, italic);
                 else
                 {
@@ -250,12 +253,15 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        public bool Equals(string familyName, int fontWeight, FontStyle style)
+        public bool IsExactMatch(string familyName, int fontWeight, FontStyle style)
         {
-            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic);
+            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic, false);
         }
 
-        
+        public bool IsSubstitutionMatch(string familyName, int fontWeight, FontStyle style)
+        {
+            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic, true);
+        }
 
         //
         // rendering

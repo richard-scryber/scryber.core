@@ -1171,7 +1171,7 @@ namespace Scryber.Components
                 {
                     if (rsrc is PDFFontResource frsc)
                     {
-                        if (frsc.Equals(sel.FamilyName, font.FontWeight, font.FontStyle))
+                        if (frsc.IsExactMatch(sel.FamilyName, font.FontWeight, font.FontStyle))
                         {
                             font.SetResourceFont(sel.FamilyName, frsc);
                             return frsc;
@@ -1193,6 +1193,7 @@ namespace Scryber.Components
                     {
                         var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontWeight, font.FontStyle);
                         var rsrc = this.RegisterFontResource(fullname, this, found);
+                        rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
                         font.SetResourceFont(sel.FamilyName, rsrc);
                         return rsrc;
                     }
@@ -1205,6 +1206,26 @@ namespace Scryber.Components
 
                 if (this.RenderOptions.UseFontSubstitution)
                 {
+                    //Do the search again from the top, looking for registered substitutions
+
+                    while (null != sel)
+                    {
+                        foreach (var rsrc in this.SharedResources)
+                        {
+                            if (rsrc is PDFFontResource frsc)
+                            {
+                                if (frsc.IsSubstitutionMatch(sel.FamilyName, font.FontWeight, font.FontStyle))
+                                {
+                                    font.SetResourceFont(sel.FamilyName, frsc);
+                                    return frsc;
+                                }
+                            }
+                        }
+
+                        sel = sel.Next;
+                    }
+
+                    //No registered substitutions
 
                     sel = font.Selector;
                     while (null != sel)
@@ -1273,10 +1294,7 @@ namespace Scryber.Components
                         mono = this.RegisterFontResource(fullname, this, monoDefn);
                         
                     }
-                    else
-                    {
-                        mono.RegisterSubstitution(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
-                    }
+                    mono.RegisterSubstitution(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
                     font.SetResourceFont(font.Selector.FamilyName, mono);
                     return mono;
 
