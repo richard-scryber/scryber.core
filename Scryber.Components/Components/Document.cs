@@ -43,7 +43,7 @@ namespace Scryber.Components
     [PDFParsableComponent("Document")]
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
-    public class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IPDFStyledComponent,
+    public partial class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IPDFStyledComponent,
                                                       IPDFTemplateParser, IParsedDocument, IControlledComponent
     {
         //
@@ -641,11 +641,15 @@ namespace Scryber.Components
 
         #endregion
 
+        #region IPDFStyledComponent.Style {get;} + IPDFStyledComponent.HasStyle {get;}
+
         // IPDFStyledComponent explicit interface - so we dont show the properties by default
 
         Style IPDFStyledComponent.Style { get; }
 
         bool IPDFStyledComponent.HasStyle { get { return null != (this as IPDFStyledComponent).Style; } }
+
+        #endregion
 
         //
         // document level services and values
@@ -705,13 +709,41 @@ namespace Scryber.Components
 
         #endregion
 
+        #region protected DocumentFontMatcher FontMatcher {get; set;}
+
+        private DocumentFontMatcher _fontMatcher;
+
+        /// <summary>
+        /// Gets the font matching services
+        /// </summary>
+        protected DocumentFontMatcher FontMatcher
+        {
+            get {
+                if (null == _fontMatcher)
+                    _fontMatcher = new DocumentFontMatcher(this);
+                return _fontMatcher;
+            }
+            set
+            {
+                this._fontMatcher = value;
+            }
+        }
+
+
+        #endregion
+
         //
         // file requests
         //
 
-        
+
+        #region public RemoteFileRequestSet RemoteRequests { get;set; } + HasRemoteRequests {get;}
+
         private RemoteFileRequestSet _requests;
 
+        /// <summary>
+        /// Gets the set of all the remote file requests for this document that are still pending.
+        /// </summary>
         public RemoteFileRequestSet RemoteRequests
         {
             get
@@ -726,11 +758,26 @@ namespace Scryber.Components
             }
         }
 
+        /// <summary>
+        /// Returns true if this document has some pending remote file requests.
+        /// </summary>
         public bool HasRemoteRequests
         {
             get { return null != _requests && _requests.Count > 0; }
         }
 
+        #endregion
+
+        #region public virtual RemoteFileRequest RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
+
+        /// <summary>
+        /// Registers a file to be loaded from an external source or web url. With a callback to be used once the request has completed.
+        /// </summary>
+        /// <param name="filePath">The full path to the file to be loaded</param>
+        /// <param name="callback">The delegate method to execute when the request has succeeded</param>
+        /// <param name="owner">Optional owner for the request</param>
+        /// <param name="arguments">Optional arguments that will be give back to the callback method</param>
+        /// <returns>A new disposable RemoteFileRequest object</returns>
         public virtual RemoteFileRequest RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
         {
             var request = new RemoteFileRequest(filePath, callback, owner, arguments);
@@ -739,6 +786,10 @@ namespace Scryber.Components
             return request;
         }
 
+        /// <summary>
+        /// Registers a new RemoteFileRequest. If the document exec mode is Immediate, then this will be syncronouly executed, otherwise it will be waited.
+        /// </summary>
+        /// <param name="request"></param>
         public virtual void RegisterRemoteFileRequest(RemoteFileRequest request)
         {
             if (null == request)
@@ -753,7 +804,8 @@ namespace Scryber.Components
             }
         }
 
-        
+        #endregion
+
 
         //
         // IXMLParsedDocument interface (explicit implementation)
@@ -925,8 +977,6 @@ namespace Scryber.Components
             
             //Get the applied style and then merge it into the base style
             Style applied = this.GetAppliedStyle(this, style);
-            //if (null != applied)
-            //    applied.MergeInto(style);
             applied.Flatten();
 
             return applied;
@@ -935,6 +985,7 @@ namespace Scryber.Components
         #endregion
 
         #region protected override PDFStyle GetBaseStyle()
+
         /// <summary>
         /// Overrides the base implementation to get a full (yet empty) style for a document.
         /// </summary>
@@ -942,9 +993,6 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            //style.Items.Add(new PDFBackgroundStyle());
-            //style.Items.Add(new PDFBorderStyle());
-            //style.Items.Add(new PDFStrokeStyle());
             Styles.FillStyle fill = new Styles.FillStyle();
             style.StyleItems.Add(fill);
             fill.Color = PDFColors.Black;
@@ -1161,219 +1209,19 @@ namespace Scryber.Components
         /// <returns>A PDFFontResource that will be included in the document (or null if it is not loaded and should not be created)</returns>
         public virtual PDFFontResource GetFontResource(PDFFont font, bool create, bool throwOnNotFound = true)
         {
-
-            string type = PDFResource.FontDefnResourceType;
-            var sel = font.Selector;
-
-            while (null != sel)
+            var found = this.FontMatcher.GetFont(font, create);
+            if(null == found)
             {
-                foreach (var rsrc in this.SharedResources)
-                {
-                    if (rsrc is PDFFontResource frsc)
-                    {
-                        if (frsc.IsExactMatch(sel.FamilyName, font.FontWeight, font.FontStyle))
-                        {
-                            font.SetResourceFont(sel.FamilyName, frsc);
-                            return frsc;
-                        }
-                    }
-                }
+                if(throwOnNotFound)
+                    throw new NullReferenceException("No fonts could be found that matched the selector " + font.Selector.ToString() + " with name " + (font.FamilyName ?? "UNNAMED") + ", style " + font.FontStyle.ToString() + " and weight " + font.FontWeight);
 
-                sel = sel.Next;
+                font.ClearResourceFont();
             }
-
-            //not found so we should create
-            if (create)
-            {
-                sel = font.Selector;
-                while (null != sel)
-                {
-                    var found = PDFFontFactory.GetFontDefinition(sel.FamilyName, font.FontStyle, font.FontWeight, false);
-                    if (null != found)
-                    {
-                        var fullname = PDFFont.GetFullName(sel.FamilyName, font.FontWeight, font.FontStyle);
-                        var rsrc = this.RegisterFontResource(fullname, this, found);
-                        rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
-                        font.SetResourceFont(sel.FamilyName, rsrc);
-                        return rsrc;
-                    }
-                    else
-                        sel = sel.Next;
-                }
-
-
-                //Cannot load so look for a substitution
-
-                if (this.RenderOptions.UseFontSubstitution)
-                {
-                    //Do the search again from the top, looking for registered substitutions
-
-                    while (null != sel)
-                    {
-                        foreach (var rsrc in this.SharedResources)
-                        {
-                            if (rsrc is PDFFontResource frsc)
-                            {
-                                if (frsc.IsSubstitutionMatch(sel.FamilyName, font.FontWeight, font.FontStyle))
-                                {
-                                    font.SetResourceFont(sel.FamilyName, frsc);
-                                    return frsc;
-                                }
-                            }
-                        }
-
-                        sel = sel.Next;
-                    }
-
-                    //No registered substitutions
-
-                    sel = font.Selector;
-                    while (null != sel)
-                    {
-                        var rsrc = GetSubstitutionFont(sel.FamilyName, font.FontWeight, font.FontStyle);
-                        if (null != rsrc)
-                        {
-                            this.TraceLog.Add(TraceLevel.Warning, "Document", "The font '" + font.FullName + "' could not be found, falling back to " + rsrc.Definition.Family + ": " + rsrc.Definition.Weight + (rsrc.Definition.Italic ? " Italic" : "") + " for rendering");
-
-                            rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
-                            font.SetResourceFont(sel.FamilyName, rsrc);
-                            return rsrc;
-                        }
-                        else
-                            sel = sel.Next;
-                    }
-
-                    //No match for the style so fall back to regular if we can
-                    if (font.FontStyle != Drawing.FontStyle.Regular)
-                    {
-                        sel = font.Selector;
-                        while (null != sel)
-                        {
-                            var rsrc = GetSubstitutionFont(sel.FamilyName, font.FontWeight, Drawing.FontStyle.Regular);
-                            if (null != rsrc)
-                            {
-                                this.TraceLog.Add(TraceLevel.Warning, "Document", "The font '" + font.FullName + "' could not be found, falling back to " + rsrc.Definition.Family + ": " + rsrc.Definition.Weight + (rsrc.Definition.Italic ? " Italic" : "") + " for rendering");
-                                rsrc.RegisterSubstitution(sel.FamilyName, font.FontWeight, font.FontStyle);
-                                font.SetResourceFont(sel.FamilyName, rsrc);
-                                return rsrc;
-                            }
-                            else
-                                sel = sel.Next;
-                        }
-                    }
-
-                    //Still no match - let's fallback to courier and issue an error message
-                    this.TraceLog.Add(TraceLevel.Error, "Document", "The font '" + font.FullName + "' could not be loaded, falling back to Courier for rendering");
-
-                    string defaultFont = "Courier";
-                    int defWeight = 400;
-                    Drawing.FontStyle defStyle = Drawing.FontStyle.Regular;
-                    string rsrcName = defaultFont;
-
-                    if (font.FontWeight >= FontWeights.SemiBold)
-                    {
-                        rsrcName += ", Bold";
-                        defWeight = FontWeights.Bold;
-                        if (font.FontStyle != Drawing.FontStyle.Regular)
-                        {
-                            defStyle = Drawing.FontStyle.Italic;
-                            rsrcName += " Italic";
-                        }
-                    }
-                    else if (font.FontStyle != Drawing.FontStyle.Regular)
-                    {
-                        defStyle = Drawing.FontStyle.Italic;
-                        rsrcName += ", Italic";
-                    }
-
-                    var mono = this.SharedResources.GetResource(PDFResource.FontDefnResourceType, rsrcName) as PDFFontResource;
-                    if(null == mono)
-                    {
-                        var monoDefn = PDFFontFactory.GetFontDefinition(defaultFont, defStyle, defWeight, true);
-                        var fullname = PDFFont.GetFullName(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
-                        mono = this.RegisterFontResource(fullname, this, monoDefn);
-                        
-                    }
-                    mono.RegisterSubstitution(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
-                    font.SetResourceFont(font.Selector.FamilyName, mono);
-                    return mono;
-
-                }
-            }
-
-            if (throwOnNotFound)
-                throw new NullReferenceException("No fonts could be found that matched the selector " + font.Selector.ToString() + " with name " + (font.FamilyName ?? "UNNAMED") + ", style " + font.FontStyle.ToString() + " and weight " + font.FontWeight);
-
-            font.ClearResourceFont();
-            return null;
+            return found;
 
         }
 
-        //We use a single look up buffer in the document
-        private List<PDFFontResource> _lookupBuffer = new List<PDFFontResource>();
-
-        private PDFFontResource GetSubstitutionFont(string familyName, int fontWeight, Drawing.FontStyle fontStyle)
-        {
-            int proximity = int.MaxValue;
-
-            if (this.SharedResources.Count > 0)
-            {
-                _lookupBuffer.Clear();
-
-                foreach (var rsrc in this.SharedResources)
-                {
-                    if(rsrc is PDFFontResource fnt)
-                    {
-                        if(fnt.Definition.Family == familyName)
-                        {
-                            if (fontStyle == Drawing.FontStyle.Italic && fnt.Definition.Italic)
-                                _lookupBuffer.Add(fnt);
-                            else if (fontStyle == Drawing.FontStyle.Regular && !fnt.Definition.Italic)
-                                _lookupBuffer.Add(fnt);
-                            else
-                            {
-                                //Styles don't match so don't add.
-                            }
-                        }
-                    }
-                }
-                
-
-                if(_lookupBuffer.Count > 0)
-                {
-                    //We have matching font resources.
-                    //so find the closest match
-                    
-                    PDFFontResource closest = null;
-
-                    foreach (var fnt in _lookupBuffer)
-                    {
-                        int newProx = 0;
-                        if (fontStyle == Drawing.FontStyle.Italic)
-                            newProx = fnt.Definition.Italic ? 0 : 1000; //Prefer a style rather than a weight.
-                        else
-                            newProx = fnt.Definition.Italic ? 1000 : 0; //reverse check we don't really want to use italic unless absolutely nescessary
-
-                        newProx += Math.Abs(fontWeight - fnt.Definition.Weight);
-
-                        //if we don't have a closest match
-                        //or this resource more closely matches
-                        if(closest == null || newProx < proximity)
-                        {
-                            proximity = newProx;
-                            closest = fnt;
-                        }
-                        
-                    }
-
-                    return closest;
-
-                }
-            }
-
-
-            return null;
-        }
+        
 
         #endregion
 

@@ -37,6 +37,9 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
 using System.Net.Http;
+using System.Collections;
+using System.Xml;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Scryber.Drawing
 {
@@ -49,15 +52,17 @@ namespace Scryber.Drawing
         // Inner classes
         //
 
-        #region private abstract class FontReference
+        #region public abstract class FontReference
+
         /// <summary>
         /// A unique font reference
         /// </summary>
-        private abstract class FontReference
+        public abstract class FontReference
         {
-            internal string FamilyName { get; private set; }
-            internal Scryber.Drawing.FontStyle Style { get; private set; }
-            internal int Weight { get; private set; }
+            public string FamilyName { get; private set; }
+            public Scryber.Drawing.FontStyle Style { get; private set; }
+            public int Weight { get; private set; }
+
             internal string FilePath { get; private set; }
             internal byte[] FileData { get; private set; }
             internal int FileHeadOffset { get; private set; }
@@ -160,10 +165,12 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region private class LinkedFamilyStyledReference
+
         /// <summary>
         /// A linked set of styled families with a linked list of weights
         /// </summary>
-        private class LinkedFamilyStyledReference
+        private class LinkedFamilyStyledReference : IEnumerable<FontReference>
         {
             internal FamilyReference Family { get; private set; }
 
@@ -251,7 +258,74 @@ namespace Scryber.Drawing
                 return curr;
             }
 
+
+
+            public IEnumerator<FontReference> GetEnumerator()
+            {
+                return new FontStyleReferenceEnumerator(this);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return this.GetEnumerator();
+            }
         }
+
+        #endregion
+
+        #region private class FontReferenceEnumerator
+
+        /// <summary>
+        /// Enumerates through a linked style reference
+        /// </summary>
+        private class FontStyleReferenceEnumerator : IEnumerator<FontReference>
+        {
+            private LinkedFontReference _curr;
+            private LinkedFamilyStyledReference _root;
+
+            public FontStyleReferenceEnumerator(LinkedFamilyStyledReference root)
+            {
+                _root = root;
+                _curr = null;
+            }
+
+            
+            public FontReference Current
+            {
+                get { return _curr; }
+            }
+
+            object IEnumerator.Current
+            {
+                get { return _curr; }
+            }
+
+            public void Dispose()
+            {
+                _curr = null;
+                _root = null;
+            }
+
+            public bool MoveNext()
+            {
+                if (null == _root)
+                    return false;
+
+                if (null == _curr)
+                    _curr = _root.Weights;
+                else
+                    _curr = _curr.Next;
+
+                return null != _curr;
+            }
+
+            public void Reset()
+            {
+                _curr = null;
+            }
+        }
+
+        #endregion
 
         #region private class FamilyReference
 
@@ -270,6 +344,21 @@ namespace Scryber.Drawing
                 get { return _first; }
             }
 
+            internal LinkedFamilyStyledReference this[FontStyle style]
+            {
+                get
+                {
+                    var one = this._first;
+                    while (null != one)
+                    {
+                        if (one.FontStyle == style)
+                            return one;
+                        else
+                            one = one.Next;
+                    }
+                    return null;
+                }
+            }
             internal FontReference this[Scryber.Drawing.FontStyle style, int weight]
             {
                 get
@@ -439,8 +528,6 @@ namespace Scryber.Drawing
         }
 
         #endregion
-
-  
 
 
         //
@@ -640,6 +727,51 @@ namespace Scryber.Drawing
         }
 
         #endregion
+
+        
+        public static IEnumerable<FontReference> GetAllFontsForFamilyAndStyle(string family, FontStyle style)
+        {
+            AssertInitialized();
+            List<FontReference> found = new List<FontReference>();
+
+            var bag = _customfamilies[family];
+            
+            if(null != bag)
+            {
+                var styleRef = bag[style];
+                if (null != styleRef)
+                    found.AddRange(styleRef);
+            }
+
+            bag = _staticfamilies[family];
+
+            if (null != bag)
+            {
+                var styleRef = bag[style];
+                if (null != styleRef)
+                    found.AddRange(styleRef);
+            }
+
+            bag = _systemfamilies[family];
+
+            if (null != bag)
+            {
+                var styleRef = bag[style];
+                if (null != styleRef)
+                    found.AddRange(styleRef);
+            }
+
+            bag = _genericfamilies[family];
+
+            if (null != bag)
+            {
+                var styleRef = bag[style];
+                if (null != styleRef)
+                    found.AddRange(styleRef);
+            }
+
+            return found;
+        }
 
         #region public static PDFFontDefinition GetFontDefinition(string fullname)
 

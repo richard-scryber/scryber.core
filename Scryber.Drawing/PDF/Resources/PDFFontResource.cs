@@ -38,36 +38,39 @@ namespace Scryber.PDF.Resources
             public string FamilyName;
             public int Weight;
             public bool Italic;
+            public bool IsSubstitution;
 
             public FontResourceMatch Next;
 
-            public bool IsMatch(string family, int weight, bool italic, bool matchChildren)
+            public bool IsMatch(string family, int weight, bool italic, bool matchSubstitution)
             {
-                if(string.Equals(this.FamilyName, family, StringComparison.OrdinalIgnoreCase))
+                if (!this.IsSubstitution || matchSubstitution)
                 {
-                    if(this.Weight == weight)
+                    if (string.Equals(this.FamilyName, family, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (this.Italic == italic)
-                            return true;
+                        if (this.Weight == weight)
+                        {
+                            if (this.Italic == italic)
+                                return true;
+                        }
                     }
                 }
-
-                if (null != Next && matchChildren)
-                    return Next.IsMatch(family, weight, italic, matchChildren);
+                if (null != Next)
+                    return Next.IsMatch(family, weight, italic, matchSubstitution);
                 else
                     return false;
             }
 
-            public bool AddMatch(string family, int weight, bool italic)
+            public bool AddMatch(string family, int weight, bool italic, bool isSubstitution)
             {
                 if (this.FamilyName == family && this.Weight == weight && this.Italic == italic)
                     return true; //Already registered
 
                 else if (null != Next)
-                    return Next.AddMatch(family, weight, italic);
+                    return Next.AddMatch(family, weight, italic, isSubstitution);
                 else
                 {
-                    Next = new FontResourceMatch() { FamilyName = family, Weight = weight, Italic = italic };
+                    Next = new FontResourceMatch() { FamilyName = family, Weight = weight, Italic = italic, IsSubstitution = isSubstitution };
                     return true;
                 }
             }
@@ -207,9 +210,9 @@ namespace Scryber.PDF.Resources
         /// <param name="familyName"></param>
         /// <param name="weight"></param>
         /// <param name="style"></param>
-        public void RegisterSubstitution(string familyName, int weight, FontStyle style)
+        public void RegisterSubstitution(string familyName, int weight, FontStyle style, bool isSubstitution)
         {
-            this._matches.AddMatch(familyName, weight, style == FontStyle.Italic);
+            this._matches.AddMatch(familyName, weight, style == FontStyle.Italic, isSubstitution);
         }
 
         #region public bool Equals(PDFFontResource other) + 2 overloads
@@ -255,12 +258,12 @@ namespace Scryber.PDF.Resources
 
         public bool IsExactMatch(string familyName, int fontWeight, FontStyle style)
         {
-            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic, false);
+            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic, matchSubstitution: false) ;
         }
 
         public bool IsSubstitutionMatch(string familyName, int fontWeight, FontStyle style)
         {
-            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic, true);
+            return this._matches.IsMatch(familyName, fontWeight, style == FontStyle.Italic, matchSubstitution: true);
         }
 
         //
