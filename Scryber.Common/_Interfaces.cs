@@ -338,6 +338,16 @@ namespace Scryber
         /// <returns></returns>
         string GetIncrementID(ObjectType type);
 
+        /// <summary>
+        /// Gets the current conformance mode (strict or lax)
+        /// </summary>
+        ParserConformanceMode ConformanceMode { get; }
+
+        /// <summary>
+        /// Gets the trace log associated with the current execution
+        /// </summary>
+        PDFTraceLog TraceLog { get; }
+
     }
 
     #endregion

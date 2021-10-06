@@ -1629,11 +1629,15 @@ namespace Scryber.PDF.Layout
                 linetoAddTo.Close();
                 bool newPage;
                 PDFLayoutRegion region = linetoAddTo.Region;
+                PDFLayoutRegion orig = region;
                 PDFLayoutBlock block = region.Parent as PDFLayoutBlock;
 
                 //If we can overflow then move the line onto a new column page.
                 if (this.MoveToNextRegion(total.Height, ref region, ref block, out newPage))
                 {
+                    if (region == orig)
+                        region = block.CurrentRegion;
+                    
                     linetoAddTo = region.BeginNewLine();
                 }
                 else
@@ -1650,6 +1654,12 @@ namespace Scryber.PDF.Layout
             {
                 if (component is IPDFImageComponent && !canfitVertical) //Did we overflow? If so recalculate an image size
                 {
+                    if(isInternalCall) //We are doing it again, so we should fail
+                    {
+                        this.ContinueLayout = false;
+                        return false;  
+                    }
+
                     content.Width = linetoAddTo.AvailableWidth;
                     content.Height = linetoAddTo.Region.AvailableHeight;
                     required = ((IPDFImageComponent)component).GetRequiredSizeForLayout(content.Size, this.Context, style);

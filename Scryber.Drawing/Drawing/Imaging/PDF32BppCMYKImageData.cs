@@ -23,7 +23,7 @@ using System.Text;
 
 namespace Scryber.Drawing.Imaging
 {
-    public class PDF32BppCMYKImageData : PDFImageData
+    public class PDF32BppCMYKImageData : PDFBinaryImageData
     {
 
         public PDF32BppCMYKImageData(string source, int w, int h)

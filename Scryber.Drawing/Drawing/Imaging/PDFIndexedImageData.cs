@@ -25,7 +25,7 @@ using Scryber.PDF;
 
 namespace Scryber.Drawing.Imaging
 {
-    internal class PDFIndexedImageData : PDFImageData
+    internal class PDFIndexedImageData : PDFBinaryImageData
     {
 
         private string _bytestreamdata = null;//the palette as a string of bytes

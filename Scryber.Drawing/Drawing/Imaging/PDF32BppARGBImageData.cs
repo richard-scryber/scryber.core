@@ -26,7 +26,7 @@ using Scryber.PDF;
 
 namespace Scryber.Drawing.Imaging
 {
-    internal class PDF32BppARGBImageData : PDFImageData
+    internal class PDF32BppARGBImageData : PDFBinaryImageData
     {
 
         private byte[] _alpha;

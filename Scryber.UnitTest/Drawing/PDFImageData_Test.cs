@@ -6,6 +6,7 @@ using Scryber.PDF.Native;
 using Scryber;
 using System.Collections.Generic;
 using System.Linq;
+using Scryber.Drawing.Imaging;
 
 namespace Scryber.Core.UnitTests.Drawing
 {
@@ -96,7 +97,7 @@ namespace Scryber.Core.UnitTests.Drawing
             string sourcekey = ImageFilePath;
             Bitmap bitmap = CreateImageBitmap();
 
-            PDFImageData actual = PDFImageData.LoadImageFromBitmap(sourcekey, bitmap, false);
+            PDFBinaryImageData actual = PDFImageData.LoadImageFromBitmap(sourcekey, bitmap, false) as PDFBinaryImageData;
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Data);
         }
@@ -115,8 +116,8 @@ namespace Scryber.Core.UnitTests.Drawing
             try
             {
                 string path = tmp;
-                PDFImageData actual;
-                actual = PDFImageData.LoadImageFromLocalFile(path);
+                PDFBinaryImageData actual;
+                actual = PDFImageData.LoadImageFromLocalFile(path) as PDFBinaryImageData;
                 Assert.IsNotNull(actual);
                 Assert.IsNotNull(actual.Data);
             }
@@ -134,8 +135,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LoadImageFromURI_Test()
         {
             string uri = ImageUrlPath;
-            PDFImageData actual;
-            actual = PDFImageData.LoadImageFromURI(uri);
+            PDFBinaryImageData actual;
+            actual = PDFImageData.LoadImageFromURI(uri) as PDFBinaryImageData; 
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Data);
         }
@@ -232,7 +233,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void BytesPerLine_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            PDFBinaryImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false) as PDFBinaryImageData;
             int expected = ImageBytesPerLine;
             int actual = (int)target.BytesPerLine;
 

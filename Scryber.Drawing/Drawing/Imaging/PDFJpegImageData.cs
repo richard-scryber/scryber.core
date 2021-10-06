@@ -26,7 +26,7 @@ using Scryber.PDF.Resources;
 
 namespace Scryber.Drawing.Imaging
 {
-    internal class PDFJpegImageData : PDFImageData
+    internal class PDFJpegImageData : PDFBinaryImageData
     {
 
         public override bool IsPrecompressedData

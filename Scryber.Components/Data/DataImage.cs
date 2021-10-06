@@ -67,8 +67,7 @@ namespace Scryber.Data
 
 
                     PDFImageData data = PDFImageData.LoadImageFromBitmap(name, img, this.Compress);
-
-                    _xobj = PDFImageXObject.Load(data, name);
+                    _xobj = PDFImageXObject.Load(data, this.Document.RenderOptions.Compression, name);
                     this.Document.SharedResources.Add(_xobj);
                 }
             }

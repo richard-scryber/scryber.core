@@ -2,6 +2,25 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Scryber</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Imaging\" />
+    <None Remove="SixLabors.ImageSharp" />
+    <None Remove="Imaging\Formats\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Imaging\" />
+    <Folder Include="Imaging\Formatted\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+  </ItemGroup>
 </Project>

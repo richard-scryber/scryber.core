@@ -1360,7 +1360,8 @@ namespace Scryber.Components
             {
                 PDFImageData data = resource as PDFImageData;
                 string id = this.GetIncrementID(ObjectTypes.ImageXObject);
-                PDFImageXObject img = PDFImageXObject.Load(data, id);
+                
+                PDFImageXObject img = PDFImageXObject.Load(data, this.RenderOptions.Compression, id);
                 resource = img;
             }
 
@@ -2367,6 +2368,7 @@ namespace Scryber.Components
                                 object returned = prov.GetResponse(prov.ProviderKey + "Image", src, null);
                                 if (returned is PDFImageData)
                                     data = (PDFImageData)returned;
+
                                 else if (returned is byte[])
                                 {
                                     byte[] imgdata = (byte[])returned;
@@ -2408,7 +2410,10 @@ namespace Scryber.Components
 
             if (null != data)
             {
-                PDFImageXObject xobj = PDFImageXObject.Load(data, key);
+                IStreamFilter[] filters = null;
+                if (this.RenderOptions.Compression == OutputCompressionType.FlateDecode)
+                    filters = new IStreamFilter[] { new PDF.PDFDeflateStreamFilter() };
+                PDFImageXObject xobj = PDFImageXObject.Load(data, filters, key);
                 return xobj;
             }
             else

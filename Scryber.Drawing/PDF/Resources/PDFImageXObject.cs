@@ -56,6 +56,13 @@ namespace Scryber.PDF.Resources
         }
 
 
+        private IStreamFilter[] _filters;
+
+        public IStreamFilter[] Filters
+        {
+            get { return _filters; }
+            private set { _filters = value; }
+        }
 
         public override string ResourceType
         {
@@ -95,7 +102,7 @@ namespace Scryber.PDF.Resources
             {
                 throw new NullReferenceException("The Image resource '" + this.Name + "' does not have any ImageData assigned");
             }
-            return this.ImageData.Render(this.Name, context, writer);
+            return this.ImageData.Render(this.Name, this.Filters, context, writer);
         }
 
 
@@ -134,6 +141,14 @@ namespace Scryber.PDF.Resources
         // Load Image methods
         //
 
+        public static PDFImageXObject Load(PDFImageData imgdata, OutputCompressionType compression, string name)
+        {
+            IStreamFilter[] filters = null;
+            if (compression == OutputCompressionType.FlateDecode)
+                filters = new IStreamFilter[] { new Scryber.PDF.PDFDeflateStreamFilter() };
+
+            return Load(imgdata, filters, name);
+        }
         /// <summary>
         /// Creates a new image resource from the specified image data with the resource name. 
         /// The imagedata.SourcePath will act as the resource key.
@@ -141,10 +156,11 @@ namespace Scryber.PDF.Resources
         /// <param name="imgdata">The image data this resource holds</param>
         /// <param name="name">The name of the image resource</param>
         /// <returns>An initialized imageXObject</returns>
-        public static PDFImageXObject Load(PDFImageData imgdata, string name)
+        public static PDFImageXObject Load(PDFImageData imgdata, IStreamFilter[] filters, string name)
         {
             PDFImageXObject x = new PDFImageXObject();
             x._src = imgdata.SourcePath;
+            x._filters = filters;
             x._data = imgdata;
             x.Name = (Native.PDFName)name;
 

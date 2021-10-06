@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Text;
 using Scryber.Drawing;
+using Scryber.PDF;
 using Scryber.PDF.Resources;
 using Scryber.Styles;
 
@@ -93,7 +94,7 @@ namespace Scryber.Components
                 if (null == xobj)
                 {
                     string name = this.Document.GetIncrementID(ObjectTypes.ImageXObject);
-                    xobj = PDFImageXObject.Load(this.Data, name);
+                    xobj = PDFImageXObject.Load(this.Data, this.Document.RenderOptions.Compression, name);
                     this.Document.SharedResources.Add(xobj);
                 }
             }

@@ -46,7 +46,7 @@ namespace Scryber
         PDFImageData LoadImageData(IDocument document, IComponent owner, string path);
     }
 
-
+    
 
 
 }

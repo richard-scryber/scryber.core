@@ -23,7 +23,7 @@ using System.Text;
 
 namespace Scryber.Drawing.Imaging
 {
-    internal class PDF24BppRGBImageData : PDFImageData
+    internal class PDF24BppRGBImageData : PDFBinaryImageData
     {
 
         internal PDF24BppRGBImageData(string uri, int width, int height)

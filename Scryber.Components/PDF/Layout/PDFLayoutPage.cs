@@ -552,7 +552,7 @@ namespace Scryber.PDF.Layout
 
                 string name = doc.GetIncrementID(ObjectTypes.ImageXObject);
 
-                _badgexobj = PDFImageXObject.Load(data, name);
+                _badgexobj = PDFImageXObject.Load(data, this.Document.RenderOptions.Compression, name);
                 doc.SharedResources.Add(_badgexobj);
             }
 
