@@ -20,7 +20,4 @@
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
-  </ItemGroup>
 </Project>

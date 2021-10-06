@@ -9,9 +9,9 @@ using SixLabors.ImageSharp.Formats;
 
 namespace Scryber.Imaging
 {
-    public class ImageFactoryPng : ImageFactoryBase, IPDFImageDataFactory
+    public class ImageFactoryTiff : ImageFactoryBase, IPDFImageDataFactory
     {
-        public ImageFactoryPng()
+        public ImageFactoryTiff()
         {
         }
 
@@ -29,7 +29,7 @@ namespace Scryber.Imaging
 
             PDFImageData data = null;
 
-            if (format.Name == "PNG")
+            if (format.Name == "TIFF")
             {
                 data = GetImageDataForImage(img, path);
             }

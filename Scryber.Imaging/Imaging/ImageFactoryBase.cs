@@ -140,36 +140,40 @@ namespace Scryber.Imaging
         {
             _lock = new object();
 
-            _factories = new Dictionary<Type, FactoryCreateInstance>();
-            _factories.Add(typeof(Image<A8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Argb32>), (img, src) =>  { return new PDFImageSharpARGB32Data(img, src); });
-            _factories.Add(typeof(Image<Bgr24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Bgr565>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Bgra32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Bgra4444>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Bgra5551>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Byte4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<L16>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<L8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<La16>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<La32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Rg32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Rgb24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Rgb48>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Rgba1010102>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Rgba32>), (img, src) => { return new PDFImageSharpRGBA32Data(img, src); });
-            _factories.Add(typeof(Image<Rgba64>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<RgbaVector>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Short2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<Short4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<HalfSingle>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<HalfVector2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<HalfVector4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<NormalizedByte2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<NormalizedByte4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<NormalizedShort2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            _factories.Add(typeof(Image<NormalizedShort4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+            lock (_lock)
+            {
+                SixLabors.ImageSharp.Configuration.Default.AddTiff();
 
+                _factories = new Dictionary<Type, FactoryCreateInstance>();
+                _factories.Add(typeof(Image<A8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Argb32>), (img, src) => { return new PDFImageSharpARGB32Data(img, src); });
+                _factories.Add(typeof(Image<Bgr24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Bgr565>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Bgra32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Bgra4444>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Bgra5551>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Byte4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<L16>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<L8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<La16>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<La32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Rg32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Rgb24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Rgb48>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Rgba1010102>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Rgba32>), (img, src) => { return new PDFImageSharpRGBA32Data(img, src); });
+                _factories.Add(typeof(Image<Rgba64>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<RgbaVector>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Short2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<Short4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<HalfSingle>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<HalfVector2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<HalfVector4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<NormalizedByte2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<NormalizedByte4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<NormalizedShort2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+                _factories.Add(typeof(Image<NormalizedShort4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
+            }
         }
 
 
