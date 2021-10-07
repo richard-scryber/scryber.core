@@ -3,9 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
+using System.Collections.Generic;
 using io = System.IO;
 using System.IO;
 using Scryber.Drawing;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Core.UnitTests.Imaging
 {
@@ -158,7 +160,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 img.Source = src;
                 img.BorderColor = PDFColors.Black;
                 img.BorderStyle = LineType.Solid;
-                img.Width = 100;
+                img.MaximumWidth = 100;
 
                 page.Contents.Add(img);
 
@@ -181,36 +183,32 @@ namespace Scryber.Core.UnitTests.Imaging
         string[] allTiff = new string[]
         {
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/rgb_deflate.tiff",
-            /*"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p02.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p04.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p08.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/bpp1.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/chunklength1.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/chunklength2.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/colors-saturation-lightness.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-1-trns.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-16-tRNS-interlaced.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-16.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-2-tRNS.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-4-tRNS.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-minisblack-16_lsb.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/grayscale_deflate_multistrip.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/rgb_palette.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-palette-02.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-palette-04.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-02.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-08.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-10.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-12.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-14.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-16.tiff",
 
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-8-tRNS.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-alpha-16.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-alpha-8.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray_4bpp.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/icon.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-16_lsb_zip_predictor.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-16_msb_zip_predictor.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-24.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-24_lsb.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-32.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-32_lsb.tiff",
 
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/indexed.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/interlaced.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-16-alpha.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-48bpp-interlaced.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-48bpp.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h1v1.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h2v1.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h2v2.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h4v4.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-planar-08_h1v1.tiff",
 
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-8-tRNS.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/vim16x16_1.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/vim16x16_2.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/palette-8bpp.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/filter4.png",*/
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/little_endian.tiff",
 
         };
 
@@ -218,6 +216,7 @@ namespace Scryber.Core.UnitTests.Imaging
         [TestMethod()]
         public void WriteAllTestTiffsFromImageSharp()
         {
+
             var doc = new Document();
 
             var page = new Page();
@@ -229,31 +228,51 @@ namespace Scryber.Core.UnitTests.Imaging
             var factory = new Scryber.Imaging.ImageFactoryTiff();
             doc.ImageFactories.Add(new Options.PDFImageFactory("TIFF", new System.Text.RegularExpressions.Regex(".*\\.tiff", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
 
+            List<string> ids = new List<string>();
+
             foreach (var src in allTiff)
             {
-
+                string id = System.IO.Path.GetFileName(src);
                 Image img = new Image();
                 img.Source = src;
+                img.ID = id;
                 img.BorderColor = PDFColors.Black;
                 img.BorderStyle = LineType.Solid;
-                img.Width = 100;
+                img.MaximumWidth = 100;
+                img.MaximumHeight = 200;
 
                 page.Contents.Add(img);
 
                 Span label = new Span();
-                label.Contents.Add(new TextLiteral(System.IO.Path.GetFileNameWithoutExtension(src)));
+                label.Contents.Add(new TextLiteral(id));
                 label.Margins = new PDFThickness(0, 0, 10, 0);
                 page.Contents.Add(label);
 
+                ids.Add(id);
             }
 
             doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
             doc.AppendTraceLog = true;
             doc.TraceLog.SetRecordLevel(TraceRecordLevel.Errors);
+
             using (var stream = DocStreams.GetOutputStream("TiffImageTypes.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }
+
+            Assert.AreEqual(allTiff.Length + 1, doc.SharedResources.Count); //images + 1 for the font
+
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if(rsrc is PDFImageXObject imgx)
+                {
+                    string src = System.IO.Path.GetFileName(imgx.Source);
+                    ids.Remove(src);
+                }
+            }
+
+            Assert.AreEqual(0, ids.Count);
+
         }
 
     }

@@ -28,7 +28,7 @@ namespace Scryber.Components
     /// </summary>
     [PDFParsableComponent("Ul")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_list")]
-    public class ListUnordered : List
+    public class ListUnordered : ListBase
     {
         
 

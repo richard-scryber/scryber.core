@@ -39,7 +39,7 @@ namespace Scryber.PDF.Layout
 
         #region ivars
 
-        private List _list;
+        private ListBase _list;
         private string _grpname;
 
         #endregion
@@ -50,7 +50,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the list this engin is laying out
         /// </summary>
-        protected List List
+        protected ListBase List
         {
             get { return _list; }
         }
@@ -85,7 +85,7 @@ namespace Scryber.PDF.Layout
 
         #region public LayoutEngineList(PDFList list, IPDFLayoutEngine parent)
 
-        public LayoutEngineList2(List list, IPDFLayoutEngine parent)
+        public LayoutEngineList2(ListBase list, IPDFLayoutEngine parent)
             : base(list, parent)
         {
             _list = list;

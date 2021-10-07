@@ -24,9 +24,13 @@ namespace Scryber.Imaging
             : base(img, source)
         {
             this.PixelImage = img ?? throw new ArgumentNullException(nameof(img));
+            this.InitPixelData(hasalpha, color, bitsPerColor, colorsPerSample, (int)img.Metadata.HorizontalResolution, (int)img.Metadata.VerticalResolution);
+        }
+
+        protected virtual void InitPixelData(bool hasalpha, ColorSpace color, int bitsPerColor, int colorsPerSample, int horizResolution, int vertResolution)
+        {
             this.ColorSpace = color;
             this.HasAlpha = hasalpha;
-
             this.BitsPerColor = bitsPerColor;
             this.ColorsPerSample = colorsPerSample;
             this.HorizontalResolution = (int)this.PixelImage.Metadata.HorizontalResolution;

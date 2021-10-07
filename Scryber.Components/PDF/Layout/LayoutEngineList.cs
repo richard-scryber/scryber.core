@@ -43,7 +43,7 @@ namespace Scryber.PDF.Layout
         private PDFLayoutBlock _listBlock;
         private PDFUnit _itemoffset = PDFUnit.Zero;
         private PDFUnit _itemNumberWidth = PDFUnit.Zero;
-        private List _list;
+        private ListBase _list;
         private List<ListNumberEntry> _entries;
 
         #endregion
@@ -54,7 +54,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the list this engin is laying out
         /// </summary>
-        protected List List
+        protected ListBase List
         {
             get { return _list; }
         }
@@ -67,7 +67,7 @@ namespace Scryber.PDF.Layout
 
         #region public LayoutEngineList(PDFList list, IPDFLayoutEngine parent)
 
-        public LayoutEngineList(List list, IPDFLayoutEngine parent)
+        public LayoutEngineList(ListBase list, IPDFLayoutEngine parent)
             : base(list, parent)
         {
             _list = list;

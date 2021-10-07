@@ -11,6 +11,14 @@
     <None Remove="Imaging\" />
     <None Remove="SixLabors.ImageSharp" />
     <None Remove="Imaging\Formats\" />
+    <None Remove="ImageSharp\netstandard2.0\SixLabors.ImageSharp.deps.json" />
+    <None Remove="ImageSharp\netstandard2.0\SixLabors.ImageSharp.dll" />
+    <None Remove="ImageSharp\netstandard2.0\SixLabors.ImageSharp.pdb" />
+    <None Remove="ImageSharp\netstandard2.0\SixLabors.ImageSharp.xml" />
+    <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.deps.json" />
+    <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.dll" />
+    <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.pdb" />
+    <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Imaging\" />
@@ -19,5 +27,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SixLabors.ImageSharp">
+      <HintPath>ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

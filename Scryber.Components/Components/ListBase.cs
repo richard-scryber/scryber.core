@@ -30,7 +30,7 @@ namespace Scryber.Components
     /// Not currently Implemented
     /// </summary>
     [PDFParsableComponent("List")]
-    public class List : Panel
+    public class ListBase : Panel
     {
 
         #region public PDFListItemList Items {get;}
@@ -171,12 +171,12 @@ namespace Scryber.Components
         // ctor
         //
 
-        public List()
+        public ListBase()
             : this(ObjectTypes.UnorderedList)
         {
         }
 
-        protected List(ObjectType type)
+        protected ListBase(ObjectType type)
             : base(type)
         {
             

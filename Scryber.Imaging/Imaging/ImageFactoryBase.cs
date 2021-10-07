@@ -142,11 +142,12 @@ namespace Scryber.Imaging
 
             lock (_lock)
             {
-                SixLabors.ImageSharp.Configuration.Default.AddTiff();
-
+                
                 _factories = new Dictionary<Type, FactoryCreateInstance>();
                 _factories.Add(typeof(Image<A8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Argb32>), (img, src) => { return new PDFImageSharpARGB32Data(img, src); });
+                _factories.Add(typeof(Image<Argb32>), (img, src) => {
+                    return new PDFImageSharpARGB32Data(img, src);
+                });
                 _factories.Add(typeof(Image<Bgr24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
                 _factories.Add(typeof(Image<Bgr565>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
                 _factories.Add(typeof(Image<Bgra32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
