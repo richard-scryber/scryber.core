@@ -23,6 +23,9 @@ namespace Scryber.Html.Components
         [PDFAttribute("data-allow-missing-images")]
         public override bool AllowMissingImages { get => base.AllowMissingImages; set => base.AllowMissingImages = value; }
 
+        [PDFAttribute("data-min-scale")]
+        public override double MinimumScaleReduction { get => base.MinimumScaleReduction; set => base.MinimumScaleReduction = value; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>

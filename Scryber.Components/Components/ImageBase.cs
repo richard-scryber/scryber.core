@@ -248,24 +248,138 @@ namespace Scryber.Components
             else if(pos.Width.HasValue)
             {
                 w = pos.Width.Value;
-                h = naturalSize.Height * (pos.Width.Value.PointsValue / naturalSize.Width.PointsValue);
+                h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+                if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
+                    h = pos.MaximumHeight.Value;
+                if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                    h = pos.MinimumHeight.Value;
             }
             else if(pos.Height.HasValue)
             {
-               
                 h = pos.Height.Value;
-                w = naturalSize.Width * (pos.Height.Value.PointsValue / naturalSize.Height.PointsValue);
+                w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+
+                if (pos.FillWidth)
+                    w = available.Width;
+
+                if (pos.MaximumWidth.HasValue && w > pos.MaximumWidth.Value)
+                    w = pos.MaximumWidth.Value;
+                if (pos.MinimumWidth.HasValue && w < pos.MinimumWidth.Value)
+                    w = pos.MinimumWidth.Value;
             }
-            else if(pos.PositionMode == PositionMode.Inline)
+            else if(pos.FillWidth)
             {
-                //We dont have an explicit size
-                //So set it to the line height.
-                if (opts.Font != null && opts.Font.FontMetrics != null)
-                    h = opts.Font.FontMetrics.Ascent;
-                else
-                    h = opts.Font.Size * 0.75;
+                w = available.Width;
+                h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+                if (pos.MaximumWidth.HasValue && w > pos.MaximumWidth.Value)
+                    w = pos.MaximumWidth.Value;
+                if (pos.MinimumWidth.HasValue && w < pos.MinimumWidth.Value)
+                    w = pos.MinimumWidth.Value;
+
+                if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
+                    h = pos.MaximumHeight.Value;
+                if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                    h = pos.MinimumHeight.Value;
+            }
+            else if(pos.MaximumWidth.HasValue)
+            {
+                if(naturalSize.Width > pos.MaximumWidth.Value)
+                {
+                    w = pos.MaximumWidth.Value;
+                    h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+                }
+                else if(pos.MinimumWidth.HasValue && naturalSize.Width < pos.MinimumWidth.Value)
+                {
+                    w = pos.MinimumWidth.Value;
+                    h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+                    if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                        h = pos.MinimumHeight.Value;
+                }
+                else if(pos.MinimumHeight.HasValue && naturalSize.Height < pos.MinimumHeight.Value)
+                {
+                    h = pos.MinimumHeight.Value;
+                    w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
+                else //width is smaller than maximum size
+                {
+                    w = naturalSize.Width;
+                    h = naturalSize.Height;
+                }
+
+                if(pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
+                {
+                    h = pos.MaximumHeight.Value;
+                    w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
+            }
+            else if(pos.MaximumHeight.HasValue)
+            {
+                if(naturalSize.Height > pos.MaximumHeight.Value)
+                {
+                    h = pos.MaximumHeight.Value;
+                    w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
+                else if (pos.MinimumWidth.HasValue && naturalSize.Width < pos.MinimumWidth.Value)
+                {
+                    w = pos.MinimumWidth.Value;
+                    h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+                    if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                        h = pos.MinimumHeight.Value;
+                }
+                else if (pos.MinimumHeight.HasValue && naturalSize.Height < pos.MinimumHeight.Value)
+                {
+                    h = pos.MinimumHeight.Value;
+                    w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
+                else //width is smaller than maximum size
+                {
+                    w = naturalSize.Width;
+                    h = naturalSize.Height;
+                }
+            }
+            else if (pos.MinimumWidth.HasValue)
+            {
+                w = PDFUnit.Min(naturalSize.Width, available.Width); //either smaller available or natural width
+                w = PDFUnit.Max(pos.MinimumWidth.Value, w); //if min is less than w use min
+
+                h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+
+                if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                {
+                    h = pos.MinimumHeight.Value;
+
+                    //we have a new height so try to fit that width
+                    var newW = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                    if (newW < pos.MinimumWidth.Value)
+                        newW = pos.MinimumWidth.Value;
+                    if (newW > available.Width)
+                        newW = available.Width;
+
+                    w = newW;
+
+                }
+            }
+            else if (pos.MinimumHeight.HasValue)
+            {
+                h = PDFUnit.Min(naturalSize.Height, available.Height); //either smaller available or natural
+                h = PDFUnit.Max(pos.MinimumHeight.Value, h);
 
                 w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+
+                if(w > available.Width) //we cant fit and we dont have an explicit width
+                {
+                    w = available.Width;
+
+                    h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+                    if (h < pos.MinimumHeight.Value)
+                        h = pos.MinimumHeight.Value;
+                }
+
             }
             else //We are in a block on our own line
             {

@@ -85,156 +85,156 @@ namespace Scryber
 
         }
 
-        public static PaperSize GetPaperFromSize(SizeF sizeinmm)
+        public static PaperSize GetPaperFromSize(PDFSize sizeinmm)
         {
             return PaperSize.Custom;
         }
 
-        public static SizeF GetSizeInMM(PaperSize paper)
+        public static PDFSize GetSizeInMM(PaperSize paper)
         {
-            SizeF p = SizeF.Empty;
+            PDFSize p = PDFSize.Empty;
             switch (paper)
             {
                 case (PaperSize.A0):
-                    p = new SizeF(841F, 1189F);
+                    p = new PDFSize(841.0, 1189.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A1):
-                    p = new SizeF(594F, 841F);
+                    p = new PDFSize(594.0, 841.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A2):
-                    p = new SizeF(420F, 594F);
+                    p = new PDFSize(420.0, 594.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A3):
-                    p = new SizeF(297F, 420.6F);
+                    p = new PDFSize(297.0, 420.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A4):
-                    p = new SizeF(210.3F, 297F);
+                    p = new PDFSize(210.0, 297.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A5):
-                    p = new SizeF(148F, 210.3F);
+                    p = new PDFSize(148.0, 210.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A6):
-                    p = new SizeF(105F, 148F);
+                    p = new PDFSize(105.0, 148, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A7):
-                    p = new SizeF(74.0F, 105.0F);
+                    p = new PDFSize(74.0, 105.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A8):
-                    p = new SizeF(52.0F, 74.0F);
+                    p = new PDFSize(52.0, 74.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A9):
-                    p = new SizeF(37.0F, 52.0F);
+                    p = new PDFSize(37.0, 52.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B0):
-                    p = new SizeF(1000.0F, 1414.0F);
+                    p = new PDFSize(1000.0, 1414.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B1):
-                    p = new SizeF(707.0F, 1000.0F);
+                    p = new PDFSize(707.0, 1000.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B2):
-                    p = new SizeF(500.0F, 707.0F);
+                    p = new PDFSize(500.0, 707.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B3):
-                    p = new SizeF(353.0F, 500.0F);
+                    p = new PDFSize(353.0, 500.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B4):
-                    p = new SizeF(250.0F, 353.0F);
+                    p = new PDFSize(250.0, 353.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B5):
-                    p = new SizeF(176.0F, 250.0F);
+                    p = new PDFSize(176.0, 250.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B6):
-                    p = new SizeF(125.0F, 176.0F);
+                    p = new PDFSize(125.0, 176.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B7):
-                    p = new SizeF(88.0F, 125.0F);
+                    p = new PDFSize(88.0, 125.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B8):
-                    p = new SizeF(62.0F, 88.0F);
+                    p = new PDFSize(62.0, 88.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B9):
-                    p = new SizeF(44.0F, 62.0F);
+                    p = new PDFSize(44.0, 62.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C0):
-                    p = new SizeF(917.0F, 1297.0F);
+                    p = new PDFSize(917.0, 1297.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C1):
-                    p = new SizeF(648.0F, 917.0F);
+                    p = new PDFSize(648.0, 917.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C2):
-                    p = new SizeF(458.0F, 648.0F);
+                    p = new PDFSize(458.0, 648.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C3):
-                    p = new SizeF(324.0F, 458.0F);
+                    p = new PDFSize(324.0, 458.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C4):
-                    p = new SizeF(229.0F, 324.0F);
+                    p = new PDFSize(229.0, 324.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C5):
-                    p = new SizeF(162.0F, 229.0F);
+                    p = new PDFSize(162.0, 229.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C6):
-                    p = new SizeF(114.0F, 162.0F);
+                    p = new PDFSize(114.0, 162.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C7):
-                    p = new SizeF(81.0F, 114.0F);
+                    p = new PDFSize(81.0, 114.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C8):
-                    p = new SizeF(57.0F, 81.0F);
+                    p = new PDFSize(57.0, 81.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C9):
-                    p = new SizeF(40.0F, 57.0F);
+                    p = new PDFSize(40.0, 57.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Quarto):
-                    p = new SizeF(203.0F, 254.0F);
+                    p = new PDFSize(203.0, 254.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Foolscap):
-                    p = new SizeF(203.0F, 330.0F);
+                    p = new PDFSize(203.0, 330.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Executive):
-                    p = new SizeF(184.0F, 267.0F);
+                    p = new PDFSize(184.0, 267.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.GovermentLetter):
-                    p = new SizeF(203.0F, 267.0F);
+                    p = new PDFSize(203.0, 267.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Letter):
-                    p = new SizeF(216.0F, 279.0F);
+                    p = new PDFSize(216.0, 279.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Legal):
-                    p = new SizeF(216.0F, 356.0F);
+                    p = new PDFSize(216.0, 356.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Tabloid):
-                    p = new SizeF(297.0F, 432.0F);
+                    p = new PDFSize(297.0, 432.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Post):
-                    p = new SizeF(394.0F, 489.0F);
+                    p = new PDFSize(394.0, 489.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Crown):
-                    p = new SizeF(381.0F, 508.0F);
+                    p = new PDFSize(381.0, 508.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.LargePost):
-                    p = new SizeF(419.0F, 533.0F);
+                    p = new PDFSize(419.0, 533.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Demy):
-                    p = new SizeF(445.0F, 572.0F);
+                    p = new PDFSize(445.0, 572.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Medium):
-                    p = new SizeF(457.0F, 584.0F);
+                    p = new PDFSize(457.0, 584.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Royal):
-                    p = new SizeF(508.0F, 635.0F);
+                    p = new PDFSize(508.0, 635.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Elephant):
-                    p = new SizeF(584.0F, 711.0F);
+                    p = new PDFSize(584.0, 711.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.DoubleDemy):
-                    p = new SizeF(597.0F, 889.0F);
+                    p = new PDFSize(597.0, 889.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.QuadDemy):
-                    p = new SizeF(88.0F, 1143.0F);
+                    p = new PDFSize(88.0, 1143.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Statement):
-                    p = new SizeF(140.0F, 216.0F);
+                    p = new PDFSize(140.0, 216.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Custom):
                 default:
@@ -247,12 +247,8 @@ namespace Scryber
 
         public static PDFSize GetSizeInDeviceIndependentUnits(PaperSize paperSize)
         {
-            SizeF mm = Papers.GetSizeInMM(paperSize);
-            PDFSize full = new PDFSize(
-                new PDFUnit(mm.Width, PageUnits.Millimeters),
-                new PDFUnit(mm.Height, PageUnits.Millimeters));
-            
-            return full;
+            PDFSize mm = Papers.GetSizeInMM(paperSize);
+            return mm.ToPoints();
         }
     }
 }

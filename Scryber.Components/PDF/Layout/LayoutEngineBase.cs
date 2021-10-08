@@ -1686,8 +1686,8 @@ namespace Scryber.PDF.Layout
                 if (txtOpts.Leading.HasValue && txtOpts.Leading.Value - descenderHeight > baselineoffset)
                     baselineoffset = txtOpts.Leading.Value - descenderHeight;
 
-                if (total.Height < baselineoffset + descenderHeight)
-                    total.Height = baselineoffset + descenderHeight;
+                //if (total.Height < baselineoffset + descenderHeight)
+                //    total.Height = baselineoffset + descenderHeight;
 
                 linetoAddTo.AddComponentRun(component, total, border, content, baselineoffset, options, style);
             }

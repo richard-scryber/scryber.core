@@ -47,6 +47,12 @@ namespace Scryber.Drawing
             get { return this.Height.IsEmpty && this.Width.IsEmpty; }
         }
 
+        public PDFSize(double width, double height, PageUnits units)
+            : this(new PDFUnit(width, units), new PDFUnit(height, units))
+        {
+
+        }
+
         public PDFSize(double width, double height)
             : this((PDFUnit)width,(PDFUnit)height)
         {
@@ -63,13 +69,6 @@ namespace Scryber.Drawing
             PDFUnit w = this.Width.ToPoints();
             PDFUnit h = this.Height.ToPoints();
             return new PDFSize(w, h);
-        }
-
-        public System.Drawing.SizeF ToDrawing()
-        {
-            PDFUnit w = this.Width.ToPoints();
-            PDFUnit h = this.Height.ToPoints();
-            return new System.Drawing.SizeF((float)w.Value, (float)h.Value);
         }
 
         public override string ToString()

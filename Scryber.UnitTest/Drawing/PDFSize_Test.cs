@@ -251,21 +251,7 @@ namespace Scryber.Core.UnitTests.Drawing
             
         }
 
-        /// <summary>
-        ///A test for ToDrawing
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Drawing Structures")]
-        public void ToDrawing_Test()
-        {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Millimeters);
-            PDFSize target = new PDFSize(width, height);
-            SizeF expected = new SizeF((float)width.PointsValue, (float)height.PointsValue);
-            SizeF actual;
-            actual = target.ToDrawing();
-            Assert.AreEqual(expected, actual);
-        }
+        
 
         /// <summary>
         ///A test for ToPoints

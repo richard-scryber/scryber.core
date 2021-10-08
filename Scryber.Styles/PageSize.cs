@@ -180,8 +180,7 @@ namespace Scryber
         /// </summary>
         private void UpdatePage()
         {
-            SizeF sf = this._size.ToDrawing();
-            this._paper = Papers.GetPaperFromSize(sf);
+            this._paper = Papers.GetPaperFromSize(this._size);
             this._orientation = this.Width > this.Height ? PaperOrientation.Landscape : PaperOrientation.Portrait;
         }
 

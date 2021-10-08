@@ -100,7 +100,11 @@ namespace Scryber.Core.UnitTests.Imaging
         }
 
 
-        
+        //
+        // Testing many of the different PNG formats
+        //
+
+
         string[] allPng = new string[]
         {
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p01.png",
@@ -153,11 +157,14 @@ namespace Scryber.Core.UnitTests.Imaging
             var factory = new Scryber.Imaging.ImageFactoryPng();
             doc.ImageFactories.Add(new Options.PDFImageFactory("PNG", new System.Text.RegularExpressions.Regex(".*\\.png", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
 
+            List<string> ids = new List<string>();
+
             foreach (var src in allPng)
             {
 
                 Image img = new Image();
                 img.Source = src;
+                img.ID = System.IO.Path.GetFileNameWithoutExtension(src);
                 img.BorderColor = PDFColors.Black;
                 img.BorderStyle = LineType.Solid;
                 img.MaximumWidth = 100;
@@ -165,20 +172,40 @@ namespace Scryber.Core.UnitTests.Imaging
                 page.Contents.Add(img);
 
                 Span label = new Span();
-                label.Contents.Add(new TextLiteral(System.IO.Path.GetFileNameWithoutExtension(src)));
+                label.Contents.Add(new TextLiteral(img.ID));
                 label.Margins = new PDFThickness(0, 0, 10, 0);
                 page.Contents.Add(label);
+
+                ids.Add(System.IO.Path.GetFileName(src));
 
             }
 
             doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
             doc.AppendTraceLog = true;
             doc.TraceLog.SetRecordLevel(TraceRecordLevel.Errors);
-            using (var stream = DocStreams.GetOutputStream("PngImageTypes.pdf"))
+            using (var stream = DocStreams.GetOutputStream("ImageTypesPng.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }
+
+
+            Assert.AreEqual(allPng.Length + 1, doc.SharedResources.Count); //images + 1 for the font
+
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    string src = System.IO.Path.GetFileName(imgx.Source);
+                    ids.Remove(src);
+                }
+            }
+
+            Assert.AreEqual(0, ids.Count);
         }
+
+        //
+        // Testing many of the Tiff formats.
+        //
 
         string[] allTiff = new string[]
         {
@@ -255,7 +282,7 @@ namespace Scryber.Core.UnitTests.Imaging
             doc.AppendTraceLog = true;
             doc.TraceLog.SetRecordLevel(TraceRecordLevel.Errors);
 
-            using (var stream = DocStreams.GetOutputStream("TiffImageTypes.pdf"))
+            using (var stream = DocStreams.GetOutputStream("ImageTypesTiff.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }
@@ -265,6 +292,90 @@ namespace Scryber.Core.UnitTests.Imaging
             foreach (var rsrc in doc.SharedResources)
             {
                 if(rsrc is PDFImageXObject imgx)
+                {
+                    string src = System.IO.Path.GetFileName(imgx.Source);
+                    ids.Remove(src);
+                }
+            }
+
+            Assert.AreEqual(0, ids.Count);
+
+        }
+
+        //
+        // Testing many of the Gif formats.
+        //
+
+        string[] allGif = new string[]
+        {
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/GlobalQuantizationTest.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_1x4.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_4x1.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/cheers.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/giphy.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-height.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-size.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-width.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/kumin.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/large_comment.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/leo.gif",
+
+        };
+
+
+        [TestMethod()]
+        public void WriteAllTestGifsFromImageSharp()
+        {
+
+            var doc = new Document();
+
+            var page = new Page();
+            page.ColumnCount = 3;
+            page.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(page);
+            page.Padding = new PDFThickness(20);
+            page.FontSize = 12;
+
+            var factory = new Scryber.Imaging.ImageFactoryGif();
+            doc.ImageFactories.Add(new Options.PDFImageFactory("GIF", new System.Text.RegularExpressions.Regex(".*\\.gif", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
+
+            List<string> ids = new List<string>();
+
+            foreach (var src in allGif)
+            {
+                string id = System.IO.Path.GetFileName(src);
+                Image img = new Image();
+                img.Source = src;
+                img.ID = id;
+                img.BorderColor = PDFColors.Black;
+                img.BorderStyle = LineType.Solid;
+                img.MaximumWidth = 100;
+                img.MaximumHeight = 200;
+
+                page.Contents.Add(img);
+
+                Span label = new Span();
+                label.Contents.Add(new TextLiteral(id));
+                label.Margins = new PDFThickness(0, 0, 10, 0);
+                page.Contents.Add(label);
+
+                ids.Add(id);
+            }
+
+            doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+            doc.AppendTraceLog = true;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Errors);
+
+            using (var stream = DocStreams.GetOutputStream("ImageTypesGif.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(allGif.Length + 1, doc.SharedResources.Count); //images + 1 for the font
+
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
                 {
                     string src = System.IO.Path.GetFileName(imgx.Source);
                     ids.Remove(src);
