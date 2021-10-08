@@ -47,6 +47,19 @@ namespace Scryber.Core.UnitTests.Layout
             Assert.AreEqual(one, two, message);
         }
 
+        [TestMethod()]
+        public void JustATextRun()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new PDFThickness(10);
+            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over multiple lines in the page with a default line height"));
+        }
+
 
         [TestMethod]
         public void FixedSizes()
@@ -1200,6 +1213,69 @@ namespace Scryber.Core.UnitTests.Layout
 
         }
 
+        [TestMethod]
+        public void InlineMultipleImageLineHeight()
+        {
+            //Toroid32.png - 682 × 452 pixels natural size @96 ppi
+            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new PDFThickness(10);
+            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral("5. Inline "));
+
+            var img = new Image();
+            img.ID = "Image1";
+            img.Source = path;
+            img.BorderColor = PDFColors.Black;
+            img.PositionMode = PositionMode.Inline;
+            img.Height = 40;
+            pg.Contents.Add(img);
+
+            pg.Contents.Add(new TextLiteral(" explicit height "));
+
+            img = new Image();
+            img.ID = "Image2";
+            img.Source = path;
+            img.BorderColor = PDFColors.Black;
+            img.PositionMode = PositionMode.Inline;
+            img.Height = 60;
+            pg.Contents.Add(img);
+
+            pg.Contents.Add(new TextLiteral(" within the content of the text on following line that will be text points high"));
+
+            using (var stream = DocStreams.GetOutputStream("Images_InlineLineHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            PDFLayoutComponentRun lrun;
+
+            lrun = GetInlineImageRunForPage(0, 0, 0, 3); //BT Tx ET Img
+
+            //5. Explicit height @60pt within the content
+            var width = naturalWidth.PointsValue * (60.0 / naturalHeight.PointsValue);
+            var height = 60.0;
+
+            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for explicit h within the content on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for explicit h within the content on image " + lrun.Owner.ID);
+            Assert.AreEqual(height, lrun.Line.BaseLineOffset, "The base line offset of the line was not the height of the image");
+        }
 
         [TestMethod]
         public void InlineSizes()
@@ -1262,38 +1338,69 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 3. Inline at explicit 60pt height"));
 
+            pg = new Page();
+            pg.Margins = new PDFThickness(10);
+            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+
+            img = new Image();
+            img.Source = path;
+            img.ID = "Image4";
+            img.BorderColor = PDFColors.Black;
+            img.PositionMode = PositionMode.Inline;
+            img.Width = 100;
+            pg.Contents.Add(img);
+            pg.Contents.Add(new TextLiteral(" 4. Inline with explicit width"));
+
+            pg = new Page();
+            pg.Margins = new PDFThickness(10);
+            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral(" 5. Inline with explicit height "));
+
+            img = new Image();
+            img.ID = "Image5";
+            img.Source = path;
+            img.BorderColor = PDFColors.Black;
+            img.PositionMode = PositionMode.Inline;
+            img.Height = 60;
+            pg.Contents.Add(img);
+
+            pg.Contents.Add(new TextLiteral(" within the content of the text on following line that will be text points high"));
+
+
+            pg = new Page();
+            pg.Margins = new PDFThickness(10);
+            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral(" 6. Inline with explicit height "));
+
+            img = new Image();
+            img.ID = "Image6";
+            img.Source = path;
+            img.BorderColor = PDFColors.Black;
+            img.PositionMode = PositionMode.Inline;
+            img.Height = 60;
+            pg.Contents.Add(img);
+
+            pg.Contents.Add(new TextLiteral(" then a second image on another following line that will be 80 points high"));
+
+            //img = new Image();
+            //img.ID = "Image6";
+            //img.Source = path;
+            //img.BorderColor = PDFColors.Black;
+            //img.PositionMode = PositionMode.Inline;
+            //img.Height = 80;
+            //pg.Contents.Add(img);
+
+            pg.Contents.Add(new TextLiteral(" after the second image"));
+
             /* pg = new Page();
-            pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
-            pg.OverflowAction = OverflowAction.NewPage;
-            pg.TextLeading = 40;
-            doc.Pages.Add(pg);
-
-            img = new Image();
-            img.Source = path;
-            img.BorderColor = PDFColors.Black;
-            img.PositionMode = PositionMode.Inline;
-
-            pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral(" 4. Inline with explicit line leading that will take up the leading space in the paragraph"));
-
-            pg = new Page();
-            pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
-            pg.OverflowAction = OverflowAction.NewPage;
-            pg.TextLeading = 40;
-            doc.Pages.Add(pg);
-
-            img = new Image();
-            img.Source = path;
-            img.BorderColor = PDFColors.Black;
-            img.PositionMode = PositionMode.Inline;
-            img.Height = 100;
-            pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral(" 5. Inline with explicit line leading and height that push out the leading space in the paragraph"));
-
-
-            pg = new Page();
             pg.Margins = new PDFThickness(10);
             pg.BackgroundColor = new PDFColor(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
@@ -1368,31 +1475,51 @@ namespace Scryber.Core.UnitTests.Layout
             lrun = GetInlineImageRunForPage(0, 0, 0);
 
             //1. Natural size in container
-            var width = naturalWidth.PointsValue * (24.0 / naturalHeight.PointsValue);
-            var height = 24.0; //Default font size
+            var width = naturalWidth.PointsValue;
+            var height = naturalHeight.PointsValue;
 
-            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for squeezing in the space on image " + lrun.Owner.ID);
-            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for squeezing in the space on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for natural in the space on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for natural in the space on image " + lrun.Owner.ID);
 
 
             lrun = GetInlineImageRunForPage(1, 0, 0);
 
             //2. 80pt font size in container
-            width = naturalWidth.PointsValue * (80.0 / naturalHeight.PointsValue);
-            height = 80.0; //Default font size
+            width = naturalWidth.PointsValue;
+            height = naturalHeight.PointsValue; //Default size
 
-            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for squeezing in the space on image " + lrun.Owner.ID);
-            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for squeezing in the space on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for natural on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for natural in the space on image " + lrun.Owner.ID);
 
             lrun = GetInlineImageRunForPage(2, 0, 0);
 
             //3. Explicit height
             width = naturalWidth.PointsValue * (60.0 / naturalHeight.PointsValue);
-            height = 60.0; //Default font size
+            height = 60.0;
 
-            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for squeezing in the space on image " + lrun.Owner.ID);
-            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for squeezing in the space on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for explicit h in the space on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for explicit h in the space on image " + lrun.Owner.ID);
 
+
+            lrun = GetInlineImageRunForPage(3, 0, 0);
+
+            //4. Explicit width
+            width = 100.0;
+            height = naturalHeight.PointsValue * (100.0 / naturalWidth.PointsValue);
+
+            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for explicit w in the space on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for explicit w in the space on image " + lrun.Owner.ID);
+
+
+            lrun = GetInlineImageRunForPage(4, 0, 0, 3); //BT Tx ET Img
+
+            //5. Explicit height @60pt within the content
+            width = naturalWidth.PointsValue * (60.0 / naturalHeight.PointsValue);
+            height = 60.0;
+
+            AssertAreApproxEqual(width, lrun.ContentRect.Width.PointsValue, "Width does not match for explicit h within the content on image " + lrun.Owner.ID);
+            AssertAreApproxEqual(height, lrun.ContentRect.Height.PointsValue, "Height does not match for explicit h within the content on image " + lrun.Owner.ID);
+            Assert.AreEqual(height, lrun.Line.BaseLineOffset, "The base line offset of the line was not the height of the image");
         }
 
     }

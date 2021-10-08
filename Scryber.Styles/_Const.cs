@@ -43,4 +43,11 @@ namespace Scryber
         public const HorizontalAlignment DefaultListNumberAlignment = HorizontalAlignment.Right;
 
     }
+
+    public static class StyleDefaults
+    {
+        public static readonly HorizontalAlignment HAlign = Const.DefaultHorizontalAlign;
+        public static readonly VerticalAlignment VAlign = Const.DefaultVerticalAlign;
+
+    }
 }

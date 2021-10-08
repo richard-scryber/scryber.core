@@ -161,7 +161,6 @@ namespace Scryber.PDF.Layout
         /// Gets the current line (open or closed from this region). 
         /// If the last item is not a line or there are no items in this region then it will return null.
         /// </summary>
-        /// <exception cref="InvalidOperationException" >Thrown if this region is closed.</exception>
         public PDFLayoutItem CurrentItem
         {
             get
