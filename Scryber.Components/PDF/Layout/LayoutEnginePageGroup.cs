@@ -73,7 +73,7 @@ namespace Scryber.PDF.Layout
         {
             bool first = true;
 
-            PDFPageNumberOptions opts = fullstyle.CreatePageNumberOptions();
+            PageNumberOptions opts = fullstyle.CreatePageNumberOptions();
             PageNumberGroup grp = null;
 
             if (null != opts && opts.HasPageNumbering)

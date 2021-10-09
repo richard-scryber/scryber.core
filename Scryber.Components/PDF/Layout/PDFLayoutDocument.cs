@@ -708,7 +708,7 @@ namespace Scryber.PDF.Layout
         /// Called at the start of document layout to initialize the numbering collection
         /// </summary>
         /// <param name="style"></param>
-        public void StartPageNumbering(PDFPageNumberOptions opts)
+        public void StartPageNumbering(PageNumberOptions opts)
         {
             this._numbers = new PageNumbers();
             this._numbers.StartNumbering(opts);
@@ -724,7 +724,7 @@ namespace Scryber.PDF.Layout
         /// <param name="pageindex"></param>
         /// <param name="page"></param>
         /// <param name="num"></param>
-        public PageNumberGroup RegisterPageNumbering(PDFLayoutPage page, PDFPageNumberOptions options)
+        public PageNumberGroup RegisterPageNumbering(PDFLayoutPage page, PageNumberOptions options)
         {
             PageNumberGroup grp = this.Numbers.PushPageNumber(options);
             this.Numbers.Register(page.PageIndex);
@@ -737,7 +737,7 @@ namespace Scryber.PDF.Layout
         /// <param name="pageindex"></param>
         /// <param name="page"></param>
         /// <param name="num"></param>
-        public PageNumberGroup RegisterPageNumbering(int pageIndex, PDFPageNumberOptions options)
+        public PageNumberGroup RegisterPageNumbering(int pageIndex, PageNumberOptions options)
         {
             PageNumberGroup grp = this.Numbers.PushPageNumber(options);
             this.Numbers.Register(pageIndex);

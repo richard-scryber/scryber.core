@@ -130,7 +130,7 @@ namespace Scryber.PDF.Layout
             this.Context.Graphics = g;
 
             //Register page numbering
-            PDFPageNumberOptions numbers = this.GetPageNumbering(this.FullStyle);
+            PageNumberOptions numbers = this.GetPageNumbering(this.FullStyle);
             this.RegisterPageNumbering(pg, numbers);
 
             this.LayoutPageContent();
@@ -156,7 +156,7 @@ namespace Scryber.PDF.Layout
         private PageNumberGroup _numbergroup;
         private int _firstpageIndex;
 
-        protected virtual void RegisterPageNumbering(PDFLayoutPage page, PDFPageNumberOptions options)
+        protected virtual void RegisterPageNumbering(PDFLayoutPage page, PageNumberOptions options)
         {
             this._numbergroup = this.DocumentLayout.RegisterPageNumbering(page, options);
             _firstpageIndex = page.PageIndex;
@@ -165,7 +165,7 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, LayoutEnginePage.LOG_CATEGORY, "Registered the page numbering");
         }
 
-        protected virtual void UnRegisterPageNumbering(PDFLayoutPage last, PDFPageNumberOptions options)
+        protected virtual void UnRegisterPageNumbering(PDFLayoutPage last, PageNumberOptions options)
         {
             this.DocumentLayout.UnRegisterPageNumbering(last, _numbergroup);
 
@@ -456,7 +456,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="style"></param>
         /// <returns></returns>
-        protected PDFPageNumberOptions GetPageNumbering(Style style)
+        protected PageNumberOptions GetPageNumbering(Style style)
         {
             return style.CreatePageNumberOptions();
         }

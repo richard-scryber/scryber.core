@@ -1059,7 +1059,7 @@ namespace Scryber.Styles
         /// Gets the page numbering options for this style
         /// </summary>
         /// <returns></returns>
-        public PDFPageNumberOptions CreatePageNumberOptions()
+        public PageNumberOptions CreatePageNumberOptions()
         {
             return this.DoCreatePageNumberOptions();
         }

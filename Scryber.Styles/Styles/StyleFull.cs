@@ -34,11 +34,11 @@ namespace Scryber.Styles
     public class StyleFull : Style
     {
 
-        private Scryber.PDFPositionOptions _pos;
-        private Scryber.PageSize _pgsize;
-        private Scryber.PDFTextRenderOptions _text;
-        private Scryber.PDFPageNumberOptions _pageNums;
-        private Scryber.PDF.PDFPenBorders _borders;
+        private PDFPositionOptions _pos;
+        private PageSize _pgsize;
+        private PDFTextRenderOptions _text;
+        private PageNumberOptions _pageNums;
+        private PDFPenBorders _borders;
 
 
         public StyleFull()
@@ -73,7 +73,7 @@ namespace Scryber.Styles
             base.BeginStyleChange();
         }
 
-        internal protected override Scryber.PDFPositionOptions DoCreatePositionOptions()
+        internal protected override PDFPositionOptions DoCreatePositionOptions()
         {
             if(null == _pos)
                 _pos = base.DoCreatePositionOptions();
@@ -81,7 +81,7 @@ namespace Scryber.Styles
             return _pos;
         }
 
-        internal protected override Scryber.PDFTextRenderOptions DoCreateTextOptions()
+        internal protected override PDFTextRenderOptions DoCreateTextOptions()
         {
             if(null == _text)
                 _text = base.DoCreateTextOptions();
@@ -105,7 +105,7 @@ namespace Scryber.Styles
             return _pgsize;
         }
 
-        internal protected override PDFPageNumberOptions DoCreatePageNumberOptions()
+        internal protected override PageNumberOptions DoCreatePageNumberOptions()
         {
             if(null == _pageNums)
                 _pageNums = base.DoCreatePageNumberOptions();
@@ -113,7 +113,7 @@ namespace Scryber.Styles
             return _pageNums;
         }
 
-        protected internal override Drawing.PDFThickness DoCreateMarginsThickness()
+        protected internal override PDFThickness DoCreateMarginsThickness()
         {
             if (null != this._pos)
                 return this._pos.Margins;
@@ -121,7 +121,7 @@ namespace Scryber.Styles
                 return base.DoCreateMarginsThickness();
         }
 
-        protected internal override Drawing.PDFThickness DoCreatePaddingThickness()
+        protected internal override PDFThickness DoCreatePaddingThickness()
         {
             if (null != this._pos)
                 return this._pos.Padding;
@@ -129,7 +129,7 @@ namespace Scryber.Styles
                 return base.DoCreatePaddingThickness();
         }
 
-        protected internal override Drawing.PDFThickness DoCreateClippingThickness()
+        protected internal override PDFThickness DoCreateClippingThickness()
         {
             if (null != this._pos)
                 return this._pos.ClipInset;

@@ -126,7 +126,7 @@ namespace Scryber
         // public methods
         //
 
-        public PageNumberGroup PushPageNumber(PDFPageNumberOptions opts)
+        public PageNumberGroup PushPageNumber(PageNumberOptions opts)
         {
             if (null != opts && opts.HasPageNumbering)
             {
@@ -244,7 +244,7 @@ namespace Scryber
         }
 
 
-        public void StartNumbering(PDFPageNumberOptions opts)
+        public void StartNumbering(PageNumberOptions opts)
         {
 
             this._registrations = new List<PageNumberRegistration>();
@@ -352,7 +352,7 @@ namespace Scryber
         /// </summary>
         /// <param name="style"></param>
         /// <returns></returns>
-        private static bool GetGroupingFromOptions(PageNumberGroup template, PDFPageNumberOptions opts, out PageNumberGroup updated)
+        private static bool GetGroupingFromOptions(PageNumberGroup template, PageNumberOptions opts, out PageNumberGroup updated)
         {
             if (null == opts)
                 throw new ArgumentNullException("opts");

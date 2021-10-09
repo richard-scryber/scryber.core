@@ -1127,9 +1127,9 @@ namespace Scryber.Styles
         /// Creates the PDFPageNumberOptions from this styles values
         /// </summary>
         /// <returns></returns>
-        internal protected virtual PDFPageNumberOptions DoCreatePageNumberOptions()
+        internal protected virtual PageNumberOptions DoCreatePageNumberOptions()
         {
-            PDFPageNumberOptions opts = new PDFPageNumberOptions();
+            PageNumberOptions opts = new PageNumberOptions();
             StyleValue<PageNumberStyle> style;
             StyleValue<string> grp;
             StyleValue<int> start;

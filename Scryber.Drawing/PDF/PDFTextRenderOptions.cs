@@ -25,7 +25,7 @@ using Scryber.Text;
 using System.ComponentModel;
 using Scryber.PDF.Graphics;
 
-namespace Scryber
+namespace Scryber.PDF
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PDFTextRenderOptions : ICloneable

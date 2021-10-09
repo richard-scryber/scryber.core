@@ -154,7 +154,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             PageNumbers col = new PageNumbers();
 
-            PDFPageNumberOptions options = new PDFPageNumberOptions() { NumberStyle = PageNumberStyle.Decimals };
+            PageNumberOptions options = new PageNumberOptions() { NumberStyle = PageNumberStyle.Decimals };
 
             col.StartNumbering(options);
 
@@ -184,7 +184,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             Style full = new Style();
             full.PageStyle.NumberStyle = PageNumberStyle.UppercaseRoman;
-            PDFPageNumberOptions opts = full.CreatePageNumberOptions();
+            PageNumberOptions opts = full.CreatePageNumberOptions();
             col.PushPageNumber(opts);
 
             col.Register(0);
@@ -216,7 +216,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             Style full = new Style();
             full.PageStyle.NumberStyle = PageNumberStyle.LowercaseRoman;
-            PDFPageNumberOptions opts = full.CreatePageNumberOptions();
+            PageNumberOptions opts = full.CreatePageNumberOptions();
             col.PushPageNumber(opts);
 
             col.Register(0);

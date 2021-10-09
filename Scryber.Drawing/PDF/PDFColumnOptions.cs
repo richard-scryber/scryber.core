@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Drawing;
 
-namespace Scryber
+namespace Scryber.PDF
 {
     public class PDFColumnOptions
     {

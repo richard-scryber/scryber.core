@@ -47,7 +47,7 @@ namespace Scryber.Components
 
         protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
-            PDFPositionOptions pos = fullstyle.CreatePostionOptions();
+            var pos = fullstyle.CreatePostionOptions();
 
             PDFPoint start = PDFPoint.Empty;
             PDFPoint end = new PDFPoint(available.Width, start.Y);

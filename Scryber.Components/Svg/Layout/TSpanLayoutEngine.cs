@@ -4,6 +4,7 @@ using Scryber.PDF.Layout;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Svg.Layout
 {

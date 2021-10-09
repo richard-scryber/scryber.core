@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Scryber
 {
-    public class PDFPageNumberOptions
+    public class PageNumberOptions
     {
         public bool HasPageNumbering { get; set; }
 

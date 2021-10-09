@@ -22,7 +22,7 @@ using System.Text;
 using Scryber.Drawing;
 using System.ComponentModel;
 
-namespace Scryber
+namespace Scryber.PDF
 {
     /// <summary>
     /// A class that represents a full set of positioning data
