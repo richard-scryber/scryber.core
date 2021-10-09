@@ -1704,13 +1704,13 @@ namespace Scryber.Styles
             //If we have an image source and we are set to use an image fill style (or it has not been specified)
             if ((this).TryGetValue(StyleKeys.BgImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value(this)))
             {
-                PDFGradientDescriptor found;
+                GradientDescriptor found;
                 if(this.IsGradientImageSrc(imgsrc.Value(this), out found))
                 {
                     if (found.GradientType == GradientType.Linear)
-                        brush = new PDFGradientLinearBrush((PDFGradientLinearDescriptor)found);
+                        brush = new PDFGradientLinearBrush((GradientLinearDescriptor)found);
                     else if (found.GradientType == GradientType.Radial)
-                        brush = new PDFGradientRadialBrush((PDFGradientRadialDescriptor)found);
+                        brush = new PDFGradientRadialBrush((GradientRadialDescriptor)found);
                     else
                         brush = null;
                 }
@@ -1774,9 +1774,9 @@ namespace Scryber.Styles
             return brush;
         }
 
-        protected virtual bool IsGradientImageSrc(string value, out PDFGradientDescriptor descriptor)
+        protected virtual bool IsGradientImageSrc(string value, out GradientDescriptor descriptor)
         {
-            if (!string.IsNullOrEmpty(value) && value.IndexOf("(") > 0 && PDFGradientDescriptor.TryParse(value, out descriptor))
+            if (!string.IsNullOrEmpty(value) && value.IndexOf("(") > 0 && GradientDescriptor.TryParse(value, out descriptor))
             {
                 return true;
             }

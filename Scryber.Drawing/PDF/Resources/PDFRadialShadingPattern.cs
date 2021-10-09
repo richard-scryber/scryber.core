@@ -10,12 +10,12 @@ namespace Scryber.PDF.Resources
     /// </summary>
     public class PDFRadialShadingPattern : PDFShadingPattern
     {
-        private PDFGradientRadialDescriptor _descriptor;
+        private GradientRadialDescriptor _descriptor;
 
         /// <summary>
         /// Gets the descriptior for the linear gradient
         /// </summary>
-        public PDFGradientRadialDescriptor Descriptor
+        public GradientRadialDescriptor Descriptor
         {
             get { return _descriptor; }
         }
@@ -28,7 +28,7 @@ namespace Scryber.PDF.Resources
         /// <param name="key"></param>
         /// <param name="descriptor">The gradient descriptor</param>
         /// <param name="bounds">The bounds of the gradient on the page (rather than component level)</param>
-        public PDFRadialShadingPattern(IComponent owner, string key, PDFGradientRadialDescriptor descriptor, PDFRect bounds)
+        public PDFRadialShadingPattern(IComponent owner, string key, GradientRadialDescriptor descriptor, PDFRect bounds)
             : base(owner, key, bounds)
         {
             this._descriptor = descriptor;

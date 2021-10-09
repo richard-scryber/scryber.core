@@ -44,13 +44,13 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFGradientDescriptorParserEmpty_Test()
         {
             string value = "";
-            PDFGradientDescriptor desc = null;
+            GradientDescriptor desc = null;
 
-            var result = PDFGradientDescriptor.TryParse(null, out desc);
+            var result = GradientDescriptor.TryParse(null, out desc);
             Assert.IsFalse(result, "A null or empty string should return false for PDFGradientDescriptor.TryParse");
 
 
-            result = PDFGradientDescriptor.TryParse(value, out desc);
+            result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsFalse(result, "A null or empty string should return false for PDFGradientDescriptor.TryParse");
 
         }
@@ -60,14 +60,14 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFLinearGradientDescriptorParser_Test()
         {
             string value = "linear-gradient(red, green)";
-            PDFGradientDescriptor desc = null;
+            GradientDescriptor desc = null;
 
-            var result = PDFGradientDescriptor.TryParse(value, out desc);
+            var result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The linear gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for linear gradient " + value );
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
-            var linear = desc as PDFGradientLinearDescriptor;
+            var linear = desc as GradientLinearDescriptor;
             Assert.AreEqual(180, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(2, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
@@ -85,13 +85,13 @@ namespace Scryber.Core.UnitTests.Drawing
 
             value = "linear-gradient(to top, #FF0000, rgba(0, 128, 0, 0.5))";
 
-            result = PDFGradientDescriptor.TryParse(value, out desc);
+            result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The linear gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for linear gradient " + value);
             Assert.AreEqual(GradientType.Linear, desc.GradientType, "Returned gradient type was not linear: " + desc.GradientType);
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
-            linear = desc as PDFGradientLinearDescriptor;
+            linear = desc as GradientLinearDescriptor;
             Assert.AreEqual(0, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(2, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
@@ -110,13 +110,13 @@ namespace Scryber.Core.UnitTests.Drawing
 
             value = "linear-gradient(25deg, #FF0000, rgba(0, 128, 0, 0.5), yellow)";
 
-            result = PDFGradientDescriptor.TryParse(value, out desc);
+            result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The linear gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for linear gradient " + value);
             Assert.AreEqual(GradientType.Linear, desc.GradientType, "Returned gradient type was not linear: " + desc.GradientType);
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
-            linear = desc as PDFGradientLinearDescriptor;
+            linear = desc as GradientLinearDescriptor;
             Assert.AreEqual(25, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(3, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
@@ -140,13 +140,13 @@ namespace Scryber.Core.UnitTests.Drawing
 
             value = "repeating-linear-gradient(red, green 20%, rgba(200, 200, 200, 0.5) 50%)";
 
-            result = PDFGradientDescriptor.TryParse(value, out desc);
+            result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The linear gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for linear gradient " + value);
             Assert.AreEqual(GradientType.Linear, desc.GradientType, "Returned gradient type was not linear: " + desc.GradientType);
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
-            linear = desc as PDFGradientLinearDescriptor;
+            linear = desc as GradientLinearDescriptor;
             Assert.AreEqual(180, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(3, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsTrue(linear.Repeating, "The linear gradient was not set to repeat for " + value);
@@ -176,14 +176,14 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFRadialGradientDescriptorParser_Test()
         {
             string value = "radial-gradient(red, green)";
-            PDFGradientDescriptor desc = null;
+            GradientDescriptor desc = null;
 
-            var result = PDFGradientDescriptor.TryParse(value, out desc);
+            var result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The radial gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for radial gradient " + value);
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
 
-            var radial = desc as PDFGradientRadialDescriptor;
+            var radial = desc as GradientRadialDescriptor;
             Assert.AreEqual(RadialShape.Circle, radial.Shape, "Shape for value " + value + " was not correct");
             Assert.AreEqual(2, radial.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(radial.Repeating, "The linear gradient was set to repeat for " + value);
@@ -202,12 +202,12 @@ namespace Scryber.Core.UnitTests.Drawing
 
             value = "radial-gradient(circle, #FF0000, rgba(0, 128, 0, 0.5), yellow)";
 
-            result = PDFGradientDescriptor.TryParse(value, out desc);
+            result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The radial gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for radial gradient " + value);
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
 
-            radial = desc as PDFGradientRadialDescriptor;
+            radial = desc as GradientRadialDescriptor;
             Assert.AreEqual(RadialShape.Circle, radial.Shape, "Angle for value " + value + " was not correct");
             Assert.AreEqual(3, radial.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(radial.Repeating, "The radial gradient was set to repeat for " + value);
@@ -231,12 +231,12 @@ namespace Scryber.Core.UnitTests.Drawing
 
             value = "repeating-radial-gradient(red, green)";
 
-            result = PDFGradientDescriptor.TryParse(value, out desc);
+            result = GradientDescriptor.TryParse(value, out desc);
             Assert.IsTrue(result, "The radial gradient " + value + " failed to be parsed");
             Assert.IsNotNull(desc, "Null returned for radial gradient " + value);
-            Assert.IsInstanceOfType(desc, typeof(PDFGradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
+            Assert.IsInstanceOfType(desc, typeof(GradientRadialDescriptor), "Returned type for " + value + " was not a radial gradient");
 
-            radial = desc as PDFGradientRadialDescriptor;
+            radial = desc as GradientRadialDescriptor;
             Assert.AreEqual(RadialShape.Circle, radial.Shape, "Shape for value " + value + " was not correct");
             Assert.AreEqual(2, radial.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsTrue(radial.Repeating, "The radial gradient was not set to repeat for " + value);
@@ -264,10 +264,10 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFLinearBrushConstructor_Test()
         {
-            PDFGradientLinearDescriptor descriptor = new PDFGradientLinearDescriptor();
-            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            GradientLinearDescriptor descriptor = new GradientLinearDescriptor();
+            descriptor.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red, null, null)
+                new GradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
@@ -289,12 +289,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFRepeatingAngleLinearBrushConstructor_Test()
         {
-            PDFGradientLinearDescriptor descriptor = new PDFGradientLinearDescriptor();
+            GradientLinearDescriptor descriptor = new GradientLinearDescriptor();
             descriptor.Angle = (double)GradientAngle.Bottom_Left;
             descriptor.Repeating = true;
-            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            descriptor.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red, null, null)
+                new GradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
@@ -318,10 +318,10 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFRadialBrushConstructor_Test()
         {
-            PDFGradientRadialDescriptor descriptor = new PDFGradientRadialDescriptor();
-            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            GradientRadialDescriptor descriptor = new GradientRadialDescriptor();
+            descriptor.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red, null, null)
+                new GradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
@@ -345,12 +345,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFRepeatingCircleRadialBrushConstructor_Test()
         {
-            PDFGradientRadialDescriptor descriptor = new PDFGradientRadialDescriptor();
+            GradientRadialDescriptor descriptor = new GradientRadialDescriptor();
             descriptor.Repeating = true;
             descriptor.Shape = RadialShape.Circle;
-            descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            descriptor.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red, null, null)
+                new GradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);

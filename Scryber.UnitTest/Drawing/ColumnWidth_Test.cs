@@ -5,7 +5,7 @@ using System;
 namespace Scryber.Core.UnitTests.Drawing
 {
     [TestClass]
-    public class PDFColumnWidth_Test
+    public class ColumnWidth_Test
     {
 
         private TestContext testContextInstance;
@@ -26,7 +26,7 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        public PDFColumnWidth_Test()
+        public ColumnWidth_Test()
         {
         }
 

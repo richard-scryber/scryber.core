@@ -65,12 +65,6 @@ namespace Scryber.Drawing
             return new PDFPoint(x,y);
         }
 
-        public System.Drawing.PointF ToDrawing()
-        {
-            PDFUnit x = this.X.ToPoints();
-            PDFUnit y = this.Y.ToPoints();
-            return new System.Drawing.PointF((float)x.Value, (float)y.Value);
-        }
 
         public override string ToString()
         {

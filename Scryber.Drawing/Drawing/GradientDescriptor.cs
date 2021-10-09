@@ -12,7 +12,7 @@ namespace Scryber.Drawing
 
 
     [PDFParsableValue()]
-    public abstract class PDFGradientDescriptor
+    public abstract class GradientDescriptor
     {
 
         #region public GradientType GradientType { get;}
@@ -26,16 +26,16 @@ namespace Scryber.Drawing
 
         #region public PDFGradientColor[] Colors
 
-        private List<PDFGradientColor> _colors;
+        private List<GradientColor> _colors;
         /// <summary>
         /// Gets or sets the array of GradientColours in this gradient
         /// </summary>
-        public List<PDFGradientColor> Colors
+        public List<GradientColor> Colors
         {
             get
             {
                 if (null == _colors)
-                    _colors = new List<PDFGradientColor>(2);
+                    _colors = new List<GradientColor>(2);
                 return _colors;
             }
             set
@@ -59,7 +59,7 @@ namespace Scryber.Drawing
         // .ctor
         //
 
-        public PDFGradientDescriptor(GradientType type)
+        public GradientDescriptor(GradientType type)
         {
             this.GradientType = type;
         }
@@ -81,13 +81,13 @@ namespace Scryber.Drawing
             //the same colour at 0 offset
 
             if (this.Colors.Count > 1 && this.Colors[0].Distance.HasValue && this.Colors[0].Distance.Value > 0.0)
-                this.Colors.Insert(0, new PDFGradientColor(this.Colors[0].Color, 0.0, this.Colors[0].Opacity));
+                this.Colors.Insert(0, new GradientColor(this.Colors[0].Color, 0.0, this.Colors[0].Opacity));
 
             //if our last colour does not have a distance then put it at 100.
             if (this.Colors.Count > 1 && this.Colors[this.Colors.Count - 1].Distance.HasValue == false)
             {
                 if (this.GradientType == GradientType.Radial && this.Repeating)
-                    this.Colors.Add(new PDFGradientColor(this.Colors[this.Colors.Count - 1].Color, 100, null));
+                    this.Colors.Add(new GradientColor(this.Colors[this.Colors.Count - 1].Color, 100, null));
                 else
                     this.Colors[this.Colors.Count - 1].Distance = 100;
             }
@@ -205,7 +205,7 @@ namespace Scryber.Drawing
         protected virtual void PreFillColorDistances()
         {
             int lastValue = -1;
-            List<PDFGradientColor> spacers = new List<PDFGradientColor>();
+            List<GradientColor> spacers = new List<GradientColor>();
 
             //Loop through each of the colors and either add it to the spacers if there is no difference
             //or 
@@ -236,7 +236,7 @@ namespace Scryber.Drawing
         /// <param name="lastValue">the index of the previous last color with a vlaue (or -1 for none)</param>
         /// <param name="spacers">All the spacer colors to add values to</param>
         /// <param name="col">The ultimate color to reach - it must have a distance value</param>
-        private void ApplySplitDistanceToSpacers(int lastValue, List<PDFGradientColor> spacers, PDFGradientColor col)
+        private void ApplySplitDistanceToSpacers(int lastValue, List<GradientColor> spacers, GradientColor col)
         {
             double min = 0.0;
             if (lastValue >= 0) //first time
@@ -264,9 +264,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFGradientDescriptor Parse(string value)
+        public static GradientDescriptor Parse(string value)
         {
-            PDFGradientDescriptor desc;
+            GradientDescriptor desc;
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentNullException("value");
             else if (TryParse(value, out desc))
@@ -285,7 +285,7 @@ namespace Scryber.Drawing
         /// <param name="value">The string to parse e.g. radial-gradient(red, green)</param>
         /// <param name="descriptor">Set to the parsed descriptor value</param>
         /// <returns>True if the gradient was parsed correctly</returns>
-        public static bool TryParse(string value, out PDFGradientDescriptor descriptor)
+        public static bool TryParse(string value, out GradientDescriptor descriptor)
         {
             descriptor = null;
 
@@ -301,9 +301,9 @@ namespace Scryber.Drawing
             else if (value.StartsWith("linear-gradient"))
             {
                 value = value.Substring("linear-gradient".Length).Trim();
-                PDFGradientLinearDescriptor linear;
+                GradientLinearDescriptor linear;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && PDFGradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
                 {
                     linear.Repeating = false;
                     descriptor = linear;
@@ -313,9 +313,9 @@ namespace Scryber.Drawing
             else if(value.StartsWith("repeating-linear-gradient"))
             {
                 value = value.Substring("repeating-linear-gradient".Length).Trim();
-                PDFGradientLinearDescriptor linear;
+                GradientLinearDescriptor linear;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && PDFGradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
                 {
                     linear.Repeating = true;
                     descriptor = linear;
@@ -325,9 +325,9 @@ namespace Scryber.Drawing
             else if(value.StartsWith("radial-gradient"))
             {
                 value = value.Substring("radial-gradient".Length).Trim();
-                PDFGradientRadialDescriptor radial;
+                GradientRadialDescriptor radial;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && PDFGradientRadialDescriptor.TryParseRadial(value.Substring(1, value.Length - 2), out radial))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientRadialDescriptor.TryParseRadial(value.Substring(1, value.Length - 2), out radial))
                 {
                     radial.Repeating = false;
                     descriptor = radial;
@@ -337,9 +337,9 @@ namespace Scryber.Drawing
             else if (value.StartsWith("repeating-radial-gradient"))
             {
                 value = value.Substring("repeating-radial-gradient".Length).Trim();
-                PDFGradientRadialDescriptor radial;
+                GradientRadialDescriptor radial;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && PDFGradientRadialDescriptor.TryParseRadial(value.Substring(1, value.Length - 2), out radial))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientRadialDescriptor.TryParseRadial(value.Substring(1, value.Length - 2), out radial))
                 {
                     radial.Repeating = true;
                     descriptor = radial;

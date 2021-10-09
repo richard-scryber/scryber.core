@@ -4,7 +4,7 @@ namespace Scryber.Drawing
     /// <summary>
     /// Defines a single gradient color value with opacity and distance that can be used in a gradient
     /// </summary>
-    public class PDFGradientColor
+    public class GradientColor
     {
         //[Obsolete("PDF does not support opacity in gradients but retaining incase we can make it work", false)]
         public double? Opacity { get; set; }
@@ -20,12 +20,12 @@ namespace Scryber.Drawing
         /// </summary>
         public Color Color { get; set; }
 
-        public PDFGradientColor(Color color) : this(color, null, null)
+        public GradientColor(Color color) : this(color, null, null)
         {
 
         }
 
-        public PDFGradientColor(Color color, double? distance, double? opacity)
+        public GradientColor(Color color, double? distance, double? opacity)
         {
             this.Color = color;
             this.Distance = distance;
@@ -34,7 +34,7 @@ namespace Scryber.Drawing
 
 
 
-        public static bool TryParse(string value, out PDFGradientColor color)
+        public static bool TryParse(string value, out GradientColor color)
         {
             color = null;
             if (null == value)
@@ -68,7 +68,7 @@ namespace Scryber.Drawing
                     if (double.TryParse(value, out distV))
                         distance = distV;
                 }
-                color = new PDFGradientColor(colVal, distance, opacity);
+                color = new GradientColor(colVal, distance, opacity);
                 return true;
             }
             else if (value.StartsWith("rgb(")) //We have rbg and maybe a distance
@@ -89,7 +89,7 @@ namespace Scryber.Drawing
                     if (double.TryParse(value, out distV))
                         distance = distV;
                 }
-                color = new PDFGradientColor(colVal, distance, opacity);
+                color = new GradientColor(colVal, distance, opacity);
                 return true;
             }
             else if (value.IndexOf(" ") > 0) //we have a named or hex color and a distance
@@ -105,12 +105,12 @@ namespace Scryber.Drawing
                 if (double.TryParse(value, out distV))
                     distance = distV;
 
-                color = new PDFGradientColor(colVal, distance, opacity);
+                color = new GradientColor(colVal, distance, opacity);
                 return true;
             }
             else if (Color.TryParse(value, out colVal)) //we just have a named or hex color
             {
-                color = new PDFGradientColor(colVal, distance, opacity);
+                color = new GradientColor(colVal, distance, opacity);
                 return true;
             }
             else //not recognised

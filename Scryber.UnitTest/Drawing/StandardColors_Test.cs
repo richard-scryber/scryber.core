@@ -12,7 +12,7 @@ namespace Scryber.Core.UnitTests.Drawing
     ///to contain all PDFColors_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFColors_Test
+    public class StandardColors_Test
     {
 
 
@@ -73,100 +73,100 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FromName_Test()
         {
             string name = "white";
-            Color expected = PDFColors.White;
+            Color expected = StandardColors.White;
             Color actual;
-            actual = PDFColors.FromName(name);
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "yellow";
-            expected = PDFColors.Yellow;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Yellow;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "teal";
-            expected = PDFColors.Teal;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Teal;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "silver";
-            expected = PDFColors.Silver;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Silver;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "red";
-            expected = PDFColors.Red;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Red;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "purple";
-            expected = PDFColors.Purple;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Purple;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "olive";
-            expected = PDFColors.Olive;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Olive;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "navy";
-            expected = PDFColors.Navy;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Navy;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "maroon";
-            expected = PDFColors.Maroon;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Maroon;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "lime";
-            expected = PDFColors.Lime;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Lime;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "green";
-            expected = PDFColors.Green;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Green;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "gray";
-            expected = PDFColors.Gray;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Gray;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "fuchsia";
-            expected = PDFColors.Fuchsia;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Fuchsia;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "blue";
-            expected = PDFColors.Blue;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Blue;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "black";
-            expected = PDFColors.Black;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Black;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "aqua";
-            expected = PDFColors.Aqua;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Aqua;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "BLACK";
-            expected = PDFColors.Black;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Black;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             name = "BlacK";
-            expected = PDFColors.Black;
-            actual = PDFColors.FromName(name);
+            expected = StandardColors.Black;
+            actual = StandardColors.FromName(name);
             Assert.AreEqual(expected, actual);
 
             try
             {
                 name = "Not A color";
-                actual = PDFColors.FromName(name);
+                actual = StandardColors.FromName(name);
                 throw new NotSupportedException("Should not get this far - throw exception with unknown name");
             }
             catch (ArgumentOutOfRangeException)

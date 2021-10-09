@@ -343,7 +343,7 @@ namespace Scryber.Drawing
             switch (this._cs)
             {
                 case ColorSpace.None:
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
 
                 case ColorSpace.G:
                     return this;
@@ -367,7 +367,7 @@ namespace Scryber.Drawing
             switch (this._cs)
             {
                 case ColorSpace.None:
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
 
                 case ColorSpace.G:
                     return new Color(ColorSpace.RGB, this._one, this._one, this._one, 0).ToCMYK();
@@ -614,10 +614,10 @@ namespace Scryber.Drawing
 
             else if (value.Equals("none", StringComparison.CurrentCultureIgnoreCase))
             {
-                color = PDFColors.Transparent;
+                color = StandardColors.Transparent;
                 return true;
             }
-            else if (PDFColors.TryGetColorFromName(value, out color))
+            else if (StandardColors.TryGetColorFromName(value, out color))
             {
                 return true;
             }
@@ -634,7 +634,7 @@ namespace Scryber.Drawing
         /// <returns>A new instance of the PDF Color</returns>
         public static bool TryParseRGBA(string value, out Color color, out double? opacity)
         {
-            color = PDFColors.Transparent;
+            color = StandardColors.Transparent;
             opacity = null;
 
             if (string.IsNullOrEmpty(value))
@@ -709,13 +709,13 @@ namespace Scryber.Drawing
         
         public static Color Transparent
         {
-            get { return PDFColors.Transparent; }
+            get { return StandardColors.Transparent; }
         }
 
 
         public static Color Empty
         {
-            get { return PDFColors.Transparent; }
+            get { return StandardColors.Transparent; }
         }
         
 

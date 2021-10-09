@@ -85,7 +85,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size"));
 
@@ -93,7 +93,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Width = new PDFUnit(100);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("100pt Wide"));
@@ -102,7 +102,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = new PDFUnit(100);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("100pt High"));
@@ -112,7 +112,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = new PDFUnit(100);
             img.Width = new PDFUnit(100);
             pg.Contents.Add(img);
@@ -187,7 +187,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MaximumWidth = new PDFUnit(600); // bigger than the image so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size"));
@@ -196,7 +196,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MaximumWidth = new PDFUnit(200); //smaller so should reduce the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Max 200pt Wide"));
@@ -205,7 +205,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MaximumHeight = new PDFUnit(200); //smaller so should reduce height and width proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Max 200pt High"));
@@ -215,7 +215,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MaximumHeight = new PDFUnit(200); //smaller so should reduce height and width proportionally
             img.MaximumWidth = new PDFUnit(400);
             pg.Contents.Add(img);
@@ -225,7 +225,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MaximumHeight = new PDFUnit(400); //smaller so should reduce height and width proportionally
             img.MaximumWidth = new PDFUnit(200);
             pg.Contents.Add(img);
@@ -308,7 +308,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumWidth = new PDFUnit(400); // bigger than the image so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size - min width 400pt"));
@@ -317,7 +317,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumHeight = new PDFUnit(300); // bigger than the image so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size - min height 300"));
@@ -326,7 +326,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumWidth = new PDFUnit(550); //larger so should increase the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Min 550pt Wide"));
@@ -335,7 +335,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumHeight = new PDFUnit(350); //larger so should increase the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Min 350pt High"));
@@ -344,7 +344,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumWidth = new PDFUnit(550);
             img.MinimumHeight = new PDFUnit(350); //width larger so should increase the width and height proportionally
             pg.Contents.Add(img);
@@ -354,7 +354,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumWidth = new PDFUnit(500);
             img.MinimumHeight = new PDFUnit(350); //height larger so should increase the width and height proportionally
             pg.Contents.Add(img);
@@ -448,7 +448,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Width = 200;
             img.MinimumHeight = new PDFUnit(100); // smaller so no change
             pg.Contents.Add(img);
@@ -458,7 +458,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Width = 200;
             img.MinimumHeight = new PDFUnit(300); // larger so will change
             pg.Contents.Add(img);
@@ -468,7 +468,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = 250;
             img.MinimumWidth = new PDFUnit(100); // smaller so no change
             pg.Contents.Add(img);
@@ -478,7 +478,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = 250;
             img.MinimumWidth = new PDFUnit(500); // larger so will change
             pg.Contents.Add(img);
@@ -553,7 +553,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Width = 300;
             img.MaximumHeight = new PDFUnit(300); //1. larger so no change
             pg.Contents.Add(img);
@@ -563,7 +563,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Width = 300;
             img.MaximumHeight = new PDFUnit(100); //2. smaller so will change
             pg.Contents.Add(img);
@@ -573,7 +573,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = 250;
             img.MaximumWidth = new PDFUnit(500); //3. larger so no change
             pg.Contents.Add(img);
@@ -583,7 +583,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = 250;
             img.MaximumWidth = new PDFUnit(200); //4. smaller so will change
             pg.Contents.Add(img);
@@ -658,7 +658,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             //1. No Explicit sizes so natural
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("1. No Explicit sizes"));
@@ -668,7 +668,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //2. Full width
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("2. Full width in page"));
@@ -677,7 +677,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //Full width with max
             img.MaximumHeight = 200;
             pg.Contents.Add(img);
@@ -696,7 +696,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             //No Explicit sizes so natural in 2 columns
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("4. No Explicit sizes with 2 columns"));
@@ -714,7 +714,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             //No Explicit sizes so natural in 3 columns
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("5. No Explicit sizes with 3 columns"));
@@ -724,7 +724,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //Full width with actual height
             img.Height = 300;
             pg.Contents.Add(img);
@@ -734,7 +734,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //Full width with min height
             img.MinimumHeight = 50;
             pg.Contents.Add(img);
@@ -744,7 +744,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //Full width with min height
             img.MinimumHeight = 300;
             pg.Contents.Add(img);
@@ -754,7 +754,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //Full width with max height 300
             img.MaximumHeight = 300;
             pg.Contents.Add(img);
@@ -764,7 +764,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.FullWidth = true; //Full width with max height 50
             img.MaximumHeight = 50;
             pg.Contents.Add(img);
@@ -774,7 +774,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             //No Width but explicit minimum height
             img.MinimumHeight = 320;
             pg.Contents.Add(img);
@@ -949,12 +949,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             var div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             var img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             //1. No Explicit sizes so natural
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("1. No Explicit sizes - shrink"));
@@ -969,12 +969,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = 200;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("2. Explicit height = 200 - overflowing"));
@@ -987,12 +987,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Width = 200;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("3. Explicit width = 200 - overflowing"));
@@ -1005,12 +1005,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumHeight = 200;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("4. Minimum Height = 200 - overflowing with natural size"));
@@ -1023,12 +1023,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumWidth = 200;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("5. Minimum Width = 200 - overflowing with natural size"));
@@ -1041,12 +1041,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 50;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("6. No Size, but cannot go below 20% shrink"));
 
@@ -1058,12 +1058,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 150;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumScaleReduction = 0.5;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("7. No Size, but explicit cannot go below 50% shrink"));
@@ -1080,12 +1080,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 150;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.Height = 180;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("8. Explicit size so new column at proportionally that size"));
@@ -1099,12 +1099,12 @@ namespace Scryber.Core.UnitTests.Layout
 
             div = new Div();
             div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 150;
-            div.BorderColor = PDFColors.Aqua;
+            div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.MinimumScaleReduction = 0.5;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("9. No Size, but explicit cannot go below 50% shrink so new column at natural size"));
@@ -1239,7 +1239,7 @@ namespace Scryber.Core.UnitTests.Layout
             var img = new Image();
             img.ID = "Image1";
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             img.Height = 40;
             pg.Contents.Add(img);
@@ -1249,7 +1249,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.ID = "Image2";
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
@@ -1305,7 +1305,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.ID = "Image1";
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 1. Inline at text size"));
@@ -1320,7 +1320,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.ID = "Image2";
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 2. Inline at text size for 80pt"));
@@ -1334,7 +1334,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.ID = "Image3";
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
@@ -1349,7 +1349,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.ID = "Image4";
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             img.Width = 100;
             pg.Contents.Add(img);
@@ -1366,7 +1366,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.ID = "Image5";
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
@@ -1385,7 +1385,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.ID = "Image6";
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);

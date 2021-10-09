@@ -13,7 +13,7 @@ namespace Scryber.Core.UnitTests.Drawing
     ///to contain all PDFGraphicsPath_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFGradientDescriptor_Test
+    public class GradientDescriptor_Test
     {
 
         
@@ -40,16 +40,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #endregion
 
-        #region public void PDFLinearGradientDescriptorCtor_Test()
+        #region public void LinearGradientDescriptorCtor_Test()
 
         /// <summary>
-        ///A test for PDFGradientLinearDescriptor Constructor
+        ///A test for GradientLinearDescriptor Constructor
         ///</summary>
         [TestMethod()]
         [TestCategory("Gradients")]
-        public void PDFLinearGradientDescriptorCtor_Test()
+        public void LinearGradientDescriptorCtor_Test()
         {
-            PDFGradientLinearDescriptor target = new PDFGradientLinearDescriptor();
+            GradientLinearDescriptor target = new GradientLinearDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Linear);
             Assert.IsFalse(target.Repeating);
@@ -61,16 +61,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #endregion
 
-        #region public void PDFRadientGradientDescriptorCtor_Test()
+        #region public void RadientGradientDescriptorCtor_Test()
 
         /// <summary>
-        ///A test for PDFRadientGradientDescriptor Constructor
+        ///A test for RadientGradientDescriptor Constructor
         ///</summary>
         [TestMethod()]
         [TestCategory("Gradients")]
-        public void PDFRadientGradientDescriptorCtor_Test()
+        public void RadientGradientDescriptorCtor_Test()
         {
-            PDFGradientRadialDescriptor target = new PDFGradientRadialDescriptor();
+            GradientRadialDescriptor target = new GradientRadialDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Radial);
             Assert.IsFalse(target.Repeating);
@@ -85,26 +85,26 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #endregion
 
-        #region public void PDFRadientGradientDescriptorColor_Test()
+        #region public void RadientGradientDescriptorColor_Test()
 
         /// <summary>
         ///A test for PDFRadientGradientDescriptor Colors
         ///</summary>
         [TestMethod()]
         [TestCategory("Gradients")]
-        public void PDFGradientDescriptorColor_Test()
+        public void GradientDescriptorColor_Test()
         {
-            PDFGradientDescriptor target = new PDFGradientLinearDescriptor();
+            GradientDescriptor target = new GradientLinearDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Linear);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red),
-                new PDFGradientColor(StandardColors.Green)
+                new GradientColor(StandardColors.Red),
+                new GradientColor(StandardColors.Green)
             });
 
             Assert.AreEqual(2, target.Colors.Count);
@@ -118,17 +118,17 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //Same test with radial
 
-            target = new PDFGradientRadialDescriptor();
+            target = new GradientRadialDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Radial);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red),
-                new PDFGradientColor(StandardColors.Green)
+                new GradientColor(StandardColors.Red),
+                new GradientColor(StandardColors.Green)
             });
 
             Assert.AreEqual(2, target.Colors.Count);
@@ -143,26 +143,26 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #endregion
 
-        #region public void PDFGradientDescriptorColorFunction2_Test()
+        #region public void GradientDescriptorColorFunction2_Test()
 
         /// <summary>
-        ///A test for PDFGradientDescriptorColorFunction2 with appropriate stops
+        ///A test for GradientDescriptorColorFunction2 with appropriate stops
         ///</summary>
         [TestMethod()]
         [TestCategory("Gradients")]
-        public void PDFGradientDescriptorColorFunction2_Test()
+        public void GradientDescriptorColorFunction2_Test()
         {
-            PDFGradientDescriptor target = new PDFGradientLinearDescriptor();
+            GradientDescriptor target = new GradientLinearDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Linear);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red),
-                new PDFGradientColor(StandardColors.Green)
+                new GradientColor(StandardColors.Red),
+                new GradientColor(StandardColors.Green)
             });
 
             var fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
@@ -177,17 +177,17 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //Radial gradient at 0 and 50% test
 
-            target = new PDFGradientRadialDescriptor();
+            target = new GradientRadialDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Radial);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red),
-                new PDFGradientColor(StandardColors.Green, 50, null)
+                new GradientColor(StandardColors.Red),
+                new GradientColor(StandardColors.Green, 50, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
@@ -202,17 +202,17 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //Radial gradient at 50% and 100% test
 
-            target = new PDFGradientRadialDescriptor();
+            target = new GradientRadialDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Radial);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red, 50, null),
-                new PDFGradientColor(StandardColors.Green, 100, null)
+                new GradientColor(StandardColors.Red, 50, null),
+                new GradientColor(StandardColors.Green, 100, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
@@ -226,26 +226,26 @@ namespace Scryber.Core.UnitTests.Drawing
         #endregion
 
 
-        #region public void PDFGradientDescriptorColorFunction3_Test()
+        #region public void GradientDescriptorColorFunction3_Test()
 
         /// <summary>
-        ///A test for PDFGradientDescriptorColorFunction3 with appropriate stops
+        ///A test for GradientDescriptorColorFunction3 with appropriate stops
         ///</summary>
         [TestMethod()]
         [TestCategory("Gradients")]
-        public void PDFGradientDescriptorColorFunction3_Test()
+        public void GradientDescriptorColorFunction3_Test()
         {
-            PDFGradientDescriptor target = new PDFGradientLinearDescriptor();
+            GradientDescriptor target = new GradientLinearDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Linear);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red),
-                new PDFGradientColor(StandardColors.Green)
+                new GradientColor(StandardColors.Red),
+                new GradientColor(StandardColors.Green)
             });
 
             var fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
@@ -260,17 +260,17 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //Radial gradient at 0 and 50% test
 
-            target = new PDFGradientRadialDescriptor();
+            target = new GradientRadialDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Radial);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red),
-                new PDFGradientColor(StandardColors.Green, 50, null)
+                new GradientColor(StandardColors.Red),
+                new GradientColor(StandardColors.Green, 50, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
@@ -285,17 +285,17 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //Radial gradient at 50% and 100% test
 
-            target = new PDFGradientRadialDescriptor();
+            target = new GradientRadialDescriptor();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.GradientType == GradientType.Radial);
             Assert.IsFalse(target.Repeating);
             Assert.IsNotNull(target.Colors);
             Assert.AreEqual(0, target.Colors.Count);
 
-            target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
+            target.Colors = new List<GradientColor>(new GradientColor[]
             {
-                new PDFGradientColor(StandardColors.Red, 50, null),
-                new PDFGradientColor(StandardColors.Green, 100, null)
+                new GradientColor(StandardColors.Red, 50, null),
+                new GradientColor(StandardColors.Green, 100, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));

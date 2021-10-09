@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.Drawing
 {
-    public static class PDFColors
+    public static class StandardColors
     {
 
         [System.Xml.Serialization.XmlAttribute("Aqua")]
@@ -79,7 +79,7 @@ namespace Scryber.Drawing
 
         private static Dictionary<string, Color> _named;
 
-        static PDFColors()
+        static StandardColors()
         {
             _named = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase);
             LoadColorsFromFields(_named);
@@ -87,7 +87,7 @@ namespace Scryber.Drawing
 
         private static void LoadColorsFromFields(Dictionary<string, Color> hash)
         {
-            System.Reflection.FieldInfo[] fields = typeof(PDFColors).GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            System.Reflection.FieldInfo[] fields = typeof(StandardColors).GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             foreach (System.Reflection.FieldInfo fi in fields)
             {
                 object[] attrs = fi.GetCustomAttributes(typeof(System.Xml.Serialization.XmlAttributeAttribute), false);
@@ -125,71 +125,71 @@ namespace Scryber.Drawing
             switch (lower)
             {
                 case ("aqua"):
-                    color = PDFColors.Aqua;
+                    color = StandardColors.Aqua;
                     known = true;
                     break;
                 case ("black"):
-                    color = PDFColors.Black;
+                    color = StandardColors.Black;
                     known = true;
                     break;
                 case ("blue"):
-                    color = PDFColors.Blue;
+                    color = StandardColors.Blue;
                     known = true;
                     break;
                 case ("fuchsia"):
-                    color = PDFColors.Fuchsia;
+                    color = StandardColors.Fuchsia;
                     known = true;
                     break;
                 case ("gray"):
-                    color = PDFColors.Gray;
+                    color = StandardColors.Gray;
                     known = true;
                     break;
                 case ("green"):
-                    color = PDFColors.Green;
+                    color = StandardColors.Green;
                     known = true;
                     break;
                 case ("lime"):
-                    color = PDFColors.Lime;
+                    color = StandardColors.Lime;
                     known = true;
                     break;
                 case ("maroon"):
-                    color = PDFColors.Maroon;
+                    color = StandardColors.Maroon;
                     known = true;
                     break;
                 case ("navy"):
-                    color = PDFColors.Navy;
+                    color = StandardColors.Navy;
                     known = true;
                     break;
                 case ("olive"):
-                    color = PDFColors.Olive;
+                    color = StandardColors.Olive;
                     known = true;
                     break;
                 case ("purple"):
-                    color = PDFColors.Purple;
+                    color = StandardColors.Purple;
                     known = true;
                     break;
                 case ("red"):
-                    color = PDFColors.Red;
+                    color = StandardColors.Red;
                     known = true;
                     break;
                 case ("silver"):
-                    color = PDFColors.Silver;
+                    color = StandardColors.Silver;
                     known = true;
                     break;
                 case ("teal"):
-                    color = PDFColors.Teal;
+                    color = StandardColors.Teal;
                     known = true;
                     break;
                 case ("white"):
-                    color = PDFColors.White;
+                    color = StandardColors.White;
                     known = true;
                     break;
                 case ("yellow"):
-                    color = PDFColors.Yellow;
+                    color = StandardColors.Yellow;
                     known = true;
                     break;
                 case ("transparent"):
-                    color = PDFColors.Transparent;
+                    color = StandardColors.Transparent;
                     known = true;
                     break;
                 default:

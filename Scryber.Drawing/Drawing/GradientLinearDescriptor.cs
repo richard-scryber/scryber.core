@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace Scryber.Drawing
 {
-    public class PDFGradientLinearDescriptor : PDFGradientDescriptor
+    public class GradientLinearDescriptor : GradientDescriptor
     {
 
         public double Angle { get; set; }
 
-        public PDFGradientLinearDescriptor() : base(GradientType.Linear)
+        public GradientLinearDescriptor() : base(GradientType.Linear)
         { }
 
         
@@ -31,7 +31,7 @@ namespace Scryber.Drawing
         /// <param name="value"></param>
         /// <param name="linear"></param>
         /// <returns></returns>
-        public static bool TryParseLinear(string value, out PDFGradientLinearDescriptor linear)
+        public static bool TryParseLinear(string value, out GradientLinearDescriptor linear)
         {
             linear = null;
             string[] all = _splitter.Split(value);
@@ -66,18 +66,18 @@ namespace Scryber.Drawing
             else
                 angle = (double)GradientAngle.Bottom;
 
-            PDFGradientColor[] colors = new PDFGradientColor[all.Length - colorStopIndex];
+            GradientColor[] colors = new GradientColor[all.Length - colorStopIndex];
 
             for (int i = 0; i < colors.Length; i++)
             {
-                PDFGradientColor parsed;
-                if (PDFGradientColor.TryParse(all[i + colorStopIndex], out parsed))
+                GradientColor parsed;
+                if (GradientColor.TryParse(all[i + colorStopIndex], out parsed))
                     colors[i] = parsed;
                 else
                     return false;
             }
 
-            linear = new PDFGradientLinearDescriptor() { Angle = angle, Colors = new List<PDFGradientColor>(colors) };
+            linear = new GradientLinearDescriptor() { Angle = angle, Colors = new List<GradientColor>(colors) };
             return true;
         }
 

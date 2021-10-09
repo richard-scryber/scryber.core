@@ -10,7 +10,7 @@ namespace Scryber.Drawing
 
         public override FillType FillStyle { get { return FillType.Pattern; } }
 
-        public PDFGradientDescriptor Descriptor
+        public GradientDescriptor Descriptor
         {
             get;
             protected set;
@@ -21,7 +21,7 @@ namespace Scryber.Drawing
             get { return this.Descriptor.GradientType; }
         }
 
-        public PDFGradientColor[] Colors
+        public GradientColor[] Colors
         {
             get { return this.Descriptor.Colors.ToArray(); }
         }
@@ -31,7 +31,7 @@ namespace Scryber.Drawing
             get { return this.Descriptor.Repeating; }
         }
 
-        public PDFGradientBrush(PDFGradientDescriptor descriptor)
+        public PDFGradientBrush(GradientDescriptor descriptor)
         {
             this.Descriptor = descriptor;
         }
@@ -49,13 +49,13 @@ namespace Scryber.Drawing
             return pgRect;
         }
 
-        public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, PDFGradientLinearDescriptor descriptor, PDFRect bounds)
+        public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, GradientLinearDescriptor descriptor, PDFRect bounds)
         {
             PDFLinearShadingPattern pattern = new PDFLinearShadingPattern(g.Container.Document, key, descriptor, bounds);
             return pattern;
         }
 
-        public PDFResource GetRadialShadingPattern(PDFGraphics g, string key, PDFGradientRadialDescriptor descriptor, PDFRect bounds)
+        public PDFResource GetRadialShadingPattern(PDFGraphics g, string key, GradientRadialDescriptor descriptor, PDFRect bounds)
         {
             PDFRadialShadingPattern pattern = new PDFRadialShadingPattern(g.Container.Document, key, descriptor, bounds);
             return pattern;

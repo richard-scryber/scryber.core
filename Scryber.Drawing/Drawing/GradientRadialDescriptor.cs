@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Scryber.Drawing
 {
-    public class PDFGradientRadialDescriptor : PDFGradientDescriptor
+    public class GradientRadialDescriptor : GradientDescriptor
     {
 
         public RadialShape Shape { get; set; }
@@ -23,10 +23,10 @@ namespace Scryber.Drawing
 
         private static Regex _splitter = new Regex(",(?![^\\(]*\\))");
 
-        public PDFGradientRadialDescriptor() : this(RadialShape.Circle, RadialSize.FarthestCorner)
+        public GradientRadialDescriptor() : this(RadialShape.Circle, RadialSize.FarthestCorner)
         { }
 
-        public PDFGradientRadialDescriptor(RadialShape shape, RadialSize size) : base(GradientType.Radial)
+        public GradientRadialDescriptor(RadialShape shape, RadialSize size) : base(GradientType.Radial)
         {
             Shape = shape;
             Size = size;
@@ -86,7 +86,7 @@ namespace Scryber.Drawing
             return items;
         }
 
-        public static bool TryParseRadial(string value, out PDFGradientRadialDescriptor radial)
+        public static bool TryParseRadial(string value, out GradientRadialDescriptor radial)
         {
             radial = null;
             string[] all = _splitter.Split(value);
@@ -186,18 +186,18 @@ namespace Scryber.Drawing
                 colorStopIndex = 1;
             }
 
-            PDFGradientColor[] colors = new PDFGradientColor[all.Length - colorStopIndex];
+            GradientColor[] colors = new GradientColor[all.Length - colorStopIndex];
 
             for (int i = 0; i < colors.Length; i++)
             {
-                PDFGradientColor parsed;
-                if (PDFGradientColor.TryParse(all[i + colorStopIndex], out parsed))
+                GradientColor parsed;
+                if (GradientColor.TryParse(all[i + colorStopIndex], out parsed))
                     colors[i] = parsed;
                 else
                     return false;
             }
 
-            radial = new PDFGradientRadialDescriptor() { Repeating = false, Shape = shape, Size = size, XCentre = xpos, YCentre = ypos, Colors = new List<PDFGradientColor>(colors) };
+            radial = new GradientRadialDescriptor() { Repeating = false, Shape = shape, Size = size, XCentre = xpos, YCentre = ypos, Colors = new List<GradientColor>(colors) };
             return true;
         }
     }

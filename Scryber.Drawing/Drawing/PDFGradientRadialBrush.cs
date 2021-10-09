@@ -6,14 +6,14 @@ namespace Scryber.Drawing
 {
     public class PDFGradientRadialBrush : PDFGradientBrush
     {
-        private PDFGradientRadialDescriptor _descriptor;
+        private GradientRadialDescriptor _descriptor;
 
         public RadialShape Shape
         {
             get { return _descriptor.Shape; }
         }
 
-        public PDFGradientRadialBrush(PDFGradientRadialDescriptor descriptor)
+        public PDFGradientRadialBrush(GradientRadialDescriptor descriptor)
             : base(descriptor)
         {
             _descriptor = descriptor;

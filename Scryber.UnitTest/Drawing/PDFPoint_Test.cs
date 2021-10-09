@@ -222,20 +222,7 @@ namespace Scryber.Core.UnitTests.Drawing
             
         }
 
-        /// <summary>
-        ///A test for ToDrawing
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Drawing Structures")]
-        public void ToDrawing_Test()
-        {
-            PDFPoint target = new PDFPoint(10, 20);
-            PointF expected = new PointF(10,20);
-            PointF actual;
-            actual = target.ToDrawing();
-            Assert.AreEqual(expected.X, actual.X);
-            Assert.AreEqual(expected.Y, actual.Y);
-        }
+        
 
         /// <summary>
         ///A test for ToPoints

@@ -7,7 +7,7 @@ namespace Scryber.Drawing
 {
     public class PDFGradientLinearBrush : PDFGradientBrush
     {
-        private PDFGradientLinearDescriptor _descriptor;
+        private GradientLinearDescriptor _descriptor;
 
         public double Angle
         {
@@ -15,7 +15,7 @@ namespace Scryber.Drawing
         }
 
         
-        public PDFGradientLinearBrush(PDFGradientLinearDescriptor descriptor) : base(descriptor)
+        public PDFGradientLinearBrush(GradientLinearDescriptor descriptor) : base(descriptor)
         {
             this._descriptor = descriptor;
         }
