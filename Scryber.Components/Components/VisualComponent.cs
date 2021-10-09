@@ -1232,14 +1232,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("column-widths", Const.PDFStylesNamespace)]
         [PDFDesignable("Column Widths", Ignore = true)]
-        public PDFColumnWidths ColumnWidths
+        public ColumnWidths ColumnWidths
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.ColumnWidthKey, PDFColumnWidths.Empty);
+                    return this.Style.GetValue(StyleKeys.ColumnWidthKey, ColumnWidths.Empty);
                 else
-                    return PDFColumnWidths.Empty;
+                    return ColumnWidths.Empty;
             }
             set { this.Style.SetValue(StyleKeys.ColumnWidthKey, value); }
         }

@@ -9,7 +9,7 @@ using Scryber.Logging;
 namespace Scryber.Drawing
 {
     [PDFParsableValue()]
-    public struct PDFColumnWidths
+    public struct ColumnWidths
     {
         public const double UndefinedWidth = 0.0;
         private static readonly double[] _emptyWidths = new double[] { };
@@ -50,13 +50,13 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFColumnWidths(PDFUnit explicitWidth)
+        public ColumnWidths(PDFUnit explicitWidth)
         {
             this._widths = null;
             this._explicit = explicitWidth;
         }
 
-        public PDFColumnWidths(double[] widths)
+        public ColumnWidths(double[] widths)
         {
             this._widths = widths;
             this._explicit = PDFUnit.Empty;
@@ -175,10 +175,10 @@ namespace Scryber.Drawing
             return all;
         }
 
-        public static PDFColumnWidths Parse(string value)
+        public static ColumnWidths Parse(string value)
         {
             if (string.IsNullOrEmpty(value))
-                return PDFColumnWidths.Empty;
+                return ColumnWidths.Empty;
 
             string[] all = value.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries);
             if(all.Length == 1)
@@ -189,7 +189,7 @@ namespace Scryber.Drawing
                 {
                     PDFUnit val;
                     if (PDFUnit.TryParse(expl, out val))
-                        return new PDFColumnWidths(val);
+                        return new ColumnWidths(val);
                     else
                         throw new ArgumentException("The value '" + value + "' could not be converted to column widths. Either use an explicit width (e.g. 200pt) or a set of percentage widths (e.g. 30% 40% 30%, or 0.3 0.4 0.3) ", "value");
                 }
@@ -217,12 +217,12 @@ namespace Scryber.Drawing
                 parsed[i] = one;
             }
             
-            return new PDFColumnWidths(parsed);
+            return new ColumnWidths(parsed);
         }
 
-        public static PDFColumnWidths Empty
+        public static ColumnWidths Empty
         {
-            get { return new PDFColumnWidths(_emptyWidths); }
+            get { return new ColumnWidths(_emptyWidths); }
         }
 
 

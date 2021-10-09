@@ -514,7 +514,7 @@ namespace Scryber.PDF.Layout
                 else if(columns.ColumnCount > 1)
                 {
                     count = columns.ColumnCount;
-                    widths = PDFColumnWidths.GetEqualColumnWidths(avail.Width, columns.AlleyWidth, count);
+                    widths = Drawing.ColumnWidths.GetEqualColumnWidths(avail.Width, columns.AlleyWidth, count);
                 }
                 else
                 {

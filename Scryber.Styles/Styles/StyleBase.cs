@@ -1236,7 +1236,7 @@ namespace Scryber.Styles
             {
                 AlleyWidth = this.GetValue(StyleKeys.ColumnAlleyKey, ColumnsStyle.DefaultAlleyWidth),
                 ColumnCount = this.GetValue(StyleKeys.ColumnCountKey, 1),
-                ColumnWidths = this.GetValue(StyleKeys.ColumnWidthKey,PDFColumnWidths.Empty),
+                ColumnWidths = this.GetValue(StyleKeys.ColumnWidthKey,ColumnWidths.Empty),
                 AutoFlow = this.GetValue(StyleKeys.ColumnFlowKey, ColumnsStyle.DefaultAutoFlow)
             };
         }

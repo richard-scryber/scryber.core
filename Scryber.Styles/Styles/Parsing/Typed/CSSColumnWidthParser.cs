@@ -6,7 +6,7 @@ using System.Text;
 namespace Scryber.Styles.Parsing.Typed
 {
 
-    public class CSSColumnWidthParser : CSSStyleAttributeParser<PDFColumnWidths>
+    public class CSSColumnWidthParser : CSSStyleAttributeParser<ColumnWidths>
     {
         public CSSColumnWidthParser()
             : base(CSSStyleItems.ColumnWidths, StyleKeys.ColumnWidthKey)
@@ -18,7 +18,7 @@ namespace Scryber.Styles.Parsing.Typed
         {
             string all = string.Empty;
             StringBuilder buffer = new StringBuilder();
-            PDFColumnWidths widths;
+            ColumnWidths widths;
 
             while (reader.ReadNextValue())
             {
@@ -45,14 +45,14 @@ namespace Scryber.Styles.Parsing.Typed
             return false;
         }
 
-        protected bool DoConvertColumnWidths(StyleBase style, object value, out PDFColumnWidths widths)
+        protected bool DoConvertColumnWidths(StyleBase style, object value, out ColumnWidths widths)
         {
             if(null == value)
             {
                 widths = default;
                 return false;
             }
-            else if(value is PDFColumnWidths w)
+            else if(value is ColumnWidths w)
             {
                 widths = w;
                 return true;
@@ -69,11 +69,11 @@ namespace Scryber.Styles.Parsing.Typed
         }
 
 
-        protected bool TryParseWidths(string value, out PDFColumnWidths widths)
+        protected bool TryParseWidths(string value, out ColumnWidths widths)
         {
             try
             {
-                widths = PDFColumnWidths.Parse(value);
+                widths = ColumnWidths.Parse(value);
             }
             catch
             {

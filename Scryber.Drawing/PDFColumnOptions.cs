@@ -17,7 +17,7 @@ namespace Scryber
         /// <summary>
         /// Gets or sets the individual width of the columns
         /// </summary>
-        public PDFColumnWidths ColumnWidths { get; set; }
+        public ColumnWidths ColumnWidths { get; set; }
 
         /// <summary>
         /// Flag to identify if the columns should flow from one to the next

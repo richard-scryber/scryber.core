@@ -120,7 +120,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<int> ColumnCountKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cont", ColumnItemKey);
         public static readonly StyleKey<PDFUnit> ColumnAlleyKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"ally", ColumnItemKey);
         public static readonly StyleKey<bool> ColumnFlowKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"flow", ColumnItemKey);
-        public static readonly StyleKey<PDFColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<PDFColumnWidths>((ObjectType)"cwid", ColumnItemKey);
+        public static readonly StyleKey<ColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<ColumnWidths>((ObjectType)"cwid", ColumnItemKey);
         public static readonly StyleKey<bool> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brcb", ColumnItemKey);
         public static readonly StyleKey<bool> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brca", ColumnItemKey);
 

@@ -33,7 +33,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestMethod]
         public void ColumnWidthConstructors()
         {
-            var widths = new PDFColumnWidths();
+            var widths = new ColumnWidths();
             Assert.IsTrue(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
             Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
@@ -43,7 +43,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestMethod]
         public void ColumnWidthWidthsContrsuctors()
         {
-            var widths = new PDFColumnWidths(new double[] { 0.3, 0.4, 0.3 });
+            var widths = new ColumnWidths(new double[] { 0.3, 0.4, 0.3 });
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
             Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
@@ -58,7 +58,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestMethod]
         public void ColumnWidthExplicitContrsuctors()
         {
-            var widths = new PDFColumnWidths(new PDFUnit(200, PageUnits.Points));
+            var widths = new ColumnWidths(new PDFUnit(200, PageUnits.Points));
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsTrue(widths.HasExplicitWidth);
 
@@ -70,7 +70,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColumnWidthWidthsParse()
         {
             var str = "0.3 0.3 0.4";
-            var widths = PDFColumnWidths.Parse(str);
+            var widths = ColumnWidths.Parse(str);
 
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColumnWidthPercentParse()
         {
             var str = "40% 30% 30%";
-            var widths = PDFColumnWidths.Parse(str);
+            var widths = ColumnWidths.Parse(str);
 
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
@@ -105,7 +105,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColumnWidthExplicitParse()
         {
             var str = "300pt";
-            var widths = PDFColumnWidths.Parse(str);
+            var widths = ColumnWidths.Parse(str);
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsTrue(widths.HasExplicitWidth);
 
@@ -118,7 +118,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColumnWidthWithVariableParse()
         {
             var str = "40% * 30%";
-            var widths = PDFColumnWidths.Parse(str);
+            var widths = ColumnWidths.Parse(str);
 
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
@@ -127,7 +127,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(widths.Widths);
             Assert.AreEqual(3, widths.Widths.Length);
             Assert.AreEqual(0.4, widths.Widths[0]);
-            Assert.AreEqual(PDFColumnWidths.UndefinedWidth, widths.Widths[1]);
+            Assert.AreEqual(ColumnWidths.UndefinedWidth, widths.Widths[1]);
             Assert.AreEqual(0.3, widths.Widths[2]);
         }
 
@@ -136,7 +136,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColumnWidthExplicitCalculate()
         {
             var str = "300pt";
-            var widths = PDFColumnWidths.Parse(str);
+            var widths = ColumnWidths.Parse(str);
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsTrue(widths.HasExplicitWidth);
 
@@ -187,7 +187,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColumnWidthWithVariableCaclulate()
         {
             var str = "40% * 30%";
-            var widths = PDFColumnWidths.Parse(str);
+            var widths = ColumnWidths.Parse(str);
 
 
             var calc = widths.GetPercentColumnWidths(1030, 10, 4);
@@ -213,7 +213,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(600, calc[1].PointsValue);
 
             str = "0.2 0.5 * 0.1";
-            widths = PDFColumnWidths.Parse(str);
+            widths = ColumnWidths.Parse(str);
 
             calc = widths.GetPercentColumnWidths(1030, 10, 4);
             Assert.AreEqual(4, calc.Length);

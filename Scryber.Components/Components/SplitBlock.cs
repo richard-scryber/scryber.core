@@ -41,7 +41,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            style.Columns.ColumnWidths = new Drawing.PDFColumnWidths(new double[] { 0.33 });
+            style.Columns.ColumnWidths = new Drawing.ColumnWidths(new double[] { 0.33 });
             return style;
         }
     }
@@ -54,7 +54,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            style.Columns.ColumnWidths = new Drawing.PDFColumnWidths(new double[] { 0.66 });
+            style.Columns.ColumnWidths = new Drawing.ColumnWidths(new double[] { 0.66 });
             return style;
         }
     }
@@ -68,7 +68,7 @@ namespace Scryber.Components
         {
             Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 3;
-            style.Columns.ColumnWidths = new Drawing.PDFColumnWidths(new double[] { 0.33, 0.33 });
+            style.Columns.ColumnWidths = new Drawing.ColumnWidths(new double[] { 0.33, 0.33 });
             return style;
         }
     }
