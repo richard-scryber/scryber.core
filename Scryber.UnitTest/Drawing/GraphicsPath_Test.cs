@@ -13,7 +13,7 @@ namespace Scryber.Core.UnitTests.Drawing
     ///to contain all PDFGraphicsPath_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFGraphicsPath_Test
+    public class GraphicsPath_Test
     {
 
         public class PDFGraphicsProxy : GraphicsPath
@@ -79,14 +79,14 @@ namespace Scryber.Core.UnitTests.Drawing
 
 
 
-        #region public void PDFGraphicsPathConstructor_Test1()
+        #region public void GraphicsPathConstructor_Test1()
 
         /// <summary>
         ///A test for PDFGraphicsPath Constructor
         ///</summary>
         [TestMethod()]
         [TestCategory("Graphics Path")]
-        public void PDFGraphicsPathConstructor_Test1()
+        public void GraphicsPathConstructor_Test1()
         {
             GraphicsPath target = new GraphicsPath();
             Assert.IsNotNull(target);

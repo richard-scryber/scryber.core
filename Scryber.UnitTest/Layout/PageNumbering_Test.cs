@@ -13,12 +13,12 @@ using LD = Scryber.PDF.Layout.PDFLayoutDocument;
 namespace Scryber.Core.UnitTests.Layout
 {
     /// <summary>
-    /// A set of tests for the PDFPageNumberingCollection, PDFPageNumberGroup and PDFPageStyle
+    /// A set of tests for the PageNumberingCollection, PageNumberGroup and PageStyle
     /// Specifically around the registation of pages and their page numbering styles so that
     /// we know the format of page numbers and labels is correct.
     /// </summary>
     [TestClass()]
-    public class PDFPageNumbering_Test
+    public class PageNumbering_Test
     {
 
 

@@ -82,7 +82,7 @@ namespace Scryber.Drawing
         /// </summary>
         public double ZeroWidth
         {
-            get { return _exh; }
+            get { return _zero; }
         }
 
         /// <summary>

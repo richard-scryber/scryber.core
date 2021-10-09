@@ -12,7 +12,7 @@ using Scryber.Styles;
 namespace Scryber.Core.UnitTests.Layout
 {
     [TestClass()]
-    public class PDFPage_NumberRegistration_Test
+    public class Page_NumberRegistration_Test
     {
         private PDFLayoutDocument _layout;
 
