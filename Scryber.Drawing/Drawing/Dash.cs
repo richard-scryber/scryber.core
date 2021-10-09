@@ -155,7 +155,7 @@ namespace Scryber.Drawing
             if (pattern.Length > 0)
             {
                 string[] array = pattern.Split(' ',',');
-                val = new int[array.Length];
+                List<int> all = new List<int>();
                 for(var i = 0; i < array.Length; i++)
                 {
                     var a = array[i];
@@ -164,9 +164,11 @@ namespace Scryber.Drawing
                     {
                         if (int.TryParse(a.Trim(), out parsed) == false)
                             parsed = 0;
-                        val[i] = parsed;
+
+                        all.Add(parsed);
                     }
                 }
+                val = all.ToArray();
             }
 
             int p = 0;
@@ -184,7 +186,8 @@ namespace Scryber.Drawing
 
             var entries = value.Split(',', ' ');
             int total = 0;
-            int[] items = new int[entries.Length];
+            List<int> items = new List<int>();
+
             for(var i = 0; i < entries.Length; i++)
             {
                 var a = entries[i];
@@ -193,15 +196,15 @@ namespace Scryber.Drawing
                     int parsed;
                     if (int.TryParse(a.Trim(), out parsed))
                     {
-                        items[i] = parsed;
-                        total += i;
+                        items.Add(parsed);
+                        total += parsed;
                     }
                     else
                         throw new FormatException("The format of a custom dash phase should be '[n n ...] n' or '[n,n,n] n' or 'n,n,n,n'. Could not understand the format '" + value + "'");
                 }
             }
-            result = items.Length > 0;
-            dash = new Dash(items, total);
+            result = items.Count > 0;
+            dash = new Dash(items.ToArray(), total);
             return result;
         }
 
