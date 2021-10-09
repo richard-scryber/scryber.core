@@ -21,7 +21,7 @@ namespace Scryber.Binding
             }
             else
             {
-                PDFItemCollection items = (PDFItemCollection)parent;
+                ItemCollection items = (ItemCollection)parent;
                 return items[this.ItemName];
             }
         }

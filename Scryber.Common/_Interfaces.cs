@@ -176,7 +176,7 @@ namespace Scryber
         /// <summary>
         /// Gets the Items defined and associated with this remote component
         /// </summary>
-        PDFItemCollection Params { get; }
+        ItemCollection Params { get; }
 
         /// <summary>
         /// Should return true if this remote component has one or more items declared on it.

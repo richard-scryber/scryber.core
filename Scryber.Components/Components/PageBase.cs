@@ -53,7 +53,7 @@ namespace Scryber.Components
 
         #region public PDFItemCollection Items {get;}
 
-        private PDFItemCollection _items = null;
+        private ItemCollection _items = null;
 
         /// <summary>
         /// Gets a page centered collection of objects that can be accessed by name or index. 
@@ -61,12 +61,12 @@ namespace Scryber.Components
         /// </summary>
         [PDFElement("Params")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Params
+        public ItemCollection Params
         {
             get
             {
                 if (null == _items)
-                    _items = new PDFItemCollection(this);
+                    _items = new ItemCollection(this);
                 return _items;
             }
         }
@@ -279,12 +279,12 @@ namespace Scryber.Components
 
         #region protected PDFItemCollection OriginalItems {get;set;}
 
-        private PDFItemCollection _origitems;
+        private ItemCollection _origitems;
 
         /// <summary>
         /// Property that stores the original items used by outer and sibling components whilst this and inner components will get the updated items collection
         /// </summary>
-        protected PDFItemCollection OriginalItems
+        protected ItemCollection OriginalItems
         {
             get { return _origitems; }
             set { _origitems = value; }
@@ -750,7 +750,7 @@ namespace Scryber.Components
 
             if (this.HasParams)
             {
-                PDFItemCollection updated = this.OriginalItems.Clone();
+                ItemCollection updated = this.OriginalItems.Clone();
                 updated.Merge(this.Params);
                 context.Items = updated;
             }
@@ -790,7 +790,7 @@ namespace Scryber.Components
 
             if(this.HasParams)
             {
-                PDFItemCollection updated = this.OriginalItems.Clone();
+                ItemCollection updated = this.OriginalItems.Clone();
                 updated.Merge(this.Params);
                 context.Items = updated;
             }

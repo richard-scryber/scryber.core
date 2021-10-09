@@ -53,7 +53,7 @@ namespace Scryber.Components
 
         #region public PDFItemCollection Items {get;}
 
-        private PDFItemCollection _items = null;
+        private ItemCollection _items = null;
 
         /// <summary>
         /// Gets a page centered collection of objects that can be accessed by name or index. 
@@ -61,12 +61,12 @@ namespace Scryber.Components
         /// </summary>
         [PDFElement("Params")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Params
+        public ItemCollection Params
         {
             get
             {
                 if (null == _items)
-                    _items = new PDFItemCollection(this);
+                    _items = new ItemCollection(this);
                 return _items;
             }
         }
@@ -144,7 +144,7 @@ namespace Scryber.Components
 
         // data bind and layout overrides for updating the item collection on this page to ensure it flows through to other items
 
-        private PDFItemCollection _orgitems;
+        private ItemCollection _orgitems;
 
         protected override void OnDataBinding(PDFDataContext context)
         {
@@ -152,7 +152,7 @@ namespace Scryber.Components
 
             if (this.HasParams)
             {
-                PDFItemCollection updated = _orgitems.Clone();
+                ItemCollection updated = _orgitems.Clone();
                 updated.Merge(this.Params);
                 context.Items = updated;
 
@@ -176,7 +176,7 @@ namespace Scryber.Components
 
             if (this.HasParams)
             {
-                PDFItemCollection updated = _orgitems.Clone();
+                ItemCollection updated = _orgitems.Clone();
                 updated.Merge(this.Params);
                 context.Items = updated;
             }

@@ -120,7 +120,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void InitTest()
         {
             StylesDocument target = new StylesDocument(); // TODO: Initialize to an appropriate value
-            PDFInitContext context = new PDFInitContext(new PDFItemCollection(null), 
+            PDFInitContext context = new PDFInitContext(new ItemCollection(null), 
                 new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
             target.Initialized += target_Initialized;
             

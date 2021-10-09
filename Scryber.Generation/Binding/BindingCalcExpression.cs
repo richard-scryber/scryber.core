@@ -80,7 +80,7 @@ namespace Scryber.Binding
     public static class PDFItemCollectionExtensions
     {
 
-        public static IVariableProvider ValueProvider(this PDFItemCollection items, int index, object currentdata)
+        public static IVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata)
         {
             return new PDFItemVariableProvider(items, index, currentdata);
         }
@@ -89,17 +89,17 @@ namespace Scryber.Binding
     public class PDFItemVariableProvider : IVariableProvider
     {
 
-        private PDFItemCollection _items;
+        private ItemCollection _items;
         private object _currentData;
         private int _currentIndex;
 
 
-        protected PDFItemCollection Items { get { return _items; } }
+        protected ItemCollection Items { get { return _items; } }
 
         protected object CurrentData { get { return _currentData; } }
         protected int CurrentIndex { get { return _currentIndex; } }
 
-        public PDFItemVariableProvider(PDFItemCollection items, int index, object currentData)
+        public PDFItemVariableProvider(ItemCollection items, int index, object currentData)
         {
             if (null == items)
                 throw new ArgumentNullException(nameof(items));

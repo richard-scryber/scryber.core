@@ -110,7 +110,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void DataBindTest()
         {
             Style target = CreatePDFStyleBase();
-            PDFDataContext context = new PDFDataContext(new PDFItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
+            PDFDataContext context = new PDFDataContext(new ItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
 
             bg_bound = false;
             fill_binding = false;

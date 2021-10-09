@@ -362,19 +362,19 @@ namespace Scryber.Components
 
         #region public PDFItemCollection Items {get;}
 
-        private PDFItemCollection _items = null;
+        private ItemCollection _items = null;
 
         /// <summary>
         /// Gets a document centered collection of objects that can be accessed by name or index
         /// </summary>
         [PDFElement("Params")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Params
+        public ItemCollection Params
         {
             get
             {
                 if (null == _items)
-                    _items = new PDFItemCollection(this);
+                    _items = new ItemCollection(this);
                 return _items;
             }
         }
@@ -391,9 +391,9 @@ namespace Scryber.Components
         /// Creates and returns a new PDFItemCollection for this document. Inheritors can override
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFItemCollection CreateItems()
+        protected virtual ItemCollection CreateItems()
         {
-            return new PDFItemCollection(this);
+            return new ItemCollection(this);
         }
 
         #endregion
@@ -1518,7 +1518,7 @@ namespace Scryber.Components
         {
             PDFTraceLog log = this.TraceLog;
             PerformanceMonitor perfmon = this.PerformanceMonitor;
-            PDFItemCollection items = this.Params;
+            ItemCollection items = this.Params;
 
             PDFInitContext icontext = CreateInitContext(log, perfmon, items);
 
@@ -1544,14 +1544,14 @@ namespace Scryber.Components
         }
 
 
-        protected virtual PDFInitContext CreateInitContext(PDFTraceLog log, PerformanceMonitor perfmon, PDFItemCollection items)
+        protected virtual PDFInitContext CreateInitContext(PDFTraceLog log, PerformanceMonitor perfmon, ItemCollection items)
         {
             PDFInitContext icontext = new PDFInitContext(items, log, perfmon, this);
             this.PopulateContextBase(icontext);
             return icontext;
         }
 
-        protected virtual PDFLoadContext CreateLoadContext(PDFTraceLog log, PerformanceMonitor perfmon, PDFItemCollection items)
+        protected virtual PDFLoadContext CreateLoadContext(PDFTraceLog log, PerformanceMonitor perfmon, ItemCollection items)
         {
             PDFLoadContext loadcontext = new PDFLoadContext(items, log, perfmon, this);
             this.PopulateContextBase(loadcontext);
@@ -1690,7 +1690,7 @@ namespace Scryber.Components
         {
             PDFTraceLog log = this.TraceLog;
             PerformanceMonitor perfmon = this.PerformanceMonitor;
-            PDFItemCollection items = this.Params;
+            ItemCollection items = this.Params;
 
             PDFDataContext context = this.CreateDataContext(log, perfmon, items);
 
@@ -1708,7 +1708,7 @@ namespace Scryber.Components
         /// Creates a new data context that is passed to the main data binding method
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFDataContext CreateDataContext(PDFTraceLog log, PerformanceMonitor perfmon, PDFItemCollection items)
+        protected virtual PDFDataContext CreateDataContext(PDFTraceLog log, PerformanceMonitor perfmon, ItemCollection items)
         {
 
             PDFDataContext context = new PDFDataContext(items, log, perfmon, this);
@@ -2161,7 +2161,7 @@ namespace Scryber.Components
         /// <param name="items">A PDFItemCollection</param>
         /// <param name="log">The log to use</param>
         /// <returns>A new layout context</returns>
-        protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon)
+        protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, ItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon)
         {
             PDFLayoutContext context = new PDFLayoutContext(style, format, items, log, perfmon, this);
             PopulateContextBase(context);

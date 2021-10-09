@@ -215,7 +215,7 @@ namespace Scryber.Logging
                 log.Add(TraceLevel.Message, "Performance Timings", "Total for " + entry.MonitorKey + ": " + entry.MonitorElapsed + " for " + entry.MonitorCount + " calls");
                 if (entry.HasMeasurements && log.ShouldLog(TraceLevel.Verbose))
                 {
-                    foreach (PDFPerformanceMonitorMeasurement measure in entry.GetMeasurements())
+                    foreach (PerformanceMonitorMeasurement measure in entry.GetMeasurements())
                     {
                         log.Add(TraceLevel.Verbose, "Perfromance Timings", "Measured " + entry.MonitorKey + ": " + measure.Key + " took " + measure.Elapsed);
                     }
@@ -239,7 +239,7 @@ namespace Scryber.Logging
         private PerformanceMonitorType _type;
         private System.Diagnostics.Stopwatch _timer;
         private int _indexer;
-        private List<PDFPerformanceMonitorMeasurement> _measurements;
+        private List<PerformanceMonitorMeasurement> _measurements;
         private bool _recordMeasurements;
 
         #endregion
@@ -354,7 +354,7 @@ namespace Scryber.Logging
         /// Throws InvalidOperationException if this entry does not have any measurements (use HasMeasurements to check)
         /// </summary>
         /// <returns></returns>
-        public PDFPerformanceMonitorMeasurement[] GetMeasurements()
+        public PerformanceMonitorMeasurement[] GetMeasurements()
         {
             if (null == _measurements || _measurements.Count == 0)
                 throw new InvalidOperationException("This performance monitor is not set to record individual items, or has no recorded events - use the HasMeasurements property to check");
@@ -400,7 +400,7 @@ namespace Scryber.Logging
         /// <returns></returns>
         public IDisposable Record(string key)
         {
-            PDFPerformanceMonitorMeasurement indiv = new PDFPerformanceMonitorMeasurement(this, key);
+            PerformanceMonitorMeasurement indiv = new PerformanceMonitorMeasurement(this, key);
 
             this.Begin();
             return indiv;
@@ -441,14 +441,14 @@ namespace Scryber.Logging
         /// </summary>
         /// <param name="item">The measurement item to register</param>
         /// <returns>The index of the item in the list</returns>
-        internal int RegisterMeasurement(PDFPerformanceMonitorMeasurement item)
+        internal int RegisterMeasurement(PerformanceMonitorMeasurement item)
         {
             int count = -1;
             if (this._recordMeasurements)
             {
                 if (null == _measurements)
                 {
-                    _measurements = new List<PDFPerformanceMonitorMeasurement>();
+                    _measurements = new List<PerformanceMonitorMeasurement>();
                 }
                 count = _measurements.Count;
                 _measurements.Add(item);
@@ -470,7 +470,7 @@ namespace Scryber.Logging
     /// <summary>
     /// Encapsulates a single specific measurement associated with a key against a performance moniter entry. 
     /// </summary>
-    public class PDFPerformanceMonitorMeasurement : IDisposable
+    public class PerformanceMonitorMeasurement : IDisposable
     {
         #region iVars
 
@@ -545,7 +545,7 @@ namespace Scryber.Logging
         /// <param name="owner"></param>
         /// <param name="key"></param>
         /// <remarks>Easiest way to create and start a meausurement is to use the entries.Record(key) method in a using block</remarks>
-        public PDFPerformanceMonitorMeasurement(PerformanceMonitorEntry owner, string key)
+        public PerformanceMonitorMeasurement(PerformanceMonitorEntry owner, string key)
         {
             this._owner = owner;
             this._start = owner.MonitorElapsed;

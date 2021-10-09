@@ -28,7 +28,7 @@ namespace Scryber
     public abstract class PDFContextBase
     {
 
-        private PDFItemCollection _items;
+        private ItemCollection _items;
         private OutputFormat _format;
         private PDFTraceLog _log;
         private PerformanceMonitor _perfmon;
@@ -51,7 +51,7 @@ namespace Scryber
             set { _log = value; }
         }
 
-        public PDFItemCollection Items
+        public ItemCollection Items
         {
             get { return this._items; }
             set { this._items = value; }
@@ -114,7 +114,7 @@ namespace Scryber
 
         #endregion
 
-        public PDFContextBase(PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
+        public PDFContextBase(ItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
         {
             this._format = OutputFormat.PDF;
 

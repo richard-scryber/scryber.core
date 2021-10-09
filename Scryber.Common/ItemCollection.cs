@@ -23,11 +23,11 @@ using System.Text;
 namespace Scryber
 {
     /// <summary>
-    /// A collection of objects that is unique to a PDFDocument, 
+    /// A collection of objects that is unique to a Document, 
     /// but is accessible in any context of the document lifecycle (Init, Load, Databind, Layout and Render)
     /// </summary>
     [Serializable()]
-    public class PDFItemCollection : System.Collections.Specialized.NameObjectCollectionBase, ICloneable
+    public class ItemCollection : System.Collections.Specialized.NameObjectCollectionBase, ICloneable
     {
         private IComponent _ownercomp;
 
@@ -37,19 +37,19 @@ namespace Scryber
         }
 
         /// <summary>
-        /// Creates a new empty instance of the PDFItemCollection
+        /// Creates a new empty instance of the ItemCollection
         /// </summary>
-        public PDFItemCollection(IComponent owner)
+        public ItemCollection(IComponent owner)
         {
             this._ownercomp = owner;
         }
 
         /// <summary>
-        /// Creates a new instance of the PDFItemCollection and adds the specified items to the collection
+        /// Creates a new instance of the ItemCollection and adds the specified items to the collection
         /// </summary>
         /// <param name="contents"></param>
         /// <param name="doc">The document that owns this item collection</param>
-        public PDFItemCollection(IDictionary<string, object> contents, IDocument doc)
+        public ItemCollection(IDictionary<string, object> contents, IDocument doc)
             : this(doc)
         {
             if (null != contents)
@@ -138,7 +138,7 @@ namespace Scryber
         /// the entries in the passed collection
         /// </summary>
         /// <param name="all"></param>
-        public void Merge(PDFItemCollection all)
+        public void Merge(ItemCollection all)
         {
             foreach (string key in all.Keys)
             {
@@ -188,9 +188,9 @@ namespace Scryber
 
         }
 
-        public PDFItemCollection Clone()
+        public ItemCollection Clone()
         {
-            PDFItemCollection instance = this.MemberwiseClone() as PDFItemCollection;
+            ItemCollection instance = this.MemberwiseClone() as ItemCollection;
             instance.Clear();
             foreach (string key in this.BaseGetAllKeys())
             {

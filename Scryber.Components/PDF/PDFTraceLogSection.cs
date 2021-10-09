@@ -255,14 +255,14 @@ namespace Scryber.PDF
 
             if (entry.HasMeasurements)
             {
-                foreach (PDFPerformanceMonitorMeasurement measure in entry.GetMeasurements())
+                foreach (PerformanceMonitorMeasurement measure in entry.GetMeasurements())
                 {
                     this.AddPerformanceMeasurement(grid, measure);
                 }
             }
         }
 
-        private void AddPerformanceMeasurement(TableGrid grid, PDFPerformanceMonitorMeasurement measure)
+        private void AddPerformanceMeasurement(TableGrid grid, PerformanceMonitorMeasurement measure)
         {
             TableRow row = new TableRow() { StyleClass = "Debug" };
             grid.Rows.Add(row);

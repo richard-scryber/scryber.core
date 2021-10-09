@@ -213,19 +213,19 @@ namespace Scryber.Styles
 
         #region public PDFItemCollection Items {get;}
 
-        private PDFItemCollection _items = null;
+        private ItemCollection _items = null;
 
         /// <summary>
         /// Gets a document centered collection of objects that can be accessed by name or index
         /// </summary>
         [PDFElement("Items")]
         [PDFArray(typeof(IKeyValueProvider))]
-        public PDFItemCollection Params
+        public ItemCollection Params
         {
             get
             {
                 if (null == _items)
-                    _items = new PDFItemCollection(this);
+                    _items = new ItemCollection(this);
                 return _items;
             }
         }
