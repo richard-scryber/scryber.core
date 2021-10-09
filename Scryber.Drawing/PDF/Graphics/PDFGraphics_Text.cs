@@ -26,7 +26,9 @@ using Scryber.PDF.Resources;
 using Scryber.PDF;
 using System.Runtime.CompilerServices;
 
-namespace Scryber.Drawing
+using Scryber.Drawing;
+
+namespace Scryber.PDF.Graphics
 {
 
     public partial class PDFGraphics

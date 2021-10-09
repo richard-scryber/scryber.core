@@ -25,6 +25,7 @@ using Scryber.Styles;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Components
 {
@@ -528,7 +529,7 @@ namespace Scryber.Components
 
         #region public override PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles)
 
-        public override PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
+        public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
         {
             Style full = styles.GetFullStyle(this);
             PageSize size = this.GetPageSize(full);

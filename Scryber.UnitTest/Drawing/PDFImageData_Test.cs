@@ -97,7 +97,7 @@ namespace Scryber.Core.UnitTests.Drawing
             string sourcekey = ImageFilePath;
             Bitmap bitmap = CreateImageBitmap();
 
-            PDFBinaryImageData actual = PDFImageData.LoadImageFromBitmap(sourcekey, bitmap, false) as PDFBinaryImageData;
+            PDFBinaryImageData actual = ImageData.LoadImageFromBitmap(sourcekey, bitmap, false) as PDFBinaryImageData;
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Data);
         }
@@ -117,7 +117,7 @@ namespace Scryber.Core.UnitTests.Drawing
             {
                 string path = tmp;
                 PDFBinaryImageData actual;
-                actual = PDFImageData.LoadImageFromLocalFile(path) as PDFBinaryImageData;
+                actual = ImageData.LoadImageFromLocalFile(path) as PDFBinaryImageData;
                 Assert.IsNotNull(actual);
                 Assert.IsNotNull(actual.Data);
             }
@@ -136,7 +136,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             string uri = ImageUrlPath;
             PDFBinaryImageData actual;
-            actual = PDFImageData.LoadImageFromURI(uri) as PDFBinaryImageData; 
+            actual = ImageData.LoadImageFromURI(uri) as PDFBinaryImageData; 
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Data);
         }
@@ -149,7 +149,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void GetSize_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
 
             //GetSize() returns actual size based on pixels and resolution
             double w = ((double)ImagePixelWidth) / ImageResolution;
@@ -171,7 +171,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void SourcePath_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
 
             string expected = ImageFilePath;
             string actual = target.SourcePath;
@@ -188,7 +188,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void VerticalResolution_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             int expected = ImageResolution;
             int actual = target.VerticalResolution;
 
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void HorizontalResolution_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             int expected = ImageResolution;
             int actual = target.HorizontalResolution;
 
@@ -218,7 +218,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void BitsPerColor_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             int expected = ImageBitsPerColor;
             int actual = (int)target.BitsPerColor;
 
@@ -233,7 +233,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void BytesPerLine_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFBinaryImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false) as PDFBinaryImageData;
+            PDFBinaryImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false) as PDFBinaryImageData;
             int expected = ImageBytesPerLine;
             int actual = (int)target.BytesPerLine;
 
@@ -248,7 +248,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColorSpace_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             ColorSpace expected = ImageColorSpace;
             ColorSpace actual = target.ColorSpace;
 
@@ -263,7 +263,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ColorsPerSample_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             int expected = ImageColorsPerSample;
             int actual = target.ColorsPerSample;
 
@@ -278,7 +278,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void DisplayHeight_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             double h = ((double)ImagePixelHeight) / ImageResolution;
             PDFUnit expected = new PDFUnit(h, PageUnits.Inches);
 
@@ -295,7 +295,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void DisplayWidth_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             double w = ((double)ImagePixelWidth) / ImageResolution;
             PDFUnit expected = new PDFUnit(w, PageUnits.Inches);
             PDFUnit actual = target.DisplayWidth;
@@ -311,7 +311,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PixelHeight_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             int expected = ImagePixelHeight;
             int actual = target.PixelHeight;
 
@@ -326,7 +326,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PixelWidth_Test()
         {
             Bitmap bmp = CreateImageBitmap();
-            PDFImageData target = PDFImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             int expected = ImagePixelWidth;
             int actual = target.PixelWidth;
 

@@ -45,11 +45,11 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        private PDFImageData _data;
+        private ImageData _data;
         /// <summary>
         /// Gets the actual image data.
         /// </summary>
-        public PDFImageData ImageData
+        public ImageData ImageData
         {
             get { return _data; }
             private set { _data = value; }
@@ -141,7 +141,7 @@ namespace Scryber.PDF.Resources
         // Load Image methods
         //
 
-        public static PDFImageXObject Load(PDFImageData imgdata, OutputCompressionType compression, string name)
+        public static PDFImageXObject Load(ImageData imgdata, OutputCompressionType compression, string name)
         {
             IStreamFilter[] filters = null;
             if (compression == OutputCompressionType.FlateDecode)
@@ -156,7 +156,7 @@ namespace Scryber.PDF.Resources
         /// <param name="imgdata">The image data this resource holds</param>
         /// <param name="name">The name of the image resource</param>
         /// <returns>An initialized imageXObject</returns>
-        public static PDFImageXObject Load(PDFImageData imgdata, IStreamFilter[] filters, string name)
+        public static PDFImageXObject Load(ImageData imgdata, IStreamFilter[] filters, string name)
         {
             PDFImageXObject x = new PDFImageXObject();
             x._src = imgdata.SourcePath;

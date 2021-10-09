@@ -1,6 +1,7 @@
 ﻿using System;
 using Scryber.OpenType.SubTables;
 using Scryber.PDF.Native;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {

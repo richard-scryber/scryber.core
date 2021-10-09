@@ -22,6 +22,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.PDF.Layout
 {
@@ -105,9 +106,7 @@ namespace Scryber.PDF.Layout
 
 
             
-            //Graphics
-            PDFGraphics g = this.Page.CreateGraphics(this.StyleStack, this.Context);
-            this.Context.Graphics = g;
+            
 
 
             //Size, border, margins
@@ -124,6 +123,11 @@ namespace Scryber.PDF.Layout
             
 
             PDFLayoutPage pg = BuildNewPage(pgsize.Size, options, colOpts, action);
+
+            //Graphics
+            PDFGraphics g = pg.CreateGraphics(null, this.StyleStack, this.Context);
+
+            this.Context.Graphics = g;
 
             //Register page numbering
             PDFPageNumberOptions numbers = this.GetPageNumbering(this.FullStyle);

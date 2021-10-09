@@ -24,6 +24,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.ComponentModel;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {

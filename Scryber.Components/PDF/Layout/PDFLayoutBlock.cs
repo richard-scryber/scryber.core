@@ -1286,7 +1286,7 @@ namespace Scryber.PDF.Layout
 
             PDFSolidBrush solid = PDFSolidBrush.Create(grid.GridColor);
             solid.Opacity = ColumnOverlayOpacity;
-            PDFGraphics graphics = context.Graphics;
+            var graphics = context.Graphics;
             PDFPoint pos = contentRect.Location;
 
             foreach (PDFLayoutRegion region in this.Columns)
@@ -1314,7 +1314,7 @@ namespace Scryber.PDF.Layout
             if (null == grid)
                 throw new ArgumentNullException("grid");
 
-            PDFGraphics graphics = context.Graphics;
+            var graphics = context.Graphics;
             
 
             //Will paint a 50% opacity colour over the columns in a panel

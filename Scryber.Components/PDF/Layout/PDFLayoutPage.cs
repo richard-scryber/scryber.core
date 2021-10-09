@@ -25,6 +25,7 @@ using Scryber.Styles;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Components;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.PDF.Layout
 {
@@ -847,7 +848,7 @@ namespace Scryber.PDF.Layout
 
         
 
-        protected virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFRenderContext context)
+        public virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
         {
            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, this.Size, context);
         }

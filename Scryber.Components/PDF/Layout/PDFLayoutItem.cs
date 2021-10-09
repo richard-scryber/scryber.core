@@ -398,7 +398,7 @@ namespace Scryber.PDF.Layout
         /// <param name="rect">The rectangle to be output</param>
         protected virtual void OutputBackground(PDFBrush bg, PDFUnit? corner, PDFRenderContext context, PDFRect rect)
         {
-            PDFGraphics g = context.Graphics;
+            var g = context.Graphics;
             
             if (null != bg)
             {
@@ -422,7 +422,7 @@ namespace Scryber.PDF.Layout
         /// <param name="rect">The rectangle that shoud be rendered as the border</param>
         protected virtual void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, PDFRect rect)
         {
-            PDFGraphics g = context.Graphics;
+            var g = context.Graphics;
             
             if (null != border.AllPen && border.AllSides > 0)
             {
@@ -476,7 +476,7 @@ namespace Scryber.PDF.Layout
         /// <param name="cliprect">The rectangle that shoud be rendered as the border</param>
         protected virtual void OutputClipping(PDFRenderContext context, PDFRect cliprect, PDFUnit corner, Sides sides, PDFThickness inset)
         {
-            PDFGraphics g = context.Graphics;
+            var g = context.Graphics;
             g.SaveGraphicsState();
 
             if (inset.IsEmpty == false)
@@ -497,7 +497,7 @@ namespace Scryber.PDF.Layout
 
         protected virtual void ReleaseClipping(PDFRenderContext context)
         {
-            PDFGraphics g = context.Graphics;
+            var g = context.Graphics;
             g.RestoreGraphicsState();
         }
 

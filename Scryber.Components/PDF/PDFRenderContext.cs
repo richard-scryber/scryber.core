@@ -22,6 +22,7 @@ using System.Text;
 using System.Drawing;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.PDF
 {

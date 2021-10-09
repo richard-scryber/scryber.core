@@ -24,6 +24,8 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
 using System.ComponentModel;
+using Scryber.PDF.Graphics;
+
 namespace Scryber.Drawing
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]

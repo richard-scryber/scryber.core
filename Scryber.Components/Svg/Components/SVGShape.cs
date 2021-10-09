@@ -4,6 +4,7 @@ using Scryber.Drawing;
 using Scryber.PDF.Native;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Svg.Components
 {
@@ -45,7 +46,7 @@ namespace Scryber.Svg.Components
             if (null == fullstyle)
                 throw new ArgumentNullException("context.FullStyle");
 
-            PDFGraphics graphics = context.Graphics;
+            var graphics = context.Graphics;
             if (null == graphics)
                 throw new ArgumentNullException("context.Graphics");
 

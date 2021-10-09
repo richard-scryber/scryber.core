@@ -43,6 +43,7 @@
     <Folder Include="PDF\" />
     <Folder Include="PDF\Resources\" />
     <Folder Include="Svg\" />
+    <Folder Include="PDF\Graphics\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Text\_FontResources\Helvetica\Helvetica.ttf" />
@@ -62,6 +63,7 @@
     <None Remove="PDF\" />
     <None Remove="PDF\Resources\" />
     <None Remove="Svg\" />
+    <None Remove="PDF\Graphics\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />

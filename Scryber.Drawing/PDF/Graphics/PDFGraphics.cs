@@ -22,8 +22,9 @@ using System.Text;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
+using Scryber.Drawing;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
     public partial class PDFGraphics : IDisposable
     {

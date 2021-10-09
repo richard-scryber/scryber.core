@@ -9,7 +9,7 @@ namespace Scryber.UnitTests.Mocks
             
         public bool ShouldCache { get { return false; } }
 
-        public PDFImageData LoadImageData(IDocument document, IComponent owner, string path)
+        public ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
             
             try
@@ -32,7 +32,7 @@ namespace Scryber.UnitTests.Mocks
                 var png = System.IO.Path.Combine(dir, "Temp.png");
                 bmp.Save(png);
 
-                PDFImageData data = PDFImageData.LoadImageFromBitmap(path, bmp, false);
+                ImageData data = ImageData.LoadImageFromBitmap(path, bmp, false);
                 return data;
             }
             catch(Exception ex)

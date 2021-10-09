@@ -29,6 +29,7 @@ using System.Drawing;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Components
 {
@@ -1116,34 +1117,7 @@ namespace Scryber.Components
         // private and protected methods
         //
 
-        #region protected PDFGraphics CreateGraphics(PDFStyleStack styles) + 1 overload
-
-        /// <summary>
-        /// Creates a new PDFGraphics context within which drawing to the PDF Surface can take place
-        /// </summary>
-        /// <param name="styles">The styles of the new graphics context</param>
-        /// <returns>A newly instantiated graphics context</returns>
-        public PDFGraphics CreateGraphics(StyleStack styles, PDFContextBase context)
-        {
-            return this.CreateGraphics(null, styles, context);
-        }
-
-
-        /// <summary>
-        /// Creates a new PDFGraphics context within which drawing to the PDF Surface can take place
-        /// </summary>
-        /// <param name="writer">The writer used to write graphical instructions to</param>
-        /// <param name="styles">The styles of the new graphics context</param>
-        /// <returns>A newly instantiated graphics context</returns>
-        public virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
-        {
-            if (this.Parent == null)
-                throw RecordAndRaise.NullReference(Errors.InvalidCallToGetGraphicsForStructure);
-            else
-                return this.Parent.CreateGraphics(writer, styles, context);
-        }
-
-        #endregion
+        
 
         #region protected virtual PDFStyle GetAppliedStyle() + public virtual PDFStyle GetAppliedStyle(PDFComponent forComponent)
 

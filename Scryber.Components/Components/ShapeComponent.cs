@@ -60,7 +60,7 @@ namespace Scryber.Components
             if (null == fullstyle)
                 throw new ArgumentNullException("context.FullStyle");
 
-            PDFGraphics graphics = context.Graphics;
+            var graphics = context.Graphics;
             if (null == graphics)
                 throw new ArgumentNullException("context.Graphics");
 

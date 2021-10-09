@@ -24,13 +24,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Scryber.Drawing;
-using Scryber.Styles;
-using Scryber.Components;
-using Scryber.Styles.Parsing;
-using System.Reflection;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.PDF.Layout
 {

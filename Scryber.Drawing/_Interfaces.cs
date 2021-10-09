@@ -47,13 +47,5 @@ namespace Scryber
     }
 
 
-    public interface IPDFGraphicsAdapter
-    {
-        bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds);
-
-        void ReleaseGraphics(PDFGraphics g, PDFRect bounds);
-    }
-
-
-
+    
 }

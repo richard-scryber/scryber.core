@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Scryber.Drawing;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.PDF.Layout
 {
