@@ -133,7 +133,7 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.DataBind();
 
                 Assert.AreEqual(expectedString, label.Text, "The label text does not match");
-                Assert.AreEqual(Scryber.Drawing.PDFColor.Parse(expectedColor), label.FillColor, "The Label fill colour does not match");
+                Assert.AreEqual(Scryber.Drawing.Color.Parse(expectedColor), label.FillColor, "The Label fill colour does not match");
                 Assert.AreEqual(Scryber.Drawing.PDFUnit.Parse(expectedUnit), label.X, "The label x offsets do not match");
                 Assert.AreEqual(Scryber.Drawing.PDFThickness.Parse(expectedThickness), label.Padding, "The label paddings do not match");
                 Assert.AreEqual(Scryber.Drawing.LineType.Dash, label.BorderStyle, "The label border styles do not match");
@@ -208,7 +208,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual(expectedString, label.Text, "The label text does not match");
 
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background colour is not set");
-                Assert.AreEqual(Scryber.Drawing.PDFColor.Parse(expectedColor), style.Background.Color, "The style color does not match");
+                Assert.AreEqual(Scryber.Drawing.Color.Parse(expectedColor), style.Background.Color, "The style color does not match");
 
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.FontWeightKey), "The font bold is not set");
                 Assert.AreEqual(expectedBool, style.Font.FontBold, "The font bolds do not match");
@@ -468,7 +468,7 @@ namespace Scryber.Core.UnitTests.Binding
             using (var reader = new System.IO.StringReader(src))
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-                var color = new Scryber.Drawing.PDFColor(1, 0, 0);
+                var color = new Scryber.Drawing.Color(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
                 var i = 5;
@@ -497,7 +497,7 @@ namespace Scryber.Core.UnitTests.Binding
             using (var reader = new System.IO.StringReader(src))
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-                var color = new Scryber.Drawing.PDFColor(1, 0, 0);
+                var color = new Scryber.Drawing.Color(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
                 var i = 5;
@@ -557,7 +557,7 @@ namespace Scryber.Core.UnitTests.Binding
             using (var reader = new System.IO.StringReader(src))
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-                var color = new Scryber.Drawing.PDFColor(1, 0, 0);
+                var color = new Scryber.Drawing.Color(1, 0, 0);
                 var text = "This is the title";
                 var date = DateTime.Now;
                 var i = 5;
@@ -723,8 +723,8 @@ namespace Scryber.Core.UnitTests.Binding
                 },
                     Theme = new
                     {
-                        TitleBg = new PDFColor(1, 0, 0),
-                        TitleColor = new PDFColor(1, 1, 1),
+                        TitleBg = new Color(1, 0, 0),
+                        TitleColor = new Color(1, 1, 1),
                         TitleFont = (FontSelector)"Segoe UI Light",
                         BodyFont = (FontSelector)"Segoe UI",
                         BodySize = (PDFUnit)12

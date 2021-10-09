@@ -72,7 +72,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFSolidPenConstructor_Test()
         {
-            PDFColor color = PDFColors.Aqua; // TODO: Initialize to an appropriate value
+            Color color = PDFColors.Aqua; // TODO: Initialize to an appropriate value
             PDFUnit width = 1;
             PDFSolidPen target = new PDFSolidPen(color, width);
 
@@ -106,8 +106,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Color_Test()
         {
             PDFSolidPen target = new PDFSolidPen(); // TODO: Initialize to an appropriate value
-            PDFColor expected = PDFColors.Aqua;
-            PDFColor actual;
+            Color expected = PDFColors.Aqua;
+            Color actual;
             target.Color = expected;
             actual = target.Color;
             Assert.AreEqual(expected, actual);

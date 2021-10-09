@@ -261,7 +261,7 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 var defn = new StyleDefn("h1.border");
-                defn.Background.Color = (PDFColor)"#FFA";
+                defn.Background.Color = (Color)"#FFA";
                 defn.Border.Width = 2;
                 defn.Border.Color = PDFColors.Red;
                 defn.Border.LineStyle = LineType.Solid;
@@ -361,7 +361,7 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
                 //This has been loaded from the remote file
-                Assert.AreEqual((PDFColor)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
                 
 
             }
@@ -405,7 +405,7 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
                 //This has been loaded from the remote file
-                Assert.AreEqual((PDFColor)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
 
 
             }
@@ -1963,8 +1963,8 @@ namespace Scryber.Core.UnitTests.Html
 
             doc.Params["style"] = new
             {
-                rowColor = (PDFColor)"#EEE",
-                altColor = (PDFColor)"#DDD",
+                rowColor = (Color)"#EEE",
+                altColor = (Color)"#DDD",
                 dateFormat ="dd MMMM yyyy",
                 currencyFormat = "£##0.00"
             };
@@ -2193,9 +2193,9 @@ namespace Scryber.Core.UnitTests.Html
                         doc.SaveAsPDF(stream);
                     }
 
-                    var rg = new PDFColor[] { PDFColors.Red, PDFColors.Green };
-                    var rgby = new PDFColor[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
-                    var ryg = new PDFColor[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
+                    var rg = new Color[] { PDFColors.Red, PDFColors.Green };
+                    var rgby = new Color[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
+                    var ryg = new Color[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
 
                     Assert.IsNotNull(_layout);
                     var pg = _layout.AllPages[0];
@@ -2223,7 +2223,7 @@ namespace Scryber.Core.UnitTests.Html
             
         }
 
-        private static void ValidateLinearGradient(PDFLinearShadingPattern one, PDFColor[] cols, double angle, bool repeating = false)
+        private static void ValidateLinearGradient(PDFLinearShadingPattern one, Color[] cols, double angle, bool repeating = false)
         {
             Assert.IsTrue(one.PatternType == PatternType.ShadingPattern);
             Assert.IsTrue(one.Registered);
@@ -2262,9 +2262,9 @@ namespace Scryber.Core.UnitTests.Html
                     }
 
                     
-                    var rg = new PDFColor[] { PDFColors.Red, PDFColors.Green };
-                    var rgby = new PDFColor[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
-                    var ryg = new PDFColor[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
+                    var rg = new Color[] { PDFColors.Red, PDFColors.Green };
+                    var rgby = new Color[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
+                    var ryg = new Color[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
 
                     Assert.IsNotNull(_layout);
                     var pg = _layout.AllPages[0];

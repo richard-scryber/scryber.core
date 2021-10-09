@@ -73,8 +73,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FromName_Test()
         {
             string name = "white";
-            PDFColor expected = PDFColors.White;
-            PDFColor actual;
+            Color expected = PDFColors.White;
+            Color actual;
             actual = PDFColors.FromName(name);
             Assert.AreEqual(expected, actual);
 

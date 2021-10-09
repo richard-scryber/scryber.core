@@ -54,7 +54,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over multiple lines in the page with a default line height"));
@@ -78,7 +78,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -180,7 +180,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -301,7 +301,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -442,7 +442,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -547,7 +547,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -652,7 +652,7 @@ namespace Scryber.Core.UnitTests.Layout
             var pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -687,7 +687,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 2;
             pg.Style.OverlayGrid.ShowGrid = true;
@@ -705,7 +705,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg = new Page();
 
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 3;
             pg.Style.OverlayGrid.ShowGrid = true;
@@ -943,7 +943,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -963,7 +963,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -981,7 +981,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -999,7 +999,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1017,7 +1017,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1035,7 +1035,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1052,7 +1052,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1073,7 +1073,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 2;
             doc.Pages.Add(pg);
@@ -1092,7 +1092,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 2;
             doc.Pages.Add(pg);
@@ -1230,7 +1230,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1294,7 +1294,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1310,7 +1310,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.FontSize = 80;
             doc.Pages.Add(pg);
@@ -1325,7 +1325,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1340,7 +1340,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1355,7 +1355,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 
@@ -1374,7 +1374,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             pg = new Page();
             pg.Margins = new PDFThickness(10);
-            pg.BackgroundColor = new PDFColor(240, 240, 240);
+            pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
 

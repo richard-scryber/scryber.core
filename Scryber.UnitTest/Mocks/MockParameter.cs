@@ -9,7 +9,7 @@ namespace Scryber.Core.UnitTests.Mocks
 
         public bool BoldTitle { get; set; }
 
-        public PDFColor Background { get; set; }
+        public Color Background { get; set; }
 
         public MockParameter()
         {
@@ -29,7 +29,7 @@ namespace Scryber.Core.UnitTests.Mocks
             this.SizeField = (PDFUnit)30;
             this.BoldTitle = true;
             this.Title = "Mock object title";
-            this.Background = new PDFColor(1, 0, 0);
+            this.Background = new Color(1, 0, 0);
         }
     }
 
@@ -39,7 +39,7 @@ namespace Scryber.Core.UnitTests.Mocks
 
         public bool BoldTitle { get; set; }
 
-        public PDFColor Background { get; set; }
+        public Color Background { get; set; }
 
         public MockOtherParameter()
         {

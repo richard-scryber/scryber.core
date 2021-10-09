@@ -26,66 +26,66 @@ namespace Scryber.Drawing
     {
 
         [System.Xml.Serialization.XmlAttribute("Aqua")]
-        public static readonly PDFColor Aqua = PDFColor.Parse("#00FFFF");
+        public static readonly Color Aqua = Color.Parse("#00FFFF");
 
         [System.Xml.Serialization.XmlAttribute("Black")]
-        public static readonly PDFColor Black = PDFColor.Parse("#000000");
+        public static readonly Color Black = Color.Parse("#000000");
 
         [System.Xml.Serialization.XmlAttribute("Blue")]
-        public static readonly PDFColor Blue = PDFColor.Parse("#0000FF");
+        public static readonly Color Blue = Color.Parse("#0000FF");
 
         [System.Xml.Serialization.XmlAttribute("Fuchisa")]
-        public static readonly PDFColor Fuchsia = PDFColor.Parse("#FF00FF");
+        public static readonly Color Fuchsia = Color.Parse("#FF00FF");
 
         [System.Xml.Serialization.XmlAttribute("Gray")]
-        public static readonly PDFColor Gray = PDFColor.Parse("#808080");
+        public static readonly Color Gray = Color.Parse("#808080");
 
         
         [System.Xml.Serialization.XmlAttribute("Green")]
-        public static readonly PDFColor Green = PDFColor.Parse("#008000");
+        public static readonly Color Green = Color.Parse("#008000");
 
         [System.Xml.Serialization.XmlAttribute("Lime")]
-        public static readonly PDFColor Lime = PDFColor.Parse("#00FF00");
+        public static readonly Color Lime = Color.Parse("#00FF00");
 
         [System.Xml.Serialization.XmlAttribute("Maroon")]
-        public static readonly PDFColor Maroon = PDFColor.Parse("#800000");
+        public static readonly Color Maroon = Color.Parse("#800000");
 
         [System.Xml.Serialization.XmlAttribute("Navy")]
-        public static readonly PDFColor Navy = PDFColor.Parse("#000080");
+        public static readonly Color Navy = Color.Parse("#000080");
 
         [System.Xml.Serialization.XmlAttribute("Olive")]
-        public static readonly PDFColor Olive = PDFColor.Parse("#808000");
+        public static readonly Color Olive = Color.Parse("#808000");
 
         [System.Xml.Serialization.XmlAttribute("Purple")]
-        public static readonly PDFColor Purple = PDFColor.Parse("#800080");
+        public static readonly Color Purple = Color.Parse("#800080");
 
         [System.Xml.Serialization.XmlAttribute("Red")]
-        public static readonly PDFColor Red = PDFColor.Parse("#FF0000");
+        public static readonly Color Red = Color.Parse("#FF0000");
 
         [System.Xml.Serialization.XmlAttribute("Silver")]
-        public static readonly PDFColor Silver = PDFColor.Parse("#C0C0C0");
+        public static readonly Color Silver = Color.Parse("#C0C0C0");
 
         [System.Xml.Serialization.XmlAttribute("Teal")]
-        public static readonly PDFColor Teal = PDFColor.Parse("#008080");
+        public static readonly Color Teal = Color.Parse("#008080");
 
         [System.Xml.Serialization.XmlAttribute("White")]
-        public static readonly PDFColor White = PDFColor.Parse("#FFFFFF");
+        public static readonly Color White = Color.Parse("#FFFFFF");
 
         [System.Xml.Serialization.XmlAttribute("Yellow")]
-        public static readonly PDFColor Yellow = PDFColor.Parse("#FFFF00");
+        public static readonly Color Yellow = Color.Parse("#FFFF00");
 
         [System.Xml.Serialization.XmlAttribute("Transparent")]
-        public static readonly PDFColor Transparent = new PDFColor();
+        public static readonly Color Transparent = new Color();
 
-        private static Dictionary<string, PDFColor> _named;
+        private static Dictionary<string, Color> _named;
 
         static PDFColors()
         {
-            _named = new Dictionary<string, PDFColor>(StringComparer.OrdinalIgnoreCase);
+            _named = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase);
             LoadColorsFromFields(_named);
         }
 
-        private static void LoadColorsFromFields(Dictionary<string, PDFColor> hash)
+        private static void LoadColorsFromFields(Dictionary<string, Color> hash)
         {
             System.Reflection.FieldInfo[] fields = typeof(PDFColors).GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             foreach (System.Reflection.FieldInfo fi in fields)
@@ -98,9 +98,9 @@ namespace Scryber.Drawing
                     if (string.IsNullOrEmpty(name))
                         name = fi.Name;
                     object color = fi.GetValue(null);
-                    if (null != color && color is PDFColor)
+                    if (null != color && color is Color)
                     {
-                        hash.Add(name, (PDFColor)color);
+                        hash.Add(name, (Color)color);
                     }
                 }
             }
@@ -108,14 +108,14 @@ namespace Scryber.Drawing
 
         public static bool IsDefinedName(string name)
         {
-            PDFColor c;
+            Color c;
             return TryGetColorFromName(name, out c);
         }
 
 
-        public static bool TryGetColorFromName(string name, out PDFColor color)
+        public static bool TryGetColorFromName(string name, out Color color)
         {
-            color = PDFColor.Transparent;
+            color = Color.Transparent;
             bool known = false;
 
             if (string.IsNullOrEmpty(name))
@@ -198,9 +198,9 @@ namespace Scryber.Drawing
             return known;
         }
 
-        public static PDFColor FromName(string name)
+        public static Color FromName(string name)
         {
-            PDFColor c;
+            Color c;
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException("name");
 

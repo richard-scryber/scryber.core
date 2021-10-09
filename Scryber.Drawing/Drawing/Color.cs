@@ -36,7 +36,7 @@ namespace Scryber.Drawing
     /// <remarks>Note the LAB and HSB are not currently supported</remarks>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct PDFColor : ITypedObject, IEquatable<PDFColor>
+    public struct Color : ITypedObject, IEquatable<Color>
     {
         internal const float UnassignedFloat = -1;
         internal const int UnassignedByte = -1;
@@ -221,7 +221,7 @@ namespace Scryber.Drawing
             get { return this.IsTransparent; }
         }
 
-        private PDFColor(ColorSpace cs, byte one, byte two, byte three, byte four)
+        private Color(ColorSpace cs, byte one, byte two, byte three, byte four)
         {
             this._cs = cs;
             if (this._cs == ColorSpace.None)
@@ -261,7 +261,7 @@ namespace Scryber.Drawing
         /// Creates a new Gray color
         /// </summary>
         /// <param name="gray"></param>
-        public PDFColor(int gray)
+        public Color(int gray)
             : this(ColorSpace.G, ValidateColorRange(gray, "gray"), 0 ,0 ,0)
         {
         }
@@ -269,7 +269,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Creates a new instance of the PDF Color with an RGB Color Space and specified colors
         /// </summary>
-        public PDFColor(int red, int green, int blue)
+        public Color(int red, int green, int blue)
             : this(ColorSpace.RGB,
                   ValidateColorRange(red, "red"),
                   ValidateColorRange(green, "green"),
@@ -281,7 +281,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Creates a new instance of the PDF Color with a CMYK Color Space and specified colors
         /// </summary>
-        public PDFColor(int cyan, int magenta, int yellow, int black)
+        public Color(int cyan, int magenta, int yellow, int black)
             : this(ColorSpace.CMYK,
                   ValidateColorRange(cyan, "cyan"),
                   ValidateColorRange(magenta, "magenta"),
@@ -310,7 +310,7 @@ namespace Scryber.Drawing
             return value == UnassignedFloat;
         }
 
-        public bool Equals(PDFColor other)
+        public bool Equals(Color other)
         {
             return other._cs == this._cs
                 && other._one == this._one
@@ -321,8 +321,8 @@ namespace Scryber.Drawing
 
         public override bool Equals(object obj)
         {
-            if (obj is PDFColor)
-                return this.Equals((PDFColor)obj);
+            if (obj is Color)
+                return this.Equals((Color)obj);
             else
                 return false;
         }
@@ -338,7 +338,7 @@ namespace Scryber.Drawing
         }
 
 
-        public PDFColor ToGray()
+        public Color ToGray()
         {
             switch (this._cs)
             {
@@ -351,7 +351,7 @@ namespace Scryber.Drawing
                 case ColorSpace.RGB:
                     float all = (this._one * 0.3F) + (this._two * 0.59F) + (this._three * 0.11F);
                     int val = all < 0 ? 0 : (all > 255 ? 255 : Convert.ToInt32(all));
-                    return new PDFColor(val);
+                    return new Color(val);
 
                 case ColorSpace.CMYK:
                     var rgb = this.ToRGB();
@@ -362,7 +362,7 @@ namespace Scryber.Drawing
             } 
         }
 
-        public PDFColor ToCMYK()
+        public Color ToCMYK()
         {
             switch (this._cs)
             {
@@ -370,7 +370,7 @@ namespace Scryber.Drawing
                     return PDFColors.Transparent;
 
                 case ColorSpace.G:
-                    return new PDFColor(ColorSpace.RGB, this._one, this._one, this._one, 0).ToCMYK();
+                    return new Color(ColorSpace.RGB, this._one, this._one, this._one, 0).ToCMYK();
 
                 case ColorSpace.RGB:
 
@@ -379,7 +379,7 @@ namespace Scryber.Drawing
                     var m = FitsByte((255.0 - _two - k) / (255.0 - k)); //(1-G-K) / (1-K)
                     var y = FitsByte((255.0 - _three - k) / (255.0 - k)); //(1-B-K) / (1-K)
 
-                    return new PDFColor(c, m, y, k);
+                    return new Color(c, m, y, k);
 
                 case ColorSpace.CMYK:
 
@@ -389,11 +389,11 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFColor ToRGB()
+        public Color ToRGB()
         {
             if (this._cs == ColorSpace.G)
             {
-                return new PDFColor(this._one, this._one, this._one);
+                return new Color(this._one, this._one, this._one);
             }
             else if (this._cs == ColorSpace.RGB)
             {
@@ -405,7 +405,7 @@ namespace Scryber.Drawing
                 int g = FitsByte((255.0 - _two) * (255.0 - _four)); // 1-M * 1-K
                 int b = FitsByte((255.0 - _three) * (255.0 - _four)); // 1-Y * 1-K
 
-                return new PDFColor(r, g, b);
+                return new Color(r, g, b);
             }
             else
                 throw new NotSupportedException("Cannot convert colorspace " + this._cs + " to RGB");
@@ -466,9 +466,9 @@ namespace Scryber.Drawing
 
         #region Parse(string) + bool TryParse(string, out color)
 
-        public static PDFColor Parse(string value)
+        public static Color Parse(string value)
         {
-            PDFColor color;
+            Color color;
 
             if(!TryParse(value,out color))
                 throw new FormatException("The color string '" + (String.IsNullOrEmpty(value) ? "" : value) + "' was in the incorrect format");
@@ -480,10 +480,10 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value">The string to parse</param>
         /// <returns>A new instance of the PDF Color</returns>
-        public static bool TryParse(string value, out PDFColor color)
+        public static bool TryParse(string value, out Color color)
         {
             ColorSpace cs = ColorSpace.RGB;
-            color = PDFColor.Transparent;
+            color = Color.Transparent;
 
             if (string.IsNullOrEmpty(value))
                 return false;
@@ -525,20 +525,20 @@ namespace Scryber.Drawing
                     case ColorSpace.G:
                         if (vals.Length != 1)
                             return false;
-                        color = new PDFColor(cs, rgbs[0], 0, 0, 0);
+                        color = new Color(cs, rgbs[0], 0, 0, 0);
                         return true;
 
                     case ColorSpace.RGB:
                         if (vals.Length != 3)
                             return false;
-                        color = new PDFColor(cs, rgbs[0], rgbs[1], rgbs[2], 0);
+                        color = new Color(cs, rgbs[0], rgbs[1], rgbs[2], 0);
                         return true;
 
                     case ColorSpace.CMYK:
                         if (vals.Length != 4)
                             return false;
 
-                        color = new PDFColor(cs, rgbs[0], rgbs[1], rgbs[2], rgbs[3]);
+                        color = new Color(cs, rgbs[0], rgbs[1], rgbs[2], rgbs[3]);
                         return true;
                     default:
                         return false;
@@ -593,7 +593,7 @@ namespace Scryber.Drawing
                     if (!byte.TryParse(r, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out rb))
                         return false;
 
-                    color = new PDFColor(cs, rb, 0, 0, 0);
+                    color = new Color(cs, rb, 0, 0, 0);
                 }
                 else if (cs == ColorSpace.RGB)
                 {
@@ -604,7 +604,7 @@ namespace Scryber.Drawing
                     if (!byte.TryParse(b, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out bb))
                         return false;
 
-                    color = new PDFColor(cs, rb, gb, bb, 0);
+                    color = new Color(cs, rb, gb, bb, 0);
                 }
                 return true;
 
@@ -632,7 +632,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value">The string to parse</param>
         /// <returns>A new instance of the PDF Color</returns>
-        public static bool TryParseRGBA(string value, out PDFColor color, out double? opacity)
+        public static bool TryParseRGBA(string value, out Color color, out double? opacity)
         {
             color = PDFColors.Transparent;
             opacity = null;
@@ -678,7 +678,7 @@ namespace Scryber.Drawing
                     else
                         return false;
                 }
-                color = new PDFColor(ColorSpace.RGB,
+                color = new Color(ColorSpace.RGB,
                         rgbs[0],
                         rgbs[1],
                         rgbs[2],
@@ -701,19 +701,19 @@ namespace Scryber.Drawing
         }
 
 
-        public static explicit operator PDFColor(string color)
+        public static explicit operator Color(string color)
         {
-            return PDFColor.Parse(color);
+            return Color.Parse(color);
         }
 
         
-        public static PDFColor Transparent
+        public static Color Transparent
         {
             get { return PDFColors.Transparent; }
         }
 
 
-        public static PDFColor Empty
+        public static Color Empty
         {
             get { return PDFColors.Transparent; }
         }

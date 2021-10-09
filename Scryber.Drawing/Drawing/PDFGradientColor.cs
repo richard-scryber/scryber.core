@@ -18,14 +18,14 @@ namespace Scryber.Drawing
         /// <summary>
         /// The actual color value to be used in the gradient
         /// </summary>
-        public PDFColor Color { get; set; }
+        public Color Color { get; set; }
 
-        public PDFGradientColor(PDFColor color) : this(color, null, null)
+        public PDFGradientColor(Color color) : this(color, null, null)
         {
 
         }
 
-        public PDFGradientColor(PDFColor color, double? distance, double? opacity)
+        public PDFGradientColor(Color color, double? distance, double? opacity)
         {
             this.Color = color;
             this.Distance = distance;
@@ -41,7 +41,7 @@ namespace Scryber.Drawing
                 return false;
 
             value = value.Trim();
-            PDFColor colVal = PDFColor.Transparent;
+            Color colVal = Color.Transparent;
             double? opacity = null;
             double? distance = null;
 
@@ -52,13 +52,13 @@ namespace Scryber.Drawing
                     return false;
                 else if (end >= value.Length - 1)
                 {
-                    if (!PDFColor.TryParseRGBA(value, out colVal, out opacity))
+                    if (!Color.TryParseRGBA(value, out colVal, out opacity))
                         return false;
                 }
                 else
                 {
                     var colS = value.Substring(0, end + 1);
-                    if (!PDFColor.TryParseRGBA(value, out colVal, out opacity))
+                    if (!Color.TryParseRGBA(value, out colVal, out opacity))
                         return false;
 
                     value = value.Substring(end + 1).Trim();
@@ -76,7 +76,7 @@ namespace Scryber.Drawing
                 var end = value.IndexOf(")");
                 if (end == value.Length - 1)
                 {
-                    if (!PDFColor.TryParse(value, out colVal))
+                    if (!Color.TryParse(value, out colVal))
                         return false;
                 }
                 else
@@ -96,7 +96,7 @@ namespace Scryber.Drawing
             {
                 var colS = value.Substring(0, value.IndexOf(" ")).Trim();
                 value = value.Substring(value.IndexOf(" ")).Trim();
-                if (!PDFColor.TryParse(colS, out colVal))
+                if (!Color.TryParse(colS, out colVal))
                     return false;
 
                 if (value.EndsWith("%"))
@@ -108,7 +108,7 @@ namespace Scryber.Drawing
                 color = new PDFGradientColor(colVal, distance, opacity);
                 return true;
             }
-            else if (PDFColor.TryParse(value, out colVal)) //we just have a named or hex color
+            else if (Color.TryParse(value, out colVal)) //we just have a named or hex color
             {
                 color = new PDFGradientColor(colVal, distance, opacity);
                 return true;

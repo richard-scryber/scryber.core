@@ -54,11 +54,11 @@ namespace Scryber.Styles
 
         [PDFAttribute("color")]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"color\"")]
-        public PDFColor Color
+        public Color Color
         {
             get 
             {
-                PDFColor col;
+                Color col;
                 if (this.TryGetValue(StyleKeys.FillColorKey, out col))
                     return col;
                 else
@@ -370,7 +370,7 @@ namespace Scryber.Styles
             bool fillstyledefined;
             string imgsrc;
             double opacity;
-            PDFColor color;
+            Color color;
 
             if (fill.TryGetValue(StyleKeys.FillStyleKey, out fillstyle))
             {

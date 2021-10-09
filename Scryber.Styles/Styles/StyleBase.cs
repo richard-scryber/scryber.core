@@ -1320,17 +1320,17 @@ namespace Scryber.Styles
         /// </summary>
         public static readonly PDFUnit RepeatNaturalSize = 0;
 
-        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<PDFColor> sideColor, StyleKey<PDFUnit> sideWidth, StyleKey<LineType> sideLine, StyleKey<Dash> sideDash)
+        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<Color> sideColor, StyleKey<PDFUnit> sideWidth, StyleKey<LineType> sideLine, StyleKey<Dash> sideDash)
         {
             PDFPen pen = null;
 
             StyleValue<LineType> styleValue;
             StyleValue<Dash> dashValue;
-            StyleValue<PDFColor> colValue;
+            StyleValue<Color> colValue;
             StyleValue<PDFUnit> widthValue;
 
             LineType line = LineType.None;
-            PDFColor col = PDFColor.Transparent;
+            Color col = Color.Transparent;
             PDFUnit width = 0;
             Dash dash = null;
 
@@ -1436,7 +1436,7 @@ namespace Scryber.Styles
 
             StyleValue<LineType> penstyle;
             StyleValue<Dash> dash;
-            StyleValue<PDFColor> c;
+            StyleValue<Color> c;
             StyleValue<PDFUnit> width;
 
             if (this.TryGetValue(StyleKeys.BorderStyleKey, out penstyle))
@@ -1559,7 +1559,7 @@ namespace Scryber.Styles
 
             StyleValue<LineType> penstyle;
             StyleValue<Dash> dash;
-            StyleValue<PDFColor> c;
+            StyleValue<Color> c;
             StyleValue<PDFUnit> width;
 
             if (this.TryGetValue(StyleKeys.StrokeStyleKey, out penstyle))
@@ -1681,7 +1681,7 @@ namespace Scryber.Styles
             StyleValue<Drawing.FillType> fillstyle;
             StyleValue<string> imgsrc;
             StyleValue<double> opacity;
-            StyleValue<PDFColor> color;
+            StyleValue<Color> color;
             if (this.TryGetValue(StyleKeys.BgStyleKey, out fillstyle))
             {
                 if (fillstyle.Value(this) == Drawing.FillType.None)
@@ -1801,7 +1801,7 @@ namespace Scryber.Styles
 
             StyleValue<string> imgsrc;
             StyleValue<double> opacity;
-            StyleValue<PDFColor> color;
+            StyleValue<Color> color;
 
             if (this.TryGetValue(StyleKeys.FillStyleKey, out fillstyle))
             {
@@ -1920,12 +1920,12 @@ namespace Scryber.Styles
         internal protected virtual PDFPen DoCreateOverlayGridPen()
         {
             StyleValue<bool> show;
-            StyleValue<PDFColor> color;
+            StyleValue<Color> color;
             StyleValue<double> opacity;
             if(this.TryGetValue(StyleKeys.OverlayShowGridKey,out show) && show.Value(this))
             {
                 if (this.TryGetValue(StyleKeys.OverlayColorKey, out color) == false)
-                    color = new StyleValue<PDFColor>(StyleKeys.OverlayColorKey, OverlayGridStyle.DefaultGridColor);
+                    color = new StyleValue<Color>(StyleKeys.OverlayColorKey, OverlayGridStyle.DefaultGridColor);
                 if (this.TryGetValue(StyleKeys.OverlayOpacityKey, out opacity) == false)
                     opacity = new StyleValue<double>(StyleKeys.OverlayOpacityKey, OverlayGridStyle.DefaultGridOpacity);
 

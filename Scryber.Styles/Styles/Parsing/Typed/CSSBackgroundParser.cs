@@ -45,7 +45,7 @@ namespace Scryber.Styles.Parsing.Typed
                 }
                 else if (IsColor(reader.CurrentTextValue))
                 {
-                    PDFColor color;
+                    Color color;
                     double? opacity;
                     if (ParseCSSColor(reader.CurrentTextValue, out color, out opacity))
                     {
@@ -81,16 +81,16 @@ namespace Scryber.Styles.Parsing.Typed
             return count > 0 && failed == 0;
         }
 
-        protected bool DoConvertBackgroundColor(StyleBase onStyle, object value, out PDFColor result)
+        protected bool DoConvertBackgroundColor(StyleBase onStyle, object value, out Color result)
         {
             double? opacity;
 
             if(null == value)
             {
-                result = PDFColor.Transparent;
+                result = Color.Transparent;
                 return false;
             }
-            else if(value is PDFColor color)
+            else if(value is Color color)
             {
                 result = color;
                 return true;
@@ -103,7 +103,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                result = PDFColor.Transparent;
+                result = Color.Transparent;
                 return false;
             }
         }

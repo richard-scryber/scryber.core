@@ -64,11 +64,11 @@ namespace Scryber.Styles
         #region public PDFColor Color {get;set;} + RemoveColor()
 
         [PDFAttribute("color")]
-        public PDFColor Color
+        public Color Color
         {
             get
             {
-                PDFColor outline;
+                Color outline;
                 if (this.TryGetValue(StyleKeys.OutlineColorKey, out outline))
                     return outline;
                 else

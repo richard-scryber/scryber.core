@@ -161,10 +161,10 @@ namespace Scryber.Styles.Parsing
         /// <param name="part"></param>
         /// <param name="color"></param>
         /// <returns></returns>
-        public static bool ParseCSSColor(string part, out PDFColor color, out double? opacity)
+        public static bool ParseCSSColor(string part, out Color color, out double? opacity)
         {
             bool result = false;
-            color = PDFColor.Transparent;
+            color = Color.Transparent;
 
             opacity = null;
             if (string.IsNullOrEmpty(part) == false)
@@ -172,15 +172,15 @@ namespace Scryber.Styles.Parsing
                 string hexValue;
 
                 if (CSSColors.Names2Colors.TryGetValue(part, out hexValue))
-                    result = PDFColor.TryParse(hexValue, out color);
+                    result = Color.TryParse(hexValue, out color);
 
                 else if (part.StartsWith("#"))
-                    result = PDFColor.TryParse(part, out color);
+                    result = Color.TryParse(part, out color);
 
                 else if (part.StartsWith("rgb(", StringComparison.InvariantCultureIgnoreCase))
-                    result = PDFColor.TryParse(part, out color);
+                    result = Color.TryParse(part, out color);
                 else if (part.StartsWith("rgba(", StringComparison.InvariantCultureIgnoreCase))
-                    result = PDFColor.TryParseRGBA(part, out color, out opacity);
+                    result = Color.TryParseRGBA(part, out color, out opacity);
             }
             return result;
         }

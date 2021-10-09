@@ -32,7 +32,7 @@ namespace Scryber.Styles
         //The instance style keys
 
         private StyleKey<LineType> _line;
-        private StyleKey<PDFColor> _color;
+        private StyleKey<Color> _color;
         private StyleKey<PDFUnit> _width;
         private StyleKey<Dash> _dash;
 
@@ -75,11 +75,11 @@ namespace Scryber.Styles
         [PDFAttribute("color")]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"border-color\"")]
         [PDFDesignable("Border Color", Category = "Border", Priority = 1, Type = "Color")]
-        public PDFColor Color
+        public Color Color
         {
             get
             {
-                PDFColor col;
+                Color col;
                 if (this.TryGetValue(_color, out col))
                     return col;
                 else
@@ -170,7 +170,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Creates a new Border style
         /// </summary>
-        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<PDFColor> colorKey, StyleKey<PDFUnit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<Dash> dashkey): 
+        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<Color> colorKey, StyleKey<PDFUnit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<Dash> dashkey): 
             base(forKey)
         {
             _side = forSide;

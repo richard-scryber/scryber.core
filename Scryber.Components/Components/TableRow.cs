@@ -44,7 +44,7 @@ namespace Scryber.Components
         /// Gets or sets the background color of this component
         /// </summary>
         [PDFAttribute("bg-color", Const.PDFStylesNamespace)]
-        public PDFColor BackgroundColor
+        public Color BackgroundColor
         {
             get
             {
@@ -162,7 +162,7 @@ namespace Scryber.Components
         /// Gets or sets the border color of this component
         /// </summary>
         [PDFAttribute("border-color", Const.PDFStylesNamespace)]
-        public PDFColor BorderColor
+        public Color BorderColor
         {
             get
             {
@@ -283,7 +283,7 @@ namespace Scryber.Components
         /// Gets or sets the Fill color of this component
         /// </summary>
         [PDFAttribute("fill-color", Const.PDFStylesNamespace)]
-        public PDFColor FillColor
+        public Color FillColor
         {
             get
             {
@@ -404,7 +404,7 @@ namespace Scryber.Components
         /// Gets or sets the Stroke color of this component
         /// </summary>
         [PDFAttribute("stroke-color", Const.PDFStylesNamespace)]
-        public PDFColor StrokeColor
+        public Color StrokeColor
         {
             get
             {

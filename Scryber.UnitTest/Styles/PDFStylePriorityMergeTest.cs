@@ -50,7 +50,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn = new StyleDefn();
             defn.Match = ".red";
-            defn.Border.Color = (PDFColor)"#FF0000";
+            defn.Border.Color = (Color)"#FF0000";
             defn.Border.Width = 3; //overriden by doc:Div.red
             doc.Styles.Add(defn);
 
@@ -59,8 +59,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div";
             defn.Margins.Left = 10;
             defn.Margins.All = 20;
-            defn.Fill.Color = (PDFColor)"#00FF00";
-            defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by .red
+            defn.Fill.Color = (Color)"#00FF00";
+            defn.Border.Color = (Color)"#0000FF"; //Overriden by .red
             defn.Border.Width = 1;
             defn.Border.LineStyle = LineType.Dash; //Overriden by doc:Div.red
             defn.Border.Dash = Dashes.Dot;
@@ -80,7 +80,7 @@ namespace Scryber.Core.UnitTests.Styles
             
             Assert.AreEqual(10, style.Border.Width.PointsValue, "Div border width should be 10");
             Assert.AreEqual(LineType.Solid, style.Border.LineStyle, "LineStyle should be solid from the doc:Div.red style");
-            Assert.AreEqual((PDFColor)"#00FF00", style.Fill.Color, "Fill colour should be green from the doc:Div style");
+            Assert.AreEqual((Color)"#00FF00", style.Fill.Color, "Fill colour should be green from the doc:Div style");
 
             Assert.AreEqual(30, style.Margins.Top.PointsValue, "Top margin should be 30 from 'doc:Div.red'");
             Assert.AreEqual(10, style.Margins.Left.PointsValue, "Left margin should be 10 from 'doc:Div'");
@@ -104,7 +104,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn = new StyleDefn();
             defn.Match = ".red";
-            defn.Border.Color = (PDFColor)"#FF0000";
+            defn.Border.Color = (Color)"#FF0000";
             defn.Border.Width = 3; //overriden by doc:Div.red
             doc.Styles.Add(defn);
 
@@ -113,8 +113,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div";
             defn.Margins.Left = 10;
             defn.Margins.All = 20;
-            defn.Fill.Color = (PDFColor)"#00FF00";
-            defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by .red
+            defn.Fill.Color = (Color)"#00FF00";
+            defn.Border.Color = (Color)"#0000FF"; //Overriden by .red
             defn.Border.Width = 1;
             defn.Border.LineStyle = LineType.Dash; //Overriden by doc:Div.red
             defn.Border.Dash = Dashes.Dot;
@@ -136,7 +136,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(10, style.Border.Width.PointsValue, "Div border width should be 10");
             Assert.AreEqual(LineType.Solid, style.Border.LineStyle, "LineStyle should be solid from the doc:Div.red style");
-            Assert.AreEqual((PDFColor)"#00FF00", style.Fill.Color, "Fill colour should be green from the doc:Div style");
+            Assert.AreEqual((Color)"#00FF00", style.Fill.Color, "Fill colour should be green from the doc:Div style");
 
             Assert.AreEqual(30, style.Margins.Top.PointsValue, "Top margin should be 30 from 'doc:Div.red'");
             Assert.AreEqual(10, style.Margins.Left.PointsValue, "Left margin should be 10 from 'doc:Div'");
@@ -153,21 +153,21 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn = new StyleDefn();
             defn.Match = "doc:Div.red"; //higher priority
-            defn.Border.Color = (PDFColor)"#00FFFF";
+            defn.Border.Color = (Color)"#00FFFF";
             defn.Margins.Top = 20;
             defn.Margins.Left = 20;
             doc.Styles.Add(defn);
 
             defn = new StyleDefn();
             defn.Match = "doc:Page.green .red"; //highest style priority
-            defn.Border.Color = (PDFColor)"#FF0000"; 
+            defn.Border.Color = (Color)"#FF0000"; 
             defn.Border.Width = 3; 
             defn.Margins.Left = 30;
             doc.Styles.Add(defn);
 
             defn = new StyleDefn();
             defn.Match = "doc:Page.blue .red"; //should be ignored
-            defn.Border.Color = (PDFColor)"#FFFFFF";
+            defn.Border.Color = (Color)"#FFFFFF";
             defn.Border.Width = 10;
             defn.Margins.Left = 10;
             doc.Styles.Add(defn);
@@ -176,8 +176,8 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Match = "doc:Div";
             defn.Margins.Left = 10;
             defn.Margins.All = 20;
-            defn.Fill.Color = (PDFColor)"#00FF00";
-            defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by both
+            defn.Fill.Color = (Color)"#00FF00";
+            defn.Border.Color = (Color)"#0000FF"; //Overriden by both
             
             doc.Styles.Add(defn);
 
@@ -196,7 +196,7 @@ namespace Scryber.Core.UnitTests.Styles
             var style = div.GetAppliedStyle();
 
             Assert.AreEqual(5, style.Border.Width.PointsValue, "Div border width should be 5");
-            Assert.AreEqual((PDFColor)"#FF0000", style.Border.Color, "Fill colour should be green from the doc:Div style");
+            Assert.AreEqual((Color)"#FF0000", style.Border.Color, "Fill colour should be green from the doc:Div style");
 
             Assert.AreEqual(20, style.Margins.Top.PointsValue, "Top margin should be 30 from 'doc:Div.red'");
             Assert.AreEqual(30, style.Margins.Left.PointsValue, "Left margin should be 10 from 'doc:Div'");
@@ -242,16 +242,16 @@ namespace Scryber.Core.UnitTests.Styles
                 var second = doc.FindAComponentById("second");
 
                 var style = pg.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#880000", style.Fill.Color, "Page fill color incorrect");
-                Assert.AreEqual((PDFColor)"#FF0000", style.Background.Color, "Page bg color incorrect");
+                Assert.AreEqual((Color)"#880000", style.Fill.Color, "Page fill color incorrect");
+                Assert.AreEqual((Color)"#FF0000", style.Background.Color, "Page bg color incorrect");
 
                 style = first.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#008800", style.Fill.Color, "First Div fill color incorrect");
-                Assert.AreEqual((PDFColor)"#00FF00", style.Background.Color, "First div bg color incorrect");
+                Assert.AreEqual((Color)"#008800", style.Fill.Color, "First Div fill color incorrect");
+                Assert.AreEqual((Color)"#00FF00", style.Background.Color, "First div bg color incorrect");
 
                 style = second.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#000088", style.Fill.Color, "Second Div fill color incorrect");
-                Assert.AreEqual((PDFColor)"#0000FF", style.Background.Color, "Second Div bg color incorrect");
+                Assert.AreEqual((Color)"#000088", style.Fill.Color, "Second Div fill color incorrect");
+                Assert.AreEqual((Color)"#0000FF", style.Background.Color, "Second Div bg color incorrect");
 
             }
         }
@@ -311,19 +311,19 @@ namespace Scryber.Core.UnitTests.Styles
                 var third = doc.FindAComponentById("third");
 
                 var style = pg.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#880000", style.Fill.Color, "Page fill color incorrect");
-                Assert.AreEqual((PDFColor)"#FF0000", style.Background.Color, "Page bg color incorrect");
+                Assert.AreEqual((Color)"#880000", style.Fill.Color, "Page fill color incorrect");
+                Assert.AreEqual((Color)"#FF0000", style.Background.Color, "Page bg color incorrect");
 
                 style = first.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#008800", style.Fill.Color, "First Div fill color incorrect");
-                Assert.AreEqual((PDFColor)"#00FF00", style.Background.Color, "First div bg color incorrect");
+                Assert.AreEqual((Color)"#008800", style.Fill.Color, "First Div fill color incorrect");
+                Assert.AreEqual((Color)"#00FF00", style.Background.Color, "First div bg color incorrect");
 
                 style = second.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#000088", style.Fill.Color, "Second Div fill color incorrect");
-                Assert.AreEqual((PDFColor)"#0000FF", style.Background.Color, "Second Div bg color incorrect");
+                Assert.AreEqual((Color)"#000088", style.Fill.Color, "Second Div fill color incorrect");
+                Assert.AreEqual((Color)"#0000FF", style.Background.Color, "Second Div bg color incorrect");
 
                 style = third.GetFirstArrangement().FullStyle;
-                Assert.AreEqual((PDFColor)"#008800", style.Fill.Color, "Third Div fill color incorrect");
+                Assert.AreEqual((Color)"#008800", style.Fill.Color, "Third Div fill color incorrect");
                 Assert.IsFalse(style.IsValueDefined(StyleKeys.BgColorKey), "Third div bg color should not be present");
 
             }

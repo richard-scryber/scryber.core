@@ -158,7 +158,7 @@ namespace Scryber.Components
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
             style.Padding.All = (PDFUnit)4;
-            style.Border.Color = new PDFColor(153);
+            style.Border.Color = new Color(153);
             style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (PDFUnit)1;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row

@@ -75,7 +75,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Create_Test()
         {
-            PDFColor color = PDFColors.Aqua;
+            Color color = PDFColors.Aqua;
             PDFUnit width = 1;
             PDFSolidPen expected = new PDFSolidPen();
             expected.Color = color;

@@ -127,7 +127,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void OverlayGrid_GridColorTest()
         {
             OverlayGridStyle target = new OverlayGridStyle();
-            PDFColor expected = OverlayGridStyle.DefaultGridColor;
+            Color expected = OverlayGridStyle.DefaultGridColor;
             Assert.AreEqual(expected, target.GridColor);
 
             expected = PDFColors.Teal;

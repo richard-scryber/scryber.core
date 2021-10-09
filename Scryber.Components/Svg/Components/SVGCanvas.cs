@@ -70,7 +70,7 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("stroke")]
-        public override PDFColor StrokeColor
+        public override Color StrokeColor
         {
             get => base.StrokeColor;
             set => base.StrokeColor = value;
@@ -114,7 +114,7 @@ namespace Scryber.Svg.Components
         // fill
 
         [PDFAttribute("fill")]
-        public override PDFColor FillColor
+        public override Color FillColor
         {
             get => base.FillColor;
             set => base.FillColor = value;

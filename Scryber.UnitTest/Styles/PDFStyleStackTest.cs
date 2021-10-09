@@ -148,7 +148,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((PDFUnit)3, actual.Border.Width); //border from two
             Assert.AreEqual(PDFColors.Lime, actual.Border.Color); //border from two
             Assert.AreEqual(true, actual.Font.FontItalic); //font from two
-            Assert.AreEqual(PDFColor.Transparent, actual.Background.Color); //not inherited from root
+            Assert.AreEqual(Color.Transparent, actual.Background.Color); //not inherited from root
             Assert.AreEqual(FillType.None, actual.Background.FillStyle); //not inherited from one
             
         }

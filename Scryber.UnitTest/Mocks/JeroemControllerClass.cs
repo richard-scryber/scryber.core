@@ -103,7 +103,7 @@ namespace Scryber.Core.UnitTests.Mocks
             //Add a class for every other item.
 
             if (index % 2 == 0)
-                row.Style.Background.Color = (Scryber.Drawing.PDFColor)"#DDD";// = (row.StyleClass == null) ? "alternate" : (row.StyleClass + " alternate");
+                row.Style.Background.Color = (Scryber.Drawing.Color)"#DDD";// = (row.StyleClass == null) ? "alternate" : (row.StyleClass + " alternate");
 
         }
 

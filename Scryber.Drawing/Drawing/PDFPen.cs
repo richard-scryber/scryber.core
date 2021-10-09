@@ -136,7 +136,7 @@ namespace Scryber.Drawing
         {
         }
 
-        public static PDFPen Create(PDFColor color, PDFUnit width)
+        public static PDFPen Create(Color color, PDFUnit width)
         {
             return new PDFSolidPen(color, width);
         }
@@ -187,9 +187,9 @@ namespace Scryber.Drawing
             get { return LineType.Solid; }
         }
 
-        private PDFColor _col;
+        private Color _col;
 
-        public PDFColor Color
+        public Color Color
         {
             get { return _col; }
             set 
@@ -207,7 +207,7 @@ namespace Scryber.Drawing
         {
         }
 
-        public PDFSolidPen(PDFColor color, PDFUnit width)
+        public PDFSolidPen(Color color, PDFUnit width)
             : this()
         {
             this.Width = width;
@@ -254,7 +254,7 @@ namespace Scryber.Drawing
             this.Dash = dash;
         }
 
-        public PDFDashPen(Dash dash, PDFColor color, PDFUnit width)
+        public PDFDashPen(Dash dash, Color color, PDFUnit width)
             : base(color, width)
         {
             this.Dash = dash;

@@ -124,7 +124,7 @@ namespace Scryber.UnitSamples
                 var bodyStyle = new StyleDefn(".body");
                 bodyStyle.Font.FontSize = 12;
                 bodyStyle.Padding.All = 10;
-                bodyStyle.Border.Color = (PDFColor)"#AAA";
+                bodyStyle.Border.Color = (Color)"#AAA";
                 bodyStyle.Columns.ColumnCount = 2;
 
                 var textStyle = new StyleDefn(".preserve");

@@ -29,9 +29,9 @@ namespace Scryber.Drawing.Imaging
     {
 
         private string _bytestreamdata = null;//the palette as a string of bytes
-        private PDFColor[] _pallette;
+        private Color[] _pallette;
 
-        internal PDFColor[] Pallette
+        internal Color[] Pallette
         {
             get { return _pallette; }
             set
@@ -101,7 +101,7 @@ namespace Scryber.Drawing.Imaging
             StringBuilder bytes = new StringBuilder();
             if (cs == ColorSpace.G)
             {
-                foreach (PDFColor c in this.Pallette)
+                foreach (Color c in this.Pallette)
                 {
                     if (bytes.Length > 0)
                         bytes.Append(" ");
@@ -111,7 +111,7 @@ namespace Scryber.Drawing.Imaging
             }
             else
             {
-                foreach (PDFColor c in this.Pallette)
+                foreach (Color c in this.Pallette)
                 {
                     if (bytes.Length > 0)
                         bytes.Append(" ");

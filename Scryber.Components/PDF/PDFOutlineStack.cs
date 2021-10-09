@@ -208,7 +208,7 @@ namespace Scryber.PDF
         private PDFObjectRef RenderOutlineItem(PDFOutlineRef outlineref, PDFObjectRef parent, PDFObjectRef prev, PDFRenderContext context, PDFWriter writer, out int count)
         {
             Outline outline = outlineref.Outline;
-            Scryber.Drawing.PDFColor c = outlineref.GetColor();
+            Scryber.Drawing.Color c = outlineref.GetColor();
             Scryber.Drawing.FontStyle fs = outlineref.GetFontStyle();
             int weight = outlineref.GetFontWeight();
 
@@ -331,13 +331,13 @@ namespace Scryber.PDF
             _inneritems.Add(outlineref);
         }
 
-        internal Scryber.Drawing.PDFColor GetColor()
+        internal Scryber.Drawing.Color GetColor()
         {
             var c = this.Outline.Color;
 
             if (c.IsTransparent)
             {
-                c = (null == this.Style) ? PDFColor.Transparent : this.Style.Color;
+                c = (null == this.Style) ? Color.Transparent : this.Style.Color;
             }
 
             return c;

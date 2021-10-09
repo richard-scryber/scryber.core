@@ -240,7 +240,7 @@ namespace Scryber.Drawing.Imaging
             int width;
             int height;
             int datawidth;
-            PDFColor[] index;
+            Color[] index;
 
             unsafe
             {
@@ -321,7 +321,7 @@ namespace Scryber.Drawing.Imaging
             int width;
             int height;
             int datawidth;
-            PDFColor[] index;
+            Color[] index;
 
             unsafe
             {
@@ -833,7 +833,7 @@ namespace Scryber.Drawing.Imaging
 
         #region private static PDFColor[] GetPDFPalette(ColorPalette palette) + 1 overload
 
-        private static PDFColor[] GetPDFPalette(ColorPalette palette)
+        private static Color[] GetPDFPalette(ColorPalette palette)
         {
             ColorSpace cspace;
             if ((palette.Flags & 2) > 0)
@@ -845,18 +845,18 @@ namespace Scryber.Drawing.Imaging
             return GetPDFPalette(cspace, palette.Entries);
         }
 
-        private static PDFColor[] GetPDFPalette(ColorSpace cspace, Color[] colors)
+        private static Color[] GetPDFPalette(ColorSpace cspace, System.Drawing.Color[] colors)
         {
             if (null == colors)
                 throw new ArgumentNullException("colors");
-            PDFColor[] all = new PDFColor[colors.Length];
+            Color[] all = new Color[colors.Length];
 
             if (cspace == ColorSpace.G)
             {
                 for (int i = 0; i < colors.Length; i++)
                 {
                     var c = colors[i];
-                    all[i] = new PDFColor(c.R, c.G, c.B).ToGray();
+                    all[i] = new Color(c.R, c.G, c.B).ToGray();
                 }
             }
             else if (cspace == ColorSpace.CMYK)
@@ -864,7 +864,7 @@ namespace Scryber.Drawing.Imaging
                 for (int i = 0; i < colors.Length; i++)
                 {
                     var c = colors[i];
-                    all[i] = new PDFColor(c.R, c.G, c.B).ToCMYK();
+                    all[i] = new Color(c.R, c.G, c.B).ToCMYK();
                 }
             }
             else if (cspace == ColorSpace.RGB)
@@ -872,7 +872,7 @@ namespace Scryber.Drawing.Imaging
                 for (int i = 0; i < colors.Length; i++)
                 {
                     var c = colors[i];
-                    all[i] = new PDFColor(c.R, c.G, c.B);
+                    all[i] = new Color(c.R, c.G, c.B);
                 }
             }
             else

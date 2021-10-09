@@ -33,7 +33,7 @@ namespace Scryber.Styles
     {
 
         public static readonly PDFUnit DefaultGridSpacing = new PDFUnit(50, PageUnits.Points);
-        public static readonly PDFColor DefaultGridColor = new PDFColor(0, 1, 1);//aqua.
+        public static readonly Color DefaultGridColor = new Color(0, 1, 1);//aqua.
         public static readonly double DefaultGridOpacity = 0.5;
         public static readonly PDFUnit DefaultXOffset = PDFUnit.Empty;
         public static readonly PDFUnit DefaultYOffset = PDFUnit.Empty;
@@ -104,11 +104,11 @@ namespace Scryber.Styles
         /// Gets or sets the color of the grid. Default value is 'aqua'
         /// </summary>
         [PDFAttribute("color")]
-        public PDFColor GridColor
+        public Color GridColor
         {
             get
             {
-                PDFColor col;
+                Color col;
                 if (this.TryGetValue(StyleKeys.OverlayColorKey, out col))
                     return col;
                 else

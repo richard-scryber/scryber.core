@@ -55,7 +55,7 @@ namespace Scryber.Components
 
         private Component _belongs;
         private string _title = string.Empty;
-        private PDFColor _col = PDFColor.Transparent;
+        private Color _col = Color.Transparent;
         private bool? _boldstyle = null;
         private bool? _italicstyle = null;
         private bool? _open = null;
@@ -121,7 +121,7 @@ namespace Scryber.Components
         /// Gets or sets the color (if any) of this outline item
         /// </summary>
         [PDFAttribute("color", Const.PDFStylesNamespace)]
-        public PDFColor Color 
+        public Color Color 
         {
             get { return this._col; }
             set { this._col = value; }

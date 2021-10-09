@@ -51,9 +51,9 @@ namespace Scryber.Drawing
             get { return FillType.Solid; }
         }
 
-        private PDFColor _col;
+        private Color _col;
 
-        public PDFColor Color
+        public Color Color
         {
             get { return _col; }
             set { _col = value; }
@@ -72,17 +72,17 @@ namespace Scryber.Drawing
         {
         }
 
-        public PDFSolidBrush(PDFColor color)
+        public PDFSolidBrush(Color color)
             : this(color, 1)
         {
         }
 
-        public PDFSolidBrush(PDFColor color, double opacity)
+        public PDFSolidBrush(Color color, double opacity)
             : this(color, (PDFReal)opacity)
         {
         }
 
-        public PDFSolidBrush(PDFColor color, PDFReal opacity)
+        public PDFSolidBrush(Color color, PDFReal opacity)
         {
             this._col = color;
             this._op = opacity;
@@ -106,7 +106,7 @@ namespace Scryber.Drawing
         }
 
 
-        public static PDFSolidBrush Create(PDFColor color)
+        public static PDFSolidBrush Create(Color color)
         {
             return new PDFSolidBrush(color);
         }

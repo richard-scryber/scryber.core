@@ -65,11 +65,11 @@ namespace Scryber.Styles
         #region public PDFColor Color {get;set;} + RemoveColor()
 
         [PDFAttribute("color")]
-        public PDFColor Color
+        public Color Color
         {
             get
             {
-                PDFColor col;
+                Color col;
                 if (this.TryGetValue(StyleKeys.StrokeColorKey, out col))
                     return col;
                 else

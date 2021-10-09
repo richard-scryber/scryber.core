@@ -36,7 +36,7 @@ namespace Scryber
         public const VerticalAlignment DefaultVerticalAlign = VerticalAlignment.Top;
         public const string DefaultFontFamily = "Helvetica";
         public const float DefaultFontSize = 12.0F;
-        public static readonly PDFColor DefaultFillColor = PDFColors.Black;
+        public static readonly Color DefaultFillColor = PDFColors.Black;
 
         public static readonly PDFUnit DefaultListNumberInset = 30;
         public static readonly PDFUnit DefaultDefinitionListInset = 100;

@@ -6,7 +6,7 @@ namespace Scryber.Styles.Parsing.Typed
     /// <summary>
     /// Parses a css color value into a PDFColor object for a PDFStyleKey
     /// </summary>
-    public class CSSColorStyleParser : CSSStyleAttributeParser<PDFColor>
+    public class CSSColorStyleParser : CSSStyleAttributeParser<Color>
     {
         private StyleKey<double> _opacity;
 
@@ -18,7 +18,7 @@ namespace Scryber.Styles.Parsing.Typed
 
 
 
-        public CSSColorStyleParser(string styleItemKey, StyleKey<PDFColor> pdfAttr, StyleKey<double> opacity)
+        public CSSColorStyleParser(string styleItemKey, StyleKey<Color> pdfAttr, StyleKey<double> opacity)
             : base(styleItemKey, pdfAttr)
         {
             _opacity = opacity;
@@ -27,7 +27,7 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = false;
-            PDFColor color;
+            Color color;
 
             if (reader.ReadNextValue())
             {
@@ -47,7 +47,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected virtual bool DoConvertOpacity(StyleBase onStyle, object value, out double opacity)
         {
-            PDFColor parsed;
+            Color parsed;
             
             if (null == value)
             {
@@ -66,16 +66,16 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        protected virtual bool DoConvertColor(StyleBase onStyle, object value, out PDFColor result)
+        protected virtual bool DoConvertColor(StyleBase onStyle, object value, out Color result)
         {
             if (null == value)
             {
-                result = PDFColor.Transparent;
+                result = Color.Transparent;
                 return false;
             }
-            else if (value is PDFColor)
+            else if (value is Color)
             {
-                result = (PDFColor)value;
+                result = (Color)value;
                 return true;
             }
             else if (ParseCSSColor(value.ToString(), out result, out double? opacity))
@@ -89,7 +89,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                result = PDFColor.Transparent;
+                result = Color.Transparent;
                 return false;
             }
         }

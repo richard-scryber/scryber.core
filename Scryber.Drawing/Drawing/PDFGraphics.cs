@@ -216,7 +216,7 @@ namespace Scryber.Drawing
 
         #region public SetStrokeColor() + SetFillColor()
 
-        public void SetStrokeColor(PDFColor color)
+        public void SetStrokeColor(Color color)
         {
             switch (color.ColorSpace)
             {
@@ -237,7 +237,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public void SetFillColor(PDFColor color)
+        public void SetFillColor(Color color)
         {
             switch (color.ColorSpace)
             {

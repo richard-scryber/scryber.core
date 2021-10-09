@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_ColorTest()
         {
             BackgroundStyle target = new BackgroundStyle();
-            Assert.AreEqual(target.Color, PDFColor.Transparent);
+            Assert.AreEqual(target.Color, Color.Transparent);
 
             target.Color = PDFColors.Red;
             Assert.AreEqual(target.Color, PDFColors.Red);
@@ -195,7 +195,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.Color, PDFColors.Blue);
 
             target.RemoveColor();
-            Assert.AreEqual(target.Color, PDFColor.Transparent);
+            Assert.AreEqual(target.Color, Color.Transparent);
 
         }
 

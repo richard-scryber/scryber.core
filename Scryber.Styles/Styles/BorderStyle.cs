@@ -126,11 +126,11 @@ namespace Scryber.Styles
         [PDFAttribute("color")]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"border-color\"")]
         [PDFDesignable("Border Color", Category = "Border", Priority = 1, Type = "Color")]
-        public PDFColor Color
+        public Color Color
         {
             get
             {
-                PDFColor col;
+                Color col;
                 if (this.TryGetValue(StyleKeys.BorderColorKey, out col))
                     return col;
                 else

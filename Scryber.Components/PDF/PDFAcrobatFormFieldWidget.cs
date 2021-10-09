@@ -154,7 +154,7 @@ namespace Scryber.PDF
             return root;
         }
 
-        private void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, PDFColor color)
+        private void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, Color color)
         {
             writer.BeginDictionaryEntry(key);
 

@@ -120,8 +120,8 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.AreEqual("body.grey", one.Match.ToString());
             Assert.AreEqual(2, one.ValueCount);
-            Assert.AreEqual((PDFColor)"#808080", one.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
-            Assert.AreEqual((PDFColor)"#222", one.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
+            Assert.AreEqual((Color)"#808080", one.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
+            Assert.AreEqual((Color)"#222", one.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
             var two = col[1] as StyleDefn;
 
@@ -136,8 +136,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("body.grey div.reverse", three.Match.ToString());
             Assert.AreEqual(2 + 4 + 4, three.ValueCount); //2 colors and 4 each for margins and padding
 
-            Assert.AreEqual((PDFColor)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
-            Assert.AreEqual((PDFColor)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
+            Assert.AreEqual((Color)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
+            Assert.AreEqual((Color)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
 
             Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsTopKey, 0.0));
             Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsBottomKey, 0.0));
@@ -386,7 +386,7 @@ body.grey div.reverse{
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
                 //This has been loaded from the remote file
-                Assert.AreEqual((PDFColor)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
                 
 
             }
@@ -809,7 +809,7 @@ body.grey div.reverse{
         }
 
 
-        private PDFColor CheckInnerVariableSpanColor(PDFLayoutBlock block)
+        private Color CheckInnerVariableSpanColor(PDFLayoutBlock block)
         {
             var inline = block.Columns[0].Contents[0] as PDFLayoutLine;
             var span = inline.Runs[0] as PDFLayoutInlineBegin;

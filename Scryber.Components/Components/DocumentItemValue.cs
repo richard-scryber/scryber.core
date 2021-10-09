@@ -493,29 +493,29 @@ namespace Scryber.Components
         [PDFAttribute("value")]
         [PDFElement()]
         [PDFDesignable("Value", Category = "Data", Priority = 3, Type = "PDFColor", Bindable = false, JSOptions = "")]
-        public PDFColor Value { get; set; }
+        public Color Value { get; set; }
 
         public ColorItemValue()
-            : base(typeof(PDFColor))
+            : base(typeof(Color))
         {
-            this.Value = PDFColor.Transparent;
+            this.Value = Color.Transparent;
         }
 
         protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
-            PDFColor val;
-            if (string.IsNullOrEmpty(qsValue) || !PDFColor.TryParse(qsValue, out val))
+            Color val;
+            if (string.IsNullOrEmpty(qsValue) || !Color.TryParse(qsValue, out val))
                 val = this.Value;
             return val;
         }
 
         protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
-            PDFColor val;
+            Color val;
             if (string.IsNullOrEmpty(value))
-                this.Value = PDFColor.Transparent;
+                this.Value = Color.Transparent;
 
-            else if (PDFColor.TryParse(value, out val))
+            else if (Color.TryParse(value, out val))
                 this.Value = val;
             else
                 throw new InvalidCastException("Could not parse the value '" + value + "' to a PDFColor");
@@ -524,9 +524,9 @@ namespace Scryber.Components
         protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
-                this.Value = PDFColor.Transparent;
+                this.Value = Color.Transparent;
             else
-                this.Value = (PDFColor)value;
+                this.Value = (Color)value;
         }
     }
 
@@ -541,7 +541,7 @@ namespace Scryber.Components
         public PDFThickness Value { get; set; }
 
         public ThicknessItemValue()
-            : base(typeof(PDFColor))
+            : base(typeof(Color))
         {
             this.Value = PDFThickness.Empty();
         }

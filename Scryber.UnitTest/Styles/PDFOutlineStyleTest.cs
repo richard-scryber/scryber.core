@@ -85,7 +85,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void Outline_ColorTest()
         {
             OutlineStyle target = new OutlineStyle();
-            PDFColor expected = PDFColors.Transparent;
+            Color expected = PDFColors.Transparent;
             Assert.AreEqual(expected, target.Color);
 
             expected = PDFColors.Olive;

@@ -56,15 +56,15 @@ namespace Scryber.Styles
         [PDFAttribute("color")]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css",JSParams = "\"background-color\"")]
         [PDFDesignable("Background Color", Category = "Background", Priority = 1, Type = "Color")]
-        public PDFColor Color
+        public Color Color
         {
             get 
             {
-                PDFColor col;
+                Color col;
                 if (this.TryGetValue(StyleKeys.BgColorKey, out col))
                     return col;
                 else
-                    return PDFColor.Transparent;
+                    return Color.Transparent;
             }
             set { this.SetValue(StyleKeys.BgColorKey, value); }
         }

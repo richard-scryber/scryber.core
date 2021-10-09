@@ -11,7 +11,7 @@ namespace Scryber.Styles.Parsing.Typed
         {
         }
 
-        public CSSFillParser(string css, StyleKey<PDFColor> key, StyleKey<double> opacity)
+        public CSSFillParser(string css, StyleKey<Color> key, StyleKey<double> opacity)
             : base(css, key, opacity)
         { }
 
@@ -20,7 +20,7 @@ namespace Scryber.Styles.Parsing.Typed
         {
 
             bool result = false;
-            PDFColor color;
+            Color color;
 
             if (reader.ReadNextValue() && !string.IsNullOrEmpty(reader.CurrentTextValue))
             {
@@ -42,14 +42,14 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertFillValue(StyleBase style, object value, out PDFColor color)
+        protected bool DoConvertFillValue(StyleBase style, object value, out Color color)
         {
             if(null == value)
             {
-                color = PDFColor.Transparent;
+                color = Color.Transparent;
                 return false;
             }
-            else if(value is PDFColor c)
+            else if(value is Color c)
             {
                 color = c;
                 return true;
@@ -60,12 +60,12 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                color = PDFColor.Transparent;
+                color = Color.Transparent;
                 return false;
             }    
         }
 
-        private bool SetColorValue(StyleBase onStyle, string val, out PDFColor color)
+        private bool SetColorValue(StyleBase onStyle, string val, out Color color)
         {
             if (val.StartsWith("url("))
             {
@@ -80,7 +80,7 @@ namespace Scryber.Styles.Parsing.Typed
                 else
                     onStyle.SetValue(StyleKeys.FillImgSrcKey, val);
 
-                color = PDFColor.Transparent;
+                color = Color.Transparent;
             }
             else if (ParseCSSColor(val, out color, out double? opacity))
             {
@@ -92,7 +92,7 @@ namespace Scryber.Styles.Parsing.Typed
                 return true;
             }
             else
-                color = PDFColor.Transparent;
+                color = Color.Transparent;
 
 
             return false;

@@ -449,7 +449,7 @@ namespace Scryber.Components
         [PDFAttribute("bg-color",Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"background-color\"")]
         [PDFDesignable("Color", Category = "Background", Priority = 1, Type = "Color")]
-        public PDFColor BackgroundColor
+        public Drawing.Color BackgroundColor
         {
             get
             {
@@ -579,7 +579,7 @@ namespace Scryber.Components
         [PDFAttribute("border-color", Const.PDFStylesNamespace)]
         [PDFDesignable("Color", Category = "Border", Priority = 1, Type = "Color")]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"border-color\"")]
-        public PDFColor BorderColor
+        public Drawing.Color BorderColor
         {
             get
             {
@@ -727,7 +727,7 @@ namespace Scryber.Components
         [PDFAttribute("fill-color", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"color\"")]
         [PDFDesignable("Color", Category = "Fill", Priority = 1, Type = "PDFColor")]
-        public virtual PDFColor FillColor
+        public virtual Drawing.Color FillColor
         {
             get
             {
@@ -855,7 +855,7 @@ namespace Scryber.Components
         [PDFAttribute("stroke-color", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"stroke\"")]
         [PDFDesignable("Color", Category = "Stroke", Priority = 1, Type = "Color")]
-        public virtual PDFColor StrokeColor
+        public virtual Drawing.Color StrokeColor
         {
             get
             {

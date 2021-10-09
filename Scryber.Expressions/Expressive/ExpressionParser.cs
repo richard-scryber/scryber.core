@@ -251,10 +251,10 @@ namespace Scryber.Expressive
                 }
                 else if(currentToken.Type == ExpressionTokenType.Color)
                 {
-                    PDFColor color;
+                    Color color;
                     tokens.Dequeue();
 
-                    if (!PDFColor.TryParse(currentToken.CurrentToken, out color))
+                    if (!Color.TryParse(currentToken.CurrentToken, out color))
                         throw new UnrecognisedTokenException(currentToken.CurrentToken);
                     else
                         leftHandSide = new ConstantValueExpression(color);

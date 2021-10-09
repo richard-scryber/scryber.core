@@ -1,6 +1,6 @@
 ﻿using System;
 using Scryber.Drawing;
-using System.Drawing;
+
 
 namespace Scryber.UnitTests.Mocks
 {
@@ -21,11 +21,11 @@ namespace Scryber.UnitTests.Mocks
                 // Standard System.Drawing routines to draw a bitmap
                 // could load an image from SQL, use parameters, whatever is needed
 
-                Bitmap bmp = new Bitmap(300, 100);
-                using (Graphics graphics = Graphics.FromImage(bmp))
+                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(300, 100);
+                using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(bmp))
                 {
-                    graphics.FillRectangle(new SolidBrush(Color.LightBlue), new Rectangle(0, 0, 300, 100));
-                    graphics.DrawString(name, new Font("Times", 12), new SolidBrush(Color.Blue), PointF.Empty);
+                    graphics.FillRectangle(new System.Drawing.SolidBrush(System.Drawing.Color.LightBlue), new System.Drawing.Rectangle(0, 0, 300, 100));
+                    graphics.DrawString(name, new System.Drawing.Font("Times", 12), new System.Drawing.SolidBrush(System.Drawing.Color.Blue), System.Drawing.PointF.Empty);
                     graphics.Flush();
                 }
                 var dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);

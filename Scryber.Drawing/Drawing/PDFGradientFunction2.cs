@@ -14,19 +14,19 @@ namespace Scryber.Drawing
 
         public double DomainEnd { get; set; }
 
-        public PDFColor ColorZero { get; set; }
+        public Color ColorZero { get; set; }
 
-        public PDFColor ColorOne { get; set; }
+        public Color ColorOne { get; set; }
 
         public double Exponent { get; set; }
 
 
-        public PDFGradientFunction2(PDFColor color0, PDFColor color1)
+        public PDFGradientFunction2(Color color0, Color color1)
             :this(color0, color1, 0, 1, 1)
         {
         }
 
-        public PDFGradientFunction2(PDFColor color0, PDFColor color1, double domainStart, double domainEnd, double exponent)
+        public PDFGradientFunction2(Color color0, Color color1, double domainStart, double domainEnd, double exponent)
         {
             this.ColorZero = color0;
             this.ColorOne = color1;
