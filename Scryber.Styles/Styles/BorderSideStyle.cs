@@ -34,7 +34,7 @@ namespace Scryber.Styles
         private StyleKey<LineType> _line;
         private StyleKey<PDFColor> _color;
         private StyleKey<PDFUnit> _width;
-        private StyleKey<PDFDash> _dash;
+        private StyleKey<Dash> _dash;
 
         //Actual side we are
         private Sides _side;
@@ -50,7 +50,7 @@ namespace Scryber.Styles
                 LineType val;
                 if (this.TryGetValue(_line,out val))
                     return val;
-                else if (this.IsDefined(_dash) && this.Dash != PDFDash.None)
+                else if (this.IsDefined(_dash) && this.Dash != Dash.None)
                     return LineType.Dash;
                 else if (this.IsDefined(_color))
                     return LineType.Solid;
@@ -126,15 +126,15 @@ namespace Scryber.Styles
         #region public PDFDash Dash {get;set;} + RemoveDash()
 
         [PDFAttribute("dash")]
-        public PDFDash Dash
+        public Dash Dash
         {
             get
             {
-                PDFDash dash;
+                Dash dash;
                 if (this.TryGetValue(_dash, out dash))
                     return dash;
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {
@@ -170,7 +170,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Creates a new Border style
         /// </summary>
-        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<PDFColor> colorKey, StyleKey<PDFUnit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<PDFDash> dashkey): 
+        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<PDFColor> colorKey, StyleKey<PDFUnit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<Dash> dashkey): 
             base(forKey)
         {
             _side = forSide;

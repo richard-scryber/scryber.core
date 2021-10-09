@@ -1302,7 +1302,7 @@ namespace Scryber.Styles
         }
 
 
-        private static PDFDash DefaultDash = new PDFDash(new int[] { 4 }, 0);
+        private static Dash DefaultDash = new Dash(new int[] { 4 }, 0);
         private static PDFUnit DefaultWidth = new PDFUnit(1, PageUnits.Points);
 
         /// <summary>
@@ -1320,19 +1320,19 @@ namespace Scryber.Styles
         /// </summary>
         public static readonly PDFUnit RepeatNaturalSize = 0;
 
-        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<PDFColor> sideColor, StyleKey<PDFUnit> sideWidth, StyleKey<LineType> sideLine, StyleKey<PDFDash> sideDash)
+        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<PDFColor> sideColor, StyleKey<PDFUnit> sideWidth, StyleKey<LineType> sideLine, StyleKey<Dash> sideDash)
         {
             PDFPen pen = null;
 
             StyleValue<LineType> styleValue;
-            StyleValue<PDFDash> dashValue;
+            StyleValue<Dash> dashValue;
             StyleValue<PDFColor> colValue;
             StyleValue<PDFUnit> widthValue;
 
             LineType line = LineType.None;
             PDFColor col = PDFColor.Transparent;
             PDFUnit width = 0;
-            PDFDash dash = null;
+            Dash dash = null;
 
 
             //Logic
@@ -1435,7 +1435,7 @@ namespace Scryber.Styles
             PDFPen pen = null;
 
             StyleValue<LineType> penstyle;
-            StyleValue<PDFDash> dash;
+            StyleValue<Dash> dash;
             StyleValue<PDFColor> c;
             StyleValue<PDFUnit> width;
 
@@ -1558,7 +1558,7 @@ namespace Scryber.Styles
             PDFPen pen;
 
             StyleValue<LineType> penstyle;
-            StyleValue<PDFDash> dash;
+            StyleValue<Dash> dash;
             StyleValue<PDFColor> c;
             StyleValue<PDFUnit> width;
 

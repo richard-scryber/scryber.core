@@ -28,60 +28,35 @@ namespace Scryber.Drawing
 {
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class PDFDash
+    public class Dash
     {
-        private PDFNumber[] _pattern;
+        private int[] _pattern;
 
-        public PDFNumber[] Pattern
+        public int[] Pattern
         {
             get { return _pattern; }
             set { _pattern = value; }
         }
 
-        private PDFNumber _len;
+        private int _len;
 
-        public PDFNumber Phase
+        public int Phase
         {
             get { return _len; }
             set { _len = value; }
         }
 
-        public PDFDash()
-            : this(new PDFNumber[] { }, PDFNumber.Zero) //solid
+        public Dash()
+            : this(new int[] { }, 0) //solid
         {
         }
 
-        public PDFDash(int[] pattern, int phase)
-            : this(ConvertToNumberArray(pattern), ConvertToNumber(phase))
-        {
-        }
-
-        private static PDFNumber ConvertToNumber(int len)
-        {
-            return (PDFNumber)len;
-        }
-
-        private static PDFNumber[] ConvertToNumberArray(int[] pattern)
-        {
-            if (null == pattern || pattern.Length == 0)
-                return new PDFNumber[] { };
-            else
-            {
-                PDFNumber[] all = new PDFNumber[pattern.Length];
-                for (int i = 0; i < pattern.Length; i++)
-                {
-                    all[i] = ConvertToNumber(pattern[i]);
-                }
-                return all;
-            }
-        }
-
-        
-        public PDFDash(PDFNumber[] pattern, PDFNumber len)
+        public Dash(int[] pattern, int phase)
         {
             this._pattern = pattern;
-            this._len = len;
+            this._len = phase;
         }
+
 
         public override string ToString()
         {
@@ -105,10 +80,10 @@ namespace Scryber.Drawing
 
         public override bool Equals(object obj)
         {
-            return this.Equals((PDFDash)obj);
+            return this.Equals((Dash)obj);
         }
 
-        public bool Equals(PDFDash dash)
+        public bool Equals(Dash dash)
         {
             if (this._pattern == null && dash._pattern == null)
                 return this._len == dash._len;
@@ -132,7 +107,7 @@ namespace Scryber.Drawing
             else
             {
                 int count = 0;
-                foreach (PDFNumber num in this._pattern)
+                foreach (int num in this._pattern)
                 {
                     count = count ^ num.GetHashCode();
                 }
@@ -140,15 +115,15 @@ namespace Scryber.Drawing
             }
         }
 
-        public static PDFDash None
+        public static Dash None
         {
-            get { return new PDFDash(); }
+            get { return new Dash(); }
         }
 
-        public static PDFDash Parse(string dashpattern)
+        public static Dash Parse(string dashpattern)
         {
             
-            PDFDash dash = null;
+            Dash dash = null;
             if(string.IsNullOrEmpty(dashpattern))
             {
                 return dash;
@@ -160,7 +135,7 @@ namespace Scryber.Drawing
                 dash = ParseExplicit(dashpattern);
             }
 
-            else if (PDFDashes.TryGetNamedDash(dashpattern, out dash) == false)
+            else if (Dashes.TryGetNamedDash(dashpattern, out dash) == false)
             {
                 if(!TryParseDashNumberList(dashpattern, out dash))
                     throw new ArgumentException("The dash pattern '" + dashpattern + "' could not be parsed. The format of a custom dash phase should be '[n n ...] n' or '[n,n,n] n', or one of hte known named patterns.");
@@ -168,67 +143,65 @@ namespace Scryber.Drawing
             return dash;
         }
 
-        private static PDFDash ParseExplicit(string dashpattern)
+        private static Dash ParseExplicit(string dashpattern)
         {
             int end = dashpattern.IndexOf(']');
 
             string pattern = dashpattern.Substring(1, end - 1).Trim();
             string phase = dashpattern.Substring(end + 1).Trim();
-            
-            List<int> val = new List<int>();
+
+            int[] val = null;
                
             if (pattern.Length > 0)
             {
                 string[] array = pattern.Split(' ',',');
-                foreach (string a in array)
+                val = new int[array.Length];
+                for(var i = 0; i < array.Length; i++)
                 {
-                    int i;
+                    var a = array[i];
+                    int parsed;
                     if (string.IsNullOrEmpty(a) == false)
                     {
-                        if (int.TryParse(a.Trim(), out i) == false)
-                            throw new FormatException("The format of a custom dash phase should be '[n n ...] n' or '[n,n,n] n' or 'n,n,n,n'. Could not understand the format '" + dashpattern + "'");
-                        val.Add(i);
+                        if (int.TryParse(a.Trim(), out parsed) == false)
+                            parsed = 0;
+                        val[i] = parsed;
                     }
                 }
             }
-            int p;
+
+            int p = 0;
             if(int.TryParse(phase, out p) == false)
                 throw new FormatException("The format of a custom dash phase should be '[n n ...] n' or [n,n,n] n. Could not understand the format '" + dashpattern + "'");
-            
-            List<PDFNumber> nums = new List<PDFNumber>(val.Count);
-            foreach (int i in val)
-            {
-                nums.Add(new PDFNumber(i));
-            }
-            return new PDFDash(nums.ToArray(), new PDFNumber(p));
 
+            return new Dash(val, p);
 
         }
 
-        public static bool TryParseDashNumberList(string value, out PDFDash dash)
+        public static bool TryParseDashNumberList(string value, out Dash dash)
         {
             bool result = false;
             dash = null;
 
             var entries = value.Split(',', ' ');
             int total = 0;
-            List<PDFNumber> items = new List<PDFNumber>(entries.Length);
-            foreach (var a in entries)
+            int[] items = new int[entries.Length];
+            for(var i = 0; i < entries.Length; i++)
             {
+                var a = entries[i];
                 if(string.IsNullOrEmpty(a) == false)
                 {
-                    int i;
-                    if (int.TryParse(a.Trim(), out i))
+                    int parsed;
+                    if (int.TryParse(a.Trim(), out parsed))
                     {
-                        items.Add(new PDFNumber(i));
+                        items[i] = parsed;
                         total += i;
                     }
                     else
                         throw new FormatException("The format of a custom dash phase should be '[n n ...] n' or '[n,n,n] n' or 'n,n,n,n'. Could not understand the format '" + value + "'");
                 }
             }
-            result = items.Count > 0;
-            dash = new PDFDash(items.ToArray(), new PDFNumber(total));
+            result = items.Length > 0;
+            dash = new Dash(items, total);
             return result;
         }
 

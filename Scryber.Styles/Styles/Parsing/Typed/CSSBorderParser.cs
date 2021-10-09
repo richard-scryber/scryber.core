@@ -71,7 +71,7 @@ namespace Scryber.Styles.Parsing.Typed
                 else
                 {
                     LineType style;
-                    PDFDash dash;
+                    Dash dash;
                     if (CSSBorderStyleParser.TryGetLineStyleFromString(reader.CurrentTextValue, out style, out dash))
                     {
                         onStyle.Border.LineStyle = style;
@@ -117,7 +117,7 @@ namespace Scryber.Styles.Parsing.Typed
         protected bool DoConvertBorderStyle(StyleBase onStyle, object value, out LineType result)
         {
             LineType style;
-            PDFDash dash;
+            Dash dash;
 
             if (null == value)
             {

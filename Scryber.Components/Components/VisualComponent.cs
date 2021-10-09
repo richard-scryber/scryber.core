@@ -603,14 +603,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("border-dash", Const.PDFStylesNamespace)]
         [PDFDesignable("Dash", Category = "Border", Priority = 3, Type = "Select")]
-        public PDFDash BorderDashPattern
+        public Dash BorderDashPattern
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderDashKey, PDFDash.None);
+                    return this.Style.GetValue(StyleKeys.BorderDashKey, Dash.None);
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {
@@ -882,14 +882,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("stroke-dash", Const.PDFStylesNamespace)]
         [PDFDesignable("Dash", Category = "Stroke", Priority = 3, Type = "Select")]
-        public virtual PDFDash StrokeDashPattern
+        public virtual Dash StrokeDashPattern
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.StrokeDashKey, PDFDash.None);
+                    return this.Style.GetValue(StyleKeys.StrokeDashKey, Dash.None);
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {

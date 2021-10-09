@@ -54,7 +54,7 @@ namespace Scryber.Styles
         public static readonly StyleKey BorderItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleBorder, NOT_INHERITED);
         public static readonly StyleKey<PDFColor> BorderColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemKey);
         public static readonly StyleKey<PDFUnit> BorderCornerRadiusKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"crad", BorderItemKey);
-        public static readonly StyleKey<PDFDash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemKey);
+        public static readonly StyleKey<Dash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemKey);
         public static readonly StyleKey<LineCaps> BorderEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", BorderItemKey);
         public static readonly StyleKey<LineJoin> BorderJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((ObjectType)"join", BorderItemKey);
         public static readonly StyleKey<float> BorderMitreKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"mitr", BorderItemKey);
@@ -68,28 +68,28 @@ namespace Scryber.Styles
         public static readonly StyleKey<PDFColor> BorderTopColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemTopKey);
         public static readonly StyleKey<LineType> BorderTopStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemTopKey);
         public static readonly StyleKey<PDFUnit> BorderTopWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemTopKey);
-        public static readonly StyleKey<PDFDash> BorderTopDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemTopKey);
+        public static readonly StyleKey<Dash> BorderTopDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemTopKey);
 
         //Border Top
         public static readonly StyleKey BorderItemLeftKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleBorderLeft, NOT_INHERITED);
         public static readonly StyleKey<PDFColor> BorderLeftColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemLeftKey);
         public static readonly StyleKey<LineType> BorderLeftStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemLeftKey);
         public static readonly StyleKey<PDFUnit> BorderLeftWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemLeftKey);
-        public static readonly StyleKey<PDFDash> BorderLeftDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemLeftKey);
+        public static readonly StyleKey<Dash> BorderLeftDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemLeftKey);
 
         //Border Top
         public static readonly StyleKey BorderItemBottomKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleBorderBottom, NOT_INHERITED);
         public static readonly StyleKey<PDFColor> BorderBottomColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemBottomKey);
         public static readonly StyleKey<LineType> BorderBottomStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemBottomKey);
         public static readonly StyleKey<PDFUnit> BorderBottomWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemBottomKey);
-        public static readonly StyleKey<PDFDash> BorderBottomDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemBottomKey);
+        public static readonly StyleKey<Dash> BorderBottomDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemBottomKey);
 
         //Border Top
         public static readonly StyleKey BorderItemRightKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleBorderRight, NOT_INHERITED);
         public static readonly StyleKey<PDFColor> BorderRightColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", BorderItemRightKey);
         public static readonly StyleKey<LineType> BorderRightStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemRightKey);
         public static readonly StyleKey<PDFUnit> BorderRightWidthKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"widt", BorderItemRightKey);
-        public static readonly StyleKey<PDFDash> BorderRightDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", BorderItemRightKey);
+        public static readonly StyleKey<Dash> BorderRightDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemRightKey);
 
         // Padding
         public static readonly StyleKey PaddingItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePadding, NOT_INHERITED);
@@ -171,7 +171,7 @@ namespace Scryber.Styles
         //Stroke
         public static readonly StyleKey StrokeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleStroke, INHERITED);
         public static readonly StyleKey<PDFColor> StrokeColorKey = StyleKey.InternalCreateStyleValueKey<PDFColor>((ObjectType)"colr", StrokeItemKey);
-        public static readonly StyleKey<PDFDash> StrokeDashKey = StyleKey.InternalCreateStyleValueKey<PDFDash>((ObjectType)"dash", StrokeItemKey);
+        public static readonly StyleKey<Dash> StrokeDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", StrokeItemKey);
         public static readonly StyleKey<LineCaps> StrokeEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", StrokeItemKey);
         public static readonly StyleKey<LineJoin> StrokeJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((ObjectType)"join", StrokeItemKey);
         public static readonly StyleKey<float> StrokeMitreKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"mitr", StrokeItemKey);

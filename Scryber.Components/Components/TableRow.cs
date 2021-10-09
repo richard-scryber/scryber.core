@@ -188,14 +188,14 @@ namespace Scryber.Components
         /// Gets or sets the border dash pattern of this component
         /// </summary>
         [PDFAttribute("border-dash", Const.PDFStylesNamespace)]
-        public PDFDash BorderDashPattern
+        public Dash BorderDashPattern
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderDashKey, PDFDash.None);
+                    return this.Style.GetValue(StyleKeys.BorderDashKey, Dash.None);
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {
@@ -430,14 +430,14 @@ namespace Scryber.Components
         /// Gets or sets the Stroke dash pattern of this component
         /// </summary>
         [PDFAttribute("stroke-dash", Const.PDFStylesNamespace)]
-        public PDFDash StrokeDashPattern
+        public Dash StrokeDashPattern
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.StrokeDashKey, PDFDash.None);
+                    return this.Style.GetValue(StyleKeys.StrokeDashKey, Dash.None);
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {

@@ -3,17 +3,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber.PDF.Native;
 using System.CodeDom;
+using Scryber.Styles.Parsing.Typed;
 
 namespace Scryber.Core.UnitTests.Drawing
 {
     
     
     /// <summary>
-    ///This is a test class for PDFDash_Test and is intended
-    ///to contain all PDFDash_Test Unit Tests
+    ///This is a test class for Dash_Test and is intended
+    ///to contain all Dash_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFDash_Test
+    public class Dash_Test
     {
 
 
@@ -35,47 +36,19 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+        
 
 
         /// <summary>
-        ///A test for PDFDash Constructor
+        ///A test for Dash Constructor
         ///</summary>
         [TestMethod()]
         [TestCategory("Graphics")]
-        public void PDFDashConstructor_Test()
+        public void DashConstructor_Test()
         {
-            PDFNumber[] pattern = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0 };
-            PDFNumber len = (PDFNumber)3.0;
-            PDFDash target = new PDFDash(pattern, len);
+            int[] pattern = new int[] { 1, 2 };
+            int len = 3;
+            Dash target = new Dash(pattern, len);
 
             Assert.IsNotNull(target.Pattern);
             Assert.AreEqual(target.Pattern.Length, 2);
@@ -86,34 +59,34 @@ namespace Scryber.Core.UnitTests.Drawing
         }
 
         /// <summary>
-        ///A test for PDFDash Constructor
+        ///A test for Dash Constructor
         ///</summary>
         [TestMethod()]
         [TestCategory("Graphics")]
-        public void PDFDashConstructor_Test1()
+        public void DashConstructor_Test1()
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
             
             Assert.IsNotNull(target.Pattern);
             Assert.AreEqual(target.Pattern.Length, 2);
-            Assert.AreEqual(target.Pattern[0], (PDFNumber)pattern[0]);
-            Assert.AreEqual(target.Pattern[1], (PDFNumber)pattern[1]);
-            Assert.AreEqual(target.Phase, (PDFNumber)len);
+            Assert.AreEqual(target.Pattern[0], pattern[0]);
+            Assert.AreEqual(target.Pattern[1], pattern[1]);
+            Assert.AreEqual(target.Phase, len);
         }
 
         /// <summary>
-        ///A test for PDFDash Constructor
+        ///A test for Dash Constructor
         ///</summary>
         [TestMethod()]
         [TestCategory("Graphics")]
-        public void PDFDashConstructor_Test2()
+        public void DashConstructor_Test2()
         {
-            PDFDash target = new PDFDash(); //empty constructor - should result in [] 0 - solid line
+            Dash target = new Dash(); //empty constructor - should result in [] 0 - solid line
             Assert.IsNotNull(target.Pattern);
             Assert.AreEqual(target.Pattern.Length, 0);
-            Assert.AreEqual(target.Phase, (PDFNumber)0);
+            Assert.AreEqual(target.Phase, 0);
         }
 
         
@@ -127,7 +100,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
 
             object obj = target;
             bool expected = true;
@@ -146,31 +119,31 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
 
-            PDFNumber[] pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0 };
-            PDFNumber len2 = (PDFNumber)3.0;
-            PDFDash target2 = new PDFDash(pattern2, len2);
+            int[] pattern2 = new int[] { 1, 2 };
+            int len2 = 3;
+            Dash target2 = new Dash(pattern2, len2);
 
             bool actual;
             actual = target.Equals(target2);
             Assert.IsTrue(actual);
 
-            pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0 };
-            len2 = (PDFNumber)4.0; // changed phase
-            target2 = new PDFDash(pattern2, len2);
+            pattern2 = new int[] { 1, 2 };
+            len2 = 4; // changed phase
+            target2 = new Dash(pattern2, len2);
             actual = target.Equals(target2);
             Assert.IsFalse(actual);
 
-            pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)1.0 }; //changed number
-            len2 = (PDFNumber)3.0;
-            target2 = new PDFDash(pattern2, len2);
+            pattern2 = new int[] { 1, 1 }; //changed number
+            len2 = 3;
+            target2 = new Dash(pattern2, len2);
             actual = target.Equals(target2);
             Assert.IsFalse(actual);
 
-            pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0, (PDFNumber)3.0 }; // Added number
-            len2 = (PDFNumber)3.0;
-            target2 = new PDFDash(pattern2, len2);
+            pattern2 = new int[] { 1, 2, 3 }; // Added number
+            len2 = 3;
+            target2 = new Dash(pattern2, len2);
             actual = target.Equals(target2);
             Assert.IsFalse(actual);
         }
@@ -184,11 +157,11 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
 
-            PDFNumber[] pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0 };
-            PDFNumber len2 = (PDFNumber)3.0;
-            PDFDash target2 = new PDFDash(pattern2, len2);
+            int[] pattern2 = new int[] { 1, 2 };
+            int len2 = 3;
+            Dash target2 = new Dash(pattern2, len2);
 
             int expected = target.GetHashCode();
             int actual = target.GetHashCode();
@@ -197,21 +170,21 @@ namespace Scryber.Core.UnitTests.Drawing
             actual = target2.GetHashCode();
             Assert.AreEqual(expected, actual);
 
-            pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)1.0 }; //changed number
-            len2 = (PDFNumber)3.0;
-            target2 = new PDFDash(pattern2, len2);
+            pattern2 = new int[] { 1, 1 }; //changed number
+            len2 = 3;
+            target2 = new Dash(pattern2, len2);
             actual = target2.GetHashCode();
             Assert.AreNotEqual(actual, expected);
 
-            pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0 };
-            len2 = (PDFNumber)4.0; //changed number
-            target2 = new PDFDash(pattern2, len2);
+            pattern2 = new int[] { 1, 2 };
+            len2 = 4; //changed number
+            target2 = new Dash(pattern2, len2);
             actual = target2.GetHashCode();
             Assert.AreNotEqual(actual, expected);
 
-            pattern2 = new PDFNumber[] { (PDFNumber)1.0, (PDFNumber)2.0, (PDFNumber)3.0 };
-            len2 = (PDFNumber)3.0;
-            target2 = new PDFDash(pattern2, len2);
+            pattern2 = new int[] { 1, 2, 3 };
+            len2 = 3;
+            target2 = new Dash(pattern2, len2);
             actual = target2.GetHashCode();
             Assert.AreNotEqual(actual, expected);
         }
@@ -226,18 +199,32 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Parse_Test()
         {
             string dashpattern = "[1, 2] 3"; 
-            PDFDash actual = PDFDash.Parse(dashpattern);
+            Dash actual = Dash.Parse(dashpattern);
             
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash expected = new PDFDash(pattern, len);
+            Dash expected = new Dash(pattern, len);
 
             Assert.AreEqual(expected, actual);
 
             dashpattern = "[1 3]3"; 
-            actual = PDFDash.Parse(dashpattern);
+            actual = Dash.Parse(dashpattern);
 
             Assert.AreNotEqual(expected, actual);
+
+            dashpattern = "dot";
+            actual = Dash.Parse(dashpattern);
+
+            expected = Dashes.Dot;
+
+            Assert.AreEqual(expected, actual);
+
+            dashpattern = "1 3"; // no phase, no brakets
+
+            actual = Dash.Parse(dashpattern);
+            expected = new Dash(new int[] { 1, 3 }, 4);
+
+            Assert.AreEqual(expected, actual);
         }
 
         
@@ -251,7 +238,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
 
             string expected = "[1 2] 3"; 
             string actual;
@@ -267,13 +254,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void None_Test()
         {
-            PDFDash actual;
-            actual = PDFDash.None;
+            Dash actual;
+            actual = Dash.None;
             //Should be empty dash - [] 0;
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Pattern);
             Assert.AreEqual(actual.Pattern.Length, 0);
-            Assert.AreEqual(actual.Phase, (PDFNumber)0);
+            Assert.AreEqual(actual.Phase, 0);
         }
 
         /// <summary>
@@ -285,12 +272,12 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
             
             Assert.AreEqual(target.Pattern.Length, pattern.Length);
             for (int i = 0; i < pattern.Length; i++)
             {
-                Assert.AreEqual(target.Pattern[i], (PDFNumber)pattern[i]);
+                Assert.AreEqual(target.Pattern[i], pattern[i]);
             }
             
         }
@@ -304,9 +291,9 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             int[] pattern = new int[] { 1, 2 };
             int len = 3;
-            PDFDash target = new PDFDash(pattern, len);
+            Dash target = new Dash(pattern, len);
 
-            Assert.AreEqual(target.Phase, (PDFNumber)len);
+            Assert.AreEqual(target.Phase, len);
         }
     }
 }

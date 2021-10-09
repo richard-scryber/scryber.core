@@ -136,7 +136,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Dash
 
-            PDFDash dash = new PDFDash(new int[] { 4, 5, 6 }, 10);
+            Dash dash = new Dash(new int[] { 4, 5, 6 }, 10);
             expected = new PDFDashPen(dash);
             ((PDFSolidPen)expected).Color = PDFColors.Lime;
             expected.Width = 8;
@@ -215,27 +215,27 @@ namespace Scryber.Core.UnitTests.Styles
             
             //Default
 
-            PDFDash expected = PDFDash.None;
-            PDFDash actual = target.Dash;
+            Dash expected = Dash.None;
+            Dash actual = target.Dash;
             Assert.AreEqual(expected, actual);
 
             // Set value
 
-            expected = new PDFDash(new int[] { 1, 2, 3 }, 7);
+            expected = new Dash(new int[] { 1, 2, 3 }, 7);
             target.Dash = expected;
             actual = target.Dash;
             Assert.AreEqual(expected, actual);
 
             //Change Value
 
-            expected = new PDFDash(new int[] { 2, 3, 4 }, 10);
+            expected = new Dash(new int[] { 2, 3, 4 }, 10);
             target.Dash = expected;
             actual = target.Dash;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFDash.None;
+            expected = Dash.None;
             target.RemoveDash();
             actual = target.Dash;
             Assert.AreEqual(expected, actual);
@@ -337,7 +337,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.LineStyle);
 
             //With dash - should be dashed
-            target.Dash = new PDFDash(new int[] { 2, 3, 4 }, 10);
+            target.Dash = new Dash(new int[] { 2, 3, 4 }, 10);
             expected = LineType.Dash;
             Assert.AreEqual(expected, target.LineStyle);
             

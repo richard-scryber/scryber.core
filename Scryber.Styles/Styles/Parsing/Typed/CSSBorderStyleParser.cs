@@ -9,19 +9,19 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSBorderStyleParser : CSSEnumStyleParser<LineType>
     {
-        public static readonly PDFDash DottedDashPattern = new PDFDash(new int[] { 2 }, 0);
-        public static readonly PDFDash DashedDashPattern = new PDFDash(new int[] { 8 }, 0);
+        public static readonly Dash DottedDashPattern = new Dash(new int[] { 2 }, 0);
+        public static readonly Dash DashedDashPattern = new Dash(new int[] { 8 }, 0);
 
-        private StyleKey<PDFDash> _dash;
+        private StyleKey<Dash> _dash;
 
-        protected StyleKey<PDFDash> DashKey { get { return this._dash; } }
+        protected StyleKey<Dash> DashKey { get { return this._dash; } }
 
         public CSSBorderStyleParser()
             : this(CSSStyleItems.BorderStyle, StyleKeys.BorderStyleKey, StyleKeys.BorderDashKey)
         {
         }
 
-        public CSSBorderStyleParser(string attr, StyleKey<LineType> style, StyleKey<PDFDash> dash)
+        public CSSBorderStyleParser(string attr, StyleKey<LineType> style, StyleKey<Dash> dash)
             : base(attr, style)
         {
             this._dash = dash;
@@ -48,7 +48,7 @@ namespace Scryber.Styles.Parsing.Typed
             else
             {
                 var str = value.ToString();
-                PDFDash dash;
+                Dash dash;
                 LineType type;
 
                 if (TryGetLineStyleFromString(str, out type, out dash))
@@ -67,7 +67,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        public static bool TryGetLineStyleFromString(string current, out LineType converted, out PDFDash dash)
+        public static bool TryGetLineStyleFromString(string current, out LineType converted, out Dash dash)
         {
             bool result = false;
             CSSBorder parsed;

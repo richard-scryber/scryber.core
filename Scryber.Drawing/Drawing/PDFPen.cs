@@ -234,9 +234,9 @@ namespace Scryber.Drawing
             }
         }
 
-        private PDFDash _dash;
+        private Dash _dash;
 
-        public PDFDash Dash
+        public Dash Dash
         {
             get { return _dash; }
             set 
@@ -249,12 +249,12 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFDashPen(PDFDash dash)
+        public PDFDashPen(Dash dash)
         {
             this.Dash = dash;
         }
 
-        public PDFDashPen(PDFDash dash, PDFColor color, PDFUnit width)
+        public PDFDashPen(Dash dash, PDFColor color, PDFUnit width)
             : base(color, width)
         {
             this.Dash = dash;

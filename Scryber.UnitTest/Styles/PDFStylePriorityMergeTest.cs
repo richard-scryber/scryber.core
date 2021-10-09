@@ -63,7 +63,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by .red
             defn.Border.Width = 1;
             defn.Border.LineStyle = LineType.Dash; //Overriden by doc:Div.red
-            defn.Border.Dash = PDFDashes.Dot;
+            defn.Border.Dash = Dashes.Dot;
             doc.Styles.Add(defn);
 
 
@@ -117,7 +117,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.Border.Color = (PDFColor)"#0000FF"; //Overriden by .red
             defn.Border.Width = 1;
             defn.Border.LineStyle = LineType.Dash; //Overriden by doc:Div.red
-            defn.Border.Dash = PDFDashes.Dot;
+            defn.Border.Dash = Dashes.Dot;
             doc.Styles.Add(defn);
 
 

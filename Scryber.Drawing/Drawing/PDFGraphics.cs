@@ -360,10 +360,10 @@ namespace Scryber.Drawing
             this.Writer.WriteOpCodeS(PDFOpCode.GraphLineWidth, width.ToPoints().RealValue);
         }
 
-        public void RenderLineDash(PDFDash dash)
+        public void RenderLineDash(Dash dash)
         {
             this.Writer.WriteArrayNumberEntries(true, dash.Pattern);
-            this.Writer.WriteOpCodeS(PDFOpCode.GraphDashPattern, dash.Phase);
+            this.Writer.WriteOpCodeS(PDFOpCode.GraphDashPattern, (PDFNumber)dash.Phase);
         }
 
         public void RenderLineJoin(LineJoin linejoin)

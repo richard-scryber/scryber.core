@@ -34,7 +34,7 @@ namespace Scryber.Styles.Parsing.Typed
 
                     if (all.Count > 0)
                     {
-                        style.SetValue(StyleKeys.StrokeDashKey, new PDFDash(all.ToArray(), 0));
+                        style.SetValue(StyleKeys.StrokeDashKey, new Dash(all.ToArray(), 0));
                         return true;
                     }
                     else
@@ -45,14 +45,14 @@ namespace Scryber.Styles.Parsing.Typed
                 return false;
         }
 
-        protected bool DoConvertDashes(StyleBase style, object value, out PDFDash dash)
+        protected bool DoConvertDashes(StyleBase style, object value, out Dash dash)
         {
             if(null == value)
             {
                 dash = null;
                 return false;
             }
-            else if(value is PDFDash d)
+            else if(value is Dash d)
             {
                 dash = d;
                 return true;
@@ -67,7 +67,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        public static bool TryParseDashes(string all, out PDFDash dash)
+        public static bool TryParseDashes(string all, out Dash dash)
         {
             if(string.IsNullOrEmpty(all))
             {
@@ -83,12 +83,12 @@ namespace Scryber.Styles.Parsing.Typed
                     if (ParseInteger(item, out int i))
                         parsed.Add(i);
                 }
-                dash = new PDFDash(parsed.ToArray(), 0);
+                dash = new Dash(parsed.ToArray(), 0);
                 return true;
             }
             else if(ParseInteger(all, out int i))
             {
-                dash = new PDFDash(new int[] { i }, 0);
+                dash = new Dash(new int[] { i }, 0);
                 return true;
             }
             else

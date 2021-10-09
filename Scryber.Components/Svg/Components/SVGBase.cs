@@ -79,7 +79,7 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("stroke-dasharray")]
-        public override PDFDash StrokeDashPattern
+        public override Dash StrokeDashPattern
         {
             get => base.StrokeDashPattern;
             set => base.StrokeDashPattern = value;

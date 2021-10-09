@@ -42,7 +42,7 @@ namespace Scryber.Styles
                 LineType val;
                 if (this.TryGetValue(StyleKeys.StrokeStyleKey, out val))
                     return val;
-                else if (this.IsDefined(StyleKeys.StrokeDashKey) && this.Dash != PDFDash.None)
+                else if (this.IsDefined(StyleKeys.StrokeDashKey) && this.Dash != Dash.None)
                     return LineType.Dash;
                 else if (this.IsDefined(StyleKeys.StrokeColorKey))
                     return LineType.Solid;
@@ -114,15 +114,15 @@ namespace Scryber.Styles
         #region public PDFDash Dash {get;set;} + RemoveDash()
 
         [PDFAttribute("dash")]
-        public PDFDash Dash
+        public Dash Dash
         {
             get
             {
-                PDFDash dash;
+                Dash dash;
                 if (this.TryGetValue(StyleKeys.StrokeDashKey, out dash))
                     return dash;
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {

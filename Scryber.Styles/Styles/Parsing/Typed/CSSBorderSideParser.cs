@@ -14,9 +14,9 @@ namespace Scryber.Styles.Parsing.Typed
 
         private StyleKey<PDFColor> _color;
         private StyleKey<LineType> _style;
-        private StyleKey<PDFDash> _dash;
+        private StyleKey<Dash> _dash;
 
-        public CSSBorderSideParser(string cssName, StyleKey<PDFUnit> width, StyleKey<PDFColor> color, StyleKey<LineType> style, StyleKey<PDFDash> dash)
+        public CSSBorderSideParser(string cssName, StyleKey<PDFUnit> width, StyleKey<PDFColor> color, StyleKey<LineType> style, StyleKey<Dash> dash)
             : base(cssName)
         {
             this._width = width;
@@ -77,7 +77,7 @@ namespace Scryber.Styles.Parsing.Typed
                 else
                 {
                     LineType line;
-                    PDFDash dash;
+                    Dash dash;
 
                     if (CSSBorderStyleParser.TryGetLineStyleFromString(reader.CurrentTextValue, out line, out dash))
                     {
@@ -123,7 +123,7 @@ namespace Scryber.Styles.Parsing.Typed
         protected bool DoConvertBorderStyle(StyleBase onStyle, object value, out LineType result)
         {
             LineType style;
-            PDFDash dash;
+            Dash dash;
 
             if (null == value)
             {

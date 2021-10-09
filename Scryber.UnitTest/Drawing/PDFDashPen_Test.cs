@@ -65,7 +65,7 @@ namespace Scryber.Core.UnitTests.Drawing
         #endregion
 
 
-        PDFDash dash = new PDFDash(new int[] { 1, 2, 0 }, 4);
+        Dash dash = new Dash(new int[] { 1, 2, 0 }, 4);
 
         /// <summary>
         ///A test for PDFDashPen Constructor
@@ -89,12 +89,12 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Dash_Test()
         {
             PDFDashPen target = new PDFDashPen(dash);
-            PDFDash expected = dash;
-            PDFDash actual;
+            Dash expected = dash;
+            Dash actual;
             actual = target.Dash;
             Assert.AreEqual(actual, expected);
 
-            expected = new PDFDash(new int[] { 1, 2, 5 }, 4);
+            expected = new Dash(new int[] { 1, 2, 5 }, 4);
             target.Dash = expected;
 
             Assert.AreEqual(expected, target.Dash);

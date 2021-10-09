@@ -101,7 +101,7 @@ namespace Scryber.Styles
                 LineType val;
                 if (this.TryGetValue(StyleKeys.BorderStyleKey,out val))
                     return val;
-                else if (this.IsDefined(StyleKeys.BorderDashKey) && this.Dash != PDFDash.None)
+                else if (this.IsDefined(StyleKeys.BorderDashKey) && this.Dash != Dash.None)
                     return LineType.Dash;
                 else if (this.IsDefined(StyleKeys.BorderColorKey))
                     return LineType.Solid;
@@ -177,15 +177,15 @@ namespace Scryber.Styles
         #region public PDFDash Dash {get;set;} + RemoveDash()
 
         [PDFAttribute("dash")]
-        public PDFDash Dash
+        public Dash Dash
         {
             get
             {
-                PDFDash dash;
+                Dash dash;
                 if (this.TryGetValue(StyleKeys.BorderDashKey, out dash))
                     return dash;
                 else
-                    return PDFDash.None;
+                    return Dash.None;
             }
             set
             {
