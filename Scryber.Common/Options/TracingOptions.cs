@@ -19,7 +19,7 @@ namespace Scryber.Options
 
         private Scryber.IPDFTraceLogFactory[] _factories;
 
-        public Scryber.PDFTraceLog GetTraceLog()
+        public Scryber.TraceLog GetTraceLog()
         {
             if(null == _factories)
             {
@@ -44,7 +44,7 @@ namespace Scryber.Options
                 return _factories[0].CreateLog(this.TraceLevel, Loggers[0].Name);
             else
             {
-                List<PDFTraceLog> instances = new List<PDFTraceLog>();
+                List<TraceLog> instances = new List<TraceLog>();
                 for(var i = 0; i < _factories.Length; i++)
                 {
                     instances.Add(_factories[i].CreateLog(this.TraceLevel, Loggers[i].Name));

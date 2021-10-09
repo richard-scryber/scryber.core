@@ -12,7 +12,7 @@ namespace Scryber.Styles.Parsing
         private CSSStyleParser _owner;
         private StyleBase _curr;
         private PDFContextBase _context;
-        private PDFTraceLog _log;
+        private TraceLog _log;
 
         public PDFContextBase Context
         {

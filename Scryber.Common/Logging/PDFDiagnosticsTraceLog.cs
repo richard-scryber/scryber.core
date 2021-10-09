@@ -26,7 +26,7 @@ namespace Scryber.Logging
     /// <summary>
     /// A TraceLog implementation that writes to System.Diagnostics.Trace
     /// </summary>
-    public class DiagnosticsTraceLog : PDFTraceLog
+    public class DiagnosticsTraceLog : TraceLog
     {
         public DiagnosticsTraceLog(TraceRecordLevel level, string name)
             : base(level, name, "   ")
@@ -92,7 +92,7 @@ namespace Scryber.Logging
     public class PDFDiagnoticsTraceLogFactory : IPDFTraceLogFactory
     {
 
-        public PDFTraceLog CreateLog(TraceRecordLevel level, string name)
+        public TraceLog CreateLog(TraceRecordLevel level, string name)
         {
             return new DiagnosticsTraceLog(level, name);
         }

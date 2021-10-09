@@ -116,7 +116,7 @@ namespace Scryber.PDF.Native
         /// Allows the instance to build any required data and perform and initialization.
         /// </summary>
         /// <param name="log"></param>
-        protected abstract void InitData(PDFTraceLog log);
+        protected abstract void InitData(TraceLog log);
 
         //
         // factory method
@@ -132,7 +132,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="seekableStream"></param>
         /// <returns></returns>
-        public static PDFReader Create(System.IO.Stream seekableStream, PDFTraceLog log)
+        public static PDFReader Create(System.IO.Stream seekableStream, TraceLog log)
         {
             if (seekableStream.CanSeek == false)
                 throw new ArgumentException("Cannot read a PDF File from a non-seekable stream");
@@ -294,7 +294,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="ownStream"></param>
-        internal PDFReader14(System.IO.Stream stream, bool ownStream, PDFTraceLog log)
+        internal PDFReader14(System.IO.Stream stream, bool ownStream, TraceLog log)
         {
             this._innerStream = stream;
             this._ownsstream = ownStream;
@@ -371,7 +371,7 @@ namespace Scryber.PDF.Native
         /// <summary>
         /// Initializes the known PDF file data such as trailers, xref tables and catalogs
         /// </summary>
-        protected override void InitData(PDFTraceLog log)
+        protected override void InitData(TraceLog log)
         {
             try
             {

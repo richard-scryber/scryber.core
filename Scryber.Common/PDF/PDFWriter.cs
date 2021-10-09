@@ -115,9 +115,9 @@ namespace Scryber.PDF
 
         #region protected PDFTraceLog TraceLog
 
-        private PDFTraceLog _log;
+        private TraceLog _log;
 
-        protected PDFTraceLog TraceLog
+        protected TraceLog TraceLog
         {
             get { return _log; }
         }
@@ -213,7 +213,7 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="stream">The underlying base stream</param>
         /// <param name="table">The XRef table to use</param>
-        protected PDFWriter(Stream stream, PDFTraceLog log)
+        protected PDFWriter(Stream stream, TraceLog log)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");

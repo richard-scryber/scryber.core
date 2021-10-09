@@ -75,7 +75,7 @@ namespace Scryber.Text
             this.Dispose(false);
         }
 
-        public static PDFTextReader Create(string text, TextFormat format, bool preserveWhitespace, PDFTraceLog log)
+        public static PDFTextReader Create(string text, TextFormat format, bool preserveWhitespace, TraceLog log)
         {
             switch (format)
             {

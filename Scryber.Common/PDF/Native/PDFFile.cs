@@ -37,7 +37,7 @@ namespace Scryber.PDF.Native
         #region ivars
 
         private PDFReader _reader;
-        private PDFTraceLog _log;
+        private TraceLog _log;
         private System.IO.Stream _innerStream;
         private PDFObjectRef _pageTree;
         private bool _canAppend;
@@ -418,7 +418,7 @@ namespace Scryber.PDF.Native
         /// <param name="path"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static PDFFile Load(string path, PDFTraceLog log)
+        public static PDFFile Load(string path, TraceLog log)
         {
             if (log.ShouldLog(TraceLevel.Message))
                 log.Begin(TraceLevel.Message, PDFFileLogCategory, "Creating a new PDFFile to read the existing data from a file at path '" + path + "'");
@@ -447,7 +447,7 @@ namespace Scryber.PDF.Native
         /// <param name="stream"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static PDFFile Load(System.IO.Stream stream, PDFTraceLog log)
+        public static PDFFile Load(System.IO.Stream stream, TraceLog log)
         {
             if (log.ShouldLog(TraceLevel.Message))
                 log.Begin(TraceLevel.Message, PDFFileLogCategory, "Creating a new PDFFile to read the existing data from a stream");

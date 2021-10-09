@@ -30,7 +30,7 @@ namespace Scryber.Logging
     /// </summary>
     #region public class PDFCollectorTraceLog : PDFTraceLog, IEnumerable<PDFCollectorTraceLogEntry>
 
-    public class PDFCollectorTraceLog : PDFTraceLog, IEnumerable<PDFCollectorTraceLogEntry>
+    public class PDFCollectorTraceLog : TraceLog, IEnumerable<PDFCollectorTraceLogEntry>
     {
 
         private List<PDFCollectorTraceLogEntry> _entries;
@@ -237,7 +237,7 @@ namespace Scryber.Logging
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        public PDFTraceLog CreateLog(TraceRecordLevel level, string name)
+        public TraceLog CreateLog(TraceRecordLevel level, string name)
         {
             return new PDFCollectorTraceLog(level, name, true);
         }

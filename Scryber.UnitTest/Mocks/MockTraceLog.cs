@@ -8,7 +8,7 @@ namespace Scryber.UnitTests.Mocks
         {
         }
 
-        public PDFTraceLog CreateLog(TraceRecordLevel level, string name)
+        public TraceLog CreateLog(TraceRecordLevel level, string name)
         {
             return new Scryber.Logging.DoNothingTraceLog(level);
         }
@@ -20,7 +20,7 @@ namespace Scryber.UnitTests.Mocks
         {
         }
 
-        public PDFTraceLog CreateLog(TraceRecordLevel level, string name)
+        public TraceLog CreateLog(TraceRecordLevel level, string name)
         {
             return new Scryber.Logging.DoNothingTraceLog(level);
         }

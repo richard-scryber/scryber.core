@@ -55,7 +55,7 @@ namespace Scryber.PDF
         /// </summary>
         private List<PDFStream> _inuse;
 
-        public PDFWriterPooled14(System.IO.Stream stream, int generation, PDFTraceLog log, Version vers)
+        public PDFWriterPooled14(System.IO.Stream stream, int generation, TraceLog log, Version vers)
             : base(stream, generation, log, vers)
         {
             InitStreamPool(DefaultPoolCount);

@@ -68,7 +68,7 @@ namespace Scryber.Text
         // ctor(s)
         //
 
-        public PDFXMLFragmentReader(string text, bool preserveWhitespace, PDFTraceLog log)
+        public PDFXMLFragmentReader(string text, bool preserveWhitespace, TraceLog log)
         {
             this.InitWithText(text, preserveWhitespace, log);
         }
@@ -100,7 +100,7 @@ namespace Scryber.Text
         /// Initializes the XMLFragmentReader with a string
         /// </summary>
         /// <param name="text"></param>
-        private void InitWithText(string text, bool preserveWhitespace, PDFTraceLog log)
+        private void InitWithText(string text, bool preserveWhitespace, TraceLog log)
         {
             System.Diagnostics.Stopwatch sw = null;
             List<Scryber.Text.PDFTextOp> all = null;

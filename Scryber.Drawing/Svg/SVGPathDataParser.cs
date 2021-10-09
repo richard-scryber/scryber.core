@@ -30,7 +30,7 @@ namespace Scryber.Svg
         Regex operators = new Regex(@"(?=[MZLHVCSQTAmzlhvcsqta])");
         Regex arguments = new Regex(@"[\s,]|(?=-)");
         private bool _strict;
-        private PDFTraceLog _log;
+        private TraceLog _log;
 
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Scryber.Svg
         /// <param name="strict">If true then exceptions will be thrown if commands cannot be parsed or are not supported.
         /// If false then errors will be written to the log instead, and execution continues</param>
         /// <param name="log">The log (if any) to write to</param>
-        public SVGPathDataParser(bool strict, PDFTraceLog log)
+        public SVGPathDataParser(bool strict, TraceLog log)
         {
             this._strict = strict;
             this._log = log == null ? new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off) : log;

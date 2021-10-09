@@ -28,12 +28,12 @@ namespace Scryber.Logging
     /// <summary>
     /// A PDFTraceLog implementation that sends the same message to multiple child logs
     /// </summary>
-    public class CompositeTraceLog : PDFTraceLog
+    public class CompositeTraceLog : TraceLog
     {
 
-        private IEnumerable<PDFTraceLog> _inner;
+        private IEnumerable<TraceLog> _inner;
 
-        public CompositeTraceLog(IEnumerable<PDFTraceLog> entries, string name)
+        public CompositeTraceLog(IEnumerable<TraceLog> entries, string name)
             : base(GetRecordLevelFromEntries(entries), name)
         {
             if (null == entries)
@@ -46,10 +46,10 @@ namespace Scryber.Logging
         /// </summary>
         /// <param name="entries"></param>
         /// <returns></returns>
-        private static TraceRecordLevel GetRecordLevelFromEntries(IEnumerable<PDFTraceLog> entries)
+        private static TraceRecordLevel GetRecordLevelFromEntries(IEnumerable<TraceLog> entries)
         {
             TraceRecordLevel min = TraceRecordLevel.Off;
-            foreach (PDFTraceLog log in entries)
+            foreach (TraceLog log in entries)
             {
                 if (log.RecordLevel < min)
                     min = log.RecordLevel;
@@ -60,18 +60,18 @@ namespace Scryber.Logging
         public override void SetRecordLevel(TraceRecordLevel level)
         {
             base.SetRecordLevel(level);
-            foreach (PDFTraceLog inner in this._inner)
+            foreach (TraceLog inner in this._inner)
             {
                 inner.SetRecordLevel(level);
             }
         }
 
-        public override PDFTraceLog GetLogWithName(string name)
+        public override TraceLog GetLogWithName(string name)
         {
-            PDFTraceLog log = base.GetLogWithName(name);
+            TraceLog log = base.GetLogWithName(name);
             if(null == log)
             {
-                foreach (PDFTraceLog inner in this._inner)
+                foreach (TraceLog inner in this._inner)
                 {
                     log = inner.GetLogWithName(name);
                     if (null != log)
@@ -83,7 +83,7 @@ namespace Scryber.Logging
 
         internal protected override void Record(string inset, TraceLevel level, TimeSpan timestamp, string category, string message, Exception ex)
         {
-            foreach (PDFTraceLog log in _inner)
+            foreach (TraceLog log in _inner)
             {
                 if (log.ShouldLog(level))
                     log.Record(inset, level, timestamp, category, message, ex);

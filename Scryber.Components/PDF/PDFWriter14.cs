@@ -131,7 +131,7 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="log"></param>
-        public PDFWriter14(Stream stream, PDFTraceLog log)
+        public PDFWriter14(Stream stream, TraceLog log)
             : this(stream, 0, log, DefaultVersion)
         {
         }
@@ -147,7 +147,7 @@ namespace Scryber.PDF
         /// <param name="gen"></param>
         /// <param name="log"></param>
         /// <param name="vers"></param>
-        public PDFWriter14(Stream stream, int gen, PDFTraceLog log, Version vers)
+        public PDFWriter14(Stream stream, int gen, TraceLog log, Version vers)
             : base(stream, log)
         {
             this._docvers = vers;

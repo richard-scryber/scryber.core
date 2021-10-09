@@ -30,7 +30,7 @@ namespace Scryber.Styles.Parsing
             private set;
         }
 
-        private PDFTraceLog _log;
+        private TraceLog _log;
 
         public CSSStyleParser(string content, PDFContextBase context)
         {

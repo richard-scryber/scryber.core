@@ -26,7 +26,7 @@ namespace Scryber.Logging
     /// <summary>
     /// A PDFTraceLog implementation that actually does nothing
     /// </summary>
-    public class DoNothingTraceLog : PDFTraceLog
+    public class DoNothingTraceLog : TraceLog
     {
         public DoNothingTraceLog(TraceRecordLevel level)
             : base(level, string.Empty)

@@ -881,7 +881,7 @@ namespace Scryber.Components
 
             if (modified)
             {
-                PDFTraceLog log = this.Document.TraceLog;
+                TraceLog log = this.Document.TraceLog;
                 if (log.ShouldLog(TraceLevel.Message))
                     log.Add(TraceLevel.Verbose, "PDFTableRow", "Removed all unsupported Margins, Padding and Postion style items that are not supported on a table row");
             }

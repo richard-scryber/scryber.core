@@ -9,12 +9,12 @@ namespace Scryber.PDF.Native
     internal class PDFReader17 : PDFReader14
     {
 
-        public PDFReader17(System.IO.Stream stream, bool ownsStream, PDFTraceLog log) 
+        public PDFReader17(System.IO.Stream stream, bool ownsStream, TraceLog log) 
             : base(stream, ownsStream, log)
         {
         }
 
-        protected override void InitData(PDFTraceLog log)
+        protected override void InitData(TraceLog log)
         {
             this.Searcher.Position = this.Searcher.Length;
             PDFFileRange eofPos = AssertFoundRange(Searcher.MatchBackwardString(EndOfFileMarker), EndOfFileMarker);

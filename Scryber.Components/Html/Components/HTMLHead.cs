@@ -146,7 +146,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected void ParseSecurityType(string content, DocumentPermissions permissions, PDFTraceLog log)
+        protected void ParseSecurityType(string content, DocumentPermissions permissions, TraceLog log)
         {
             if (!string.IsNullOrEmpty(content))
             {
@@ -174,7 +174,7 @@ namespace Scryber.Html.Components
 
         private static readonly char[] _splits = new char[] { ' ', ',' };
 
-        protected void ParseRestrictions(string content, DocumentPermissions permissions, PDFTraceLog log)
+        protected void ParseRestrictions(string content, DocumentPermissions permissions, TraceLog log)
         {
             if (string.IsNullOrEmpty(content))
                 return;
