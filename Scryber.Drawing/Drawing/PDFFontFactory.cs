@@ -620,7 +620,7 @@ namespace Scryber.Drawing
             Scryber.Drawing.FontStyle fs = font.FontStyle;
             int weight = font.FontWeight;
 
-            PDFFontSelector selector = font.Selector;
+            FontSelector selector = font.Selector;
 
             while (null != selector)
             {
@@ -1488,14 +1488,14 @@ namespace Scryber.Drawing
         // PDFFontSource ensure methods
         //
 
-        public static bool TryEnsureFont(IComponent mapper, PDFContextBase context, PDFFontSource source, string familyName, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
+        public static bool TryEnsureFont(IComponent mapper, PDFContextBase context, FontSource source, string familyName, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
         {
             AssertInitialized();
 
             bool found = false;
             definition = null;
 
-            PDFFontSource curr = source;
+            FontSource curr = source;
             
             while (null != curr)
             {

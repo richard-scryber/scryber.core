@@ -397,36 +397,36 @@ body.grey div.reverse{
         {
             string sample = "url(https://somewebsite.com/path/to/font.woff)";
 
-            PDFFontSource parsed;
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            FontSource parsed;
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("https://somewebsite.com/path/to/font.woff", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
 
             sample = "url(path/to/font.woff)";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("path/to/font.woff", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
 
             sample = "url(path/to/font.woff) format(\"woff\")";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("path/to/font.woff", parsed.Source);
             Assert.AreEqual(FontSourceFormat.WOFF, parsed.Format);
 
             sample = "url('path/to/font.woff')";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("path/to/font.woff", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
 
             sample = "url(\"path/to/svgfont.svg#example\")";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("path/to/svgfont.svg#example", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
@@ -434,7 +434,7 @@ body.grey div.reverse{
 
             sample = "url(\"path/to/svgfont.svg#example\") format(\"svg\")";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("path/to/svgfont.svg#example", parsed.Source);
             Assert.AreEqual(FontSourceFormat.SVG, parsed.Format);
@@ -443,14 +443,14 @@ body.grey div.reverse{
 
             sample = "local(font)";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Local, parsed.Type);
             Assert.AreEqual("font", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
 
             sample = "local(some font)";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Local, parsed.Type);
             Assert.AreEqual("some font", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
@@ -458,7 +458,7 @@ body.grey div.reverse{
 
             sample = "local('some font') format(truetype)";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Local, parsed.Type);
             Assert.AreEqual("some font", parsed.Source);
             Assert.AreEqual(FontSourceFormat.TrueType, parsed.Format);
@@ -466,22 +466,22 @@ body.grey div.reverse{
 
             sample = "local(\"some other font\") format(\"opentype\")";
 
-            Assert.IsTrue(PDFFontSource.TryParseOneValue(sample, out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue(sample, out parsed));
             Assert.AreEqual(FontSourceType.Local, parsed.Type);
             Assert.AreEqual("some other font", parsed.Source);
             Assert.AreEqual(FontSourceFormat.OpenType, parsed.Format);
 
             //empty is false
-            Assert.IsFalse(PDFFontSource.TryParseOneValue("", out parsed));
+            Assert.IsFalse(FontSource.TryParseOneValue("", out parsed));
 
             //unbalanced quotes is false
-            Assert.IsFalse(PDFFontSource.TryParseOneValue("local(\"some other font) format(\"opentype\")", out parsed));
+            Assert.IsFalse(FontSource.TryParseOneValue("local(\"some other font) format(\"opentype\")", out parsed));
 
             //Unknown source type is false
-            Assert.IsFalse(PDFFontSource.TryParseOneValue("remote(\"path/to/svgfont.svg#example\") format(\"svg\")", out parsed));
+            Assert.IsFalse(FontSource.TryParseOneValue("remote(\"path/to/svgfont.svg#example\") format(\"svg\")", out parsed));
 
             //Other marker e.g. other is ignored so true
-            Assert.IsTrue(PDFFontSource.TryParseOneValue("url(\"path/to/svgfont.svg#example\") other(\"svg\")", out parsed));
+            Assert.IsTrue(FontSource.TryParseOneValue("url(\"path/to/svgfont.svg#example\") other(\"svg\")", out parsed));
             Assert.AreEqual(FontSourceType.Url, parsed.Type);
             Assert.AreEqual("path/to/svgfont.svg#example", parsed.Source);
             Assert.AreEqual(FontSourceFormat.Default, parsed.Format);
@@ -493,7 +493,7 @@ body.grey div.reverse{
                 url(path/to/font.ttf) format(truetype),
                 url('path/to/font.otf') format(embedded-opentype)";
 
-            Assert.IsTrue(PDFFontSource.TryParse(full, out parsed));
+            Assert.IsTrue(FontSource.TryParse(full, out parsed));
 
             Assert.AreEqual("font", parsed.Source);
             Assert.AreEqual(FontSourceType.Local, parsed.Type);

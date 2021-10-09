@@ -417,28 +417,6 @@ namespace Scryber.PDF.Resources
 
 
 
-        #region OBSELETE public System.Drawing.Font GetSystemFont(float pointsize)
-
-        /// <summary>
-        /// Gets the System.Drawing.Font that represents this PDFFontDefintion
-        /// </summary>
-        /// <param name="pointsize"></param>
-        /// <returns></returns>
-        [Obsolete("Dont use system fonts anymore", true)]
-        public System.Drawing.Font GetSystemFont(float pointsize)
-        {
-            System.Drawing.FontStyle fs = System.Drawing.FontStyle.Regular;
-            if (this.Bold)
-                fs |= System.Drawing.FontStyle.Bold;
-            if (this.Italic)
-                fs |= System.Drawing.FontStyle.Italic;
-
-            System.Drawing.Font f = new System.Drawing.Font(this.WindowsName, pointsize, fs);
-            return f;
-        }
-
-        #endregion
-
         // object overrides
 
         #region public override bool Equals(object obj) + 2 overload
@@ -571,7 +549,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        public PDFFontMetrics GetFontMetrics(PDFUnit fontSize)
+        public FontMetrics GetFontMetrics(PDFUnit fontSize)
         {
             double scale = fontSize.PointsValue / ((double)this.FontUnitsPerEm);
             if (null != this.Descriptor)
@@ -581,7 +559,7 @@ namespace Scryber.PDF.Resources
 
                 double line = ((double)(this.Descriptor.Leading) * scale);
 
-                return new PDFFontMetrics(fontSize.PointsValue, ascent, descent, line);
+                return new FontMetrics(fontSize.PointsValue, ascent, descent, line);
             }
             else if (this.IsStandard)
             {
@@ -589,7 +567,7 @@ namespace Scryber.PDF.Resources
                 double descent = fontSize.PointsValue * 0.25;
                 double line = fontSize.PointsValue * 1.2;
 
-                return new PDFFontMetrics(fontSize.PointsValue, ascent, descent, line);
+                return new FontMetrics(fontSize.PointsValue, ascent, descent, line);
             }
             else
                 throw new InvalidOperationException("The font does not have a descriptor");

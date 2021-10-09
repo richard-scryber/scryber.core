@@ -241,7 +241,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
-            defn.Font.FontFamily = (PDFFontSelector)"Helvetica";
+            defn.Font.FontFamily = (FontSelector)"Helvetica";
             target.Styles.Add(defn);
 
             StyleDefn defn2 = new StyleDefn();
@@ -276,7 +276,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
-            defn.Font.FontFamily = (PDFFontSelector)"Helvetica";
+            defn.Font.FontFamily = (FontSelector)"Helvetica";
             target.Styles.Add(defn);
 
             // same class no type = applied (lower priority)
@@ -298,7 +298,7 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn defn4 = new StyleDefn();
             defn4.AppliedClass = classname;
             defn4.AppliedType = typeof(Image);
-            defn4.Font.FontFamily = (PDFFontSelector)"Symbol";
+            defn4.Font.FontFamily = (FontSelector)"Symbol";
             target.Styles.Add(defn4);
 
 
@@ -313,7 +313,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(PDFColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
             Assert.AreEqual((PDFUnit)10, actual.Border.Width); // from defn
             Assert.AreEqual(3, actual.Columns.ColumnCount); //from defn2 
-            Assert.AreEqual((PDFFontSelector)"Helvetica", actual.Font.FontFamily);
+            Assert.AreEqual((FontSelector)"Helvetica", actual.Font.FontFamily);
         }
 
         /// <summary>

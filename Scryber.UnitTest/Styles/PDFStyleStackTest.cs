@@ -122,7 +122,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             Style root = new Style();
             root.Background.Color = PDFColors.Red; //Not inherited
-            root.Font.FontFamily = (PDFFontSelector)"Symbol"; //Font is inherited
+            root.Font.FontFamily = (FontSelector)"Symbol"; //Font is inherited
             root.Font.FontSize = 20; //Font is inherited
 
             StyleStack target = new StyleStack(root);

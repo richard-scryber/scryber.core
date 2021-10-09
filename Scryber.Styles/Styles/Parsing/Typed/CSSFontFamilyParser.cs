@@ -14,14 +14,14 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
 
-            PDFFontSelector root = null;
-            PDFFontSelector curr = null;
+            FontSelector root = null;
+            FontSelector curr = null;
             bool hasExpr = false;
 
             while (reader.ReadNextValue())
             {
                 string fontfamily = reader.CurrentTextValue.Trim();
-                PDFFontSelector found;
+                FontSelector found;
                 if(IsExpression(fontfamily))
                 {
                     if (null != root)
@@ -56,14 +56,14 @@ namespace Scryber.Styles.Parsing.Typed
 
         }
 
-        protected bool DoConvertFontSelector(StyleBase onStyle, object value, out PDFFontSelector selector)
+        protected bool DoConvertFontSelector(StyleBase onStyle, object value, out FontSelector selector)
         {
             if(null == value)
             {
                 selector = null;
                 return false;
             }
-            else if(value is PDFFontSelector f)
+            else if(value is FontSelector f)
             {
                 selector = f;
                 return true;
@@ -79,7 +79,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        public static bool TryGetActualFontFamily(string fontfamily, out PDFFontSelector found)
+        public static bool TryGetActualFontFamily(string fontfamily, out FontSelector found)
         {
             found = null;
 
@@ -101,7 +101,7 @@ namespace Scryber.Styles.Parsing.Typed
             if (string.IsNullOrEmpty(fontfamily))
                 return false;
 
-            found = new PDFFontSelector(fontfamily);
+            found = new FontSelector(fontfamily);
             return true;
 
         }

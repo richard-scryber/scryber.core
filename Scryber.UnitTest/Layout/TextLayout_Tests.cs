@@ -87,7 +87,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.BackgroundColor = new PDFColor(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.FontFamily = new PDFFontSelector("Optima");
+            pg.FontFamily = new FontSelector("Optima");
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
 
 
@@ -190,7 +190,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.OverflowAction = OverflowAction.NewPage;
             pg.TextLeading = leading;
             pg.FontSize = size;
-            pg.FontFamily = new PDFFontSelector("Optima");
+            pg.FontFamily = new FontSelector("Optima");
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page. " +
@@ -489,7 +489,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.BackgroundColor = new PDFColor(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.FontFamily = new PDFFontSelector("Optima");
+            pg.FontFamily = new FontSelector("Optima");
 
             var span = new Span();
             span.Contents.Add(new TextLiteral("This is a text run that should flow over more than "));
@@ -537,7 +537,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.BackgroundColor = new PDFColor(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.FontFamily = new PDFFontSelector("Optima");
+            pg.FontFamily = new FontSelector("Optima");
 
             var span = new Span();
             span.Contents.Add(new TextLiteral("This is a text run that should flow over more than "));

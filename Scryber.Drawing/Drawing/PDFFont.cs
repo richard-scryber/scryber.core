@@ -31,7 +31,7 @@ namespace Scryber.Drawing
     /// Defines a font family, style attributes and size for outputting text onto a pdf document
     /// </summary>
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class PDFFont : PDFGraphicsAdapter
+    public class PDFFont : IPDFGraphicsAdapter
     {
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace Scryber.Drawing
 
         #region public PDFFontSelector Selector {get; set;}
 
-        private PDFFontSelector _selector;
+        private FontSelector _selector;
 
-        public PDFFontSelector Selector
+        public FontSelector Selector
         {
             get { return this._selector; }
             set 
@@ -87,7 +87,7 @@ namespace Scryber.Drawing
             }
             set 
             {
-                this.Selector = PDFFontSelector.Parse(value);
+                this.Selector = FontSelector.Parse(value);
                 this.ClearResourceFont();
             }
         }
@@ -223,12 +223,12 @@ namespace Scryber.Drawing
         /// <summary>
         /// private ivar to cache the Font Metrics.
         /// </summary>
-        private PDFFontMetrics _cachedmetrics = null;
+        private FontMetrics _cachedmetrics = null;
 
         /// <summary>
         /// Gets the Metrics (ascent, descent etc.) associated with this this font.
         /// </summary>
-        public PDFFontMetrics FontMetrics
+        public FontMetrics FontMetrics
         {
             get
             {
@@ -327,7 +327,7 @@ namespace Scryber.Drawing
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
         public PDFFont(string family, PDFUnit size, int weight, FontStyle style)
-            : this(PDFFontSelector.Parse(family), size, weight, style)
+            : this(FontSelector.Parse(family), size, weight, style)
         {
         }
 
@@ -340,7 +340,7 @@ namespace Scryber.Drawing
         /// <param name="size">The fonts unit size</param>
         /// <param name="style">The fonts style</param>
         /// <param name="isStd">Flag to identify if this is one of the PDF standard fonts.</param>
-        public PDFFont(PDFFontSelector selector, PDFUnit size, int weight, FontStyle style)
+        public PDFFont(FontSelector selector, PDFUnit size, int weight, FontStyle style)
         {
             this._selector = selector ?? throw new ArgumentNullException("The font selector for a PDFFont cannot be null");
             this._size = size;
@@ -433,13 +433,13 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region protected PDFFontMetrics GetFontMetrics()
+        #region protected FontMetrics GetFontMetrics()
 
         /// <summary>
         /// Gets the associated font metrics for the current font
         /// </summary>
         /// <returns>The font metrics for this font</returns>
-        protected PDFFontMetrics GetFontMetrics()
+        protected FontMetrics GetFontMetrics()
         {
             return this._cachedmetrics;
             /*
@@ -453,13 +453,13 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             graphics.SetCurrentFont(this);
             return true;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
         {
             
         }

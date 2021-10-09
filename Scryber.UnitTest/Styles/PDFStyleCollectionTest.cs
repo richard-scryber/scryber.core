@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             defn.Border.Color = PDFColors.Red;
             defn.Border.Width = 10;
-            defn.Font.FontFamily = (PDFFontSelector)"Helvetica";
+            defn.Font.FontFamily = (FontSelector)"Helvetica";
 
             target.Add(defn);
 
@@ -125,7 +125,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(PDFColors.Red, style.Border.Color); //from defn as higher priority
             Assert.AreEqual((PDFUnit)10, style.Border.Width); // from defn (defn2 has no width)
-            Assert.AreEqual((PDFFontSelector)"Helvetica", style.Font.FontFamily); //from defn
+            Assert.AreEqual((FontSelector)"Helvetica", style.Font.FontFamily); //from defn
             Assert.AreEqual(3, style.Columns.ColumnCount); //from defn2 (lower priority but not set on defn)
             Assert.IsFalse(style.IsValueDefined(StyleKeys.StrokeColorKey)); //defn3 does have a stroke, but shoulld not be included
 

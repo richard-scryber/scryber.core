@@ -24,7 +24,7 @@ using System.ComponentModel;
 namespace Scryber.Drawing
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class PDFFontMetrics
+    public class FontMetrics
     {
         private double _emh;
         /// <summary>
@@ -72,7 +72,7 @@ namespace Scryber.Drawing
         }
 
 
-        public PDFFontMetrics(double emheight, double ascent, double descent, double lineheight)
+        public FontMetrics(double emheight, double ascent, double descent, double lineheight)
         {
             this._emh = emheight;
             this._desc = descent;

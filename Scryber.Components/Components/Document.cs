@@ -1005,7 +1005,7 @@ namespace Scryber.Components
 
             Styles.FontStyle fs = new Styles.FontStyle();
             style.StyleItems.Add(fs);
-            fs.FontFamily = (PDFFontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
+            fs.FontFamily = (FontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
             fs.FontSize = new PDFUnit(24.0, PageUnits.Points);
 
 

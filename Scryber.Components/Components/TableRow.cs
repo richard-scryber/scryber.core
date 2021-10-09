@@ -480,7 +480,7 @@ namespace Scryber.Components
         /// Gets or sets the Font Family of this component
         /// </summary>
         [PDFAttribute("font-family", Const.PDFStylesNamespace)]
-        public PDFFontSelector FontFamily
+        public FontSelector FontFamily
         {
             get
             {

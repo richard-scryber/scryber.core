@@ -1067,12 +1067,12 @@ namespace Scryber.Styles
         internal protected virtual PDFFont DoCreateFont(bool force)
         {
             bool hasvalues = false;
-            StyleValue<PDFFontSelector> familyVal;
+            StyleValue<FontSelector> familyVal;
             StyleValue<PDFUnit> sizeVal;
             StyleValue<int> boldVal;
             StyleValue<Drawing.FontStyle> italicVal;
 
-            PDFFontSelector family;
+            FontSelector family;
             PDFUnit size;
             int weight = FontWeights.Regular;
             Drawing.FontStyle style = Drawing.FontStyle.Regular;
@@ -1084,7 +1084,7 @@ namespace Scryber.Styles
                 hasvalues = true;
             }
             else
-                family = new PDFFontSelector(Const.DefaultFontFamily);
+                family = new FontSelector(Const.DefaultFontFamily);
 
             if (this.TryGetValue(StyleKeys.FontSizeKey, out sizeVal))
             {

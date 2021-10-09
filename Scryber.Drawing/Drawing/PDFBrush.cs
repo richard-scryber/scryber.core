@@ -26,11 +26,21 @@ using System.ComponentModel;
 
 namespace Scryber.Drawing
 {
-    public abstract class PDFBrush : PDFGraphicsAdapter
+    public abstract class PDFBrush : IPDFGraphicsAdapter
     {
         public abstract FillType FillStyle {get;}
 
         public PDFBrush UnderBrush { get; set; }
+
+        public virtual void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        {
+            
+        }
+
+        public virtual bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        {
+            return false;
+        }
     }
 
     [TypeConverter(typeof(ExpandableObjectConverter))]

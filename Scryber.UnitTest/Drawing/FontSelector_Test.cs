@@ -10,7 +10,7 @@ using Scryber.Drawing;
 namespace Scryber.Core.UnitTests.Drawing
 {
     [TestClass]
-   public  class PDFFontSelector_Test
+   public  class FontSelector_Test
     {
         private TestContext testContextInstance;
 
@@ -35,7 +35,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ParsingSimple()
         {
             var str = "Gill Sans, Helvetica, Arial";
-            var sel = PDFFontSelector.Parse(str);
+            var sel = FontSelector.Parse(str);
 
             var curr = sel;
             Assert.IsNotNull(curr);
@@ -58,7 +58,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ParsingQuoted()
         {
             var str = "'Gill Sans MT', Helvetica, Arial, sans-serif";
-            var sel = PDFFontSelector.Parse(str);
+            var sel = FontSelector.Parse(str);
 
             var curr = sel;
             Assert.IsNotNull(curr);
@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ParsingDoubleQuotedAndEmpty()
         {
             var str = "\"Gill Sans MT\", Helvetica,, sans-serif ";
-            var sel = PDFFontSelector.Parse(str);
+            var sel = FontSelector.Parse(str);
 
             var curr = sel;
             Assert.IsNotNull(curr);
@@ -106,13 +106,13 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ToStringOverrides()
         {
             var str = "'Gill Sans MT', Gill Sans, Helvetica, Arial, sans-serif";
-            var sel = PDFFontSelector.Parse(str);
+            var sel = FontSelector.Parse(str);
 
             var result = sel.ToString();
             Assert.AreEqual("'Gill Sans MT', 'Gill Sans', Helvetica, Arial, sans-serif", result);
 
             str = "\"Gill Sans MT\", Helvetica,, sans-serif ";
-            sel = PDFFontSelector.Parse(str);
+            sel = FontSelector.Parse(str);
 
             result = sel.ToString();
             Assert.AreEqual("'Gill Sans MT', Helvetica, sans-serif", result);
@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void GetSystemFont()
         {
             var str = "'Gill Sans MT', Gill Sans, Helvetica, Arial, sans-serif";
-            var sel = PDFFontSelector.Parse(str);
+            var sel = FontSelector.Parse(str);
 
             var curr = sel;
             Assert.IsNotNull(curr);

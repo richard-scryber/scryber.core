@@ -140,7 +140,7 @@ namespace Scryber.Styles
 
         //Font
         public static readonly StyleKey FontItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleFont, INHERITED);
-        public static readonly StyleKey<PDFFontSelector> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<PDFFontSelector>((ObjectType)"faml", FontItemKey);
+        public static readonly StyleKey<FontSelector> FontFamilyKey = StyleKey.InternalCreateStyleValueKey<FontSelector>((ObjectType)"faml", FontItemKey);
         public static readonly StyleKey<int> FontWeightKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"weig", FontItemKey);
         public static readonly StyleKey<Drawing.FontStyle> FontStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((ObjectType)"styl", FontItemKey);
         public static readonly StyleKey<PDFUnit> FontSizeKey = StyleKey.InternalCreateStyleValueKey<PDFUnit>((ObjectType)"size", FontItemKey);
@@ -288,7 +288,7 @@ namespace Scryber.Styles
 
         //FontFace
         public static readonly StyleKey FontFaceItemKey = StyleKey.InternalCreateStyleItemKey((ObjectType)"csff", NOT_INHERITED);
-        public static readonly StyleKey<PDFFontSource> FontFaceSrcKey = StyleKey.InternalCreateStyleValueKey<PDFFontSource>((ObjectType)"fsrc", FontFaceItemKey);
+        public static readonly StyleKey<FontSource> FontFaceSrcKey = StyleKey.InternalCreateStyleValueKey<FontSource>((ObjectType)"fsrc", FontFaceItemKey);
         public static readonly StyleKey<string> FontFaceFamilyKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"ffam", FontFaceItemKey);
         public static readonly StyleKey<int> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"fwgt", FontFaceItemKey);
         public static readonly StyleKey<Drawing.FontStyle> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((ObjectType)"fsyl", FontFaceItemKey);

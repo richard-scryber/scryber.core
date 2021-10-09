@@ -14,14 +14,14 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
-            PDFFontSource root = null;
-            PDFFontSource curr = null;
+            FontSource root = null;
+            FontSource curr = null;
             bool hasExpr = false;
 
             while (reader.ReadNextValue(',', ';', true))
             {
                 string src = reader.CurrentTextValue.Trim();
-                PDFFontSource found;
+                FontSource found;
                 if(IsExpression(src))
                 {
                     if (hasExpr)
@@ -60,14 +60,14 @@ namespace Scryber.Styles.Parsing.Typed
                 return false;
         }
 
-        protected bool DoConvertFontSource(StyleBase onstyle, object value, out PDFFontSource source)
+        protected bool DoConvertFontSource(StyleBase onstyle, object value, out FontSource source)
         {
             if(null == value)
             {
                 source = null;
                 return false;
             }
-            else if(value is PDFFontSource src)
+            else if(value is FontSource src)
             {
                 source = src;
                 return true;
@@ -83,9 +83,9 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        private bool TryGetFontSource(string value, out PDFFontSource found)
+        private bool TryGetFontSource(string value, out FontSource found)
         {
-            if (PDFFontSource.TryParseOneValue(value, out found))
+            if (FontSource.TryParseOneValue(value, out found))
                 return true;
             else
                 return false;

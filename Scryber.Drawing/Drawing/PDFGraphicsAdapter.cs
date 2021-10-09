@@ -22,10 +22,5 @@ using System.Text;
 
 namespace Scryber.Drawing
 {
-    public abstract class PDFGraphicsAdapter
-    {
-        public abstract bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds);
-
-        public abstract void ReleaseGraphics(PDFGraphics g, PDFRect bounds);
-    }
+    
 }

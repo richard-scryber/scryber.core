@@ -8,9 +8,9 @@ namespace Scryber.Drawing
     /// <summary>
     /// Defines a specific location and type for a font, and allows a linked list of further sources.
     /// </summary>
-    public class PDFFontSource
+    public class FontSource
     {
-        private PDFFontSource _next;
+        private FontSource _next;
 
         private FontSourceType _type;
         private string _source;
@@ -31,17 +31,17 @@ namespace Scryber.Drawing
             get { return _format; }
         }
 
-        public PDFFontSource Next
+        public FontSource Next
         {
             get { return _next; }
             set { _next = value; }
         }
 
-        public PDFFontSource()
+        public FontSource()
         {
         }
 
-        public PDFFontSource(FontSourceType type, string source, FontSourceFormat format)
+        public FontSource(FontSourceType type, string source, FontSourceFormat format)
         {
             this._type = type;
             this._source = source;
@@ -73,7 +73,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public static bool TryParse(string value, out PDFFontSource parsed)
+        public static bool TryParse(string value, out FontSource parsed)
         {
             parsed = null;
             if (null == value)
@@ -82,8 +82,8 @@ namespace Scryber.Drawing
             if (value.IndexOf(',') > 0)
             {
                 var all = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                PDFFontSource curr = null;
-                PDFFontSource next;
+                FontSource curr = null;
+                FontSource next;
                 foreach (var one in all)
                 {
                     if (TryParseOneValue(one, out next))
@@ -106,7 +106,7 @@ namespace Scryber.Drawing
         }
 
 
-        public static bool TryParseOneValue(string value, out PDFFontSource parsed)
+        public static bool TryParseOneValue(string value, out FontSource parsed)
         {
             parsed = null;
 
@@ -190,7 +190,7 @@ namespace Scryber.Drawing
             }
 
 
-            parsed = new PDFFontSource(type, src, format);
+            parsed = new FontSource(type, src, format);
 
             return true;
 

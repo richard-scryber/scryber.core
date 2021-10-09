@@ -101,7 +101,7 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("font-family")]
-        public override PDFFontSelector FontFamily
+        public override FontSelector FontFamily
         {
             get => base.FontFamily;
             set => base.FontFamily = value;

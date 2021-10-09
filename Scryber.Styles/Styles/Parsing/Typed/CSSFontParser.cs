@@ -125,16 +125,16 @@ namespace Scryber.Styles.Parsing.Typed
 
             //last one is multiple font families
             bool foundFamily = false;
-            PDFFontSelector root = null;
+            FontSelector root = null;
 
             do
             {
                 if (IsExpression(reader.CurrentTextValue))
                     throw new InvalidOperationException("The compound 'font' css selector does not currently support expressions");
 
-                PDFFontSelector selector;
+                FontSelector selector;
 
-                PDFFontSelector curr = null;
+                FontSelector curr = null;
 
                 if (CSSFontFamilyParser.TryGetActualFontFamily(reader.CurrentTextValue, out selector))
                 {

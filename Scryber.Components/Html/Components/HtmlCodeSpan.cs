@@ -14,7 +14,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Font.FontFamily = (PDFFontSelector)"monospace";
+            style.Font.FontFamily = (FontSelector)"monospace";
             return style;
         }
     }

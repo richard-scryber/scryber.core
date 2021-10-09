@@ -26,7 +26,7 @@ namespace Scryber.PDF
             StyleDefn traceSect = new StyleDefn() { AppliedType = typeof(Section) };
             traceSect.Margins.All = 10;
             traceSect.PageStyle.PaperSize = PaperSize.A4;
-            traceSect.Font.FontFamily = (PDFFontSelector)"Helvetica";
+            traceSect.Font.FontFamily = (FontSelector)"Helvetica";
             this.Styles.Add(traceSect);
 
             StyleDefn h1 = new StyleDefn() { AppliedType = typeof(Head1) };

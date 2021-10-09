@@ -117,7 +117,7 @@ namespace Scryber.UnitSamples
                 titleStyle.Size.Height = 300;
                 titleStyle.Font.FontSize = 30;
                 titleStyle.Fill.Color = PDFColors.White;
-                titleStyle.Font.FontFamily = new PDFFontSelector("serif");
+                titleStyle.Font.FontFamily = new FontSelector("serif");
 
 
                 //Define the body style that matches onto the '.body' style class

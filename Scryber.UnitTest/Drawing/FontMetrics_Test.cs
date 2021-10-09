@@ -11,7 +11,7 @@ namespace Scryber.Core.UnitTests.Drawing
     ///to contain all PDFFontMetrics_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFFontMetrics_Test
+    public class FontMetrics_Test
     {
 
 
@@ -33,35 +33,6 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
 
 
         /// <summary>
@@ -69,13 +40,13 @@ namespace Scryber.Core.UnitTests.Drawing
         ///</summary>
         [TestMethod()]
         [TestCategory("Fonts")]
-        public void PDFFontMetricsConstructor_Test()
+        public void FontMetricsConstructor_Test()
         {
             double emheight = 12.7;
             double ascent = 120.34;
             double descent = 12.9;
             double lineheight = 13.6;
-            PDFFontMetrics target = new PDFFontMetrics(emheight, ascent, descent, lineheight);
+            FontMetrics target = new FontMetrics(emheight, ascent, descent, lineheight);
             
 
             Assert.IsNotNull(target);

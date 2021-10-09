@@ -27,7 +27,7 @@ using System.ComponentModel;
 namespace Scryber.Drawing
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public abstract class PDFPen : PDFGraphicsAdapter
+    public abstract class PDFPen : IPDFGraphicsAdapter
     {
         public abstract LineType LineStyle { get;}
 
@@ -116,7 +116,7 @@ namespace Scryber.Drawing
             this.ClearAll();
         }
 
-        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public virtual bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             if (this.IsSet(SetValues.Caps))
                 graphics.RenderLineCap(this.LineCaps);
@@ -132,7 +132,7 @@ namespace Scryber.Drawing
             return true;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public virtual void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
         {
         }
 

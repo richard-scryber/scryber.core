@@ -82,7 +82,7 @@ namespace Scryber.Core.UnitTests.Styles
             col.Add(bor);
 
             Scryber.Styles.FontStyle fnt = new Scryber.Styles.FontStyle();
-            fnt.FontFamily = (PDFFontSelector)"Symbol";
+            fnt.FontFamily = (FontSelector)"Symbol";
             col.Add(fnt);
 
             return col;

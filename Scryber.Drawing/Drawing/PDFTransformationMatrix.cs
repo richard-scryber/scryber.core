@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.Drawing
 {
-    public class PDFTransformationMatrix : PDFGraphicsAdapter, ICloneable
+    public class PDFTransformationMatrix : IPDFGraphicsAdapter, ICloneable
     {
 
         private System.Drawing.Drawing2D.Matrix _matrix;
@@ -200,13 +200,13 @@ namespace Scryber.Drawing
         // graphics adapters
         //
 
-        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
         {
             graphics.SetTransformationMatrix(this, true, true);
             return true;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
         {
             //Do Nothing
         }

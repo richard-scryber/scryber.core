@@ -936,7 +936,7 @@ namespace Scryber.Components
         [PDFAttribute("font-family", Const.PDFStylesNamespace)]
         [PDFDesignable("Family", Category = "Font", Priority = 1, Type = "Select")]
         [PDFJSConvertor("scryber.studio.design.convertors.string_css", JSParams = "\"font-family\"")]
-        public virtual PDFFontSelector FontFamily
+        public virtual FontSelector FontFamily
         {
             get
             {

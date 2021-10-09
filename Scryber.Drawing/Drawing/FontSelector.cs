@@ -11,10 +11,10 @@ namespace Scryber.Drawing
     /// </summary>
     [PDFParsableComponent("font-family")]
     [PDFParsableValue]
-    public class PDFFontSelector
+    public class FontSelector
     {
 
-        private PDFFontSelector _next;
+        private FontSelector _next;
         private string _familyName;
 
         public string FamilyName
@@ -22,7 +22,7 @@ namespace Scryber.Drawing
             get { return this._familyName; }
         }
 
-        public PDFFontSelector Next
+        public FontSelector Next
         {
             get { return this._next; }
             set
@@ -32,16 +32,16 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFFontSelector(string name) : this(name, null)
+        public FontSelector(string name) : this(name, null)
         { }
 
-        public PDFFontSelector(string name, PDFFontSelector next)
+        public FontSelector(string name, FontSelector next)
         {
             this._familyName = name;
             this._next = next;
         }
 
-        private void AssertChain(PDFFontSelector entry)
+        private void AssertChain(FontSelector entry)
         {
             while (null != entry)
             {
@@ -78,22 +78,22 @@ namespace Scryber.Drawing
             }
         }
 
-        public static explicit operator PDFFontSelector(string value)
+        public static explicit operator FontSelector(string value)
         {
-            return PDFFontSelector.Parse(value);
+            return FontSelector.Parse(value);
         }
 
-        public static explicit operator string(PDFFontSelector font)
+        public static explicit operator string(FontSelector font)
         {
             return null == font ? null : font.ToString();
         }
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as PDFFontSelector);
+            return this.Equals(obj as FontSelector);
         }
 
-        public bool Equals(PDFFontSelector selector)
+        public bool Equals(FontSelector selector)
         {
             if (null == selector)
                 return false;
@@ -112,7 +112,7 @@ namespace Scryber.Drawing
 
         }
 
-        public static PDFFontSelector Parse(string value)
+        public static FontSelector Parse(string value)
         {
             if (string.IsNullOrEmpty(value))
                 return null;
@@ -125,8 +125,8 @@ namespace Scryber.Drawing
             }
             else
             {
-                PDFFontSelector root = null;
-                PDFFontSelector curr = null;
+                FontSelector root = null;
+                FontSelector curr = null;
 
                 string[] all = value.Split(',');
 
@@ -151,7 +151,7 @@ namespace Scryber.Drawing
 
 
 
-        private static PDFFontSelector ParseSingle(string value)
+        private static FontSelector ParseSingle(string value)
         {
             value = value.Trim();
             if (string.IsNullOrEmpty(value))
@@ -163,17 +163,17 @@ namespace Scryber.Drawing
                 value = value.Substring(1);
                 if (value.EndsWith('\"'))
                     value = value.Substring(0, value.Length - 1);
-                return new PDFFontSelector(value);
+                return new FontSelector(value);
             }
             else if (value.StartsWith('\''))
             {
                 value = value.Substring(1);
                 if (value.EndsWith('\''))
                     value = value.Substring(0, value.Length - 1);
-                return new PDFFontSelector(value);
+                return new FontSelector(value);
             }
             else
-                return new PDFFontSelector(value);
+                return new FontSelector(value);
         }
 
         

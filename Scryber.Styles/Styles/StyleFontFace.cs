@@ -42,11 +42,11 @@ namespace Scryber.Styles
         #region public string Source {get; set;}
 
         [PDFAttribute("src")]
-        public PDFFontSource Source
+        public FontSource Source
         {
             get
             {
-                PDFFontSource found;
+                FontSource found;
                 if (this._ff.TryGetValue(StyleKeys.FontFaceSrcKey, out found))
                     return found;
                 else
@@ -68,11 +68,11 @@ namespace Scryber.Styles
         #region public string FontFamily {get; set;}
 
         [PDFAttribute("font-family")]
-        public PDFFontSelector FontFamily
+        public FontSelector FontFamily
         {
             get
             {
-                PDFFontSelector found;
+                FontSelector found;
                 if (this._ff.TryGetValue(StyleKeys.FontFamilyKey, out found))
                     return found;
                 else
