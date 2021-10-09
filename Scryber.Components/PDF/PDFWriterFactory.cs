@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Components;
+using Scryber.Logging;
 
 namespace Scryber.PDF
 {
@@ -41,9 +42,9 @@ namespace Scryber.PDF
                 throw new InvalidOperationException(Errors.DocumentHasBeenDisposed);
             else
             {
-                PDFPerformanceMonitor monitor;
+                PerformanceMonitor monitor;
                 if (null == forDoc.PerformanceMonitor)
-                    monitor = new PDFPerformanceMonitor(false);
+                    monitor = new PerformanceMonitor(false);
                 else
                     monitor = forDoc.PerformanceMonitor;
 
@@ -51,7 +52,7 @@ namespace Scryber.PDF
             }
         }
 
-        protected abstract PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PDFPerformanceMonitor monitor);
+        protected abstract PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PerformanceMonitor monitor);
 
         public void Dispose()
         {
@@ -106,7 +107,7 @@ namespace Scryber.PDF
             this.PDFVersion = version;
         }
 
-        protected override PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PDFPerformanceMonitor monitor)
+        protected override PDFWriter DoGetInstance(Document forDoc, System.IO.Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PerformanceMonitor monitor)
         {
             Version vers = (string.IsNullOrEmpty(this.PDFVersion)) ? new Version(1, 4) : System.Version.Parse(this.PDFVersion);
 

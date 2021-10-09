@@ -4,7 +4,7 @@ using System;
 using Scryber;
 using Scryber.Drawing;
 using Scryber.Components;
-
+using Scryber.Logging;
 namespace Scryber.Core.UnitTests.Styles
 {
     
@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             StylesDocument target = new StylesDocument(); // TODO: Initialize to an appropriate value
             PDFInitContext context = new PDFInitContext(new PDFItemCollection(null), 
-                new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true), null);
+                new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
             target.Initialized += target_Initialized;
             
             isInitialized = false;

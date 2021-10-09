@@ -23,6 +23,7 @@ using System.Drawing;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF.Graphics;
+using Scryber.Logging;
 
 namespace Scryber.PDF
 {
@@ -155,12 +156,12 @@ namespace Scryber.PDF
         // .ctor
         //
 
-        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.Style root, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
+        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.Style root, PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
             : this(origin,pageCount,format, new Scryber.Styles.StyleStack(root), items, log, perfmon, document)
         {
         }
 
-        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.StyleStack stack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document) 
+        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.StyleStack stack, PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document) 
             : base(stack, items, log, perfmon, document)
         {
             this._origin = origin;

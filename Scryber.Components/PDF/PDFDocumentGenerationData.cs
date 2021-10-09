@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber.PDF
 {
@@ -49,7 +50,7 @@ namespace Scryber.PDF
 
         public Scryber.Components.DocumentViewPreferences DocumentViewerPrefs { get; set; }
 
-        public Scryber.PDFPerformanceMonitor PerformanceMetrics { get; set; }
+        public PerformanceMonitor PerformanceMetrics { get; set; }
 
     }
 }

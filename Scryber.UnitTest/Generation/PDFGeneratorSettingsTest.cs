@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
 using Scryber.Components;
+using Scryber.Logging;
 
 namespace Scryber.Core.UnitTests.Generation
 {
@@ -80,7 +81,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
-            PDFPerformanceMonitor mon = new PDFPerformanceMonitor(true);
+            PerformanceMonitor mon = new PerformanceMonitor(true);
             Mocks.MockControllerClass controller = new Mocks.MockControllerClass();
 
             ParserSettings target = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, controller);
@@ -116,7 +117,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
-            PDFPerformanceMonitor mon = new PDFPerformanceMonitor(true);
+            PerformanceMonitor mon = new PerformanceMonitor(true);
             ParserSettings target = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, null);
 
             Assert.AreEqual(conformance, target.ConformanceMode);

@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scryber
+namespace Scryber.Logging
 {
     /// <summary>
     /// Encapsulates the performance monitoring of the srcyber library. 
@@ -29,12 +29,12 @@ namespace Scryber
     /// Use the Record method to measure individual action timings (based on a key) for a particular 
     /// monitor type - also increments the tpye entry.
     /// </summary>
-    public class PDFPerformanceMonitor : IEnumerable<PDFPerformanceMonitorEntry>
+    public class PerformanceMonitor : IEnumerable<PerformanceMonitorEntry>
     {
 
         #region ivars
 
-        PDFPerformanceMonitorEntry[] _entries;
+        PerformanceMonitorEntry[] _entries;
         bool _recordMeasurements;
 
         #endregion
@@ -50,7 +50,7 @@ namespace Scryber
         /// </summary>
         /// <param name="type">The type of the monitor</param>
         /// <returns>An entry that holds the timing details</returns>
-        public PDFPerformanceMonitorEntry this[PerformanceMonitorType type]
+        public PerformanceMonitorEntry this[PerformanceMonitorType type]
         {
             get { return _entries[(int)type]; }
         }
@@ -83,7 +83,7 @@ namespace Scryber
                     _recordMeasurements = value;
                     for (int i = 0; i < _entries.Length; i++)
                     {
-                        PDFPerformanceMonitorEntry entry = _entries[i];
+                        PerformanceMonitorEntry entry = _entries[i];
                         entry.RecordMeasurements = value;
                     }
                 }
@@ -103,7 +103,7 @@ namespace Scryber
         /// <summary>
         /// Creates a new instance of the PDFPerformanceMonitor
         /// </summary>
-        public PDFPerformanceMonitor(bool recordMeasurements)
+        public PerformanceMonitor(bool recordMeasurements)
         {
             this._recordMeasurements = recordMeasurements;
             InitEntries(recordMeasurements);
@@ -120,11 +120,11 @@ namespace Scryber
         protected virtual void InitEntries(bool recordMeasurements)
         {
             int len = (int)PerformanceMonitorType.Count;
-            _entries = new PDFPerformanceMonitorEntry[len];
+            _entries = new PerformanceMonitorEntry[len];
             for (int i = 0; i < len; i++)
             {
                 PerformanceMonitorType type = (PerformanceMonitorType)i;
-                _entries[i] = new PDFPerformanceMonitorEntry(type, recordMeasurements);
+                _entries[i] = new PerformanceMonitorEntry(type, recordMeasurements);
             }
         }
         
@@ -183,9 +183,9 @@ namespace Scryber
         /// an enumerator to loop over all the performance monitor entries
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<PDFPerformanceMonitorEntry> GetEnumerator()
+        public IEnumerator<PerformanceMonitorEntry> GetEnumerator()
         {
-            return _entries.AsEnumerable<PDFPerformanceMonitorEntry>().GetEnumerator();
+            return _entries.AsEnumerable<PerformanceMonitorEntry>().GetEnumerator();
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Scryber
             if (null == log)
                 return;
 
-            foreach (PDFPerformanceMonitorEntry entry in this)
+            foreach (PerformanceMonitorEntry entry in this)
             {
                 log.Add(TraceLevel.Message, "Performance Timings", "Total for " + entry.MonitorKey + ": " + entry.MonitorElapsed + " for " + entry.MonitorCount + " calls");
                 if (entry.HasMeasurements && log.ShouldLog(TraceLevel.Verbose))
@@ -232,7 +232,7 @@ namespace Scryber
     /// Encapsulates the performance monitoring for a single type so that the library can validate the 
     /// execution speed of key aspects of the library.
     /// </summary>
-    public class PDFPerformanceMonitorEntry
+    public class PerformanceMonitorEntry
     {
         #region ivars
 
@@ -333,7 +333,7 @@ namespace Scryber
         /// </summary>
         /// <param name="type"></param>
         /// <param name="recordItems"></param>
-        public PDFPerformanceMonitorEntry(PerformanceMonitorType type, bool recordMeasurements)
+        public PerformanceMonitorEntry(PerformanceMonitorType type, bool recordMeasurements)
         {
             this._type = type;
             this._timer = new System.Diagnostics.Stopwatch();
@@ -474,7 +474,7 @@ namespace Scryber
     {
         #region iVars
 
-        private PDFPerformanceMonitorEntry _owner;
+        private PerformanceMonitorEntry _owner;
         private TimeSpan _start, _end;
         private string _key;
         private int _index;
@@ -545,7 +545,7 @@ namespace Scryber
         /// <param name="owner"></param>
         /// <param name="key"></param>
         /// <remarks>Easiest way to create and start a meausurement is to use the entries.Record(key) method in a using block</remarks>
-        public PDFPerformanceMonitorMeasurement(PDFPerformanceMonitorEntry owner, string key)
+        public PDFPerformanceMonitorMeasurement(PerformanceMonitorEntry owner, string key)
         {
             this._owner = owner;
             this._start = owner.MonitorElapsed;

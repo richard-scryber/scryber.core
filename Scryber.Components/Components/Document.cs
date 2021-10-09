@@ -36,7 +36,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Scryber.OpenType.SubTables;
 using System.Net.Http;
-
+using Scryber.Logging;
 
 namespace Scryber.Components
 {
@@ -886,14 +886,14 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public Scryber.PDFPerformanceMonitor PerformanceMonitor  {get;set;}
+        #region public PDFPerformanceMonitor PerformanceMonitor  {get;set;}
 
-        private Scryber.PDFPerformanceMonitor _perfmon;
+        private PerformanceMonitor _perfmon;
 
         /// <summary>
         /// Gets or sets the preformance monitor for this document
         /// </summary>
-        public Scryber.PDFPerformanceMonitor PerformanceMonitor
+        public PerformanceMonitor PerformanceMonitor
         {
             get
             {
@@ -911,13 +911,13 @@ namespace Scryber.Components
         /// Instantiates a new trace log and returns it - inheritors can override this method
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFPerformanceMonitor CreatePerformanceMonitor()
+        protected virtual PerformanceMonitor CreatePerformanceMonitor()
         {
             TraceRecordLevel level = this.TraceLog.RecordLevel;
             bool measure = (level >= TraceRecordLevel.Verbose);
 
             //TODO: Make this look at the configuration
-            return new PDFPerformanceMonitor(measure);
+            return new PerformanceMonitor(measure);
         }
 
         #endregion
@@ -1517,7 +1517,7 @@ namespace Scryber.Components
         public void InitializeAndLoad()
         {
             PDFTraceLog log = this.TraceLog;
-            PDFPerformanceMonitor perfmon = this.PerformanceMonitor;
+            PerformanceMonitor perfmon = this.PerformanceMonitor;
             PDFItemCollection items = this.Params;
 
             PDFInitContext icontext = CreateInitContext(log, perfmon, items);
@@ -1544,14 +1544,14 @@ namespace Scryber.Components
         }
 
 
-        protected virtual PDFInitContext CreateInitContext(PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFItemCollection items)
+        protected virtual PDFInitContext CreateInitContext(PDFTraceLog log, PerformanceMonitor perfmon, PDFItemCollection items)
         {
             PDFInitContext icontext = new PDFInitContext(items, log, perfmon, this);
             this.PopulateContextBase(icontext);
             return icontext;
         }
 
-        protected virtual PDFLoadContext CreateLoadContext(PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFItemCollection items)
+        protected virtual PDFLoadContext CreateLoadContext(PDFTraceLog log, PerformanceMonitor perfmon, PDFItemCollection items)
         {
             PDFLoadContext loadcontext = new PDFLoadContext(items, log, perfmon, this);
             this.PopulateContextBase(loadcontext);
@@ -1689,7 +1689,7 @@ namespace Scryber.Components
         public void DataBind()
         {
             PDFTraceLog log = this.TraceLog;
-            PDFPerformanceMonitor perfmon = this.PerformanceMonitor;
+            PerformanceMonitor perfmon = this.PerformanceMonitor;
             PDFItemCollection items = this.Params;
 
             PDFDataContext context = this.CreateDataContext(log, perfmon, items);
@@ -1708,7 +1708,7 @@ namespace Scryber.Components
         /// Creates a new data context that is passed to the main data binding method
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFDataContext CreateDataContext(PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFItemCollection items)
+        protected virtual PDFDataContext CreateDataContext(PDFTraceLog log, PerformanceMonitor perfmon, PDFItemCollection items)
         {
 
             PDFDataContext context = new PDFDataContext(items, log, perfmon, this);
@@ -2161,7 +2161,7 @@ namespace Scryber.Components
         /// <param name="items">A PDFItemCollection</param>
         /// <param name="log">The log to use</param>
         /// <returns>A new layout context</returns>
-        protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon)
+        protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon)
         {
             PDFLayoutContext context = new PDFLayoutContext(style, format, items, log, perfmon, this);
             PopulateContextBase(context);
@@ -2219,7 +2219,7 @@ namespace Scryber.Components
         protected virtual PDFRenderContext DoCreateRenderContext()
         {
             PDFTraceLog log = this.TraceLog;
-            PDFPerformanceMonitor perfmon = this.PerformanceMonitor;
+            PerformanceMonitor perfmon = this.PerformanceMonitor;
 
 
             Style def = this.CreateDefaultStyle();
@@ -2845,7 +2845,7 @@ namespace Scryber.Components
         protected virtual ParserSettings DoCreateGeneratorSettings(PDFReferenceResolver resolver)
         {
             PDFTraceLog log = this.TraceLog;
-            PDFPerformanceMonitor monitor = this.PerformanceMonitor;
+            PerformanceMonitor monitor = this.PerformanceMonitor;
             ParserConformanceMode mode = this.ConformanceMode;
             ParserLoadType loadtype = this.LoadType;
             object controller = this.Controller;
@@ -2861,13 +2861,13 @@ namespace Scryber.Components
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
 
             PDFTraceLog log = config.TracingOptions.GetTraceLog();
-            PDFPerformanceMonitor perfmon = new PDFPerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
+            PerformanceMonitor perfmon = new PerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
 
             return CreateGeneratorSettings(resolver, conformance, loadtype, log, perfmon, controller);
         }
 
         protected static ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver, 
-            ParserConformanceMode conformance, ParserLoadType loadtype, PDFTraceLog log, PDFPerformanceMonitor perfmon, object controller)
+            ParserConformanceMode conformance, ParserLoadType loadtype, PDFTraceLog log, PerformanceMonitor perfmon, object controller)
         {
             ParserSettings settings = new ParserSettings(typeof(TextLiteral)
                                                                     , typeof(ParsableTemplateGenerator)

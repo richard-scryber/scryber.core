@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
+using Scryber.Logging;
 
 namespace Scryber.Core.UnitTests.Styles
 {
@@ -109,7 +110,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void DataBindTest()
         {
             Style target = CreatePDFStyleBase();
-            PDFDataContext context = new PDFDataContext(new PDFItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PDFPerformanceMonitor(true), null);
+            PDFDataContext context = new PDFDataContext(new PDFItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
 
             bg_bound = false;
             fill_binding = false;

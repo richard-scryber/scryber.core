@@ -404,21 +404,22 @@ namespace Scryber
         /// </summary>
         bool AppendTraceLog { get; set; }
 
-        /// <summary>
-        /// When the PDFXmlParser reads a document, then if it encounters a switch to tell it to append the log to the document it must add a collector log
-        /// and set it on the document, so that it can be output. This interface defines a property that can be set by the parser and then have the component use.
-        /// </summary>
-        Scryber.PDFTraceLog TraceLog { get; set; }
+        
 
         /// <summary>
         /// Gets or sets the performance monitor instance that the document will use to capture performance statistics
         /// </summary>
-        Scryber.PDFPerformanceMonitor PerformanceMonitor { get; set; }
+        Scryber.Logging.PerformanceMonitor PerformanceMonitor { get; set; }
 
         /// <summary>
-        /// Gets or sets the conformance mode of this parsed document
+        /// Gets the current conformance mode (strict or lax)
         /// </summary>
-        Scryber.ParserConformanceMode ConformanceMode { get; set; }
+        ParserConformanceMode ConformanceMode { set; }
+
+        /// <summary>
+        /// Gets the trace log associated with the current execution
+        /// </summary>
+        PDFTraceLog TraceLog { set; }
 
     }
 

@@ -7,6 +7,7 @@ using Scryber.Generation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Dynamic;
 using Scryber.Binding;
+using Scryber.Logging;
 
 namespace Scryber.Core.UnitTests.Generation
 {
@@ -283,7 +284,7 @@ namespace Scryber.Core.UnitTests.Generation
             var log = config.TracingOptions.GetTraceLog();
 
             PDFItemCollection items = new PDFItemCollection(null);
-            PDFDataContext context = new PDFDataContext(items, log, new PDFPerformanceMonitor(true), null);
+            PDFDataContext context = new PDFDataContext(items, log, new PerformanceMonitor(true), null);
             PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
             return args;
         }

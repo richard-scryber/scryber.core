@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber
 {
@@ -85,7 +86,7 @@ namespace Scryber
         /// </summary>
         /// <param name="items"></param>
         /// <param name="log"></param>
-        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
+        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
             : this(items, log, perfmon, new PDFDataStack(), document)
         {
         }
@@ -100,7 +101,7 @@ namespace Scryber
         /// <param name="items"></param>
         /// <param name="log"></param>
         /// <param name="stack"></param>
-        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, PDFDataStack stack, IDocument document)
+        public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, PDFDataStack stack, IDocument document)
             : base(items, log, perfmon, document)
         {
             this._datastack = stack;

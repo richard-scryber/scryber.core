@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber.Generation
 {
@@ -52,7 +53,7 @@ namespace Scryber.Generation
         private ParserConformanceMode _conformance;
         private ParserLoadType _loadtype;
         private PDFReferenceResolver _resolver;
-        private PDFPerformanceMonitor _perfmon;
+        private PerformanceMonitor _perfmon;
         private bool _appendLog;
         private Type _controllerType;
         private object _controllerInstance;
@@ -122,7 +123,7 @@ namespace Scryber.Generation
         /// <summary>
         /// Gets or sets the Performance monitor for the document
         /// </summary>
-        public PDFPerformanceMonitor PerformanceMonitor
+        public PerformanceMonitor PerformanceMonitor
         {
             get { return _perfmon; }
             set { _perfmon = value; }
@@ -191,7 +192,7 @@ namespace Scryber.Generation
 
         public ParserSettings(Type literaltype, Type templategenerator, Type templateinstance, 
                                 PDFReferenceResolver resolver, ParserConformanceMode conformance, ParserLoadType loadtype,
-                                PDFTraceLog log, PDFPerformanceMonitor perfmon, object controllerInstance)
+                                PDFTraceLog log, PerformanceMonitor perfmon, object controllerInstance)
         {
             this._textLiteralType = literaltype;
             this._tempateGenType = templategenerator;

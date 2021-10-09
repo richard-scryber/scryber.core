@@ -19,8 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Scryber.Logging;
 
-namespace Scryber
+namespace Scryber.PDF
 {
     
     /// <summary>
@@ -42,7 +43,7 @@ namespace Scryber
 
 
 
-        internal PDFContextStyleBase(Styles.StyleStack stylesstack, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
+        internal PDFContextStyleBase(Styles.StyleStack stylesstack, PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(items, log, perfmon, document)
         {
             this._stylestack = stylesstack;

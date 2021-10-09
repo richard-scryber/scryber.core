@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security;
+using Scryber.Logging;
 
 namespace Scryber.PDF.Secure
 {
@@ -49,7 +50,7 @@ namespace Scryber.PDF.Secure
         }
 
 
-        internal PDFEncryter InitEncrypter(SecureString ownerpassword, SecureString userpassword, PDFDocumentID documentid, PermissionFlags protection, PDFPerformanceMonitor monitor)
+        internal PDFEncryter InitEncrypter(SecureString ownerpassword, SecureString userpassword, PDFDocumentID documentid, PermissionFlags protection, PerformanceMonitor monitor)
         {
             IDisposable dur = null;
 
@@ -88,7 +89,7 @@ namespace Scryber.PDF.Secure
         }
 
 
-        internal PDFEncryter InitEncrypter(string ownerpassword, string userpassword, PDFDocumentID documentid, PermissionFlags protection, PDFPerformanceMonitor monitor)
+        internal PDFEncryter InitEncrypter(string ownerpassword, string userpassword, PDFDocumentID documentid, PermissionFlags protection, PerformanceMonitor monitor)
         {
             IDisposable dur = null;
 

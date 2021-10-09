@@ -24,6 +24,7 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Graphics;
+using Scryber.Logging;
 
 namespace Scryber.PDF
 {
@@ -70,7 +71,7 @@ namespace Scryber.PDF
 
         #endregion
 
-        public PDFLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
+        public PDFLayoutContext(Style style, PDFOutputFormatting format, PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(new StyleStack(style), items, log, perfmon, document)
         {
             this._format = format;

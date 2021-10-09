@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber
 {
@@ -30,7 +31,7 @@ namespace Scryber
         private PDFItemCollection _items;
         private OutputFormat _format;
         private PDFTraceLog _log;
-        private PDFPerformanceMonitor _perfmon;
+        private PerformanceMonitor _perfmon;
         private ParserConformanceMode _conformance;
         private IDocument _doc;
         private bool _shouldLogDebug;
@@ -56,7 +57,7 @@ namespace Scryber
             set { this._items = value; }
         }
 
-        public PDFPerformanceMonitor PerformanceMonitor
+        public PerformanceMonitor PerformanceMonitor
         {
             get { return _perfmon; }
             set { _perfmon = value; }
@@ -113,7 +114,7 @@ namespace Scryber
 
         #endregion
 
-        public PDFContextBase(PDFItemCollection items, PDFTraceLog log, PDFPerformanceMonitor perfmon, IDocument document)
+        public PDFContextBase(PDFItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
         {
             this._format = OutputFormat.PDF;
 

@@ -5,6 +5,7 @@ using System.Text;
 using Scryber.Components;
 using Scryber.Drawing.Imaging;
 using Scryber.PDF.Resources;
+using Scryber.Logging;
 
 namespace Scryber.PDF
 {
@@ -203,7 +204,7 @@ namespace Scryber.PDF
 
 
 
-        private void AddPerformance(PDFPerformanceMonitor perfdata)
+        private void AddPerformance(PerformanceMonitor perfdata)
         {
             Head3 head = new Head3() { Text = "Performance Metrics"};
             this.Contents.Add(head);
@@ -228,14 +229,14 @@ namespace Scryber.PDF
             cell.Contents.Add(new TextLiteral("Count"));
             top.Cells.Add(cell);
 
-            foreach (PDFPerformanceMonitorEntry entry in perfdata)
+            foreach (PerformanceMonitorEntry entry in perfdata)
             {
                 if (entry.MonitorCount > 0)
                     this.AddPerformanceEntry(tbl, entry);
             }
         }
 
-        private void AddPerformanceEntry(TableGrid grid, PDFPerformanceMonitorEntry entry)
+        private void AddPerformanceEntry(TableGrid grid, PerformanceMonitorEntry entry)
         {
             TableRow row = new TableRow();
             grid.Rows.Add(row);

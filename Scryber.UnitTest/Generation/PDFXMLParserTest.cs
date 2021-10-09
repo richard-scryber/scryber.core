@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using Scryber;
 using System.Xml;
+using Scryber.Logging;
 
 namespace Scryber.Core.UnitTests.Generation
 {
@@ -80,7 +81,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
-            PDFPerformanceMonitor perfmon = new PDFPerformanceMonitor(true);
+            PerformanceMonitor perfmon = new PerformanceMonitor(true);
             ParserSettings settings = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
 
             return settings;
