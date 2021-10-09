@@ -24,7 +24,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
     public class PDFExternalGraphicsState
     {

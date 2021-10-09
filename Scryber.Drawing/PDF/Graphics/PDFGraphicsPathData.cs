@@ -3,8 +3,9 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.OpenType.SubTables;
+using Scryber.Drawing;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
     public abstract class PDFGraphicsPathData : PDFObject
     {

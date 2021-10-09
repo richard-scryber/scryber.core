@@ -5,7 +5,7 @@ using System.Linq;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
-using Newtonsoft.Json.Serialization;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {

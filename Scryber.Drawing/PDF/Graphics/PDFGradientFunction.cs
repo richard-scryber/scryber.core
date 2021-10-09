@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Scryber.PDF;
 
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
     /// <summary>
     /// Base abstract class for all Gradient functions.

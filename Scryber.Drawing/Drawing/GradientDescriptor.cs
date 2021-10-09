@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Permissions;
-using System.Text.RegularExpressions;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {

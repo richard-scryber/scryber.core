@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Scryber.PDF;
+using Scryber.Drawing;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
     
     /// <summary>

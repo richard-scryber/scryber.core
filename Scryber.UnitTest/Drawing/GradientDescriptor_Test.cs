@@ -3,20 +3,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
 using System.Collections.Generic;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Core.UnitTests.Drawing
 {
     
     
     /// <summary>
-    ///This is a test class for PDFGraphicsPath_Test and is intended
-    ///to contain all PDFGraphicsPath_Test Unit Tests
+    ///This is a test class for GraientDecriptors and is intended
+    ///to contain all GradientDecriptor and GradientFunction Unit Tests
     ///</summary>
     [TestClass()]
     public class GradientDescriptor_Test
     {
-
-        
 
         #region public TestContext TestContext {get;set;}
         
