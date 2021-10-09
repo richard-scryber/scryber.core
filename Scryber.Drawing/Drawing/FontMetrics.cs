@@ -23,6 +23,9 @@ using System.ComponentModel;
 
 namespace Scryber.Drawing
 {
+    /// <summary>
+    /// General metrics on the a font for a specific size
+    /// </summary>
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FontMetrics
     {
@@ -63,6 +66,25 @@ namespace Scryber.Drawing
             get { return _lineHeight; }
         }
 
+        private double _exh;
+        /// <summary>
+        /// Gets the height of a lower case x in the font size
+        /// </summary>
+        public double ExHeight
+        {
+            get { return _exh; }
+        }
+
+        private double _zero;
+
+        /// <summary>
+        /// Gets the width of the zero character in the font size
+        /// </summary>
+        public double ZeroWidth
+        {
+            get { return _exh; }
+        }
+
         /// <summary>
         /// Gets the amount of white space that should be between two lines of text (the leading)
         /// </summary>
@@ -72,12 +94,14 @@ namespace Scryber.Drawing
         }
 
 
-        public FontMetrics(double emheight, double ascent, double descent, double lineheight)
+        public FontMetrics(double emheight, double ascent, double descent, double lineheight, double exheight, double zeroWidth)
         {
             this._emh = emheight;
             this._desc = descent;
             this._asc = ascent;
             this._lineHeight = lineheight;
+            this._exh = exheight;
+            this._zero = zeroWidth;
         }
 
     }

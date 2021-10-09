@@ -557,17 +557,19 @@ namespace Scryber.PDF.Resources
                 double ascent = (double)this.Descriptor.Ascent * scale;
                 double descent = Math.Abs((double)this.Descriptor.Descent * scale);
 
-                double line = ((double)(this.Descriptor.Leading) * scale);
-
-                return new FontMetrics(fontSize.PointsValue, ascent, descent, line);
+                double line = (double)(this.Descriptor.Leading * scale);
+                double exheight = (double)(this.Descriptor.XHeight * scale);
+                double zerowidth = (double)(this.Descriptor.AvgWidth * scale);
+                return new FontMetrics(fontSize.PointsValue, ascent, descent, line, exheight, zerowidth);
             }
             else if (this.IsStandard)
             {
                 double ascent = fontSize.PointsValue * 0.75;
                 double descent = fontSize.PointsValue * 0.25;
                 double line = fontSize.PointsValue * 1.2;
-
-                return new FontMetrics(fontSize.PointsValue, ascent, descent, line);
+                double exheight = fontSize.PointsValue * 0.5;
+                double zerowidth = fontSize.PointsValue * 0.5;
+                return new FontMetrics(fontSize.PointsValue, ascent, descent, line, exheight, zerowidth);
             }
             else
                 throw new InvalidOperationException("The font does not have a descriptor");

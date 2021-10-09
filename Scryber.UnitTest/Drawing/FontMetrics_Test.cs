@@ -46,7 +46,10 @@ namespace Scryber.Core.UnitTests.Drawing
             double ascent = 120.34;
             double descent = 12.9;
             double lineheight = 13.6;
-            FontMetrics target = new FontMetrics(emheight, ascent, descent, lineheight);
+            double exheight = emheight * 0.5;
+            double zerow = emheight * 0.6;
+
+            FontMetrics target = new FontMetrics(emheight, ascent, descent, lineheight, exheight, zerow);
             
 
             Assert.IsNotNull(target);
@@ -55,6 +58,8 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(descent, target.Descent);
             Assert.AreEqual(lineheight, target.LineHeight);
             Assert.AreEqual(lineheight - (ascent + descent), target.LineSpacing);
+            Assert.AreEqual(exheight, target.ExHeight);
+            Assert.AreEqual(zerow, target.ZeroWidth);
         }
 
     }

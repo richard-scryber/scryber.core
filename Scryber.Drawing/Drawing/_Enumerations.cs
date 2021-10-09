@@ -50,6 +50,29 @@ namespace Scryber.Drawing
     }
 
     /// <summary>
+    /// Available page units
+    /// </summary>
+    public enum RelativeUnits
+    {
+        //Reserved 0 for empty units
+        Points = 0,
+        Millimeters = 1,
+        Inches = 2,
+        Pixel = 3,
+        Percent = 4,
+        EMHeight = 5,
+        EXHeight = 6,
+        ZeroWidth = 7,
+        RootEMHeight = 8,
+        ViewPortWidth = 9,
+        ViewPortHeight = 10,
+        ViewPortMin = 11,
+        ViewPortMax = 12
+    }
+
+    
+
+    /// <summary>
     /// The style of fill
     /// </summary>
     public enum FillType
