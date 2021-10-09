@@ -135,15 +135,15 @@ namespace Scryber.PDF.Layout
                 PDFSize offset = this.Offset;
                 offset.Width += xoffset;
 
-                PDFLayoutLine line = this.NextLineSpacer.Line;
-                if (line.BaseLineOffset > 0 && this.TextOptions.Leading.HasValue == false)
-                {
-                    PDFUnit maxdescender = line.Height - line.BaseLineOffset;
-                    PDFUnit ourdescender = this.TextOptions.Font.FontMetrics.LineHeight - this.TextOptions.Font.FontMetrics.Ascent;
-                    PDFUnit difdescender = maxdescender - ourdescender;
+                PDFLayoutLine nextline = this.NextLineSpacer.Line;
+                //if (nextline.BaseLineOffset > 0 && this.TextOptions.Leading.HasValue == false)
+                //{
+                //    PDFUnit maxdescender = nextline.Height - nextline.BaseLineOffset;
+                //    PDFUnit ourdescender = this.TextOptions.Font.FontMetrics.LineHeight - this.TextOptions.Font.FontMetrics.Ascent;
+                //    PDFUnit difdescender = maxdescender - ourdescender;
 
-                    offset.Height = line.Height - difdescender;
-                }
+                //    offset.Height = nextline.Height - difdescender;
+                //}
 
                 this.Offset = offset;
             }

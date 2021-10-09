@@ -1052,9 +1052,9 @@ namespace Scryber.Components
             set
             {
                 if (value)
-                    this.Style.SetValue(StyleKeys.FontFaceStyleKey, Drawing.FontStyle.Italic);
+                    this.Style.SetValue(StyleKeys.FontStyleKey, Drawing.FontStyle.Italic);
                 else
-                    this.Style.SetValue(StyleKeys.FontFaceStyleKey, Drawing.FontStyle.Regular);
+                    this.Style.SetValue(StyleKeys.FontStyleKey, Drawing.FontStyle.Regular);
             }
         }
 

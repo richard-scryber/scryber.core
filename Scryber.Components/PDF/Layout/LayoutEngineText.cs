@@ -492,7 +492,7 @@ namespace Scryber.PDF.Layout
             if (line.BaseLineOffset == 0 || this.TextRenderOptions.Leading.HasValue) //we don't have any begins or ends affecting the flow (or an explicit leading)
                 br.Offset = new PDFSize(back, line.Height);
             else
-                br.Offset = new PDFSize(back, (line.Height - line.BaseLineOffset) + this.TextRenderOptions.GetAscent());
+                br.Offset = new PDFSize(back, line.Height);
             
 
             PDFLayoutRegion reg = line.Region;

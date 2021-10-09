@@ -421,12 +421,14 @@ namespace Scryber.PDF.Layout
         public PDFLayoutLine BeginNewLine()
         {
             this.AssertIsOpen();
-            this.AssertLastItemIsClosed();
+            var last = this.AssertLastItemIsClosed() as PDFLayoutLine;
             
             PDFUnit width = this.GetAvailableWidth();
 
             PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, this.VAlignment, this.Contents.Count);
             line.SetOffset(line.OffsetX, this.UsedSize.Height);
+            if (null != last)
+                line.BaseLineOffset = last.BaseLineOffset;
 
             this.Contents.Add(line);
 
@@ -648,13 +650,15 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Checks that the last item in this region is closed
         /// </summary>
-        protected virtual void AssertLastItemIsClosed()
+        protected virtual PDFLayoutItem AssertLastItemIsClosed()
         {
             if (null == _contents || _contents.Count == 0)
-                return;
+                return null;
             PDFLayoutItem last = _contents[_contents.Count - 1];
             if (!last.IsClosed)
                 throw new InvalidOperationException(Errors.LayoutContainerHasExistingOpenItem);
+
+            return last;
         }
 
         #endregion

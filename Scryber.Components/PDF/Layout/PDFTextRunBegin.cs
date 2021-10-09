@@ -54,6 +54,8 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        
+
         #region public PDFTextRenderOptions TextRenderOptions
 
 
@@ -175,6 +177,7 @@ namespace Scryber.PDF.Layout
             {
                 final.X += xoffset;
             }
+
             this.TotalBounds = final;
 
             base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
@@ -372,12 +375,7 @@ namespace Scryber.PDF.Layout
             //cursor.Height += this.TextRenderOptions.Font.FontMetrics.Ascent;
 
             //With mixed content
-            if (this.TextRenderOptions.Leading.HasValue)
-            {
-                cursor.Height += this.TextRenderOptions.Leading.Value - metrics.Descent;
-            }
-            else
-                cursor.Height += this.Line.BaseLineOffset;
+            cursor.Height += this.Line.BaseLineOffset;
             
 
             if (context.ShouldLogDebug)

@@ -205,7 +205,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the offset from the top left of the line to the baseline of any text or component.
         /// </summary>
-        public PDFUnit BaseLineOffset { get; private set; }
+        public PDFUnit BaseLineOffset { get; set; }
 
         #endregion
 
@@ -387,16 +387,16 @@ namespace Scryber.PDF.Layout
         /// <param name="run"></param>
         public virtual void AddRun(PDFLayoutRun run)
         {
-            if (run is PDFTextRunBegin)
+            if (run is PDFTextRunBegin begin)
             {
-                PDFUnit ascent = ((PDFTextRunBegin)run).TextRenderOptions.GetAscent();
-                if (ascent > this.BaseLineOffset)
+                var ascent = begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetDescender();
+                
+                if (ascent > this.BaseLineOffset || this.Runs.Count == 0)
                     this.BaseLineOffset = ascent;
             }
-            else if (run is PDFTextRunEnd)
+            else if (run is PDFTextRunEnd end)
             {
-                PDFTextRunEnd end = (PDFTextRunEnd)run;
-                PDFUnit ascent = end.Start.TextRenderOptions.GetAscent();
+                PDFUnit ascent = end.Start.TextRenderOptions.GetLineHeight() - end.Start.TextRenderOptions.GetDescender();
                 if (ascent > this.BaseLineOffset)
                     this.BaseLineOffset = ascent;
             }
