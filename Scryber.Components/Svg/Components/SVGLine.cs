@@ -36,7 +36,7 @@ namespace Scryber.Svg.Components
             return new PDFRect(minx, miny, maxx - minx, maxy - maxx);
         }
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             //We use top left zero based moving and line
             var bounds = this.GetBounds();
@@ -45,7 +45,7 @@ namespace Scryber.Svg.Components
             var y1 = this.Y1 - bounds.Y;
             var y2 = this.Y2 - bounds.Y;
 
-            var path = new PDFGraphicsPath();
+            var path = new GraphicsPath();
             path.MoveTo(new PDFPoint(x1,y1));
             path.LineTo(new PDFPoint(x2, y2));
 

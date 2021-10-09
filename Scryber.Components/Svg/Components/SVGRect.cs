@@ -98,7 +98,7 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override void BuildPath(PDFGraphicsPath path, PDFPoint[] points, Style style, bool end)
+        protected override void BuildPath(GraphicsPath path, PDFPoint[] points, Style style, bool end)
         {
             if (this.CornerRadiusX != PDFUnit.Zero)
                 this.BuildRoundRectPath(path, points, style);
@@ -106,7 +106,7 @@ namespace Scryber.Svg.Components
                 base.BuildPath(path, points, style, end);
         }
 
-        private void BuildRoundRectPath(PDFGraphicsPath path, PDFPoint[] points, Style style)
+        private void BuildRoundRectPath(GraphicsPath path, PDFPoint[] points, Style style)
         {
             throw new NotImplementedException("Round rectangle points are not currently supported");
         }

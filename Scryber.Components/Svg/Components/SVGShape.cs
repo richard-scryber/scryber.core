@@ -17,24 +17,24 @@ namespace Scryber.Svg.Components
         {
         }
 
-        private PDFGraphicsPath _path;
+        private GraphicsPath _path;
 
-        protected PDFGraphicsPath Path
+        protected GraphicsPath Path
         {
             get { return _path; }
             set { _path = value; }
         }
 
-        PDFGraphicsPath IPDFGraphicPathComponent.Path
+        GraphicsPath IPDFGraphicPathComponent.Path
         {
             get { return this.Path; }
             set { this.Path = value; }
         }
 
 
-        protected abstract PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle);
+        protected abstract GraphicsPath CreatePath(PDFSize available, Style fullstyle);
 
-        PDFGraphicsPath IPDFGraphicPathComponent.CreatePath(PDFSize available, Style fullstyle)
+        GraphicsPath IPDFGraphicPathComponent.CreatePath(PDFSize available, Style fullstyle)
         {
             return this.CreatePath(available, fullstyle);
         }

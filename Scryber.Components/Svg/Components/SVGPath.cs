@@ -13,7 +13,7 @@ namespace Scryber.Svg.Components
 
         [PDFElement()]
         [PDFAttribute("d")]
-        public PDFGraphicsPath PathData
+        public GraphicsPath PathData
         {
             get { return this.Path; }
             set { this.Path = value; }
@@ -29,7 +29,7 @@ namespace Scryber.Svg.Components
             return this.PathData.Bounds;
         }
 
-        protected override Drawing.PDFGraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
+        protected override Drawing.GraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
         {
             return this.PathData;
         }

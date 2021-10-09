@@ -293,7 +293,7 @@ namespace Scryber.Drawing
         }
 
 
-        public void FillPath(PDFBrush brush, PDFPoint location, PDFGraphicsPath path)
+        public void FillPath(PDFBrush brush, PDFPoint location, GraphicsPath path)
         {
             if (null == path)
                 throw new ArgumentNullException("path");
@@ -306,7 +306,7 @@ namespace Scryber.Drawing
             this.RestoreGraphicsState();
         }
 
-        public void DrawPath(PDFPen pen, PDFPoint location, PDFGraphicsPath path)
+        public void DrawPath(PDFPen pen, PDFPoint location, GraphicsPath path)
         {
             if (null == path)
                 throw new ArgumentNullException("path");
@@ -319,7 +319,7 @@ namespace Scryber.Drawing
             this.RestoreGraphicsState();
         }
 
-        public void FillAndStrokePath(PDFBrush brush, PDFPen pen, PDFPoint location, PDFGraphicsPath path)
+        public void FillAndStrokePath(PDFBrush brush, PDFPen pen, PDFPoint location, GraphicsPath path)
         {
             if (null == path)
                 throw new ArgumentNullException("path");
@@ -333,7 +333,7 @@ namespace Scryber.Drawing
             this.RestoreGraphicsState();
         }
 
-        private void OutputPath(PDFBrush brush, PDFPen pen, PDFPoint location, PDFGraphicsPath path)
+        private void OutputPath(PDFBrush brush, PDFPen pen, PDFPoint location, GraphicsPath path)
         {
 
             PDFRect bounds = new PDFRect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);

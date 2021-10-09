@@ -26,7 +26,7 @@ namespace Scryber.Drawing
     /// Contains path drawing operations
     /// </summary>
     [PDFParsableValue()]
-    public class PDFGraphicsPath : PDFObject
+    public class GraphicsPath : ITypedObject
     {
         
         private List<Path> _paths = new List<Path>();
@@ -91,10 +91,15 @@ namespace Scryber.Drawing
             get { return _bounds; }
         }
 
+        public ObjectType Type
+        {
+            get { return ObjectTypes.GraphicsPath; }
+        }
+
         /// <summary>
         /// Creates a new empty graphics path, ready to start adding operations to.
         /// </summary>
-        public PDFGraphicsPath()
+        public GraphicsPath()
             : this(ObjectTypes.GraphicsPath)
         {
 
@@ -103,8 +108,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Creates a new empty graphics path, ready to start adding operations to.
         /// </summary>
-        protected PDFGraphicsPath(ObjectType type)
-            : base(type)
+        protected GraphicsPath(ObjectType type)
         {
             Path p = new Path();
             _paths = new List<Path>();
@@ -467,9 +471,9 @@ namespace Scryber.Drawing
             return pts.ToArray();
         }
 
-        public static PDFGraphicsPath Parse(string value)
+        public static GraphicsPath Parse(string value)
         {
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
             if (string.IsNullOrEmpty(value))
                 return path;
 

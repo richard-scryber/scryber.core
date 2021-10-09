@@ -30,11 +30,11 @@ namespace Scryber.Components
     public class Path : ShapeComponent
     {
 
-        private PDFGraphicsPath _data;
+        private GraphicsPath _data;
 
         [PDFElement()]
         [PDFAttribute("d")]
-        public PDFGraphicsPath PathData
+        public GraphicsPath PathData
         {
             get { return _data; }
             set { _data = value; }
@@ -61,7 +61,7 @@ namespace Scryber.Components
         }
 
         
-        protected override Drawing.PDFGraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
+        protected override Drawing.GraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
         {
             return this.PathData;
         }

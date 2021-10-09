@@ -85,12 +85,12 @@ namespace Scryber
     /// </summary>
     public interface IPDFGraphicPathComponent : IComponent, IPDFRenderComponent
     {
-        PDFGraphicsPath CreatePath(PDFSize avail, Styles.Style fullstyle);
+        GraphicsPath CreatePath(PDFSize avail, Styles.Style fullstyle);
 
         /// <summary>
         /// Gets or sets the path generated with the CreatePath method
         /// </summary>
-        Drawing.PDFGraphicsPath Path { get; set; }
+        Drawing.GraphicsPath Path { get; set; }
     }
 
     #endregion

@@ -28,14 +28,14 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             var bounds = this.GetBounds();
 
             var xoffset = bounds.X.PointsValue;
             var yoffset = bounds.Y.PointsValue;
 
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
 
             if (null != this.Points)
             {
@@ -89,9 +89,9 @@ namespace Scryber.Svg.Components
         public SVGPolygon(): base()
         { }
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
-            PDFGraphicsPath path = base.CreatePath(available, fullstyle);
+            GraphicsPath path = base.CreatePath(available, fullstyle);
             path.ClosePath(true);
 
             return path;

@@ -16,7 +16,7 @@ namespace Scryber.Core.UnitTests.Drawing
     public class PDFGraphicsPath_Test
     {
 
-        public class PDFGraphicsProxy : PDFGraphicsPath
+        public class PDFGraphicsProxy : GraphicsPath
         {
             
             public PDFGraphicsProxy()
@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void PDFGraphicsPathConstructor_Test1()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsNotNull(target);
             Assert.IsTrue(target.CurrentPath != null);
             Assert.IsTrue(target.HasCurrentPath);
@@ -107,7 +107,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void BeginPath_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -129,7 +129,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void ClosePath_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -146,7 +146,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
 
             end = true;
-            target = new PDFGraphicsPath();
+            target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -172,7 +172,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void EndPath_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -197,7 +197,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void MoveTo_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -229,7 +229,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void MoveBy_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -266,7 +266,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void LineTo_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -303,7 +303,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void LineFor_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -341,7 +341,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void VerticalLineTo_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -379,7 +379,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void VerticalLineFor_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -417,7 +417,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void HorizontalLineTo_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -455,7 +455,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void HorizontalLineFor_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -488,7 +488,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void CubicTo_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -518,7 +518,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void CubicToWithHandleStart_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -547,7 +547,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void CubicToWithHandleEnd_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -576,7 +576,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void CubicFor_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -611,7 +611,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void CubicForWithHandleStart_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -646,7 +646,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void CubicForWithHandleEnd_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -687,7 +687,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void Bounds_Test()
         {
-            PDFGraphicsPath target = new PDFGraphicsPath();
+            GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
@@ -762,7 +762,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics Path")]
         public void ParseEmpty_Test()
         {
-            PDFGraphicsPath target = PDFGraphicsPath.Parse("");
+            GraphicsPath target = GraphicsPath.Parse("");
             Assert.IsNotNull(target);
             Assert.IsTrue(target.CurrentPath != null);
             Assert.IsTrue(target.HasCurrentPath);
@@ -775,7 +775,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ParseClose_Test()
         {
 
-            PDFGraphicsPath target = PDFGraphicsPath.Parse("Z");
+            GraphicsPath target = GraphicsPath.Parse("Z");
             Assert.IsNotNull(target);
             Assert.IsTrue(target.CurrentPath != null);
             Assert.IsTrue(target.HasCurrentPath);
@@ -829,7 +829,7 @@ c-11.377,0-18.938,7.272-18.938,20.018c0,11.953,6.841,19.514,18.578,19.514c3.888,
             var pathData = @"M-84.1487,-15.8513h168.2974 V10.053 H-2Z";
             
             PDFSVGPathDataParser parser = new PDFSVGPathDataParser(true, null);
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
 
             parser.ParseSVG(path, pathData);
             Assert.AreEqual(path.Paths.Count, 1);
@@ -873,7 +873,7 @@ c0-15.266,10.297-25.49,25.346-25.49c5.977,0,9.865,1.296,11.521,2.16L-1.584,5.112
 c-11.377,0-18.938,7.272-18.938,20.018c0,11.953,6.841,19.514,18.578,19.514c3.888,0,7.777-0.792,10.297-2.016L70.491,50.826z";
 
             PDFSVGPathDataParser parser = new PDFSVGPathDataParser(true, null);
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
 
             parser.ParseSVG(path, pathData);
             Assert.AreEqual(path.Paths.Count, 1);

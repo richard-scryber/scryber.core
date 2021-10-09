@@ -42,11 +42,11 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
 
             PDFRect rect = this.GetRectBounds();
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
 
             Ellipse.BuildElipse(path, rect, true, 0);
 

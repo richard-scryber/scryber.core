@@ -45,7 +45,7 @@ namespace Scryber.Components
         }
 
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             PDFPositionOptions pos = fullstyle.CreatePostionOptions();
 
@@ -93,7 +93,7 @@ namespace Scryber.Components
             }
             
 
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
             path.MoveTo(start);
             path.LineTo(end);
 

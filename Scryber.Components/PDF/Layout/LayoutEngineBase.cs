@@ -1067,7 +1067,7 @@ namespace Scryber.PDF.Layout
             avail.Width -= options.Margins.Left + options.Margins.Right + options.Padding.Left + options.Padding.Right;
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
 
-            PDFGraphicsPath path = comp.CreatePath(avail, style);
+            GraphicsPath path = comp.CreatePath(avail, style);
             comp.Path = path;
             PDFSize required = path.Bounds.Size;
 

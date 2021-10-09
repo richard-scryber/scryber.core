@@ -45,7 +45,7 @@ namespace Scryber
             this._log = log == null ? new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off) : log;
         }
 
-        public void ParseSVG(PDFGraphicsPath path, string data)
+        public void ParseSVG(GraphicsPath path, string data)
         {
             string[] tokens = operators.Split(data);
 
@@ -61,7 +61,7 @@ namespace Scryber
         /// </summary>
         /// <param name="path"></param>
         /// <param name="command"></param>
-        public void ParseSVGCommand(PDFGraphicsPath path, string command)
+        public void ParseSVGCommand(GraphicsPath path, string command)
         {
             char cmd = command[0];
             string[] args;
@@ -75,7 +75,7 @@ namespace Scryber
         }
 
 
-        private void ParseSVGCommand(PDFGraphicsPath path, char cmd, string[] args)
+        private void ParseSVGCommand(GraphicsPath path, char cmd, string[] args)
         {
             switch (cmd)
             {
@@ -144,7 +144,7 @@ namespace Scryber
             }
         }
 
-        private void ParseSVGMoveCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGMoveCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             int index = 0;
             PDFUnit x, y;
@@ -167,7 +167,7 @@ namespace Scryber
             }
         }
 
-        private void ParseSVGLineCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGLineCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit x,y;
             int index = 0;
@@ -191,7 +191,7 @@ namespace Scryber
             }
         }
 
-        private void ParseSVGVerticalCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGVerticalCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit v;
             int index = 0;
@@ -213,7 +213,7 @@ namespace Scryber
             }
         }
 
-        private void ParseSVGHorizontalCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGHorizontalCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit h;
             int index = 0;
@@ -237,12 +237,12 @@ namespace Scryber
             }
         }
 
-        private void ParseSVGCloseCommand(PDFGraphicsPath path, string[] args)
+        private void ParseSVGCloseCommand(GraphicsPath path, string[] args)
         {
             path.ClosePath(false);
         }
 
-        private void ParseSVGCubicCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGCubicCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit startHandleX, startHandleY, endHandleX, endHandleY, endPtX, endPtY;
             int index = 0;
@@ -275,7 +275,7 @@ namespace Scryber
             }
         }
 
-        private void ParseSVGQuadraticCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGQuadraticCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit handleX, handleY, endPtX, endPtY;
             int index = 0;
@@ -315,7 +315,7 @@ namespace Scryber
         /// <param name="args"></param>
         /// <remarks>The curve is a cubic bezier path that starts from the current cursor position.
         /// The start handle is inferred as a reflection of the previous handle point</remarks>
-        private void ParseSVGSmoothCubicCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGSmoothCubicCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit endHandleX, endHandleY, endPtX, endPtY;
             int index = 0;
@@ -355,7 +355,7 @@ namespace Scryber
         /// <param name="absolute"></param>
         /// <param name="args"></param>
         /// <remarks>The handle is inferred as a reflection of the previous handle</remarks>
-        private void ParseSVGSmoothQuadraticCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGSmoothQuadraticCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit endPtX, endPtY;
             int index = 0;
@@ -403,7 +403,7 @@ namespace Scryber
         /// endx = The X co-ordinate of the end point of the arc
         /// endy = The Y co-ordinate of the end point of the arc
         /// </remarks>
-        private void ParseSVGArcCommand(PDFGraphicsPath path, char cmd, bool absolute, string[] args)
+        private void ParseSVGArcCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             PDFUnit rx, ry, endx, endy;
             double ang;

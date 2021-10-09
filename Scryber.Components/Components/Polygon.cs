@@ -92,7 +92,7 @@ namespace Scryber.Components
                 return base.GetPoints(bounds, style);
         }
 
-        protected override void BuildPath(PDFGraphicsPath path, PDFPoint[] points, Style style, bool end)
+        protected override void BuildPath(GraphicsPath path, PDFPoint[] points, Style style, bool end)
         {
             int vertexstep = style.GetValue(StyleKeys.ShapeVertexStepKey, 1);
             bool closed = style.GetValue(StyleKeys.ShapeClosedKey, true);
@@ -103,7 +103,7 @@ namespace Scryber.Components
                 base.BuildPath(path, points, style, end);
         }
 
-        protected virtual void BuildPolygramPath(PDFGraphicsPath path, PDFPoint[] points, int step, bool closed, bool end)
+        protected virtual void BuildPolygramPath(GraphicsPath path, PDFPoint[] points, int step, bool closed, bool end)
         {
             if (points.Length < 5)
                 throw new PDFException(Errors.CannotCreatePolygramWithLessThan5Sides, null);

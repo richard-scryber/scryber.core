@@ -43,10 +43,10 @@ namespace Scryber.Svg.Components
             base.OnPreLayout(context);
         }
 
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             var bounds = this.GetRectBounds();
-            var path = new PDFGraphicsPath();
+            var path = new GraphicsPath();
             Ellipse.BuildElipse(path, bounds, true, 0);
 
             return path;

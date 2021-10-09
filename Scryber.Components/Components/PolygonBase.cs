@@ -99,13 +99,13 @@ namespace Scryber.Components
         /// <param name="available"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override PDFGraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
         {
             PDFRect rect = this.GetPrescribedBounds(available, fullstyle);
 
             PDFPoint[] points = this.GetPoints(rect, fullstyle);
 
-            PDFGraphicsPath path = new PDFGraphicsPath();
+            GraphicsPath path = new GraphicsPath();
             this.BuildPath(path, points, fullstyle, true);
 
             return path;
@@ -154,7 +154,7 @@ namespace Scryber.Components
         /// <param name="points">The points to add lines between</param>
         /// <param name="close">Closes the path (adds an extra line back to the starting point</param>
         /// <param name="end">If true then ends the path so no more points can be added to it</param>
-        protected virtual void BuildPath(PDFGraphicsPath path, PDFPoint[] points, Style style, bool end)
+        protected virtual void BuildPath(GraphicsPath path, PDFPoint[] points, Style style, bool end)
         {
             if (path.HasCurrentPath == false)
                 path.BeginPath();
