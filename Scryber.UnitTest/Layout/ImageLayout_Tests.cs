@@ -120,6 +120,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             using (var stream = DocStreams.GetOutputStream("Images_FixedSizes.pdf"))
             {
+                doc.AppendTraceLog = true;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(stream);
             }

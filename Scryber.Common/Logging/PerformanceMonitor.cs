@@ -205,7 +205,7 @@ namespace Scryber.Logging
         /// Adds all the performance monitor entries onto the specified trace log
         /// </summary>
         /// <param name="log"></param>
-        public void OutputToTraceLog(PDFTraceLog log)
+        public void OutputToTraceLog(TraceLog log)
         {
             if (null == log)
                 return;

@@ -110,7 +110,7 @@ namespace Scryber.PDF.Secure
         /// <param name="stream">The stream to ultimately write the data to.</param>
         /// <param name="log">The log to write messages to.</param>
         /// <param name="security">The PDFEncrypter to use.</param>
-        internal PDFSecureWriter14(Stream stream, PDFTraceLog log, PerformanceMonitor monitor, PDFEncryter security)
+        internal PDFSecureWriter14(Stream stream, TraceLog log, PerformanceMonitor monitor, PDFEncryter security)
             : base(stream, log)
         {
             if (null == security)
@@ -131,7 +131,7 @@ namespace Scryber.PDF.Secure
         /// <param name="generation">The current generation of the PDF docucment.</param>
         /// <param name="log">The log to write messages to.</param>
         /// <param name="security">The PDFEncrypter to use.</param>
-        internal PDFSecureWriter14(Stream stream, int generation, PDFTraceLog log, PerformanceMonitor monitor, Version vers, PDFEncryter security)
+        internal PDFSecureWriter14(Stream stream, int generation, TraceLog log, PerformanceMonitor monitor, Version vers, PDFEncryter security)
             : base(stream, generation, log, vers)
         {
             if (null == security)
@@ -380,7 +380,7 @@ namespace Scryber.PDF.Secure
             this._enc = enc;
         }
 
-        protected override PDFWriter DoGetInstance(Document forDoc, Stream stream, int generation, PDFDocumentRenderOptions options, PDFTraceLog log, PerformanceMonitor monitor)
+        protected override PDFWriter DoGetInstance(Document forDoc, Stream stream, int generation, PDFDocumentRenderOptions options, TraceLog log, PerformanceMonitor monitor)
         {
             return new PDFSecureWriter14(stream, log, monitor, this._enc);
         }

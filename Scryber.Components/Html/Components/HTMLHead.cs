@@ -5,6 +5,7 @@ using Scryber.Components;
 using Scryber.Styles;
 using Scryber.PDF;
 using Scryber.PDF.Secure;
+using Scryber.Logging;
 
 namespace Scryber.Html.Components
 {

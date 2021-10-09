@@ -23,6 +23,7 @@ using System.Security;
 using System.Text;
 using Scryber.Components;
 using Scryber.PDF.Secure;
+using Scryber.Logging;
 
 namespace Scryber.PDF
 {

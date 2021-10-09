@@ -80,7 +80,7 @@ namespace Scryber.Core.UnitTests.Generation
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
-            PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
+            TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor mon = new PerformanceMonitor(true);
             Mocks.MockControllerClass controller = new Mocks.MockControllerClass();
 
@@ -116,7 +116,7 @@ namespace Scryber.Core.UnitTests.Generation
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
-            PDFTraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
+            TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor mon = new PerformanceMonitor(true);
             ParserSettings target = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, null);
 

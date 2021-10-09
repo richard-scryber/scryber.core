@@ -162,7 +162,7 @@ namespace Scryber.PDF.Layout
                 throw new ArgumentOutOfRangeException("Cannot begin a new page based on previous page if there are no previous pages");
             PDFLayoutPage pg = this.CurrentPage;
 
-            PDFTraceLog log = this.DocumentComponent.TraceLog;
+            var log = this.DocumentComponent.TraceLog;
             if (log.ShouldLog(TraceLevel.Verbose))
                 log.Add(TraceLevel.Verbose, "LAYOUT", "Beginning a new continuation page for '" + pg + "'");
 

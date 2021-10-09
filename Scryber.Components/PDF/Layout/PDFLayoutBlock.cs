@@ -462,7 +462,7 @@ namespace Scryber.PDF.Layout
         /// <param name="alley"></param>
         public virtual void InitRegions(PDFRect totalbounds, PDFPositionOptions position, PDFColumnOptions columns, PDFLayoutContext context)
         {
-            TraceLog log = context.TraceLog;
+            var log = context.TraceLog;
             if (log.ShouldLog(TraceLevel.Debug))
                 log.Add(TraceLevel.Debug, LayoutEngineBase.LOG_CATEGORY, "Initialized layout block for component " + (null == this.Owner ? "'NONE'" : this.Owner.ToString()));
 

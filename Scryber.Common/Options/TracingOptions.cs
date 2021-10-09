@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Scryber.Logging;
 
 namespace Scryber.Options
 {
@@ -19,7 +20,7 @@ namespace Scryber.Options
 
         private Scryber.IPDFTraceLogFactory[] _factories;
 
-        public Scryber.TraceLog GetTraceLog()
+        public TraceLog GetTraceLog()
         {
             if(null == _factories)
             {
@@ -37,7 +38,7 @@ namespace Scryber.Options
                 }
                 _factories = all.ToArray();
             }
-
+            
             if (_factories.Length == 0)
                 return new Scryber.Logging.DoNothingTraceLog(this.TraceLevel);
             else if (_factories.Length == 1)

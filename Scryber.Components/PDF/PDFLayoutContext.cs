@@ -71,7 +71,7 @@ namespace Scryber.PDF
 
         #endregion
 
-        public PDFLayoutContext(Style style, PDFOutputFormatting format, ItemCollection items, PDFTraceLog log, PerformanceMonitor perfmon, IDocument document)
+        public PDFLayoutContext(Style style, PDFOutputFormatting format, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(new StyleStack(style), items, log, perfmon, document)
         {
             this._format = format;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Scryber.Logging;
 
 namespace Scryber.UnitTests.Mocks
 {

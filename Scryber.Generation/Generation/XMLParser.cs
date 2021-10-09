@@ -23,6 +23,8 @@ using System.IO;
 using System.Xml;
 using System.Data.Common;
 
+using Scryber.Logging;
+
 namespace Scryber.Generation
 {
     public class XMLParser : IComponentParser
@@ -1854,16 +1856,16 @@ namespace Scryber.Generation
         /// <returns></returns>
         private void InjectCollectorLog()
         {
-            if (this.Settings.TraceLog != null && this.Settings.TraceLog.GetLogWithName(Scryber.PDFTraceLog.ScryberAppendTraceLogName) == null)
+            if (this.Settings.TraceLog != null && this.Settings.TraceLog.GetLogWithName(TraceLog.ScryberAppendTraceLogName) == null)
             {
                 Scryber.Logging.PDFCollectorTraceLogFactory factory = new Logging.PDFCollectorTraceLogFactory();
 
-                Scryber.Logging.PDFCollectorTraceLog coll = (Scryber.Logging.PDFCollectorTraceLog)factory.CreateLog(this.Settings.TraceLog.RecordLevel, Scryber.PDFTraceLog.ScryberAppendTraceLogName);
+                Scryber.Logging.PDFCollectorTraceLog coll = (Scryber.Logging.PDFCollectorTraceLog)factory.CreateLog(this.Settings.TraceLog.RecordLevel, TraceLog.ScryberAppendTraceLogName);
                 if (null == this.Settings.TraceLog)
                     this.Settings.TraceLog = coll;
                 else
                 {
-                    Scryber.Logging.CompositeTraceLog comp = new Logging.CompositeTraceLog(new PDFTraceLog[] { this.Settings.TraceLog, coll }, string.Empty);
+                    Scryber.Logging.CompositeTraceLog comp = new Logging.CompositeTraceLog(new TraceLog[] { this.Settings.TraceLog, coll }, string.Empty);
                     this.Settings.TraceLog = comp;
                 }
             }

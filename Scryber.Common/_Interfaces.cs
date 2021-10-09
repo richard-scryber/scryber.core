@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
+using Scryber.Logging;
 
 namespace Scryber
 {
@@ -346,7 +347,7 @@ namespace Scryber
         /// <summary>
         /// Gets the trace log associated with the current execution
         /// </summary>
-        PDFTraceLog TraceLog { get; }
+        TraceLog TraceLog { get; }
 
     }
 
@@ -419,7 +420,7 @@ namespace Scryber
         /// <summary>
         /// Gets the trace log associated with the current execution
         /// </summary>
-        PDFTraceLog TraceLog { set; }
+        TraceLog TraceLog { set; }
 
     }
 
@@ -537,7 +538,7 @@ namespace Scryber
     /// </summary>
     public interface IPDFTraceLogFactory
     {
-        PDFTraceLog CreateLog(TraceRecordLevel level, string name);
+        TraceLog CreateLog(TraceRecordLevel level, string name);
     }
 
     #endregion

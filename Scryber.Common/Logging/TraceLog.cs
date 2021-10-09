@@ -20,12 +20,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scryber
+namespace Scryber.Logging
 {
     /// <summary>
     /// Base implementation of all trace logs for the Scryber library
     /// </summary>
-    public abstract class PDFTraceLog : IDisposable
+    public abstract class TraceLog : IDisposable
     {
 
         public const string ScryberAppendTraceLogName = "_scryber.appendcollectorlog_";
@@ -93,7 +93,7 @@ namespace Scryber
         /// 
         /// </summary>
         /// <param name="recordlevel"></param>
-        protected PDFTraceLog(TraceRecordLevel recordlevel, string name)
+        protected TraceLog(TraceRecordLevel recordlevel, string name)
             : this(recordlevel, name, InsetString)
         {
         }
@@ -102,7 +102,7 @@ namespace Scryber
 
         #region protected PDFTraceLog(TraceRecordLevel recordlevel, string name, string insetstring)
 
-        protected PDFTraceLog(TraceRecordLevel recordlevel, string name, string insetstring)
+        protected TraceLog(TraceRecordLevel recordlevel, string name, string insetstring)
         {
             this._level = recordlevel;
             this._stopwatch = new System.Diagnostics.Stopwatch();
@@ -282,7 +282,7 @@ namespace Scryber
 
         #endregion
 
-        public virtual PDFTraceLog GetLogWithName(string name)
+        public virtual TraceLog GetLogWithName(string name)
         {
             if(string.Equals(this.Name,name))
                 return this;
@@ -355,7 +355,7 @@ namespace Scryber
             }
         }
 
-        ~PDFTraceLog()
+        ~TraceLog()
         {
             this.Dispose(false);
         }

@@ -48,7 +48,7 @@ namespace Scryber.Generation
         private Type _templateinstanceType;
         private Type _tempateGenType;
         private Type _textLiteralType;
-        private PDFTraceLog _log;
+        private TraceLog _log;
         private bool _logParserOutput;
         private ParserConformanceMode _conformance;
         private ParserLoadType _loadtype;
@@ -114,7 +114,7 @@ namespace Scryber.Generation
         /// <summary>
         /// Gets or sets the current log
         /// </summary>
-        public PDFTraceLog TraceLog
+        public TraceLog TraceLog
         {
             get { return _log; }
             set { _log = value; }
@@ -192,7 +192,7 @@ namespace Scryber.Generation
 
         public ParserSettings(Type literaltype, Type templategenerator, Type templateinstance, 
                                 PDFReferenceResolver resolver, ParserConformanceMode conformance, ParserLoadType loadtype,
-                                PDFTraceLog log, PerformanceMonitor perfmon, object controllerInstance)
+                                TraceLog log, PerformanceMonitor perfmon, object controllerInstance)
         {
             this._textLiteralType = literaltype;
             this._tempateGenType = templategenerator;

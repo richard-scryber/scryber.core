@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Scryber.Logging;
 
 namespace Scryber.PDF.Native
 {

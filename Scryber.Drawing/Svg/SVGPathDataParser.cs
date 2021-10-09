@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Scryber.Drawing;
+using Scryber.Logging;
 
 namespace Scryber.Svg
 {
