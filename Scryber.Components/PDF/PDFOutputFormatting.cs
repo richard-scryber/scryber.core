@@ -77,7 +77,7 @@ namespace Scryber.PDF
             return _supportedColor(color);
         }
 
-        public virtual bool IsSupportedImageType(PDFImageData data)
+        public virtual bool IsSupportedImageType(ImageData data)
         {
             return true;
         }

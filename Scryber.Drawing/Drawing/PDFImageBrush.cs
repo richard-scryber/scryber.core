@@ -209,7 +209,7 @@ namespace Scryber.Drawing
                 return false;
         }
 
-        private PDFSize CalculateAppropriateImageSize(PDFImageData imgdata)
+        private PDFSize CalculateAppropriateImageSize(ImageData imgdata)
         {
             if (this.XSize > 0 && this.YSize > 0)
             {

@@ -43,7 +43,7 @@ namespace Scryber
         /// <param name="document">The root level document</param>
         /// <param name="path">The specified path to the source</param>
         /// <returns>The loaded image data</returns>
-        PDFImageData LoadImageData(IDocument document, IComponent owner, string path);
+        ImageData LoadImageData(IDocument document, IComponent owner, string path);
     }
 
 

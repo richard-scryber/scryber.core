@@ -42,6 +42,7 @@
     <Folder Include="Text\_FontResources\Symbol\" />
     <Folder Include="PDF\" />
     <Folder Include="PDF\Resources\" />
+    <Folder Include="Svg\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Text\_FontResources\Helvetica\Helvetica.ttf" />
@@ -60,6 +61,7 @@
     <None Remove="Text\_FontResources\Times\timesNewRomanItalic.ttf" />
     <None Remove="PDF\" />
     <None Remove="PDF\Resources\" />
+    <None Remove="Svg\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />

@@ -190,7 +190,7 @@ namespace Scryber.Drawing
                 return false;
         }
 
-        private PDFSize CalculateAppropriateImageSize(PDFImageData imgdata, PDFRect bounds)
+        private PDFSize CalculateAppropriateImageSize(ImageData imgdata, PDFRect bounds)
         {
             //Find the dimension that makes sure the bounds are fully covered
             double scale = (bounds.Width.PointsValue / imgdata.DisplayWidth.PointsValue);

@@ -28,7 +28,7 @@ using Scryber.PDF;
 namespace Scryber.Drawing
 {
     [PDFParsableValue()]
-    public abstract class PDFImageData : PDFObject
+    public abstract class ImageData : ITypedObject
     {
 
         //
@@ -206,11 +206,21 @@ namespace Scryber.Drawing
 
         #endregion
 
+        private ObjectType _type;
+
+        /// <summary>
+        /// Gets the type of object this is
+        /// </summary>
+        public ObjectType Type
+        {
+            get { return _type; }
+        }
+
         //
         // ctor(s)
         //
 
-        #region protected PDFImageData(string source, int w, int h)
+        #region protected PDFImageData(string source, int w, int h) + 1 overload
 
         /// <summary>
         /// Protected constructor - accepts the source path, width and height (in pixels)
@@ -218,9 +228,17 @@ namespace Scryber.Drawing
         /// <param name="source"></param>
         /// <param name="w"></param>
         /// <param name="h"></param>
-        protected PDFImageData(string source, int w, int h)
-            : base(ObjectTypes.ImageData)
+        protected ImageData(string source, int w, int h)
+            : this(ObjectTypes.ImageData, source, w, h)
         {
+            this._path = source;
+            this._w = w;
+            this._h = h;
+        }
+
+        protected ImageData(ObjectType type, string source, int w, int h)
+        {
+            this._type = type;
             this._path = source;
             this._w = w;
             this._h = h;
@@ -264,7 +282,7 @@ namespace Scryber.Drawing
         // static methods
         //
 
-        public static PDFImageData LoadImageFromURI(string uri, IComponent owner = null)
+        public static ImageData LoadImageFromURI(string uri, IComponent owner = null)
         {
             //throw new NotSupportedException("Don't use the loading from a remote uri. Use the Document.RegisterRemoteFileRequest");
 
@@ -277,7 +295,7 @@ namespace Scryber.Drawing
                 if (owner is IOptimizeComponent)
                     compress = ((IOptimizeComponent)owner).Compress;
 
-                PDFImageData img;
+                ImageData img;
                 byte[] data = wc.GetByteArrayAsync(uri).Result;
                 img = InitImageData(uri, data, compress);
                 return img;
@@ -285,7 +303,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public static PDFImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IComponent owner = null)
+        public static ImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IComponent owner = null)
         {
             using (System.Drawing.Image bmp = System.Drawing.Image.FromStream(stream))
             {
@@ -294,13 +312,13 @@ namespace Scryber.Drawing
                 if (null != owner && owner is IOptimizeComponent)
                     compress = ((IOptimizeComponent)owner).Compress;
 
-                PDFImageData img;
+                ImageData img;
                 img = InitImageData(sourceKey, bmp, compress);
                 return img;
             }
         }
 
-        public static PDFImageData LoadImageFromLocalFile(string path, IComponent owner = null)
+        public static ImageData LoadImageFromLocalFile(string path, IComponent owner = null)
         {
             System.IO.FileInfo fi = new System.IO.FileInfo(path);
             if (fi.Exists == false)
@@ -313,13 +331,13 @@ namespace Scryber.Drawing
 
             using (System.Drawing.Image bmp = System.Drawing.Image.FromFile(path))
             {
-                PDFImageData img;
+                ImageData img;
                 img = InitImageData(path, bmp, compress);
                 return img;
             }
         }
 
-        public static PDFImageData LoadImageFromUriData(string src, IDocument document, IComponent owner)
+        public static ImageData LoadImageFromUriData(string src, IDocument document, IComponent owner)
         {
             if (null == document) throw new ArgumentNullException("document");
             if (null == owner) throw new ArgumentNullException("owner");
@@ -333,7 +351,7 @@ namespace Scryber.Drawing
 
             using (var ms = new System.IO.MemoryStream(binary))
             {
-                return PDFImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
+                return ImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
             }
         }
 
@@ -344,19 +362,19 @@ namespace Scryber.Drawing
         /// <param name="sourcekey"></param>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static PDFImageData LoadImageFromBitmap(string sourcekey, System.Drawing.Bitmap bitmap, bool compress = false)
+        public static ImageData LoadImageFromBitmap(string sourcekey, System.Drawing.Bitmap bitmap, bool compress = false)
         {
             if (null == bitmap)
                 throw new ArgumentNullException("bitmap");
-            PDFImageData data = InitImageData(sourcekey, bitmap, compress);
+            ImageData data = InitImageData(sourcekey, bitmap, compress);
             
             return data;
         }
 
 
-        public static PDFImageData InitImageData(string uri, byte[] data, bool compress)
+        public static ImageData InitImageData(string uri, byte[] data, bool compress)
         {
-            PDFImageData img;
+            ImageData img;
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream(data))
             {
                 System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms, false);
@@ -366,9 +384,9 @@ namespace Scryber.Drawing
             return img;
         }
 
-        private static PDFImageData InitImageData(string uri, System.Drawing.Image bmp, bool compress)
+        private static ImageData InitImageData(string uri, System.Drawing.Image bmp, bool compress)
         {
-            PDFImageData imgdata;
+            ImageData imgdata;
             bool dispose = false;
 
             //if this image data is not a bitmap but a metafile (drawing instructions)
@@ -419,12 +437,12 @@ namespace Scryber.Drawing
             return bmp;
         }
 
-        public static PDFImageData Parse(string data)
+        public static ImageData Parse(string data)
         {
             return Parse(data, false);
         }
 
-        public static PDFImageData Parse(string data, bool compress)
+        public static ImageData Parse(string data, bool compress)
         {
             if (string.IsNullOrEmpty(data) == false)
             {
@@ -434,7 +452,7 @@ namespace Scryber.Drawing
                     using (System.IO.MemoryStream ms = new System.IO.MemoryStream(binary))
                     {
                         System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms);
-                        return PDFImageData.LoadImageFromBitmap(Guid.NewGuid().ToString(), bmp, compress);
+                        return ImageData.LoadImageFromBitmap(Guid.NewGuid().ToString(), bmp, compress);
                     }
                 }
                 catch (Exception ex)

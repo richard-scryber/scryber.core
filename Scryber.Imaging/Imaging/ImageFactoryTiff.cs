@@ -21,13 +21,13 @@ namespace Scryber.Imaging
         }
 
 
-        protected override PDFImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
+        protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
         {
             IImageFormat format;
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
             var img = Image.Load(config, stream, out format);
 
-            PDFImageData data = null;
+            ImageData data = null;
 
             if (format.Name == "TIFF")
             {

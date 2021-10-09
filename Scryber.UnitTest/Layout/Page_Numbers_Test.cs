@@ -15,7 +15,7 @@ namespace Scryber.Core.UnitTests.Layout
 {
 
     [TestClass()]
-    public class PDFPage_Numbers_Test
+    public class Page_Numbers_Test
     {
 
 

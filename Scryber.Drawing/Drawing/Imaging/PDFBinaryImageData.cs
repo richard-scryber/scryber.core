@@ -7,7 +7,7 @@ namespace Scryber.Drawing.Imaging
     /// <summary>
     /// Represents a binary image where the data is held as a byte array
     /// </summary>
-    public class PDFBinaryImageData : PDFImageData
+    public class PDFBinaryImageData : ImageData
     {
 
         #region public byte[] Data {get;set;}

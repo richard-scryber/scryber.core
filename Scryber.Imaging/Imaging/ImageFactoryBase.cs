@@ -20,20 +20,20 @@ namespace Scryber.Imaging
 
         public abstract bool ShouldCache { get; }
 
-        public virtual PDFImageData LoadImageData(IDocument document, IComponent owner, string path)
+        public virtual ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
             return this.DoLoadImageDataAsync(document, owner, path).Result;
         }
 
-        public async virtual Task<PDFImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
+        public async virtual Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             return await this.DoLoadImageDataAsync(document, owner, path);
         }
 
-        protected async virtual Task<PDFImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
+        protected async virtual Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             Stream stream = null;
-            PDFImageData data = null;
+            ImageData data = null;
             try
             {
                 if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
@@ -96,9 +96,9 @@ namespace Scryber.Imaging
         /// <param name="owner"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected abstract PDFImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner, string path);
+        protected abstract ImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner, string path);
 
-        public delegate PDFImageData FactoryCreateInstance(SixLabors.ImageSharp.Image baseImage, string source);
+        public delegate ImageData FactoryCreateInstance(SixLabors.ImageSharp.Image baseImage, string source);
 
         private static Dictionary<Type, FactoryCreateInstance> _factories;
         private static readonly object _lock;
@@ -178,7 +178,7 @@ namespace Scryber.Imaging
         }
 
 
-        protected virtual PDFImageData GetImageDataForImage(Image baseImage, string source)
+        protected virtual ImageData GetImageDataForImage(Image baseImage, string source)
         {
             if (null == baseImage)
                 throw new ArgumentNullException(nameof(baseImage));

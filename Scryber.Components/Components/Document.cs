@@ -1356,9 +1356,9 @@ namespace Scryber.Components
 
         protected PDFResource RegisterXObjectResource(string fullname, Component owner, object resource)
         {
-            if (resource is PDFImageData)
+            if (resource is ImageData)
             {
-                PDFImageData data = resource as PDFImageData;
+                ImageData data = resource as ImageData;
                 string id = this.GetIncrementID(ObjectTypes.ImageXObject);
                 
                 PDFImageXObject img = PDFImageXObject.Load(data, this.RenderOptions.Compression, id);
@@ -2307,7 +2307,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public PDFImageXObject LoadImageData(IComponent owner, string src)
         {
-            PDFImageData data;
+            ImageData data;
             string key = src;
             bool compress = false;
             if (owner is IOptimizeComponent)
@@ -2348,7 +2348,7 @@ namespace Scryber.Components
 
                     if (isInlineData)
                     {
-                        data = PDFImageData.LoadImageFromUriData(src, this, owner);
+                        data = ImageData.LoadImageFromUriData(src, this, owner);
                         key = GetIncrementID(ObjectTypes.ImageXObject); ;
                     }
                     else
@@ -2361,18 +2361,18 @@ namespace Scryber.Components
                         {
                             IPDFDataProvider prov;
                             if (isfile)
-                                data = PDFImageData.LoadImageFromLocalFile(src, owner);
+                                data = ImageData.LoadImageFromLocalFile(src, owner);
 
                             else if (this.DataProviders.TryGetDomainProvider("", src, out prov))
                             {
                                 object returned = prov.GetResponse(prov.ProviderKey + "Image", src, null);
-                                if (returned is PDFImageData)
-                                    data = (PDFImageData)returned;
+                                if (returned is ImageData)
+                                    data = (ImageData)returned;
 
                                 else if (returned is byte[])
                                 {
                                     byte[] imgdata = (byte[])returned;
-                                    data = PDFImageData.InitImageData(src, imgdata, compress);
+                                    data = ImageData.InitImageData(src, imgdata, compress);
                                 }
                                 else
                                     data = null;
@@ -2380,7 +2380,7 @@ namespace Scryber.Components
                             else
                             {
 
-                                data = PDFImageData.LoadImageFromURI(src, owner);
+                                data = ImageData.LoadImageFromURI(src, owner);
                             }
 
                             if (null != data)
@@ -2391,7 +2391,7 @@ namespace Scryber.Components
                             }
                         }
                         else
-                            data = (PDFImageData)cached;
+                            data = (ImageData)cached;
                     }
                 }
             }
@@ -2445,9 +2445,9 @@ namespace Scryber.Components
                 return data;
         }
 
-        private PDFImageData LoadImageDataFromFactory(IComponent owner, IPDFImageDataFactory factory, string path)
+        private ImageData LoadImageDataFromFactory(IComponent owner, IPDFImageDataFactory factory, string path)
         {
-            PDFImageData data;
+            ImageData data;
 
             if (factory.ShouldCache)
             {
@@ -2463,7 +2463,7 @@ namespace Scryber.Components
                     }
                 }
                 else
-                    data = (PDFImageData)cached;
+                    data = (ImageData)cached;
             }
             else
                 data = factory.LoadImageData(this, owner, path);
@@ -2471,7 +2471,7 @@ namespace Scryber.Components
             return data;
         }
 
-        public PDFImageData GetNotFoundLogo(string path)
+        public ImageData GetNotFoundLogo(string path)
         {
             return null;
 

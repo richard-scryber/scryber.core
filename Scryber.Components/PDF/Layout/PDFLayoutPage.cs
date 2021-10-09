@@ -548,7 +548,7 @@ namespace Scryber.PDF.Layout
                 else
                     bmp = mgr.GetObject(EnvironmentBadgeName) as System.Drawing.Bitmap;
 
-                PDFImageData data = PDFImageData.LoadImageFromBitmap(rsrcName, bmp, false);
+                ImageData data = ImageData.LoadImageFromBitmap(rsrcName, bmp, false);
 
                 string name = doc.GetIncrementID(ObjectTypes.ImageXObject);
 

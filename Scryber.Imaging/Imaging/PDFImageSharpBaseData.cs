@@ -10,7 +10,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Scryber.Imaging
 {
-    public abstract class PDFImageSharpData : PDFImageData
+    public abstract class PDFImageSharpData : ImageData
     {
         
 

@@ -120,7 +120,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="img"></param>
         /// <returns></returns>
-        private static PDFImageData GetJpegImageData(string uri, System.Drawing.Image img)
+        private static ImageData GetJpegImageData(string uri, System.Drawing.Image img)
         {
             PDFJpegImageData imgdata = new PDFJpegImageData(uri, img);
             return imgdata;
@@ -137,7 +137,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get1bppImageData(string uri, System.Drawing.Image image)
+        private static ImageData Get1bppImageData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -232,7 +232,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get4bppIndexedData(string uri, System.Drawing.Image image)
+        private static ImageData Get4bppIndexedData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -313,7 +313,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get8bppIndexedData(string uri, System.Drawing.Image image)
+        private static ImageData Get8bppIndexedData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -387,7 +387,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get24bppRGBImageData(string uri, System.Drawing.Image image)
+        private static ImageData Get24bppRGBImageData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -464,7 +464,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get32bppRGBImageData(string uri, System.Drawing.Image image)
+        private static ImageData Get32bppRGBImageData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -542,7 +542,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get32bppARGBImageData(string uri, System.Drawing.Image image)
+        private static ImageData Get32bppARGBImageData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -626,7 +626,7 @@ namespace Scryber.Drawing.Imaging
         /// <param name="uri"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static PDFImageData Get32bppCMYKImageData(string uri, System.Drawing.Image image)
+        private static ImageData Get32bppCMYKImageData(string uri, System.Drawing.Image image)
         {
             Bitmap bmp = (Bitmap)image;
             Rectangle bounds = new Rectangle(0, 0, image.Width, image.Height);
@@ -697,7 +697,7 @@ namespace Scryber.Drawing.Imaging
             return imgdata;
         }
 
-        private static PDFImageData GetCmykImageData(string uri, System.Drawing.Image image)
+        private static ImageData GetCmykImageData(string uri, System.Drawing.Image image)
         {
             return Get32bppCMYKImageData(uri, image);
         }

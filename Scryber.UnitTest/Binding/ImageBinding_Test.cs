@@ -71,7 +71,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 path = System.IO.Path.GetFullPath(path);
 
-                var data = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(path);
+                var data = Scryber.Drawing.ImageData.LoadImageFromLocalFile(path);
                 doc.Params["MyImage"] = data;
 
                 var img = doc.FindAComponentById("LoadedImage") as Image;
@@ -102,8 +102,8 @@ namespace Scryber.Core.UnitTests.Binding
             if (!path.EndsWith("/"))
                 path += "/";
 
-            var imgData1 = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(path + "Toroid24.jpg");
-            var imgData2 = Scryber.Drawing.PDFImageData.LoadImageFromLocalFile(path + "group.png"); ;
+            var imgData1 = Scryber.Drawing.ImageData.LoadImageFromLocalFile(path + "Toroid24.jpg");
+            var imgData2 = Scryber.Drawing.ImageData.LoadImageFromLocalFile(path + "group.png"); ;
 
             var model = new
             {

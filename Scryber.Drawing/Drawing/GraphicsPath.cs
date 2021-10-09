@@ -477,7 +477,7 @@ namespace Scryber.Drawing
             if (string.IsNullOrEmpty(value))
                 return path;
 
-            PDFSVGPathDataParser parser = new PDFSVGPathDataParser(true, null);
+            var parser = new Scryber.Svg.SVGPathDataParser(true, null);
             parser.ParseSVG(path, value);
             
             return path;
