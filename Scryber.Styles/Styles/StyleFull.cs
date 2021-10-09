@@ -22,6 +22,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
+using Scryber.PDF;
 
 namespace Scryber.Styles
 {
@@ -36,7 +38,7 @@ namespace Scryber.Styles
         private Scryber.PageSize _pgsize;
         private Scryber.PDFTextRenderOptions _text;
         private Scryber.PDFPageNumberOptions _pageNums;
-        private Scryber.Drawing.PDFPenBorders _borders;
+        private Scryber.PDF.PDFPenBorders _borders;
 
 
         public StyleFull()

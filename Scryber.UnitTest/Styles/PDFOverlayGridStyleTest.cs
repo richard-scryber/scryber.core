@@ -3,6 +3,7 @@ using System;
 using Scryber;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Core.UnitTests.Styles
 {

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
 using Scryber.PDF.Native;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Core.UnitTests.Drawing
 {

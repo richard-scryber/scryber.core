@@ -388,7 +388,7 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(thick.Bottom, (Scryber.Drawing.PDFUnit)12.5);
             Assert.AreEqual(thick.Left, new Scryber.Drawing.PDFUnit(4, Scryber.Drawing.PageUnits.Millimeters));
 
-            type = typeof(Scryber.Drawing.PDFPen); //pen is not parsable
+            type = typeof(Scryber.PDF.Graphics.PDFPen); //pen is not parsable
             expected = false;
             actual = ParserDefintionFactory.IsCustomParsableObjectType(type, out convert);
             Assert.AreEqual(expected, actual);

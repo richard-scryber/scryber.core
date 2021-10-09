@@ -218,10 +218,10 @@ namespace Scryber.PDF.Layout
                     size = size.Subtract(opts.Margins);
                 }
                 
-                PDFPenBorders border = this.FullStyle.CreateBorderPen();
+                var border = this.FullStyle.CreateBorderPen();
 
 
-                PDFBrush background = this.FullStyle.CreateBackgroundBrush();
+                var background = this.FullStyle.CreateBackgroundBrush();
 
                 PDFRect borderRect = new PDFRect(loc, size);
                 if (null != background)

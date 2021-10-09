@@ -4,6 +4,7 @@ using System;
 using Scryber;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Core.UnitTests.Styles
 {

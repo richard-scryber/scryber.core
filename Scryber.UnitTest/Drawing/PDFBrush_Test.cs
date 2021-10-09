@@ -2,6 +2,7 @@
 using System;
 using Scryber;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Core.UnitTests.Drawing
 {

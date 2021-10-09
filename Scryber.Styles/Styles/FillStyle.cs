@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using Scryber.Drawing;
 using Scryber;
 using System.ComponentModel;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Styles
 {

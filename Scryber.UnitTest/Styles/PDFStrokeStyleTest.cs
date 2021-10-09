@@ -2,6 +2,7 @@
 using System;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Core.UnitTests.Styles
 {
@@ -33,6 +34,8 @@ namespace Scryber.Core.UnitTests.Styles
                 testContextInstance = value;
             }
         }
+
+
 
         #region Additional test attributes
         // 

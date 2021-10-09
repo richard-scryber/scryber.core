@@ -1,5 +1,8 @@
 ﻿using System;
-namespace Scryber.Drawing
+using Scryber.Drawing;
+using Scryber.PDF.Graphics;
+
+namespace Scryber.PDF
 {
     public class PDFPenBorders
     {
