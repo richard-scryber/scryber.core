@@ -123,7 +123,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Fill.Color = Scryber.Drawing.PDFColors.Blue;
+            style.Fill.Color = Scryber.Drawing.StandardColors.Blue;
             style.Text.Decoration = Text.TextDecoration.Underline;
 
             return style;

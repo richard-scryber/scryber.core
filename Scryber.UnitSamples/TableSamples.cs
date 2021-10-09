@@ -88,7 +88,7 @@ namespace Scryber.UnitSamples
                     }
                     else
                     {
-                        var cell = new TableCell() { BorderColor = PDFColors.Aqua, FontItalic = true };
+                        var cell = new TableCell() { BorderColor = StandardColors.Aqua, FontItalic = true };
                         row.Cells.Add(cell);
 
                         var txt = new TextLiteral("Cell " + (i + 1) + "." + (j + 1));

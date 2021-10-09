@@ -121,7 +121,7 @@ namespace Scryber.UnitSamples
                     File = "https://www.nuget.org/packages/Scryber.Core/",
                     Margins = new PDFThickness(10),
                     Padding = new PDFThickness(5),
-                    BackgroundColor = PDFColors.Gray,
+                    BackgroundColor = StandardColors.Gray,
                     PositionMode = PositionMode.Block
                 };
 

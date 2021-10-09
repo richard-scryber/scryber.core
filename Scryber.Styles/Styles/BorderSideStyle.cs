@@ -83,7 +83,7 @@ namespace Scryber.Styles
                 if (this.TryGetValue(_color, out col))
                     return col;
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set { this.SetValue(_color, value); }
         }

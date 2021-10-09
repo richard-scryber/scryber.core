@@ -210,13 +210,13 @@ namespace Scryber.Core.UnitTests.Styles
 
             target = new Style();
             
-            target.Background.Color = PDFColors.Lime;
+            target.Background.Color = StandardColors.Lime;
             target.Background.FillStyle = Scryber.Drawing.FillType.Solid;
 
-            target.Fill.Color = PDFColors.Navy;
+            target.Fill.Color = StandardColors.Navy;
             target.Fill.Style = Scryber.Drawing.FillType.Solid;
 
-            target.Stroke.Color = PDFColors.Purple;
+            target.Stroke.Color = StandardColors.Purple;
             target.Stroke.Width = 2;
             target.Stroke.LineStyle = LineType.Solid;
 
@@ -233,13 +233,13 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.CreateTextOptions();
 
             Assert.IsInstanceOfType(actual.Background, typeof(PDFSolidBrush));
-            Assert.AreEqual(PDFColors.Lime, ((PDFSolidBrush)actual.Background).Color);
+            Assert.AreEqual(StandardColors.Lime, ((PDFSolidBrush)actual.Background).Color);
 
             Assert.IsInstanceOfType(actual.FillBrush, typeof(PDFSolidBrush));
-            Assert.AreEqual(PDFColors.Navy, ((PDFSolidBrush)actual.FillBrush).Color);
+            Assert.AreEqual(StandardColors.Navy, ((PDFSolidBrush)actual.FillBrush).Color);
 
             Assert.IsInstanceOfType(actual.Stroke, typeof(PDFSolidPen));
-            Assert.AreEqual(PDFColors.Purple, ((PDFSolidPen)actual.Stroke).Color);
+            Assert.AreEqual(StandardColors.Purple, ((PDFSolidPen)actual.Stroke).Color);
             Assert.AreEqual((PDFUnit)2, actual.Stroke.Width);
 
             Assert.IsInstanceOfType(actual.Font, typeof(PDFFont));
@@ -267,7 +267,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Add a background color and style
             BackgroundStyle bg = new BackgroundStyle();
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             //target.Background.AddItem(bg);
 
@@ -279,7 +279,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Flattening process will remove the duplicates from the bottom up.
             Style actual = target.Flatten();
-            Assert.AreEqual(PDFColors.Aqua, actual.Background.Color);
+            Assert.AreEqual(StandardColors.Aqua, actual.Background.Color);
             Assert.AreEqual(Scryber.Drawing.FillType.Pattern, actual.Background.FillStyle);
             Assert.AreEqual(true, actual.Font.FontBold);
             Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.FontFamily);
@@ -298,7 +298,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Add a background color and style
             //PDFBackgroundStyle bg = new PDFBackgroundStyle();
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             //target.AddItem(bg);
 
@@ -316,7 +316,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(actual);
 
             //But we should not have lost any detail within the style for the background
-            Assert.AreEqual(PDFColors.Aqua, actual.Color);
+            Assert.AreEqual(StandardColors.Aqua, actual.Color);
             Assert.AreEqual(Scryber.Drawing.FillType.Pattern, actual.FillStyle);
 
         }
@@ -333,7 +333,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style target = new Style();
 
             //Add a background color and style - not inherited
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
@@ -375,7 +375,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style target = new Style();
 
             //Add a background color and style - not inherited
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
@@ -416,7 +416,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style target = new Style();
 
             //Add a background color and style - not inherited
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
@@ -459,7 +459,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style target = new Style();
 
             //Add a background color and style - not inherited
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
             
             //Add a font - inherited
@@ -500,7 +500,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void TryGetStyleTest()
         {
             Style target = new Style();
-            target.Background.Color = PDFColors.Aqua;
+            target.Background.Color = StandardColors.Aqua;
             
             target.Border.CornerRadius = 20;
             
@@ -537,7 +537,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Background;
             Assert.IsNotNull(actual);
 
-            actual.Color = PDFColors.Lime;
+            actual.Color = StandardColors.Lime;
             Assert.AreEqual(actual.Color, target.Background.Color);
 
             
@@ -556,7 +556,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Border;
             Assert.IsNotNull(actual);
 
-            actual.Color = PDFColors.Lime;
+            actual.Color = StandardColors.Lime;
             Assert.AreEqual(actual.Color, target.Border.Color);
 
         }
@@ -592,7 +592,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Fill;
             Assert.IsNotNull(actual);
 
-            actual.Color = PDFColors.Lime;
+            actual.Color = StandardColors.Lime;
             Assert.AreEqual(actual.Color, target.Fill.Color);
         }
 
@@ -645,7 +645,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Outline;
             Assert.IsNotNull(actual);
 
-            actual.Color = PDFColors.Lime;
+            actual.Color = StandardColors.Lime;
             Assert.AreEqual(actual.Color, target.Outline.Color);
         }
 

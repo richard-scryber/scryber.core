@@ -49,9 +49,9 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent);
+                    return this.Style.GetValue(StyleKeys.BgColorKey, StandardColors.Transparent);
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set
             {
@@ -167,9 +167,9 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderColorKey, PDFColors.Transparent);
+                    return this.Style.GetValue(StyleKeys.BorderColorKey, StandardColors.Transparent);
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set
             {
@@ -288,9 +288,9 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent);
+                    return this.Style.GetValue(StyleKeys.FillColorKey, StandardColors.Transparent);
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set
             {
@@ -409,9 +409,9 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.StrokeColorKey, PDFColors.Transparent);
+                    return this.Style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent);
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set
             {

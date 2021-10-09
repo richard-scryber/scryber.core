@@ -1353,7 +1353,7 @@ namespace Scryber.Styles
                     || this.TryGetValue(StyleKeys.BorderColorKey, out colValue))
                     col = colValue.Value(this);
                 else
-                    col = PDFColors.Black;
+                    col = StandardColors.Black;
 
                 if (this.TryGetValue(sideWidth, out widthValue)
                     || this.TryGetValue(StyleKeys.BorderWidthKey, out widthValue))
@@ -1399,7 +1399,7 @@ namespace Scryber.Styles
                 if (this.TryGetValue(StyleKeys.BorderColorKey, out colValue)) //We know there is no explicit side color
                     col = colValue.Value(this);
                 else
-                    col = PDFColors.Black;
+                    col = StandardColors.Black;
 
                 if (this.TryGetValue(sideDash, out dashValue) || this.TryGetValue(StyleKeys.BorderDashKey, out dashValue))
                     dash = dashValue.Value(this);
@@ -1458,20 +1458,20 @@ namespace Scryber.Styles
 
                 if (penstyle.Value(this) == LineType.Solid)
                 {
-                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value(this), Width = (null == width) ? 1.0 : width.Value(this) };
+                    pen = new PDFSolidPen() { Color = (null == c) ? StandardColors.Black : c.Value(this), Width = (null == width) ? 1.0 : width.Value(this) };
                 }
                 else if (penstyle.Value(this) == LineType.Dash)
                 {
                     if (this.TryGetValue(StyleKeys.BorderDashKey, out dash))
                         pen = new PDFDashPen(dash.Value(this))
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Color = (null == c) ? StandardColors.Black : c.Value(this),
                             Width = (null == width) ? 1.0 : width.Value(this)
                         };
                     else // set as Dash, but there is none so use default
                         pen = new PDFDashPen(DefaultDash)
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Color = (null == c) ? StandardColors.Black : c.Value(this),
                             Width = (null == width) ? 1.0 : width.Value(this)
                         };
                 }
@@ -1488,7 +1488,7 @@ namespace Scryber.Styles
 
                 pen = new PDFDashPen(dash.Value(this))
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Color = (null == c) ? StandardColors.Black : c.Value(this),
                     Width = (null == width) ? 1.0 : width.Value(this)
                 };
 
@@ -1504,7 +1504,7 @@ namespace Scryber.Styles
 
                 pen = new PDFSolidPen()
                 {
-                    Color = (c == null) ? PDFColors.Black : c.Value(this),
+                    Color = (c == null) ? StandardColors.Black : c.Value(this),
                     Width = (null == width) ? DefaultWidth : width.Value(this)
                 };
             }
@@ -1513,7 +1513,7 @@ namespace Scryber.Styles
                 if (width.Value(this) <= 0)
                     return null;
 
-                pen = new PDFSolidPen() { Color = PDFColors.Black, Width = width.Value(this) };
+                pen = new PDFSolidPen() { Color = StandardColors.Black, Width = width.Value(this) };
             }
 
             //TODO: Pens for border-bottom, top, left and right. Then use a CompoundPen to support this.
@@ -1581,20 +1581,20 @@ namespace Scryber.Styles
 
                 if (penstyle.Value(this) == LineType.Solid)
                 {
-                    pen = new PDFSolidPen() { Color = (null == c) ? PDFColors.Black : c.Value(this), Width = (null == width) ? 1.0 : width.Value(this) };
+                    pen = new PDFSolidPen() { Color = (null == c) ? StandardColors.Black : c.Value(this), Width = (null == width) ? 1.0 : width.Value(this) };
                 }
                 else if (penstyle.Value(this) == LineType.Dash)
                 {
                     if (this.TryGetValue(StyleKeys.StrokeDashKey, out dash))
                         pen = new PDFDashPen(dash.Value(this))
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Color = (null == c) ? StandardColors.Black : c.Value(this),
                             Width = (null == width) ? 1.0 : width.Value(this)
                         };
                     else // set as Dash, but there is none so use default
                         pen = new PDFDashPen(DefaultDash)
                         {
-                            Color = (null == c) ? PDFColors.Black : c.Value(this),
+                            Color = (null == c) ? StandardColors.Black : c.Value(this),
                             Width = (null == width) ? 1.0 : width.Value(this)
                         };
                 }
@@ -1611,7 +1611,7 @@ namespace Scryber.Styles
 
                 pen = new PDFDashPen(dash.Value(this))
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Color = (null == c) ? StandardColors.Black : c.Value(this),
                     Width = (null == width) ? 1.0 : width.Value(this)
                 };
             }
@@ -1635,7 +1635,7 @@ namespace Scryber.Styles
 
                 pen = new PDFSolidPen()
                 {
-                    Color = (null == c) ? PDFColors.Black : c.Value(this),
+                    Color = (null == c) ? StandardColors.Black : c.Value(this),
                     Width = (null == width) ? DefaultWidth : width.Value(this)
                 };
             }

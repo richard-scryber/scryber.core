@@ -127,7 +127,7 @@ namespace Scryber.Components
             style.Position.PositionMode = Drawing.PositionMode.Block;
             style.Border.Width = 1;
             style.Border.LineStyle = Drawing.LineType.Solid;
-            style.Border.Color = Drawing.PDFColors.Black;
+            style.Border.Color = Drawing.StandardColors.Black;
             style.Padding.All = 5;
             style.Size.FullWidth = true;
 

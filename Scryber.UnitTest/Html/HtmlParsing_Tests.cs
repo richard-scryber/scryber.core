@@ -263,7 +263,7 @@ namespace Scryber.Core.UnitTests.Html
                 var defn = new StyleDefn("h1.border");
                 defn.Background.Color = (Color)"#FFA";
                 defn.Border.Width = 2;
-                defn.Border.Color = PDFColors.Red;
+                defn.Border.Color = StandardColors.Red;
                 defn.Border.LineStyle = LineType.Solid;
 
                 doc.Styles.Add(defn);
@@ -2193,9 +2193,9 @@ namespace Scryber.Core.UnitTests.Html
                         doc.SaveAsPDF(stream);
                     }
 
-                    var rg = new Color[] { PDFColors.Red, PDFColors.Green };
-                    var rgby = new Color[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
-                    var ryg = new Color[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
+                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
+                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
+                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
 
                     Assert.IsNotNull(_layout);
                     var pg = _layout.AllPages[0];
@@ -2262,9 +2262,9 @@ namespace Scryber.Core.UnitTests.Html
                     }
 
                     
-                    var rg = new Color[] { PDFColors.Red, PDFColors.Green };
-                    var rgby = new Color[] { PDFColors.Red, PDFColors.Green, PDFColors.Blue, PDFColors.Yellow };
-                    var ryg = new Color[] { PDFColors.Red, PDFColors.Yellow, PDFColors.Green };
+                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
+                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
+                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
 
                     Assert.IsNotNull(_layout);
                     var pg = _layout.AllPages[0];

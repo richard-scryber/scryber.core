@@ -65,7 +65,7 @@ namespace Scryber.Html.Components
 
             style.SetValue(StyleKeys.BorderLeftStyleKey, Drawing.LineType.Solid);
             style.SetValue(StyleKeys.BorderLeftWidthKey, 2);
-            style.SetValue(StyleKeys.BorderLeftColorKey, PDFColors.Gray);
+            style.SetValue(StyleKeys.BorderLeftColorKey, StandardColors.Gray);
             style.SetValue(StyleKeys.PaddingLeftKey, 5);
             style.SetValue(StyleKeys.MarginsTopKey, 5);
             style.SetValue(StyleKeys.MarginsBottomKey, 5);

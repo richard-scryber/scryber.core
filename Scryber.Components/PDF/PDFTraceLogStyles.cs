@@ -32,7 +32,7 @@ namespace Scryber.PDF
             StyleDefn h1 = new StyleDefn() { AppliedType = typeof(Head1) };
             h1.Background.Color = new Color(153);
             h1.Size.FullWidth = true;
-            h1.Fill.Color = PDFColors.White;
+            h1.Fill.Color = StandardColors.White;
             h1.Padding.All = 5;
             this.Styles.Add(h1);
 
@@ -57,7 +57,7 @@ namespace Scryber.PDF
                 AppliedType = typeof(TableCell)
             };
             tcell.Border.Width = 1;
-            tcell.Border.Color = PDFColors.Gray;
+            tcell.Border.Color = StandardColors.Gray;
             tcell.Padding.All = 2;
             this.Styles.Add(tcell);
 
@@ -90,29 +90,29 @@ namespace Scryber.PDF
             {
                 AppliedClass = "Message"
             };
-            logMsg.Fill.Color = PDFColors.Green;
+            logMsg.Fill.Color = StandardColors.Green;
             this.Styles.Add(logMsg);
 
             StyleDefn logErr = new StyleDefn()
             {
                 AppliedClass = "Error"
             };
-            logErr.Fill.Color = PDFColors.White;
-            logErr.Background.Color = PDFColors.Red;
+            logErr.Fill.Color = StandardColors.White;
+            logErr.Background.Color = StandardColors.Red;
             this.Styles.Add(logErr);
 
             StyleDefn logWarn = new StyleDefn()
             {
                 AppliedClass = "Warning"
             };
-            logWarn.Fill.Color = PDFColors.Red;
+            logWarn.Fill.Color = StandardColors.Red;
             this.Styles.Add(logWarn);
 
             StyleDefn logVerb = new StyleDefn()
             {
                 AppliedClass = "Verbose"
             };
-            logVerb.Fill.Color = PDFColors.Black;
+            logVerb.Fill.Color = StandardColors.Black;
             this.Styles.Add(logVerb);
 
             StyleDefn logDebug = new StyleDefn()

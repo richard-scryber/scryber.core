@@ -73,7 +73,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFSolidBrushConstructor_Test()
         {
-            Color color = PDFColors.Aqua; 
+            Color color = StandardColors.Aqua; 
             double opacity = 1F; 
             PDFSolidBrush target = new PDFSolidBrush(color, opacity);
 
@@ -89,7 +89,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFSolidBrushConstructor_Test1()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFReal opacity = 1F; 
             PDFSolidBrush target = new PDFSolidBrush(color, opacity);
 
@@ -109,7 +109,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFSolidBrush target = new PDFSolidBrush();
            
             Assert.IsNotNull(target);
-            Assert.AreEqual(PDFColors.Transparent, target.Color);
+            Assert.AreEqual(StandardColors.Transparent, target.Color);
             Assert.AreEqual((PDFReal)1, target.Opacity);
             Assert.AreEqual(FillType.Solid, target.FillStyle);
         }
@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PDFSolidBrushConstructor_Test3()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFSolidBrush target = new PDFSolidBrush(color);
 
             Assert.IsNotNull(target);
@@ -137,7 +137,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Create_Test()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFSolidBrush expected = new PDFSolidBrush(color);
             PDFSolidBrush actual;
             actual = PDFSolidBrush.Create(color);
@@ -157,13 +157,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Color_Test()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFSolidBrush target = new PDFSolidBrush(color);
             Color expected = color;
             Color actual = target.Color;
             Assert.AreEqual(expected, actual);
 
-            expected = PDFColors.White;
+            expected = StandardColors.White;
             target.Color = expected;
             actual = target.Color;
             Assert.AreEqual(expected, actual);
@@ -177,7 +177,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void FillStyle_Test()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFSolidBrush target = new PDFSolidBrush(color);
             FillType expected = FillType.Solid;
             FillType actual;
@@ -192,7 +192,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Opacity_Test()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFReal opacity = 1F; 
             PDFSolidBrush target = new PDFSolidBrush(color, opacity);
             Assert.AreEqual(opacity, target.Opacity);

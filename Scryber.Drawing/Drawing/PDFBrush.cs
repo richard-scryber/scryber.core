@@ -68,7 +68,7 @@ namespace Scryber.Drawing
         }
 
         public PDFSolidBrush()
-            : this(PDFColors.Transparent)
+            : this(StandardColors.Transparent)
         {
         }
 

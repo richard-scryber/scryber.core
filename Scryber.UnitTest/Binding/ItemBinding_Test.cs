@@ -267,7 +267,7 @@ namespace Scryber.Core.UnitTests.Binding
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 doc.Params["dynamic"] = new
                 {
-                    Color = Scryber.Drawing.PDFColors.Aqua,
+                    Color = Scryber.Drawing.StandardColors.Aqua,
                     List = new[] {
                         new { Name = "First", Id = "FirstID"},
                         new { Name = "Second", Id = "SecondID" }
@@ -289,7 +289,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 var style = doc.Styles[0] as Scryber.Styles.Style;
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.BgColorKey), "The background color is not assigned");
-                Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color, "The background colors do not match");
+                Assert.AreEqual(Scryber.Drawing.StandardColors.Aqua, style.Background.Color, "The background colors do not match");
             }
 
 

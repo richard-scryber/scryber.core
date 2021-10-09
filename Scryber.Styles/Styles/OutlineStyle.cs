@@ -72,7 +72,7 @@ namespace Scryber.Styles
                 if (this.TryGetValue(StyleKeys.OutlineColorKey, out outline))
                     return outline;
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set
             {

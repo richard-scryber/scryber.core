@@ -101,7 +101,7 @@ namespace Scryber.UnitSamples
                         var div = new Div();
                         
                         div.Style.Margins.All = 20;
-                        div.Style.Border.Color = PDFColors.Black;
+                        div.Style.Border.Color = StandardColors.Black;
                         pg.Contents.Add(div);
 
                         for (int j = 0; j < 5; j++)

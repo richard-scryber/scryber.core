@@ -57,7 +57,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             Image img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.BorderStyle = LineType.Solid;
 
             page.Contents.Add(img);
@@ -82,7 +82,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             img = new Image();
             img.Source = path;
-            img.BorderColor = PDFColors.Black;
+            img.BorderColor = StandardColors.Black;
             img.BorderStyle = LineType.Solid;
 
             page.Contents.Add(img);
@@ -165,7 +165,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 Image img = new Image();
                 img.Source = src;
                 img.ID = System.IO.Path.GetFileNameWithoutExtension(src);
-                img.BorderColor = PDFColors.Black;
+                img.BorderColor = StandardColors.Black;
                 img.BorderStyle = LineType.Solid;
                 img.MaximumWidth = 100;
 
@@ -263,7 +263,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 Image img = new Image();
                 img.Source = src;
                 img.ID = id;
-                img.BorderColor = PDFColors.Black;
+                img.BorderColor = StandardColors.Black;
                 img.BorderStyle = LineType.Solid;
                 img.MaximumWidth = 100;
                 img.MaximumHeight = 200;
@@ -347,7 +347,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 Image img = new Image();
                 img.Source = src;
                 img.ID = id;
-                img.BorderColor = PDFColors.Black;
+                img.BorderColor = StandardColors.Black;
                 img.BorderStyle = LineType.Solid;
                 img.MaximumWidth = 100;
                 img.MaximumHeight = 200;

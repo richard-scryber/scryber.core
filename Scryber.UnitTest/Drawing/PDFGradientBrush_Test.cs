@@ -73,12 +73,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(linear.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green
-            Assert.AreEqual(PDFColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
             Assert.IsFalse(linear.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
 
@@ -97,12 +97,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(linear.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green 50% opacity
-            Assert.AreEqual(PDFColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
             Assert.IsTrue(linear.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was null");
             Assert.AreEqual(0.5, linear.Colors[1].Opacity.Value, "Second colour opacity for " + value + " was not correct: " + linear.Colors[1].Opacity.Value);
@@ -122,18 +122,18 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(linear.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green 50% opacity
-            Assert.AreEqual(PDFColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
             Assert.IsTrue(linear.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was null");
             Assert.AreEqual(0.5, linear.Colors[1].Opacity.Value, "Second colour opacity for " + value + " was not correct: " + linear.Colors[1].Opacity.Value);
 
             //Third yellow
-            Assert.AreEqual(PDFColors.Yellow, linear.Colors[2].Color, "Third colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Yellow, linear.Colors[2].Color, "Third colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[2].Distance.HasValue, "Third colour distance for " + value + " was not null");
             Assert.IsFalse(linear.Colors[2].Opacity.HasValue, "Third colour opacity for " + value + " was not null");
 
@@ -152,12 +152,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(linear.Repeating, "The linear gradient was not set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(linear.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green
-            Assert.AreEqual(PDFColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsTrue(linear.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was null");
             Assert.AreEqual(20, linear.Colors[1].Distance.Value, "Second colour distance for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
@@ -189,12 +189,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(radial.Repeating, "The linear gradient was set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(radial.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green
-            Assert.AreEqual(PDFColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
             Assert.IsFalse(radial.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
 
@@ -213,18 +213,18 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(radial.Repeating, "The radial gradient was set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(radial.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green 50% opacity
-            Assert.AreEqual(PDFColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
             Assert.IsTrue(radial.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was null");
             Assert.AreEqual(0.5, radial.Colors[1].Opacity.Value, "Second colour opacity for " + value + " was not correct: " + radial.Colors[1].Opacity.Value);
 
             //Third yellow
-            Assert.AreEqual(PDFColors.Yellow, radial.Colors[2].Color, "Third colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Yellow, radial.Colors[2].Color, "Third colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[2].Distance.HasValue, "Third colour distance for " + value + " was not null");
             Assert.IsFalse(radial.Colors[2].Opacity.HasValue, "Third colour opacity for " + value + " was not null");
 
@@ -242,12 +242,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(radial.Repeating, "The radial gradient was not set to repeat for " + value);
 
             //First red
-            Assert.AreEqual(PDFColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
             Assert.IsFalse(radial.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green
-            Assert.AreEqual(PDFColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
+            Assert.AreEqual(StandardColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsFalse(radial.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
             Assert.IsFalse(radial.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
 
@@ -267,11 +267,11 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFGradientLinearDescriptor descriptor = new PDFGradientLinearDescriptor();
             descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red, null, null)
+                new PDFGradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
-            Scryber.Drawing.Color color = PDFColors.Red;
+            Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
 
@@ -294,11 +294,11 @@ namespace Scryber.Core.UnitTests.Drawing
             descriptor.Repeating = true;
             descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red, null, null)
+                new PDFGradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
-            Scryber.Drawing.Color color = PDFColors.Red;
+            Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
 
@@ -321,11 +321,11 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFGradientRadialDescriptor descriptor = new PDFGradientRadialDescriptor();
             descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red, null, null)
+                new PDFGradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
-            Scryber.Drawing.Color color = PDFColors.Red;
+            Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
 
@@ -350,11 +350,11 @@ namespace Scryber.Core.UnitTests.Drawing
             descriptor.Shape = RadialShape.Circle;
             descriptor.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red, null, null)
+                new PDFGradientColor(StandardColors.Red, null, null)
             });
 
             PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
-            Scryber.Drawing.Color color = PDFColors.Red;
+            Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
 

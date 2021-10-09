@@ -264,10 +264,10 @@ namespace Scryber.Core.UnitTests.Styles
             lbl.ID = "myId";
 
             StyleDefn target = new StyleDefn();
-            target.Background.Color = Scryber.Drawing.PDFColors.Aqua;
+            target.Background.Color = Scryber.Drawing.StandardColors.Aqua;
 
             Style style = new Style();
-            style.Background.Color = Scryber.Drawing.PDFColors.Blue;
+            style.Background.Color = Scryber.Drawing.StandardColors.Blue;
 
             //matched should have aqua applied, non-matching should stay blue
 
@@ -277,15 +277,15 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, lbl, ComponentState.Normal);
 
             style.Flatten();
-            Assert.AreEqual(Scryber.Drawing.PDFColors.Aqua, style.Background.Color);
+            Assert.AreEqual(Scryber.Drawing.StandardColors.Aqua, style.Background.Color);
 
             //non-matching applied type
             target.AppliedType = typeof(Scryber.Components.TableCell);
             style = new Style();
-            style.Background.Color = Scryber.Drawing.PDFColors.Blue;
+            style.Background.Color = Scryber.Drawing.StandardColors.Blue;
 
             target.MergeInto(style, lbl, ComponentState.Normal);
-            Assert.AreEqual(Scryber.Drawing.PDFColors.Blue, style.Background.Color);
+            Assert.AreEqual(Scryber.Drawing.StandardColors.Blue, style.Background.Color);
 
         }
 

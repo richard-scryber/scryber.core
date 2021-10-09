@@ -116,7 +116,7 @@ namespace Scryber.UnitSamples
                 titleStyle.Position.HAlign = HorizontalAlignment.Center;
                 titleStyle.Size.Height = 300;
                 titleStyle.Font.FontSize = 30;
-                titleStyle.Fill.Color = PDFColors.White;
+                titleStyle.Fill.Color = StandardColors.White;
                 titleStyle.Font.FontFamily = new FontSelector("serif");
 
 
@@ -215,7 +215,7 @@ namespace Scryber.UnitSamples
                         Text = "This is the header",
                         Padding = new PDFThickness(10, 20, 10, 20),
                         Margins = PDFThickness.Empty(),
-                        BackgroundColor = PDFColors.Silver,
+                        BackgroundColor = StandardColors.Silver,
                         HorizontalAlignment = HorizontalAlignment.Right
                     }
                 };
@@ -230,8 +230,8 @@ namespace Scryber.UnitSamples
             public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
             {
                 var div = new Div() {
-                    BackgroundColor = PDFColors.Silver,
-                    FillColor = PDFColors.White,
+                    BackgroundColor = StandardColors.Silver,
+                    FillColor = StandardColors.White,
                     FontSize = 12,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Padding = new PDFThickness(10)

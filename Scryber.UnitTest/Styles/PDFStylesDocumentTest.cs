@@ -239,7 +239,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.AppliedType = typeof(Label);
             defn.AppliedClass = "sea";
 
-            defn.Border.Color = PDFColors.Red;
+            defn.Border.Color = StandardColors.Red;
             defn.Border.Width = 10;
             defn.Font.FontFamily = (FontSelector)"Helvetica";
             target.Styles.Add(defn);
@@ -247,14 +247,14 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn defn2 = new StyleDefn();
             defn2.AppliedClass = "sea";
 
-            defn2.Border.Color = PDFColors.Gray;
+            defn2.Border.Color = StandardColors.Gray;
             defn2.Columns.ColumnCount = 3;
             target.Styles.Add(defn2);
 
             StyleDefn defn3 = new StyleDefn();
             defn3.AppliedClass = "other";
             defn3.Border.Width = 20;
-            defn3.Stroke.Color = PDFColors.Aqua;
+            defn3.Stroke.Color = StandardColors.Aqua;
             target.Styles.Add(defn3);
         }
 
@@ -274,7 +274,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn.AppliedType = typeof(Label);
             defn.AppliedClass = classname;
 
-            defn.Border.Color = PDFColors.Red;
+            defn.Border.Color = StandardColors.Red;
             defn.Border.Width = 10;
             defn.Font.FontFamily = (FontSelector)"Helvetica";
             target.Styles.Add(defn);
@@ -283,7 +283,7 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn defn2 = new StyleDefn();
             defn2.AppliedClass = classname;
 
-            defn2.Border.Color = PDFColors.Gray;
+            defn2.Border.Color = StandardColors.Gray;
             defn2.Columns.ColumnCount = 3;
             target.Styles.Add(defn2);
 
@@ -291,7 +291,7 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn defn3 = new StyleDefn();
             defn3.AppliedClass = "other";
             defn3.Border.Width = 20;
-            defn3.Stroke.Color = PDFColors.Aqua;
+            defn3.Stroke.Color = StandardColors.Aqua;
             target.Styles.Add(defn3);
 
             //same class but different type = not applied
@@ -310,7 +310,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(actual, lbl, ComponentState.Normal);
             actual.Flatten();
 
-            Assert.AreEqual(PDFColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
+            Assert.AreEqual(StandardColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
             Assert.AreEqual((PDFUnit)10, actual.Border.Width); // from defn
             Assert.AreEqual(3, actual.Columns.ColumnCount); //from defn2 
             Assert.AreEqual((FontSelector)"Helvetica", actual.Font.FontFamily);

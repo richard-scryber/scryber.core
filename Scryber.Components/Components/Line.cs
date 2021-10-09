@@ -37,7 +37,7 @@ namespace Scryber.Components
         {
             Style inherited = base.GetBaseStyle();
             inherited.Stroke.Width = new PDFUnit(1, PageUnits.Points);
-            inherited.Stroke.Color = PDFColors.Black;
+            inherited.Stroke.Color = StandardColors.Black;
             inherited.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
             inherited.Fill.Style = FillType.None;
 

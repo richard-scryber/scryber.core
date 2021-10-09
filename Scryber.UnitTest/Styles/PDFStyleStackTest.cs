@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void GetFullStyleTest()
         {
             Style root = new Style();
-            root.Background.Color = PDFColors.Red; //Not inherited
+            root.Background.Color = StandardColors.Red; //Not inherited
             root.Font.FontFamily = (FontSelector)"Symbol"; //Font is inherited
             root.Font.FontSize = 20; //Font is inherited
 
@@ -135,7 +135,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //last item will always be merged in a full style - actual, not inherited values
             Style two = new Style();
-            two.Border.Color = PDFColors.Lime;
+            two.Border.Color = StandardColors.Lime;
             two.Border.Width = 3;
             two.Font.FontItalic = true;
             target.Push(two);
@@ -146,7 +146,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual("Symbol", actual.Font.FontFamily.FamilyName); //inherited from root
             Assert.AreEqual((PDFUnit)48, actual.Font.FontSize); //inherited from one
             Assert.AreEqual((PDFUnit)3, actual.Border.Width); //border from two
-            Assert.AreEqual(PDFColors.Lime, actual.Border.Color); //border from two
+            Assert.AreEqual(StandardColors.Lime, actual.Border.Color); //border from two
             Assert.AreEqual(true, actual.Font.FontItalic); //font from two
             Assert.AreEqual(Color.Transparent, actual.Background.Color); //not inherited from root
             Assert.AreEqual(FillType.None, actual.Background.FillStyle); //not inherited from one

@@ -103,16 +103,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red),
-                new PDFGradientColor(PDFColors.Green)
+                new PDFGradientColor(StandardColors.Red),
+                new PDFGradientColor(StandardColors.Green)
             });
 
             Assert.AreEqual(2, target.Colors.Count);
-            Assert.AreEqual(PDFColors.Red, target.Colors[0].Color);
+            Assert.AreEqual(StandardColors.Red, target.Colors[0].Color);
             Assert.IsFalse(target.Colors[0].Distance.HasValue);
             Assert.IsFalse(target.Colors[0].Opacity.HasValue);
 
-            Assert.AreEqual(PDFColors.Green, target.Colors[1].Color);
+            Assert.AreEqual(StandardColors.Green, target.Colors[1].Color);
             Assert.IsFalse(target.Colors[1].Distance.HasValue);
             Assert.IsFalse(target.Colors[1].Opacity.HasValue);
 
@@ -127,16 +127,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red),
-                new PDFGradientColor(PDFColors.Green)
+                new PDFGradientColor(StandardColors.Red),
+                new PDFGradientColor(StandardColors.Green)
             });
 
             Assert.AreEqual(2, target.Colors.Count);
-            Assert.AreEqual(PDFColors.Red, target.Colors[0].Color);
+            Assert.AreEqual(StandardColors.Red, target.Colors[0].Color);
             Assert.IsFalse(target.Colors[0].Distance.HasValue);
             Assert.IsFalse(target.Colors[0].Opacity.HasValue);
 
-            Assert.AreEqual(PDFColors.Green, target.Colors[1].Color);
+            Assert.AreEqual(StandardColors.Green, target.Colors[1].Color);
             Assert.IsFalse(target.Colors[1].Distance.HasValue);
             Assert.IsFalse(target.Colors[1].Opacity.HasValue);
         }
@@ -161,16 +161,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red),
-                new PDFGradientColor(PDFColors.Green)
+                new PDFGradientColor(StandardColors.Red),
+                new PDFGradientColor(StandardColors.Green)
             });
 
             var fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             var fn2 = fn as PDFGradientFunction2;
-            Assert.AreEqual(fn2.ColorZero, PDFColors.Red);
-            Assert.AreEqual(fn2.ColorOne, PDFColors.Green);
+            Assert.AreEqual(fn2.ColorZero, StandardColors.Red);
+            Assert.AreEqual(fn2.ColorOne, StandardColors.Green);
             Assert.AreEqual(0.0, fn2.DomainStart);
             Assert.AreEqual(1.0, fn2.DomainEnd);
             Assert.AreEqual(1.0, fn2.Exponent);
@@ -186,16 +186,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red),
-                new PDFGradientColor(PDFColors.Green, 50, null)
+                new PDFGradientColor(StandardColors.Red),
+                new PDFGradientColor(StandardColors.Green, 50, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             fn2 = fn as PDFGradientFunction2;
-            Assert.AreEqual(fn2.ColorZero, PDFColors.Red);
-            Assert.AreEqual(fn2.ColorOne, PDFColors.Green);
+            Assert.AreEqual(fn2.ColorZero, StandardColors.Red);
+            Assert.AreEqual(fn2.ColorOne, StandardColors.Green);
             Assert.AreEqual(0.0, fn2.DomainStart);
             Assert.AreEqual(2.0, fn2.DomainEnd);
             Assert.AreEqual(1.0, fn2.Exponent);
@@ -211,8 +211,8 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red, 50, null),
-                new PDFGradientColor(PDFColors.Green, 100, null)
+                new PDFGradientColor(StandardColors.Red, 50, null),
+                new PDFGradientColor(StandardColors.Green, 100, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
@@ -244,16 +244,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red),
-                new PDFGradientColor(PDFColors.Green)
+                new PDFGradientColor(StandardColors.Red),
+                new PDFGradientColor(StandardColors.Green)
             });
 
             var fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             var fn2 = fn as PDFGradientFunction2;
-            Assert.AreEqual(fn2.ColorZero, PDFColors.Red);
-            Assert.AreEqual(fn2.ColorOne, PDFColors.Green);
+            Assert.AreEqual(fn2.ColorZero, StandardColors.Red);
+            Assert.AreEqual(fn2.ColorOne, StandardColors.Green);
             Assert.AreEqual(0.0, fn2.DomainStart);
             Assert.AreEqual(1.0, fn2.DomainEnd);
             Assert.AreEqual(1.0, fn2.Exponent);
@@ -269,16 +269,16 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red),
-                new PDFGradientColor(PDFColors.Green, 50, null)
+                new PDFGradientColor(StandardColors.Red),
+                new PDFGradientColor(StandardColors.Green, 50, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             fn2 = fn as PDFGradientFunction2;
-            Assert.AreEqual(fn2.ColorZero, PDFColors.Red);
-            Assert.AreEqual(fn2.ColorOne, PDFColors.Green);
+            Assert.AreEqual(fn2.ColorZero, StandardColors.Red);
+            Assert.AreEqual(fn2.ColorOne, StandardColors.Green);
             Assert.AreEqual(0.0, fn2.DomainStart);
             Assert.AreEqual(2.0, fn2.DomainEnd);
             Assert.AreEqual(1.0, fn2.Exponent);
@@ -294,8 +294,8 @@ namespace Scryber.Core.UnitTests.Drawing
 
             target.Colors = new List<PDFGradientColor>(new PDFGradientColor[]
             {
-                new PDFGradientColor(PDFColors.Red, 50, null),
-                new PDFGradientColor(PDFColors.Green, 100, null)
+                new PDFGradientColor(StandardColors.Red, 50, null),
+                new PDFGradientColor(StandardColors.Green, 100, null)
             });
 
             fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));

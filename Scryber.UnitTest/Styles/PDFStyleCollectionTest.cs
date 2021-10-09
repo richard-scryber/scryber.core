@@ -90,7 +90,7 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn defn = new StyleDefn();
             defn.Match = "Label.sea";
 
-            defn.Border.Color = PDFColors.Red;
+            defn.Border.Color = StandardColors.Red;
             defn.Border.Width = 10;
             defn.Font.FontFamily = (FontSelector)"Helvetica";
 
@@ -99,14 +99,14 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn defn2 = new StyleDefn();
             defn2.Match = ".sea"; // lower priority
 
-            defn2.Border.Color = PDFColors.Gray; 
+            defn2.Border.Color = StandardColors.Gray; 
             defn2.Columns.ColumnCount = 3;
             target.Add(defn2);
 
             StyleDefn defn3 = new StyleDefn();
             defn3.AppliedClass = "other";
             defn3.Border.Width = 20;
-            defn3.Stroke.Color = PDFColors.Aqua;
+            defn3.Stroke.Color = StandardColors.Aqua;
             target.Add(defn3);
 
             Label lbl = new Label();
@@ -123,7 +123,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, lbl, state);
             style.Flatten();
 
-            Assert.AreEqual(PDFColors.Red, style.Border.Color); //from defn as higher priority
+            Assert.AreEqual(StandardColors.Red, style.Border.Color); //from defn as higher priority
             Assert.AreEqual((PDFUnit)10, style.Border.Width); // from defn (defn2 has no width)
             Assert.AreEqual((FontSelector)"Helvetica", style.Font.FontFamily); //from defn
             Assert.AreEqual(3, style.Columns.ColumnCount); //from defn2 (lower priority but not set on defn)
@@ -142,12 +142,12 @@ namespace Scryber.Core.UnitTests.Styles
         {
             StyleCollection target = new StyleCollection();
             StyleDefn defn = new StyleDefn();
-            defn.Border.Color = PDFColors.Red;
+            defn.Border.Color = StandardColors.Red;
             defn.Border.Width = 10;
             target.Add(defn);
 
             StyleDefn defn2 = new StyleDefn();
-            defn2.Border.Color = PDFColors.Gray;
+            defn2.Border.Color = StandardColors.Gray;
             defn2.Border.Width = 2;
             target.Add(defn2);
 

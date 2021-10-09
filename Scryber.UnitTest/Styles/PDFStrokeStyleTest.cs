@@ -100,8 +100,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Solid pen
 
-            expected = new PDFSolidPen(PDFColors.Purple, 10);
-            target.Color = PDFColors.Purple;
+            expected = new PDFSolidPen(StandardColors.Purple, 10);
+            target.Color = StandardColors.Purple;
             target.Width = 10;
             actual = target.CreatePen();
             AssertPensAreEqual(expected, actual);
@@ -138,13 +138,13 @@ namespace Scryber.Core.UnitTests.Styles
 
             Dash dash = new Dash(new int[] { 4, 5, 6 }, 10);
             expected = new PDFDashPen(dash);
-            ((PDFSolidPen)expected).Color = PDFColors.Lime;
+            ((PDFSolidPen)expected).Color = StandardColors.Lime;
             expected.Width = 8;
 
             target = new StrokeStyle();
             target.Dash = dash;
             target.Width = 8;
-            target.Color = PDFColors.Lime;
+            target.Color = StandardColors.Lime;
             actual = target.CreatePen();
             AssertPensAreEqual(expected, actual);
         }
@@ -192,16 +192,16 @@ namespace Scryber.Core.UnitTests.Styles
         public void Style_ColorTest()
         {
             StrokeStyle target = new StrokeStyle();
-            Assert.AreEqual(target.Color, PDFColors.Transparent);
+            Assert.AreEqual(target.Color, StandardColors.Transparent);
 
-            target.Color = PDFColors.Red;
-            Assert.AreEqual(target.Color, PDFColors.Red);
+            target.Color = StandardColors.Red;
+            Assert.AreEqual(target.Color, StandardColors.Red);
 
-            target.Color = PDFColors.Blue;
-            Assert.AreEqual(target.Color, PDFColors.Blue);
+            target.Color = StandardColors.Blue;
+            Assert.AreEqual(target.Color, StandardColors.Blue);
 
             target.RemoveColor();
-            Assert.AreEqual(target.Color, PDFColors.Transparent);
+            Assert.AreEqual(target.Color, StandardColors.Transparent);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.LineStyle);
 
             //With color - should be solid
-            target.Color = PDFColors.Red;
+            target.Color = StandardColors.Red;
             expected = LineType.Solid;
             Assert.AreEqual(expected, target.LineStyle);
 

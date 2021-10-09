@@ -174,7 +174,7 @@ namespace Scryber.UnitSamples
                 {
                     ListOrdered ol = new ListOrdered() {
                         NumberingStyle = ListNumberingGroupStyle.LowercaseLetters,
-                        BorderColor = PDFColors.Red, BorderWidth = 1 };
+                        BorderColor = StandardColors.Red, BorderWidth = 1 };
                     for(var i = 1; i < 10; i ++)
                     {
                         ListItem li = new ListItem();

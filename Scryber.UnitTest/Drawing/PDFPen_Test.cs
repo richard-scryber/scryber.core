@@ -75,7 +75,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Create_Test()
         {
-            Color color = PDFColors.Aqua;
+            Color color = StandardColors.Aqua;
             PDFUnit width = 1;
             PDFSolidPen expected = new PDFSolidPen();
             expected.Color = color;
@@ -109,7 +109,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void LineCaps_Test()
         {
-            PDFPen target = PDFPen.Create(PDFColors.Aqua, 1);
+            PDFPen target = PDFPen.Create(StandardColors.Aqua, 1);
             LineCaps expected = LineCaps.Butt;
             LineCaps actual = target.LineCaps;
             Assert.AreEqual(expected, actual);
@@ -127,7 +127,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void LineJoin_Test()
         {
-            PDFPen target = PDFPen.Create(PDFColors.Aqua, 1);
+            PDFPen target = PDFPen.Create(StandardColors.Aqua, 1);
 
             LineJoin expected = LineJoin.Mitre;
             LineJoin actual = target.LineJoin;
@@ -145,7 +145,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void LineStyle_Test()
         {
-            PDFPen target = PDFPen.Create(PDFColors.Aqua, 1);
+            PDFPen target = PDFPen.Create(StandardColors.Aqua, 1);
             
             LineType actual;
             actual = target.LineStyle;
@@ -159,7 +159,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void MitreLimit_Test()
         {
-            PDFPen target = PDFPen.Create(PDFColors.Aqua, 1);
+            PDFPen target = PDFPen.Create(StandardColors.Aqua, 1);
             float expected = 0F;
             float actual = target.MitreLimit;
             Assert.AreEqual(expected, actual);
@@ -178,7 +178,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Opacity_Test()
         {
-            PDFPen target = PDFPen.Create(PDFColors.Aqua, 1);
+            PDFPen target = PDFPen.Create(StandardColors.Aqua, 1);
             PDFReal expected = -1;
             PDFReal actual = target.Opacity;
             Assert.AreEqual(expected, actual);
@@ -198,7 +198,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Width_Test()
         {
             PDFUnit expected = 1;
-            PDFPen target = PDFPen.Create(PDFColors.Aqua, expected);
+            PDFPen target = PDFPen.Create(StandardColors.Aqua, expected);
 
             PDFUnit actual = target.Width;
             Assert.AreEqual(expected, actual);

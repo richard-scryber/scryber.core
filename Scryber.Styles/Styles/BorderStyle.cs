@@ -134,7 +134,7 @@ namespace Scryber.Styles
                 if (this.TryGetValue(StyleKeys.BorderColorKey, out col))
                     return col;
                 else
-                    return PDFColors.Transparent;
+                    return StandardColors.Transparent;
             }
             set { this.SetValue(StyleKeys.BorderColorKey, value); }
         }

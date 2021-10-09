@@ -88,8 +88,8 @@ namespace Scryber.Core.UnitTests.Styles
         {
             Scryber.Styles.FillStyle target = new Scryber.Styles.FillStyle();
             target.Style = Scryber.Drawing.FillType.Solid;
-            target.Color = PDFColors.Red;
-            PDFBrush expected = new PDFSolidBrush(PDFColors.Red);
+            target.Color = StandardColors.Red;
+            PDFBrush expected = new PDFSolidBrush(StandardColors.Red);
             PDFBrush actual;
             actual = target.CreateBrush();
             Assert.AreEqual(expected.GetType(), actual.GetType());
@@ -154,11 +154,11 @@ namespace Scryber.Core.UnitTests.Styles
             Scryber.Styles.FillStyle target = new Scryber.Styles.FillStyle();
             Assert.AreEqual(target.Color, PDFStyleConst.DefaultFillColor);
 
-            target.Color = PDFColors.Red;
-            Assert.AreEqual(target.Color, PDFColors.Red);
+            target.Color = StandardColors.Red;
+            Assert.AreEqual(target.Color, StandardColors.Red);
 
-            target.Color = PDFColors.Blue;
-            Assert.AreEqual(target.Color, PDFColors.Blue);
+            target.Color = StandardColors.Blue;
+            Assert.AreEqual(target.Color, StandardColors.Blue);
 
             target.RemoveColor();
             Assert.AreEqual(target.Color, PDFStyleConst.DefaultFillColor);

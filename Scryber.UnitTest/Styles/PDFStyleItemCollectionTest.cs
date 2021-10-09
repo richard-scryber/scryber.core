@@ -74,11 +74,11 @@ namespace Scryber.Core.UnitTests.Styles
             Style style = new Style();
             StyleItemCollection col = new StyleItemCollection(style);
             BackgroundStyle bg = new BackgroundStyle();
-            bg.Color = PDFColors.Red;
+            bg.Color = StandardColors.Red;
             col.Add(bg);
 
             BorderStyle bor = new BorderStyle();
-            bor.Color = PDFColors.Green;
+            bor.Color = StandardColors.Green;
             col.Add(bor);
 
             Scryber.Styles.FontStyle fnt = new Scryber.Styles.FontStyle();

@@ -995,7 +995,7 @@ namespace Scryber.Components
             Style style = base.GetBaseStyle();
             Styles.FillStyle fill = new Styles.FillStyle();
             style.StyleItems.Add(fill);
-            fill.Color = PDFColors.Black;
+            fill.Color = StandardColors.Black;
 
 
             PageStyle defpaper = new PageStyle();

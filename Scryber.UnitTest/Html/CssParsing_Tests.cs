@@ -120,8 +120,8 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.AreEqual("body.grey", one.Match.ToString());
             Assert.AreEqual(2, one.ValueCount);
-            Assert.AreEqual((Color)"#808080", one.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
-            Assert.AreEqual((Color)"#222", one.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
+            Assert.AreEqual((Color)"#808080", one.GetValue(StyleKeys.BgColorKey, StandardColors.Transparent));
+            Assert.AreEqual((Color)"#222", one.GetValue(StyleKeys.FillColorKey, StandardColors.Transparent));
 
             var two = col[1] as StyleDefn;
 
@@ -136,8 +136,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("body.grey div.reverse", three.Match.ToString());
             Assert.AreEqual(2 + 4 + 4, three.ValueCount); //2 colors and 4 each for margins and padding
 
-            Assert.AreEqual((Color)"#222", three.GetValue(StyleKeys.BgColorKey, PDFColors.Transparent));
-            Assert.AreEqual((Color)"#808080", three.GetValue(StyleKeys.FillColorKey, PDFColors.Transparent));
+            Assert.AreEqual((Color)"#222", three.GetValue(StyleKeys.BgColorKey, StandardColors.Transparent));
+            Assert.AreEqual((Color)"#808080", three.GetValue(StyleKeys.FillColorKey, StandardColors.Transparent));
 
             Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsTopKey, 0.0));
             Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsBottomKey, 0.0));
@@ -718,10 +718,10 @@ body.grey div.reverse{
                 doc.StyleClass = "other";
 
                 //And now we apply the color to the params collection
-                doc.Params["--main-color"] = PDFColors.Aqua;
+                doc.Params["--main-color"] = StandardColors.Aqua;
 
                 var applied = doc.GetAppliedStyle();
-                Assert.AreEqual(PDFColors.Aqua.ToString(), applied.Fill.Color.ToString(), "Parameter '--main-color' was not overriden in the document based on the parameters");
+                Assert.AreEqual(StandardColors.Aqua.ToString(), applied.Fill.Color.ToString(), "Parameter '--main-color' was not overriden in the document based on the parameters");
 
             }
         }
@@ -802,10 +802,10 @@ body.grey div.reverse{
             var asClass = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
             var over = content.Columns[0].Contents[3] as PDFLayoutBlock; //Overridden block
 
-            Assert.AreEqual(PDFColors.Lime, CheckInnerVariableSpanColor(def), "The default colour did not match lime");
-            Assert.AreEqual(PDFColors.Red, CheckInnerVariableSpanColor(exp), "The explicit colour did not match red");
-            Assert.AreEqual(PDFColors.Red, CheckInnerVariableSpanColor(asClass), "The assigned class colour did not match red");
-            Assert.AreEqual(PDFColors.Blue, CheckInnerVariableSpanColor(over), "The overriden colour did not match blue");
+            Assert.AreEqual(StandardColors.Lime, CheckInnerVariableSpanColor(def), "The default colour did not match lime");
+            Assert.AreEqual(StandardColors.Red, CheckInnerVariableSpanColor(exp), "The explicit colour did not match red");
+            Assert.AreEqual(StandardColors.Red, CheckInnerVariableSpanColor(asClass), "The assigned class colour did not match red");
+            Assert.AreEqual(StandardColors.Blue, CheckInnerVariableSpanColor(over), "The overriden colour did not match blue");
         }
 
 
@@ -853,8 +853,8 @@ body.grey div.reverse{
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 doc.Params["theme"] = new
                 {
-                    lime = PDFColors.Lime,
-                    red = PDFColors.Red,
+                    lime = StandardColors.Lime,
+                    red = StandardColors.Red,
                     dark = false
                 };
 
@@ -872,8 +872,8 @@ body.grey div.reverse{
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 doc.Params["theme"] = new
                 {
-                    lime = PDFColors.Lime,
-                    red = PDFColors.Red,
+                    lime = StandardColors.Lime,
+                    red = StandardColors.Red,
                     dark = true
                 };
 
@@ -896,10 +896,10 @@ body.grey div.reverse{
             var red = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
             var dark = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
 
-            Assert.AreEqual(PDFColors.Lime, lime.FullStyle.Fill.Color, "The default colour did not match lime");
-            Assert.AreEqual(PDFColors.Red, red.FullStyle.Fill.Color, "The explicit colour did not match red");
-            Assert.AreEqual(PDFColors.Black, dark.FullStyle.Fill.Color, "The calc colour did not match black");
-            Assert.AreEqual(PDFColors.White, dark.FullStyle.Background.Color, "The calc background colour did not match white");
+            Assert.AreEqual(StandardColors.Lime, lime.FullStyle.Fill.Color, "The default colour did not match lime");
+            Assert.AreEqual(StandardColors.Red, red.FullStyle.Fill.Color, "The explicit colour did not match red");
+            Assert.AreEqual(StandardColors.Black, dark.FullStyle.Fill.Color, "The calc colour did not match black");
+            Assert.AreEqual(StandardColors.White, dark.FullStyle.Background.Color, "The calc background colour did not match white");
         }
 
         private void ParseCSSWithInlineCalcDark_LayoutComplete(object sender, PDFLayoutEventArgs args)
@@ -912,10 +912,10 @@ body.grey div.reverse{
             var red = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
             var dark = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
 
-            Assert.AreEqual(PDFColors.Lime, lime.FullStyle.Fill.Color, "The default colour did not match lime");
-            Assert.AreEqual(PDFColors.Red, red.FullStyle.Fill.Color, "The explicit colour did not match red");
-            Assert.AreEqual(PDFColors.Lime, dark.FullStyle.Fill.Color, "The calc colour did not match lime");
-            Assert.AreEqual(PDFColors.Black, dark.FullStyle.Background.Color, "The calc background colour did not match black");
+            Assert.AreEqual(StandardColors.Lime, lime.FullStyle.Fill.Color, "The default colour did not match lime");
+            Assert.AreEqual(StandardColors.Red, red.FullStyle.Fill.Color, "The explicit colour did not match red");
+            Assert.AreEqual(StandardColors.Lime, dark.FullStyle.Fill.Color, "The calc colour did not match lime");
+            Assert.AreEqual(StandardColors.Black, dark.FullStyle.Background.Color, "The calc background colour did not match black");
         }
 
         [TestMethod]
@@ -946,7 +946,7 @@ body.grey div.reverse{
                         "Second",
                         "Third"
                     },
-                    red = PDFColors.Red,
+                    red = StandardColors.Red,
                     dark = false
                 };
 
@@ -970,9 +970,9 @@ body.grey div.reverse{
             var second = content.Columns[0].Contents[1] as PDFLayoutBlock; //Explicit block
             var third = content.Columns[0].Contents[2] as PDFLayoutBlock; //As a class block
 
-            Assert.AreEqual(PDFColors.Lime, first.FullStyle.Background.Color, "The default colour did not match lime");
-            Assert.AreEqual(PDFColors.Red, second.FullStyle.Background.Color, "The explicit colour did not match red");
-            Assert.AreEqual(PDFColors.Lime, third.FullStyle.Background.Color, "The calc colour did not match lime");
+            Assert.AreEqual(StandardColors.Lime, first.FullStyle.Background.Color, "The default colour did not match lime");
+            Assert.AreEqual(StandardColors.Red, second.FullStyle.Background.Color, "The explicit colour did not match red");
+            Assert.AreEqual(StandardColors.Lime, third.FullStyle.Background.Color, "The calc colour did not match lime");
         }
 
 
@@ -1014,11 +1014,11 @@ body.grey div.reverse{
             using (var doc = BuildDocumentWithStyles(cssWithCalc))
             {
                 doc.StyleClass = "other";
-                doc.Params["--text-color"] = PDFColors.Lime;
+                doc.Params["--text-color"] = StandardColors.Lime;
                 var applied = doc.GetAppliedStyle();
 
                 Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
-                Assert.AreEqual(PDFColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
+                Assert.AreEqual(StandardColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
             }
         }
 

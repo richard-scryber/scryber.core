@@ -104,10 +104,10 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected.Width, actual.Width);
             Assert.AreEqual(expected.Opacity, actual.Opacity);
 
-            target.GridColor = PDFColors.Purple;
+            target.GridColor = StandardColors.Purple;
             target.GridOpacity = 0.3;
 
-            expected = new PDFSolidPen(PDFColors.Purple, OverlayGridStyle.DefaultGridPenWidth);
+            expected = new PDFSolidPen(StandardColors.Purple, OverlayGridStyle.DefaultGridPenWidth);
             expected.Opacity = 0.3;
 
             actual = (PDFSolidPen)target.GetPen();
@@ -130,11 +130,11 @@ namespace Scryber.Core.UnitTests.Styles
             Color expected = OverlayGridStyle.DefaultGridColor;
             Assert.AreEqual(expected, target.GridColor);
 
-            expected = PDFColors.Teal;
+            expected = StandardColors.Teal;
             target.GridColor = expected;
             Assert.AreEqual(expected, target.GridColor);
 
-            expected = PDFColors.Silver;
+            expected = StandardColors.Silver;
             target.GridColor = expected;
             Assert.AreEqual(expected, target.GridColor);
 
