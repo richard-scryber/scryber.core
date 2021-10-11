@@ -31,7 +31,7 @@ namespace Scryber.PDF
     /// <summary>
     /// The current context for laying out the PDF Document
     /// </summary>
-    public class PDFLayoutContext : PDFContextStyleBase
+    public class PDFLayoutContext : LayoutContext
     {
 
 
@@ -58,7 +58,7 @@ namespace Scryber.PDF
         #endregion
 
         public PDFLayoutContext(Style style, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : base(new StyleStack(style), items, log, perfmon, document)
+            : base(style, items, log, perfmon, document, OutputFormat.PDF)
         {
         }
 

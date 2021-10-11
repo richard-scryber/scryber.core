@@ -193,7 +193,7 @@ namespace Scryber.Components
                 {
                     //Need to do the initialization for each of the items.
 
-                    InitContext initContext = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                    InitContext initContext = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format);
                     for (int i = 0; i < _added.Count; i++)
                     {
                         _added[i].Init(initContext);
@@ -204,7 +204,7 @@ namespace Scryber.Components
 
                     if (performload)
                     {
-                        LoadContext loadContext = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                        LoadContext loadContext = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format);
                         for (int i = 0; i < _added.Count; i++)
                         {
                             IComponent comp = _added[i];

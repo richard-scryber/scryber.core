@@ -111,4 +111,7 @@ namespace Scryber
     /// <returns></returns>
     public delegate object ValueConverter(string value, Type requiredType, IFormatProvider formatProvider);
 
+
+    
+
 }

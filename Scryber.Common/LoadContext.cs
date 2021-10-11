@@ -26,8 +26,8 @@ namespace Scryber
 {
     public class LoadContext : ContextBase
     {
-        public LoadContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : base(items, log, perfmon, document)
+        public LoadContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
+            : base(items, log, perfmon, document, format)
         {
         }
     }

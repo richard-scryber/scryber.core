@@ -27,7 +27,7 @@ using Scryber.Logging;
 
 namespace Scryber.PDF
 {
-    public class PDFRenderContext : PDFContextStyleBase
+    public class PDFRenderContext : RenderContext
     {
 
         //
@@ -144,13 +144,8 @@ namespace Scryber.PDF
         // .ctor
         //
 
-        public PDFRenderContext(DrawingOrigin origin, int pageCount, Styles.Style root, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : this(origin,pageCount, new Scryber.Styles.StyleStack(root), items, log, perfmon, document)
-        {
-        }
-
-        internal PDFRenderContext(DrawingOrigin origin, int pageCount, Styles.StyleStack stack, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document) 
-            : base(stack, items, log, perfmon, document)
+        internal PDFRenderContext(DrawingOrigin origin, int pageCount, Style root, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document) 
+            : base(root, items, log, perfmon, document, OutputFormat.PDF)
         {
             this._origin = origin;
             this._offset = new Drawing.Point();

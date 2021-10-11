@@ -173,8 +173,8 @@ namespace Scryber.Components
 
                 //Do the init and load for these components
 
-                InitContext init = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
-                LoadContext load = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                InitContext init = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format);
+                LoadContext load = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format);
                 foreach (IComponent child in all)
                 {
                     child.Init(init);

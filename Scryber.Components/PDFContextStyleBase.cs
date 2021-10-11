@@ -21,13 +21,13 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Logging;
 
-namespace Scryber.PDF
+namespace Scryber
 {
     
     /// <summary>
     /// A context base class with style stack
     /// </summary>
-    public abstract class PDFContextStyleBase : ContextBase
+    public abstract class ContextStyleBase : ContextBase
     {
         
         private Styles.StyleStack _stylestack;
@@ -42,9 +42,8 @@ namespace Scryber.PDF
         }
 
 
-
-        internal PDFContextStyleBase(Styles.StyleStack stylesstack, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : base(items, log, perfmon, document)
+        internal ContextStyleBase(Styles.StyleStack stylesstack, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
+            : base(items, log, perfmon, document, format)
         {
             this._stylestack = stylesstack;
         }

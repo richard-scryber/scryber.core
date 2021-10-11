@@ -1184,7 +1184,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected virtual bool ClipGraphicsToSize(PDFContextStyleBase context)
+        protected virtual bool ClipGraphicsToSize(ContextStyleBase context)
         {
             return false;
         }

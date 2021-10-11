@@ -27,9 +27,8 @@ namespace Scryber
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     public abstract class ContextBase
     {
-
-        private ItemCollection _items;
         private OutputFormat _format;
+        private ItemCollection _items;
         private TraceLog _log;
         private PerformanceMonitor _perfmon;
         private ParserConformanceMode _conformance;
@@ -63,12 +62,6 @@ namespace Scryber
             set { _perfmon = value; }
         }
 
-        public OutputFormat OutputFormat
-        {
-            get { return this._format; }
-            set { this._format = value; }
-        }
-
         /// <summary>
         /// returns true if Debug entries should be logged based on the current logging level
         /// </summary>
@@ -99,6 +92,11 @@ namespace Scryber
         }
 
 
+        public OutputFormat Format
+        {
+            get { return _format; }
+        }
+
         #region public OutputCompression Compression {get;set;}
 
         private OutputCompressionType _compress = OutputCompressionType.FlateDecode;
@@ -114,19 +112,21 @@ namespace Scryber
 
         #endregion
 
-        public ContextBase(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
+        public ContextBase(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
         {
-            this._format = OutputFormat.PDF;
 
             this._log = log;
             if (null == log)
                 _log = new Logging.DoNothingTraceLog(Scryber.TraceRecordLevel.Off);
+
             _shouldLogDebug = TraceRecordLevel.Diagnostic >= _log.RecordLevel;
             _shouldLogVerbose = TraceRecordLevel.Verbose >= _log.RecordLevel;
             _shouldLogMessage = TraceRecordLevel.Messages >= _log.RecordLevel;
+
             this._items = items;
             this._perfmon = perfmon;
             this._doc = document;
+            this._format = format;
         }
 
     }

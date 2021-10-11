@@ -29,7 +29,7 @@ namespace Scryber.Components
             var asyncRemotes = new PDFRemoteFileAsyncRequestSet(doc);
             doc.RemoteRequests = asyncRemotes;
                         
-            int completed = await doc.InitializeAndLoadAsync();
+            int completed = await doc.InitializeAndLoadAsync(format);
 
             if (doc.TraceLog != null && doc.TraceLog.ShouldLog(TraceLevel.Message))
                 doc.TraceLog.Add(TraceLevel.Message, "Asyncronous", "Completed the asynchronous execution of InitializeAndLoad");
@@ -40,7 +40,7 @@ namespace Scryber.Components
                 doc.TraceLog.Add(TraceLevel.Message, "Asyncronous", "Completed the asynchronous execution of " + completed + " requests after Load");
 
             if (bind)
-                completed = await doc.DataBindAsync();
+                completed = await doc.DataBindAsync(format);
 
             if (doc.TraceLog != null && doc.TraceLog.ShouldLog(TraceLevel.Message))
                 doc.TraceLog.Add(TraceLevel.Message, "Asyncronous", "Completed the asynchronous execution of DataBind");
@@ -64,19 +64,19 @@ namespace Scryber.Components
 
 
 
-        private static async Task<int> InitializeAndLoadAsync(this Document doc)
+        private static async Task<int> InitializeAndLoadAsync(this Document doc, OutputFormat format)
         {
             return await Task<int>.Run(() => {
-                doc.InitializeAndLoad();
+                doc.InitializeAndLoad(format);
                 return 1;
             });
             
         }
 
-        private static async Task<int> DataBindAsync(this Document doc)
+        private static async Task<int> DataBindAsync(this Document doc, OutputFormat format)
         {
             return await Task<int>.Run(() => {
-                doc.DataBind();
+                doc.DataBind(format);
                 return 1;
             });
 
@@ -85,7 +85,8 @@ namespace Scryber.Components
         private static async Task<int> RenderToAsync(this Document doc, System.IO.Stream stream, OutputFormat format)
         {
             return await Task<int>.Run(() => {
-                doc.RenderTo(stream, format);
+                if (format == OutputFormat.PDF)
+                    doc.RenderToPDF(stream);
                 return 1;
             });
 

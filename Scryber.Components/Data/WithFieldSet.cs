@@ -216,8 +216,8 @@ namespace Scryber.Data
                     context.TraceLog.Add(TraceLevel.Debug, "DataGrid", "Initializing and loading root component before binding");
 
                 var log = context.TraceLog;
-                InitContext init = new InitContext(context.Items, log, context.PerformanceMonitor, this.Document);
-                LoadContext load = new LoadContext(context.Items, log, context.PerformanceMonitor, this.Document);
+                InitContext init = new InitContext(context.Items, log, context.PerformanceMonitor, this.Document, context.Format);
+                LoadContext load = new LoadContext(context.Items, log, context.PerformanceMonitor, this.Document, context.Format);
 
 
                 foreach (DataItem item in schema.Items)

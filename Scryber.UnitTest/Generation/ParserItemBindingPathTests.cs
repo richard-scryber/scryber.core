@@ -284,7 +284,7 @@ namespace Scryber.Core.UnitTests.Generation
             var log = config.TracingOptions.GetTraceLog();
 
             ItemCollection items = new ItemCollection(null);
-            DataContext context = new DataContext(items, log, new PerformanceMonitor(true), null);
+            DataContext context = new DataContext(items, log, new PerformanceMonitor(true), null, OutputFormat.PDF);
             DataBindEventArgs args = new DataBindEventArgs(context);
             return args;
         }

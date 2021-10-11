@@ -428,7 +428,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public PDFDocumentAdditionList Additions {get;set;}
+        #region public DocumentAdditionList Additions {get;set;}
 
         private DocumentAdditionList _additions;
 
@@ -476,7 +476,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public PDFDataComponentList DataSources
+        #region public DataComponentList DataSources
 
         private DataComponentList _sources;
 
@@ -508,7 +508,7 @@ namespace Scryber.Components
         }
         #endregion
 
-        #region public PDFPageList Pages {get;}
+        #region public PageList Pages {get;}
 
         private PageList _pages = null;
 
@@ -601,10 +601,6 @@ namespace Scryber.Components
         }
 
         #endregion
-
-        
-
-        
 
         #region IPDFStyledComponent.Style {get;} + IPDFStyledComponent.HasStyle {get;}
 
@@ -984,7 +980,7 @@ namespace Scryber.Components
         // Designed to impove the look up of components
         // 
 
-        #region public void RegisterComponent(PDFComponent comp)
+        #region public void RegisterComponent(Component comp)
 
         /// <summary>
         /// Registers a component in the document. It is an error to register 2 components with the same name.
@@ -1009,7 +1005,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public void UnRegisterComponent(PDFComponent comp)
+        #region public void UnRegisterComponent(Component comp)
 
         /// <summary>
         /// Unregisters a component in the document.
@@ -1025,7 +1021,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public void ReRegisterComponent(PDFComponent comp, string oldname) + 1 overload
+        #region public void ReRegisterComponent(Component comp, string oldname) + 1 overload
 
         /// <summary>
         /// Re-registers the component, removing any registration with the old name
@@ -1100,7 +1096,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public override PDFComponentArrangement GetFirstArrangement()
+        #region public override ComponentArrangement GetFirstArrangement()
 
         /// <summary>
         /// Override the GetFirstArrangement to return the arrangement of the first page
@@ -1140,7 +1136,6 @@ namespace Scryber.Components
         protected virtual PDFResourceCollection CreateResourceCollection()
         {
             PDFResourceCollection resxcol = new PDFResourceCollection(this);
-            //PDFFonts.InitStdFonts(resxcol);
             return resxcol;
         }
 
@@ -1462,12 +1457,16 @@ namespace Scryber.Components
             if (null == stream)
                 throw new ArgumentNullException("stream");
 
-            this.InitializeAndLoad();
+            this.InitializeAndLoad(format);
 
             if (bind)
-                this.DataBind();
+                this.DataBind(format);
 
-            this.RenderTo(stream, format);
+            if (format == OutputFormat.PDF)
+                this.RenderToPDF(stream);
+
+            else
+                throw new NotSupportedException("The output format '" + format + "' is not supported");
         }
 
 
@@ -1479,13 +1478,13 @@ namespace Scryber.Components
         /// <summary>
         /// Performs any initializing and loading, but does not render the document
         /// </summary>
-        public void InitializeAndLoad()
+        public void InitializeAndLoad(OutputFormat format)
         {
             TraceLog log = this.TraceLog;
             PerformanceMonitor perfmon = this.PerformanceMonitor;
             ItemCollection items = this.Params;
 
-            InitContext icontext = CreateInitContext(log, perfmon, items);
+            InitContext icontext = CreateInitContext(log, perfmon, items, format);
 
             log.Begin(TraceLevel.Message, "Document", "Beginning Document Initialize");
             perfmon.Begin(PerformanceMonitorType.Document_Init_Stage);
@@ -1496,7 +1495,7 @@ namespace Scryber.Components
             log.End(TraceLevel.Message, "Document", "Completed Document Initialize");
             this.GenerationStage = DocumentGenerationStage.Initialized;
 
-            LoadContext loadcontext = CreateLoadContext(log, perfmon, items);
+            LoadContext loadcontext = CreateLoadContext(log, perfmon, items, format);
 
             log.Begin(TraceLevel.Message, "Document", "Beginning Document Load");
             perfmon.Begin(PerformanceMonitorType.Document_Load_Stage);
@@ -1509,16 +1508,16 @@ namespace Scryber.Components
         }
 
 
-        protected virtual InitContext CreateInitContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
+        protected virtual InitContext CreateInitContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items, OutputFormat format)
         {
-            InitContext icontext = new InitContext(items, log, perfmon, this);
+            InitContext icontext = new InitContext(items, log, perfmon, this, format);
             this.PopulateContextBase(icontext);
             return icontext;
         }
 
-        protected virtual LoadContext CreateLoadContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
+        protected virtual LoadContext CreateLoadContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items, OutputFormat format)
         {
-            LoadContext loadcontext = new LoadContext(items, log, perfmon, this);
+            LoadContext loadcontext = new LoadContext(items, log, perfmon, this, format);
             this.PopulateContextBase(loadcontext);
             return loadcontext;
         }
@@ -1651,13 +1650,13 @@ namespace Scryber.Components
         /// <summary>
         /// Data binds the entire document
         /// </summary>
-        public void DataBind()
+        public void DataBind(OutputFormat format)
         {
             TraceLog log = this.TraceLog;
             PerformanceMonitor perfmon = this.PerformanceMonitor;
             ItemCollection items = this.Params;
 
-            DataContext context = this.CreateDataContext(log, perfmon, items);
+            DataContext context = this.CreateDataContext(log, perfmon, items, format);
 
             context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document Databind");
             context.PerformanceMonitor.Begin(PerformanceMonitorType.Document_Bind_Stage);
@@ -1673,10 +1672,10 @@ namespace Scryber.Components
         /// Creates a new data context that is passed to the main data binding method
         /// </summary>
         /// <returns></returns>
-        protected virtual DataContext CreateDataContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
+        protected virtual DataContext CreateDataContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items, OutputFormat format)
         {
 
-            DataContext context = new DataContext(items, log, perfmon, this);
+            DataContext context = new DataContext(items, log, perfmon, this, format);
             this.PopulateContextBase(context);
             return context;
         }
@@ -1875,38 +1874,7 @@ namespace Scryber.Components
         // rendering
         //
 
-        #region RenderTo(string path, System.IO.FileMode mode) + 2 Overloads
-
-        /// <summary>
-        /// Renders the complete document to a file at the specified path, using the specified file mode. It is up to callers to
-        /// to use temporary files and replacement
-        /// </summary>
-        /// <param name="path">The complete path at which to create the file.</param>
-        /// <param name="mode">The FileMode option for CreateNew, Append etc.</param>
-        public void RenderTo(string path, System.IO.FileMode mode, OutputFormat format)
-        {
-            using (System.IO.Stream stream = this.DoOpenFileStream(path, mode))
-            {
-                this.RenderTo(stream, format);
-            }
-        }
-
-        /// <summary>
-        /// Renders the complete document to an IO Stream
-        /// </summary>
-        /// <param name="tostream">The stream to write the document to</param>
-        public void RenderTo(System.IO.Stream tostream, OutputFormat format)
-        {
-            switch (format)
-            {
-                case OutputFormat.PDF:
-                    this.RenderToPDF(tostream);
-                    break;
-                default:
-                    break;
-            }
-
-        }
+        #region RenderToPDF(string path, System.IO.FileMode mode) + 2 Overloads
 
 
         public virtual void RenderToPDF(System.IO.Stream tostream)

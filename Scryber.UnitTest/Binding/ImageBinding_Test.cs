@@ -77,8 +77,8 @@ namespace Scryber.Core.UnitTests.Binding
                 var img = doc.FindAComponentById("LoadedImage") as Image;
                 Assert.IsNull(img.Data);
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
                 
                 Assert.IsNotNull(img.Data);
                 Assert.AreEqual(data, img.Data);

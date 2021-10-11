@@ -313,7 +313,7 @@ namespace Scryber.Html.Components
 
             HTMLLinkType type;
 
-            if (this.ShouldAddContent(context.OutputFormat, context, out type) == false)
+            if (this.ShouldAddContent(context.Format, context, out type) == false)
             {
                 if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                     context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Link " + this.UniqueID + " is not a stylesheet or include, or print reference (@rel), so ignoring");

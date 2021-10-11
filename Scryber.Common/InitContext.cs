@@ -28,8 +28,8 @@ namespace Scryber
 
     public class InitContext : ContextBase
     {
-        public InitContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : base(items, log, perfmon, document)
+        public InitContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
+            : base(items, log, perfmon, document, format)
         {
         }
 

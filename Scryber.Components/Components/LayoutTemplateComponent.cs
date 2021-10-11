@@ -58,24 +58,21 @@ namespace Scryber.Components
             if (generated.Count == 0)
                 return;
 
-            InitContext init = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
+            InitContext init = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format)
             {
                 Compression = context.Compression,
-                OutputFormat = context.OutputFormat,
                 Conformance = context.Conformance
             };
 
-            LoadContext load = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
+            LoadContext load = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format)
             {
                 Compression = context.Compression,
-                OutputFormat = context.OutputFormat,
                 Conformance = context.Conformance
             };
 
-            DataContext data = new DataContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
+            DataContext data = new DataContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document, context.Format)
             {
                 Compression = context.Compression,
-                OutputFormat = context.OutputFormat,
                 Conformance = context.Conformance
             };
 

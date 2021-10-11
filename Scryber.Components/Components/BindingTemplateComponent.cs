@@ -305,14 +305,14 @@ namespace Scryber.Components
         private InitContext GetInitContext(DataContext dataContext)
         {
             if (null == _initContext)
-                _initContext = new InitContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
+                _initContext = new InitContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document, dataContext.Format);
             return _initContext;
         }
 
         private LoadContext GetLoadContext(DataContext dataContext)
         {
             if (null == _loadContext)
-                _loadContext = new LoadContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
+                _loadContext = new LoadContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document, dataContext.Format);
             return _loadContext;
         }
 

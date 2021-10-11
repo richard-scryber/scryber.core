@@ -16,16 +16,10 @@ namespace Scryber.Styles.Selectors
 
         public virtual bool IsMatchedTo(OutputFormat format)
         {
-            //If we are a print format return only for the PDF output format
-            switch (format)
-            {
-                case OutputFormat.PDF:
-                    return this.IsPrintMedia();
-
-                default:
-                    return true;
-
-            }
+            if (format == OutputFormat.PDF)
+                return this.IsPrintMedia();
+            else
+                return false;
         }
 
         public bool IsPrintMedia()

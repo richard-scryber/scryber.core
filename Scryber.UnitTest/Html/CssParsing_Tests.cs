@@ -1198,7 +1198,7 @@ body.grey div.reverse{
         private Document BuildDocumentWithStyles(string css)
         {
             var doc = new Document();
-            var context = new LoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var context = new LoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc, OutputFormat.PDF);
             var cssparser = new CSSStyleParser(css, context);
 
             //Add the parsed styles
@@ -1208,8 +1208,8 @@ body.grey div.reverse{
             }
 
             //do the load and bind
-            doc.InitializeAndLoad();
-            doc.DataBind();
+            doc.InitializeAndLoad(OutputFormat.PDF);
+            doc.DataBind(OutputFormat.PDF);
 
             return doc;
         }

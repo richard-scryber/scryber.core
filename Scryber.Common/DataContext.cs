@@ -30,7 +30,7 @@ namespace Scryber
     public class DataContext : ContextBase
     {
         
-        #region public PDFDataStack DataStack {get;}
+        #region public DataStack DataStack {get;}
 
         private DataStack _datastack;
         
@@ -79,21 +79,21 @@ namespace Scryber
         // .ctors
         //
 
-        #region public PDFDataContext(PDFItemCollection items, PDFTraceLog log)
+        #region public DataContext(PDFItemCollection items, PDFTraceLog log)
 
         /// <summary>
         /// Creates a new PDFDataContext with the item collection and trace log
         /// </summary>
         /// <param name="items"></param>
         /// <param name="log"></param>
-        public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : this(items, log, perfmon, new DataStack(), document)
+        public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
+            : this(items, log, perfmon, new DataStack(), document, format)
         {
         }
 
         #endregion
 
-        #region public PDFDataContext(PDFItemCollection items, PDFTraceLog log, PDFDataStack stack)
+        #region public DataContext(ItemCollection items, TraceLog log, DataStack stack)
 
         /// <summary>
         /// Creates a new PDFDataContext with the item collection, trace log, and data stack
@@ -101,8 +101,8 @@ namespace Scryber
         /// <param name="items"></param>
         /// <param name="log"></param>
         /// <param name="stack"></param>
-        public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, DataStack stack, IDocument document)
-            : base(items, log, perfmon, document)
+        public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, DataStack stack, IDocument document, OutputFormat format)
+            : base(items, log, perfmon, document, format)
         {
             this._datastack = stack;
         }

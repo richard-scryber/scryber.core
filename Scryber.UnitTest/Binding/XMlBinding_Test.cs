@@ -75,8 +75,8 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 var head = doc.FindAComponentById("Heading") as Head1;
                 Assert.AreEqual("Testing Document Datasources", head.Text, "The heading text values do not match");

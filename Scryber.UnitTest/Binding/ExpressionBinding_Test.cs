@@ -1147,17 +1147,7 @@ namespace Scryber.Core.UnitTests.Binding
                 }
             }
 
-            //Performance check for binding
-            using (var sr = new System.IO.StringReader(src))
-            {
-                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-                doc.Params["model"] = model;
-
-                using (var stream = DocStreams.GetOutputStream("BindCalcAllFunctions_repeat.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
+            
 
 
         }

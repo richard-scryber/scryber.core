@@ -50,7 +50,7 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_SingleLiteral");
+            SaveAsPDF(doc, "Text_SingleLiteral");
             
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -91,7 +91,7 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_SingleLiteralOptima");
+            SaveAsPDF(doc, "Text_SingleLiteralOptima");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -149,7 +149,7 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_SingleLiteralWithLeading");
+            SaveAsPDF(doc, "Text_SingleLiteralWithLeading");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -197,7 +197,7 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_SingleLiteralWithLeadingAt12ptOptima");
+            SaveAsPDF(doc, "Text_SingleLiteralWithLeadingAt12ptOptima");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -257,7 +257,7 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
-            this.SaveAsPDFAndText(doc, "Text_LiteralAfterABlock");
+            this.SaveAsPDF(doc, "Text_LiteralAfterABlock");
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             PDFLayoutRegion region = layout.AllPages[0].ContentBlock.Columns[0];
@@ -305,7 +305,7 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_LiteralVAlignBottom");
+            SaveAsPDF(doc, "Text_LiteralVAlignBottom");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -355,7 +355,7 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_LiteralVAlignMiddle");
+            SaveAsPDF(doc, "Text_LiteralVAlignMiddle");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -408,7 +408,7 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_LiteralHAlignRight");
+            SaveAsPDF(doc, "Text_LiteralHAlignRight");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -460,7 +460,7 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_LongLiteral");
+            SaveAsPDF(doc, "Text_LongLiteral");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -509,7 +509,8 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_LiteralsInBoldAndItalic");
+
+            SaveAsPDF(doc, "Text_LiteralsInBoldAndItalic");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -517,7 +518,7 @@ namespace Scryber.UnitLayouts
             PDFLayoutLine first = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
             PDFLayoutLine second = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
 
-
+            Assert.Inconclusive("No checking the spans");
 
         }
 
@@ -558,7 +559,8 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDFAndText(doc, "Text_SingleLiteral");
+
+            SaveAsPDF(doc, "Text_SingleLiteral");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -567,22 +569,37 @@ namespace Scryber.UnitLayouts
             PDFLayoutLine second = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
 
 
+            Assert.Inconclusive("Not checking the spans");
 
         }
 
-        private void SaveAsPDFAndText(Document doc, string stem)
+        [TestMethod]
+        public void WordAndCharSpacing()
+        {
+
+        }
+
+        private void SaveAsPDF(Document doc, string fileName)
+        {
+            using(var stream = DocStreams.GetOutputStream(fileName + ".pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        private void SaveAsPDFAndText(Document doc, string fileName)
         {
             using(var ms = new MemoryStream())
             {
                 doc.SaveAsPDF(ms);
 
-                using (var stream = DocStreams.GetOutputStream(stem + ".pdf"))
+                using (var stream = DocStreams.GetOutputStream(fileName + ".pdf"))
                 {
                     ms.Position = 0;
                     ms.CopyTo(stream);
                 }
 
-                using (var stream = DocStreams.GetOutputStream(stem + ".text"))
+                using (var stream = DocStreams.GetOutputStream(fileName + ".text"))
                 {
                     ms.Position = 0;
                     ms.CopyTo(stream);

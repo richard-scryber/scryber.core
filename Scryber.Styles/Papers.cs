@@ -231,7 +231,7 @@ namespace Scryber
                     p = new Drawing.Size(597.0, 889.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.QuadDemy):
-                    p = new Drawing.Size(88.0, 1143.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(889.0, 1143.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Statement):
                     p = new Drawing.Size(140.0, 216.0, PageUnits.Millimeters);

@@ -59,8 +59,8 @@ namespace Scryber.Core.UnitTests.Binding
                 var label = sect.Contents[0] as Label;
 
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 Assert.AreEqual(expected, label.Text, "The document title does not match");
             }
@@ -129,8 +129,8 @@ namespace Scryber.Core.UnitTests.Binding
                 var num1 = sect.Contents[2] as Number;
                 var num2 = sect.Contents[3] as Number;
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 Assert.AreEqual(expectedString, label.Text, "The label text does not match");
                 Assert.AreEqual(Scryber.Drawing.Color.Parse(expectedColor), label.FillColor, "The Label fill colour does not match");
@@ -202,8 +202,8 @@ namespace Scryber.Core.UnitTests.Binding
                 var label = sect.Contents[0] as Label;
                 var style = doc.Styles[0] as Scryber.Styles.Style;
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 Assert.AreEqual(expectedString, label.Text, "The label text does not match");
 
@@ -275,8 +275,8 @@ namespace Scryber.Core.UnitTests.Binding
                 };
 
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 //For the ForEach template with an object source.
                 var first = doc.FindAComponentById("FirstID") as Label;
@@ -335,8 +335,8 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 //For the ForEach template with an object source.
                 var first = doc.FindAComponentById("xmlInnerDiv1") as Div;
@@ -395,8 +395,8 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 //For the ForEach template with an object source.
                 var first = doc.FindAComponentById("xmlInnerDiv1") as Div;
@@ -418,8 +418,8 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.Params["template"] = @"<doc:H1 id='{xpath:concat(""xmlH"",@value)}' >
                                         <doc:Text id='{xpath:concat(""xmlText"",@value)}' value='{xpath:@value}' />
                                      </doc:H1>";
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 //For the ForEach template with an object source.
                 var first = doc.FindAComponentById("xmlH1") as Head1;
@@ -477,8 +477,8 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.Params["string"] = text;
                 doc.Params["int"] = i;
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
 
                 //Find the label as the value should be converted to a string.
@@ -512,7 +512,7 @@ namespace Scryber.Core.UnitTests.Binding
                     doc.Params["string"] = text;
                     doc.Params["int"] = i;
 
-                    doc.InitializeAndLoad();
+                    doc.InitializeAndLoad(OutputFormat.PDF);
                     //doc.DataBind();
                 }
                 catch(Scryber.PDFDataException)
@@ -566,8 +566,8 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.Params["string"] = text;
                 doc.Params["int"] = i.ToString();
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
 
                 //Find the label as the value should be converted to a string.
@@ -619,8 +619,8 @@ namespace Scryber.Core.UnitTests.Binding
 
                 doc.Params["obj"] = param;
 
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
 
                 //Find the label as the value should be converted to a string.
@@ -732,8 +732,8 @@ namespace Scryber.Core.UnitTests.Binding
                 };
 
                 doc.Params["dynamic"] = binding;
-                doc.InitializeAndLoad();
-                doc.DataBind();
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
 
                 //For the ForEach template with an object source.
                 var first = doc.FindAComponentById("FirstID") as Label;

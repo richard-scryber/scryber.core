@@ -22,7 +22,7 @@ namespace Scryber.Styles
 
         protected override void DoDataBind(DataContext context, bool includechildren)
         {
-            _format = context.OutputFormat;
+            this._format = context.Format;
 
             base.DoDataBind(context, includechildren);
         }

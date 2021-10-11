@@ -136,8 +136,8 @@ namespace Scryber
         public PageSize(PaperSize paper, PaperOrientation orientation) 
             : base(ObjectTypes.PageSize)
         {
-            this.PaperSize = paper;
-            this.Orientation = orientation;
+            this._paper = paper;
+            this._orientation = orientation;
             this.UpdateSizes();
         }
         

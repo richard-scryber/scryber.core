@@ -133,10 +133,7 @@ namespace Scryber
         FlateDecode = 1
     }
 
-    public enum OutputFormat
-    {
-        PDF
-    }
+    
 
     public enum ImageCompressionType
     {
