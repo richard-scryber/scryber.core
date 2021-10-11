@@ -11,7 +11,7 @@ using LD = Scryber.PDF.Layout.PDFLayoutDocument;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace Scryber.Core.UnitTests.Layout
+namespace Scryber.Core.UnitTests.Numbers
 {
 
     [TestClass()]

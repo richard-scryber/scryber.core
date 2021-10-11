@@ -27,7 +27,7 @@ namespace Scryber.Styles
 {
     /// <summary>
     /// Defines a single style that has the capabilities to be applied to multiple page Components
-    /// based upon their ID, Type, or class
+    /// based upon the style matching string.
     /// </summary>
     [PDFParsableComponent("Style")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -43,9 +43,10 @@ namespace Scryber.Styles
         private Type _type;
 
         /// <summary>
-        /// Gets or sets the type of components this definition is applied to.
+        /// Gets or sets the type of components this definition is applied to. Use the matcher as a preference
         /// </summary>
         [PDFAttribute("applied-type")]
+        [Obsolete("Use the style Match property (that is implicitly converted from a string instead) e.g. Match = 'html'", false)]
         public Type AppliedType
         {
             get { return _type; }
@@ -65,9 +66,10 @@ namespace Scryber.Styles
         private string _class;
 
         /// <summary>
-        /// Gets or sets the style-class that this definition is applied to.
+        /// Gets or sets the style-class that this definition is applied to. Use the style matcher as a preference
         /// </summary>
         [PDFAttribute("applied-class")]
+        [Obsolete("Use the style Match property (that is implicitly converted from a string instead) e.g. Match = '.red'", false)]
         public string AppliedClass
         {
             get { return _class; }
@@ -86,9 +88,10 @@ namespace Scryber.Styles
         private string _id;
     
         /// <summary>
-        /// Gets or sets the id of the components this definition is applied to.
+        /// Gets or sets the id of the components this definition is applied to. Use the style matcher as a preference
         /// </summary>
         [PDFAttribute("applied-id")]
+        [Obsolete("Use the style Match property (that is implicitly converted from a string instead) e.g. Match = '#id'", false)]
         public string AppliedID
         {
             get { return _id; }
@@ -111,6 +114,7 @@ namespace Scryber.Styles
         /// Not currently supported
         /// </summary>
         [PDFAttribute("applied-state")]
+        [Obsolete("Use the style Match property (that is implicitly converted from a string instead) e.g. Match = 'div::before'", false)]
         public ComponentState AppliedState
         {
             get { return _state; }
@@ -166,13 +170,22 @@ namespace Scryber.Styles
             this._type = appliedtype;
         }
 
-        #endregion 
+        #endregion
 
+        #region public StyleDefn(string match)
+
+        /// <summary>
+        /// Creates a new style definition with the matching selector
+        /// </summary>
+        /// <param name="match"></param>
         public StyleDefn(string match)
-            : this()
+            : this(ObjectTypes.Style)
         {
-            this.Match = match;
+            this.Match = (StyleMatcher)(match);
         }
+
+        #endregion
+
         #region protected PDFStyleDefn(PDFObjectType type)
 
         protected StyleDefn(ObjectType type)
@@ -185,73 +198,6 @@ namespace Scryber.Styles
         //
         // methods
         //
-
-        #region public bool IsCatchAllStyle()
-
-        /// <summary>
-        /// Retruns true if this definition is 'catch all' (does not have any selectors applied)
-        /// </summary>
-        /// <returns></returns>
-        public bool IsCatchAllStyle()
-        {
-            var match = this.AssertMatcher();
-            return (match is StyleCatchAllMatcher);
-            
-        }
-
-        #endregion
-
-        #region public bool IsClassNameMatch(string classname)
-
-        public const char ClassNameSeparator = ' ';
-        public const StringComparison ClassNameComparer = StringComparison.Ordinal; //CaseSensitive
-
-        /// <summary>
-        /// Returns true if the specified class name is considered a match for this definitions class name
-        /// </summary>
-        /// <param name="classname"></param>
-        /// <returns></returns>
-        private bool IsClassNameMatch(string classname)
-        {
-            if (string.IsNullOrEmpty(classname))
-                return false;// string.IsNullOrEmpty(this.AppliedClass);
-
-            if (classname.IndexOf(ClassNameSeparator) > 0)
-            {
-                int index = 0;
-                do
-                {
-                    index = classname.IndexOf(this.AppliedClass, index, ClassNameComparer);
-                    if (index >= 0)
-                    {
-                        if (IsDistinctClassName(this.AppliedClass, classname, index))
-                            return true;
-                        else
-                            index += this.AppliedClass.Length;
-                    }
-                }
-                while (index > 0);
-
-                return false;
-            }
-            else
-                return string.Equals(this.AppliedClass, classname, ClassNameComparer);
-        }
-
-        private bool IsDistinctClassName(string match, string all, int position)
-        {
-            bool startsdistinct = false;
-            bool endsdistinct = false;
-
-            if (position == 0 || char.IsWhiteSpace(all, position - 1))
-                startsdistinct = true;
-            if (position + match.Length == all.Length || char.IsWhiteSpace(all, position + match.Length))
-                endsdistinct = true;
-
-            return startsdistinct && endsdistinct;
-        }
-
-        #endregion
 
         #region public virtual bool IsMatchedTo(IPDFComponent component)
 
@@ -302,6 +248,8 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region protected virtual void MergeVariables(Style style)
+        
         protected virtual void MergeVariables(Style style)
         {
             if (null == style)
@@ -315,6 +263,8 @@ namespace Scryber.Styles
                 }
             }
         }
+
+        #endregion
 
         #region protected virtual PDFStyleMatcher AssertMatcher()
 

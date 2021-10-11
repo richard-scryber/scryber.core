@@ -101,46 +101,6 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(ComponentState.Normal, target.AppliedState);
         }
 
-        /// <summary>
-        ///A test for IsCatchAllStyle
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Styles")]
-        public void IsCatchAllStyleTest()
-        {
-            StyleDefn target = new StyleDefn();
-            bool expected = true;
-            bool actual;
-            actual = target.IsCatchAllStyle();
-            Assert.AreEqual(expected, actual);
-
-            target.AppliedClass = "AclassName";
-            expected = false;
-            actual = target.IsCatchAllStyle();
-            Assert.AreEqual(expected, actual);
-
-            target = new StyleDefn();
-            target.AppliedID = "AnId";
-            expected = false;
-            actual = target.IsCatchAllStyle();
-            Assert.AreEqual(expected, actual);
-
-            target = new StyleDefn();
-            target.AppliedType = typeof(Scryber.Components.Label);
-            expected = false;
-            actual = target.IsCatchAllStyle();
-            Assert.AreEqual(expected, actual);
-
-
-            target.AppliedType = null;
-            expected = true;
-            actual = target.IsCatchAllStyle();
-            Assert.AreEqual(expected, actual);
-
-
-        }
-
-        
 
         /// <summary>
         ///A test for IsMatchedTo

@@ -9,7 +9,7 @@ using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Styles;
 
-namespace Scryber.Core.UnitTests.Layout
+namespace Scryber.Core.UnitTests.Numbers
 {
     [TestClass()]
     public class Page_NumberRegistration_Test

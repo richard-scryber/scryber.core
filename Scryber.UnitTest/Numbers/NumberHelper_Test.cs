@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Scryber.Core.UnitTests.Layout
+namespace Scryber.Core.UnitTests.Numbers
 {
     [TestClass()]
     public class NumberHelper_Test

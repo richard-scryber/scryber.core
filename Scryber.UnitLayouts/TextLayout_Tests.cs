@@ -2,13 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
-using Scryber.PDF;
 using Scryber.Drawing;
 using System.IO;
 using Scryber.PDF.Resources;
-using System.Net.WebSockets;
 
-namespace Scryber.Core.UnitTests.Layout
+namespace Scryber.UnitLayouts
 {
     [TestClass]
     public class TextLayout_Tests

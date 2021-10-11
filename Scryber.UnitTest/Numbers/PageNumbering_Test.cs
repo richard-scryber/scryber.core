@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scryber.Components;
 using Scryber.Styles;
-using Scryber.PDF.Layout;
-using Scryber.PDF;
-using LD = Scryber.PDF.Layout.PDFLayoutDocument;
 
-namespace Scryber.Core.UnitTests.Layout
+
+namespace Scryber.Core.UnitTests.Numbers
 {
     /// <summary>
     /// A set of tests for the PageNumberingCollection, PageNumberGroup and PageStyle
