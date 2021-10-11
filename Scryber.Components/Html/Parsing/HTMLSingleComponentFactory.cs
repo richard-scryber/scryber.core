@@ -75,16 +75,16 @@ namespace Scryber.Html.Parsing
         /// <param name="attrValue"></param>
         public virtual void SetAttribute(IHtmlContentParser parser, IComponent parsed, string componentName, string attrName, string attrValue)
         {
-            if (attrName == ClassAttrName && parsed is IPDFStyledComponent)
-                ((IPDFStyledComponent)parsed).StyleClass = attrValue;
+            if (attrName == ClassAttrName && parsed is IStyledComponent)
+                ((IStyledComponent)parsed).StyleClass = attrValue;
             else if (attrName == IdAttrName)
                 parsed.ID = attrValue;
-            else if (StyleAttrNames.Contains(attrName) && parsed is IPDFStyledComponent)
-                this.SetStyleAttribute(parsed as IPDFStyledComponent, attrName, attrValue);
+            else if (StyleAttrNames.Contains(attrName) && parsed is IStyledComponent)
+                this.SetStyleAttribute(parsed as IStyledComponent, attrName, attrValue);
 
         }
 
-        protected virtual void SetStyleAttribute(IPDFStyledComponent comp, string name, string value)
+        protected virtual void SetStyleAttribute(IStyledComponent comp, string name, string value)
         {
             //TODO: Implement style parsing.
         }

@@ -43,7 +43,7 @@ namespace Scryber.Components
     [PDFParsableComponent("Document")]
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
-    public partial class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IPDFStyledComponent,
+    public partial class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IStyledComponent,
                                                       ITemplateParser, IParsedDocument, IControlledComponent
     {
         //
@@ -606,9 +606,9 @@ namespace Scryber.Components
 
         // IPDFStyledComponent explicit interface - so we dont show the properties by default
 
-        Style IPDFStyledComponent.Style { get; }
+        Style IStyledComponent.Style { get; }
 
-        bool IPDFStyledComponent.HasStyle { get { return null != (this as IPDFStyledComponent).Style; } }
+        bool IStyledComponent.HasStyle { get { return null != (this as IStyledComponent).Style; } }
 
         #endregion
 
@@ -1811,7 +1811,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to register pre layout for any additions as well
         /// </summary>
         /// <param name="context"></param>
-        internal override void RegisterPreLayout(PDFLayoutContext context)
+        internal override void RegisterPreLayout(LayoutContext context)
         {
             if (this.HasAdditions)
                 this.Additions.RegisterPreLayout(context);
@@ -1827,7 +1827,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to register layout complete for any additions as well
         /// </summary>
         /// <param name="context"></param>
-        internal override void RegisterLayoutComplete(PDFLayoutContext context)
+        internal override void RegisterLayoutComplete(LayoutContext context)
         {
             if (this.HasAdditions)
                 this.Additions.RegisterLayoutComplete(context);
@@ -1843,7 +1843,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to register pre render for any additions as well
         /// </summary>
         /// <param name="context"></param>
-        internal override void RegisterPreRender(PDFRenderContext context)
+        internal override void RegisterPreRender(RenderContext context)
         {
             base.RegisterPreRender(context);
 
@@ -1859,7 +1859,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to register post render for any additions as well
         /// </summary>
         /// <param name="context"></param>
-        internal override void RegisterPostRender(PDFRenderContext context)
+        internal override void RegisterPostRender(RenderContext context)
         {
             base.RegisterPostRender(context);
 

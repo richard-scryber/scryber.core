@@ -65,10 +65,11 @@ namespace Scryber.Core.UnitTests.Generation
 
         }
 
-        private void DefaultFont_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void DefaultFont_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Default font is Sans-Serif
-            var doc = args.Context.DocumentLayout.DocumentComponent;
+            var context = (PDF.PDFLayoutContext)(args.Context);
+            var doc = context.DocumentLayout.DocumentComponent;
             var rsrc = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Sans-Serif");
 
             Assert.IsNotNull(rsrc);
@@ -111,10 +112,11 @@ namespace Scryber.Core.UnitTests.Generation
 
         }
 
-        private void StandardFont_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void StandardFont_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Default font is Sans-Serif
-            var doc = args.Context.DocumentLayout.DocumentComponent;
+            var context = (PDF.PDFLayoutContext)(args.Context);
+            var doc = context.DocumentLayout.DocumentComponent;
             var hel = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Helvetica") as PDFFontResource;
             var times = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times") as PDFFontResource;
             var cour = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Courier") as PDFFontResource;
@@ -176,10 +178,11 @@ that will flow across multiple lines and show the expected default leading for t
 
         }
 
-        private void SelectorFont_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void SelectorFont_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Default font is Sans-Serif
-            var doc = args.Context.DocumentLayout.DocumentComponent;
+            var context = (PDF.PDFLayoutContext)(args.Context);
+            var doc = context.DocumentLayout.DocumentComponent;
             
             var sans = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Arial") as PDFFontResource;
             

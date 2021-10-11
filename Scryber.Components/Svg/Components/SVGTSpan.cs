@@ -5,7 +5,7 @@ using Scryber.Components;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("tspan")]
-    public class SVGTextSpan : TextLiteral, IPDFStyledComponent
+    public class SVGTextSpan : TextLiteral, IStyledComponent
     {
 
         #region public PDFStyle Style {get;set;} + public bool HasStyle{get;}

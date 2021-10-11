@@ -37,9 +37,9 @@ namespace Scryber.UnitLayouts
         }
 
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            var pg = args.Context.DocumentLayout.AllPages[0];
+            var pg = args.Context.GetLayout<PDFLayoutDocument>().AllPages[0];
             var reg = pg.ContentBlock.Columns[0];
             var line = reg.Contents[0] as PDFLayoutLine;
             var runs = line.Runs;

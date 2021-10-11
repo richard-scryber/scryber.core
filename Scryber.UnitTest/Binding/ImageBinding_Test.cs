@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.PDF;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -160,9 +161,11 @@ namespace Scryber.Core.UnitTests.Binding
             
         }
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            var layoutPg = args.Context.DocumentLayout.AllPages[0];
+            var context = (PDFLayoutContext)(args.Context);
+
+            var layoutPg = context.DocumentLayout.AllPages[0];
             var layoutLine1 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.PDF.Layout.PDFLayoutLine;
 
             Assert.IsNotNull(layoutLine1);
@@ -174,7 +177,7 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsNotNull(compRun1.Owner);
             Assert.AreEqual("LoadedImage1", compRun1.Owner.ID);
 
-            layoutPg = args.Context.DocumentLayout.AllPages[1];
+            layoutPg = context.DocumentLayout.AllPages[1];
             var layoutLine2 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.PDF.Layout.PDFLayoutLine;
 
             Assert.IsNotNull(layoutLine2);

@@ -34,7 +34,7 @@ namespace Scryber.Components
         /// Event that is raised when one item is databound onto the component
         /// </summary>
         [PDFAttribute("on-item-databound")]
-        public event PDFTemplateItemDataBoundHandler ItemDataBound
+        public event TemplateItemDataBoundHandler ItemDataBound
         {
             add { this.Events.AddHandler(ItemBoundEventKey, value); }
             remove { this.Events.RemoveHandler(ItemBoundEventKey, value); }
@@ -49,10 +49,10 @@ namespace Scryber.Components
         {
             if (this.HasRegisteredEvents)
             {
-                PDFTemplateItemDataBoundHandler handler = this.Events[ItemBoundEventKey] as PDFTemplateItemDataBoundHandler;
+                TemplateItemDataBoundHandler handler = this.Events[ItemBoundEventKey] as TemplateItemDataBoundHandler;
                 if(null != handler)
                 {
-                    handler(this, new PDFTemplateItemDataBoundArgs(item, context));
+                    handler(this, new TemplateItemDataBoundArgs(item, context));
                 }
                 
             }

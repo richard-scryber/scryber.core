@@ -32,7 +32,7 @@ namespace Scryber
     /// Defines an interface for Components that support the application of state attributes and
     /// can also get the full style defined in the Components document for their type, id, and class
     /// </summary>
-    public interface IPDFStyledComponent : IComponent
+    public interface IStyledComponent : IComponent
     {
         /// <summary>
         /// Gets or sets the class name of styles to apply
@@ -89,6 +89,6 @@ namespace Scryber
     {
         bool SetStyleValue(Styles.Style onStyle, CSSStyleItemReader styleReader, ContextBase context);
 
-        bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent component, CSSStyleItemReader stylereader);
+        bool SetStyleValue(IHtmlContentParser parser, IStyledComponent component, CSSStyleItemReader stylereader);
     }
 }

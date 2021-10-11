@@ -213,7 +213,7 @@ namespace Scryber.Styles.Selectors
 
         #region public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state)
 
-        public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state, out int priority)
+        public bool IsMatchedTo(IStyledComponent component, ComponentState state, out int priority)
         {
             priority = 0;
             // check everything
@@ -258,13 +258,13 @@ namespace Scryber.Styles.Selectors
                 var parent = component.Parent;
                 if (this.Ancestor.Placement == StylePlacement.DirectParent)
                 {
-                    while (null != parent && !(parent is IPDFStyledComponent)) // select the closest styled component
+                    while (null != parent && !(parent is IStyledComponent)) // select the closest styled component
                         parent = parent.Parent;
 
                     if (null == parent)
                         return false;
 
-                    if (this.Ancestor.IsMatchedTo(parent as IPDFStyledComponent, state, out parentPriority))
+                    if (this.Ancestor.IsMatchedTo(parent as IStyledComponent, state, out parentPriority))
                     {
                         priority = this.Priority;
                         return true;
@@ -274,9 +274,9 @@ namespace Scryber.Styles.Selectors
                 {
                     while (null != parent)
                     {
-                        if (parent is IPDFStyledComponent)
+                        if (parent is IStyledComponent)
                         {
-                            if (this.Ancestor.IsMatchedTo(parent as IPDFStyledComponent, state, out parentPriority))
+                            if (this.Ancestor.IsMatchedTo(parent as IStyledComponent, state, out parentPriority))
                             {
                                 priority = this.Priority;
                                 return true;

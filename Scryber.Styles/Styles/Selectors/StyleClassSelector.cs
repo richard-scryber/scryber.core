@@ -28,7 +28,7 @@ namespace Scryber.Styles.Selectors
             this.AndClass = and;
         }
 
-        public bool IsMatchedTo(IPDFStyledComponent component, ComponentState state)
+        public bool IsMatchedTo(IStyledComponent component, ComponentState state)
         {
             
             var equals = component.StyleClass.Equals(this.ClassName);

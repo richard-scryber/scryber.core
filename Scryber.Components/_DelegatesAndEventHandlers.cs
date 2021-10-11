@@ -27,20 +27,20 @@ namespace Scryber
 {
 
     /// <summary>
-    /// Deletegate for the a Components Initialized Event
+    /// Deletegate for the a Components Rendered Event
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public delegate void PDFRenderEventHandler(object sender, PDFRenderEventArgs args);
+    public delegate void RenderEventHandler(object sender, RenderEventArgs args);
 
     /// <summary>
     /// Event args for a components Initialized event
     /// </summary>
-    public class PDFRenderEventArgs : EventArgs
+    public class RenderEventArgs : EventArgs
     {
-        public PDFRenderContext Context { get; private set; }
+        public RenderContext Context { get; private set; }
 
-        public PDFRenderEventArgs(PDFRenderContext context)
+        public RenderEventArgs(RenderContext context)
         {
             this.Context = context;
         }
@@ -51,30 +51,32 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public delegate void PDFLayoutEventHandler(object sender, PDFLayoutEventArgs args);
+    public delegate void LayoutEventHandler(object sender, LayoutEventArgs args);
 
     /// <summary>
     /// Event args for a components Pre and Post Layout events
     /// </summary>
-    public class PDFLayoutEventArgs: EventArgs
+    public class LayoutEventArgs: EventArgs
     {
-        public PDFLayoutContext Context { get; private set; }
+        public LayoutContext Context { get; private set; }
 
-        public PDFLayoutEventArgs(PDFLayoutContext context)
+        public LayoutEventArgs(LayoutContext context)
         {
             this.Context = context;
         }
+
+        
     }
 
 
-    public delegate void PDFTemplateItemDataBoundHandler(object sender, PDFTemplateItemDataBoundArgs args);
+    public delegate void TemplateItemDataBoundHandler(object sender, TemplateItemDataBoundArgs args);
 
 
     /// <summary>
     /// Event args class that has a reference to the item that was generated and bound.
     /// And the current data context for binding.
     /// </summary>
-    public class PDFTemplateItemDataBoundArgs : EventArgs
+    public class TemplateItemDataBoundArgs : EventArgs
     {
         private IComponent _item;
         private DataContext _context;
@@ -89,7 +91,7 @@ namespace Scryber
             get { return _context; }
         }
 
-        public PDFTemplateItemDataBoundArgs(IComponent item, DataContext context)
+        public TemplateItemDataBoundArgs(IComponent item, DataContext context)
         {
             this._item = item;
             this._context = context;

@@ -93,7 +93,7 @@ namespace Scryber.Components
             base.OnLoaded(context);
         }
 
-        protected override void OnPreLayout(PDF.PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             bool performload = true;
             this.EnsureContentsParsed(context, performload);

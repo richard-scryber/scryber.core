@@ -30,7 +30,7 @@ namespace Scryber.Svg.Components
         {
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             var bounds = this.GetBounds();
             this.X = bounds.X;

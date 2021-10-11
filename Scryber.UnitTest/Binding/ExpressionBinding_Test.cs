@@ -525,7 +525,7 @@ namespace Scryber.Core.UnitTests.Binding
                 }
                 Assert.AreEqual("Binding Document title", doc.Info.Title, "Title is not correct");
 
-                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                var p = doc.FindAComponentById("myPara") as IStyledComponent;
                 Assert.AreEqual((Color)"#FF0033", p.Style.Fill.Color, "Paragraph color was not correct");
             }
         }
@@ -572,7 +572,7 @@ namespace Scryber.Core.UnitTests.Binding
                 }
                 Assert.AreEqual("Binding Document 1", doc.Info.Title, "Title is not correct");
 
-                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                var p = doc.FindAComponentById("myPara") as IStyledComponent;
                 Assert.AreEqual((Color)"#FF0033", p.Style.Fill.Color, "Paragraph color was not correct");
 
                 var list = doc.FindAComponentById("mylist") as ListUnordered;
@@ -602,7 +602,7 @@ namespace Scryber.Core.UnitTests.Binding
                 }
                 Assert.AreEqual("Binding Document 2", doc.Info.Title, "Title is not correct");
 
-                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                var p = doc.FindAComponentById("myPara") as IStyledComponent;
                 Assert.AreEqual((Color)"#FF00FF", p.Style.Fill.Color, "Paragraph color was not correct");
 
                 var list = doc.FindAComponentById("mylist") as ListUnordered;
@@ -701,7 +701,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 Assert.AreEqual("Binding Document " + i.ToString(), doc.Info.Title, "Title is not correct");
 
-                var p = doc.FindAComponentById("myPara") as IPDFStyledComponent;
+                var p = doc.FindAComponentById("myPara") as IStyledComponent;
                 Assert.AreEqual((Color)"#FF00FF", p.Style.Fill.Color, "Paragraph color was not correct");
 
                 var list = doc.FindAComponentById("mylist") as ListUnordered;
@@ -849,7 +849,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual("Document title", doc.Info.Title, "Title is not correct");
 
                 //body color
-                var body = doc.FindAComponentById("mainbody") as IPDFStyledComponent;
+                var body = doc.FindAComponentById("mainbody") as IStyledComponent;
                 Assert.AreEqual((Color)"#330033", body.Style.Fill.Color, "Body color was not correct");
 
                 //table binding

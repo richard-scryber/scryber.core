@@ -69,7 +69,7 @@ namespace Scryber.Svg.Components
             return null;
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             this.UpdateShapeBounds(context);
             base.OnPreLayout(context);

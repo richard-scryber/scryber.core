@@ -207,13 +207,13 @@ namespace Scryber.Components
 
         #endregion
 
-        #region PDFLayoutEventHandler PreLayout event + OnPreLayout(PDFLayoutContext) + RegisterPreLayout(PDFLayoutContext)
+        #region LayoutEventHandler PreLayout event + OnPreLayout(PDFLayoutContext) + RegisterPreLayout(PDFLayoutContext)
 
         /// <summary>
         /// Event that is raised before any of the layout of the document has been started.
         /// </summary>
         [PDFAttribute("on-prelayout")]
-        public event PDFLayoutEventHandler PreLayout
+        public event LayoutEventHandler PreLayout
         {
             add { this.Events.AddHandler(PreLayoutEventKey, value);  }
             remove { this.Events.RemoveHandler(PreLayoutEventKey, value); }
@@ -223,13 +223,13 @@ namespace Scryber.Components
         /// Raises the PreLayout event
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void OnPreLayout(PDFLayoutContext context)
+        protected virtual void OnPreLayout(LayoutContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFLayoutEventHandler handler = (PDFLayoutEventHandler)this.Events[PreLayoutEventKey];
+                LayoutEventHandler handler = (LayoutEventHandler)this.Events[PreLayoutEventKey];
                 if (null != handler)
-                    handler(this, new PDFLayoutEventArgs(context));
+                    handler(this, new LayoutEventArgs(context));
             }
         }
 
@@ -238,7 +238,7 @@ namespace Scryber.Components
         /// Friendly inheritors can override.
         /// </summary>
         /// <param name="context"></param>
-        internal virtual void RegisterPreLayout(PDFLayoutContext context)
+        internal virtual void RegisterPreLayout(LayoutContext context)
         {
             this.OnPreLayout(context);
         }
@@ -251,7 +251,7 @@ namespace Scryber.Components
         /// Event that is raised once all the layout of the document has been completed.
         /// </summary>
         [PDFAttribute("on-postlayout")]
-        public event PDFLayoutEventHandler LayoutComplete
+        public event LayoutEventHandler LayoutComplete
         {
             add { this.Events.AddHandler(PostLayoutEventKey, value); }
             remove { this.Events.RemoveHandler(PostLayoutEventKey, value); }
@@ -261,13 +261,13 @@ namespace Scryber.Components
         /// Raises the LayoutComplete event
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void OnLayoutComplete(PDFLayoutContext context)
+        protected virtual void OnLayoutComplete(LayoutContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFLayoutEventHandler handler = (PDFLayoutEventHandler)this.Events[PostLayoutEventKey];
+                LayoutEventHandler handler = (LayoutEventHandler)this.Events[PostLayoutEventKey];
                 if (null != handler)
-                    handler(this, new PDFLayoutEventArgs(context));
+                    handler(this, new LayoutEventArgs(context));
             }
 
         }
@@ -277,7 +277,7 @@ namespace Scryber.Components
         /// Friendly inheritors can override
         /// </summary>
         /// <param name="context"></param>
-        internal virtual void RegisterLayoutComplete(PDFLayoutContext context)
+        internal virtual void RegisterLayoutComplete(LayoutContext context)
         {
             this.OnLayoutComplete(context);
         }
@@ -290,7 +290,7 @@ namespace Scryber.Components
         /// Notifies receivers that this instance is about to be Rendered. This is the last chance to change properties
         /// </summary>
         [PDFAttribute("on-prerender")]
-        public event PDFRenderEventHandler PreRender
+        public event RenderEventHandler PreRender
         {
             add { this.Events.AddHandler(PreRenderEventKey, value); }
             remove { this.Events.RemoveHandler(PreRenderEventKey, value); }
@@ -300,13 +300,13 @@ namespace Scryber.Components
         /// Raises the PreRender event. Inheritors can override this method to perfom their own actions
         /// </summary>
         /// <param name="e">The arguments</param>
-        protected virtual void OnPreRender(PDFRenderContext context)
+        protected virtual void OnPreRender(RenderContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFRenderEventHandler handler = (PDFRenderEventHandler)this.Events[PreRenderEventKey];
+                RenderEventHandler handler = (RenderEventHandler)this.Events[PreRenderEventKey];
                 if (handler != null)
-                    handler(this, new PDFRenderEventArgs(context));
+                    handler(this, new RenderEventArgs(context));
             }
         }
 
@@ -315,20 +315,20 @@ namespace Scryber.Components
         /// Friendly inheritors can override
         /// </summary>
         /// <param name="context"></param>
-        internal virtual void RegisterPreRender(PDFRenderContext context)
+        internal virtual void RegisterPreRender(RenderContext context)
         {
             this.OnPreRender(context);
         }
 
         #endregion
 
-        #region PDFRenderEventHandler PostRender Event + OnPostRender(PDFRenderContext) + RegisterPostRender(PDFRenderContext)
+        #region PDFRenderEventHandler PostRender Event + OnPostRender(RenderContext) + RegisterPostRender(RenderContext)
 
         /// <summary>
         /// Notifies receivers that this instance has been rendered. Clean up can now be performed
         /// </summary>
         [PDFAttribute("on-postrender")]
-        public event PDFRenderEventHandler PostRender
+        public event RenderEventHandler PostRender
         {
             add { this.Events.AddHandler(PostRenderEventKey, value); }
             remove { this.Events.RemoveHandler(PostRenderEventKey, value); }
@@ -338,13 +338,13 @@ namespace Scryber.Components
         /// Raises the PostRender event. Inheritors can override this method to perfom their own actions
         /// </summary>
         /// <param name="context">The current render context</param>
-        protected virtual void OnPostRender(PDFRenderContext context)
+        protected virtual void OnPostRender(RenderContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFRenderEventHandler handler = (PDFRenderEventHandler)this.Events[PostRenderEventKey];
+                RenderEventHandler handler = (RenderEventHandler)this.Events[PostRenderEventKey];
                 if (null != handler)
-                    handler(this, new PDFRenderEventArgs(context));
+                    handler(this, new RenderEventArgs(context));
             }
         }
 
@@ -353,7 +353,7 @@ namespace Scryber.Components
         /// Friendly inheritors can override
         /// </summary>
         /// <param name="context"></param>
-        internal virtual void RegisterPostRender(PDFRenderContext context)
+        internal virtual void RegisterPostRender(RenderContext context)
         {
             this.OnPostRender(context);
         }
@@ -1144,7 +1144,7 @@ namespace Scryber.Components
         /// <param name="applied"></param>
         protected virtual void MergeDeclaredStyles(Style applied)
         {
-            if (this is IPDFStyledComponent styledComponent)
+            if (this is IStyledComponent styledComponent)
             {
                 if (styledComponent.HasStyle)
                     styledComponent.Style.MergeInto(applied, Style.DirectStylePriority);

@@ -59,7 +59,7 @@ namespace Scryber.Styles.Parsing
 
         #endregion
 
-        bool IParserStyleFactory.SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent onComponent, CSSStyleItemReader reader)
+        bool IParserStyleFactory.SetStyleValue(IHtmlContentParser parser, IStyledComponent onComponent, CSSStyleItemReader reader)
         {
             return this.SetStyleValue(onComponent.Style, reader, parser.Context);
         }

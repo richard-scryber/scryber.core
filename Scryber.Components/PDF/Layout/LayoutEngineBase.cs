@@ -410,7 +410,7 @@ namespace Scryber.PDF.Layout
 
         private static bool IsStyled(IComponent comp)
         {
-            return comp is IPDFStyledComponent && !(comp is ILayoutBreak);
+            return comp is IStyledComponent && !(comp is ILayoutBreak);
         }
 
         private static bool IsText(IComponent comp)
@@ -484,9 +484,9 @@ namespace Scryber.PDF.Layout
             {
                 this.DoLayoutPathComponent(comp as IGraphicPathComponent, full);
             }
-            else if(comp is IPDFLayoutComponent)
+            else if(comp is ILayoutComponent)
             {
-                this.DoLayoutVisualRenderComponent(comp as IPDFLayoutComponent, full);
+                this.DoLayoutVisualRenderComponent(comp as ILayoutComponent, full);
             }
             else if (comp is IInvisibleContainer)
             {
@@ -1121,7 +1121,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="comp">The image reference to layout</param>
         /// <param name="style">The image style</param>
-        protected virtual void DoLayoutVisualRenderComponent(IPDFLayoutComponent comp, Style style)
+        protected virtual void DoLayoutVisualRenderComponent(ILayoutComponent comp, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
 
@@ -1693,8 +1693,8 @@ namespace Scryber.PDF.Layout
                 linetoAddTo.AddComponentRun(component, total, border, content, baselineoffset, options, style);
             }
 
-            if (component is IPDFLayoutComponent)
-                ((IPDFLayoutComponent)component).SetRenderSizes(content, border, total, style);
+            if (component is ILayoutComponent)
+                ((ILayoutComponent)component).SetRenderSizes(content, border, total, style);
 
             return true;
         }

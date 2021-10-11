@@ -232,7 +232,7 @@ namespace Scryber.Components
                 return null;
         }
 
-        public Size GetRequiredSizeForLayout(Size available, PDFLayoutContext context, Style appliedstyle)
+        public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
             PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();

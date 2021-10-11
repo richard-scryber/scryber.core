@@ -17,9 +17,9 @@ namespace Scryber.UnitLayouts
 
         PDFLayoutDocument layout;
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            this.layout = args.Context.DocumentLayout;
+            this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
         private void AssertAreApproxEqual(double one, double two, string message)

@@ -19,9 +19,9 @@ namespace Scryber.UnitLayouts
 
         private PDFLayoutDocument layout;
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            layout = args.Context.DocumentLayout;
+            layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
         #region public void PageWithExplicitSizedPanel()

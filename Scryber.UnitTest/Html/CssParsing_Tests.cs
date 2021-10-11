@@ -70,9 +70,10 @@ namespace Scryber.Core.UnitTests.Html
 
 
 
-        private void SimpleDocumentParsing_Layout(object sender, PDFLayoutEventArgs args)
+        private void SimpleDocumentParsing_Layout(object sender, LayoutEventArgs args)
         {
-            _layoutcontext = args.Context;
+            var context = (PDFLayoutContext)(args.Context);
+            _layoutcontext = context;
         }
 
         string commentedCSS = @"
@@ -791,10 +792,11 @@ body.grey div.reverse{
             }
         }
 
-        private void ParseCSSWithInnerVariableApplied_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void ParseCSSWithInnerVariableApplied_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Make sure the variables are correctly assigned to the inline begin spans.
-            var layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            var layout = context.DocumentLayout;
             var pg = layout.AllPages[0];
             var content = pg.ContentBlock;
             var def = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
@@ -886,10 +888,11 @@ body.grey div.reverse{
             }
         }
 
-        private void ParseCSSWithInlineCalcLight_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void ParseCSSWithInlineCalcLight_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Make sure the variables are correctly assigned to the inline begin spans.
-            var layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            var layout = context.DocumentLayout;
             var pg = layout.AllPages[0];
             var content = pg.ContentBlock;
             var lime = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
@@ -902,10 +905,11 @@ body.grey div.reverse{
             Assert.AreEqual(StandardColors.White, dark.FullStyle.Background.Color, "The calc background colour did not match white");
         }
 
-        private void ParseCSSWithInlineCalcDark_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void ParseCSSWithInlineCalcDark_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Make sure the variables are correctly assigned to the inline begin spans.
-            var layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            var layout = context.DocumentLayout;
             var pg = layout.AllPages[0];
             var content = pg.ContentBlock;
             var lime = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
@@ -960,10 +964,11 @@ body.grey div.reverse{
 
         }
 
-        private void ParseCSSWithInlineCalcRepeater_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void ParseCSSWithInlineCalcRepeater_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Make sure the variables are correctly assigned to the inline begin spans.
-            var layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            var layout = context.DocumentLayout;
             var pg = layout.AllPages[0];
             var content = pg.ContentBlock;
             var first = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block

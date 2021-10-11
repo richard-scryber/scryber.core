@@ -55,7 +55,7 @@ namespace Scryber.Core.UnitTests.Generation
 
         }
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
             
         }

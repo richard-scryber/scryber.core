@@ -75,7 +75,7 @@ namespace Scryber.Html.Components
 
 
 
-        protected override void OnPreLayout(PDF.PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             this.ArrangeHeadersAndFooters();
             base.OnPreLayout(context);  

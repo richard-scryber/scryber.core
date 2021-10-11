@@ -285,14 +285,14 @@ namespace Scryber.Svg.Components
             if (found is ICloneable)
                 found = (found as ICloneable).Clone() as IComponent;
 
-            if(found is IPDFStyledComponent)
-            this.ApplySizeStyle(found as IPDFStyledComponent);
+            if(found is IStyledComponent)
+            this.ApplySizeStyle(found as IStyledComponent);
             
             
             return new IComponent[] { found };
         }
 
-        private void ApplySizeStyle(IPDFStyledComponent found)
+        private void ApplySizeStyle(IStyledComponent found)
         {
             StyleValue<Unit> val;
 

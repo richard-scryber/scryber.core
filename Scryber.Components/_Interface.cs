@@ -62,6 +62,16 @@ namespace Scryber
 
     #endregion
 
+    /// <summary>
+    /// Base interface that all document layouts should implement if they are passed as an layout.
+    /// </summary>
+    public interface IDocumentLayout
+    {
+        IDocument Owner { get; }
+
+        OutputFormat Format { get; }
+    }
+
     #region public interface ITextComponent : IComponent
 
     /// <summary>
@@ -92,9 +102,9 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFImageComponent : IPDFComponent
+    #region public interface IPDFImageComponent : IComponent
 
-    public interface IPDFImageComponent : IComponent, IPDFLayoutComponent
+    public interface IPDFImageComponent : IComponent, ILayoutComponent
     {
         /// <summary>
         /// Gets the image resource data associated with this image. 
@@ -128,22 +138,8 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFRenderComponent : IComponent
-
-    /// <summary>
-    /// A PDF Component that supports rendering
-    /// </summary>
-    public interface IPDFRenderComponent : IComponent
+    public interface IPDFRenderable
     {
-        /// <summary>
-        /// Event that is raised before the Component is rendered to the document
-        /// </summary>
-        event PDFRenderEventHandler PreRender;
-        /// <summary>
-        /// Event that is raised after the Component has been rendered
-        /// </summary>
-        event PDFRenderEventHandler PostRender;
-
         /// <summary>
         /// Outputs the compenent content to the pdf writer
         /// </summary>
@@ -153,6 +149,25 @@ namespace Scryber
         PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer);
     }
 
+    #region public interface IPDFRenderComponent : IComponent
+
+    /// <summary>
+    /// A Component that supports rendering to a PDF writer
+    /// </summary>
+    public interface IPDFRenderComponent : IComponent, IPDFRenderable
+    {
+        /// <summary>
+        /// Event that is raised before the Component is rendered to the document
+        /// </summary>
+        event RenderEventHandler PreRender;
+        /// <summary>
+        /// Event that is raised after the Component has been rendered
+        /// </summary>
+        event RenderEventHandler PostRender;
+
+        
+    }
+
     #endregion
 
     #region public interface IPDFLayoutComponent : IRenderComponent
@@ -160,7 +175,7 @@ namespace Scryber
     /// <summary>
     /// Interface for components to implement that layout their own contents within the content of a PDF page, but don't need to implement a layout engine.
     /// </summary>
-    public interface IPDFLayoutComponent : IPDFRenderComponent
+    public interface ILayoutComponent : IComponent
     {
         /// <summary>
         /// Returns the required size to be made available within the layout for the component to render into.
@@ -169,7 +184,7 @@ namespace Scryber
         /// <param name="context">The current layout context</param>
         /// <param name="appliedstyle">The style applied to the component</param>
         /// <returns>The required size of the component content (excluding any padding or margins)</returns>
-        Size GetRequiredSizeForLayout(Size available, PDFLayoutContext context, Style appliedstyle);
+        Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle);
 
         /// <summary>
         /// Applies the final render size(s) back to the visual render component.
@@ -188,7 +203,7 @@ namespace Scryber
     /// <summary>
     /// A Visual Component that has a physical dimension and content
     /// </summary>
-    public interface IVisualComponent : IPDFStyledComponent
+    public interface IVisualComponent : IStyledComponent
     {
 
         /// <summary>

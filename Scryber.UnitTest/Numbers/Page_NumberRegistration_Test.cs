@@ -16,9 +16,10 @@ namespace Scryber.Core.UnitTests.Numbers
     {
         private PDFLayoutDocument _layout;
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            this._layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            this._layout = context.DocumentLayout;
         }
 
         /// <summary>

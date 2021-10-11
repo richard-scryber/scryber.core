@@ -223,7 +223,7 @@ namespace Scryber.Data
         /// Here we make sure that the contents of the field ase created.
         /// </summary>
         /// <param name="context"></param>
-        protected override void OnPreLayout(PDF.PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             this.EnsureContents(context);
             base.OnPreLayout(context);

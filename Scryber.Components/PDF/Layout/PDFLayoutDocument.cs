@@ -32,7 +32,7 @@ namespace Scryber.PDF.Layout
     /// <summary>
     /// Represents the layout of a document
     /// </summary>
-    public partial class PDFLayoutDocument : PDFLayoutContainerItem
+    public partial class PDFLayoutDocument : PDFLayoutContainerItem, IDocumentLayout
     {
         //
         // properties
@@ -44,6 +44,9 @@ namespace Scryber.PDF.Layout
         /// Gets or sets the document that started the layout
         /// </summary>
         public Document DocumentComponent { get; private set; }
+
+
+        IDocument IDocumentLayout.Owner { get { return this.DocumentComponent; } }
 
         #endregion
 
@@ -124,6 +127,11 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets the output format for this document (which is always PDF)
+        /// </summary>
+        public OutputFormat Format { get { return OutputFormat.PDF; } }
 
         //
         // ctor(s)

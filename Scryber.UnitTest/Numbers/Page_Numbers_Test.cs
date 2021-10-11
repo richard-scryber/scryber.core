@@ -40,9 +40,10 @@ namespace Scryber.Core.UnitTests.Numbers
 
         private LD layout;
 
-        private void Doc_LayoutCompleted(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutCompleted(object sender, LayoutEventArgs args)
         {
-            layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            layout = context.DocumentLayout;
         }
 
 

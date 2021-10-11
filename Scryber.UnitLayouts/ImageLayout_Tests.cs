@@ -22,9 +22,9 @@ namespace Scryber.UnitLayouts
 
         PDFLayoutDocument layout;
 
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            this.layout = args.Context.DocumentLayout;
+            this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
         private PDFLayoutComponentRun GetBlockImageRunForPage(int pg, int column = 0, int contentIndex = 0, int runIndex = 0)

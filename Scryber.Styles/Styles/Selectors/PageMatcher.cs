@@ -19,9 +19,9 @@ namespace Scryber.Styles.Selectors
             if (null == this.Selectors)
                 return true;
 
-            else if (component is IPDFStyledComponent)
+            else if (component is IStyledComponent)
             {
-                var styled = component as IPDFStyledComponent;
+                var styled = component as IStyledComponent;
 
                 
                 var val = styled.StyleClass;

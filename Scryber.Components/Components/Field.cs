@@ -30,7 +30,7 @@ namespace Scryber.Components
 
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             this.Contents.Clear();
 

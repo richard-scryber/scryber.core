@@ -52,25 +52,25 @@ namespace Scryber.Core.UnitTests.Mocks
         }
 
         [PDFAction()]
-        public void DocumentPreLayout(object sender, PDFLayoutEventArgs args)
+        public void DocumentPreLayout(object sender, LayoutEventArgs args)
         {
             Results.Add("Controller Document Laying out");
         }
 
         [PDFAction()]
-        public void DocumentPostLayout(object sender, PDFLayoutEventArgs args)
+        public void DocumentPostLayout(object sender, LayoutEventArgs args)
         {
             Results.Add("Controller Document Laid out");
         }
 
         [PDFAction()]
-        public void DocumentPreRender(object sender, PDFRenderEventArgs args)
+        public void DocumentPreRender(object sender, RenderEventArgs args)
         {
             Results.Add("Controller Document Rendering");
         }
 
         [PDFAction()]
-        public void DocumentPostRender(object sender, PDFRenderEventArgs args)
+        public void DocumentPostRender(object sender, RenderEventArgs args)
         {
             Results.Add("Controller Document Rendered");
         }
@@ -105,7 +105,7 @@ namespace Scryber.Core.UnitTests.Mocks
         }
 
         [PDFAction()]
-        public void ForEachItemBinding(object sender, PDFTemplateItemDataBoundArgs args)
+        public void ForEachItemBinding(object sender, TemplateItemDataBoundArgs args)
         {
             var forEach = sender as ForEach;
             var index = args.Context.CurrentIndex;

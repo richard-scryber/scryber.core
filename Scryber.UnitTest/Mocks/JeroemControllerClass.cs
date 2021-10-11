@@ -41,14 +41,14 @@ namespace Scryber.Core.UnitTests.Mocks
 
 
         [PDFAction("pre-layout-para")]
-        public void ParagraphPreLayout(object sender, PDFLayoutEventArgs args)
+        public void ParagraphPreLayout(object sender, LayoutEventArgs args)
         {
             (sender as HTMLParagraph).Contents.Add(new Label() { Text = "We are laying out", StyleClass = "block" });
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Laying-out the paragraph");
         }
 
         [PDFAction("post-layout-para")]
-        public void ParagraphPostLayout(object sender, PDFLayoutEventArgs args)
+        public void ParagraphPostLayout(object sender, LayoutEventArgs args)
         {
             //This label will not appear as we have finished using the components
             (sender as HTMLParagraph).Contents.Add(new Label() { Text = "We have been laid out", StyleClass = "block" });
@@ -58,13 +58,13 @@ namespace Scryber.Core.UnitTests.Mocks
 
 
         [PDFAction("pre-render-para")]
-        public void ParagraphPreRender(object sender, PDFRenderEventArgs args)
+        public void ParagraphPreRender(object sender, RenderEventArgs args)
         {
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Rendering the paragraph");
         }
 
         [PDFAction("post-render-para")]
-        public void ParagraphBinding(object sender, PDFRenderEventArgs args)
+        public void ParagraphBinding(object sender, RenderEventArgs args)
         {
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Rendered the paragraph");
         }
@@ -72,7 +72,7 @@ namespace Scryber.Core.UnitTests.Mocks
         
 
         [PDFAction("template-item-bound")]
-        public void TemplateItemBound(object sender, PDFTemplateItemDataBoundArgs args)
+        public void TemplateItemBound(object sender, TemplateItemDataBoundArgs args)
         {
             var template = sender as HTMLTemplate;
 

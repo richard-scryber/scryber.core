@@ -54,9 +54,9 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        private void DocumentParsing_Layout(object sender, PDFLayoutEventArgs args)
+        private void DocumentParsing_Layout(object sender, LayoutEventArgs args)
         {
-            _layoutcontext = args.Context;
+            _layoutcontext = (PDFLayoutContext)args.Context;
         }
 
         [TestMethod]
@@ -2238,9 +2238,10 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        private void Gradient_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Gradient_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            _layout = args.Context.DocumentLayout;
+            var context = (PDFLayoutContext)(args.Context);
+            _layout = context.DocumentLayout;
         }
 
 

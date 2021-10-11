@@ -14,9 +14,9 @@ namespace Scryber.UnitLayouts
 
         private PDFLayoutDocument layoutDoc;
 
-        private void Doc_LayoutDocument(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutDocument(object sender, LayoutEventArgs args)
         {
-            layoutDoc = args.Context.DocumentLayout;
+            layoutDoc = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
 

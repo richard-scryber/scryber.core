@@ -62,6 +62,10 @@ namespace Scryber.PDF
         {
         }
 
+        protected override IDocumentLayout DoGetLayout()
+        {
+            return this.DocumentLayout;
+        }
 
     }
 

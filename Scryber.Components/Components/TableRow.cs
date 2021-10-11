@@ -30,7 +30,7 @@ namespace Scryber.Components
     /// </summary>
     [PDFParsableComponent("Row")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_row")]
-    public class TableRow : ContainerComponent, IPDFStyledComponent, IDataStyledComponent
+    public class TableRow : ContainerComponent, IStyledComponent, IDataStyledComponent
     {
 
         //

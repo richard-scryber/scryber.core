@@ -59,28 +59,28 @@ namespace Scryber.Core.UnitTests.Generation
         }
 
         [PDFAction("handleprelayout")]
-        public void HandlePagePreLayout(object sender, PDFLayoutEventArgs args)
+        public void HandlePagePreLayout(object sender, LayoutEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("pre-layout");
         }
 
         [PDFAction("handlepostlayout")]
-        public void HandlePagePostLayout(object sender, PDFLayoutEventArgs args)
+        public void HandlePagePostLayout(object sender, LayoutEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("post-layout");
         }
 
         [PDFAction("handleprerender")]
-        public void HandlePagePreRender(object sender, PDFRenderEventArgs args)
+        public void HandlePagePreRender(object sender, RenderEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("pre-render");
         }
 
         [PDFAction("handlepostrender")]
-        public void HandlePagePostRender(object sender, PDFRenderEventArgs args)
+        public void HandlePagePostRender(object sender, RenderEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("post-render");

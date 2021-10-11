@@ -259,7 +259,7 @@ namespace Scryber.Html.Components
 
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             base.OnPreLayout(context);
             this.UpdateDocumentInfo(this.Document);

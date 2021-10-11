@@ -31,7 +31,7 @@ namespace Scryber.Styles.Parsing
         }
 
 
-        public bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent component, CSSStyleItemReader reader)
+        public bool SetStyleValue(IHtmlContentParser parser, IStyledComponent component, CSSStyleItemReader reader)
         {
             IParserStyleFactory found;
 

@@ -54,7 +54,7 @@ namespace Scryber.Svg.Components
             return style;
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             base.OnPreLayout(context);
         }

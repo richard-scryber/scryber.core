@@ -344,7 +344,7 @@ namespace Scryber.Components
 
         #endregion
 
-        public void RegisterPreLayout(PDFLayoutContext context)
+        public void RegisterPreLayout(LayoutContext context)
         {
             foreach(IComponent com in this)
             {
@@ -354,7 +354,7 @@ namespace Scryber.Components
         }
 
         
-        public void RegisterLayoutComplete(PDFLayoutContext context)
+        public void RegisterLayoutComplete(LayoutContext context)
         {
             foreach (IComponent comp in this)
             {
@@ -365,7 +365,7 @@ namespace Scryber.Components
 
 
         
-        public void RegisterPreRender(PDFRenderContext context)
+        public void RegisterPreRender(RenderContext context)
         {
             foreach (IComponent comp in this)
             {
@@ -394,7 +394,7 @@ namespace Scryber.Components
         #endregion
 
 
-        public void RegisterPostRender(PDFRenderContext context)
+        public void RegisterPostRender(RenderContext context)
         {
             foreach (IComponent comp in this)
             {

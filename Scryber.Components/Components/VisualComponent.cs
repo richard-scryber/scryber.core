@@ -26,7 +26,7 @@ using Scryber.Drawing;
 
 namespace Scryber.Components
 {
-    public abstract class VisualComponent : ContainerComponent, IVisualComponent, IPDFStyledComponent, IDataStyledComponent
+    public abstract class VisualComponent : ContainerComponent, IVisualComponent, IStyledComponent, IDataStyledComponent
     {
 
 

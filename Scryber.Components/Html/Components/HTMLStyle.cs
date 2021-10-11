@@ -130,7 +130,7 @@ namespace Scryber.Html.Components
             this.AddStylesToDocument();
         }
 
-        protected override void OnPreLayout(PDFLayoutContext context)
+        protected override void OnPreLayout(LayoutContext context)
         {
             if (null == this._parsedGroup)
                 this.AddStylesToDocument();

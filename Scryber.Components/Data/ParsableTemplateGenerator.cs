@@ -260,8 +260,8 @@ namespace Scryber.Data
 
                     TemplateBlockInstance template = (TemplateBlockInstance)comp;
 
-                    if (null != this.Style && (template is IPDFStyledComponent))
-                        this.Style.MergeInto((template as IPDFStyledComponent).Style);
+                    if (null != this.Style && (template is IStyledComponent))
+                        this.Style.MergeInto((template as IStyledComponent).Style);
 
                     template.StyleClass = this.StyleClass;
                     template.ElementName = this.ElementName;
@@ -273,8 +273,8 @@ namespace Scryber.Data
 
                     TemplateInstance template = (TemplateInstance)comp;
 
-                    if (null != this.Style && (template is IPDFStyledComponent))
-                        this.Style.MergeInto((template as IPDFStyledComponent).Style);
+                    if (null != this.Style && (template is IStyledComponent))
+                        this.Style.MergeInto((template as IStyledComponent).Style);
 
                     template.StyleClass = this.StyleClass;
                     template.ElementName = this.ElementName;

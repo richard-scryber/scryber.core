@@ -144,8 +144,8 @@ namespace Scryber.Styles
 
             if (sender is Style)
                 style = (sender as Style);
-            else if (sender is IPDFStyledComponent)
-                style = (sender as IPDFStyledComponent).Style;
+            else if (sender is IStyledComponent)
+                style = (sender as IStyledComponent).Style;
             else
                 throw new InvalidCastException("Style values can only be bound on styles or the StyledComponents that own them");
 

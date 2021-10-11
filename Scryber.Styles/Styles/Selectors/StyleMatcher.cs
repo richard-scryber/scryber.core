@@ -49,11 +49,11 @@ namespace Scryber.Styles.Selectors
 
         public virtual bool IsMatchedTo(IComponent component, ComponentState state, out int priority)
         {
-            if (component is IPDFStyledComponent)
+            if (component is IStyledComponent)
             {
 
                 var curr = this.Selector;
-                var matched = curr.IsMatchedTo(component as IPDFStyledComponent, state, out priority);
+                var matched = curr.IsMatchedTo(component as IStyledComponent, state, out priority);
 
                 return matched;
             }

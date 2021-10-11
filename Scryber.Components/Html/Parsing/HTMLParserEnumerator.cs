@@ -1047,9 +1047,9 @@ namespace Scryber.Html.Parsing
                     {
                         if (string.Equals(attrName, HTMLStyleAttribute, StringComparison.OrdinalIgnoreCase)) 
                         {
-                            if (this.Parser.Settings.SkipStyles == false && parsed is IPDFStyledComponent)
+                            if (this.Parser.Settings.SkipStyles == false && parsed is IStyledComponent)
                             {
-                                IPDFStyledComponent parsedStyled = parsed as IPDFStyledComponent;
+                                IStyledComponent parsedStyled = parsed as IStyledComponent;
 
                                 CSSStyleItemReader reader = new CSSStyleItemReader(attrValue);
                                 while (reader.ReadNextAttributeName())

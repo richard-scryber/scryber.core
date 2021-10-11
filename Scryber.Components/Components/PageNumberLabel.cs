@@ -22,6 +22,7 @@ using System.Text;
 using Scryber.PDF.Native;
 using Scryber.Styles;
 using Scryber.PDF.Layout;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -175,16 +176,16 @@ namespace Scryber.Components
         /// Once layout is comlete then we can replace the text that was used when not rendering
         /// with the text that was.
         /// </summary>
-        internal override void RegisterLayoutComplete(PDF.PDFLayoutContext context)
+        internal override void RegisterLayoutComplete(LayoutContext context)
         {
             base.RegisterLayoutComplete(context);
 
             ComponentArrangement arrange = this.GetFirstArrangement();
-            if (null != arrange)
+            if (null != arrange && context is PDFLayoutContext layoutContext)
             {
                 this._renderpageindex = arrange.PageIndex;
                 this._fullstyle = arrange.FullStyle;
-                this._pgstyle = context.DocumentLayout.CurrentPage.FullStyle;
+                this._pgstyle = layoutContext.DocumentLayout.CurrentPage.FullStyle;
             }
 
             if (null != this._doc && null != this._numberProxy)
@@ -273,9 +274,9 @@ namespace Scryber.Components
 
             while(null != parent)
             {
-                if(parent is IPDFStyledComponent)
+                if(parent is IStyledComponent)
                 {
-                    var styled = (IPDFStyledComponent)parent;
+                    var styled = (IStyledComponent)parent;
                     if (styled.HasStyle)
                         stack.Add(styled.Style);
                 }

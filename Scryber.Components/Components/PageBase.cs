@@ -30,7 +30,7 @@ using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
-    public abstract class PageBase : VisualComponent, IPDFStyledComponent, IResourceContainer, IPDFViewPortComponent,
+    public abstract class PageBase : VisualComponent, IStyledComponent, IResourceContainer, IPDFViewPortComponent,
                                                   IRemoteComponent, IControlledComponent, INamingContainer, ITopAndTailedComponent
     {
 
@@ -544,7 +544,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to extend to the headers and footers on the page
         /// </summary>
-        internal override void RegisterPreLayout(PDFLayoutContext context)
+        internal override void RegisterPreLayout(LayoutContext context)
         {
             if (null != this.PageHeaders)
             {
@@ -567,7 +567,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to extend to the headers and footers on the page
         /// </summary>
-        internal override void RegisterLayoutComplete(PDFLayoutContext context)
+        internal override void RegisterLayoutComplete(LayoutContext context)
         {
             
             if (null != this.PageHeaders)
@@ -591,7 +591,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to extend to the headers and footers on the page
         /// </summary>
-        internal override void RegisterPostRender(PDFRenderContext context)
+        internal override void RegisterPostRender(RenderContext context)
         {
             if (null != this.PageHeaders)
             {
@@ -615,7 +615,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to extend to the headers and footers on the page
         /// </summary>
-        internal override void RegisterPreRender(PDFRenderContext context)
+        internal override void RegisterPreRender(RenderContext context)
         {
            
 

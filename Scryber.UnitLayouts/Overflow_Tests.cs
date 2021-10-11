@@ -22,9 +22,9 @@ namespace Scryber.UnitLayouts
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void Doc_LayoutComplete(object sender, PDFLayoutEventArgs args)
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
-            layout = args.Context.DocumentLayout;
+            layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
         [TestCategory(TestCategoryName)]

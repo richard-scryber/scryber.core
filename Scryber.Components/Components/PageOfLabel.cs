@@ -192,7 +192,7 @@ namespace Scryber.Components
         /// <summary>
         /// We know that all components now have the blocks laid out and complete
         /// </summary>
-        internal override void RegisterLayoutComplete(PDFLayoutContext context)
+        internal override void RegisterLayoutComplete(LayoutContext context)
         {
             base.RegisterLayoutComplete(context);
 
@@ -315,7 +315,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <param name="name"></param>
-        private Component LookupExternalComponent(bool rendering, PDFLayoutContext context, string name)
+        private Component LookupExternalComponent(bool rendering, LayoutContext context, string name)
         {
             Component comp;
 

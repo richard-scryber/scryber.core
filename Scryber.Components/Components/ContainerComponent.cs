@@ -186,7 +186,7 @@ namespace Scryber.Components
 
         #region internal override void RegisterPreRender() + RegisterPostRender() + RegisterLayoutComplete()
 
-        internal override void RegisterPreLayout(PDFLayoutContext context)
+        internal override void RegisterPreLayout(LayoutContext context)
         {
             base.RegisterPreLayout(context);
 
@@ -203,7 +203,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to call the inner content methods
         /// </summary>
-        internal override void RegisterPreRender(PDFRenderContext context)
+        internal override void RegisterPreRender(RenderContext context)
         {
             base.RegisterPreRender(context);
             if (this.HasContent)
@@ -220,7 +220,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to call the inner content methods
         /// </summary>
-        internal override void RegisterPostRender(PDFRenderContext context)
+        internal override void RegisterPostRender(RenderContext context)
         {
             base.RegisterPostRender(context);
 
@@ -237,7 +237,7 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides base implementation to call the inner content methods
         /// </summary>
-        internal override void RegisterLayoutComplete(PDFLayoutContext context)
+        internal override void RegisterLayoutComplete(LayoutContext context)
         {
             base.RegisterLayoutComplete(context);
             if (this.HasContent)
