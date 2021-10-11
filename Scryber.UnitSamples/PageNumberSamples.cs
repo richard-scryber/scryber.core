@@ -106,7 +106,7 @@ namespace Scryber.UnitSamples
 
                         for (int j = 0; j < 5; j++)
                         {
-                            var span = new Span() { PositionMode = PositionMode.Block, Padding = new PDFThickness(4) };
+                            var span = new Span() { PositionMode = PositionMode.Block, Padding = new Thickness(4) };
                             span.Contents.Add(new TextLiteral("The page number of index " + j + " is "));
                             span.Contents.Add(new PageOfLabel() { ComponentName = "#Item" + j });
                             div.Contents.Add(span);

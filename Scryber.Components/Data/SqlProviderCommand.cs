@@ -32,7 +32,7 @@ namespace Scryber.Data
     [PDFRequiredFramework("0.9.0")]
     [PDFParsableComponent("SqlCommand")]
     [PDFJSConvertor("scryber.studio.design.sql.convertors.sql_SQLCommand")]
-    public class SqlProviderCommand : DataTableProviderCommandBase, IPDFDataSetProviderCommand
+    public class SqlProviderCommand : DataTableProviderCommandBase, IDataSetProviderCommand
     {
         //the category name of the sql command
         internal const string SqlCommandLog = "Sql Command"; 
@@ -185,7 +185,7 @@ namespace Scryber.Data
         /// Overrides the base implementation to ensure that the parameters and relations are databound
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
             if (this.HasParameters)
@@ -209,7 +209,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="ds">the DataSet to populate</param>
         /// <param name="index">The index of the command</param>
-        public override void FillData(DataSet ds, XPathDataSourceBase source, IPDFDataSetProviderCommand parent, PDFDataContext context)
+        public override void FillData(DataSet ds, XPathDataSourceBase source, IDataSetProviderCommand parent, DataContext context)
         {
             bool logDebug = context.TraceLog.ShouldLog(TraceLevel.Debug);
 
@@ -302,7 +302,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="values"></param>
-        private void PopulateParameters(DbCommand cmd, PDFDataContext context)
+        private void PopulateParameters(DbCommand cmd, DataContext context)
         {
             if (this.HasParameters)
             {

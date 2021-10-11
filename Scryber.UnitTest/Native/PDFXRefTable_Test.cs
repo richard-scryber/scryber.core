@@ -14,11 +14,11 @@ namespace Scryber.Core.UnitTests.Native
     ///to contain all PDFXRefTable_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFXRefTable_Test : IStreamFactory
+    public class PDFXRefTable_Test : IPDFStreamFactory
     {
         #region IStreamFactory interface
 
-        public PDFStream CreateStream(IStreamFilter[] filters, IIndirectObject forobject)
+        public PDFStream CreateStream(IStreamFilter[] filters, IPDFIndirectObject forobject)
         {
             PDFIndirectObject indobj = (PDFIndirectObject)forobject;
             return new PDFStream(filters, indobj);
@@ -176,7 +176,7 @@ namespace Scryber.Core.UnitTests.Native
             Assert.AreEqual(count + 2, target.ReferenceCount);
             Assert.IsTrue(target.Contains(obj2));
             
-            IIndirectObject removed = target[count + 1].Reference;
+            IPDFIndirectObject removed = target[count + 1].Reference;
             Assert.IsNotNull(removed);
             Assert.IsTrue(removed.Deleted);
 

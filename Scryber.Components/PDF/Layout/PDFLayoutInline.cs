@@ -28,12 +28,12 @@ namespace Scryber.PDF.Layout
 
 
         
-        public override Drawing.PDFUnit Height
+        public override Drawing.Unit Height
         {
             get { return 0; }
         }
 
-        public override Drawing.PDFUnit Width
+        public override Drawing.Unit Width
         {
             get { return 0; }
         }
@@ -45,7 +45,7 @@ namespace Scryber.PDF.Layout
             this.FullStyle = fullStyle;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.PDFUnit xoffset, Drawing.PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
         {
             
         }
@@ -68,12 +68,12 @@ namespace Scryber.PDF.Layout
             set;
         }
 
-        public override Drawing.PDFUnit Height
+        public override Drawing.Unit Height
         {
             get { return 0; }
         }
 
-        public override Drawing.PDFUnit Width
+        public override Drawing.Unit Width
         {
             get { return 0; }
         }
@@ -84,7 +84,7 @@ namespace Scryber.PDF.Layout
             this.BeginMarker = begin;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.PDFUnit xoffset, Drawing.PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
         {
 
         }

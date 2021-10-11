@@ -38,7 +38,7 @@ namespace Scryber.PDF.Layout
         // properties
         //
 
-        #region public PDFDocument DocumentComponent { get; }
+        #region public Document DocumentComponent { get; }
 
         /// <summary>
         /// Gets or sets the document that started the layout
@@ -95,7 +95,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public PDFPageNumbers Numbers {get;}
+        #region public PageNumbers Numbers {get;}
 
         private PageNumbers _numbers;
         /// <summary>
@@ -116,7 +116,7 @@ namespace Scryber.PDF.Layout
         private PDFDocumentRenderOptions _renderopts;
 
         /// <summary>
-        /// Gets or sets the flag that will force all components to output their destination name if the output. False and only linked components will have their names output.
+        /// Gets the options for rendering the final output
         /// </summary>
         public PDFDocumentRenderOptions RenderOptions
         {
@@ -169,7 +169,7 @@ namespace Scryber.PDF.Layout
             if (!pg.IsClosed)
                 pg.Close();
 
-            PDFSize size = pg.Size;
+            Size size = pg.Size;
             Style style = pg.FullStyle;
             Page owner = pg.Owner as Page;
             OverflowAction overflow = pg.OverflowAction;
@@ -218,9 +218,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Returns Zero for the height of a document
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -230,9 +230,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Returns zero for the width of a document
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -243,7 +243,7 @@ namespace Scryber.PDF.Layout
         /// Overrides the base abstract method to push the arrangements for each page
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             if (context.ShouldLogVerbose)
                 context.TraceLog.Begin(TraceLevel.Verbose, "Layout Document", "Starting to push the layouts back onto the components");
@@ -556,7 +556,6 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-
         #region private PDFObjectRef WritePageLabels(PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
@@ -702,7 +701,7 @@ namespace Scryber.PDF.Layout
         // page numbers
         //
 
-        #region public void StartPageNumbering(PDFPageNumberOptions opts)
+        #region public void StartPageNumbering(PageNumberOptions opts)
 
         /// <summary>
         /// Called at the start of document layout to initialize the numbering collection
@@ -716,7 +715,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public void RegisterPageNumbering(int pageindex, PDFPage page, PDFPageStyle num) + 1 overload
+        #region public void RegisterPageNumbering(PDFLayoutPage page, PageNumberOptions num) + 1 overload
 
         /// <summary>
         /// Registers the current page numbering options for the specified page at the specified index
@@ -758,7 +757,8 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public void UnRegisterPageNumbering(int currentPageIndex, PDFLayoutPage page, PDFPageNumbering numbering)
+        #region public void UnRegisterPageNumbering(PDFLayoutPage page, PageNumberGroup numbering) + 1 overload
+
         /// <summary>
         /// 
         /// </summary>
@@ -785,7 +785,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public PDFPageNumber GetNumbering(int pageindex, out int offset, out int max)
+        #region public PageNumberData GetNumbering(int pageindex, out int offset, out int max)
 
         /// <summary>
         /// Gets the page numbering for the requested page with ZERO BASED Index

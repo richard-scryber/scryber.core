@@ -25,17 +25,17 @@ namespace Scryber.Data
         {
         }
 
-        public override Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public override Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             TableCell cell = (TableCell)base.DoBuildItemCell(grid, row, rowindex, columnindex, context);
             DataImage dimg = new DataImage();
             cell.Contents.Add(dimg);
-            dimg.DataBinding += new PDFDataBindEventHandler(dimg_DataBinding);
+            dimg.DataBinding += new DataBindEventHandler(dimg_DataBinding);
 
             return cell;
         }
 
-        void dimg_DataBinding(object sender, PDFDataBindEventArgs args)
+        void dimg_DataBinding(object sender, DataBindEventArgs args)
         {
             this.DataBind(args.Context);
             DataImage dimg = (DataImage)sender;
@@ -53,7 +53,7 @@ namespace Scryber.Data
 
         private string _autobindItemPath;
 
-        protected override void ApplyAutoBindingMember(PDFDataItem item)
+        protected override void ApplyAutoBindingMember(DataItem item)
         {
             this._autobindItemPath = item.RelativePath;
         }
@@ -68,7 +68,7 @@ namespace Scryber.Data
                 throw new PDFDataException(Errors.CountNoConvertBinaryDataToBitmap);
         }
 
-        protected virtual string GetImageKey(PDFDataContext context)
+        protected virtual string GetImageKey(DataContext context)
         {
             return this.UniqueID + ":" + context.CurrentIndex.ToString();
         }

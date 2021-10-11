@@ -12,7 +12,7 @@ namespace Scryber.Binding
             this.KeyValue = key;
         }
 
-        protected override object DoGetMyValue(object parent, PDFDataContext context)
+        protected override object DoGetMyValue(object parent, DataContext context)
         {
             System.Reflection.PropertyInfo pi = parent.GetType().GetProperty("Item", new Type[] { typeof(string) });
             if (null != pi)

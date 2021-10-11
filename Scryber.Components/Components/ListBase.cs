@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -122,7 +123,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("number-inset", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable("Inset", Ignore = true)]
-        public virtual PDFUnit NumberInset
+        public virtual Unit NumberInset
         {
             get { return this.Style.GetValue(StyleKeys.ListInsetKey, Const.DefaultListNumberInset); }
             set { this.Style.SetValue(StyleKeys.ListInsetKey, value); }

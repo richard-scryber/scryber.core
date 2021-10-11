@@ -96,7 +96,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             if (this.ImageData == null)
             {
@@ -108,9 +108,9 @@ namespace Scryber.PDF.Resources
 
         
 
-        public PDFSize GetImageSize()
+        public Size GetImageSize()
         {
-            PDFSize size = PDFSize.Empty;
+            Size size = Size.Empty;
 
             if (this.Registered && String.IsNullOrEmpty(this.Source) == false)
             {

@@ -36,7 +36,7 @@ namespace Scryber.Core.UnitTests.Drawing
             var widths = new ColumnWidths();
             Assert.IsTrue(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
-            Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
+            Assert.AreEqual(Unit.Empty, widths.Explicit);
             Assert.IsNull(widths.Widths);
         }
 
@@ -46,7 +46,7 @@ namespace Scryber.Core.UnitTests.Drawing
             var widths = new ColumnWidths(new double[] { 0.3, 0.4, 0.3 });
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
-            Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
+            Assert.AreEqual(Unit.Empty, widths.Explicit);
 
             Assert.IsNotNull(widths.Widths);
             Assert.AreEqual(3, widths.Widths.Length);
@@ -58,12 +58,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestMethod]
         public void ColumnWidthExplicitContrsuctors()
         {
-            var widths = new ColumnWidths(new PDFUnit(200, PageUnits.Points));
+            var widths = new ColumnWidths(new Unit(200, PageUnits.Points));
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsTrue(widths.HasExplicitWidth);
 
             Assert.IsNull(widths.Widths);
-            Assert.AreEqual(new PDFUnit(200, PageUnits.Points), widths.Explicit);
+            Assert.AreEqual(new Unit(200, PageUnits.Points), widths.Explicit);
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
-            Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
+            Assert.AreEqual(Unit.Empty, widths.Explicit);
 
             Assert.IsNotNull(widths.Widths);
             Assert.AreEqual(3, widths.Widths.Length);
@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
-            Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
+            Assert.AreEqual(Unit.Empty, widths.Explicit);
 
             Assert.IsNotNull(widths.Widths);
             Assert.AreEqual(3, widths.Widths.Length);
@@ -110,7 +110,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(widths.HasExplicitWidth);
 
             Assert.IsNull(widths.Widths);
-            Assert.AreEqual(new PDFUnit(300, PageUnits.Points), widths.Explicit);
+            Assert.AreEqual(new Unit(300, PageUnits.Points), widths.Explicit);
         }
 
 
@@ -122,7 +122,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             Assert.IsFalse(widths.IsEmpty);
             Assert.IsFalse(widths.HasExplicitWidth);
-            Assert.AreEqual(PDFUnit.Empty, widths.Explicit);
+            Assert.AreEqual(Unit.Empty, widths.Explicit);
 
             Assert.IsNotNull(widths.Widths);
             Assert.AreEqual(3, widths.Widths.Length);

@@ -14,11 +14,11 @@ namespace Scryber.Core.UnitTests.Native
     ///to contain all PDFStream_Test Unit Tests
     ///</summary>
     [TestClass()]
-    public class PDFStream_Test : IStreamFactory
+    public class PDFStream_Test : IPDFStreamFactory
     {
         #region IStreamFactory interface
 
-        public PDFStream CreateStream(IStreamFilter[] filters, IIndirectObject forobject)
+        public PDFStream CreateStream(IStreamFilter[] filters, IPDFIndirectObject forobject)
         {
             PDFIndirectObject indobj = (PDFIndirectObject)forobject;
             return new PDFStream(filters, indobj);

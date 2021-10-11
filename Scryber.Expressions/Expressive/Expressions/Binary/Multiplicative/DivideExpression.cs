@@ -33,13 +33,13 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
         /// <returns></returns>
         private static object ConvertToDouble(object value)
         {
-            if (value is PDFUnit unit)
+            if (value is Unit unit)
                 return unit.PointsValue;
             else if(value is string s)
             {
                 if (Double.TryParse(s, out double d))
                     return d;
-                else if (PDFUnit.TryParse(s, out unit))
+                else if (Unit.TryParse(s, out unit))
                     return unit.PointsValue;
             }
             return Convert.ToDouble(value);

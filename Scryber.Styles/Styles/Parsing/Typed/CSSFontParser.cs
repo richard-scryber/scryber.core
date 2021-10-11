@@ -8,12 +8,12 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public class CSSFontParser : CSSStyleValueParser
     {
-        public static readonly PDFFont CaptionFont = new PDFFont("Helvetica", 12, FontWeights.Bold, Drawing.FontStyle.Regular);
-        public static readonly PDFFont IconFont = new PDFFont("Helvetica", 8, FontWeights.Bold, Drawing.FontStyle.Regular);
-        public static readonly PDFFont MenuFont = new PDFFont("Times", 10, FontWeights.Regular, Drawing.FontStyle.Regular);
-        public static readonly PDFFont MessageBoxFont = new PDFFont("Times", 10, FontWeights.Bold, Drawing.FontStyle.Regular);
-        public static readonly PDFFont SmallCaptionFont = new PDFFont("Helvetica", 8, FontWeights.Regular, Drawing.FontStyle.Italic);
-        public static readonly PDFFont StatusBarFont = new PDFFont("Courier", 10, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly Font CaptionFont = new Font("Helvetica", 12, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly Font IconFont = new Font("Helvetica", 8, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly Font MenuFont = new Font("Times", 10, FontWeights.Regular, Drawing.FontStyle.Regular);
+        public static readonly Font MessageBoxFont = new Font("Times", 10, FontWeights.Bold, Drawing.FontStyle.Regular);
+        public static readonly Font SmallCaptionFont = new Font("Helvetica", 8, FontWeights.Regular, Drawing.FontStyle.Italic);
+        public static readonly Font StatusBarFont = new Font("Courier", 10, FontWeights.Bold, Drawing.FontStyle.Regular);
 
         public CSSFontParser()
             : base(CSSStyleItems.Font)
@@ -67,7 +67,7 @@ namespace Scryber.Styles.Parsing.Typed
             //discreet values - font-style font-variant font-weight font-size/line-height font-family
             Drawing.FontStyle italic;
             int weight;
-            PDFUnit fsize, lineheight;
+            Unit fsize, lineheight;
             double relativeLeading;
 
 
@@ -164,7 +164,7 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        private void ApplyFont(Style onStyle, PDFFont font)
+        private void ApplyFont(Style onStyle, Font font)
         {
             onStyle.SetValue(StyleKeys.FontFamilyKey, font.Selector);
             onStyle.SetValue(StyleKeys.FontSizeKey, font.Size);

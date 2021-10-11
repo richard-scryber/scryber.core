@@ -202,9 +202,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10,10);
+            Point pos = new Point(10,10);
             target.MoveTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -213,7 +213,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PathMoveData data = (PathMoveData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.MoveTo, pos);
 
-            pos = new PDFPoint(40, 40);
+            pos = new Point(40, 40);
             target.MoveTo(pos);
             Assert.AreEqual(target.Cursor, pos);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
@@ -234,9 +234,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.MoveTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -245,9 +245,9 @@ namespace Scryber.Core.UnitTests.Drawing
             PathMoveData data = (PathMoveData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.MoveTo, pos);
 
-            PDFPoint pos2 = new PDFPoint(40, 40);
+            Point pos2 = new Point(40, 40);
             target.MoveBy(pos2);
-            PDFPoint total = new PDFPoint(pos.X + pos2.X, pos.Y + pos2.Y);
+            Point total = new Point(pos.X + pos2.X, pos.Y + pos2.Y);
 
             Assert.AreEqual(target.Cursor, total);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
@@ -271,9 +271,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -282,7 +282,7 @@ namespace Scryber.Core.UnitTests.Drawing
             PathLineData data = (PathLineData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
-            PDFPoint pos2 = new PDFPoint(40, 40);
+            Point pos2 = new Point(40, 40);
             target.LineTo(pos2);
             
             Assert.AreEqual(target.Cursor, pos2);
@@ -308,9 +308,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -319,9 +319,9 @@ namespace Scryber.Core.UnitTests.Drawing
             PathLineData data = (PathLineData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
-            PDFPoint pos2 = new PDFPoint(40, 40);
+            Point pos2 = new Point(40, 40);
             target.LineFor(pos2);
-            PDFPoint total = new PDFPoint(pos.X + pos2.X, pos.Y + pos2.Y);
+            Point total = new Point(pos.X + pos2.X, pos.Y + pos2.Y);
 
             Assert.AreEqual(target.Cursor, total);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
@@ -346,9 +346,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -357,10 +357,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PathLineData data = (PathLineData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
-            PDFUnit v = 40;
+            Unit v = 40;
             target.VerticalLineTo(v);
 
-            pos = new PDFPoint(pos.X, v);
+            pos = new Point(pos.X, v);
             Assert.AreEqual(target.Cursor, pos);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
             Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
@@ -384,9 +384,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -395,10 +395,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PathLineData data = (PathLineData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
-            PDFUnit v = 40;
+            Unit v = 40;
             target.VerticalLineFor(v);
 
-            pos = new PDFPoint(pos.X, pos.Y + v);
+            pos = new Point(pos.X, pos.Y + v);
             Assert.AreEqual(target.Cursor, pos);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
             Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
@@ -422,9 +422,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -433,10 +433,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PathLineData data = (PathLineData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
-            PDFUnit h = 40;
+            Unit h = 40;
             target.HorizontalLineTo(h);
 
-            pos = new PDFPoint(h, pos.Y);
+            pos = new Point(h, pos.Y);
             Assert.AreEqual(target.Cursor, pos);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
             Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
@@ -460,9 +460,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
@@ -471,10 +471,10 @@ namespace Scryber.Core.UnitTests.Drawing
             PathLineData data = (PathLineData)target.Paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
-            PDFUnit h = 40;
+            Unit h = 40;
             target.HorizontalLineFor(h);
 
-            pos = new PDFPoint(pos.X + h, pos.Y);
+            pos = new Point(pos.X + h, pos.Y);
             Assert.AreEqual(target.Cursor, pos);
             Assert.AreEqual(target.Paths[0].Operations.Count, 2);
             Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
@@ -493,11 +493,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveTo(end, handleStart, handleEnd);
 
@@ -523,11 +523,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveToWithHandleStart(end, handleStart);
 
@@ -541,7 +541,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(data.HasEndHandle);
             Assert.AreEqual(data.EndPoint, end);
             Assert.AreEqual(data.StartHandle, handleStart);
-            Assert.AreEqual(data.EndHandle, PDFPoint.Empty);
+            Assert.AreEqual(data.EndHandle, Point.Empty);
         }
 
         [TestMethod()]
@@ -552,11 +552,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            Assert.AreEqual(target.Cursor, PDFPoint.Empty);
+            Assert.AreEqual(target.Cursor, Point.Empty);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveToWithHandleEnd(end, handleEnd);
 
@@ -569,7 +569,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(data.HasStartHandle);
             Assert.IsTrue(data.HasEndHandle);
             Assert.AreEqual(data.EndPoint, end);
-            Assert.AreEqual(data.StartHandle, PDFPoint.Empty);
+            Assert.AreEqual(data.StartHandle, Point.Empty);
             Assert.AreEqual(data.EndHandle, handleEnd);
         }
 
@@ -581,13 +581,13 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.MoveTo(pos);
             Assert.AreEqual(target.Cursor, pos);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveFor(end, handleStart, handleEnd);
 
@@ -616,13 +616,13 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.MoveTo(pos);
             Assert.AreEqual(target.Cursor, pos);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveForWithHandleStart(end, handleStart);
 
@@ -640,7 +640,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(data.HasEndHandle);
             Assert.AreEqual(data.EndPoint, end);
             Assert.AreEqual(data.StartHandle, handleStart);
-            Assert.AreEqual(data.EndHandle, PDFPoint.Empty);
+            Assert.AreEqual(data.EndHandle, Point.Empty);
         }
 
         [TestMethod()]
@@ -651,13 +651,13 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.MoveTo(pos);
             Assert.AreEqual(target.Cursor, pos);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveForWithHandleEnd(end, handleEnd);
 
@@ -674,7 +674,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsFalse(data.HasStartHandle);
             Assert.IsTrue(data.HasEndHandle);
             Assert.AreEqual(data.EndPoint, end);
-            Assert.AreEqual(data.StartHandle, PDFPoint.Empty);
+            Assert.AreEqual(data.StartHandle, Point.Empty);
             Assert.AreEqual(data.EndHandle, handleEnd);
         }
 
@@ -692,12 +692,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(target.Paths.Count == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
-            PDFPoint pos = new PDFPoint(10, 10);
+            Point pos = new Point(10, 10);
             target.MoveTo(pos);
 
-            PDFPoint end = new PDFPoint(100, 100);
-            PDFPoint handleStart = new PDFPoint(0, 50);
-            PDFPoint handleEnd = new PDFPoint(50, 100);
+            Point end = new Point(100, 100);
+            Point handleStart = new Point(0, 50);
+            Point handleEnd = new Point(50, 100);
 
             target.CubicCurveForWithHandleEnd(end, handleEnd);
 
@@ -705,10 +705,10 @@ namespace Scryber.Core.UnitTests.Drawing
             handleEnd = handleEnd.Offset(pos);
             handleStart = handleStart.Offset(pos);
 
-            PDFRect bounds = target.Bounds;
+            Rect bounds = target.Bounds;
 
-            Assert.AreEqual(bounds.X, PDFUnit.Zero);
-            Assert.AreEqual(bounds.Y, PDFUnit.Zero);
+            Assert.AreEqual(bounds.X, Unit.Zero);
+            Assert.AreEqual(bounds.Y, Unit.Zero);
             Assert.AreEqual(bounds.Width, end.X);
             Assert.AreEqual(bounds.Height, end.Y);
         }

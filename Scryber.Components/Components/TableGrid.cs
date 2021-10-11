@@ -23,6 +23,7 @@ using Scryber.Drawing;
 using Scryber.PDF.Native;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
@@ -64,7 +65,7 @@ namespace Scryber.Components
         internal PDFPositionOptions positionOptions { get; set; }
         internal int tblColumnCount { get; set; }
         internal int tblRowCount { get; set; }
-        internal PDFUnit?[] tblColumnWidths { get; set; }
+        internal Unit?[] tblColumnWidths { get; set; }
 
         //
         // ctor(s)

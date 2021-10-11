@@ -35,24 +35,24 @@ namespace Scryber.PDF.Layout
 
         public PDFTransformationMatrix Matrix { get; set; }
 
-        public PDFRect? ClipRect { get; set; }
+        public Rect? ClipRect { get; set; }
 
 
         public string SubType { get; set; }
 
-        public PDFPoint Location { get; private set; }
+        public Point Location { get; private set; }
 
 
-        private PDFUnit? _explicitH;
-        private PDFUnit? _explicitW;
+        private Unit? _explicitH;
+        private Unit? _explicitW;
 
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return _explicitH.HasValue ? _explicitH.Value : this._childContainer.Height; }
             
         }
 
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return _explicitW.HasValue ? _explicitW.Value :  this._childContainer.Width; }
             
@@ -75,7 +75,7 @@ namespace Scryber.PDF.Layout
         #endregion
 
         
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             this._page = context.DocumentLayout.CurrentPage;
             this._childContainer.PushComponentLayout(context, pageIndex, xoffset, yoffset);
@@ -143,7 +143,7 @@ namespace Scryber.PDF.Layout
                 return false;
         }
 
-        public void SetOutputSize(PDFUnit? width, PDFUnit? height)
+        public void SetOutputSize(Unit? width, Unit? height)
         {
             this._explicitW = width;
             this._explicitH = height;
@@ -180,7 +180,7 @@ namespace Scryber.PDF.Layout
             writer.BeginStream(xObject, filters);
 
             this.Location = context.Offset.Offset(0, this.Line.OffsetY);
-            PDFSize origSpace = context.Space.Clone();
+            Size origSpace = context.Space.Clone();
             PDFGraphics prevGraphics = context.Graphics;
 
             using (PDFGraphics g = this.CreateGraphics(writer, context.StyleStack, context))
@@ -189,7 +189,7 @@ namespace Scryber.PDF.Layout
                 g.SaveGraphicsState();
                 g.RestoreGraphicsState();
 
-                context.Offset = Drawing.PDFPoint.Empty;
+                context.Offset = Drawing.Point.Empty;
 
                 this._childContainer.OutputToPDF(context, writer);
 
@@ -224,7 +224,7 @@ namespace Scryber.PDF.Layout
 
             if (this._position.ViewPort.HasValue)
             {
-                PDFRect vp = this._position.ViewPort.Value;
+                Rect vp = this._position.ViewPort.Value;
                 writer.WriteReal(vp.X.PointsValue);
                 writer.WriteRealS(vp.Y.PointsValue);
                 writer.WriteRealS(vp.Width.PointsValue);
@@ -272,7 +272,7 @@ namespace Scryber.PDF.Layout
 
         protected virtual PDFGraphics CreateGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
         {
-            var sz = new PDFSize(this._childContainer.Width, this._childContainer.Height);
+            var sz = new Size(this._childContainer.Width, this._childContainer.Height);
             if(this._position.ViewPort.HasValue)
             {
                 sz = this._position.ViewPort.Value.Size;

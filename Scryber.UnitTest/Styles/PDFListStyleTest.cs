@@ -135,8 +135,8 @@ namespace Scryber.Core.UnitTests.Styles
         public void List_NumberInset()
         {
             ListStyle target = new ListStyle();
-            PDFUnit expected = PDFStyleConst.DefaultListNumberInset;
-            PDFUnit actual = target.NumberInset;
+            Unit expected = PDFStyleConst.DefaultListNumberInset;
+            Unit actual = target.NumberInset;
             Assert.AreEqual(expected, actual);
 
             expected = 10;
@@ -302,7 +302,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual(ListNumberingGroupStyle.LowercaseRoman, target.NumberingStyle);
             Assert.AreEqual("all-group", target.NumberingGroup);
-            Assert.AreEqual((PDFUnit)40, target.NumberInset);
+            Assert.AreEqual((Unit)40, target.NumberInset);
             Assert.AreEqual("prefix", target.NumberPrefix);
             Assert.AreEqual("postfix", target.NumberPostfix);
             Assert.AreEqual(HorizontalAlignment.Center, target.NumberAlignment);

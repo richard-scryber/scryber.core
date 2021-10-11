@@ -12,9 +12,9 @@ namespace Scryber.PDF.Layout
     {
         public PDFMarkedContentType ContentType { get; private set; }
 
-        public override PDFUnit Height { get { return PDFUnit.Zero; } }
+        public override Unit Height { get { return Unit.Zero; } }
 
-        public override PDFUnit Width { get { return PDFUnit.Zero; } }
+        public override Unit Width { get { return Unit.Zero; } }
 
         public PDFLayoutMarkedContentBegin(PDFLayoutLine line, IComponent owner, PDFMarkedContentType type)
             : base(line, owner)
@@ -22,7 +22,7 @@ namespace Scryber.PDF.Layout
             this.ContentType = type;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             
         }
@@ -50,9 +50,9 @@ namespace Scryber.PDF.Layout
 
     public class PDFLayoutMarkedContentEnd : PDFLayoutRun
     {
-        public override PDFUnit Height { get { return PDFUnit.Zero; } }
+        public override Unit Height { get { return Unit.Zero; } }
 
-        public override PDFUnit Width { get { return PDFUnit.Zero; } }
+        public override Unit Width { get { return Unit.Zero; } }
 
         public PDFLayoutMarkedContentBegin Begin { get; private set; }
 
@@ -62,7 +62,7 @@ namespace Scryber.PDF.Layout
             this.Begin = start;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
 
         }

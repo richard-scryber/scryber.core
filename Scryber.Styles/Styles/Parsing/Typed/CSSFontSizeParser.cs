@@ -9,13 +9,13 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSFontSizeParser : CSSStyleValueParser
     {
-        public static readonly PDFUnit XXSmallFontSize = new PDFUnit(6.0, PageUnits.Points);
-        public static readonly PDFUnit XSmallFontSize = new PDFUnit(8.0, PageUnits.Points);
-        public static readonly PDFUnit SmallFontSize = new PDFUnit(10.0, PageUnits.Points);
-        public static readonly PDFUnit MediumFontSize = new PDFUnit(12.0, PageUnits.Points);
-        public static readonly PDFUnit LargeFontSize = new PDFUnit(16.0, PageUnits.Points);
-        public static readonly PDFUnit XLargeFontSize = new PDFUnit(24.0, PageUnits.Points);
-        public static readonly PDFUnit XXLargeFontSize = new PDFUnit(32.0, PageUnits.Points);
+        public static readonly Unit XXSmallFontSize = new Unit(6.0, PageUnits.Points);
+        public static readonly Unit XSmallFontSize = new Unit(8.0, PageUnits.Points);
+        public static readonly Unit SmallFontSize = new Unit(10.0, PageUnits.Points);
+        public static readonly Unit MediumFontSize = new Unit(12.0, PageUnits.Points);
+        public static readonly Unit LargeFontSize = new Unit(16.0, PageUnits.Points);
+        public static readonly Unit XLargeFontSize = new Unit(24.0, PageUnits.Points);
+        public static readonly Unit XXLargeFontSize = new Unit(32.0, PageUnits.Points);
 
         public CSSFontSizeParser()
             : base(CSSStyleItems.FontSize)
@@ -24,7 +24,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            PDFUnit size = PDFUnit.Zero;
+            Unit size = Unit.Zero;
             bool result = true;
             if (reader.ReadNextValue())
             {
@@ -47,14 +47,14 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertFontSize(StyleBase style, object value, out PDFUnit size)
+        protected bool DoConvertFontSize(StyleBase style, object value, out Unit size)
         {
             if(null == value)
             {
-                size = PDFUnit.Empty;
+                size = Unit.Empty;
                 return false;
             }
-            else if(value is PDFUnit unit)
+            else if(value is Unit unit)
             {
                 size = unit;
                 return true;
@@ -65,18 +65,18 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                size = PDFUnit.Zero;
+                size = Unit.Zero;
                 return false;
             }
         }
 
         public static bool IsFontSize(string value)
         {
-            PDFUnit size;
+            Unit size;
             return TryGetFontSize(value, out size);
         }
 
-        public static bool TryGetFontSize(string value, out PDFUnit size)
+        public static bool TryGetFontSize(string value, out Unit size)
         {
             switch (value.ToLower())
             {
@@ -110,7 +110,7 @@ namespace Scryber.Styles.Parsing.Typed
 
                 case ("larger"):
                 case ("smaller"):
-                    size = PDFUnit.Zero;
+                    size = Unit.Zero;
                     return false;
 
                 default:

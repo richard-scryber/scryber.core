@@ -25,7 +25,7 @@ namespace Scryber.PDF.Native
     /// <summary>
     /// Encapsulates the stream of data and / or operations within a PDF File
     /// </summary>
-    public class PDFStream : IFileObject, IDisposable
+    public class PDFStream : IPDFFileObject, IDisposable
     {
 
         public ObjectType Type { get { return ObjectTypes.Stream; } }

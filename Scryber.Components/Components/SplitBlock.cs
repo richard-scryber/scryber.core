@@ -15,7 +15,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            style.Padding.All = new Scryber.Drawing.PDFUnit(20, Drawing.PageUnits.Points);
+            style.Padding.All = new Scryber.Drawing.Unit(20, Drawing.PageUnits.Points);
             return style;
         }
     }

@@ -146,7 +146,7 @@ namespace Scryber.Components
 
         private ItemCollection _orgitems;
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             _orgitems = context.Items;
 
@@ -161,7 +161,7 @@ namespace Scryber.Components
             base.OnDataBinding(context);
         }
 
-        protected override void OnDataBound(PDFDataContext context)
+        protected override void OnDataBound(DataContext context)
         {
             base.OnDataBound(context);
 

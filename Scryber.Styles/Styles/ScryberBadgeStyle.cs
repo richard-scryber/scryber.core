@@ -32,8 +32,8 @@ namespace Scryber.Styles
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ScryberBadgeStyle : StyleItemBase
     {
-        public static readonly PDFUnit DefaultXOffset = new PDFUnit(3, PageUnits.Millimeters);
-        public static readonly PDFUnit DefaultYOffset = new PDFUnit(3, PageUnits.Millimeters);
+        public static readonly Unit DefaultXOffset = new Unit(3, PageUnits.Millimeters);
+        public static readonly Unit DefaultYOffset = new Unit(3, PageUnits.Millimeters);
         public const BadgeType DefaultDisplayOption = BadgeType.WhiteOnBlack;
 
         #region public Corner Corner {get;set;}
@@ -92,11 +92,11 @@ namespace Scryber.Styles
         #region public PDFUnit XOffset {get; set;}
 
         [PDFAttribute("x-offset")]
-        public PDFUnit XOffset
+        public Unit XOffset
         {
             get
             {
-                PDFUnit val;
+                Unit val;
                 if (this.TryGetValue(StyleKeys.BadgeXOffsetKey, out val))
                     return val;
                 else
@@ -123,11 +123,11 @@ namespace Scryber.Styles
         #region public PDFUnit YOffset {get;set;}
 
         [PDFAttribute("y-offset")]
-        public PDFUnit YOffset
+        public Unit YOffset
         {
             get
             {
-                PDFUnit val;
+                Unit val;
                 if (this.TryGetValue(StyleKeys.BadgeYOffsetKey, out val))
                     return val;
                 else

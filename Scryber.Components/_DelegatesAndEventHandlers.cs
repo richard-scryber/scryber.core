@@ -77,19 +77,19 @@ namespace Scryber
     public class PDFTemplateItemDataBoundArgs : EventArgs
     {
         private IComponent _item;
-        private PDFDataContext _context;
+        private DataContext _context;
 
         public IComponent Item
         {
             get { return _item; }
         }
 
-        public PDFDataContext Context
+        public DataContext Context
         {
             get { return _context; }
         }
 
-        public PDFTemplateItemDataBoundArgs(IComponent item, PDFDataContext context)
+        public PDFTemplateItemDataBoundArgs(IComponent item, DataContext context)
         {
             this._item = item;
             this._context = context;

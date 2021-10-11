@@ -117,7 +117,7 @@ namespace Scryber.PDF.Resources
 
         
 
-        public override void RenderWidthsArrayToPDF(PDFContextBase context, PDFWriter writer)
+        public override void RenderWidthsArrayToPDF(ContextBase context, PDFWriter writer)
         {
             writer.WriteArrayNumberEntries(this._widths.ToArray());
 

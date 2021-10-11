@@ -105,7 +105,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="oref"></param>
         /// <returns></returns>
-        public abstract IParsedIndirectObject GetObject(PDFObjectRef oref);
+        public abstract IPDFParsedIndirectObject GetObject(PDFObjectRef oref);
 
         #endregion
 
@@ -318,7 +318,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="oref"></param>
         /// <returns></returns>
-        public override IParsedIndirectObject GetObject(PDFObjectRef oref)
+        public override IPDFParsedIndirectObject GetObject(PDFObjectRef oref)
         {
             PDFXRefTableEntry entry = this.XRefTable[oref];
             if (null != entry)
@@ -330,7 +330,7 @@ namespace Scryber.PDF.Native
                         this.Searcher.Position = entry.Offset;
                         entry.Reference = PDFFileIndirectObject.Parse(this.Searcher, oref.Number, oref.Generation);
                     }
-                    return (IParsedIndirectObject)entry.Reference;
+                    return (IPDFParsedIndirectObject)entry.Reference;
                 }
             }
             return null;
@@ -396,7 +396,7 @@ namespace Scryber.PDF.Native
 
                 PDFObjectRef catalogRef = AssertGetObjectRef(trailer, CatalogObjName, "The '" + CatalogObjName + "' entry couldnot be found in the documents trailer dictionary");
                 PDFObjectRef infoRef = AssertGetObjectRef(trailer, InfoObjName, "The '" + InfoObjName + "' entry couldnot be found in the documents trailer dictionary");
-                IFileObject prevXRefObj;
+                IPDFFileObject prevXRefObj;
                 trailer.TryGetValue(PrevXRefName, out prevXRefObj);
                 long prevOffset = -1;
                 if (prevXRefObj is PDFNumber)
@@ -480,7 +480,7 @@ namespace Scryber.PDF.Native
                     PDFFileRange trailerPos = AssertFoundRange(this.Searcher.MatchBackwardString(TrailerMarker), TrailerMarker);
 
                     PDFDictionary trailer = GetTrailerDictionary(trailerPos, startxrefPos);
-                    IFileObject prevEntry;
+                    IPDFFileObject prevEntry;
 
                     if (trailer.TryGetValue(PrevXRefName, out prevEntry))
                     {
@@ -508,7 +508,7 @@ namespace Scryber.PDF.Native
 
         protected static PDFObjectRef AssertGetObjectRef(PDFDictionary dict, PDFName entry, string errorMessage)
         {
-            IFileObject found;
+            IPDFFileObject found;
             if (!dict.TryGetValue(entry, out found))
                 throw new PDFNativeParserException(errorMessage);
 

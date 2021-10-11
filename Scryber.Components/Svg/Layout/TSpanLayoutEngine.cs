@@ -27,7 +27,7 @@ namespace Scryber.Svg.Layout
 
             if (text.DrawTextFromTop == false)
             {
-                PDFUnit y;
+                Unit y;
                 var font = full.CreateFont();
                 if (pos.Y.HasValue)
                     y = pos.Y.Value;

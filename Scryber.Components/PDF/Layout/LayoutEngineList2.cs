@@ -33,8 +33,8 @@ namespace Scryber.PDF.Layout
         //
 
         private const string ListEngineLogCategory = "List Layout Engine";
-        private static readonly PDFUnit DefaultListItemAlley = 10;
-        public static readonly PDFUnit DefaultNumberWidth = Const.DefaultListNumberInset;
+        private static readonly Unit DefaultListItemAlley = 10;
+        public static readonly Unit DefaultNumberWidth = Const.DefaultListNumberInset;
         public const HorizontalAlignment DefaultListItemAlignment = HorizontalAlignment.Right;
 
         #region ivars
@@ -57,12 +57,12 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        public PDFUnit ItemNumberWidth
+        public Unit ItemNumberWidth
         {
             get; set;
         }
 
-        public PDFUnit ItemAlleyWidth
+        public Unit ItemAlleyWidth
         {
             get; set;
         }
@@ -254,7 +254,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// The layout width of the number region
             /// </summary>
-            public PDFUnit NumberWidth;
+            public Unit NumberWidth;
 
             /// <summary>
             /// The list item this entry holds the details for

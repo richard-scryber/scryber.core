@@ -26,7 +26,7 @@ namespace Scryber.PDF.Native
     /// <summary>
     /// Encapsulates reference to a PDFIndirectObject
     /// </summary>
-    public class PDFObjectRef : IFileObject, IEquatable<PDFObjectRef>
+    public class PDFObjectRef : IPDFFileObject, IEquatable<PDFObjectRef>
     {
         private int _num, _gen;
 
@@ -49,12 +49,12 @@ namespace Scryber.PDF.Native
             get { return (null == this.Reference)? _gen : this.Reference.Generation; }
         }
 
-        private IIndirectObject _ref;
+        private IPDFIndirectObject _ref;
 
         /// <summary>
         /// Gets or sets the acutal object this reference refers to
         /// </summary>
-        public IIndirectObject Reference
+        public IPDFIndirectObject Reference
         {
             get { return _ref; }
             set { this._ref = value; }
@@ -65,7 +65,7 @@ namespace Scryber.PDF.Native
         {
         }
 
-        public PDFObjectRef(IIndirectObject reference)
+        public PDFObjectRef(IPDFIndirectObject reference)
         {
             this._ref = reference;
         }

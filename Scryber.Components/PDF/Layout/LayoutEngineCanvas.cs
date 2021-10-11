@@ -72,10 +72,10 @@ namespace Scryber.PDF.Layout
                 var rsrc = new PDFCanvasResource(this.Component as Canvas, canvas, position.ViewPort.Value);
                 var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
 
-                var size = new PDFSize(canvas.Width, canvas.Height);
+                var size = new Size(canvas.Width, canvas.Height);
                 canvas.Matrix = CalculateMatrix(size, position.ViewPort.Value, ratio);
-                canvas.ClipRect = new PDFRect(position.X.HasValue ? position.X.Value : PDFUnit.Zero,
-                                              position.Y.HasValue ? position.Y.Value : PDFUnit.Zero,
+                canvas.ClipRect = new Rect(position.X.HasValue ? position.X.Value : Unit.Zero,
+                                              position.Y.HasValue ? position.Y.Value : Unit.Zero,
                                               canvas.Width, canvas.Height);
                 this.Context.DocumentLayout.CurrentPage.PageOwner.Register(rsrc);
                 this.Context.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
@@ -83,7 +83,7 @@ namespace Scryber.PDF.Layout
         }
 
 
-        private PDFTransformationMatrix CalculateMatrix(PDFSize available, PDFRect view, SVGAspectRatio ratio)
+        private PDFTransformationMatrix CalculateMatrix(Size available, Rect view, SVGAspectRatio ratio)
         {
 
             PDFTransformationMatrix matrix = PDFTransformationMatrix.Identity();
@@ -105,7 +105,7 @@ namespace Scryber.PDF.Layout
         }
 
 
-        protected virtual PDFLayoutXObject ApplyViewPort(PDFPositionOptions oldpos, PDFRect viewPort)
+        protected virtual PDFLayoutXObject ApplyViewPort(PDFPositionOptions oldpos, Rect viewPort)
         {
             //Set the size to the viewport size
             var newpos = oldpos.Clone();
@@ -178,7 +178,7 @@ namespace Scryber.PDF.Layout
             
             if (text.DrawTextFromTop == false)
             {
-                PDFUnit y;
+                Unit y;
                 var font = full.CreateFont();
                 if (pos.Y.HasValue)
                     y = pos.Y.Value;
@@ -228,7 +228,7 @@ namespace Scryber.PDF.Layout
             private PDFLayoutXObject _layout;
             private Canvas _component;
 
-            public PDFCanvasResource(Canvas component, PDFLayoutXObject layout, PDFRect viewPort)
+            public PDFCanvasResource(Canvas component, PDFLayoutXObject layout, Rect viewPort)
                 : base(ObjectTypes.CanvasXObject)
             {
                 this._layout = layout;
@@ -242,7 +242,7 @@ namespace Scryber.PDF.Layout
 
             public override string ResourceKey { get { return this._component.UniqueID; } }
 
-            protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+            protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
             {
                 //The XObject should have been rendered as part of the page content.
                 return _layout.RenderReference;

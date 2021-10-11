@@ -27,7 +27,7 @@ using System.CodeDom;
 namespace Scryber.Drawing
 {
     [PDFParsableValue()]
-    public struct PDFUnit : IComparable, IComparable<PDFUnit>, IEquatable<PDFUnit>
+    public struct Unit : IComparable, IComparable<Unit>, IEquatable<Unit>
     {
         /// <summary>
         /// Stores the actual value of the units in Points measurement
@@ -76,19 +76,19 @@ namespace Scryber.Drawing
             get { return this._val == 0; }
         }
 
-        public PDFUnit(double value, PageUnits units)
+        public Unit(double value, PageUnits units)
         {
             this._val = ConvertToPoints(value, units);
             this._units = units;
         }
 
-        public PDFUnit(double pointvalue)
+        public Unit(double pointvalue)
             : this(pointvalue, PageUnits.Points)
         {
 
         }
 
-        public PDFUnit(int pointvalue)
+        public Unit(int pointvalue)
             : this((double)pointvalue)
         {
         }
@@ -132,25 +132,25 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFUnit ToPoints()
+        public Unit ToPoints()
         {
-            return new PDFUnit(this._val, PageUnits.Points);
+            return new Unit(this._val, PageUnits.Points);
         }
 
-        public PDFUnit ToMillimeters()
+        public Unit ToMillimeters()
         {
             if (this._units == PageUnits.Millimeters)
                 return this;
             else
-                return new PDFUnit(ConvertToUnits(this._val, PageUnits.Millimeters), PageUnits.Millimeters);
+                return new Unit(ConvertToUnits(this._val, PageUnits.Millimeters), PageUnits.Millimeters);
         }
 
-        public PDFUnit ToInches()
+        public Unit ToInches()
         {
             if (this._units == PageUnits.Inches)
                 return this;
             else
-                return new PDFUnit(ConvertToUnits(this._val, PageUnits.Inches), PageUnits.Inches);
+                return new Unit(ConvertToUnits(this._val, PageUnits.Inches), PageUnits.Inches);
         }
 
 
@@ -193,7 +193,7 @@ namespace Scryber.Drawing
 
         #region bool Equals(PDFUnit unit) + 1 overload
 
-        public bool Equals(PDFUnit unit)
+        public bool Equals(Unit unit)
         {
             return DoubleApproximatelyEquals(this._val, unit._val);
         }
@@ -214,29 +214,29 @@ namespace Scryber.Drawing
 
         public override bool Equals(object obj)
         {
-            return this.Equals((PDFUnit)obj);
+            return this.Equals((Unit)obj);
         }
 
         #endregion
 
         #region int CompareTo(PDFUnit unit) + 1 overload
 
-        public int CompareTo(PDFUnit unit)
+        public int CompareTo(Unit unit)
         {
             return this._val.CompareTo(unit._val);
         }
 
         public int CompareTo(object obj)
         {
-            return this.CompareTo((PDFUnit)obj);
+            return this.CompareTo((Unit)obj);
         }
 
         #endregion
 
         #region public static PDFUnit Empty {get;}
 
-        private static PDFUnit _empty = new PDFUnit();
-        public static PDFUnit Empty
+        private static Unit _empty = new Unit();
+        public static Unit Empty
         {
             get { return _empty; }
         }
@@ -245,9 +245,9 @@ namespace Scryber.Drawing
 
         #region public static PDFUnit Zero {get;}
 
-        private static PDFUnit _zero = new PDFUnit(0, PageUnits.Points);
+        private static Unit _zero = new Unit(0, PageUnits.Points);
 
-        public static PDFUnit Zero
+        public static Unit Zero
         {
             get { return _zero; }
         }
@@ -256,7 +256,7 @@ namespace Scryber.Drawing
 
         #region public static int Compare(PDFUnit one, PDFUnit two)
 
-        public static int Compare(PDFUnit one, PDFUnit two)
+        public static int Compare(Unit one, Unit two)
         {
             return one._val.CompareTo(two._val);
         }
@@ -266,12 +266,12 @@ namespace Scryber.Drawing
 
         #region + operator
 
-        public static PDFUnit operator +(PDFUnit left, PDFUnit right)
+        public static Unit operator +(Unit left, Unit right)
         {
-            return new PDFUnit(left._val + right._val);
+            return new Unit(left._val + right._val);
         }
 
-        public static PDFUnit Add(PDFUnit left, PDFUnit right)
+        public static Unit Add(Unit left, Unit right)
         {
             return left + right;
         }
@@ -280,13 +280,13 @@ namespace Scryber.Drawing
 
         #region - operator
 
-        public static PDFUnit operator -(PDFUnit left, PDFUnit right)
+        public static Unit operator -(Unit left, Unit right)
         {
-            return new PDFUnit(left._val - right._val);
+            return new Unit(left._val - right._val);
             
         }
 
-        public static PDFUnit Subtract(PDFUnit left, PDFUnit right)
+        public static Unit Subtract(Unit left, Unit right)
         {
             return left - right;
         }
@@ -295,72 +295,72 @@ namespace Scryber.Drawing
 
         #region / operator
 
-        public static PDFUnit Divide(PDFUnit left, double right)
+        public static Unit Divide(Unit left, double right)
         {
-            return new PDFUnit(left.Value / right, left.Units);
+            return new Unit(left.Value / right, left.Units);
         }
 
-        public static PDFUnit Divide(PDFUnit left, int right)
+        public static Unit Divide(Unit left, int right)
         {
-            return new PDFUnit(left.Value / (double)right, left._units);
+            return new Unit(left.Value / (double)right, left._units);
         }
 
-        public static PDFUnit operator /(PDFUnit left, int right)
+        public static Unit operator /(Unit left, int right)
         {
             double val = left.Value / (double)right;
-            return new PDFUnit(val, left.Units);
+            return new Unit(val, left.Units);
         }
 
-        public static PDFUnit operator /(PDFUnit left, double right)
+        public static Unit operator /(Unit left, double right)
         {
             double val = left.Value / right;
-            return new PDFUnit(val, left.Units);
+            return new Unit(val, left.Units);
         }
 
         #endregion
 
         #region * operator
 
-        public static PDFUnit operator *(PDFUnit left, double right)
+        public static Unit operator *(Unit left, double right)
         {
-            return new PDFUnit(left.Value * right, left.Units);
+            return new Unit(left.Value * right, left.Units);
         }
 
-        public static PDFUnit Multiply(PDFUnit left, double right)
+        public static Unit Multiply(Unit left, double right)
         {
-            return new PDFUnit(left.Value * right, left.Units);
+            return new Unit(left.Value * right, left.Units);
         }
 
-        public static PDFUnit operator *(PDFUnit left, int right)
+        public static Unit operator *(Unit left, int right)
         {
-            return new PDFUnit(left.Value * (double)right, left.Units);
+            return new Unit(left.Value * (double)right, left.Units);
         }
 
-        public static PDFUnit Multiply(PDFUnit left, int right)
+        public static Unit Multiply(Unit left, int right)
         {
-            return new PDFUnit(left.Value * (double)right, left.Units);
+            return new Unit(left.Value * (double)right, left.Units);
         }
 
         #endregion
 
         #region ==, != operators
 
-        public static bool operator ==(PDFUnit left, PDFUnit right)
+        public static bool operator ==(Unit left, Unit right)
         {
             return left._val == right._val;
         }
 
-        public static bool Equals(PDFUnit left, PDFUnit right)
+        public static bool Equals(Unit left, Unit right)
         {
             return left._val == right._val;
         }
 
-        public static bool operator !=(PDFUnit left, PDFUnit right)
+        public static bool operator !=(Unit left, Unit right)
         {
             return left._val != right._val;
         }
 
-        public static bool NotEquals(PDFUnit left, PDFUnit right)
+        public static bool NotEquals(Unit left, Unit right)
         {
             return left._val != right._val;
         }
@@ -369,22 +369,22 @@ namespace Scryber.Drawing
 
         #region >, < operators
 
-        public static bool operator >(PDFUnit left, PDFUnit right)
+        public static bool operator >(Unit left, Unit right)
         {
             return left._val > right._val;
         }
 
-        public static bool operator <(PDFUnit left, PDFUnit right)
+        public static bool operator <(Unit left, Unit right)
         {
             return left._val < right._val;
         }
 
-        public static bool GreaterThan(PDFUnit left, PDFUnit right)
+        public static bool GreaterThan(Unit left, Unit right)
         {
             return left._val > right._val;
         }
 
-        public static bool LessThan(PDFUnit left, PDFUnit right)
+        public static bool LessThan(Unit left, Unit right)
         {
             return left._val < right._val;
         }
@@ -393,22 +393,22 @@ namespace Scryber.Drawing
 
         #region <=, >= operators
 
-        public static bool operator <=(PDFUnit left, PDFUnit right)
+        public static bool operator <=(Unit left, Unit right)
         {
             return left._val <= right._val;
         }
 
-        public static bool operator >=(PDFUnit left, PDFUnit right)
+        public static bool operator >=(Unit left, Unit right)
         {
             return left._val >= right._val;
         }
 
-        public static bool GreaterThanEqual(PDFUnit left, PDFUnit right)
+        public static bool GreaterThanEqual(Unit left, Unit right)
         {
             return left._val >= right._val;
         }
 
-        public static bool LessThanEqual(PDFUnit left, PDFUnit right)
+        public static bool LessThanEqual(Unit left, Unit right)
         {
             return left._val <= right._val;
         }
@@ -418,23 +418,23 @@ namespace Scryber.Drawing
         #region cast - double to unit, int to unit, unit to double
 
 
-        public static implicit operator PDFUnit(double value)
+        public static implicit operator Unit(double value)
         {
-            return new PDFUnit(value, PageUnits.Points);
+            return new Unit(value, PageUnits.Points);
         }
 
-        public static implicit operator PDFUnit(int value)
+        public static implicit operator Unit(int value)
         {
-            return new PDFUnit(value, PageUnits.Points);
+            return new Unit(value, PageUnits.Points);
         }
 
         #endregion
 
         #region public static PDFUnit Convert(PDFUnit unit, PageUnits tounits)
 
-        public static PDFUnit Convert(PDFUnit unit, PageUnits tounits)
+        public static Unit Convert(Unit unit, PageUnits tounits)
         {
-            PDFUnit newunit = new PDFUnit(unit._val);
+            Unit newunit = new Unit(unit._val);
             newunit._units = tounits;
             return newunit;
         }
@@ -443,7 +443,7 @@ namespace Scryber.Drawing
 
         #region public static Min + Max
 
-        public static PDFUnit Max(PDFUnit a, PDFUnit b)
+        public static Unit Max(Unit a, Unit b)
         {
             if (a._val > b._val)
                 return a;
@@ -451,7 +451,7 @@ namespace Scryber.Drawing
                 return b;
         }
 
-        public static PDFUnit Min(PDFUnit a, PDFUnit b)
+        public static Unit Min(Unit a, Unit b)
         {
             if (a._val < b._val)
                 return a;
@@ -463,7 +463,7 @@ namespace Scryber.Drawing
 
         #region public static Parse(string value)
 
-        public static bool TryParse(string value, out PDFUnit unit)
+        public static bool TryParse(string value, out Unit unit)
         {
             bool b = true;
             try
@@ -476,15 +476,15 @@ namespace Scryber.Drawing
             catch (Exception)
             {
                 b = false;
-                unit = PDFUnit.Empty;
+                unit = Unit.Empty;
             }
             return b;
         }
 
-        public static PDFUnit Parse(string value)
+        public static Unit Parse(string value)
         {
             if (string.IsNullOrEmpty(value))
-                return PDFUnit.Empty;
+                return Unit.Empty;
             
             PageUnits unit;
             double val;
@@ -498,7 +498,7 @@ namespace Scryber.Drawing
             else
                 unit = PageUnits.Points;
 
-            return new PDFUnit(val, unit);
+            return new Unit(val, unit);
         }
 
         private static bool IsRelativeValue(string value, out double val, out PageUnits unit)
@@ -616,9 +616,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFUnit Pt(double value)
+        public static Unit Pt(double value)
         {
-            return new PDFUnit(value, PageUnits.Points);
+            return new Unit(value, PageUnits.Points);
         }
 
         /// <summary>
@@ -626,9 +626,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFUnit Pt(int value)
+        public static Unit Pt(int value)
         {
-            return new PDFUnit(value, PageUnits.Points);
+            return new Unit(value, PageUnits.Points);
         }
 
         #endregion
@@ -641,9 +641,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFUnit Inch(double value)
+        public static Unit Inch(double value)
         {
-            return new PDFUnit(value, PageUnits.Inches);
+            return new Unit(value, PageUnits.Inches);
         }
 
         /// <summary>
@@ -651,9 +651,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFUnit Inch(int value)
+        public static Unit Inch(int value)
         {
-            return new PDFUnit(value, PageUnits.Inches);
+            return new Unit(value, PageUnits.Inches);
         }
 
         #endregion
@@ -665,9 +665,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFUnit Mm(double value)
+        public static Unit Mm(double value)
         {
-            return new PDFUnit(value, PageUnits.Millimeters);
+            return new Unit(value, PageUnits.Millimeters);
         }
 
         /// <summary>
@@ -675,9 +675,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static PDFUnit Mm(int value)
+        public static Unit Mm(int value)
         {
-            return new PDFUnit(value, PageUnits.Millimeters);
+            return new Unit(value, PageUnits.Millimeters);
         }
 
         #endregion

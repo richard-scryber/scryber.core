@@ -28,29 +28,29 @@ namespace Scryber.Styles
     /// <summary>
     /// Abstract base class for all style items. Items act as a grouping for style values.
     /// </summary>
-    public abstract class StyleItemBase : Scryber.PDFObject, IBindableComponent
+    public abstract class StyleItemBase : Scryber.TypedObject, IBindableComponent
     {
 
         #region public event PDFDataBindEventHandler DataBinding + OnDataBinding(context)
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (this.DataBinding != null)
-                this.DataBinding(this, new PDFDataBindEventArgs(context));
+                this.DataBinding(this, new DataBindEventArgs(context));
         }
 
         #endregion
 
         #region public event PDFDataBindEventHandler DataBound + OnDataBound(context)
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (this.DataBound != null)
-                this.DataBound(this, new PDFDataBindEventArgs(context));
+                this.DataBound(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -200,7 +200,7 @@ namespace Scryber.Styles
         #endregion
 
 
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             this.OnDataBinding(context);
             

@@ -13,10 +13,10 @@ namespace Scryber.Components
     public class HorizontalRule : Line
     {
         [PDFDesignable("Width", Ignore = true)]
-        public override PDFUnit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { get => base.Width; set => base.Width = value; }
 
         [PDFDesignable("Height", Ignore = true)]
-        public override PDFUnit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { get => base.Height; set => base.Height = value; }
 
 
         protected override Style GetBaseStyle()

@@ -36,7 +36,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style inherited = base.GetBaseStyle();
-            inherited.Stroke.Width = new PDFUnit(1, PageUnits.Points);
+            inherited.Stroke.Width = new Unit(1, PageUnits.Points);
             inherited.Stroke.Color = StandardColors.Black;
             inherited.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
             inherited.Fill.Style = FillType.None;
@@ -45,12 +45,12 @@ namespace Scryber.Components
         }
 
 
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
             var pos = fullstyle.CreatePostionOptions();
 
-            PDFPoint start = PDFPoint.Empty;
-            PDFPoint end = new PDFPoint(available.Width, start.Y);
+            Point start = Point.Empty;
+            Point end = new Point(available.Width, start.Y);
 
             if (pos.X.HasValue)
                 start.X = pos.X.Value;

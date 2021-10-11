@@ -28,7 +28,7 @@ namespace Scryber.Components
     [PDFParsableComponent("Poly")]
     public class Polygon : PolygonBase
     {
-        private PDFPointArray _pts;
+        private PointArray _pts;
 
 
         [PDFAttribute("vertex-count", Scryber.Styles.Style.PDFStylesNamespace)]
@@ -47,12 +47,12 @@ namespace Scryber.Components
         }
 
         [PDFAttribute("points")]
-        public PDFPointArray Points
+        public PointArray Points
         {
             get
             {
                 if (null == _pts)
-                    _pts = new PDFPointArray();
+                    _pts = new PointArray();
                 return _pts;
             }
             set
@@ -82,7 +82,7 @@ namespace Scryber.Components
 
 
 
-        protected override Drawing.PDFPoint[] GetPoints(Drawing.PDFRect bounds, Style style)
+        protected override Drawing.Point[] GetPoints(Drawing.Rect bounds, Style style)
         {
             if (this.HasPoints)
             {
@@ -92,7 +92,7 @@ namespace Scryber.Components
                 return base.GetPoints(bounds, style);
         }
 
-        protected override void BuildPath(GraphicsPath path, PDFPoint[] points, Style style, bool end)
+        protected override void BuildPath(GraphicsPath path, Point[] points, Style style, bool end)
         {
             int vertexstep = style.GetValue(StyleKeys.ShapeVertexStepKey, 1);
             bool closed = style.GetValue(StyleKeys.ShapeClosedKey, true);
@@ -103,7 +103,7 @@ namespace Scryber.Components
                 base.BuildPath(path, points, style, end);
         }
 
-        protected virtual void BuildPolygramPath(GraphicsPath path, PDFPoint[] points, int step, bool closed, bool end)
+        protected virtual void BuildPolygramPath(GraphicsPath path, Point[] points, int step, bool closed, bool end)
         {
             if (points.Length < 5)
                 throw new PDFException(Errors.CannotCreatePolygramWithLessThan5Sides, null);
@@ -135,8 +135,8 @@ namespace Scryber.Components
                     path.BeginPath();
 
                 int index = firstFree; //firstFree is set from the visitedAll method
-                PDFPoint first = points[index];
-                PDFPoint current = first;
+                Point first = points[index];
+                Point current = first;
 
                 path.MoveTo(current);
                 do

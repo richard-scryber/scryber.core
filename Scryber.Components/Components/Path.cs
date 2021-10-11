@@ -61,7 +61,7 @@ namespace Scryber.Components
         }
 
         
-        protected override Drawing.GraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
+        protected override Drawing.GraphicsPath CreatePath(Drawing.Size available, Style fullstyle)
         {
             return this.PathData;
         }

@@ -154,7 +154,7 @@ namespace Scryber.Styles
         }
 
 
-        protected override void DoDataBind(PDFDataContext context, bool includechildren)
+        protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
             
@@ -166,7 +166,7 @@ namespace Scryber.Styles
 
                 if (this.TryGetFont(doc, context, out definition))
                 {
-                    string name = PDFFont.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
+                    string name = Drawing.Font.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
                     //PDFFontResource resource = PDFFontResource.Load(definition, name);
 
                     doc.EnsureResource(PDFFontResource.FontDefnResourceType, name, definition);
@@ -186,7 +186,7 @@ namespace Scryber.Styles
         
 
         
-        private bool TryGetFont(IDocument doc, PDFContextBase context, out PDFFontDefinition definition)
+        private bool TryGetFont(IDocument doc, ContextBase context, out PDFFontDefinition definition)
         {
             Drawing.FontStyle style = this.FontStyle;
             int weight = this.FontWeight;

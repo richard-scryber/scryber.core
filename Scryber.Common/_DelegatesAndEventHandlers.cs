@@ -29,16 +29,16 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public delegate void PDFLoadedEventHandler(object sender, PDFLoadEventArgs args);
+    public delegate void LoadedEventHandler(object sender, LoadEventArgs args);
 
     /// <summary>
     /// Event args for a components Load event
     /// </summary>
-    public class PDFLoadEventArgs : EventArgs
+    public class LoadEventArgs : EventArgs
     {
-        public PDFLoadContext Context { get; private set; }
+        public LoadContext Context { get; private set; }
 
-        public PDFLoadEventArgs(PDFLoadContext context)
+        public LoadEventArgs(LoadContext context)
         {
             this.Context = context;
         }
@@ -49,16 +49,16 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public delegate void PDFInitializedEventHandler(object sender, PDFInitEventArgs args);
+    public delegate void InitializedEventHandler(object sender, InitEventArgs args);
 
     /// <summary>
     /// Event args for a components Initialized event
     /// </summary>
-    public class PDFInitEventArgs : EventArgs
+    public class InitEventArgs : EventArgs
     {
-        public PDFInitContext Context { get; private set; }
+        public InitContext Context { get; private set; }
 
-        public PDFInitEventArgs(PDFInitContext context)
+        public InitEventArgs(InitContext context)
         {
             this.Context = context;
         }
@@ -71,22 +71,22 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public delegate void PDFDataBindEventHandler(object sender, PDFDataBindEventArgs e);
+    public delegate void DataBindEventHandler(object sender, DataBindEventArgs e);
 
     /// <summary>
     /// Arguments for the PDFDataBindEventHandler
     /// </summary>
-    public class PDFDataBindEventArgs : EventArgs
+    public class DataBindEventArgs : EventArgs
     {
         /// <summary>
         /// instance storage of PFDataContext
         /// </summary>
-        private PDFDataContext _context;
+        private DataContext _context;
 
         /// <summary>
         /// Gets the context associated with the current databind operation
         /// </summary>
-        public PDFDataContext Context
+        public DataContext Context
         {
             get { return _context; }
         }
@@ -95,7 +95,7 @@ namespace Scryber
         /// Creates a new instance of the PDFDataBindEventArgs
         /// </summary>
         /// <param name="context"></param>
-        public PDFDataBindEventArgs(PDFDataContext context)
+        public DataBindEventArgs(DataContext context)
         {
             this._context = context;
         }
@@ -109,6 +109,6 @@ namespace Scryber
     /// <param name="requiredType"></param>
     /// <param name="formatProvider"></param>
     /// <returns></returns>
-    public delegate object PDFValueConverter(string value, Type requiredType, IFormatProvider formatProvider);
+    public delegate object ValueConverter(string value, Type requiredType, IFormatProvider formatProvider);
 
 }

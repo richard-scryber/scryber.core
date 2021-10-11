@@ -98,27 +98,27 @@ namespace Scryber.Styles
         // lifecycle methods
         //
 
-        public void Init(PDFInitContext context)
+        public void Init(InitContext context)
         {
-            foreach (PDFObject item in this)
+            foreach (TypedObject item in this)
             {
                 if (item is IComponent)
                     (item as IComponent).Init(context);
             }
         }
 
-        public void Load(PDFLoadContext context)
+        public void Load(LoadContext context)
         {
-            foreach (PDFObject item in this)
+            foreach (TypedObject item in this)
             {
                 if (item is IComponent)
                     (item as IComponent).Load(context);
             }
         }
 
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
-            foreach (PDFObject item in this)
+            foreach (TypedObject item in this)
             {
                 if (item is IBindableComponent)
                     (item as IBindableComponent).DataBind(context);
@@ -134,7 +134,7 @@ namespace Scryber.Styles
         {
             if(disposing)
             {
-                foreach (PDFObject item in this)
+                foreach (TypedObject item in this)
                 {
                     if (item is IDisposable)
                         (item as IDisposable).Dispose();

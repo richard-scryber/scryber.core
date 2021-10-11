@@ -69,7 +69,7 @@ namespace Scryber.Drawing
         /// Buids and returns a gradient function that will render the stops and colors for this linear gradient
         /// </summary>
         /// <returns></returns>
-        public virtual PDFGradientFunction GetGradientFunction(PDFPoint offset, PDFSize size)
+        public virtual PDFGradientFunction GetGradientFunction(Point offset, Size size)
         {
 
             //if our first value is offset from the start put one in of
@@ -165,7 +165,7 @@ namespace Scryber.Drawing
         /// <param name="offset">The offset of the shape in the page</param>
         /// <param name="size">The size of the shape in the page</param>
         /// <returns>A list of function boundaries</returns>
-        protected virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(PDFPoint offset, PDFSize size)
+        protected virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
         {
             List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
 

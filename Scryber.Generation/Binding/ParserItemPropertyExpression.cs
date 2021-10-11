@@ -16,7 +16,7 @@ namespace Scryber.Binding
             this.PropertyOrFieldName = name;
         }
 
-        protected override object DoGetMyValue(object parent, PDFDataContext context)
+        protected override object DoGetMyValue(object parent, DataContext context)
         {
             var type = parent.GetType();
 

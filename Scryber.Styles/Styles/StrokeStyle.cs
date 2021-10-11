@@ -89,15 +89,15 @@ namespace Scryber.Styles
         #region public PDFUnit Width {get;set;} + RemoveWidth()
 
         [PDFAttribute("width")]
-        public PDFUnit Width
+        public Unit Width
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.StrokeWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {

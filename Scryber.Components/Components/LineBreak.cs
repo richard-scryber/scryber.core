@@ -28,7 +28,7 @@ namespace Scryber.Components
     /// </summary>
     [PDFParsableComponent("Br")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_br")]
-    public class LineBreak : VisualComponent, IPDFLayoutBreak
+    public class LineBreak : VisualComponent, ILayoutBreak
     {
 
         public LayoutBreakType BreakType

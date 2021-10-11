@@ -61,7 +61,7 @@ namespace Scryber.Data
         /// Inheritors can override this method to perform their own actions during databinding
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
         }
 
@@ -75,7 +75,7 @@ namespace Scryber.Data
         /// <param name="source"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void EnsureDataLoaded(XPathDataSourceBase source, System.Data.DataSet dataSet, PDFDataContext context)
+        public void EnsureDataLoaded(XPathDataSourceBase source, System.Data.DataSet dataSet, DataContext context)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace Scryber.Data
         /// <param name="source"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract void DoEnsureDataLoaded(XPathDataSourceBase source, System.Data.DataSet dataSet, PDFDataContext context);
+        protected abstract void DoEnsureDataLoaded(XPathDataSourceBase source, System.Data.DataSet dataSet, DataContext context);
 
 
     }
@@ -164,7 +164,7 @@ namespace Scryber.Data
         //
 
 
-        public XPathProviderCommandList(XPathDataSourceBase parentSource) : base(((IPDFContainerComponent)parentSource).Content)
+        public XPathProviderCommandList(XPathDataSourceBase parentSource) : base(((IContainerComponent)parentSource).Content)
         {
         }
 
@@ -173,7 +173,7 @@ namespace Scryber.Data
         //
 
 
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             if(this.Count > 0)
             {

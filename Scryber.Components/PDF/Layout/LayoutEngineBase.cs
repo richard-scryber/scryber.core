@@ -25,6 +25,7 @@ using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber.PDF;
 
 namespace Scryber.PDF.Layout
 {
@@ -266,9 +267,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private static ComponentList GetComponentChildren(IComponent parent)
         {
-            if (parent is IPDFContainerComponent)
+            if (parent is IContainerComponent)
             {
-                IPDFContainerComponent contaner = parent as IPDFContainerComponent;
+                IContainerComponent contaner = parent as IContainerComponent;
                 if (contaner.HasContent)
                     return contaner.Content;
             }
@@ -325,10 +326,10 @@ namespace Scryber.PDF.Layout
 
             if (IsStyled(comp))
             {
-                if (comp is IPDFDataStyledComponent
-                    && !string.IsNullOrEmpty((comp as IPDFDataStyledComponent).DataStyleIdentifier))
+                if (comp is IDataStyledComponent
+                    && !string.IsNullOrEmpty((comp as IDataStyledComponent).DataStyleIdentifier))
                 {
-                    styleidentifier = (comp as IPDFDataStyledComponent).DataStyleIdentifier;
+                    styleidentifier = (comp as IDataStyledComponent).DataStyleIdentifier;
                     if (this.Context.DocumentLayout.TryGetStyleWithIdentifier(styleidentifier, out applied, out full))
                     {
                         if (this.Context.ShouldLogDebug)
@@ -409,12 +410,12 @@ namespace Scryber.PDF.Layout
 
         private static bool IsStyled(IComponent comp)
         {
-            return comp is IPDFStyledComponent && !(comp is IPDFLayoutBreak);
+            return comp is IPDFStyledComponent && !(comp is ILayoutBreak);
         }
 
         private static bool IsText(IComponent comp)
         {
-            return comp is IPDFTextComponent;
+            return comp is ITextComponent;
         }
 
         #endregion
@@ -453,9 +454,9 @@ namespace Scryber.PDF.Layout
             if (comp is IPDFViewPortComponent)
                 this.DoLayoutViewPortComponent(comp as IPDFViewPortComponent, full);
 
-            else if (comp is IPDFLayoutBreak)
+            else if (comp is ILayoutBreak)
             {
-                IPDFLayoutBreak lb = comp as IPDFLayoutBreak;
+                ILayoutBreak lb = comp as ILayoutBreak;
                 switch (lb.BreakType)
                 {
                     case LayoutBreakType.Page:
@@ -471,25 +472,25 @@ namespace Scryber.PDF.Layout
                         throw new IndexOutOfRangeException("IPDFLayoutBreak.BreakType");
                 }
             }
-            else if (comp is IPDFTextComponent)
+            else if (comp is ITextComponent)
             {
-                this.DoLayoutTextComponent(comp as IPDFTextComponent, full);
+                this.DoLayoutTextComponent(comp as ITextComponent, full);
             }
             else if (comp is IPDFImageComponent)
             {
                 this.DoLayoutImageComponent(comp as IPDFImageComponent, full);
             }
-            else if (comp is IPDFGraphicPathComponent)
+            else if (comp is IGraphicPathComponent)
             {
-                this.DoLayoutPathComponent(comp as IPDFGraphicPathComponent, full);
+                this.DoLayoutPathComponent(comp as IGraphicPathComponent, full);
             }
-            else if(comp is IPDFVisualRenderComponent)
+            else if(comp is IPDFLayoutComponent)
             {
-                this.DoLayoutVisualRenderComponent(comp as IPDFVisualRenderComponent, full);
+                this.DoLayoutVisualRenderComponent(comp as IPDFLayoutComponent, full);
             }
-            else if (comp is IPDFInvisibleContainer)
+            else if (comp is IInvisibleContainer)
             {
-                this.DoLayoutInvisibleComponent(comp as IPDFInvisibleContainer, full);
+                this.DoLayoutInvisibleComponent(comp as IInvisibleContainer, full);
             }
 
             //close any relative or absolute region
@@ -555,14 +556,14 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Warning, "Float Layout", "Block has moved to a new page and cannot find a parent that is valid. Float detail is lost");
                 return;
             }
-            PDFUnit floatWidth;
+            Unit floatWidth;
             bool isImage;
             if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out isImage))
                 return;
             
-            PDFUnit floatInset = PDFUnit.Zero;
-            PDFUnit height = positioned.Height;
-            PDFUnit offset = pos.Y.Value;
+            Unit floatInset = Unit.Zero;
+            Unit height = positioned.Height;
+            Unit offset = pos.Y.Value;
             var bounds = positioned.TotalBounds;
             var container = positioned.GetParentBlock();
             var pageOffset = container.GetPageYOffset();
@@ -618,7 +619,7 @@ namespace Scryber.PDF.Layout
             
         }
 
-        private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out PDFUnit width, out bool isImage)
+        private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out Unit width, out bool isImage)
         {
             isImage = false;
             if(positioned.Contents.Count == 0)
@@ -716,21 +717,21 @@ namespace Scryber.PDF.Layout
 
             PDFTransformationMatrix matrix = pos.TransformMatrix;
 
-            PDFRect bounds = new PDFRect(PDFPoint.Empty, relBlock.TotalBounds.Size); //relBlock.TotalBounds;
-            PDFRect transformed = matrix.TransformBounds(bounds, TransformationOrigin.CenterMiddle);
+            Rect bounds = new Rect(Point.Empty, relBlock.TotalBounds.Size); //relBlock.TotalBounds;
+            Rect transformed = matrix.TransformBounds(bounds, TransformationOrigin.CenterMiddle);
 
-            PDFUnit xpos = transformed.X;
-            PDFUnit ypos = transformed.Y;
+            Unit xpos = transformed.X;
+            Unit ypos = transformed.Y;
 
-            PDFUnit height = transformed.Height;
-            PDFUnit width = transformed.Width;
+            Unit height = transformed.Height;
+            Unit width = transformed.Width;
 
-            PDFUnit xshift = PDFUnit.Zero;
-            PDFUnit yshift = PDFUnit.Zero;
+            Unit xshift = Unit.Zero;
+            Unit yshift = Unit.Zero;
 
             //move the position to zero and the shift to x - so any transforms will happen at the origin
 
-            xshift = new PDFUnit(-xpos.PointsValue, PageUnits.Points);
+            xshift = new Unit(-xpos.PointsValue, PageUnits.Points);
             xpos = 0;
             
 
@@ -744,7 +745,7 @@ namespace Scryber.PDF.Layout
             }
 
             //move the position to zero and the shift to y
-             yshift = new PDFUnit(-ypos.PointsValue, PageUnits.Points);
+             yshift = new Unit(-ypos.PointsValue, PageUnits.Points);
             ypos = 0;
             
 
@@ -756,13 +757,13 @@ namespace Scryber.PDF.Layout
             }
 
             //Set the transformed offset of the block to xshift and yshift (which will be applied in the block rendering.
-            relBlock.TransformedOffset = new PDFPoint(xshift, yshift);
+            relBlock.TransformedOffset = new Point(xshift, yshift);
 
             //declare the used size as width and height (inc. and explicit positioning)
-            positioned.UsedSize = new PDFSize(width, height);
+            positioned.UsedSize = new Size(width, height);
 
             //and total bounds is also width and height with a zero, zero x and y
-            positioned.TotalBounds = new PDFRect(xpos, ypos, width, height);
+            positioned.TotalBounds = new Rect(xpos, ypos, width, height);
 
         }
 
@@ -787,7 +788,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            PDFUnit offsetY = last.Height;
+            Unit offsetY = last.Height;
             var region = last.CurrentRegion;
             if (null != region)
             {
@@ -800,13 +801,13 @@ namespace Scryber.PDF.Layout
                     if (line.Runs.Count > 0)
                         offsetY += region.CurrentItem.Height;
                     else
-                        line.SetMaxWidth(line.AvailableWidth - pos.Width ?? PDFUnit.Zero);
+                        line.SetMaxWidth(line.AvailableWidth - pos.Width ?? Unit.Zero);
 
                 }
                 //there could be another float left, so make sure we inset to match this.
                 if (pos.FloatMode == FloatMode.Left)
                 {
-                    var x = region.GetLeftInset(offsetY, pos.Height ?? (PDFUnit)1);
+                    var x = region.GetLeftInset(offsetY, pos.Height ?? (Unit)1);
                     if (x > 0)
                         pos.X = x;
                 }
@@ -907,7 +908,7 @@ namespace Scryber.PDF.Layout
             bool newpage;
             if (this.CanSplitOrHasMoreRegions(block))
             {
-                if (!this.MoveToNextRegion(PDFUnit.Zero, ref region, ref block, out newpage))
+                if (!this.MoveToNextRegion(Unit.Zero, ref region, ref block, out newpage))
                 {
                     this.ContinueLayout = false;
                 }
@@ -941,7 +942,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="linebreak"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutLineBreak(IPDFLayoutBreak linebreak, Style style)
+        protected virtual void DoLayoutLineBreak(ILayoutBreak linebreak, Style style)
         {
             if (linebreak is Component && !((Component)linebreak).Visible)
                 return;
@@ -953,7 +954,7 @@ namespace Scryber.PDF.Layout
                 if (region.HasOpenItem == false)
                 {
                     PDFTextRenderOptions txtopts = style.CreateTextOptions();
-                    PDFUnit height;
+                    Unit height;
                     if (txtopts.Leading.HasValue)
                         height = txtopts.Leading.Value;
                     else if (txtopts.Font != null && txtopts.Font.FontMetrics != null)
@@ -963,7 +964,7 @@ namespace Scryber.PDF.Layout
                     else
                         height = 12;
                     PDFLayoutLine line = region.BeginNewLine();
-                    line.AddRun(new PDFTextRunSpacer(PDFUnit.Zero, height, line, null));
+                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null));
                 }
                 region.CloseCurrentItem();
             }
@@ -979,7 +980,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="invisible"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, Style style)
+        protected virtual void DoLayoutInvisibleComponent(IInvisibleContainer invisible, Style style)
         {
             ComponentList children;
 
@@ -1029,7 +1030,7 @@ namespace Scryber.PDF.Layout
             PDFPositionOptions options = style.CreatePostionOptions();
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
-            PDFSize avail = new PDFSize(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
+            Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
 
             avail.Width -= options.Margins.Left + options.Margins.Right + options.Padding.Left + options.Padding.Right;
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
@@ -1039,7 +1040,7 @@ namespace Scryber.PDF.Layout
             //bool hasmargins, haspadding;
             //PDFThickness marginThick, padThick;
 
-            PDFSize sz = image.GetRequiredSizeForLayout(avail, this.Context, style);
+            Size sz = image.GetRequiredSizeForLayout(avail, this.Context, style);
             //sz = BuildContentSizes(style, options, sz, out border, out content, out total, out hasmargins, out haspadding, out marginThick, out padThick);
 
             AddComponentRunToLayoutWithSize(sz, image, style, ref linetoAddTo, options);
@@ -1057,19 +1058,19 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="comp"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutPathComponent(IPDFGraphicPathComponent comp, Style style)
+        protected virtual void DoLayoutPathComponent(IGraphicPathComponent comp, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
-            PDFSize avail = new PDFSize(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
+            Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
 
             avail.Width -= options.Margins.Left + options.Margins.Right + options.Padding.Left + options.Padding.Right;
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
 
             GraphicsPath path = comp.CreatePath(avail, style);
             comp.Path = path;
-            PDFSize required = path.Bounds.Size;
+            Size required = path.Bounds.Size;
 
             AddComponentRunToLayoutWithSize(required, comp, style, ref linetoAddTo, options);
 
@@ -1084,7 +1085,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="text"></param>
         /// <param name="style"></param>
-        protected virtual void DoLayoutTextComponent(IPDFTextComponent text, Style style)
+        protected virtual void DoLayoutTextComponent(ITextComponent text, Style style)
         {
             try
             {
@@ -1120,17 +1121,17 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="comp">The image reference to layout</param>
         /// <param name="style">The image style</param>
-        protected virtual void DoLayoutVisualRenderComponent(IPDFVisualRenderComponent comp, Style style)
+        protected virtual void DoLayoutVisualRenderComponent(IPDFLayoutComponent comp, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
-            PDFSize avail = new PDFSize(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
+            Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
 
             avail.Width -= options.Margins.Left + options.Margins.Right + options.Padding.Left + options.Padding.Right;
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
 
-            PDFSize required = comp.GetRequiredSizeForLayout(avail, this.Context, style);
+            Size required = comp.GetRequiredSizeForLayout(avail, this.Context, style);
 
             AddComponentRunToLayoutWithSize(required, comp, style, ref linetoAddTo, options);
 
@@ -1202,7 +1203,7 @@ namespace Scryber.PDF.Layout
         /// <param name="block">Pass in the current block. Will be set to the next block if it has changed</param>
         /// <param name="newPage">Set to true if we are now going to be working on another page</param>
         /// <returns>True is we can move to another page.</returns>
-        internal protected virtual bool MoveToNextRegion(PDFUnit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
+        internal protected virtual bool MoveToNextRegion(Unit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
         {
 
             using (IDisposable record = Context.PerformanceMonitor.Record(PerformanceMonitorType.Content_Overflow, this.Component.UniqueID))
@@ -1339,7 +1340,7 @@ namespace Scryber.PDF.Layout
                             this.Context.TraceLog.Add(TraceLevel.Debug, logCategory, "Have existing block '" + tomove + "' to move to the next region");
 
                         //and then add it back into the new region.
-                        PDFUnit origHeight = region.UsedSize.Height;
+                        Unit origHeight = region.UsedSize.Height;
                         region.AddExistingItem(tomove);
                         tomove.ResetAvailableHeight(region.AvailableHeight - origHeight, true);
                         //Because we have moved the current block onto a new page - we are back with the original region and block
@@ -1466,7 +1467,7 @@ namespace Scryber.PDF.Layout
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, logCategory, "Have existing block '" + tomove + "' to move to the next region");
 
-                PDFUnit origheight = region.UsedSize.Height;
+                Unit origheight = region.UsedSize.Height;
 
                 if (null != posRegion)
                 {
@@ -1515,7 +1516,7 @@ namespace Scryber.PDF.Layout
             PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
             PDFColumnOptions options = this.FullStyle.CreateColumnOptions();
 
-            PDFRect total = new PDFRect(new PDFPoint(0, joinToRegion.Height), joinToRegion.UnusedBounds.Size);
+            Rect total = new Rect(new Point(0, joinToRegion.Height), joinToRegion.UnusedBounds.Size);
 
             if (position.Width.HasValue)
                 total.Width = position.Width.Value;
@@ -1600,21 +1601,21 @@ namespace Scryber.PDF.Layout
         /// <param name="linetoAddTo">The current line in the layout.</param>
         /// <param name="options">The position options</param>
         /// <returns>True if the component could be added (i.e. there was enough space) or false.</returns>
-        protected bool AddComponentRunToLayoutWithSize(PDFSize required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
+        protected bool AddComponentRunToLayoutWithSize(Size required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
         {
-            PDFRect content = new PDFRect(
+            Rect content = new Rect(
                 options.Padding.Top + options.Margins.Top,
                 options.Padding.Left + options.Margins.Left,
                 required.Width,
                 required.Height);
 
-            PDFRect border = new PDFRect(
+            Rect border = new Rect(
                 options.Margins.Top,
                 options.Margins.Left,
                 required.Width + options.Padding.Left + options.Padding.Right,
                 required.Height + options.Padding.Top + options.Padding.Bottom);
 
-            PDFRect total = new PDFRect(
+            Rect total = new Rect(
                 0,
                 0,
                 border.Width + options.Margins.Left + options.Margins.Right,
@@ -1678,10 +1679,10 @@ namespace Scryber.PDF.Layout
 
                 PDFTextRenderOptions txtOpts = style.CreateTextOptions();
 
-                PDFUnit baselineoffset = content.Height + options.Padding.Top + options.Padding.Bottom + options.Margins.Top + options.Margins.Bottom;
+                Unit baselineoffset = content.Height + options.Padding.Top + options.Padding.Bottom + options.Margins.Top + options.Margins.Bottom;
 
 
-                PDFUnit descenderHeight = txtOpts.GetDescender();
+                Unit descenderHeight = txtOpts.GetDescender();
 
                 if (txtOpts.Leading.HasValue && txtOpts.Leading.Value - descenderHeight > baselineoffset)
                     baselineoffset = txtOpts.Leading.Value - descenderHeight;
@@ -1692,8 +1693,8 @@ namespace Scryber.PDF.Layout
                 linetoAddTo.AddComponentRun(component, total, border, content, baselineoffset, options, style);
             }
 
-            if (component is IPDFVisualRenderComponent)
-                ((IPDFVisualRenderComponent)component).SetRenderSizes(content, border, total, style);
+            if (component is IPDFLayoutComponent)
+                ((IPDFLayoutComponent)component).SetRenderSizes(content, border, total, style);
 
             return true;
         }
@@ -1749,7 +1750,7 @@ namespace Scryber.PDF.Layout
         /// <param name="marginThick"></param>
         /// <param name="padThick"></param>
         /// <returns></returns>
-        protected PDFSize BuildContentSizes(Style style, PDFPositionOptions options, PDFSize origsize, out PDFRect border, out PDFRect content, out PDFRect total, out bool hasmargins, out bool haspadding, out PDFThickness marginThick, out PDFThickness padThick)
+        protected Size BuildContentSizes(Style style, PDFPositionOptions options, Size origsize, out Rect border, out Rect content, out Rect total, out bool hasmargins, out bool haspadding, out Thickness marginThick, out Thickness padThick)
         {
 
             //Extract the margins and padding from the options
@@ -1761,26 +1762,26 @@ namespace Scryber.PDF.Layout
 
             //Create the image size based on any defined width and/or height.
             if (options.Width.HasValue && options.Height.HasValue)
-                origsize = new PDFSize(options.Width.Value, options.Height.Value);
+                origsize = new Size(options.Width.Value, options.Height.Value);
 
             else if (options.Width.HasValue)
             {
                 if (origsize.Width > 0)
-                    origsize = new PDFSize(options.Width.Value, origsize.Height * (options.Width.Value.PointsValue / origsize.Width.PointsValue));
+                    origsize = new Size(options.Width.Value, origsize.Height * (options.Width.Value.PointsValue / origsize.Width.PointsValue));
                 else
-                    origsize = new PDFSize(options.Width.Value, 0);
+                    origsize = new Size(options.Width.Value, 0);
             }
             else if (options.Height.HasValue)
             {
                 if (origsize.Height > 0)
-                    origsize = new PDFSize(origsize.Width * (options.Height.Value.PointsValue / origsize.Height.PointsValue), options.Height.Value);
+                    origsize = new Size(origsize.Width * (options.Height.Value.PointsValue / origsize.Height.PointsValue), options.Height.Value);
                 else
-                    origsize = new PDFSize(0, options.Height.Value);
+                    origsize = new Size(0, options.Height.Value);
             }
 
-            content = new PDFRect(marginThick.Top + padThick.Top, marginThick.Left + padThick.Left, origsize.Width, origsize.Height);
-            border = new PDFRect(marginThick.Top, marginThick.Left, origsize.Width + padThick.Left + padThick.Right, origsize.Height + padThick.Top + padThick.Right);
-            total = new PDFRect(0, 0, border.Width + marginThick.Left + marginThick.Right, border.Height + marginThick.Top + marginThick.Bottom);
+            content = new Rect(marginThick.Top + padThick.Top, marginThick.Left + padThick.Left, origsize.Width, origsize.Height);
+            border = new Rect(marginThick.Top, marginThick.Left, origsize.Width + padThick.Left + padThick.Right, origsize.Height + padThick.Top + padThick.Right);
+            total = new Rect(0, 0, border.Width + marginThick.Left + marginThick.Right, border.Height + marginThick.Top + marginThick.Bottom);
             return origsize;
 
         }
@@ -1796,7 +1797,7 @@ namespace Scryber.PDF.Layout
         /// <param name="region"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        protected PDFLayoutLine GetOpenLine(PDFUnit requiredwidth, PDFLayoutRegion region, PositionMode mode)
+        protected PDFLayoutLine GetOpenLine(Unit requiredwidth, PDFLayoutRegion region, PositionMode mode)
         {
             PDFLayoutLine linetoAddTo;
             switch (mode)
@@ -1817,7 +1818,7 @@ namespace Scryber.PDF.Layout
                         linetoAddTo = region.CurrentItem as PDFLayoutLine;
 
                         //If not then close the current line and add start a new line
-                        if (requiredwidth > PDFUnit.Zero && linetoAddTo.CanFitWidth(requiredwidth) == false)
+                        if (requiredwidth > Unit.Zero && linetoAddTo.CanFitWidth(requiredwidth) == false)
                         {
                             region.CloseCurrentItem();
                             linetoAddTo = region.BeginNewLine();
@@ -1843,7 +1844,7 @@ namespace Scryber.PDF.Layout
         /// <param name="block"></param>
         /// <param name="bounds"></param>
         /// <param name="style"></param>
-        protected void InitBlock(PDFLayoutBlock block, PDFRect bounds, Style style)
+        protected void InitBlock(PDFLayoutBlock block, Rect bounds, Style style)
         {
             PDFPositionOptions options = style.CreatePostionOptions();
             PDFColumnOptions columns = style.CreateColumnOptions();
@@ -1862,9 +1863,9 @@ namespace Scryber.PDF.Layout
         /// <param name="margthick">set to the applied margins</param>
         /// <param name="padthick">set to the applied padding</param>
         /// <returns>The available content rectangle</returns>
-        protected PDFRect GetContentRectFromBounds(PDFRect bounds, PDFThickness margthick, PDFThickness padthick)
+        protected Rect GetContentRectFromBounds(Rect bounds, Thickness margthick, Thickness padthick)
         {
-            PDFRect contentrect = bounds;
+            Rect contentrect = bounds;
 
             if (margthick.IsEmpty == false)
             {

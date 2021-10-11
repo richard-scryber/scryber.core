@@ -83,7 +83,7 @@ namespace Scryber.Components
             this.AllowMissingImages = config.ImagingOptions.AllowMissingImages;
         }
 
-        protected override void DoInit(PDFInitContext context)
+        protected override void DoInit(InitContext context)
         {
             if (!this._hasExplicitCompress)
                 this._compress = this.Document != null && this.Document.RenderOptions != null ? this.Document.RenderOptions.ImageCompression == ImageCompressionType.WebOptimize : false;
@@ -95,7 +95,7 @@ namespace Scryber.Components
         /// Implementation method for the IPDFImageComponent to return the image data in a PDFImageXObject instance.
         /// </summary>
         /// <returns></returns>
-        public virtual PDFImageXObject GetImageObject(PDFContextBase context, Style fullstyle)
+        public virtual PDFImageXObject GetImageObject(ContextBase context, Style fullstyle)
         {
             if (null == this.XObject)
             {
@@ -154,7 +154,7 @@ namespace Scryber.Components
         /// Inheritors must implement this method to actually load the required image data.
         /// </summary>
         /// <returns></returns>
-        protected abstract PDFImageXObject InitImageXObject(PDFContextBase context, Style fullstyle);
+        protected abstract PDFImageXObject InitImageXObject(ContextBase context, Style fullstyle);
 
         /// <summary>
         /// Overrides the base implementation to specify that images are by default blocks.
@@ -203,10 +203,10 @@ namespace Scryber.Components
             PDFImageXObject img = this.GetImageObject(context, full);
             if (img != null)
             {
-                PDFPoint pos = context.Offset;
+                Point pos = context.Offset;
 
 
-                PDFSize imgsize = context.Space;
+                Size imgsize = context.Space;
 
                 //the pictures are drawn from their bottom left corner, so take off the height.
                 //if (context.DrawingOrigin == DrawingOrigin.TopLeft)
@@ -232,15 +232,15 @@ namespace Scryber.Components
                 return null;
         }
 
-        public PDFSize GetRequiredSizeForLayout(PDFSize available, PDFLayoutContext context, Style appliedstyle)
+        public Size GetRequiredSizeForLayout(Size available, PDFLayoutContext context, Style appliedstyle)
         {
             PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();
             PDFImageXObject xobj = this.GetImageObject(context, appliedstyle);
-            PDFSize naturalSize = xobj.GetImageSize();
+            Size naturalSize = xobj.GetImageSize();
 
-            PDFUnit h;
-            PDFUnit w;
+            Unit h;
+            Unit w;
             if(pos.Height.HasValue && pos.Width.HasValue)
             {
                 w = pos.Width.Value;
@@ -344,8 +344,8 @@ namespace Scryber.Components
             }
             else if (pos.MinimumWidth.HasValue)
             {
-                w = PDFUnit.Min(naturalSize.Width, available.Width); //either smaller available or natural width
-                w = PDFUnit.Max(pos.MinimumWidth.Value, w); //if min is less than w use min
+                w = Unit.Min(naturalSize.Width, available.Width); //either smaller available or natural width
+                w = Unit.Max(pos.MinimumWidth.Value, w); //if min is less than w use min
 
                 h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
 
@@ -367,8 +367,8 @@ namespace Scryber.Components
             }
             else if (pos.MinimumHeight.HasValue)
             {
-                h = PDFUnit.Min(naturalSize.Height, available.Height); //either smaller available or natural
-                h = PDFUnit.Max(pos.MinimumHeight.Value, h);
+                h = Unit.Min(naturalSize.Height, available.Height); //either smaller available or natural
+                h = Unit.Max(pos.MinimumHeight.Value, h);
 
                 w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
 
@@ -413,10 +413,10 @@ namespace Scryber.Components
             }
             
 
-            return new PDFSize(w, h);
+            return new Size(w, h);
         }
 
-        public void SetRenderSizes(PDFRect content, PDFRect border, PDFRect total, Style style)
+        public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
         {
             //Do Nothing
         }

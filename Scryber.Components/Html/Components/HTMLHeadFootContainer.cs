@@ -68,7 +68,7 @@ namespace Scryber.Html.Components
             
         }
 
-        protected override void OnInitialized(PDFInitContext context)
+        protected override void OnInitialized(InitContext context)
         {
             base.OnInitialized(context);
         }

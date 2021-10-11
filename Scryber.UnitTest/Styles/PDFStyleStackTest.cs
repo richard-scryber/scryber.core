@@ -144,8 +144,8 @@ namespace Scryber.Core.UnitTests.Styles
             Style actual = target.GetFullStyle(lbl);
 
             Assert.AreEqual("Symbol", actual.Font.FontFamily.FamilyName); //inherited from root
-            Assert.AreEqual((PDFUnit)48, actual.Font.FontSize); //inherited from one
-            Assert.AreEqual((PDFUnit)3, actual.Border.Width); //border from two
+            Assert.AreEqual((Unit)48, actual.Font.FontSize); //inherited from one
+            Assert.AreEqual((Unit)3, actual.Border.Width); //border from two
             Assert.AreEqual(StandardColors.Lime, actual.Border.Color); //border from two
             Assert.AreEqual(true, actual.Font.FontItalic); //font from two
             Assert.AreEqual(Color.Transparent, actual.Background.Color); //not inherited from root

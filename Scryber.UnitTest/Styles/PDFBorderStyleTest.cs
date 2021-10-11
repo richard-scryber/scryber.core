@@ -97,7 +97,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Zero width
 
-            target.Width = PDFUnit.Empty;
+            target.Width = Unit.Empty;
             actual = target.CreatePen();
             Assert.IsNull(actual);
 
@@ -454,8 +454,8 @@ namespace Scryber.Core.UnitTests.Styles
             BorderStyle target = new BorderStyle();
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.Width;
+            Unit expected = Unit.Empty;
+            Unit actual = target.Width;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -467,14 +467,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.Width = expected;
             actual = target.Width;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveWidth();
             actual = target.Width;
             Assert.AreEqual(expected, actual);
@@ -488,9 +488,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Border_CornerRadiusTest()
         {
             BorderStyle target = new BorderStyle();
-            Assert.AreEqual(PDFUnit.Zero, target.CornerRadius);
+            Assert.AreEqual(Unit.Zero, target.CornerRadius);
 
-            PDFUnit expected = 10;
+            Unit expected = 10;
             target.CornerRadius = expected;
             Assert.AreEqual(expected, target.CornerRadius);
 
@@ -499,7 +499,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, target.CornerRadius);
 
             target.RemoveCornerRadius();
-            Assert.AreEqual(PDFUnit.Zero, target.CornerRadius);
+            Assert.AreEqual(Unit.Zero, target.CornerRadius);
         }
 
         /// <summary>

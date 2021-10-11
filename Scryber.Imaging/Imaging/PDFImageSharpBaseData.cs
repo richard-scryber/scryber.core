@@ -25,7 +25,7 @@ namespace Scryber.Imaging
         {
         }
 
-        public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             bool logverbose = context.TraceLog.ShouldLog(TraceLevel.Verbose);
             bool logmessages = context.TraceLog.ShouldLog(TraceLevel.Message);
@@ -117,7 +117,7 @@ namespace Scryber.Imaging
         /// <param name="filters"></param>
         /// <param name="context"></param>
         /// <param name="writer"></param>
-        protected virtual void WriteImageInformation(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        protected virtual void WriteImageInformation(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
 
             writer.WriteDictionaryNumberEntry("Width", this.PixelWidth);
@@ -135,7 +135,7 @@ namespace Scryber.Imaging
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        protected abstract long DoRenderImageData(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer);
+        protected abstract long DoRenderImageData(IStreamFilter[] filters, ContextBase context, PDFWriter writer);
 
         /// <summary>
         /// Inheritors should override this method to render any aplha channel data
@@ -144,7 +144,7 @@ namespace Scryber.Imaging
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        protected abstract long DoRenderAlphaData(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer);
+        protected abstract long DoRenderAlphaData(IStreamFilter[] filters, ContextBase context, PDFWriter writer);
 
         #region protected PDFObjectRef RenderAlpha(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
 
@@ -155,7 +155,7 @@ namespace Scryber.Imaging
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        protected PDFObjectRef RenderAlpha(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        protected PDFObjectRef RenderAlpha(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             bool logverbose = context.TraceLog.ShouldLog(TraceLevel.Verbose);
             bool logmessages = context.TraceLog.ShouldLog(TraceLevel.Message);

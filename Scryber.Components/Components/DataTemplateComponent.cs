@@ -80,7 +80,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="datasourceComponent"></param>
         /// <returns></returns>
-        protected bool HasAssignedDataSourceComponent(PDFDataContext context, out IPDFDataSource datasourceComponent)
+        protected bool HasAssignedDataSourceComponent(DataContext context, out IDataSource datasourceComponent)
         {
             if (string.IsNullOrEmpty(this.DataSourceID) == false)
             {
@@ -100,9 +100,9 @@ namespace Scryber.Components
         /// <param name="datasourceComponentID">The ID of the IPDFDataSource</param>
         /// <param name="context">The current data context</param>
         /// <returns></returns>
-        protected IPDFDataSource GetDataSourceComponent(string datasourceComponentID, PDFDataContext context)
+        protected IDataSource GetDataSourceComponent(string datasourceComponentID, DataContext context)
         {
-            IPDFDataSource datasourceComponent = null;
+            IDataSource datasourceComponent = null;
 
             if (string.IsNullOrEmpty(datasourceComponentID))
                 throw new ArgumentNullException("datasourceComponentID");
@@ -110,10 +110,10 @@ namespace Scryber.Components
             Component found = base.FindDocumentComponentById(datasourceComponentID);
             if (found == null)
                 throw RecordAndRaise.ArgumentNull("DataSourceID", Errors.CouldNotFindControlWithID, datasourceComponentID);
-            else if (!(found is IPDFDataSource))
+            else if (!(found is IDataSource))
                 throw RecordAndRaise.Argument("DataSourceID", Errors.AssignedDataSourceIsNotIPDFDataSource, datasourceComponentID);
             else
-                datasourceComponent = ((IPDFDataSource)found);
+                datasourceComponent = ((IDataSource)found);
 
 
             return datasourceComponent;

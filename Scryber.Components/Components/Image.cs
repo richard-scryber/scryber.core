@@ -80,7 +80,7 @@ namespace Scryber.Components
         }
 
 
-        protected override PDFImageXObject InitImageXObject(PDFContextBase context, Style style)
+        protected override PDFImageXObject InitImageXObject(ContextBase context, Style style)
         {
             Document doc = this.Document;
             if (null == doc)

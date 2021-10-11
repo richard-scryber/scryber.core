@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Styles
             ColumnsStyle target = new ColumnsStyle();
             Assert.AreEqual(ColumnsStyle.DefaultAlleyWidth, target.AlleyWidth);
 
-            PDFUnit expected = ColumnsStyle.DefaultAlleyWidth + 20;
+            Unit expected = ColumnsStyle.DefaultAlleyWidth + 20;
             target.AlleyWidth = expected;
             Assert.AreEqual(expected, target.AlleyWidth);
 

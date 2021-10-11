@@ -293,25 +293,25 @@ namespace Scryber.Components
         // IBindableComponent
         //
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBinding(PDFDataBindEventArgs args)
+        protected virtual void OnDataBinding(DataBindEventArgs args)
         {
             if (null != this.DataBinding)
                 this.DataBinding(this, args);
         }
 
-        protected virtual void OnDataBound(PDFDataBindEventArgs args)
+        protected virtual void OnDataBound(DataBindEventArgs args)
         {
             if (null != this.DataBound)
                 this.DataBound(this, args);
         }
         
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
-            PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
+            DataBindEventArgs args = new DataBindEventArgs(context);
             this.OnDataBinding(args);
             this.OnDataBound(args);
             

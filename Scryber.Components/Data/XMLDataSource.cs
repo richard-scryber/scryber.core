@@ -147,7 +147,7 @@ namespace Scryber.Data
         /// is also null then the SourcePath will be used. If this is also not set, then null will be
         /// retruned from this method.
         /// </remarks>
-        protected override XPathDataSourceBase.XPathDataCacheItem LoadSourceXPathData(PDFDataContext context)
+        protected override XPathDataSourceBase.XPathDataCacheItem LoadSourceXPathData(DataContext context)
         {
             System.Xml.XPath.XPathNavigator nav = null;
             System.Data.DataSet dataSet = null;
@@ -228,7 +228,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="sourcepath"></param>
         /// <returns></returns>
-        private System.Xml.XmlDocument LoadXMLDocument(string sourcepath, PDFDataContext context)
+        private System.Xml.XmlDocument LoadXMLDocument(string sourcepath, DataContext context)
         {
             if (string.IsNullOrEmpty(sourcepath))
                 throw new ArgumentNullException(string.Format(Errors.NoSourcePathDefinedOnXmlDataSource, this.ID));
@@ -263,7 +263,7 @@ namespace Scryber.Data
         /// <param name="ds"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected virtual XPathNavigator ConvertDataSetToXPath(System.Data.DataSet ds, string rootTable, PDFDataContext context)
+        protected virtual XPathNavigator ConvertDataSetToXPath(System.Data.DataSet ds, string rootTable, DataContext context)
         {
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {

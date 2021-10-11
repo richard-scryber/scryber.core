@@ -56,12 +56,12 @@ namespace Scryber.PDF.Layout
 
         #region public IPDFTextComponent TextComponent {get;}
 
-        private IPDFTextComponent _txt;
+        private ITextComponent _txt;
 
         /// <summary>
         /// Gets the text component that this engine is laying out the text for
         /// </summary>
-        public IPDFTextComponent TextComponent
+        public ITextComponent TextComponent
         {
             get { return _txt; }
         }
@@ -206,7 +206,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets this inset of the current line in comparison to the containing region.
         /// </summary>
-        public PDFUnit CurrentLineInset
+        public Unit CurrentLineInset
         {
             get;
             set;
@@ -221,7 +221,7 @@ namespace Scryber.PDF.Layout
 
         #region public PDFTextLayoutEngine(IPDFTextComponent component, IPDFLayoutEngine parent)
 
-        public LayoutEngineText(IPDFTextComponent component, IPDFLayoutEngine parent)
+        public LayoutEngineText(ITextComponent component, IPDFLayoutEngine parent)
         {
             if (null == component)
                 throw new ArgumentNullException("component");
@@ -296,7 +296,7 @@ namespace Scryber.PDF.Layout
             if (!this.StartText())
                 return;
 
-            PDFUnit lastwidth = PDFUnit.Zero;
+            Unit lastwidth = Unit.Zero;
             int index = 0;
             while (this.Reader.Read())
             {
@@ -361,7 +361,7 @@ namespace Scryber.PDF.Layout
 
             this.Context.Graphics.SetCurrentFont(this.TextRenderOptions.Font);
 
-            PDFUnit inset = PDFUnit.Zero;
+            Unit inset = Unit.Zero;
             if (line.IsEmpty == false)
                 inset = line.Width;
             else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.PositionMode != PositionMode.Inline || started))
@@ -444,7 +444,7 @@ namespace Scryber.PDF.Layout
         /// <param name="w"></param>
         /// <param name="h"></param>
         /// <param name="line"></param>
-        protected virtual PDFTextRunSpacer AddLineInsetRun(PDFUnit w, PDFUnit h, PDFLayoutLine line)
+        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line)
         {
             PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent);
             line.AddRun(spacer);
@@ -458,7 +458,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// We need to add an explict return
         /// </summary>
-        protected virtual void AddHardReturn(PDFUnit widthOfLastTextDraw)
+        protected virtual void AddHardReturn(Unit widthOfLastTextDraw)
         {
             AddReturn(widthOfLastTextDraw, true);
         }
@@ -467,7 +467,7 @@ namespace Scryber.PDF.Layout
 
         #region protected virtual void AddReturn(PDFUnit widthOfLastTextDraw, bool hardReturn)
 
-        protected virtual void AddReturn(PDFUnit widthOfLastTextDraw, bool hardReturn)
+        protected virtual void AddReturn(Unit widthOfLastTextDraw, bool hardReturn)
         {
             this.AssertCurrentLine();
             PDFLayoutLine line = this.CurrentLine;
@@ -478,21 +478,21 @@ namespace Scryber.PDF.Layout
 
             //The offset is from the start of the last text drawing operation 
             //and the offset of the start of the current line
-            PDFUnit lineright = widthOfLastTextDraw;
+            Unit lineright = widthOfLastTextDraw;
             
-            PDFUnit back = line.Width - lineright;
+            Unit back = line.Width - lineright;
 
             //Previous - 27 Feb 2015
             //br.Offset = new PDFSize(back, line.Height);
 
             //Updated
-            if (line.Height == PDFUnit.Zero)
+            if (line.Height == Unit.Zero)
                 line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
 
             if (line.BaseLineOffset == 0 || this.TextRenderOptions.Leading.HasValue) //we don't have any begins or ends affecting the flow (or an explicit leading)
-                br.Offset = new PDFSize(back, line.Height);
+                br.Offset = new Size(back, line.Height);
             else
-                br.Offset = new PDFSize(back, line.Height);
+                br.Offset = new Size(back, line.Height);
             
 
             PDFLayoutRegion reg = line.Region;
@@ -500,11 +500,11 @@ namespace Scryber.PDF.Layout
             line = reg.BeginNewLine();
             this.BeginningRun.Lines.Add(line);
 
-            PDFUnit inset;
+            Unit inset;
             if (hardReturn)
                 inset = this.TextRenderOptions.GetFirstLineInset();
             else
-                inset = PDFUnit.Zero;
+                inset = Unit.Zero;
 
             PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line);
             br.NextLineSpacer = spacer;
@@ -520,22 +520,22 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Add characters to the line(s), and returns the last width of the characters that were laid out.
         /// </summary>
-        protected virtual PDFUnit AddProxyCharacters(PDFTextProxyOp proxy)
+        protected virtual Unit AddProxyCharacters(PDFTextProxyOp proxy)
         {
             this.AssertCurrentLine();
 
             
-            PDFUnit lineheight = this.TextRenderOptions.GetLineHeight();
+            Unit lineheight = this.TextRenderOptions.GetLineHeight();
             ZeroLineCounter zeros = new ZeroLineCounter();
 
-            PDFSize measured = PDFSize.Empty;
-            PDFSize required = PDFSize.Empty;
+            Size measured = Size.Empty;
+            Size required = Size.Empty;
 
             PDFLayoutLine line = this.CurrentLine;
             PDFLayoutRegion reg = line.Region;
 
-            PDFUnit availH = reg.AvailableHeight;
-            PDFUnit availW = line.AvailableWidth;
+            Unit availH = reg.AvailableHeight;
+            Unit availW = line.AvailableWidth;
 
 
             if (availH < lineheight)
@@ -547,7 +547,7 @@ namespace Scryber.PDF.Layout
                     this.DoMoveToNextRegion(lineheight);
 
                     if (!this.ContinueLayout)
-                        return PDFUnit.Zero;
+                        return Unit.Zero;
                 }
             }
 
@@ -561,7 +561,7 @@ namespace Scryber.PDF.Layout
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
-            required = new PDFSize(measured.Width, lineheight);
+            required = new Size(measured.Width, lineheight);
 
             if (fitted < proxy.Text.Length) //cannot split a proxy - must simply be a single run.
             {
@@ -569,7 +569,7 @@ namespace Scryber.PDF.Layout
                 this.AddSoftReturn(0);
 
                 if (!zeros.AssertIncrement(this.Context))
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
 
                 availW = this.CurrentLine.AvailableWidth;
 
@@ -585,7 +585,7 @@ namespace Scryber.PDF.Layout
                     return measured.Width;
                 }
 
-                required = new PDFSize(measured.Width, lineheight);
+                required = new Size(measured.Width, lineheight);
             }
 
             // everything fitted on the line
@@ -625,7 +625,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="size">the size of the run in PDFUnits</param>
         /// <param name="chars">The characters that should be rendered in the run</param>
-        private void AddProxyToCurrentLine(PDFSize size, PDFTextProxyOp op)
+        private void AddProxyToCurrentLine(Size size, PDFTextProxyOp op)
         {
             this.AssertCurrentLine();
             PDFTextRunProxy run = new PDFTextRunProxy(size, op, this.CurrentLine, this.TextComponent);
@@ -639,17 +639,17 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Add characters to the line(s), and returns the last width of the characters that were laid out.
         /// </summary>
-        protected virtual PDFUnit AddCharacters(string chars)
+        protected virtual Unit AddCharacters(string chars)
         {
             this.AssertCurrentLine();
            
 
-            PDFUnit lineheight = this.TextRenderOptions.GetLineHeight();
+            Unit lineheight = this.TextRenderOptions.GetLineHeight();
             int offset = 0;
             ZeroLineCounter zeros = new ZeroLineCounter();
             
-            PDFSize measured = PDFSize.Empty;
-            PDFSize required = PDFSize.Empty;
+            Size measured = Size.Empty;
+            Size required = Size.Empty;
 
             while (offset < chars.Length)
             {
@@ -657,8 +657,8 @@ namespace Scryber.PDF.Layout
 
                 PDFLayoutLine line = this.CurrentLine;
                 PDFLayoutRegion reg = line.Region;
-                PDFUnit availH = reg.AvailableHeight;
-                PDFUnit availW = line.AvailableWidth;
+                Unit availH = reg.AvailableHeight;
+                Unit availW = line.AvailableWidth;
 
                 if (availH < lineheight)
                 {
@@ -667,7 +667,7 @@ namespace Scryber.PDF.Layout
                         this.DoMoveToNextRegion(lineheight);
 
                         if (!this.ContinueLayout)
-                            return PDFUnit.Zero;
+                            return Unit.Zero;
                         else
                         {
                             line = this.CurrentLine;
@@ -690,13 +690,13 @@ namespace Scryber.PDF.Layout
 
                 Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
-                required = new PDFSize(measured.Width, lineheight);
+                required = new Size(measured.Width, lineheight);
 
                 if (fitted <= 0) //nothing fitted on the line
                 {
                     this.AddSoftReturn(0);
                     if (!zeros.AssertIncrement(this.Context))
-                        return PDFUnit.Zero;
+                        return Unit.Zero;
                     
                 }
                 else if (fitted + offset == chars.Length) // everything fitted on the line
@@ -713,7 +713,7 @@ namespace Scryber.PDF.Layout
                 {
                     this.AddSoftReturn(0);
                     if (!zeros.AssertIncrement(this.Context))
-                        return PDFUnit.Zero;
+                        return Unit.Zero;
                 }
                 else //partial fit
                 {
@@ -823,12 +823,12 @@ namespace Scryber.PDF.Layout
         /// <param name="fitted"></param>
         /// <param name="availh">The available height in the current region</param>
         /// <returns></returns>
-        private PDFSize MeasureString(PDFUnit availh, PDFUnit availw, string chars, int offset, out int fitted)
+        private Size MeasureString(Unit availh, Unit availw, string chars, int offset, out int fitted)
         {
-            PDFSize available = new PDFSize(availw, availh);
+            Size available = new Size(availw, availh);
             PDFTextRenderOptions opts = this.TextRenderOptions;
             
-            PDFSize measured;
+            Size measured;
             measured = this.Context.Graphics.MeasureString(chars, offset, available, opts, out fitted);
             return measured;
         }
@@ -842,7 +842,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="size">the size of the run in PDFUnits</param>
         /// <param name="chars">The characters that should be rendered in the run</param>
-        private void AddCharactersToCurrentLine(PDFSize size, string chars)
+        private void AddCharactersToCurrentLine(Size size, string chars)
         {
             this.AssertCurrentLine();
 
@@ -859,7 +859,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="size">the size of the run in PDFUnits</param>
         /// <param name="chars">The characters that should be rendered in the run</param>
-        private void AddCharactersToCurrentLine(PDFSize size, string chars, int startOffset, int count)
+        private void AddCharactersToCurrentLine(Size size, string chars, int startOffset, int count)
         {
             this.AssertCurrentLine();
 
@@ -874,7 +874,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Closes the current line and begins a new one
         /// </summary>
-        private void AddSoftReturn(PDFUnit widthOfLastTextDraw)
+        private void AddSoftReturn(Unit widthOfLastTextDraw)
         {
             AddReturn(widthOfLastTextDraw, false);
         }
@@ -921,7 +921,7 @@ namespace Scryber.PDF.Layout
         //
 
 
-        protected virtual void DoMoveToNextRegion(PDFUnit lineheight)
+        protected virtual void DoMoveToNextRegion(Unit lineheight)
         {
             PDFLayoutLine lastline = this.CurrentLine;
 

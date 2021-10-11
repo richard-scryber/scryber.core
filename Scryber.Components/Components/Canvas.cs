@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -59,7 +60,7 @@ namespace Scryber.Components
 
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new PDF.Layout.LayoutEngineCanvas(this, parent);
+            return new Scryber.PDF.Layout.LayoutEngineCanvas(this, parent);
         }
 
     }

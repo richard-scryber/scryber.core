@@ -41,7 +41,7 @@ namespace Scryber.Drawing
             this._type = type;
         }
 
-        public abstract void FillAllPoints(List<PDFPoint> points);
+        public abstract void FillAllPoints(List<Point> points);
     }
 
     #endregion
@@ -50,11 +50,11 @@ namespace Scryber.Drawing
 
     public class PathMoveData : PathData
     {
-        public PDFPoint MoveTo { get; set; }
+        public Point MoveTo { get; set; }
 
         public PathMoveData() : base(PathDataType.Move) { }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             points.Add(this.MoveTo);
         }
@@ -70,7 +70,7 @@ namespace Scryber.Drawing
 
         public PathSubPathData() : base(PathDataType.SubPath) { }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             if (null != this.InnerPath)
                 this.InnerPath.FillAllPoints(points);
@@ -83,11 +83,11 @@ namespace Scryber.Drawing
 
     public class PathLineData : PathData
     {
-        public PDFPoint LineTo { get; set; }
+        public Point LineTo { get; set; }
 
         public PathLineData() : base(PathDataType.Line) { }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             points.Add(LineTo);
         }
@@ -99,16 +99,16 @@ namespace Scryber.Drawing
 
     public class PathRectData : PathData
     {
-        public PDFRect Rect { get; set; }
+        public Rect Rect { get; set; }
 
         public PathRectData() : base(PathDataType.Rect) { }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             points.Add(this.Rect.Location);
-            points.Add(new PDFPoint(this.Rect.X + this.Rect.Width, this.Rect.Y));
-            points.Add(new PDFPoint(this.Rect.X + this.Rect.Width, this.Rect.Y + this.Rect.Height));
-            points.Add(new PDFPoint(this.Rect.X, this.Rect.Y + this.Rect.Height));
+            points.Add(new Point(this.Rect.X + this.Rect.Width, this.Rect.Y));
+            points.Add(new Point(this.Rect.X + this.Rect.Width, this.Rect.Y + this.Rect.Height));
+            points.Add(new Point(this.Rect.X, this.Rect.Y + this.Rect.Height));
         }
     }
 
@@ -118,24 +118,24 @@ namespace Scryber.Drawing
 
     public class PathBezierCurveData : PathData
     {
-        public PDFPoint[] Points { get; private set; }
+        public Point[] Points { get; private set; }
 
-        public PDFPoint EndPoint { get { return this.Points[0]; } }
-        public PDFPoint StartHandle { get { return this.Points[1]; } }
-        public PDFPoint EndHandle { get { return this.Points[2]; } }
+        public Point EndPoint { get { return this.Points[0]; } }
+        public Point StartHandle { get { return this.Points[1]; } }
+        public Point EndHandle { get { return this.Points[2]; } }
 
         public bool HasStartHandle { get; private set; }
 
         public bool HasEndHandle { get; private set; }
 
-        public PathBezierCurveData(PDFPoint end, PDFPoint startHandle, PDFPoint endHandle, bool hasStart, bool hasEnd) : base(PathDataType.Bezier) 
+        public PathBezierCurveData(Point end, Point startHandle, Point endHandle, bool hasStart, bool hasEnd) : base(PathDataType.Bezier) 
         {
-            this.Points = new PDFPoint[] { end, startHandle, endHandle };
+            this.Points = new Point[] { end, startHandle, endHandle };
             this.HasEndHandle = hasEnd;
             this.HasStartHandle = hasStart;
         }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             points.AddRange(this.Points);
         }
@@ -154,17 +154,17 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets or sets the X Radius of an the ellipse that describes this arc.
         /// </summary>
-        public PDFUnit RadiusX { get; set; }
+        public Unit RadiusX { get; set; }
 
         /// <summary>
         /// Gets or Sets the Y Radius of an ellipse that describes this arc
         /// </summary>
-        public PDFUnit RadiusY { get; set; }
+        public Unit RadiusY { get; set; }
 
         /// <summary>
         /// Gets or sets the rotation angle of the ellipse that describes the arc.
         /// </summary>
-        public PDFUnit XAxisRotation { get; set; }
+        public Unit XAxisRotation { get; set; }
 
         /// <summary>
         /// Gets or sets the Arc size option within the ellipse - large 
@@ -179,7 +179,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets or sets the end point of the arc on the ellipse circumference.
         /// </summary>
-        public PDFPoint EndPoint { get; set; }
+        public Point EndPoint { get; set; }
 
 
         public PathArcData()
@@ -187,7 +187,7 @@ namespace Scryber.Drawing
         {
         }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             points.Add(this.EndPoint);
         }
@@ -205,19 +205,19 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets the control point for this quadratic curve
         /// </summary>
-        public PDFPoint ControlPoint { get; set; }
+        public Point ControlPoint { get; set; }
 
         /// <summary>
         /// Gets or sets the end point for the quadratic curve
         /// </summary>
-        public PDFPoint EndPoint { get; set; }
+        public Point EndPoint { get; set; }
 
         public PathQuadraticCurve()
             : base(PathDataType.Quadratic)
         {
         }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             points.Add(this.ControlPoint);
             points.Add(this.EndPoint);
@@ -236,7 +236,7 @@ namespace Scryber.Drawing
         {
         }
 
-        public override void FillAllPoints(List<PDFPoint> points)
+        public override void FillAllPoints(List<Point> points)
         {
             
         }

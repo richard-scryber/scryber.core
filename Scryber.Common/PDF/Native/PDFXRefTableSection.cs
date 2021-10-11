@@ -80,7 +80,7 @@ namespace Scryber.PDF.Native
             this._entries = new List<PDFXRefTableEntry>();
         }
 
-        public int Add(IIndirectObject obj)
+        public int Add(IPDFIndirectObject obj)
         {
             int index = this._start + _entries.Count;
 
@@ -93,7 +93,7 @@ namespace Scryber.PDF.Native
             return index;
         }
 
-        public bool Contains(IIndirectObject obj)
+        public bool Contains(IPDFIndirectObject obj)
         {
             foreach (PDFXRefTableEntry entry in this._entries)
             {
@@ -103,7 +103,7 @@ namespace Scryber.PDF.Native
             return false;
         }
 
-        public void Delete(IIndirectObject obj)
+        public void Delete(IPDFIndirectObject obj)
         {
             int index = obj.Number - this.Start;
             this._entries[index].Delete();

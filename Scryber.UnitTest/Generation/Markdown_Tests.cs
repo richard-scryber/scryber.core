@@ -38,7 +38,7 @@ namespace Scryber.Core.UnitTests.Generation
             var doc = new Document();
             var pg = new Section();
             pg.FontSize = 12;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
             var frag = new HtmlFragment();
 
             doc.Pages.Add(pg);

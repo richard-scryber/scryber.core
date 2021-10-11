@@ -61,7 +61,7 @@ namespace Scryber.Components
         {
             Styles.Style b = base.GetBaseStyle();
             b.Position.PositionMode = Drawing.PositionMode.Block;
-            b.Margins.Top = new Drawing.PDFUnit(5,Drawing.PageUnits.Points);
+            b.Margins.Top = new Drawing.Unit(5,Drawing.PageUnits.Points);
             
             b.Size.FullWidth = true;
             return b;

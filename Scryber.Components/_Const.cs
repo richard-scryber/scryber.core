@@ -55,8 +55,8 @@ namespace Scryber
         /// </summary>
         public const string DefaultParserEventPrefix = "on-";
 
-        public static readonly PDFUnit DefaultListNumberInset = 30;
-        public static readonly PDFUnit DefaultDefinitionListInset = 100;
+        public static readonly Unit DefaultListNumberInset = 30;
+        public static readonly Unit DefaultDefinitionListInset = 100;
         public const HorizontalAlignment DefaultListNumberAlignment = HorizontalAlignment.Right;
 
         /// <summary>

@@ -20,12 +20,12 @@ namespace Scryber.Drawing
             _descriptor = descriptor;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public override void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
             
         }
 
-        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             var doc = graphics.Container.Document;
             var id = doc.GetIncrementID(ObjectTypes.Pattern);

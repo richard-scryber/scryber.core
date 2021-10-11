@@ -37,7 +37,7 @@ namespace Scryber.PDF.Graphics
         /// <param name="pen"></param>
         /// <param name="rect"></param>
         /// <param name="spacing"></param>
-        public void RenderGrid(PDFPen pen, PDFRect rect, PDFUnit spacing)
+        public void RenderGrid(PDFPen pen, Rect rect, Unit spacing)
         {
             this.RenderGrid(pen, rect.Location, rect.Size, spacing);
         }
@@ -49,7 +49,7 @@ namespace Scryber.PDF.Graphics
         /// <param name="location">The starting location for the grid</param>
         /// <param name="size">The total size of the grid</param>
         /// <param name="spacing">The spacing between gridlines</param>
-        public void RenderGrid(PDFPen pen, PDFPoint location, PDFSize size, PDFUnit spacing)
+        public void RenderGrid(PDFPen pen, Point location, Size size, Unit spacing)
         {
             this.RenderGrid(pen, location.X, location.Y, size.Width, size.Height, spacing);
         }
@@ -64,7 +64,7 @@ namespace Scryber.PDF.Graphics
         /// <param name="width">The total width of the grid</param>
         /// <param name="height">The total height of the grid</param>
         /// <param name="spacing">The spacing between gridlines</param>
-        public void RenderGrid(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit spacing)
+        public void RenderGrid(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Unit spacing)
         {
             this.DoRenderGrid(pen, x, y, width, height, spacing);
         }
@@ -72,10 +72,10 @@ namespace Scryber.PDF.Graphics
         /// <summary>
         /// Internal method to render the grid
         /// </summary>
-        protected virtual void DoRenderGrid(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit spacing)
+        protected virtual void DoRenderGrid(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Unit spacing)
         {
             this.Writer.WriteOpCodeS(PDFOpCode.SaveState);
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             pen.SetUpGraphics(this, bounds);
 

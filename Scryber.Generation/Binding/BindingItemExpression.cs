@@ -59,7 +59,7 @@ namespace Scryber.Binding
         }
 
 
-        public void BindComponent(object sender, PDFDataBindEventArgs args)
+        public void BindComponent(object sender, DataBindEventArgs args)
         {
             if(null != this._path)
             {

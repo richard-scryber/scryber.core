@@ -86,7 +86,7 @@ namespace Scryber.Components
 
         
 
-        protected override void OnLoaded(PDFLoadContext context)
+        protected override void OnLoaded(LoadContext context)
         {
             bool performload = false;
             this.EnsureContentsParsed(context, performload);
@@ -102,12 +102,12 @@ namespace Scryber.Components
 
         
 
-        protected virtual void EnsureContentsParsed(PDFContextBase context, bool performload)
+        protected virtual void EnsureContentsParsed(ContextBase context, bool performload)
         {
             if (_parsed)
                 return;
 
-            IPDFContainerComponent container = this.GetContainerParent();
+            IContainerComponent container = this.GetContainerParent();
             int index = container.Content.IndexOf(this);
             try
             {
@@ -193,7 +193,7 @@ namespace Scryber.Components
                 {
                     //Need to do the initialization for each of the items.
 
-                    PDFInitContext initContext = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                    InitContext initContext = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                     for (int i = 0; i < _added.Count; i++)
                     {
                         _added[i].Init(initContext);
@@ -204,7 +204,7 @@ namespace Scryber.Components
 
                     if (performload)
                     {
-                        PDFLoadContext loadContext = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                        LoadContext loadContext = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                         for (int i = 0; i < _added.Count; i++)
                         {
                             IComponent comp = _added[i];
@@ -219,7 +219,7 @@ namespace Scryber.Components
             _parsed = true;
         }
 
-        protected IPDFContainerComponent GetContainerParent()
+        protected IContainerComponent GetContainerParent()
         {
             Component ele = this;
             while (null != ele)
@@ -228,17 +228,17 @@ namespace Scryber.Components
                 if (par == null)
                     throw new ArgumentNullException("This HTML Fragment does not have a parent component that is a container to add the conetents to");
 
-                else if ((par is IPDFContainerComponent) == false)
+                else if ((par is IContainerComponent) == false)
                     ele = par;
                 else
-                    return par as IPDFContainerComponent;
+                    return par as IContainerComponent;
             }
 
             //If we get this far then we haven't got a viable container to add our items to.
             throw new ArgumentNullException("This HTML Fragment does not have a parent component that is a container to add the conetents to");
         }
 
-        protected virtual void ParseHtmlContents(string source, string html, IPDFContainerComponent container, int insertIndex, PDFContextBase context)
+        protected virtual void ParseHtmlContents(string source, string html, IContainerComponent container, int insertIndex, ContextBase context)
         {
             HTMLParserSettings settings = GetParserSettings(context);
 
@@ -276,7 +276,7 @@ namespace Scryber.Components
                         }
                         else
                         {
-                            IPDFContainerComponent parent = (IPDFContainerComponent)route.Peek();
+                            IContainerComponent parent = (IContainerComponent)route.Peek();
                             ((IComponentList)parent.Content).Add(parsed);
                         }
                         route.Push(result.Parsed);
@@ -285,7 +285,7 @@ namespace Scryber.Components
             }
         }
 
-        internal virtual HTMLParserSettings GetParserSettings(PDFContextBase context)
+        internal virtual HTMLParserSettings GetParserSettings(ContextBase context)
         {
             HTMLParserSettings settings = new HTMLParserSettings(context);
             return settings;

@@ -69,14 +69,14 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("width")]
-        public override PDFUnit Width
+        public override Unit Width
         {
             get => base.Width;
             set => base.Width = value;
         }
         
         [PDFAttribute("height")]
-        public override PDFUnit Height
+        public override Unit Height
         {
             get => base.Height;
             set => base.Height = value;

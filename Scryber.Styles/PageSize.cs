@@ -28,7 +28,7 @@ namespace Scryber
     /// <summary>
     /// Defines the Sizing characteristics of a Page or group of pages
     /// </summary>
-    public class PageSize : PDFObject
+    public class PageSize : TypedObject
     {
         #region PaperSize {get;set;}
 
@@ -51,12 +51,12 @@ namespace Scryber
 
         #region Width{get;set;} and Height {get;set;}
 
-        private PDFSize _size;
+        private Drawing.Size _size;
         /// <summary>
         /// Gets or Sets the width of the Page (setting will change the PaperSize to Custom)
         /// </summary>
         /// <value>The new width</value>
-        public PDFUnit Width
+        public Unit Width
         {
             get 
             { 
@@ -73,7 +73,7 @@ namespace Scryber
         /// Gets or sets the height of the page (setting will change the PaperSize to Custom)
         /// </summary>
         /// <value>The new height</value>
-        public PDFUnit Height
+        public Unit Height
         {
             get { return _size.Height; }
             set 
@@ -85,7 +85,7 @@ namespace Scryber
 
         #endregion
 
-        public PDFSize Size
+        public Drawing.Size Size
         {
             get
             {
@@ -145,7 +145,7 @@ namespace Scryber
         /// Creates an new custom page size
         /// </summary>
         /// <param name="size">The width and height of the page</param>
-        public PageSize(PDFSize size)
+        public PageSize(Drawing.Size size)
             : base(ObjectTypes.PageSize)
         {
             this._size = size;
@@ -163,10 +163,10 @@ namespace Scryber
         {
             if (this.PaperSize != PaperSize.Custom)
             {
-                PDFSize size = Papers.GetSizeInDeviceIndependentUnits(this.PaperSize);
+                Drawing.Size size = Papers.GetSizeInDeviceIndependentUnits(this.PaperSize);
                 if (this.Orientation == PaperOrientation.Landscape)
                 {
-                    this._size = new PDFSize(size.Height, size.Width);
+                    this._size = new Drawing.Size(size.Height, size.Width);
                 }
                 else
                 {

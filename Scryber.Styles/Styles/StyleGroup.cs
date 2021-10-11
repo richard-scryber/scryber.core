@@ -213,7 +213,7 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="context"></param>
         /// <param name="includechildren"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includechildren)
+        protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
             if (includechildren && this.InnerItems != null && this.InnerItems.Count > 0)

@@ -161,7 +161,7 @@ namespace Scryber.Components
         }
 
 
-        protected override Text.PDFTextReader CreateReader(PDFContextBase context, Styles.Style fullstyle)
+        protected override Text.PDFTextReader CreateReader(ContextBase context, Styles.Style fullstyle)
         {
             if (context is PDF.PDFLayoutContext layout)
             {

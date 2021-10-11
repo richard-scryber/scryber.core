@@ -22,11 +22,12 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Text;
 using Scryber.Drawing;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
     public abstract class TextBase : VisualComponent
-                                        , IPDFTextComponent
+                                        , ITextComponent
                                         , IPDFViewPortComponent
     {
 
@@ -55,7 +56,7 @@ namespace Scryber.Components
 
         #region protected virtual PDFTextReader CreateReader() + Interface implementation
 
-        protected virtual PDFTextReader CreateReader(PDFContextBase context, Style fullstyle)
+        protected virtual PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {
             TextFormat format = TextFormat.Plain;
             bool preserveWhitespace = fullstyle.GetValue(StyleKeys.TextWhitespaceKey, false);
@@ -67,7 +68,7 @@ namespace Scryber.Components
             return PDFTextReader.Create(this.BaseText, format, preserveWhitespace, context.TraceLog);
         }
 
-        PDFTextReader IPDFTextComponent.CreateReader(PDFContextBase context, Style fullstyle)
+        PDFTextReader ITextComponent.CreateReader(ContextBase context, Style fullstyle)
         {
             return this.CreateReader(context, fullstyle);
         }

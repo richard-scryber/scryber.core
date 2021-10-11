@@ -138,7 +138,7 @@ namespace Scryber.Styles
         /// This method must be called before the Expression will be used, so the Expression can be built.
         /// If it is not called then the instance will fallback to the default base implementation
         /// </remarks>
-        public void BindValue(object sender, PDFDataBindEventArgs args)
+        public void BindValue(object sender, DataBindEventArgs args)
         {
             Style style;
 

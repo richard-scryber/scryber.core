@@ -10,13 +10,13 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public abstract class CSSBorderSideParser : CSSStyleValueParser
     {
-        private StyleKey<PDFUnit> _width;
+        private StyleKey<Unit> _width;
 
         private StyleKey<Color> _color;
         private StyleKey<LineType> _style;
         private StyleKey<Dash> _dash;
 
-        public CSSBorderSideParser(string cssName, StyleKey<PDFUnit> width, StyleKey<Color> color, StyleKey<LineType> style, StyleKey<Dash> dash)
+        public CSSBorderSideParser(string cssName, StyleKey<Unit> width, StyleKey<Color> color, StyleKey<LineType> style, StyleKey<Dash> dash)
             : base(cssName)
         {
             this._width = width;
@@ -55,7 +55,7 @@ namespace Scryber.Styles.Parsing.Typed
                 }
                 else if (IsNumber(reader.CurrentTextValue))
                 {
-                    PDFUnit unit;
+                    Unit unit;
                     if (ParseCSSUnit(reader.CurrentTextValue, out unit))
                         style.SetValue(_width, unit);
                     else
@@ -150,16 +150,16 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        protected bool DoConvertBorderWidth(StyleBase onStyle, object value, out PDFUnit result)
+        protected bool DoConvertBorderWidth(StyleBase onStyle, object value, out Unit result)
         {
             if (null == value)
             {
-                result = PDFUnit.Zero;
+                result = Unit.Zero;
                 return false;
             }
-            else if (value is PDFUnit)
+            else if (value is Unit)
             {
-                result = (PDFUnit)value;
+                result = (Unit)value;
                 return true;
             }
             else if (ParseCSSUnit(value.ToString(), out result))
@@ -168,7 +168,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                result = PDFUnit.Zero;
+                result = Unit.Zero;
                 return false;
             }
         }

@@ -28,7 +28,7 @@ namespace Scryber.Drawing
     /// </summary>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct PDFRect : IEquatable<PDFRect>, IComparable<PDFRect>, ICloneable
+    public struct Rect : IEquatable<Rect>, IComparable<Rect>, ICloneable
     {
         public const char RectangleStartChar = '[';
         public const char RectangleEndChar = ']';
@@ -36,41 +36,41 @@ namespace Scryber.Drawing
         public const bool RectangleStartAndEndCharRequired = false;
 
 
-        private PDFUnit _x;
+        private Unit _x;
 
-        public PDFUnit X
+        public Unit X
         {
             get { return _x; }
             set { _x = value; }
         }
 
-        private PDFUnit _y;
+        private Unit _y;
 
-        public PDFUnit Y
+        public Unit Y
         {
             get { return _y; }
             set { _y = value; }
         }
 
-        private PDFUnit _w;
+        private Unit _w;
 
-        public PDFUnit Width
+        public Unit Width
         {
             get { return _w; }
             set { _w = value; }
         }
 
-        private PDFUnit _h;
+        private Unit _h;
 
-        public PDFUnit Height
+        public Unit Height
         {
             get { return _h; }
             set { _h = value; }
         }
 
-        public PDFPoint Location
+        public Point Location
         {
-            get { return new PDFPoint(this.X, this.Y); }
+            get { return new Point(this.X, this.Y); }
             set
             {
                 this.X = value.X;
@@ -78,9 +78,9 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFSize Size
+        public Size Size
         {
-            get { return new PDFSize(this.Width, this.Height); }
+            get { return new Size(this.Width, this.Height); }
             set
             {
                 this.Width = value.Width;
@@ -92,16 +92,16 @@ namespace Scryber.Drawing
         {
             get
             {
-                return this.Equals(PDFRect.Empty);
+                return this.Equals(Rect.Empty);
             }
         }
 
-        public PDFRect(double x, double y, double width, double height)
-            : this((PDFUnit)x, (PDFUnit)y, (PDFUnit)width, (PDFUnit)height)
+        public Rect(double x, double y, double width, double height)
+            : this((Unit)x, (Unit)y, (Unit)width, (Unit)height)
         {
         }
 
-        public PDFRect(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        public Rect(Unit x, Unit y, Unit width, Unit height)
         {
             this._x = x;
             this._y = y;
@@ -109,7 +109,7 @@ namespace Scryber.Drawing
             this._h = height;
         }
 
-        public PDFRect(PDFPoint location, PDFSize size)
+        public Rect(Point location, Size size)
         {
             this._x = location.X;
             this._y = location.Y;
@@ -119,28 +119,28 @@ namespace Scryber.Drawing
 
         public override bool Equals(object obj)
         {
-            if ((obj is PDFRect) == false)
+            if ((obj is Rect) == false)
                 return false;
             else
-                return Equals((PDFRect)obj);
+                return Equals((Rect)obj);
         }
 
-        public bool Equals(PDFRect rect)
+        public bool Equals(Rect rect)
         {
             return Equal(this, rect);
         }
 
-        public static bool Equal(PDFRect one, PDFRect two)
+        public static bool Equal(Rect one, Rect two)
         {
             return (one.X == two.X) && (one.Y == two.Y) && (one.Width == two.Width) && (one.Height == two.Height);
         }
 
-        public static bool operator ==(PDFRect left, PDFRect right)
+        public static bool operator ==(Rect left, Rect right)
         {
             return Equal(left, right);
         }
 
-        public static bool operator !=(PDFRect left, PDFRect right)
+        public static bool operator !=(Rect left, Rect right)
         {
             return Equal(left, right) == false;
         }
@@ -155,12 +155,12 @@ namespace Scryber.Drawing
             return (((x ^ ((y << 13) | (y >> 0x13))) ^ ((w << 0x1a) | (w >> 6))) ^ ((h << 7) | (h >> 0x19)));
         }
 
-        public bool Contains(PDFUnit x, PDFUnit y)
+        public bool Contains(Unit x, Unit y)
         {
             return (this.X <= x) && (x < (this.X + this.Width)) && (this.Y <= y) && (y < (this.Y + this.Height));
         }
 
-        public bool Contains(PDFPoint point)
+        public bool Contains(Point point)
         {
             return this.Contains(point.X, point.Y);
         }
@@ -171,9 +171,9 @@ namespace Scryber.Drawing
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public PDFRect Inflate(PDFUnit width, PDFUnit height)
+        public Rect Inflate(Unit width, Unit height)
         {
-            PDFRect r = this.Clone();
+            Rect r = this.Clone();
             r.Width += width;
             r.Height += height;
             return r;
@@ -185,9 +185,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="thickness"></param>
         /// <returns></returns>
-        public PDFRect Inset(PDFThickness thickness)
+        public Rect Inset(Thickness thickness)
         {
-            PDFRect r = this.Clone();
+            Rect r = this.Clone();
             r.X += thickness.Left;
             r.Y += thickness.Top;
 
@@ -202,9 +202,9 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="thickness"></param>
         /// <returns></returns>
-        public PDFRect Outset(PDFThickness thickness)
+        public Rect Outset(Thickness thickness)
         {
-            PDFRect r = this.Clone();
+            Rect r = this.Clone();
             r.X -= thickness.Left;
             r.Y -= thickness.Top;
 
@@ -220,60 +220,60 @@ namespace Scryber.Drawing
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public PDFRect Inflate(PDFSize size)
+        public Rect Inflate(Size size)
         {
             return this.Inflate(size.Width, size.Height);
         }
 
-        public static PDFRect Inflate(PDFRect rect, PDFUnit x, PDFUnit y)
+        public static Rect Inflate(Rect rect, Unit x, Unit y)
         {
-            PDFRect rect2 = rect.Clone();
+            Rect rect2 = rect.Clone();
             rect2 = rect2.Inflate(x, y);
             return rect2;
         }
 
-        public PDFRect Intersect(PDFRect rect)
+        public Rect Intersect(Rect rect)
         {
-            return PDFRect.Intersect(this, rect);
+            return Rect.Intersect(this, rect);
         }
 
-        public bool IntersectsWith(PDFRect rect)
+        public bool IntersectsWith(Rect rect)
         {
             return ((((rect.X < (this.X + this.Width)) && (this.X < (rect.X + rect.Width))) && (rect.Y < (this.Y + this.Height))) && (this.Y < (rect.Y + rect.Height)));
         }
 
-        public static PDFRect Intersect(PDFRect a, PDFRect b)
+        public static Rect Intersect(Rect a, Rect b)
         {
-            PDFUnit x1 = PDFUnit.Max(a.X, b.X);
-            PDFUnit x2 = PDFUnit.Min(a.X + a.Width, b.X + b.Width);
-            PDFUnit y1 = PDFUnit.Max(a.Y, b.Y);
-            PDFUnit y2 = PDFUnit.Min(a.Y + a.Height, b.Y + b.Height);
+            Unit x1 = Unit.Max(a.X, b.X);
+            Unit x2 = Unit.Min(a.X + a.Width, b.X + b.Width);
+            Unit y1 = Unit.Max(a.Y, b.Y);
+            Unit y2 = Unit.Min(a.Y + a.Height, b.Y + b.Height);
 
             if ((x2 >= x1) && (y2 >= y1))
-                return new PDFRect(x1, y1, x2 - x1, y2 - y1);
+                return new Rect(x1, y1, x2 - x1, y2 - y1);
             else
-                return PDFRect.Empty;
+                return Rect.Empty;
         }
 
-        public static PDFRect Union(PDFRect a, PDFRect b)
+        public static Rect Union(Rect a, Rect b)
         {
-            PDFUnit x = PDFUnit.Min(a.X, b.X);
-            PDFUnit x2 = PDFUnit.Max(a.X + a.Width, b.X + b.Width);
-            PDFUnit y = PDFUnit.Min(a.Y, b.Y);
-            PDFUnit y2 = PDFUnit.Max(a.Y + a.Height, b.Y + b.Height);
+            Unit x = Unit.Min(a.X, b.X);
+            Unit x2 = Unit.Max(a.X + a.Width, b.X + b.Width);
+            Unit y = Unit.Min(a.Y, b.Y);
+            Unit y2 = Unit.Max(a.Y + a.Height, b.Y + b.Height);
 
-            return new PDFRect(x, y, x2 - x, y2 - y);
+            return new Rect(x, y, x2 - x, y2 - y);
         }
 
-        public PDFRect Offset(PDFUnit x, PDFUnit y)
+        public Rect Offset(Unit x, Unit y)
         {
-            PDFRect rect2 = this.Clone();
+            Rect rect2 = this.Clone();
             rect2.X += x;
             rect2.Y += y;
             return rect2;
         }
 
-        public PDFRect Offset(PDFPoint pt)
+        public Rect Offset(Point pt)
         {
             return this.Offset(pt.X, pt.Y);
         }
@@ -284,15 +284,15 @@ namespace Scryber.Drawing
         }
 
 
-        public static PDFRect Empty
+        public static Rect Empty
         {
-            get { return new PDFRect(); }
+            get { return new Rect(); }
         }
 
 
         #region IComparable<PDFRectangle> Members
 
-        public int CompareTo(PDFRect other)
+        public int CompareTo(Rect other)
         {
             int i = this.Location.CompareTo(other.Location);
             if (i == 0)
@@ -304,7 +304,7 @@ namespace Scryber.Drawing
 
         #region ICloneable<PDFRectangle> Members
 
-        public PDFRect Clone()
+        public Rect Clone()
         {
             return this;
         }
@@ -330,7 +330,7 @@ namespace Scryber.Drawing
         /// <returns>A new PDFRect instance</returns>
         /// <exception cref="ArgumentNullException" />
         /// <exception cref="ArgumentException" />
-        public static PDFRect Parse(string value)
+        public static Rect Parse(string value)
         {
             if (String.IsNullOrEmpty(value))
                 throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFRect", "[T L W H] OR [All]"));
@@ -341,12 +341,12 @@ namespace Scryber.Drawing
             else if (RectangleStartAndEndCharRequired)
                 throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFRect", "[T L W H] OR [All]"));
 
-            PDFUnit t, l, w, h;
+            Unit t, l, w, h;
 
             string[] rect = value.Split(RectangleSeparatorChar);
             if (rect.Length == 1)
             {
-                if (PDFUnit.TryParse(rect[0], out t) == false)
+                if (Unit.TryParse(rect[0], out t) == false)
                     throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFRect", "[T L W H] OR [All]"));
                 else
                 {
@@ -358,13 +358,13 @@ namespace Scryber.Drawing
             else
             {
 
-                if (PDFUnit.TryParse(rect[0], out t) == false ||
-                    PDFUnit.TryParse(rect[1], out l) == false ||
-                    PDFUnit.TryParse(rect[2], out w) == false ||
-                    PDFUnit.TryParse(rect[3], out h) == false)
+                if (Unit.TryParse(rect[0], out t) == false ||
+                    Unit.TryParse(rect[1], out l) == false ||
+                    Unit.TryParse(rect[2], out w) == false ||
+                    Unit.TryParse(rect[3], out h) == false)
                     throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFRect", "[T L W H] OR [All]"));
             }
-            return new PDFRect(t, l, w, h);
+            return new Rect(t, l, w, h);
         }
 
         #endregion

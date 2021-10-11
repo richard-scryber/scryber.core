@@ -86,9 +86,9 @@ namespace Scryber.Svg.Components
         // scaling calculations
         //
 
-        public static void ApplyMaxNonUniformScaling(PDFTransformationMatrix onmatrix, PDFSize dest, PDFRect viewport)
+        public static void ApplyMaxNonUniformScaling(PDFTransformationMatrix onmatrix, Size dest, Rect viewport)
         {
-            PDFSize source = viewport.Size;
+            Size source = viewport.Size;
             double scalex =  dest.Width.PointsValue / source.Width.PointsValue;
             double scaley =  dest.Height.PointsValue / source.Height.PointsValue;
             double offx = 0; // viewport.X.PointsValue;
@@ -98,9 +98,9 @@ namespace Scryber.Svg.Components
             onmatrix.SetScale((float)scalex, (float)scaley);
         }
 
-        public static void ApplyUniformScaling(PDFTransformationMatrix onmatrix, PDFSize dest, PDFRect viewport, AspectRatioAlign align)
+        public static void ApplyUniformScaling(PDFTransformationMatrix onmatrix, Size dest, Rect viewport, AspectRatioAlign align)
         {
-            PDFSize source = viewport.Size;
+            Size source = viewport.Size;
             double scalex = dest.Width.PointsValue / source.Width.PointsValue;
             double scaley = dest.Height.PointsValue / source.Height.PointsValue;
             double offx = 0; // viewport.X.PointsValue;
@@ -190,9 +190,9 @@ namespace Scryber.Svg.Components
 
         }
 
-        public static void ApplyUniformStretching(PDFTransformationMatrix onmatrix, PDFSize dest, PDFRect viewport, AspectRatioAlign align)
+        public static void ApplyUniformStretching(PDFTransformationMatrix onmatrix, Size dest, Rect viewport, AspectRatioAlign align)
         {
-            PDFSize source = viewport.Size;
+            Size source = viewport.Size;
             double scalex = dest.Width.PointsValue / source.Width.PointsValue;
             double scaley = dest.Height.PointsValue / source.Height.PointsValue;
             double offx = 0; // viewport.X.PointsValue;

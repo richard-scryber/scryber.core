@@ -54,7 +54,7 @@ namespace Scryber.Html.Components
         public override string NumberPrefix { get => base.NumberPrefix; set => base.NumberPrefix = value; }
 
         [PDFAttribute("data-li-inset")]
-        public override PDFUnit NumberInset { get => base.NumberInset; set => base.NumberInset = value; }
+        public override Unit NumberInset { get => base.NumberInset; set => base.NumberInset = value; }
 
 
         [PDFAttribute("data-li-align")]
@@ -73,10 +73,7 @@ namespace Scryber.Html.Components
         {
         }
 
-        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
-        {
-            return new PDF.Layout.LayoutEngineList2(this, parent);
-        }
+        
     }
 
 }

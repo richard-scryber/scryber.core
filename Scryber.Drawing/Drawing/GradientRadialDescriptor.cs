@@ -16,9 +16,9 @@ namespace Scryber.Drawing
 
         public RadialSize Size { get; set; }
 
-        public PDFUnit? XCentre { get; set; }
+        public Unit? XCentre { get; set; }
 
-        public PDFUnit? YCentre { get; set; }
+        public Unit? YCentre { get; set; }
 
 
         private static Regex _splitter = new Regex(",(?![^\\(]*\\))");
@@ -41,7 +41,7 @@ namespace Scryber.Drawing
         /// <param name="offset"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        protected override List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(PDFPoint offset, PDFSize size)
+        protected override List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
         {
             var items = base.GetRepeatingBoundaries(offset, size);
             if (this.Size != RadialSize.None && this.Size != RadialSize.FarthestCorner)
@@ -51,7 +51,7 @@ namespace Scryber.Drawing
 
                 //calculate the centre and radii for the names side and farthest corner
                 var newItems = new List<PDFGradientFunctionBoundary>(items.Count);
-                PDFPoint centre = PDFRadialShadingPattern.CacluateRadialCentre(this.XCentre, this.YCentre, height, width);
+                Point centre = PDFRadialShadingPattern.CacluateRadialCentre(this.XCentre, this.YCentre, height, width);
                 var radiusActual = Math.Abs(PDFRadialShadingPattern.CalculateRadiusForSize(this.Size, height, width, centre.X.PointsValue, centre.Y.PointsValue));
                 var radiusRequired = Math.Abs(PDFRadialShadingPattern.CalculateRadiusForSize(RadialSize.FarthestCorner, height, width, centre.X.PointsValue, centre.Y.PointsValue));
 
@@ -95,8 +95,8 @@ namespace Scryber.Drawing
 
             RadialShape shape = RadialShape.Circle;
             RadialSize size = RadialSize.FarthestCorner;
-            PDFUnit? xpos = null;
-            PDFUnit? ypos = null;
+            Unit? xpos = null;
+            Unit? ypos = null;
 
             int colorStopIndex = 0;
 
@@ -172,8 +172,8 @@ namespace Scryber.Drawing
                             xpos = Double.MaxValue;
                             break;
                         default:
-                            PDFUnit found;
-                            if (PDFUnit.TryParse(item, out found))
+                            Unit found;
+                            if (Unit.TryParse(item, out found))
                             {
                                 if (xpos.HasValue)
                                     ypos = found;

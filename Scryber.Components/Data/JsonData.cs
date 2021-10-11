@@ -20,7 +20,7 @@ namespace Scryber.Data
 
         private Scryber.Components.TextLiteral _literal;
 
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
 
@@ -43,9 +43,9 @@ namespace Scryber.Data
         }
 
 
-        protected IPDFDataSource GetDataSourceComponent(string datasourceComponentID, PDFDataContext context)
+        protected IDataSource GetDataSourceComponent(string datasourceComponentID, DataContext context)
         {
-            IPDFDataSource datasourceComponent = null;
+            IDataSource datasourceComponent = null;
 
             if (string.IsNullOrEmpty(datasourceComponentID))
                 throw new ArgumentNullException("datasourceComponentID");
@@ -53,19 +53,19 @@ namespace Scryber.Data
             Component found = base.FindDocumentComponentById(datasourceComponentID);
             if (found == null)
                 throw RecordAndRaise.ArgumentNull("DataSourceID", Errors.CouldNotFindControlWithID, datasourceComponentID);
-            else if (!(found is IPDFDataSource))
+            else if (!(found is IDataSource))
                 throw RecordAndRaise.Argument("DataSourceID", Errors.AssignedDataSourceIsNotIPDFDataSource, datasourceComponentID);
             else
-                datasourceComponent = ((IPDFDataSource)found);
+                datasourceComponent = ((IDataSource)found);
 
 
             return datasourceComponent;
         }
 
-        protected virtual object GetRequiredData(PDFDataContext context)
+        protected virtual object GetRequiredData(DataContext context)
         {
             object data = null;
-            IPDFDataSource src;
+            IDataSource src;
             bool hasdata = false;
             System.Xml.IXmlNamespaceResolver resolver = context.NamespaceResolver;
 

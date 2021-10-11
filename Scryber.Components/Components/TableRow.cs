@@ -30,7 +30,7 @@ namespace Scryber.Components
     /// </summary>
     [PDFParsableComponent("Row")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_row")]
-    public class TableRow : ContainerComponent, IPDFStyledComponent, IPDFDataStyledComponent
+    public class TableRow : ContainerComponent, IPDFStyledComponent, IDataStyledComponent
     {
 
         //
@@ -139,14 +139,14 @@ namespace Scryber.Components
         /// Gets or sets the border width of this component
         /// </summary>
         [PDFAttribute("border-width", Const.PDFStylesNamespace)]
-        public PDFUnit BorderWidth
+        public Unit BorderWidth
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.BorderWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -260,14 +260,14 @@ namespace Scryber.Components
         /// Gets or sets the border corner radii of this component
         /// </summary>
         [PDFAttribute("border-corner-radius", Const.PDFStylesNamespace)]
-        public PDFUnit BorderCornerRadius
+        public Unit BorderCornerRadius
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderCornerRadiusKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.BorderCornerRadiusKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -381,14 +381,14 @@ namespace Scryber.Components
         /// Gets or sets the Stroke width of this component
         /// </summary>
         [PDFAttribute("stroke-width", Const.PDFStylesNamespace)]
-        public PDFUnit StrokeWidth
+        public Unit StrokeWidth
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.StrokeWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.StrokeWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -506,14 +506,14 @@ namespace Scryber.Components
         /// Gets or sets the Font Size of this component
         /// </summary>
         [PDFAttribute("font-size", Const.PDFStylesNamespace)]
-        public PDFUnit FontSize
+        public Unit FontSize
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FontSizeKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.FontSizeKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -707,7 +707,7 @@ namespace Scryber.Components
                 {
                     if (Component is TableGrid)
                         return Component as TableGrid;
-                    else if (Component is IPDFInvisibleContainer)
+                    else if (Component is IInvisibleContainer)
                         Component = Component.Parent;
                     else
                         Component = null;
@@ -811,7 +811,7 @@ namespace Scryber.Components
         /// Inheritors should override this method to provide their own databing implementations.
         /// </summary>
         /// <param name="includeChildren">Flag to identifiy if children should be databound also</param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             if (includeChildren && this.HasStyle)
                 this.Style.DataBind(context);

@@ -101,17 +101,17 @@ namespace Scryber.Drawing
         /// <param name="fontMetrics">The mterics associated with the font to be used</param>
         /// <param name="defaultFontSize">The size of the default font</param>
         /// <returns>The converted unit</returns>
-        public PDFUnit ToAbsolute(PDFUnit containerDimension, PDFSize pageSize, FontMetrics fontMetrics, PDFUnit defaultFontSize)
+        public Unit ToAbsolute(Unit containerDimension, Size pageSize, FontMetrics fontMetrics, Unit defaultFontSize)
         {
             var val = _val;
 
             if (!this.IsRelative)
-                return new PDFUnit(val, (PageUnits)this.Units);
+                return new Unit(val, (PageUnits)this.Units);
             else
             {
                 val = ConvertToPoints(this._units, _val, containerDimension, pageSize, fontMetrics, defaultFontSize);
 
-                return new PDFUnit(val, PageUnits.Points);
+                return new Unit(val, PageUnits.Points);
             }
         }
 
@@ -262,7 +262,7 @@ namespace Scryber.Drawing
 
         #region cast - Unit to Relative Unit, string to relative, double to relative
 
-        public static implicit operator RelativeUnit(PDFUnit value)
+        public static implicit operator RelativeUnit(Unit value)
         {
             return new RelativeUnit(value.Value, (RelativeUnits)value.Units);
         }
@@ -282,7 +282,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public static double ConvertToPoints(RelativeUnits units, double value, PDFUnit containerDimension, PDFSize viewSize, FontMetrics metrics, PDFUnit defaultEMSize)
+        public static double ConvertToPoints(RelativeUnits units, double value, Unit containerDimension, Size viewSize, FontMetrics metrics, Unit defaultEMSize)
         {
             switch (units)
             {

@@ -87,14 +87,14 @@ namespace Scryber.Core.UnitTests.Styles
         {
             ClipStyle target = new ClipStyle();
 
-            PDFThickness actual;
-            PDFThickness expected = PDFThickness.Empty();
+            Thickness actual;
+            Thickness expected = Thickness.Empty();
             bool result = target.TryGetThickness(out actual);
             Assert.IsFalse(result);
             Assert.AreEqual(expected, actual);
 
             target.All = 12;
-            expected = new PDFThickness(12);
+            expected = new Thickness(12);
 
             result = target.TryGetThickness(out actual);
             Assert.IsTrue(result);
@@ -104,14 +104,14 @@ namespace Scryber.Core.UnitTests.Styles
             target.Right = 14;
             target.Top = 15;
             target.Bottom = 16;
-            expected = new PDFThickness(15, 14, 16, 13);
+            expected = new Thickness(15, 14, 16, 13);
 
             result = target.TryGetThickness(out actual);
             Assert.IsTrue(result);
             Assert.AreEqual(expected, actual);
 
             target.RemoveAllValues();
-            expected = PDFThickness.Empty();
+            expected = Thickness.Empty();
             result = target.TryGetThickness(out actual);
             Assert.IsFalse(result);
             Assert.AreEqual(expected, actual);
@@ -133,13 +133,13 @@ namespace Scryber.Core.UnitTests.Styles
             target.Top = 15;
             target.Bottom = 16;
 
-            PDFThickness thickness = new PDFThickness(21, 22, 23, 24); //T,R,B,L
+            Thickness thickness = new Thickness(21, 22, 23, 24); //T,R,B,L
             target.SetThickness(thickness);
 
-            Assert.AreEqual((PDFUnit)21, target.Top);
-            Assert.AreEqual((PDFUnit)24, target.Left);
-            Assert.AreEqual((PDFUnit)23, target.Bottom);
-            Assert.AreEqual((PDFUnit)22, target.Right);
+            Assert.AreEqual((Unit)21, target.Top);
+            Assert.AreEqual((Unit)24, target.Left);
+            Assert.AreEqual((Unit)23, target.Bottom);
+            Assert.AreEqual((Unit)22, target.Right);
         }
 
         /// <summary>
@@ -150,33 +150,33 @@ namespace Scryber.Core.UnitTests.Styles
         public void Clip_AllTest()
         {
             ClipStyle target = new ClipStyle();
-            Assert.AreEqual(PDFUnit.Zero, target.All);
+            Assert.AreEqual(Unit.Zero, target.All);
 
             target.All = 20;
-            Assert.AreEqual((PDFUnit)20, target.All);
+            Assert.AreEqual((Unit)20, target.All);
 
             //These properties fall back to all
-            Assert.AreEqual((PDFUnit)20, target.Left);
-            Assert.AreEqual((PDFUnit)20, target.Top);
-            Assert.AreEqual((PDFUnit)20, target.Bottom);
-            Assert.AreEqual((PDFUnit)20, target.Right);
+            Assert.AreEqual((Unit)20, target.Left);
+            Assert.AreEqual((Unit)20, target.Top);
+            Assert.AreEqual((Unit)20, target.Bottom);
+            Assert.AreEqual((Unit)20, target.Right);
 
             //Modify one and make sure the rest as still set
             target.Bottom = 300;
 
-            Assert.AreEqual((PDFUnit)20, target.All);
-            Assert.AreEqual((PDFUnit)20, target.Left);
-            Assert.AreEqual((PDFUnit)20, target.Top);
-            Assert.AreEqual((PDFUnit)300, target.Bottom); //different
-            Assert.AreEqual((PDFUnit)20, target.Right);
+            Assert.AreEqual((Unit)20, target.All);
+            Assert.AreEqual((Unit)20, target.Left);
+            Assert.AreEqual((Unit)20, target.Top);
+            Assert.AreEqual((Unit)300, target.Bottom); //different
+            Assert.AreEqual((Unit)20, target.Right);
 
             target.RemoveAll();
-            Assert.AreEqual(PDFUnit.Zero, target.All);
+            Assert.AreEqual(Unit.Zero, target.All);
 
-            Assert.AreEqual(PDFUnit.Zero, target.Left);
-            Assert.AreEqual(PDFUnit.Zero, target.Top);
-            Assert.AreEqual((PDFUnit)300, target.Bottom); //retained the separate value
-            Assert.AreEqual(PDFUnit.Zero, target.Right);
+            Assert.AreEqual(Unit.Zero, target.Left);
+            Assert.AreEqual(Unit.Zero, target.Top);
+            Assert.AreEqual((Unit)300, target.Bottom); //retained the separate value
+            Assert.AreEqual(Unit.Zero, target.Right);
         }
 
         /// <summary>
@@ -187,13 +187,13 @@ namespace Scryber.Core.UnitTests.Styles
         public void Clip_BottomTest()
         {
             ClipStyle target = new ClipStyle();
-            Assert.AreEqual(PDFUnit.Zero, target.Bottom);
+            Assert.AreEqual(Unit.Zero, target.Bottom);
 
             target.Bottom = 20;
-            Assert.AreEqual((PDFUnit)20, target.Bottom);
+            Assert.AreEqual((Unit)20, target.Bottom);
 
             target.RemoveBottom();
-            Assert.AreEqual(PDFUnit.Zero, target.Bottom);
+            Assert.AreEqual(Unit.Zero, target.Bottom);
         }
 
         /// <summary>
@@ -204,13 +204,13 @@ namespace Scryber.Core.UnitTests.Styles
         public void Clip_LeftTest()
         {
             ClipStyle target = new ClipStyle();
-            Assert.AreEqual(PDFUnit.Zero, target.Left);
+            Assert.AreEqual(Unit.Zero, target.Left);
 
             target.Left = 20;
-            Assert.AreEqual((PDFUnit)20, target.Left);
+            Assert.AreEqual((Unit)20, target.Left);
 
             target.RemoveLeft();
-            Assert.AreEqual(PDFUnit.Zero, target.Left);
+            Assert.AreEqual(Unit.Zero, target.Left);
         }
 
         /// <summary>
@@ -221,13 +221,13 @@ namespace Scryber.Core.UnitTests.Styles
         public void Clip_RightTest()
         {
             ClipStyle target = new ClipStyle();
-            Assert.AreEqual(PDFUnit.Zero, target.Right);
+            Assert.AreEqual(Unit.Zero, target.Right);
 
             target.Right = 20;
-            Assert.AreEqual((PDFUnit)20, target.Right);
+            Assert.AreEqual((Unit)20, target.Right);
 
             target.RemoveRight();
-            Assert.AreEqual(PDFUnit.Zero, target.Right);
+            Assert.AreEqual(Unit.Zero, target.Right);
         }
 
         /// <summary>
@@ -238,13 +238,13 @@ namespace Scryber.Core.UnitTests.Styles
         public void Clip_TopTest()
         {
             ClipStyle target = new ClipStyle();
-            Assert.AreEqual(PDFUnit.Zero, target.Top);
+            Assert.AreEqual(Unit.Zero, target.Top);
 
             target.Top = 20;
-            Assert.AreEqual((PDFUnit)20, target.Top);
+            Assert.AreEqual((Unit)20, target.Top);
 
             target.RemoveTop();
-            Assert.AreEqual(PDFUnit.Zero, target.Top);
+            Assert.AreEqual(Unit.Zero, target.Top);
         }
 
     }

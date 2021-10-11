@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {

@@ -40,15 +40,15 @@ namespace Scryber.Styles
         [PDFAttribute("corner-radius")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"corner-radius\"")]
         [PDFDesignable("Border Radius", Category = "Border", Priority = 2, Type = "PDFUnit")]
-        public PDFUnit CornerRadius
+        public Unit CornerRadius
         {
             get
             {
-                PDFUnit rad;
+                Unit rad;
                 if (this.TryGetValue(StyleKeys.BorderCornerRadiusKey, out rad))
                     return rad;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -152,15 +152,15 @@ namespace Scryber.Styles
         [PDFAttribute("width")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"border-width\"")]
         [PDFDesignable("Border Width", Category = "Border", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit Width
+        public Unit Width
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.BorderWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {

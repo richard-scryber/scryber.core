@@ -127,8 +127,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.Height;
+            Unit expected = Unit.Empty;
+            Unit actual = target.Height;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -140,14 +140,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.Height = expected;
             actual = target.Height;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveHeight();
             actual = target.Height;
             Assert.AreEqual(expected, actual);
@@ -169,8 +169,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.MaximumWidth;
+            Unit expected = Unit.Empty;
+            Unit actual = target.MaximumWidth;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -182,14 +182,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.MaximumWidth = expected;
             actual = target.MaximumWidth;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveMaximumWidth();
             actual = target.MaximumWidth;
             Assert.AreEqual(expected, actual);
@@ -211,8 +211,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.MaximumHeight;
+            Unit expected = Unit.Empty;
+            Unit actual = target.MaximumHeight;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -224,14 +224,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.MaximumHeight = expected;
             actual = target.MaximumHeight;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveMaximumHeight();
             actual = target.MaximumHeight;
             Assert.AreEqual(expected, actual);
@@ -253,8 +253,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.MinimumWidth;
+            Unit expected = Unit.Empty;
+            Unit actual = target.MinimumWidth;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -266,14 +266,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.MinimumWidth = expected;
             actual = target.MinimumWidth;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveMinimumWidth();
             actual = target.MinimumWidth;
             Assert.AreEqual(expected, actual);
@@ -295,8 +295,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.MinimumHeight;
+            Unit expected = Unit.Empty;
+            Unit actual = target.MinimumHeight;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -308,14 +308,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.MinimumHeight = expected;
             actual = target.MinimumHeight;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveMinimumHeight();
             actual = target.MinimumHeight;
             Assert.AreEqual(expected, actual);
@@ -337,8 +337,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.Width;
+            Unit expected = Unit.Empty;
+            Unit actual = target.Width;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -350,14 +350,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.Width = expected;
             actual = target.Width;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveWidth();
             actual = target.Width;
             Assert.AreEqual(expected, actual);

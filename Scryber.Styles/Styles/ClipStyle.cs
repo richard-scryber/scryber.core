@@ -36,17 +36,17 @@ namespace Scryber.Styles
         #region public PDFUnit Top {get; set;}
 
         [PDFAttribute("top")]
-        public PDFUnit Top
+        public Unit Top
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.ClipTopKey, out found))
                     return found;
                 else if (this.TryGetValue(StyleKeys.ClipAllKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -64,17 +64,17 @@ namespace Scryber.Styles
         #region public PDFUnit Bottom {get;set;}
 
         [PDFAttribute("bottom")]
-        public PDFUnit Bottom
+        public Unit Bottom
         {
             get
             {
-                PDFUnit b;
+                Unit b;
                 if (this.TryGetValue(StyleKeys.ClipBottomKey, out b))
                     return b;
                 else if (this.TryGetValue(StyleKeys.ClipAllKey, out b))
                     return b;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -92,17 +92,17 @@ namespace Scryber.Styles
         #region public PDFUnit Left {get; set;}
 
         [PDFAttribute("left")]
-        public PDFUnit Left
+        public Unit Left
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.ClipLeftKey, out found))
                     return found;
                 else if (this.TryGetValue(StyleKeys.ClipAllKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -120,17 +120,17 @@ namespace Scryber.Styles
         #region public PDFUnit Right {get;set;}
 
         [PDFAttribute("right")]
-        public PDFUnit Right
+        public Unit Right
         {
             get
             {
-                PDFUnit r;
+                Unit r;
                 if (this.TryGetValue(StyleKeys.ClipRightKey, out r))
                     return r;
                 else if (this.TryGetValue(StyleKeys.ClipAllKey, out r))
                     return r;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -148,15 +148,15 @@ namespace Scryber.Styles
         #region public PDFUnit All {get;set;}
 
         [PDFAttribute("all")]
-        public PDFUnit All
+        public Unit All
         {
             get
             {
-                PDFUnit b;
+                Unit b;
                 if (this.TryGetValue(StyleKeys.ClipAllKey, out b))
                     return b;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -178,12 +178,12 @@ namespace Scryber.Styles
         }
 
 
-        public bool TryGetThickness(out PDFThickness thickness)
+        public bool TryGetThickness(out Thickness thickness)
         {
             return this.AssertOwner().TryGetThickness(this.IsInherited, StyleKeys.ClipAllKey, StyleKeys.ClipTopKey, StyleKeys.ClipLeftKey, StyleKeys.ClipBottomKey, StyleKeys.ClipRightKey, out thickness);
         }
 
-        public void SetThickness(PDFThickness thickness)
+        public void SetThickness(Thickness thickness)
         {
             this.AssertOwner().SetThickness(this.IsInherited, thickness, StyleKeys.ClipTopKey, StyleKeys.ClipLeftKey, StyleKeys.ClipBottomKey, StyleKeys.ClipRightKey);
         }

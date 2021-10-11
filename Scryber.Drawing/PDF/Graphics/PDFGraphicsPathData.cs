@@ -7,24 +7,24 @@ using Scryber.Drawing;
 
 namespace Scryber.PDF.Graphics
 {
-    public abstract class PDFGraphicsPathData : PDFObject
+    public abstract class PDFGraphicsPathData : TypedObject
     {
 
-        private PDFSize _size;
+        private Size _size;
 
-        public PDFSize Size
+        public Size Size
         {
             get { return this._size; }
             set { this._size = value; }
         }
 
-        public PDFGraphicsPathData(PDFSize size) : base(ObjectTypes.GraphicsPathData)
+        public PDFGraphicsPathData(Size size) : base(ObjectTypes.GraphicsPathData)
         {
             this._size = size;
         }
 
 
-        internal PDFObjectRef Render(PDFName name, PDFContextBase context, PDFWriter writer)
+        internal PDFObjectRef Render(PDFName name, ContextBase context, PDFWriter writer)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Message, "Path Data", "Rendering path data for '" + name.ToString() + "'");
@@ -55,7 +55,7 @@ namespace Scryber.PDF.Graphics
             return renderref;
         }
 
-        protected virtual void RenderPathInformation(PDFContextBase context, PDFWriter writer, PDFObjectRef xobj)
+        protected virtual void RenderPathInformation(ContextBase context, PDFWriter writer, PDFObjectRef xobj)
         {
 
             writer.BeginDictionaryEntry("BBox");
@@ -66,6 +66,6 @@ namespace Scryber.PDF.Graphics
 
         }
 
-        protected abstract int RenderPathData(PDFContextBase context, PDFWriter writer, PDFObjectRef xobj);
+        protected abstract int RenderPathData(ContextBase context, PDFWriter writer, PDFObjectRef xobj);
     }
 }

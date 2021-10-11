@@ -29,21 +29,21 @@ namespace Scryber.PDF.Graphics
     public partial class PDFGraphics
     {
         
-        public void DrawElipse(PDFPen pen, PDFRect rect)
+        public void DrawElipse(PDFPen pen, Rect rect)
         {
             this.DrawElipse(pen, rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        public void DrawElipse(PDFPen pen, PDFPoint pos, PDFSize size)
+        public void DrawElipse(PDFPen pen, Point pos, Size size)
         {
             this.DrawElipse(pen, pos.X, pos.Y, size.Width, size.Height);
         }
 
-        public void DrawElipse(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        public void DrawElipse(PDFPen pen, Unit x, Unit y, Unit width, Unit height)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
             pen.SetUpGraphics(this, bounds);
@@ -57,22 +57,22 @@ namespace Scryber.PDF.Graphics
             
         }
 
-        public void FillElipse(PDFBrush brush, PDFRect rect)
+        public void FillElipse(PDFBrush brush, Rect rect)
         {
             this.FillElipse(brush, rect.Location, rect.Size);
         }
 
-        public void FillElipse(PDFBrush brush, PDFPoint pos, PDFSize size)
+        public void FillElipse(PDFBrush brush, Point pos, Size size)
         {
             this.FillElipse(brush, pos.X, pos.Y, size.Width, size.Height);
         }
 
-        public void FillElipse(PDFBrush brush, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        public void FillElipse(PDFBrush brush, Unit x, Unit y, Unit width, Unit height)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
 
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
             brush.SetUpGraphics(this, bounds);
@@ -86,7 +86,7 @@ namespace Scryber.PDF.Graphics
 
         }
 
-        private void OutputElipsePoints(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        private void OutputElipsePoints(Unit x, Unit y, Unit width, Unit height)
         {
             PDFReal left = x.RealValue;
             PDFReal right = (x + width).RealValue;
@@ -108,22 +108,22 @@ namespace Scryber.PDF.Graphics
             this.RenderBezierCurveTo(left, vcentre, hcentre - xhandle, bottom, left, vcentre + yhandle);
         }
 
-        public void DrawQuadrants(PDFPen pen, PDFRect rect, Quadrants sides)
+        public void DrawQuadrants(PDFPen pen, Rect rect, Quadrants sides)
         {
             this.DrawQuadrants(pen, rect.Location, rect.Size, sides);
         }
 
-        public void DrawQuadrants(PDFPen pen, PDFPoint pos, PDFSize size, Quadrants sides)
+        public void DrawQuadrants(PDFPen pen, Point pos, Size size, Quadrants sides)
         {
             this.DrawQuadrants(pen, pos.X, pos.Y, size.Width, size.Height, sides);
         }
 
-        public void DrawQuadrants(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Quadrants sides)
+        public void DrawQuadrants(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Quadrants sides)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
 
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
             pen.SetUpGraphics(this, bounds);
@@ -136,7 +136,7 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        private void OutputQuadrantPoints(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Quadrants sides)
+        private void OutputQuadrantPoints(Unit x, Unit y, Unit width, Unit height, Quadrants sides)
         {
             PDFReal left = x.RealValue;
             PDFReal right = (x + width).RealValue;
@@ -189,22 +189,22 @@ namespace Scryber.PDF.Graphics
             }
         }
 
-        public void FillQuadrants(PDFBrush brush, PDFRect rect, Quadrants sides)
+        public void FillQuadrants(PDFBrush brush, Rect rect, Quadrants sides)
         {
             this.FillQuadrants(brush, rect.Location, rect.Size, sides);
         }
 
-        public void FillQuadrants(PDFBrush brush, PDFPoint pos, PDFSize size, Quadrants sides)
+        public void FillQuadrants(PDFBrush brush, Point pos, Size size, Quadrants sides)
         {
             this.FillQuadrants(brush, pos.X, pos.Y, size.Width, size.Height, sides);
         }
 
-        public void FillQuadrants(PDFBrush brush, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Quadrants sides)
+        public void FillQuadrants(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Quadrants sides)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
 
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
             brush.SetUpGraphics(this, bounds);
@@ -217,7 +217,7 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        private void OutputQuadrantShapes(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Quadrants sides)
+        private void OutputQuadrantShapes(Unit x, Unit y, Unit width, Unit height, Quadrants sides)
         {
             PDFReal left = x.RealValue;
             PDFReal right = (x + width).RealValue;
@@ -267,26 +267,26 @@ namespace Scryber.PDF.Graphics
         }
 
 
-        public void DrawCurve(PDFPoint start, PDFPoint end, PDFPoint starthandle, PDFPoint endhandle)
+        public void DrawCurve(Point start, Point end, Point starthandle, Point endhandle)
         {
             this.RenderMoveTo(start.X, start.Y);
             this.RenderBezierCurveTo(end.X, end.Y, starthandle.X, starthandle.Y, endhandle.X, endhandle.Y);
         }
 
-        public void DrawContinuationCurve(PDFPoint end, PDFPoint starthandle, PDFPoint endhandle)
+        public void DrawContinuationCurve(Point end, Point starthandle, Point endhandle)
         {
             this.RenderBezierCurveTo(end.X, end.Y, starthandle.X, starthandle.Y, endhandle.X, endhandle.Y);
         }
 
 
-        public void DrawLine(PDFUnit x1, PDFUnit y1, PDFUnit x2, PDFUnit y2)
+        public void DrawLine(Unit x1, Unit y1, Unit x2, Unit y2)
         {
             this.RenderMoveTo(x1, y1);
             this.RenderLineTo(x2, y2);
             this.RenderStrokePathOp();
         }
 
-        public void DrawLine(PDFPoint start, PDFPoint end)
+        public void DrawLine(Point start, Point end)
         {
             this.RenderMoveTo(start.X, start.Y);
             this.RenderLineTo(end.X, end.Y);
@@ -294,7 +294,7 @@ namespace Scryber.PDF.Graphics
         }
 
 
-        public void FillPath(PDFBrush brush, PDFPoint location, GraphicsPath path)
+        public void FillPath(PDFBrush brush, Point location, GraphicsPath path)
         {
             if (null == path)
                 throw new ArgumentNullException("path");
@@ -307,7 +307,7 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        public void DrawPath(PDFPen pen, PDFPoint location, GraphicsPath path)
+        public void DrawPath(PDFPen pen, Point location, GraphicsPath path)
         {
             if (null == path)
                 throw new ArgumentNullException("path");
@@ -320,7 +320,7 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        public void FillAndStrokePath(PDFBrush brush, PDFPen pen, PDFPoint location, GraphicsPath path)
+        public void FillAndStrokePath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path)
         {
             if (null == path)
                 throw new ArgumentNullException("path");
@@ -334,17 +334,17 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        private void OutputPath(PDFBrush brush, PDFPen pen, PDFPoint location, GraphicsPath path)
+        private void OutputPath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path)
         {
 
-            PDFRect bounds = new PDFRect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);
+            Rect bounds = new Rect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);
             
             if (null != brush)
                 brush.SetUpGraphics(this, bounds);
             if (null != pen)
                 pen.SetUpGraphics(this, bounds);
 
-            PDFPoint cursor = PDFPoint.Empty;
+            Point cursor = Point.Empty;
 
             foreach (Path p in path.SubPaths)
             {
@@ -365,7 +365,7 @@ namespace Scryber.PDF.Graphics
                 pen.ReleaseGraphics(this, bounds);
         }
 
-        private void RenderPathData(PDFPoint location, Path p, ref PDFPoint cursor)
+        private void RenderPathData(Point location, Path p, ref Point cursor)
         {
             if (null == p)
                 return;
@@ -378,7 +378,7 @@ namespace Scryber.PDF.Graphics
             //    RenderCloseStrokePathOp();
         }
 
-        private void RenderPathOp(PathData data, PDFPoint location, ref PDFPoint cursor)
+        private void RenderPathOp(PathData data, Point location, ref Point cursor)
         {
             switch (data.Type)
             {
@@ -455,7 +455,7 @@ namespace Scryber.PDF.Graphics
 
                 case PathDataType.Close:
                     this.RenderClosePathOp();
-                    cursor = PDFPoint.Empty;
+                    cursor = Point.Empty;
                     break;
                     
                 default:

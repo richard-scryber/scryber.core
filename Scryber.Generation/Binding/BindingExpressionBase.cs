@@ -13,7 +13,7 @@ namespace Scryber.Binding
         }
 
 
-        protected virtual void SetPropertyValue(object owner, object value, string expression, PropertyInfo toProperty, PDFContextBase context)
+        protected virtual void SetPropertyValue(object owner, object value, string expression, PropertyInfo toProperty, ContextBase context)
         {
             try
             {

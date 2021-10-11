@@ -45,16 +45,16 @@ namespace Scryber.PDF
                 writer.WriteDictionaryNameEntry("Subtype", "Link");
                 if (!string.IsNullOrEmpty(this.AlternateText))
                     writer.WriteDictionaryStringEntry("Contents", this.AlternateText);
-                PDFRect bounds = arrange.RenderBounds;
-                if (bounds != PDFRect.Empty && bounds.Size != PDFSize.Empty)
+                Rect bounds = arrange.RenderBounds;
+                if (bounds != Rect.Empty && bounds.Size != Size.Empty)
                 {
                     if (context.DrawingOrigin == DrawingOrigin.TopLeft)
                     {
                         //PDFs have origin at bottom so need to convert.
                         PDFReal value = context.Graphics.GetXPosition(bounds.X.RealValue);
-                        bounds.X = new PDFUnit(value.Value, PageUnits.Points);
+                        bounds.X = new Unit(value.Value, PageUnits.Points);
                         value = context.Graphics.GetYPosition(bounds.Y.RealValue);
-                        bounds.Y = new PDFUnit(value.Value, PageUnits.Points);
+                        bounds.Y = new Unit(value.Value, PageUnits.Points);
                         bounds.Width = bounds.X + bounds.Width;
                         bounds.Height = bounds.Y - bounds.Height;
                     }
@@ -155,12 +155,12 @@ namespace Scryber.PDF
             }
         }
 
-        protected virtual PDFRect GetComponentBounds(Component comp, ComponentArrangement arrange)
+        protected virtual Rect GetComponentBounds(Component comp, ComponentArrangement arrange)
         {
             if (null != arrange)
                 return arrange.RenderBounds;
             else
-                return PDFRect.Empty;
+                return Rect.Empty;
         }
 
     }

@@ -18,7 +18,7 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 string value = reader.CurrentTextValue;
 
-                PDFUnit parsed;
+                Unit parsed;
                 if(IsExpression(value))
                 {
                     //Attach to both the Width and the FullWidth flag
@@ -39,19 +39,19 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertExplicitWidth(StyleBase style, object value, out PDFUnit width)
+        protected bool DoConvertExplicitWidth(StyleBase style, object value, out Unit width)
         {
             if(null == value)
             {
-                width = PDFUnit.Empty;
+                width = Unit.Empty;
                 return false;
             }
-            else if(value is PDFUnit unit)
+            else if(value is Unit unit)
             {
                 width = unit;
                 return true;
             }
-            else if(PDFUnit.TryParse(value.ToString(), out width))
+            else if(Unit.TryParse(value.ToString(), out width))
             {
                 return true;
             }

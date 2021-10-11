@@ -135,7 +135,7 @@ namespace Scryber.Data
             this._contentsBuilt = false;
         }
 
-        protected virtual void EnsureContents(PDFContextBase context)
+        protected virtual void EnsureContents(ContextBase context)
         {
             if(!this._contentsBuilt)
             {
@@ -144,7 +144,7 @@ namespace Scryber.Data
             }
         }
 
-        protected virtual void BuildContents(PDFContextBase context)
+        protected virtual void BuildContents(ContextBase context)
         {
             if (this.LayoutType != FieldLayoutType.ValueOnly)
             { 
@@ -186,7 +186,7 @@ namespace Scryber.Data
 
         }
 
-        public virtual void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public virtual void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             
         }
@@ -198,7 +198,7 @@ namespace Scryber.Data
         /// <param name="path"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        protected object AssertGetDataItemValue(string path, PDFDataBindEventArgs args)
+        protected object AssertGetDataItemValue(string path, DataBindEventArgs args)
         {
             if (args.Context.DataStack.HasData == false)
                 throw new PDFDataException(Errors.CouldNotBindDataComponent);
@@ -230,7 +230,7 @@ namespace Scryber.Data
         }
 
 
-        public abstract VisualComponent DoBuildItemField(PDFContextBase context);
+        public abstract VisualComponent DoBuildItemField(ContextBase context);
 
         protected bool IsEmptyValue(object value)
         {

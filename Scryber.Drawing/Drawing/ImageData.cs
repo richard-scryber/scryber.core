@@ -150,18 +150,18 @@ namespace Scryber.Drawing
 
         #region public PDFUnit DisplayHeight {get;}
 
-        public PDFUnit DisplayHeight
+        public Unit DisplayHeight
         {
-            get { return new PDFUnit(((double)this.PixelHeight) / (double)this.VerticalResolution, PageUnits.Inches); }
+            get { return new Unit(((double)this.PixelHeight) / (double)this.VerticalResolution, PageUnits.Inches); }
         }
 
         #endregion
 
         #region public PDFUnit DisplayWidth {get;}
 
-        public PDFUnit DisplayWidth
+        public Unit DisplayWidth
         {
-            get { return new PDFUnit(((double)this.PixelWidth) / (double)this.HorizontalResolution, PageUnits.Inches); }
+            get { return new Unit(((double)this.PixelWidth) / (double)this.HorizontalResolution, PageUnits.Inches); }
         }
 
         #endregion
@@ -257,7 +257,7 @@ namespace Scryber.Drawing
         /// Gets the natural size of the image in page units
         /// </summary>
         /// <returns></returns>
-        public PDFSize GetSize()
+        public Size GetSize()
         {
             double hres = (double)this.HorizontalResolution;
             if (hres < 1.0)
@@ -269,12 +269,12 @@ namespace Scryber.Drawing
             double w = ((double)this.PixelWidth) / hres;
             double h = ((double)this.PixelHeight) / vres;
 
-            return new PDFSize(new PDFUnit(w, PageUnits.Inches), new PDFUnit(h, PageUnits.Inches));
+            return new Size(new Unit(w, PageUnits.Inches), new Unit(h, PageUnits.Inches));
         }
 
         #endregion
 
-        public abstract PDFObjectRef Render(PDFName name, IStreamFilter[] filters,  PDFContextBase context, PDFWriter writer);
+        public abstract PDFObjectRef Render(PDFName name, IStreamFilter[] filters,  ContextBase context, PDFWriter writer);
 
         public abstract void ResetFilterCache();
 

@@ -451,37 +451,37 @@ namespace Scryber.Components
         [PDFAttribute("value")]
         [PDFElement()]
         [PDFDesignable("Value", Category = "Data", Priority = 3, Type = "PDFUnit", Bindable = false, JSOptions = "")]
-        public PDFUnit Value { get; set; }
+        public Unit Value { get; set; }
 
         public UnitItemValue()
-            : base(typeof(PDFUnit))
+            : base(typeof(Unit))
         {
-            this.Value = PDFUnit.Empty;
+            this.Value = Unit.Empty;
         }
 
         protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
-            PDFUnit val;
-            if (string.IsNullOrEmpty(qsValue) || !PDFUnit.TryParse(qsValue, out val))
+            Unit val;
+            if (string.IsNullOrEmpty(qsValue) || !Unit.TryParse(qsValue, out val))
                 val = this.Value;
             return val;
         }
 
         protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
-            PDFUnit val;
-            if (PDFUnit.TryParse(value, out val))
+            Unit val;
+            if (Unit.TryParse(value, out val))
                 this.Value = val;
             else
-                this.Value = PDFUnit.Empty;
+                this.Value = Unit.Empty;
         }
 
         protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
-                this.Value = PDFUnit.Empty;
+                this.Value = Unit.Empty;
             else
-                this.Value = (PDFUnit)value;
+                this.Value = (Unit)value;
         }
     }
 
@@ -538,37 +538,37 @@ namespace Scryber.Components
         [PDFAttribute("value")]
         [PDFElement()]
         [PDFDesignable("Value", Category = "Data", Priority = 3, Type = "Thickness", Bindable = false, JSOptions = "")]
-        public PDFThickness Value { get; set; }
+        public Thickness Value { get; set; }
 
         public ThicknessItemValue()
             : base(typeof(Color))
         {
-            this.Value = PDFThickness.Empty();
+            this.Value = Thickness.Empty();
         }
 
         protected override object DoGetNativeValue(string key, string qsValue, IComponent comp)
         {
-            PDFThickness val;
-            if (string.IsNullOrEmpty(qsValue) || !PDFThickness.TryParse(qsValue, out val))
+            Thickness val;
+            if (string.IsNullOrEmpty(qsValue) || !Thickness.TryParse(qsValue, out val))
                 val = this.Value;
             return val;
         }
 
         protected override void DoSetNativeValueFromString(string value, IComponent owner)
         {
-            PDFThickness val;
-            if (PDFThickness.TryParse(value, out val))
+            Thickness val;
+            if (Thickness.TryParse(value, out val))
                 this.Value = val;
             else
-                this.Value = PDFThickness.Empty();
+                this.Value = Thickness.Empty();
         }
 
         protected override void DoSetNativeValue(object value, IComponent owner)
         {
             if (null == value)
-                this.Value = PDFThickness.Empty();
+                this.Value = Thickness.Empty();
             else
-                this.Value = (PDFThickness)value;
+                this.Value = (Thickness)value;
         }
     }
 

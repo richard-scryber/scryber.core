@@ -48,7 +48,7 @@ namespace Scryber.Drawing.Imaging
 
         }
 
-        protected override void RenderImageInformation(PDFContextBase context, PDFWriter writer)
+        protected override void RenderImageInformation(ContextBase context, PDFWriter writer)
         {
             base.RenderImageInformation(context, writer);
             writer.WriteDictionaryNumberEntry("ColorTransform", 1);

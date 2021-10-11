@@ -38,25 +38,25 @@ namespace Scryber.PDF.Graphics
         }
 
 
-        protected PDFRect ConvertToPageRect(PDFGraphics graphics, PDFRect bounds)
+        protected Rect ConvertToPageRect(PDFGraphics graphics, Rect bounds)
         {
-            PDFRect pgRect = PDFRect.Empty;
+            Rect pgRect = Rect.Empty;
 
-            pgRect.X = new PDFUnit(graphics.GetXPosition(bounds.X).Value);
-            pgRect.Y = new PDFUnit(graphics.GetYPosition(bounds.Y).Value);
-            pgRect.Width = new PDFUnit(graphics.GetXOffset(bounds.Width).Value);
-            pgRect.Height = new PDFUnit(graphics.GetYOffset(bounds.Height).Value);
+            pgRect.X = new Unit(graphics.GetXPosition(bounds.X).Value);
+            pgRect.Y = new Unit(graphics.GetYPosition(bounds.Y).Value);
+            pgRect.Width = new Unit(graphics.GetXOffset(bounds.Width).Value);
+            pgRect.Height = new Unit(graphics.GetYOffset(bounds.Height).Value);
 
             return pgRect;
         }
 
-        public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, GradientLinearDescriptor descriptor, PDFRect bounds)
+        public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, GradientLinearDescriptor descriptor, Rect bounds)
         {
             PDFLinearShadingPattern pattern = new PDFLinearShadingPattern(g.Container.Document, key, descriptor, bounds);
             return pattern;
         }
 
-        public PDFResource GetRadialShadingPattern(PDFGraphics g, string key, GradientRadialDescriptor descriptor, PDFRect bounds)
+        public PDFResource GetRadialShadingPattern(PDFGraphics g, string key, GradientRadialDescriptor descriptor, Rect bounds)
         {
             PDFRadialShadingPattern pattern = new PDFRadialShadingPattern(g.Container.Document, key, descriptor, bounds);
             return pattern;

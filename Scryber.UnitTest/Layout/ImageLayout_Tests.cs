@@ -53,7 +53,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -65,8 +65,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void FixedSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72);
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0);
+            var naturalWidth = new Unit((682.0 / 96.0) * 72);
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0);
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -77,7 +77,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -94,7 +94,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.Width = new PDFUnit(100);
+            img.Width = new Unit(100);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("100pt Wide"));
 
@@ -103,7 +103,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.Height = new PDFUnit(100);
+            img.Height = new Unit(100);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("100pt High"));
 
@@ -113,8 +113,8 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.Height = new PDFUnit(100);
-            img.Width = new PDFUnit(100);
+            img.Height = new Unit(100);
+            img.Width = new Unit(100);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("100pt Both"));
 
@@ -168,8 +168,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void MaximumSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72);
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0);
+            var naturalWidth = new Unit((682.0 / 96.0) * 72);
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0);
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -180,7 +180,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -189,7 +189,7 @@ namespace Scryber.Core.UnitTests.Layout
             var img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MaximumWidth = new PDFUnit(600); // bigger than the image so no change
+            img.MaximumWidth = new Unit(600); // bigger than the image so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size"));
 
@@ -198,7 +198,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MaximumWidth = new PDFUnit(200); //smaller so should reduce the width and height proportionally
+            img.MaximumWidth = new Unit(200); //smaller so should reduce the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Max 200pt Wide"));
 
@@ -207,7 +207,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MaximumHeight = new PDFUnit(200); //smaller so should reduce height and width proportionally
+            img.MaximumHeight = new Unit(200); //smaller so should reduce height and width proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Max 200pt High"));
 
@@ -217,8 +217,8 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MaximumHeight = new PDFUnit(200); //smaller so should reduce height and width proportionally
-            img.MaximumWidth = new PDFUnit(400);
+            img.MaximumHeight = new Unit(200); //smaller so should reduce height and width proportionally
+            img.MaximumWidth = new Unit(400);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Max 400pt wide and 200pt High"));
 
@@ -227,8 +227,8 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MaximumHeight = new PDFUnit(400); //smaller so should reduce height and width proportionally
-            img.MaximumWidth = new PDFUnit(200);
+            img.MaximumHeight = new Unit(400); //smaller so should reduce height and width proportionally
+            img.MaximumWidth = new Unit(200);
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Max 200pt wide and 400pt High"));
 
@@ -289,8 +289,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void MinimumSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -301,7 +301,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -310,7 +310,7 @@ namespace Scryber.Core.UnitTests.Layout
             var img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumWidth = new PDFUnit(400); // bigger than the image so no change
+            img.MinimumWidth = new Unit(400); // bigger than the image so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size - min width 400pt"));
 
@@ -319,7 +319,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumHeight = new PDFUnit(300); // bigger than the image so no change
+            img.MinimumHeight = new Unit(300); // bigger than the image so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Natural Size - min height 300"));
 
@@ -328,7 +328,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumWidth = new PDFUnit(550); //larger so should increase the width and height proportionally
+            img.MinimumWidth = new Unit(550); //larger so should increase the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Min 550pt Wide"));
 
@@ -337,7 +337,7 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumHeight = new PDFUnit(350); //larger so should increase the width and height proportionally
+            img.MinimumHeight = new Unit(350); //larger so should increase the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Min 350pt High"));
 
@@ -346,8 +346,8 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumWidth = new PDFUnit(550);
-            img.MinimumHeight = new PDFUnit(350); //width larger so should increase the width and height proportionally
+            img.MinimumWidth = new Unit(550);
+            img.MinimumHeight = new Unit(350); //width larger so should increase the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Min 550 wide and 350pt High - 550 wide"));
 
@@ -356,8 +356,8 @@ namespace Scryber.Core.UnitTests.Layout
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumWidth = new PDFUnit(500);
-            img.MinimumHeight = new PDFUnit(350); //height larger so should increase the width and height proportionally
+            img.MinimumWidth = new Unit(500);
+            img.MinimumHeight = new Unit(350); //height larger so should increase the width and height proportionally
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Min 500 wide and 350pt High - 350 high"));
 
@@ -430,8 +430,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void MixedActualAndMinSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -442,7 +442,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -451,7 +451,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Width = 200;
-            img.MinimumHeight = new PDFUnit(100); // smaller so no change
+            img.MinimumHeight = new Unit(100); // smaller so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Width 200pt and min height 100pt"));
 
@@ -461,7 +461,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Width = 200;
-            img.MinimumHeight = new PDFUnit(300); // larger so will change
+            img.MinimumHeight = new Unit(300); // larger so will change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Width 200pt and min height 300pt"));
 
@@ -471,7 +471,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Height = 250;
-            img.MinimumWidth = new PDFUnit(100); // smaller so no change
+            img.MinimumWidth = new Unit(100); // smaller so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Heigth 200pt and min width 100pt"));
 
@@ -481,7 +481,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Height = 250;
-            img.MinimumWidth = new PDFUnit(500); // larger so will change
+            img.MinimumWidth = new Unit(500); // larger so will change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Heigth 200pt and min width 500pt"));
 
@@ -535,8 +535,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void MixedActualAndMaxSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -547,7 +547,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -556,7 +556,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Width = 300;
-            img.MaximumHeight = new PDFUnit(300); //1. larger so no change
+            img.MaximumHeight = new Unit(300); //1. larger so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Width 200pt and max height 300pt"));
 
@@ -566,7 +566,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Width = 300;
-            img.MaximumHeight = new PDFUnit(100); //2. smaller so will change
+            img.MaximumHeight = new Unit(100); //2. smaller so will change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Width 200pt and max height 100pt"));
 
@@ -576,7 +576,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Height = 250;
-            img.MaximumWidth = new PDFUnit(500); //3. larger so no change
+            img.MaximumWidth = new Unit(500); //3. larger so no change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Height 250pt and max width 500pt"));
 
@@ -586,7 +586,7 @@ namespace Scryber.Core.UnitTests.Layout
             img.Source = path;
             img.BorderColor = StandardColors.Black;
             img.Height = 250;
-            img.MaximumWidth = new PDFUnit(200); //4. smaller so will change
+            img.MaximumWidth = new Unit(200); //4. smaller so will change
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("Height 250pt and max width 200pt"));
 
@@ -640,8 +640,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void FitContainerSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -652,7 +652,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
             var pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -687,7 +687,7 @@ namespace Scryber.Core.UnitTests.Layout
             //new page with 2 columns
             pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 2;
@@ -705,7 +705,7 @@ namespace Scryber.Core.UnitTests.Layout
             //new page with 3 columns
             pg = new Page();
 
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 3;
@@ -932,8 +932,8 @@ namespace Scryber.Core.UnitTests.Layout
         {
 
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -943,7 +943,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var doc = new Document();
             var pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -963,7 +963,7 @@ namespace Scryber.Core.UnitTests.Layout
 
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -981,7 +981,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral("2. Explicit height = 200 - overflowing"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -999,7 +999,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral("3. Explicit width = 200 - overflowing"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1017,7 +1017,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral("4. Minimum Height = 200 - overflowing with natural size"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1035,7 +1035,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral("5. Minimum Width = 200 - overflowing with natural size"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1052,7 +1052,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral("6. No Size, but cannot go below 20% shrink"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1073,7 +1073,7 @@ namespace Scryber.Core.UnitTests.Layout
             //2 column layout
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 2;
@@ -1092,7 +1092,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral("8. Explicit size so new column at proportionally that size"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.ColumnCount = 2;
@@ -1218,8 +1218,8 @@ namespace Scryber.Core.UnitTests.Layout
         public void InlineMultipleImageLineHeight()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -1230,7 +1230,7 @@ namespace Scryber.Core.UnitTests.Layout
             var doc = new Document();
 
             var pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1285,8 +1285,8 @@ namespace Scryber.Core.UnitTests.Layout
         {
 
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new PDFUnit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new PDFUnit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
@@ -1296,7 +1296,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             var doc = new Document();
             var pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1312,7 +1312,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral(" 1. Inline at text size"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.FontSize = 80;
@@ -1327,7 +1327,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral(" 2. Inline at text size for 80pt"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1342,7 +1342,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral(" 3. Inline at explicit 60pt height"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1357,7 +1357,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.Contents.Add(new TextLiteral(" 4. Inline with explicit width"));
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
@@ -1376,7 +1376,7 @@ namespace Scryber.Core.UnitTests.Layout
 
 
             pg = new Page();
-            pg.Margins = new PDFThickness(10);
+            pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);

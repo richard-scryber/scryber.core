@@ -164,7 +164,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="obj">The object to add</param>
         /// <returns>The added objects number</returns>
-        public int Append(IIndirectObject obj)
+        public int Append(IPDFIndirectObject obj)
         {
             if (this.ReadOnly)
                 throw new InvalidOperationException("Read Only XRef Table");
@@ -175,7 +175,7 @@ namespace Scryber.PDF.Native
             return section.Add(obj);
         }
 
-        public bool Contains(IIndirectObject obj)
+        public bool Contains(IPDFIndirectObject obj)
         {
             for (int i = this._sections.Count - 1; i >= 0; i--)
             {
@@ -195,7 +195,7 @@ namespace Scryber.PDF.Native
         /// Removes the current IIndirectObject and fills the space with an empty item
         /// </summary>
         /// <param name="obj"></param>
-        public void Delete(IIndirectObject obj)
+        public void Delete(IPDFIndirectObject obj)
         {
             if (this.ReadOnly)
                 throw new InvalidOperationException("Read Only XRef Table");
@@ -225,7 +225,7 @@ namespace Scryber.PDF.Native
         /// <summary>
         /// An empty ref is a placeholder for a cell in the table that used to contain a reference, but it was removed
         /// </summary>
-        private class EmptyRef : IIndirectObject
+        private class EmptyRef : IPDFIndirectObject
         {
 
             public EmptyRef(int num, int gen, long offset)

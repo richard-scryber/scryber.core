@@ -1504,9 +1504,9 @@ namespace Scryber.Generation
         /// <param name="reader"></param>
         /// <param name="attr"></param>
         /// <returns></returns>
-        private PDFValueConverter GetValueConverter(XmlReader reader, ParserPropertyDefinition attr)
+        private ValueConverter GetValueConverter(XmlReader reader, ParserPropertyDefinition attr)
         {
-            PDFValueConverter valueconverter;
+            ValueConverter valueconverter;
             if (ParserDefintionFactory.IsSimpleObjectType(attr.ValueType, out valueconverter))
             {
                 return valueconverter;

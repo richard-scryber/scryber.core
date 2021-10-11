@@ -33,12 +33,12 @@ namespace Scryber.Styles
     public class OverlayGridStyle : StyleItemBase
     {
 
-        public static readonly PDFUnit DefaultGridSpacing = new PDFUnit(50, PageUnits.Points);
+        public static readonly Unit DefaultGridSpacing = new Unit(50, PageUnits.Points);
         public static readonly Color DefaultGridColor = new Color(0, 1, 1);//aqua.
         public static readonly double DefaultGridOpacity = 0.5;
-        public static readonly PDFUnit DefaultXOffset = PDFUnit.Empty;
-        public static readonly PDFUnit DefaultYOffset = PDFUnit.Empty;
-        public static readonly PDFUnit DefaultGridPenWidth = new PDFUnit(0.1, PageUnits.Points);
+        public static readonly Unit DefaultXOffset = Unit.Empty;
+        public static readonly Unit DefaultYOffset = Unit.Empty;
+        public static readonly Unit DefaultGridPenWidth = new Unit(0.1, PageUnits.Points);
 
 
         #region public bool ShowGrid {get;set;} + RemoveGrid()
@@ -76,11 +76,11 @@ namespace Scryber.Styles
         /// Gets or sets the space between each grid square
         /// </summary>
         [PDFAttribute("spacing")]
-        public PDFUnit GridSpacing
+        public Unit GridSpacing
         {
             get
             {
-                PDFUnit size;
+                Unit size;
                 if (this.TryGetValue(StyleKeys.OverlaySpacingKey, out size))
                     return size;
                 else
@@ -163,11 +163,11 @@ namespace Scryber.Styles
         /// Gets or sets the horizontal offset from the left of the component to start rendering the grid. Default is 0 (zero).
         /// </summary>
         [PDFAttribute("x-offset")]
-        public PDFUnit GridXOffset
+        public Unit GridXOffset
         {
             get
             {
-                PDFUnit x;
+                Unit x;
                 if (this.TryGetValue(StyleKeys.OverlayXOffsetKey, out x))
                     return x;
                 else
@@ -194,11 +194,11 @@ namespace Scryber.Styles
         /// Default is 0 (zero).
         /// </summary>
         [PDFAttribute("y-offset")]
-        public PDFUnit GridYOffset
+        public Unit GridYOffset
         {
             get
             {
-                PDFUnit y;
+                Unit y;
                 if (this.TryGetValue(StyleKeys.OverlayYOffsetKey, out y))
                     return y;
                 else

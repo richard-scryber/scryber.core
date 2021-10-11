@@ -27,33 +27,33 @@ namespace Scryber.Styles
     public class StylesDocument : StyleBase, IComponent, IBindableComponent, IRemoteComponent
     {
 
-        public event PDFInitializedEventHandler Initialized;
+        public event InitializedEventHandler Initialized;
 
-        protected virtual void OnInit(PDFInitContext context)
+        protected virtual void OnInit(InitContext context)
         {
             if (null != this.Initialized)
-                this.Initialized(this, new PDFInitEventArgs(context));
+                this.Initialized(this, new InitEventArgs(context));
         }
 
-        public event PDFLoadedEventHandler Loaded;
+        public event LoadedEventHandler Loaded;
 
-        protected virtual void OnLoaded(PDFLoadContext context)
+        protected virtual void OnLoaded(LoadContext context)
         {
             if (null != this.Loaded)
-                this.Loaded(this, new PDFLoadEventArgs(context));
+                this.Loaded(this, new LoadEventArgs(context));
         }
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataBindEventArgs args)
+        protected virtual void OnDataBinding(DataBindEventArgs args)
         {
             if (null != this.DataBinding)
                 this.DataBinding(this, args);
         }
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataBindEventArgs args)
+        protected virtual void OnDataBound(DataBindEventArgs args)
         {
             if (null != this.DataBound)
                 this.DataBound(this, args);
@@ -316,25 +316,25 @@ namespace Scryber.Styles
         //    return this.Styles.MatchClass(classname);
         //}
 
-        public void Init(PDFInitContext context)
+        public void Init(InitContext context)
         {
             this.DoInit(context, true);
             this.OnInit(context);
         }
 
-        protected virtual void DoInit(PDFInitContext context, bool includeChildren)
+        protected virtual void DoInit(InitContext context, bool includeChildren)
         {
             if (includeChildren)
                 this.Styles.Init(context);
         }
 
-        public void Load(PDFLoadContext context)
+        public void Load(LoadContext context)
         {
             this.DoLoad(context, true);
             this.OnLoaded(context);
         }
 
-        protected virtual void DoLoad(PDFLoadContext context, bool includeChildren)
+        protected virtual void DoLoad(LoadContext context, bool includeChildren)
         {
             if (includeChildren)
                 this.Styles.Load(context);
@@ -378,16 +378,16 @@ namespace Scryber.Styles
             return all;
         }
 
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
-            PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
+            DataBindEventArgs args = new DataBindEventArgs(context);
             this.OnDataBinding(args);
             this.DoDataBind(context, true);
             this.OnDataBound(args);
 
         }
 
-        protected override void DoDataBind(PDFDataContext context, bool includechildren)
+        protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
             if (includechildren)

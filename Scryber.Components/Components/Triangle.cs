@@ -32,14 +32,14 @@ namespace Scryber.Components
     public class Triangle : PolygonBase
     {
 
-        private PDFPointArray _points;
+        private PointArray _points;
 
         /// <summary>
         /// Gets or sets the points in the triangle.
         /// If set - must be an array of 3 points.
         /// </summary>
         [PDFAttribute("points")]
-        public PDFPointArray Points
+        public PointArray Points
         {
             get { return _points; }
             set { _points = value; }
@@ -58,7 +58,7 @@ namespace Scryber.Components
         }
 
 
-        protected override PDFPoint[] GetPoints(PDFRect bounds, Styles.Style style)
+        protected override Point[] GetPoints(Rect bounds, Styles.Style style)
         {
             if (null != Points)
             {

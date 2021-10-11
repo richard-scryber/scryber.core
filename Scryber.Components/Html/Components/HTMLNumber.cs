@@ -66,7 +66,7 @@ namespace Scryber.Html.Components
         {
         }
 
-        protected override PDFTextReader CreateReader(PDFContextBase context, Style fullstyle)
+        protected override PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {
             if (!string.IsNullOrEmpty(this.Text))
             {

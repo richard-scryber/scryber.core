@@ -298,9 +298,9 @@ namespace Scryber.Components
                     return true;
                 }
             }
-            else if (comp is IPDFInvisibleContainer)
+            else if (comp is IInvisibleContainer)
             {
-                IPDFInvisibleContainer container = comp as IPDFInvisibleContainer;
+                IInvisibleContainer container = comp as IInvisibleContainer;
                 if (container.HasContent)
                 {
                     list = container.Content;

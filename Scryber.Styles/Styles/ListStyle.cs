@@ -97,11 +97,11 @@ namespace Scryber.Styles
         /// Gets or sets the inset of the number from the start of the line
         /// </summary>
         [PDFAttribute("number-inset")]
-        public PDFUnit NumberInset
+        public Unit NumberInset
         {
             get
             {
-                PDFUnit value;
+                Unit value;
                 if (this.TryGetValue(StyleKeys.ListInsetKey, out value))
                     return value;
                 else

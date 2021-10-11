@@ -2,6 +2,7 @@
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Svg.Components
 {

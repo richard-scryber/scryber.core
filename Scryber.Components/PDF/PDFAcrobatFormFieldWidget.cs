@@ -29,8 +29,8 @@ namespace Scryber.PDF
 
         private Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObject> _states;
 
-        private Drawing.PDFPoint _location;
-        private Drawing.PDFSize _size;
+        private Drawing.Point _location;
+        private Drawing.Size _size;
         private Layout.PDFLayoutPage _page;
         private Styles.Style _style;
 
@@ -106,7 +106,7 @@ namespace Scryber.PDF
             {
                 _location = context.Offset;
 
-                Drawing.PDFRect bounds = Drawing.PDFRect.Empty;
+                Drawing.Rect bounds = Drawing.Rect.Empty;
                 writer.BeginDictionaryEntry("AP");
                 writer.BeginDictionary();
                 foreach (var kvp in _states)
@@ -119,8 +119,8 @@ namespace Scryber.PDF
                     if (null != oref)
                     {
                         
-                        PDFSize sz = new Drawing.PDFSize(xObject.Width, xObject.Height);
-                        if (_size == PDFSize.Empty)
+                        Size sz = new Drawing.Size(xObject.Width, xObject.Height);
+                        if (_size == Size.Empty)
                             _size = sz;
                         else
                         {

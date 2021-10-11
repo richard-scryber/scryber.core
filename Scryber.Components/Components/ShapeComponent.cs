@@ -28,7 +28,7 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Components
 {
-    public abstract class ShapeComponent : VisualComponent, IPDFGraphicPathComponent
+    public abstract class ShapeComponent : VisualComponent, IGraphicPathComponent
     {
 
         public ShapeComponent(ObjectType type) : base(type) { }
@@ -41,16 +41,16 @@ namespace Scryber.Components
             set { _path = value; }
         }
 
-        GraphicsPath IPDFGraphicPathComponent.Path
+        GraphicsPath IGraphicPathComponent.Path
         {
             get { return this.Path; }
             set { this.Path = value; }
         }
 
 
-        protected abstract GraphicsPath CreatePath(PDFSize available, Style fullstyle);
+        protected abstract GraphicsPath CreatePath(Size available, Style fullstyle);
 
-        GraphicsPath IPDFGraphicPathComponent.CreatePath(PDFSize available, Style fullstyle)
+        GraphicsPath IGraphicPathComponent.CreatePath(Size available, Style fullstyle)
         {
             return this.CreatePath(available, fullstyle);
         }

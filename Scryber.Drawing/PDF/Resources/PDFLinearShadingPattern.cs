@@ -28,7 +28,7 @@ namespace Scryber.PDF.Resources
         /// <param name="key"></param>
         /// <param name="descriptor">The gradient descriptor</param>
         /// <param name="bounds">The bounds of the gradient on the page (rather than component level)</param>
-        public PDFLinearShadingPattern(IComponent owner, string key, GradientLinearDescriptor descriptor, PDFRect bounds)
+        public PDFLinearShadingPattern(IComponent owner, string key, GradientLinearDescriptor descriptor, Rect bounds)
             : base(owner, key, bounds)
         {
             this._descriptor = descriptor;
@@ -36,7 +36,7 @@ namespace Scryber.PDF.Resources
         }
 
 
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             PDFObjectRef oref = writer.BeginObject(this.Name.Value);
             writer.BeginDictionary();
@@ -54,7 +54,7 @@ namespace Scryber.PDF.Resources
 
         }
 
-        protected virtual PDFObjectRef RenderShadingDictionary(PDFContextBase context, PDFWriter writer)
+        protected virtual PDFObjectRef RenderShadingDictionary(ContextBase context, PDFWriter writer)
         {
             writer.BeginDictionaryEntry("Shading");
             writer.BeginDictionary();
@@ -65,10 +65,10 @@ namespace Scryber.PDF.Resources
 
             writer.BeginDictionaryEntry("BBox");
 
-            PDFPoint offset = new PDFPoint(this.Start.X, this.Start.Y);// this.Start;
-            PDFSize size = this.Size;
+            Point offset = new Point(this.Start.X, this.Start.Y);// this.Start;
+            Size size = this.Size;
 
-            PDFSize graphicsSize = new PDFSize(size.Width + offset.X, size.Height + offset.Y);
+            Size graphicsSize = new Size(size.Width + offset.X, size.Height + offset.Y);
 
             writer.WriteArrayRealEntries(true, offset.X.PointsValue,
                                                offset.Y.PointsValue,
@@ -97,7 +97,7 @@ namespace Scryber.PDF.Resources
 
         
 
-        protected virtual double[] GetCoords(PDFPoint offset, PDFSize size, double angle)
+        protected virtual double[] GetCoords(Point offset, Size size, double angle)
         {
 
             double[] all = new double[4];

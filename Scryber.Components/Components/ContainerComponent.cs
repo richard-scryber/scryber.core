@@ -26,7 +26,7 @@ using Scryber.PDF;
 
 namespace Scryber.Components
 {
-    public abstract class ContainerComponent : Component, IPDFContainerComponent //, IPDFRenderComponent
+    public abstract class ContainerComponent : Component, IContainerComponent //, IPDFRenderComponent
     {
         
         //
@@ -75,7 +75,7 @@ namespace Scryber.Components
         /// <summary>
         /// Interface implementation that allows all content to be accessed via the IContainerComponent interface
         /// </summary>
-        ComponentList IPDFContainerComponent.Content
+        ComponentList IContainerComponent.Content
         {
             get { return this.InnerContent; }
         }
@@ -109,7 +109,7 @@ namespace Scryber.Components
         /// <summary>
         /// Performs the base initialization and then calls DoInitChildren to ensure that each of its children are initialized.
         /// </summary>
-        protected override void DoInit(PDFInitContext context)
+        protected override void DoInit(InitContext context)
         {
             base.DoInit(context);
             this.DoInitChildren(context);
@@ -118,7 +118,7 @@ namespace Scryber.Components
         /// <summary>
         /// Initializes all children in the document
         /// </summary>
-        protected virtual void DoInitChildren(PDFInitContext context)
+        protected virtual void DoInitChildren(InitContext context)
         {
             if (this.HasContent)
             {
@@ -135,13 +135,13 @@ namespace Scryber.Components
 
         #region protected override void DoLoad(PDFLoadContext context) + DoLoadChildren
 
-        protected override void DoLoad(PDFLoadContext context)
+        protected override void DoLoad(LoadContext context)
         {
             base.DoLoad(context);
             this.DoLoadChildren(context);
         }
 
-        protected virtual void DoLoadChildren(PDFLoadContext context)
+        protected virtual void DoLoadChildren(LoadContext context)
         {
             if (this.HasContent)
             {
@@ -162,7 +162,7 @@ namespace Scryber.Components
         /// Overrides the default implementation to optionally databind children
         /// </summary>
         /// <param name="includeChildren">Flag to identify if children should be databound too</param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
 
@@ -173,7 +173,7 @@ namespace Scryber.Components
         /// <summary>
         /// Databinds all the children in the container
         /// </summary>
-        protected virtual void DoDataBindChildren(PDFDataContext context)
+        protected virtual void DoDataBindChildren(DataContext context)
         {
             if (this.HasContent)
             {

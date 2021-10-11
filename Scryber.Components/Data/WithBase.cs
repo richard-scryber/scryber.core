@@ -13,7 +13,7 @@ namespace Scryber.Data
     /// An abstract data bound component for a single item. The current context is set to the data in th
     /// </summary>
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_withItem")]
-    public abstract class WithBase : Scryber.Components.VisualComponent, IPDFViewPortComponent, IPDFInvisibleContainer
+    public abstract class WithBase : Scryber.Components.VisualComponent, IPDFViewPortComponent, IInvisibleContainer
     {
 
         public virtual string SelectPath { get; set; }
@@ -57,7 +57,7 @@ namespace Scryber.Data
         {
         }
 
-        protected override void DoDataBindChildren(PDFDataContext context)
+        protected override void DoDataBindChildren(DataContext context)
         {
             bool setup = this.DoSetupWithData(context);
 
@@ -79,9 +79,9 @@ namespace Scryber.Data
         /// <param name="datasourceComponentID">The ID of the IPDFDataSource</param>
         /// <param name="context">The current data context</param>
         /// <returns></returns>
-        protected IPDFDataSource GetDataSourceComponent(string datasourceComponentID, PDFDataContext context)
+        protected IDataSource GetDataSourceComponent(string datasourceComponentID, DataContext context)
         {
-            IPDFDataSource datasourceComponent = null;
+            IDataSource datasourceComponent = null;
 
             if (string.IsNullOrEmpty(datasourceComponentID))
                 throw new ArgumentNullException("datasourceComponentID");
@@ -89,10 +89,10 @@ namespace Scryber.Data
             Component found = base.FindDocumentComponentById(datasourceComponentID);
             if (found == null)
                 throw RecordAndRaise.ArgumentNull("DataSourceID", Errors.CouldNotFindControlWithID, datasourceComponentID);
-            else if (!(found is IPDFDataSource))
+            else if (!(found is IDataSource))
                 throw RecordAndRaise.Argument("DataSourceID", Errors.AssignedDataSourceIsNotIPDFDataSource, datasourceComponentID);
             else
-                datasourceComponent = ((IPDFDataSource)found);
+                datasourceComponent = ((IDataSource)found);
 
 
             return datasourceComponent;
@@ -109,7 +109,7 @@ namespace Scryber.Data
         /// <param name="context"></param>
         /// <param name="datasourceComponent"></param>
         /// <returns></returns>
-        protected bool HasAssignedDataSourceComponent(PDFDataContext context, out IPDFDataSource datasourceComponent)
+        protected bool HasAssignedDataSourceComponent(DataContext context, out IDataSource datasourceComponent)
         {
             if (string.IsNullOrEmpty(this.DataSourceID) == false)
             {
@@ -132,7 +132,7 @@ namespace Scryber.Data
         /// <param name="containerposition"></param>
         /// <param name="template"></param>
         /// <param name="context"></param>
-        protected virtual void DoBindDataIntoContainer(IPDFContainerComponent container, int containerposition, PDFDataContext context)
+        protected virtual void DoBindDataIntoContainer(IContainerComponent container, int containerposition, DataContext context)
         {
 
         }
@@ -149,12 +149,12 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="context">The context to set up</param>
         /// <returns>True if new data was added to the context</returns>
-        protected virtual bool DoSetupWithData(PDFDataContext context)
+        protected virtual bool DoSetupWithData(DataContext context)
         {
             bool hasdata = false;
 
             lastResolver = context.NamespaceResolver;
-            IPDFDataSource datasource;
+            IDataSource datasource;
             object data = null;
 
             //Get the datasource
@@ -237,7 +237,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="hasData"></param>
         /// <param name="context"></param>
-        protected virtual void DoTearDownWithData(bool hasData, PDFDataContext context)
+        protected virtual void DoTearDownWithData(bool hasData, DataContext context)
         {
             if(hasData)
             {

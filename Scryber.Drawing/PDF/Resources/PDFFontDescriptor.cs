@@ -25,7 +25,7 @@ using Scryber.Drawing;
 
 namespace Scryber.PDF.Resources
 {
-    public class PDFFontDescriptor : PDFObject
+    public class PDFFontDescriptor : TypedObject
     {
         private int _asc;
 
@@ -257,7 +257,7 @@ namespace Scryber.PDF.Resources
             this.MissingWidth = 0;
         }
 
-        public PDFObjectRef RenderToPDF(string fullname, PDFContextBase context, PDFWriter writer)
+        public PDFObjectRef RenderToPDF(string fullname, ContextBase context, PDFWriter writer)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Add(TraceLevel.Debug, "Font Descriptor", "Rendering the font descriptor information");

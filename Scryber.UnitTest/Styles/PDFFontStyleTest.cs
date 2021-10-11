@@ -84,28 +84,28 @@ namespace Scryber.Core.UnitTests.Styles
         public void Font_CreateFontTest()
         {
             Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
-            PDFFont expected = new PDFFont(PDFStyleConst.DefaultFontFamily, PDFStyleConst.DefaultFontSize);
-            PDFFont actual;
+            Font expected = new Font(PDFStyleConst.DefaultFontFamily, PDFStyleConst.DefaultFontSize);
+            Font actual;
             actual = target.CreateFont();
             bool equal = expected.Equals(actual);
             Assert.AreEqual(expected, actual,"Default not the same, " + expected + " was not equal to " + actual);
 
             target.FontFamily = (FontSelector)"Symbol";
-            expected = new PDFFont(StandardFont.Symbol, PDFStyleConst.DefaultFontSize);
+            expected = new Font(StandardFont.Symbol, PDFStyleConst.DefaultFontSize);
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Symbol not the same");
 
             target.FontSize = 40;
-            expected = new PDFFont(StandardFont.Symbol, 40);
+            expected = new Font(StandardFont.Symbol, 40);
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Symbol 40pt not the same");
 
             target.FontFamily = (FontSelector)"Bauhaus 92";
             target.FontBold = true;
             target.FontItalic = true;
-            target.FontSize = new PDFUnit(10, PageUnits.Millimeters);
+            target.FontSize = new Unit(10, PageUnits.Millimeters);
 
-            expected = new PDFFont("Bauhaus 92", new PDFUnit(10, PageUnits.Millimeters), FontWeights.Bold , Scryber.Drawing.FontStyle.Italic);
+            expected = new Font("Bauhaus 92", new Unit(10, PageUnits.Millimeters), FontWeights.Bold , Scryber.Drawing.FontStyle.Italic);
             actual = target.CreateFont();
             Assert.AreEqual(expected, actual, "Bauhaus not the same");
 
@@ -194,24 +194,24 @@ namespace Scryber.Core.UnitTests.Styles
         public void FontSizeTest()
         {
             Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
-            PDFUnit expected = PDFUnit.Empty;
+            Unit expected = Unit.Empty;
             Assert.AreEqual(expected, target.FontSize);
 
-            expected = new PDFUnit(20,PageUnits.Millimeters);
+            expected = new Unit(20,PageUnits.Millimeters);
             target.FontSize = expected;
             Assert.AreEqual(expected, target.FontSize);
 
-            expected = new PDFUnit(10,PageUnits.Points);
+            expected = new Unit(10,PageUnits.Points);
             target.FontSize = expected;
             Assert.AreEqual(expected, target.FontSize);
 
 
             target.RemoveFontSize();
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             Assert.AreEqual(expected, target.FontSize);
 
-            target.FontSize = PDFUnit.Empty;
-            Assert.AreEqual(PDFUnit.Empty, target.FontSize);
+            target.FontSize = Unit.Empty;
+            Assert.AreEqual(Unit.Empty, target.FontSize);
         }
 
         

@@ -36,15 +36,15 @@ namespace Scryber.Styles
         #region public PDFUnit FirstLineInset {get;set;} + RemoveFirstLineInset()
 
         [PDFAttribute("first-indent")]
-        public PDFUnit FirstLineInset
+        public Unit FirstLineInset
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.TextFirstLineIndentKey, out f))
                     return f;
                 else
-                return PDFUnit.Empty;
+                return Unit.Empty;
             }
             set
             {
@@ -62,15 +62,15 @@ namespace Scryber.Styles
         #region public PDFUnit WordSpacing {get;set} + RemoveWordSpacing()
 
         [PDFAttribute("word-spacing")]
-        public PDFUnit WordSpacing
+        public Unit WordSpacing
         {
             get
             {
-                PDFUnit u;
+                Unit u;
                 if (this.TryGetValue(StyleKeys.TextWordSpacingKey, out u))
                     return u;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -88,15 +88,15 @@ namespace Scryber.Styles
         #region public PDFUnit CharacterSpacing {get;set} + RemoveCharacterSpacing()
 
         [PDFAttribute("char-spacing")]
-        public PDFUnit CharacterSpacing
+        public Unit CharacterSpacing
         {
             get
             {
-                PDFUnit u;
+                Unit u;
                 if (this.TryGetValue(StyleKeys.TextCharSpacingKey, out u))
                     return u;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -225,15 +225,15 @@ namespace Scryber.Styles
         #region public PDFUnit Leading {get;set;} + RemoveLeadingText()
 
         [PDFAttribute("leading")]
-        public PDFUnit Leading
+        public Unit Leading
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.TextLeadingKey, out f))
                     return f;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {

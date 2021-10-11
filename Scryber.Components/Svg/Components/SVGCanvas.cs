@@ -42,10 +42,10 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("x")]
-        public override PDFUnit X { get => base.X; set => base.X = value; }
+        public override Unit X { get => base.X; set => base.X = value; }
 
         [PDFAttribute("y")]
-        public override PDFUnit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y { get => base.Y; set => base.Y = value; }
 
         private ComponentList _definitions;
 
@@ -78,7 +78,7 @@ namespace Scryber.Svg.Components
 
 
         [PDFAttribute("stroke-width")]
-        public override PDFUnit StrokeWidth
+        public override Unit StrokeWidth
         {
             get => base.StrokeWidth;
             set => base.StrokeWidth = value;
@@ -123,14 +123,14 @@ namespace Scryber.Svg.Components
         #region public PDFRect ViewBox {get; set;}
 
         [PDFAttribute("viewBox")]
-        public PDFRect ViewBox
+        public Rect ViewBox
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.PositionViewPort, PDFRect.Empty);
+                    return this.Style.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
                 else
-                    return PDFRect.Empty;
+                    return Rect.Empty;
             }
             set
             {
@@ -175,10 +175,10 @@ namespace Scryber.Svg.Components
         //style attributes
 
         [PDFAttribute("width")]
-        public override PDFUnit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { get => base.Width; set => base.Width = value; }
 
         [PDFAttribute("height")]
-        public override PDFUnit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { get => base.Height; set => base.Height = value; }
 
 
         public SVGCanvas()

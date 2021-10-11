@@ -54,47 +54,47 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets the X (horizontal) offset
         /// </summary>
-        public PDFUnit? X { get; set; }
+        public Unit? X { get; set; }
 
         /// <summary>
         /// Gets or sets the Y (vertical offset)
         /// </summary>
-        public PDFUnit? Y { get; set; }
+        public Unit? Y { get; set; }
 
         /// <summary>
         /// Gets or sets the Width
         /// </summary>
-        public PDFUnit? Width { get; set; }
+        public Unit? Width { get; set; }
 
         /// <summary>
         /// Gets or sets the Height
         /// </summary>
-        public PDFUnit? Height { get; set; }
+        public Unit? Height { get; set; }
 
         /// <summary>
         /// Gets or sets the Minimum Width
         /// </summary>
-        public PDFUnit? MinimumWidth { get; set; }
+        public Unit? MinimumWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the Minimum Height
         /// </summary>
-        public PDFUnit? MinimumHeight { get; set; }
+        public Unit? MinimumHeight { get; set; }
 
         /// <summary>
         /// Gets or sets the Maximum Width
         /// </summary>
-        public PDFUnit? MaximumWidth { get; set; }
+        public Unit? MaximumWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the Maximum Height
         /// </summary>
-        public PDFUnit? MaximumHeight { get; set; }
+        public Unit? MaximumHeight { get; set; }
 
         /// <summary>
         /// The form viewport if this has one.
         /// </summary>
-        public PDFRect? ViewPort { get; set; }
+        public Rect? ViewPort { get; set; }
 
         /// <summary>
         /// Gets or sets if these options specifiy that the copmonent these options refer to should fill the available horizontal space
@@ -111,17 +111,17 @@ namespace Scryber.PDF
         /// </summary>
         public OverflowSplit OverflowSplit { get; set; }
 
-        public PDFThickness ClipInset { get; set; }
+        public Thickness ClipInset { get; set; }
 
         /// <summary>
         /// Gets or sets any margins
         /// </summary>
-        public PDFThickness Margins { get; set; }
+        public Thickness Margins { get; set; }
 
         /// <summary>
         /// Gets or sets any padding
         /// </summary>
-        public PDFThickness Padding { get; set; }
+        public Thickness Padding { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical alignment on any child content
@@ -141,17 +141,17 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets the column alley width
         /// </summary>
-        public PDFUnit AlleyWidth { get; set; }
+        public Unit AlleyWidth { get; set; }
 
         /// <summary>
         /// Returns 
         /// </summary>
-        public bool HasAlleyWidth { get { return this.AlleyWidth >= PDFUnit.Zero; } }
+        public bool HasAlleyWidth { get { return this.AlleyWidth >= Unit.Zero; } }
 
         /// <summary>
         /// Gets or sets the widths of the columns
         /// </summary>
-        public PDFUnit[] ColumnWidths { get; set; }
+        public Unit[] ColumnWidths { get; set; }
 
         /// <summary>
         /// Gets or sets the direction or standard reading direction

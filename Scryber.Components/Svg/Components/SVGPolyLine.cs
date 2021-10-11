@@ -28,7 +28,7 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
             var bounds = this.GetBounds();
 
@@ -54,27 +54,27 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override PDFRect GetBounds()
+        protected override Rect GetBounds()
         {
             if (null == this.Points)
-                return PDFRect.Empty;
+                return Rect.Empty;
 
-            PDFUnit maxx = new PDFUnit(int.MinValue);
-            PDFUnit maxy = new PDFUnit(int.MinValue);
+            Unit maxx = new Unit(int.MinValue);
+            Unit maxy = new Unit(int.MinValue);
 
-            PDFUnit minx = new PDFUnit(int.MaxValue);
-            PDFUnit miny = new PDFUnit(int.MaxValue);
+            Unit minx = new Unit(int.MaxValue);
+            Unit miny = new Unit(int.MaxValue);
 
             foreach (var pt in this.Points)
             {
-                maxx = PDFUnit.Max(pt.X, maxx);
-                maxy = PDFUnit.Max(pt.Y, maxy);
+                maxx = Unit.Max(pt.X, maxx);
+                maxy = Unit.Max(pt.Y, maxy);
 
-                minx = PDFUnit.Min(pt.X, minx);
-                miny = PDFUnit.Min(pt.Y, miny);
+                minx = Unit.Min(pt.X, minx);
+                miny = Unit.Min(pt.Y, miny);
             }
 
-            return new PDFRect(minx, miny, maxx - minx, maxy - miny);
+            return new Rect(minx, miny, maxx - minx, maxy - miny);
 
             
         }
@@ -89,7 +89,7 @@ namespace Scryber.Svg.Components
         public SVGPolygon(): base()
         { }
 
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
             GraphicsPath path = base.CreatePath(available, fullstyle);
             path.ClosePath(true);

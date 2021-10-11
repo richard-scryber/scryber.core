@@ -8,7 +8,7 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Svg.Components
 {
-    public abstract class SVGShape : SVGBase, IPDFGraphicPathComponent
+    public abstract class SVGShape : SVGBase, IGraphicPathComponent
     {
 
 
@@ -26,16 +26,16 @@ namespace Scryber.Svg.Components
             set { _path = value; }
         }
 
-        GraphicsPath IPDFGraphicPathComponent.Path
+        GraphicsPath IGraphicPathComponent.Path
         {
             get { return this.Path; }
             set { this.Path = value; }
         }
 
 
-        protected abstract GraphicsPath CreatePath(PDFSize available, Style fullstyle);
+        protected abstract GraphicsPath CreatePath(Size available, Style fullstyle);
 
-        GraphicsPath IPDFGraphicPathComponent.CreatePath(PDFSize available, Style fullstyle)
+        GraphicsPath IGraphicPathComponent.CreatePath(Size available, Style fullstyle)
         {
             return this.CreatePath(available, fullstyle);
         }
@@ -75,10 +75,10 @@ namespace Scryber.Svg.Components
             base.OnPreLayout(context);
         }
 
-        protected virtual void UpdateShapeBounds(PDFContextBase context)
+        protected virtual void UpdateShapeBounds(ContextBase context)
         {
             var bounds = this.GetBounds();
-            if (bounds != PDFRect.Empty)
+            if (bounds != Rect.Empty)
             {
                 this.X = bounds.X;
                 this.Y = bounds.Y;
@@ -89,9 +89,9 @@ namespace Scryber.Svg.Components
 
 
 
-        protected virtual PDFRect GetBounds()
+        protected virtual Rect GetBounds()
         {
-            return PDFRect.Empty;
+            return Rect.Empty;
         }
     }
 }

@@ -7,7 +7,7 @@ using Scryber.Components;
 
 namespace Scryber.Data
 {
-    public abstract class DataComponentBase : Component, IPDFDataComponent
+    public abstract class DataComponentBase : Component
     {
 
         public DataComponentBase(ObjectType type) : base(type)

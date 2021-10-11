@@ -16,7 +16,7 @@ namespace Scryber.Imaging.Formatted
         }
 
 
-        protected override long DoRenderImageData(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        protected override long DoRenderImageData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             var config = SixLabors.ImageSharp.Configuration.Default;
             var ops = new Bgr24().CreatePixelOperations();
@@ -38,7 +38,7 @@ namespace Scryber.Imaging.Formatted
             return total;
         }
 
-        protected override long DoRenderAlphaData(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        protected override long DoRenderAlphaData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             throw new InvalidOperationException("The Bgr24 format does not have an alpha component");
         }

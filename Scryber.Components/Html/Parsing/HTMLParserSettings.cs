@@ -94,7 +94,7 @@ namespace Scryber.Html.Parsing
         /// <summary>
         /// Gets or sets the Context for the parser
         /// </summary>
-        public PDFContextBase Context
+        public ContextBase Context
         {
             get;
             set;
@@ -160,7 +160,7 @@ namespace Scryber.Html.Parsing
         /// <summary>
         /// Creates a new default instance of the parser settings
         /// </summary>
-        public HTMLParserSettings(PDFContextBase context)
+        public HTMLParserSettings(ContextBase context)
             : this(DefaultSkipUnknown, DefaultSkipCssClasses, DefaultSkipStyles, DefaultSkipProcessingInstructions,DefaultSkipComments,DefaultSkipDocType, DefaultSkipCData, context, new ReadOnlyList<string>(DefaultSkipOverTags), new ReadOnlyDictionary<string,char>(DefaultEscapedHTMLEntities))
         {
         }
@@ -175,7 +175,7 @@ namespace Scryber.Html.Parsing
         /// <param name="skipUnknown">Flag if unknown tags should be ignored</param>
         /// <param name="skipOverTags">Any known but unusable tags that should be skipped completely (including any of their inner content)</param>
         /// <param name="escapeEntites">All the escaped entities mapping HTML entities (e.g. &amp;) to the character equivalent (e.g. &)</param>
-        private HTMLParserSettings(bool skipUnknown, bool skipCssClasses, bool skipStyles, bool skipProcessingInstructions, bool skipComments, bool skipDocType, bool skipCData, PDFContextBase context, IList<string> skipOverTags, IDictionary<string,char> escapeEntites)
+        private HTMLParserSettings(bool skipUnknown, bool skipCssClasses, bool skipStyles, bool skipProcessingInstructions, bool skipComments, bool skipDocType, bool skipCData, ContextBase context, IList<string> skipOverTags, IDictionary<string,char> escapeEntites)
         {
             if (null == escapeEntites)
                 throw new ArgumentNullException("escapeEntities");

@@ -147,13 +147,13 @@ namespace Scryber.Data
         }
 
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
 
-        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
             if(this.Template is IPDFDataTemplateGenerator)
             {
@@ -163,14 +163,14 @@ namespace Scryber.Data
             return this.Template;
         }
 
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             object data = null;
             bool hasdata = false;
             System.Xml.IXmlNamespaceResolver resolver = context.NamespaceResolver;
 
             //If we have a specific source then we use that otherwise we use the current datasource
-            IPDFDataSource dataSource;
+            IDataSource dataSource;
 
             if (this.HasObjectValue(context, out data))
             {
@@ -253,7 +253,7 @@ namespace Scryber.Data
                 return new RangeEnumerator(enumerable.GetEnumerator(), this.StartIndex, this.MaxCount, this.Step);
         }
 
-        protected bool HasObjectValue(PDFContextBase context, out object data)
+        protected bool HasObjectValue(ContextBase context, out object data)
         {
             data = this.Value;
             return null != data;

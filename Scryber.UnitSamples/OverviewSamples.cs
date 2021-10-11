@@ -116,7 +116,7 @@ namespace Scryber.UnitSamples
             var page = new Page();
             doc.Pages.Add(page);
 
-            var div = new Div() { Padding = new PDFThickness(10) };
+            var div = new Div() { Padding = new Thickness(10) };
             page.Contents.Add(div);
 
             div.Contents.Add(new TextLiteral("Hello World"));

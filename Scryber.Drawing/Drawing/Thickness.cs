@@ -30,7 +30,7 @@ namespace Scryber.Drawing
     /// </summary>
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct PDFThickness : IComparable<PDFThickness>, IEquatable<PDFThickness>, ICloneable
+    public struct Thickness : IComparable<Thickness>, IEquatable<Thickness>, ICloneable
     {
         public const char ThicknessStartChar = '[';
         public const char ThicknessSeparatorChar = ' ';
@@ -39,45 +39,45 @@ namespace Scryber.Drawing
 
         #region Top{get;set}, Left{get;set}, Bottom{get;set}, Right{get;set}
 
-        private PDFUnit _top;
+        private Unit _top;
         /// <summary>
         /// Gets or Sets the top thickness
         /// </summary>
         /// <value>The new thickness</value>
-        public PDFUnit Top
+        public Unit Top
         {
             get { return _top; }
             set { _top = value; }
         }
 
-        private PDFUnit _left;
+        private Unit _left;
         /// <summary>
         /// Gets or Sets the left thickness
         /// </summary>
         /// <value>The new thickness</value>
-        public PDFUnit Left
+        public Unit Left
         {
             get { return _left; }
             set { _left = value; }
         }
 
-        private PDFUnit _bottom;
+        private Unit _bottom;
         /// <summary>
         /// Gets or sets the Botton thickness
         /// </summary>
         /// <value>The new thickness</value>
-        public PDFUnit Bottom
+        public Unit Bottom
         {
             get { return _bottom; }
             set { _bottom = value; }
         }
 
-        private PDFUnit _right;
+        private Unit _right;
         /// <summary>
         /// Gets or sets the Right thickness
         /// </summary>
         /// <value>The new thickness</value>
-        public PDFUnit Right
+        public Unit Right
         {
             get { return _right; }
             set { _right = value; }
@@ -91,7 +91,7 @@ namespace Scryber.Drawing
         /// Sets all edges in the thickness to the value of all
         /// </summary>
         /// <param name="all">The new value of all edges</param>
-        public void SetAll(PDFUnit all)
+        public void SetAll(Unit all)
         {
             this._bottom = this._left = this._right = this._top = all;
         }
@@ -104,7 +104,7 @@ namespace Scryber.Drawing
         /// Creates a new instance of a PDFThickness with the edges set to all
         /// </summary>
         /// <param name="all">The thickness of each edge</param>
-        public PDFThickness(PDFUnit all)
+        public Thickness(Unit all)
             : this(all, all, all, all)
         {
         }
@@ -116,7 +116,7 @@ namespace Scryber.Drawing
         /// <param name="left">The left thickness</param>
         /// <param name="bottom">The bottom thickness</param>
         /// <param name="right">The right thickness</param>
-        public PDFThickness(PDFUnit top, PDFUnit right, PDFUnit bottom, PDFUnit left)
+        public Thickness(Unit top, Unit right, Unit bottom, Unit left)
         {
             this._left = left;
             this._top = top;
@@ -148,7 +148,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="other">The other thickness to compare</param>
         /// <returns>True if the two instances are the same</returns>
-        public bool Equals(PDFThickness other)
+        public bool Equals(Thickness other)
         {
             return this.Top.Equals(other.Top)
                     && this.Left.Equals(other.Left)
@@ -163,7 +163,7 @@ namespace Scryber.Drawing
         /// <returns>True if the two instances are the same</returns>
         public override bool Equals(object obj)
         {
-            return (null == obj) ? false : Equals((PDFThickness)obj);
+            return (null == obj) ? false : Equals((Thickness)obj);
         }
 
         #endregion
@@ -176,7 +176,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="w">The value to increase the horizontal sizes by</param>
         /// <param name="h">The value to increase the vertical sizes by</param>
-        public void Inflate(PDFUnit w, PDFUnit h)
+        public void Inflate(Unit w, Unit h)
         {
             this.Top += h;
             this.Bottom += h;
@@ -188,7 +188,7 @@ namespace Scryber.Drawing
         /// Increases the thickness of the edges by the specified amount (Top & Bottom & Left & Right += all)
         /// </summary>
         /// <param name="all">The thickness to increase all edges by</param>
-        public void Inflate(PDFUnit all)
+        public void Inflate(Unit all)
         {
             this.Top += all;
             this.Bottom += all;
@@ -203,7 +203,7 @@ namespace Scryber.Drawing
         /// <param name="left">The value to increase the left edge by</param>
         /// <param name="bottom">The value to increase the bottom edge by</param>
         /// <param name="right">The value to increase the right edge by</param>
-        public void Inflate(PDFUnit top, PDFUnit right, PDFUnit bottom, PDFUnit left)
+        public void Inflate(Unit top, Unit right, Unit bottom, Unit left)
         {
             this.Top += top;
             this.Bottom += bottom;
@@ -219,9 +219,9 @@ namespace Scryber.Drawing
         /// Returns a new Empty PDFThickness
         /// </summary>
         /// <returns>The new thickness with 0.0 edges</returns>
-        public static PDFThickness Empty()
+        public static Thickness Empty()
         {
-            return new PDFThickness();
+            return new Thickness();
         }
 
         #endregion
@@ -235,10 +235,10 @@ namespace Scryber.Drawing
         {
             get
             {
-                return this._bottom == PDFUnit.Zero
-                    && this._top == PDFUnit.Zero
-                    && this._left == PDFUnit.Zero
-                    && this._right == PDFUnit.Zero;
+                return this._bottom == Unit.Zero
+                    && this._top == Unit.Zero
+                    && this._left == Unit.Zero
+                    && this._right == Unit.Zero;
             }
         }
 
@@ -246,12 +246,12 @@ namespace Scryber.Drawing
 
         #region operator +, -
 
-        public static PDFThickness operator +  (PDFThickness one, PDFThickness two)
+        public static Thickness operator +  (Thickness one, Thickness two)
         {
             return Add(one, two);
         }
 
-        public static PDFThickness operator -(PDFThickness one, PDFThickness two)
+        public static Thickness operator -(Thickness one, Thickness two)
         {
             return Subtract(one, two);
         }
@@ -266,9 +266,9 @@ namespace Scryber.Drawing
         /// <param name="one">The first thickness</param>
         /// <param name="two">The second thickness</param>
         /// <returns>The resultant thickness</returns>
-        public static PDFThickness Add(PDFThickness one, PDFThickness two)
+        public static Thickness Add(Thickness one, Thickness two)
         {
-            return new PDFThickness(one.Top + two.Top,
+            return new Thickness(one.Top + two.Top,
                 one.Right + two.Right, one.Bottom + two.Bottom, one.Left + two.Left);
 
         }
@@ -279,9 +279,9 @@ namespace Scryber.Drawing
         /// <param name="one">The first thickness</param>
         /// <param name="two">The second thickness</param>
         /// <returns>The resultant thickness</returns>
-        public static PDFThickness Subtract(PDFThickness one, PDFThickness two)
+        public static Thickness Subtract(Thickness one, Thickness two)
         {
-            return new PDFThickness(one.Top - two.Top,
+            return new Thickness(one.Top - two.Top,
                 one.Right - two.Right, one.Bottom - two.Bottom, one.Left - two.Left);
         }
 
@@ -290,7 +290,7 @@ namespace Scryber.Drawing
 
         #region IComparable<PDFThickness> Members
 
-        private PDFUnit Total
+        private Unit Total
         {
             get { return this.Top + this.Bottom + this.Left + this.Right; }
         }
@@ -299,7 +299,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="other">The other thickness</param>
         /// <returns>True if they are the same</returns>
-        public int CompareTo(PDFThickness other)
+        public int CompareTo(Thickness other)
         {
             
             int comp = this.Total.CompareTo(other.Total);
@@ -334,9 +334,9 @@ namespace Scryber.Drawing
         /// Rturns a new Thickness with the same edge sizes
         /// </summary>
         /// <returns>The new thickness</returns>
-        public PDFThickness Clone()
+        public Thickness Clone()
         {
-            return new PDFThickness(this.Top, this.Right, this.Bottom, this.Left);
+            return new Thickness(this.Top, this.Right, this.Bottom, this.Left);
         }
 
         #endregion
@@ -364,11 +364,11 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public static bool TryParse(string value, out PDFThickness parsed)
+        public static bool TryParse(string value, out Thickness parsed)
         {
             if (string.IsNullOrEmpty(value))
             {
-                parsed = PDFThickness.Empty();
+                parsed = Thickness.Empty();
                 return false;
             }
             bool success = false;
@@ -379,7 +379,7 @@ namespace Scryber.Drawing
             }
             catch
             {
-                parsed = PDFThickness.Empty();
+                parsed = Thickness.Empty();
                 success = false;
             }
             return success;
@@ -394,7 +394,7 @@ namespace Scryber.Drawing
         /// <returns>A new PDFSize instance</returns>
         /// <exception cref="ArgumentNullException" />
         /// <exception cref="ArgumentException" />
-        public static PDFThickness Parse(string value)
+        public static Thickness Parse(string value)
         {
             if (String.IsNullOrEmpty(value))
                 throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T L B R], [TB RL] OR [All]"));
@@ -404,12 +404,12 @@ namespace Scryber.Drawing
             else if(ThicknessStartAndEndRequired)
                 throw new ArgumentNullException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
 
-            PDFUnit t, l, b, r;
+            Unit t, l, b, r;
 
             string[] thick = value.Split(ThicknessSeparatorChar);
             if (thick.Length == 1)
             {
-                if (PDFUnit.TryParse(thick[0], out t) == false)
+                if (Unit.TryParse(thick[0], out t) == false)
                     throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
                 else
                 {
@@ -418,8 +418,8 @@ namespace Scryber.Drawing
             }
             else if(thick.Length == 2)
             {
-                if (PDFUnit.TryParse(thick[0], out t) == false ||
-                    PDFUnit.TryParse(thick[1], out r) == false)
+                if (Unit.TryParse(thick[0], out t) == false ||
+                    Unit.TryParse(thick[1], out r) == false)
                     throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
                 b = t;
                 l = r;
@@ -429,13 +429,13 @@ namespace Scryber.Drawing
             else
             {
 
-                if (PDFUnit.TryParse(thick[0], out t) == false ||
-                    PDFUnit.TryParse(thick[1], out r) == false ||
-                    PDFUnit.TryParse(thick[2], out b) == false ||
-                    PDFUnit.TryParse(thick[3], out l) == false)
+                if (Unit.TryParse(thick[0], out t) == false ||
+                    Unit.TryParse(thick[1], out r) == false ||
+                    Unit.TryParse(thick[2], out b) == false ||
+                    Unit.TryParse(thick[3], out l) == false)
                     throw new ArgumentException("value", String.Format(Errors.CouldNotParseValue_3, value, "PDFThickness", "[T R B L], [TB RL] OR [All]"));
             }
-            return new PDFThickness(t, r, b, l);
+            return new Thickness(t, r, b, l);
         }
 
 

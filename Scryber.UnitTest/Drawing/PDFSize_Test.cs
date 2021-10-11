@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFSizeConstructor_Test()
         {
-            PDFUnit width = new PDFUnit(10,PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10,PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
 
             Assert.AreEqual(width, target.Width);
             Assert.AreEqual(height, target.Height);
@@ -89,7 +89,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             double width = 10F; // TODO: Initialize to an appropriate value
             double height = 20F; // TODO: Initialize to an appropriate value
-            PDFSize target = new PDFSize(width, height);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
             Assert.AreEqual(width, target.Width.PointsValue);
             Assert.AreEqual(height, target.Height.PointsValue);
         }
@@ -101,12 +101,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Clone_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
 
-            PDFSize expected = new PDFSize(width, height);
-            PDFSize actual;
+            Scryber.Drawing.Size expected = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size actual;
             actual = target.Clone();
             Assert.AreEqual(expected, actual);
             
@@ -119,24 +119,24 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void CompareTo_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
-            PDFSize other = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size other = new Scryber.Drawing.Size(width, height);
 
             int expected = 0;
             int actual;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
 
-            height = new PDFUnit(10, PageUnits.Inches);
-            target = new PDFSize(width, height);
+            height = new Unit(10, PageUnits.Inches);
+            target = new Scryber.Drawing.Size(width, height);
             expected = -1;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
 
-            height = new PDFUnit(40, PageUnits.Inches);
-            target = new PDFSize(width, height);
+            height = new Unit(40, PageUnits.Inches);
+            target = new Scryber.Drawing.Size(width, height);
             expected = 1;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
@@ -149,9 +149,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Equals_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
             object obj = null;
 
             bool expected = false;
@@ -159,7 +159,7 @@ namespace Scryber.Core.UnitTests.Drawing
             actual = target.Equals(obj);
             Assert.AreEqual(expected, actual);
 
-            obj = new PDFSize(width, height);
+            obj = new Scryber.Drawing.Size(width, height);
             expected = true;
             actual = target.Equals(obj);
             Assert.AreEqual(expected, actual);
@@ -173,18 +173,18 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Equals_Test1()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
-            PDFSize other = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size other = new Scryber.Drawing.Size(width, height);
 
             bool expected = true;
             bool actual;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            height = new PDFUnit(40, PageUnits.Inches);
-            other = new PDFSize(width, height);
+            height = new Unit(40, PageUnits.Inches);
+            other = new Scryber.Drawing.Size(width, height);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
@@ -197,17 +197,17 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void GetHashCode_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
-            PDFSize other = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size other = new Scryber.Drawing.Size(width, height);
             int expected = other.GetHashCode();
             int actual;
             actual = target.GetHashCode();
             Assert.AreEqual(expected, actual);
 
-            height = new PDFUnit(40, PageUnits.Inches);
-            target = new PDFSize(width, height);
+            height = new Unit(40, PageUnits.Inches);
+            target = new Scryber.Drawing.Size(width, height);
             actual = target.GetHashCode();
             Assert.AreNotEqual(expected, actual);
         }
@@ -219,15 +219,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Subtract_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Millimeters);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Millimeters);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
 
-            PDFUnit m = new PDFUnit(5, PageUnits.Millimeters);
+            Unit m = new Unit(5, PageUnits.Millimeters);
 
-            PDFThickness margins = new PDFThickness(m, m, m, m);
-            PDFSize expected = new PDFSize(new PDFUnit(0, PageUnits.Millimeters), new PDFUnit(10, PageUnits.Millimeters));
-            PDFSize actual;
+            Thickness margins = new Thickness(m, m, m, m);
+            Scryber.Drawing.Size expected = new Scryber.Drawing.Size(new Unit(0, PageUnits.Millimeters), new Unit(10, PageUnits.Millimeters));
+            Scryber.Drawing.Size actual;
             actual = target.Subtract(margins);
             Assert.AreEqual(expected.Width.PointsValue, actual.Width.PointsValue);
             Assert.AreEqual(Math.Round(expected.Height.PointsValue, 2), Math.Round(actual.Height.PointsValue, 2));
@@ -241,9 +241,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Clone_Test1()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Millimeters);
-            ICloneable target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Millimeters);
+            ICloneable target = new Scryber.Drawing.Size(width, height);
             object expected = target;
             object actual;
             actual = target.Clone();
@@ -260,11 +260,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToPoints_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Millimeters);
-            PDFSize target = new PDFSize(width, height);
-            PDFSize expected = new PDFSize(width.PointsValue, height.PointsValue);
-            PDFSize actual;
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Millimeters);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size expected = new Scryber.Drawing.Size(width.PointsValue, height.PointsValue);
+            Scryber.Drawing.Size actual;
             actual = target.ToPoints();
             Assert.AreEqual(expected, actual);
             
@@ -277,9 +277,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToString_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Millimeters);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Millimeters);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
             string expected = "[10mm, 20mm]";
             string actual;
             actual = target.ToString();
@@ -294,18 +294,18 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void op_Equality_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
-            PDFSize other = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size other = new Scryber.Drawing.Size(width, height);
 
             bool expected = true;
             bool actual;
             actual = (target == other);
             Assert.AreEqual(expected, actual);
 
-            height = new PDFUnit(40, PageUnits.Inches);
-            other = new PDFSize(width, height);
+            height = new Unit(40, PageUnits.Inches);
+            other = new Scryber.Drawing.Size(width, height);
             expected = false;
             actual = (target == other);
             Assert.AreEqual(expected, actual);
@@ -318,25 +318,25 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void op_Inequality_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
-            PDFSize other = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
+            Scryber.Drawing.Size other = new Scryber.Drawing.Size(width, height);
 
             bool expected = false;
             bool actual;
             actual = (target != other);
             Assert.AreEqual(expected, actual);
 
-            height = new PDFUnit(40, PageUnits.Inches);
-            other = new PDFSize(width, height);
+            height = new Unit(40, PageUnits.Inches);
+            other = new Scryber.Drawing.Size(width, height);
             expected = true;
             actual = (target != other);
             Assert.AreEqual(expected, actual);
 
-            width = new PDFUnit(20, PageUnits.Millimeters);
-            height = new PDFUnit(20, PageUnits.Inches);
-            other = new PDFSize(width, height);
+            width = new Unit(20, PageUnits.Millimeters);
+            height = new Unit(20, PageUnits.Inches);
+            other = new Scryber.Drawing.Size(width, height);
             expected = true;
             actual = (target != other);
             Assert.AreEqual(expected, actual);
@@ -349,12 +349,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Empty_Test()
         {
-            PDFUnit width = PDFUnit.Zero;
-            PDFUnit height = PDFUnit.Zero;
-            PDFSize empty = new PDFSize(width, height);
+            Unit width = Unit.Zero;
+            Unit height = Unit.Zero;
+            Scryber.Drawing.Size empty = new Scryber.Drawing.Size(width, height);
 
-            PDFSize actual;
-            actual = PDFSize.Empty;
+            Scryber.Drawing.Size actual;
+            actual = Scryber.Drawing.Size.Empty;
             Assert.AreEqual(empty, actual);
 
         }
@@ -366,15 +366,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Height_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
 
-            PDFUnit expected = height;
+            Unit expected = height;
             Assert.AreEqual(expected, target.Height);
 
-            PDFUnit actual;
-            expected = new PDFUnit(40, PageUnits.Inches);
+            Unit actual;
+            expected = new Unit(40, PageUnits.Inches);
             target.Height = expected;
             actual = target.Height;
             Assert.AreEqual(expected, actual);
@@ -388,17 +388,17 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void IsEmpty_Test()
         {
-            PDFUnit width = PDFUnit.Zero;
-            PDFUnit height = PDFUnit.Zero;
-            PDFSize empty = new PDFSize(width, height);
+            Unit width = Unit.Zero;
+            Unit height = Unit.Zero;
+            Scryber.Drawing.Size empty = new Scryber.Drawing.Size(width, height);
             Assert.IsTrue(empty.IsEmpty);
 
-            PDFSize actual;
-            actual = PDFSize.Empty;
+            Scryber.Drawing.Size actual;
+            actual = Scryber.Drawing.Size.Empty;
             Assert.IsTrue(actual.IsEmpty);
 
-            height = new PDFUnit(10, PageUnits.Millimeters);
-            actual = new PDFSize(width, height);
+            height = new Unit(10, PageUnits.Millimeters);
+            actual = new Scryber.Drawing.Size(width, height);
             Assert.IsFalse(actual.IsEmpty);
         }
 
@@ -409,15 +409,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Width_Test()
         {
-            PDFUnit width = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit height = new PDFUnit(20, PageUnits.Inches);
-            PDFSize target = new PDFSize(width, height);
+            Unit width = new Unit(10, PageUnits.Millimeters);
+            Unit height = new Unit(20, PageUnits.Inches);
+            Scryber.Drawing.Size target = new Scryber.Drawing.Size(width, height);
 
-            PDFUnit expected = width;
+            Unit expected = width;
             Assert.AreEqual(expected, target.Width);
 
-            PDFUnit actual;
-            expected = new PDFUnit(40, PageUnits.Inches);
+            Unit actual;
+            expected = new Unit(40, PageUnits.Inches);
             target.Width = expected;
             actual = target.Width;
             Assert.AreEqual(expected, actual);

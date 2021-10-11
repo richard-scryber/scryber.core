@@ -13,10 +13,10 @@ namespace Scryber.PDF.Layout
 
         public FloatMode Mode { get; private set; }
 
-        public PDFUnit FloatWidth, FloatHeight, FloatInset, YOffset;
+        public Unit FloatWidth, FloatHeight, FloatInset, YOffset;
         public PDFFloatAddition Prev;
 
-        public PDFFloatAddition(FloatMode mode, PDFUnit floatWidth, PDFUnit floatheight, PDFUnit floatInset, PDFUnit yoffset, PDFFloatAddition prev)
+        public PDFFloatAddition(FloatMode mode, Unit floatWidth, Unit floatheight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
         {
             this.Mode = mode;
             this.FloatWidth = floatWidth;
@@ -34,9 +34,9 @@ namespace Scryber.PDF.Layout
         /// <param name="yoffset"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public PDFUnit ApplyWidthInset(PDFUnit available, PDFUnit yoffset, PDFUnit height)
+        public Unit ApplyWidthInset(Unit available, Unit yoffset, Unit height)
         {
-            PDFUnit inset = PDFUnit.Zero;
+            Unit inset = Unit.Zero;
 
             var leftOffset = this.GetLeftOffset(0, yoffset, height);
             var rightInset = this.GetRightInset(0, yoffset, height);
@@ -45,7 +45,7 @@ namespace Scryber.PDF.Layout
 
             return available;
 
-            PDFUnit newAvail = available;
+            Unit newAvail = available;
             if (this.IsAffectingWidth(yoffset, height))
             {
                 inset = this.FloatWidth + this.FloatInset;
@@ -55,7 +55,7 @@ namespace Scryber.PDF.Layout
             if (null != this.Prev)
             {
                 var prevAvail = this.Prev.ApplyWidthInset(available, yoffset, height);
-                newAvail = PDFUnit.Min(newAvail, prevAvail);
+                newAvail = Unit.Min(newAvail, prevAvail);
             }
 
             return newAvail;
@@ -69,7 +69,7 @@ namespace Scryber.PDF.Layout
         /// <param name="yoffset">The vertical offset of the component in the container this float is in</param>
         /// <param name="height">The height of the component, for ensuring exact matches are not missed use 0.1 if zero</param>
         /// <returns></returns>
-        public virtual PDFUnit GetLeftOffset(PDFUnit xoffset, PDFUnit yoffset, PDFUnit height)
+        public virtual Unit GetLeftOffset(Unit xoffset, Unit yoffset, Unit height)
         {
             if (null != this.Prev)
             {
@@ -79,7 +79,7 @@ namespace Scryber.PDF.Layout
             return xoffset;
         }
 
-        public virtual PDFUnit GetRightInset(PDFUnit xoffset, PDFUnit yoffset, PDFUnit height)
+        public virtual Unit GetRightInset(Unit xoffset, Unit yoffset, Unit height)
         {
             if (null != this.Prev)
             {
@@ -89,7 +89,7 @@ namespace Scryber.PDF.Layout
             return xoffset;
         }
 
-        public virtual bool IsAffectingWidth(PDFUnit yoffset, PDFUnit height)
+        public virtual bool IsAffectingWidth(Unit yoffset, Unit height)
         {
             if ((yoffset + height) > this.YOffset && yoffset < (this.YOffset + this.FloatHeight))
                 return true;
@@ -100,15 +100,15 @@ namespace Scryber.PDF.Layout
 
     public class PDFFloatLeftAddition : PDFFloatAddition
     {
-        public PDFFloatLeftAddition(PDFUnit floatWidth, PDFUnit floatHeight, PDFUnit floatInset, PDFUnit yoffset, PDFFloatAddition prev)
+        public PDFFloatLeftAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
             : base(FloatMode.Left, floatWidth, floatHeight, floatInset, yoffset, prev)
         {
         }
 
-        public override PDFUnit GetLeftOffset(PDFUnit x, PDFUnit yoffset, PDFUnit height)
+        public override Unit GetLeftOffset(Unit x, Unit yoffset, Unit height)
         {
             if (this.IsAffectingWidth(yoffset, height))
-                x = PDFUnit.Max(this.FloatWidth + this.FloatInset, x);
+                x = Unit.Max(this.FloatWidth + this.FloatInset, x);
 
             x = base.GetLeftOffset(x, yoffset, height);
 
@@ -118,15 +118,15 @@ namespace Scryber.PDF.Layout
 
     public class PDFFloatRightAddition : PDFFloatAddition
     {
-        public PDFFloatRightAddition(PDFUnit floatWidth, PDFUnit floatHeight, PDFUnit floatInset, PDFUnit yoffset, PDFFloatAddition prev)
+        public PDFFloatRightAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
             : base(FloatMode.Right, floatWidth, floatHeight, floatInset, yoffset, prev)
         {
         }
 
-        public override PDFUnit GetRightInset(PDFUnit x, PDFUnit yoffset, PDFUnit height)
+        public override Unit GetRightInset(Unit x, Unit yoffset, Unit height)
         {
             if (this.IsAffectingWidth(yoffset, height))
-                x = PDFUnit.Max(this.FloatWidth + this.FloatInset, x);
+                x = Unit.Max(this.FloatWidth + this.FloatInset, x);
 
             x = base.GetRightInset(x, yoffset, height);
 

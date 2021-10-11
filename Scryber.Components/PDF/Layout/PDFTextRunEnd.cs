@@ -55,9 +55,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this end run - PDFUnit.Zero
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -67,9 +67,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this end run - PDFUnit.Zero
         /// </summary>
-        public override Drawing.PDFUnit Width
+        public override Drawing.Unit Width
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -88,7 +88,7 @@ namespace Scryber.PDF.Layout
         // implementation
         //
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
 

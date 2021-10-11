@@ -73,7 +73,7 @@ namespace Scryber.PDF.Resources
         }
 
 
-        public PDFObjectRef WriteResourceList(PDFContextBase context, PDFWriter writer)
+        public PDFObjectRef WriteResourceList(ContextBase context, PDFWriter writer)
         {
             PDFObjectRef oref = writer.BeginObject();
 

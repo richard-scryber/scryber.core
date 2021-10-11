@@ -32,7 +32,7 @@ namespace Scryber.Drawing
     /// Defines a font family, style attributes and size for outputting text onto a pdf document
     /// </summary>
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class PDFFont : IPDFGraphicsAdapter
+    public class Font : IPDFGraphicsAdapter
     {
 
         /// <summary>
@@ -165,12 +165,12 @@ namespace Scryber.Drawing
 
         #region public PDFUnit Size {get;set;}
 
-        private PDFUnit _size;
+        private Unit _size;
 
         /// <summary>
         /// Gets or sets the current em size of the font.
         /// </summary>
-        public PDFUnit Size
+        public Unit Size
         {
             get { return _size; }
             set 
@@ -263,7 +263,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="size">The new font size</param>
-        public PDFFont(PDFFont basefont, PDFUnit size)
+        public Font(Font basefont, Unit size)
             : this(basefont.Selector, size, basefont.FontWeight, basefont.FontStyle)
         {
         }
@@ -273,7 +273,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="style">The new FontStyle</param>
-        public PDFFont(PDFFont basefont, int weight, FontStyle style)
+        public Font(Font basefont, int weight, FontStyle style)
             : this(basefont.Selector, basefont.Size, weight, style)
         {
         }
@@ -284,7 +284,7 @@ namespace Scryber.Drawing
         /// <param name="basefont">The existing PDFFont</param>
         /// <param name="size">the new font size</param>
         /// <param name="style">the new font style</param>
-        public PDFFont(PDFFont basefont, PDFUnit size, int weight, FontStyle style)
+        public Font(Font basefont, Unit size, int weight, FontStyle style)
             : this(basefont.Selector, size, weight, style)
         {
         }
@@ -295,7 +295,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="font">One of the PDF Standard fonts that does not need to be included in the PDF file</param>
         /// <param name="size">The em size of the font</param>
-        public PDFFont(StandardFont font, PDFUnit size)
+        public Font(StandardFont font, Unit size)
             : this(font.ToString(), size, FontWeights.Regular, FontStyle.Regular)
         {
         }
@@ -306,7 +306,7 @@ namespace Scryber.Drawing
         /// <param name="font">One of the PDF Standard fonts that does not need to be included in the PDF file</param>
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
-        public PDFFont(StandardFont font, PDFUnit size, int weight, FontStyle style)
+        public Font(StandardFont font, Unit size, int weight, FontStyle style)
             : this(font.ToString(), size, weight, style)
         {
         }
@@ -316,7 +316,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="family">The family name of the font (e.g. Arial, Helvetica, Courier)</param>
         /// <param name="size">The em size of the font</param>
-        public PDFFont(string family, PDFUnit size)
+        public Font(string family, Unit size)
             : this(family, size, FontWeights.Regular, FontStyle.Regular)
         {
         }
@@ -327,7 +327,7 @@ namespace Scryber.Drawing
         /// <param name="family">The family name of the font (e.g. Arial, Helvetica, Courier)</param>
         /// <param name="size">The em size of the font</param>
         /// <param name="style">The new font style</param>
-        public PDFFont(string family, PDFUnit size, int weight, FontStyle style)
+        public Font(string family, Unit size, int weight, FontStyle style)
             : this(FontSelector.Parse(family), size, weight, style)
         {
         }
@@ -341,7 +341,7 @@ namespace Scryber.Drawing
         /// <param name="size">The fonts unit size</param>
         /// <param name="style">The fonts style</param>
         /// <param name="isStd">Flag to identify if this is one of the PDF standard fonts.</param>
-        public PDFFont(FontSelector selector, PDFUnit size, int weight, FontStyle style)
+        public Font(FontSelector selector, Unit size, int weight, FontStyle style)
         {
             this._selector = selector ?? throw new ArgumentNullException("The font selector for a PDFFont cannot be null");
             this._size = size;
@@ -367,7 +367,7 @@ namespace Scryber.Drawing
         /// <returns>Returns true if the object is a font and it matches this instance</returns>
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as PDFFont);
+            return this.Equals(obj as Font);
         }
 
         /// <summary>
@@ -375,7 +375,7 @@ namespace Scryber.Drawing
         /// </summary>
         /// <param name="font">The font to compare</param>
         /// <returns>Returns true if the font matches this instance</returns>
-        public bool Equals(PDFFont font)
+        public bool Equals(Font font)
         {
             return Equals(this, font);
         }
@@ -386,7 +386,7 @@ namespace Scryber.Drawing
         /// <param name="one">The first to compare</param>
         /// <param name="two">The other instance to compare</param>
         /// <returns>True if the instances are comparably equal</returns>
-        public static bool Equals(PDFFont one, PDFFont two)
+        public static bool Equals(Font one, Font two)
         {
             if (null == one)
                 return null == two;
@@ -454,13 +454,13 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             graphics.SetCurrentFont(this);
             return true;
         }
 
-        public void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
             
         }

@@ -154,10 +154,10 @@ namespace Scryber.Core.UnitTests.Drawing
             //GetSize() returns actual size based on pixels and resolution
             double w = ((double)ImagePixelWidth) / ImageResolution;
             double h = ((double)ImagePixelHeight) / ImageResolution;
-            PDFSize expected = new PDFSize(new PDFUnit(w, PageUnits.Inches), new PDFUnit(h, PageUnits.Inches));
+            Scryber.Drawing.Size expected = new Scryber.Drawing.Size(new Unit(w, PageUnits.Inches), new Unit(h, PageUnits.Inches));
 
             int accuracy = 0;
-            PDFSize actual;
+            Scryber.Drawing.Size actual;
             actual = target.GetSize();
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, accuracy), Math.Round(actual.Width.PointsValue, accuracy));
             Assert.AreEqual(Math.Round(expected.Height.PointsValue, accuracy), Math.Round(actual.Height.PointsValue, accuracy));
@@ -280,9 +280,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Bitmap bmp = CreateImageBitmap();
             ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             double h = ((double)ImagePixelHeight) / ImageResolution;
-            PDFUnit expected = new PDFUnit(h, PageUnits.Inches);
+            Unit expected = new Unit(h, PageUnits.Inches);
 
-            PDFUnit actual = target.DisplayHeight;
+            Unit actual = target.DisplayHeight;
 
             Assert.AreEqual(expected, actual);
         }
@@ -297,8 +297,8 @@ namespace Scryber.Core.UnitTests.Drawing
             Bitmap bmp = CreateImageBitmap();
             ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
             double w = ((double)ImagePixelWidth) / ImageResolution;
-            PDFUnit expected = new PDFUnit(w, PageUnits.Inches);
-            PDFUnit actual = target.DisplayWidth;
+            Unit expected = new Unit(w, PageUnits.Inches);
+            Unit actual = target.DisplayWidth;
 
             Assert.AreEqual(expected, actual);
         }

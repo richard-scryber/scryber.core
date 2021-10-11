@@ -33,36 +33,36 @@ namespace Scryber.Binding
             get { return DocumentGenerationStage.Bound; }
         }
 
-        public PDFInitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
+        public InitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
             throw new NotSupportedException("XPath Binding is not supported on any other document lifecycle stage than the databinding");
         }
 
-        public PDFLoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
+        public LoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
             throw new NotSupportedException("XPath Binding is not supported on any other document lifecycle stage than the databinding");
         }
 
-        public PDFDataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
+        public DataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
-            PDFValueConverter valConv;
+            ValueConverter valConv;
 
             if(ParserDefintionFactory.IsSimpleObjectType(forProperty.PropertyType, out valConv))
             {
                 BindingXPathExpression expr = BindingXPathExpression.Create(expressionvalue, valConv, forProperty);
-                return new PDFDataBindEventHandler(expr.BindComponent);
+                return new DataBindEventHandler(expr.BindComponent);
             }
             else if(ParserDefintionFactory.IsCustomParsableObjectType(forProperty.PropertyType, out valConv))
             {
                 BindingXPathExpression expr = BindingXPathExpression.Create(expressionvalue, valConv, forProperty);
-                return new PDFDataBindEventHandler(expr.BindComponent);
+                return new DataBindEventHandler(expr.BindComponent);
             }
             else if(forProperty.PropertyType == typeof(Object))
             {
                 valConv = null;
 
                 var expr = BindingXPathExpression.Create(expressionvalue, valConv, forProperty);
-                return new PDFDataBindEventHandler(expr.BindComponent);
+                return new DataBindEventHandler(expr.BindComponent);
             }
             else
                 throw new PDFParserException(string.Format(Errors.ParserAttributeMustBeSimpleOrCustomParsableType, forProperty.Name, forProperty.PropertyType));

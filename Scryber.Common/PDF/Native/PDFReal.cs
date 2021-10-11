@@ -23,7 +23,7 @@ using System.Text;
 namespace Scryber.PDF.Native
 {
     [PDFParsableValue()]
-    public struct PDFReal : IFileObject, IEquatable<PDFReal>
+    public struct PDFReal : IPDFFileObject, IEquatable<PDFReal>
     {
         public ObjectType Type { get { return ObjectTypes.Real; } }
 
@@ -95,7 +95,7 @@ namespace Scryber.PDF.Native
 
         public static PDFReal Parse(string value, int offset, out int end)
         {
-            IFileObject obj = PDFParserHelper.ParseNumericValue(value, offset, out end);
+            IPDFFileObject obj = PDFParserHelper.ParseNumericValue(value, offset, out end);
 
             if (obj.Type == ObjectTypes.Real)
                 return (PDFReal)obj;

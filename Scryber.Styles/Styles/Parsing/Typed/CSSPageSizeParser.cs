@@ -17,8 +17,8 @@ namespace Scryber.Styles.Parsing.Typed
                 var val = reader.CurrentTextValue;
 
                 PaperSize paper;
-                PDFUnit width;
-                PDFUnit height;
+                Unit width;
+                Unit height;
                 PaperOrientation orient;
                 string expr1 = null, expr2 = null;
 
@@ -186,14 +186,14 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        protected bool DoConvertPageSizeValue(StyleBase style, object value, out PDFUnit size)
+        protected bool DoConvertPageSizeValue(StyleBase style, object value, out Unit size)
         {
             if(null == value)
             {
-                size = PDFUnit.Empty;
+                size = Unit.Empty;
                 return false;
             }
-            else if(value is PDFUnit u)
+            else if(value is Unit u)
             {
                 size = u;
                 return true;

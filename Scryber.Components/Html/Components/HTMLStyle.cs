@@ -100,7 +100,7 @@ namespace Scryber.Html.Components
             
         }
 
-        private void AssertInnerStyles(PDFContextBase context)
+        private void AssertInnerStyles(ContextBase context)
         {
             if(!string.IsNullOrEmpty(this.Contents))
             {
@@ -109,13 +109,13 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected override void OnLoaded(PDFLoadContext context)
+        protected override void OnLoaded(LoadContext context)
         {
             AssertInnerStyles(context);
             base.OnLoaded(context);
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             AssertInnerStyles(context);
             base.OnDataBinding(context);
@@ -124,7 +124,7 @@ namespace Scryber.Html.Components
                 this._innerItems.DataBind(context);
         }
 
-        protected override void OnDataBound(PDFDataContext context)
+        protected override void OnDataBound(DataContext context)
         {
             base.OnDataBound(context);
             this.AddStylesToDocument();
@@ -146,7 +146,7 @@ namespace Scryber.Html.Components
             this._parsedGroup = null;
         }
 
-        protected StyleCollection CreateInnerStyles(PDFContextBase context)
+        protected StyleCollection CreateInnerStyles(ContextBase context)
         {
             var collection = new StyleCollection(this);
             this.AddCssStyles(collection, context);
@@ -169,7 +169,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected virtual void AddCssStyles(StyleCollection collection, PDFContextBase context)
+        protected virtual void AddCssStyles(StyleCollection collection, ContextBase context)
         {
             if(!string.IsNullOrEmpty(this.StyleType))
             {

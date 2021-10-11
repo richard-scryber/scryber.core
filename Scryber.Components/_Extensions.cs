@@ -31,7 +31,7 @@ namespace Scryber
     /// </summary>
     public static class PDFArrayExtensions
     {
-        public static T[] ContentAs<T>(this PDFArray ary) where T : IFileObject
+        public static T[] ContentAs<T>(this PDFArray ary) where T : IPDFFileObject
         {
             if (null == ary)
                 return null;

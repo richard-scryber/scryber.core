@@ -126,7 +126,7 @@ namespace Scryber.PDF.Native
         /// <param name="offset"></param>
         /// <param name="end">Set to the character position after the parsed number (or the end of the string)</param>
         /// <returns>The parsed file object that best represents the numeric value</returns>
-        public static IFileObject ParseNumericValue(string value, int offset, out int end)
+        public static IPDFFileObject ParseNumericValue(string value, int offset, out int end)
         {
             AssertValidValue(value, offset);
 
@@ -334,7 +334,7 @@ namespace Scryber.PDF.Native
                 {
                     PDFName name = ParseName(value, offset, out end);
                     offset = end;
-                    IFileObject obj = InferAndParseNextObject(value, offset, out end);
+                    IPDFFileObject obj = InferAndParseNextObject(value, offset, out end);
                     dict[name] = obj;
                     offset = end;
                 }
@@ -387,7 +387,7 @@ namespace Scryber.PDF.Native
                 }
                 else
                 {
-                    IFileObject obj = InferAndParseNextObject(value, offset, out end);
+                    IPDFFileObject obj = InferAndParseNextObject(value, offset, out end);
                     arry.Add(obj);
                     offset = end;
                 }
@@ -406,7 +406,7 @@ namespace Scryber.PDF.Native
         //
 
 
-        internal static IFileObject InferAndParseNextObject(string value, int offset, out int end)
+        internal static IPDFFileObject InferAndParseNextObject(string value, int offset, out int end)
         {
             while (char.IsWhiteSpace(value, offset))
             {
@@ -450,7 +450,7 @@ namespace Scryber.PDF.Native
 
                     //all we are left with are Number, Real, ObjectRef (all start with a number)
 
-                    IFileObject num = ParseNumericValue(value, offset, out end);
+                    IPDFFileObject num = ParseNumericValue(value, offset, out end);
 
                     if (end >= value.Length || num.Type == ObjectTypes.Real)
                         return num;
@@ -460,7 +460,7 @@ namespace Scryber.PDF.Native
                         int tempoffset = end + 1;
                         int tempend;
 
-                        IFileObject num2 = ParseNumericValue(value, tempoffset, out tempend);
+                        IPDFFileObject num2 = ParseNumericValue(value, tempoffset, out tempend);
                         if (num2.Type == ObjectTypes.Number && char.IsWhiteSpace(value, tempend) && value[tempend + 1] == 'R')
                         {
                             return ParseObjectRef(value, offset, out end);

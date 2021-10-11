@@ -78,9 +78,9 @@ namespace Scryber.PDF
 
         #region public PDFPoint Offset {get;set;}
 
-        private PDFPoint _offset = PDFPoint.Empty;
+        private Drawing.Point _offset = Drawing.Point.Empty;
 
-        public PDFPoint Offset
+        public Drawing.Point Offset
         {
             get { return _offset; }
             set { _offset = value; }
@@ -90,9 +90,9 @@ namespace Scryber.PDF
 
         #region public PDFSize Space {get;set;}
 
-        private PDFSize _space;
+        private Drawing.Size _space;
 
-        public PDFSize Space
+        public Drawing.Size Space
         {
             get { return _space; }
             set { _space = value; }
@@ -102,9 +102,9 @@ namespace Scryber.PDF
 
         #region public PDFSize PageSize
 
-        private PDFSize _size = PDFSize.Empty;
+        private Drawing.Size _size = Drawing.Size.Empty;
 
-        public PDFSize PageSize
+        public Drawing.Size PageSize
         {
             get { return this._size; }
             set { this._size = value; }
@@ -138,38 +138,25 @@ namespace Scryber.PDF
 
         #endregion
 
-        #region public PDFOutputFormatting OutputFormat {get;}
-
-        private PDFOutputFormatting _format;
-
-        /// <summary>
-        /// Gets the output format for the document
-        /// </summary>
-        public PDFOutputFormatting Formatting
-        {
-            get { return _format; }
-        }
-
-        #endregion
+        
 
         //
         // .ctor
         //
 
-        public PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.Style root, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : this(origin,pageCount,format, new Scryber.Styles.StyleStack(root), items, log, perfmon, document)
+        public PDFRenderContext(DrawingOrigin origin, int pageCount, Styles.Style root, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
+            : this(origin,pageCount, new Scryber.Styles.StyleStack(root), items, log, perfmon, document)
         {
         }
 
-        internal PDFRenderContext(DrawingOrigin origin, int pageCount, PDFOutputFormatting format, Styles.StyleStack stack, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document) 
+        internal PDFRenderContext(DrawingOrigin origin, int pageCount, Styles.StyleStack stack, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document) 
             : base(stack, items, log, perfmon, document)
         {
             this._origin = origin;
-            this._offset = new PDFPoint();
-            this._space = new PDFSize();
+            this._offset = new Drawing.Point();
+            this._space = new Drawing.Size();
             this._pgCount = pageCount;
             this._pgindex = 0;
-            this._format = format;
             
         }
         

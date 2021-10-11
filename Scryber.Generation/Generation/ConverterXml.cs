@@ -911,7 +911,7 @@ namespace Scryber.Generation
             /// <summary>
             /// Reference to the Value convevertor delegate method
             /// </summary>
-            internal PDFValueConverter ValueConverter { get; private set; }
+            internal ValueConverter ValueConverter { get; private set; }
 
             /// <summary>
             /// Reference to the actual simple parse method on the class itself
@@ -941,7 +941,7 @@ namespace Scryber.Generation
             {
                 this.Type = parsetype;
                 XmlConverter = new PDFXmlConverter(this.ConvertXml);
-                ValueConverter = new PDFValueConverter(this.ConvertValue);
+                ValueConverter = new ValueConverter(this.ConvertValue);
             }
         }
 

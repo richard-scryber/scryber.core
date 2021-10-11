@@ -120,12 +120,12 @@ namespace Scryber.Core.UnitTests.Styles
             // explicit sizes
 
             target = new PageStyle();
-            PDFUnit w = 200;
-            PDFUnit h = 500;
+            Unit w = 200;
+            Unit h = 500;
             target.Width = w;
             target.Height = h;
 
-            expected = new PageSize(new PDFSize(w, h));
+            expected = new PageSize(new Size(w, h));
             actual = target.CreatePageSize();
             AssertPageSizeAreEqual(expected, actual);
 
@@ -144,7 +144,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.PaperOrientation = orientation;
 
 
-            expected = new PageSize(new PDFSize(w, h));
+            expected = new PageSize(new Size(w, h));
             actual = target.CreatePageSize();
 
             AssertPageSizeAreEqual(expected, actual);
@@ -170,7 +170,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void Page_HeightTest()
         {
             PageStyle target = new PageStyle();
-            PDFUnit expected = PDFUnit.Zero;
+            Unit expected = Unit.Zero;
 
             Assert.AreEqual(expected, target.Height);
 
@@ -182,7 +182,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Height = expected;
             Assert.AreEqual(expected, target.Height);
 
-            expected = PDFUnit.Zero;
+            expected = Unit.Zero;
             target.RemoveHeight();
             Assert.AreEqual(expected, target.Height);
 
@@ -337,7 +337,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void Page_WidthTest()
         {
             PageStyle target = new PageStyle();
-            PDFUnit expected = PDFUnit.Zero;
+            Unit expected = Unit.Zero;
 
             Assert.AreEqual(expected, target.Width);
 
@@ -349,7 +349,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Width = expected;
             Assert.AreEqual(expected, target.Width);
 
-            expected = PDFUnit.Zero;
+            expected = Unit.Zero;
             target.RemoveWidth();
             Assert.AreEqual(expected, target.Width);
 

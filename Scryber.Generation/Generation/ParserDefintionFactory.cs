@@ -233,7 +233,7 @@ namespace Scryber.Generation
         /// <param name="type"></param>
         /// <param name="convert"></param>
         /// <returns></returns>
-        public static bool IsSimpleObjectType(Type type, out PDFValueConverter convert)
+        public static bool IsSimpleObjectType(Type type, out ValueConverter convert)
         {
             return ConvertObjects.IsSimpleObjectType(type, out convert);
         }
@@ -249,7 +249,7 @@ namespace Scryber.Generation
         /// <param name="type">The type to check for parsability</param>
         /// <param name="convert">If it is a custom parsable type then it will be set to the converter of this type</param>
         /// <returns>True if the type is decoated with a custom parsable type</returns>
-        public static bool IsCustomParsableObjectType(Type type, out PDFValueConverter convert)
+        public static bool IsCustomParsableObjectType(Type type, out ValueConverter convert)
         {
             PDFParsableValueAttribute valattr = GetCustomAttribute<PDFParsableValueAttribute>(type, true);
             if (null != valattr)

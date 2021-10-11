@@ -11,15 +11,15 @@ namespace Scryber.Styles.Parsing
         private StringEnumerator _str;
         private CSSStyleParser _owner;
         private StyleBase _curr;
-        private PDFContextBase _context;
+        private ContextBase _context;
         private TraceLog _log;
 
-        public PDFContextBase Context
+        public ContextBase Context
         {
             get { return this._context; }
         }
 
-        public CSSStyleEnumerator(StringEnumerator str, CSSStyleParser owner, PDFContextBase context)
+        public CSSStyleEnumerator(StringEnumerator str, CSSStyleParser owner, ContextBase context)
         {
             this._str = str;
             this._owner = owner;

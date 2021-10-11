@@ -34,24 +34,24 @@ namespace Scryber
     // PDFComponent interfaces and related contracts
     //
 
-    #region public interface IPDFTemplateParser : IPDFComponent
+    #region public interface ITemplateParser : IComponent
 
     /// <summary>
     /// Interface that all components must implement if they need to parse template files.
     /// </summary>
-    public interface IPDFTemplateParser : IComponent
+    public interface ITemplateParser : IComponent
     {
         IComponent ParseTemplate(IRemoteComponent comp, System.IO.TextReader reader);
     }
 
     #endregion
 
-    #region public interface IPDFContainerComponent : IPDFComponent
+    #region public interface IContainerComponent : IComponent
 
     /// <summary>
     /// Interface that identifies a Page Component as a container for multiple child Components
     /// </summary>
-    public interface IPDFContainerComponent : IComponent
+    public interface IContainerComponent : IComponent
     {
         bool HasContent { get; }
         /// <summary>
@@ -62,30 +62,27 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFTextComponent : IPDFComponent
+    #region public interface ITextComponent : IComponent
 
     /// <summary>
     /// Interface for any text based Component (has visual content displayed as text on a page) 
     /// </summary>
-    public interface IPDFTextComponent : IComponent
+    public interface ITextComponent : IComponent
     {
-        //Text.PDFTextLayout TextLayout { get; set; }
 
-        Text.PDFTextReader CreateReader(PDFContextBase context, Style fullstyle);
-
-        //void ResetTextBlock();
+        Text.PDFTextReader CreateReader(ContextBase context, Style fullstyle);
     }
 
     #endregion
 
-    #region public interface IPDFGraphicPathComponent : IPDFComponent
+    #region public interface IGraphicPathComponent : IComponent
 
     /// <summary>
     /// Interface for any Component that is displayed as a shape or path
     /// </summary>
-    public interface IPDFGraphicPathComponent : IComponent, IPDFRenderComponent
+    public interface IGraphicPathComponent : IComponent
     {
-        GraphicsPath CreatePath(PDFSize avail, Styles.Style fullstyle);
+        GraphicsPath CreatePath(Size avail, Styles.Style fullstyle);
 
         /// <summary>
         /// Gets or sets the path generated with the CreatePath method
@@ -97,25 +94,25 @@ namespace Scryber
 
     #region public interface IPDFImageComponent : IPDFComponent
 
-    public interface IPDFImageComponent : IComponent, IPDFVisualRenderComponent
+    public interface IPDFImageComponent : IComponent, IPDFLayoutComponent
     {
         /// <summary>
         /// Gets the image resource data associated with this image. 
         /// Returns null if there is no image.
         /// </summary>
         /// <returns></returns>
-        PDFImageXObject GetImageObject(PDFContextBase context, Style imagestyle);
+        PDFImageXObject GetImageObject(ContextBase context, Style imagestyle);
 
     }
 
     #endregion
     
-    #region public interface IPDFTopAndTailedComponent : IPDFContainerComponent
+    #region public interface ITopAndTailedComponent : IContainerComponent
 
     /// <summary>
     /// Interface that extends the container Component to include a header and a footer
     /// </summary>
-    public interface IPDFTopAndTailedComponent : IPDFContainerComponent
+    public interface ITopAndTailedComponent : IContainerComponent
     {
 
         /// <summary>
@@ -131,7 +128,7 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFRenderComponent : IPDFComponent
+    #region public interface IPDFRenderComponent : IComponent
 
     /// <summary>
     /// A PDF Component that supports rendering
@@ -158,12 +155,12 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFVisualRenderComponent : IPDFRenderComponent
+    #region public interface IPDFLayoutComponent : IRenderComponent
 
     /// <summary>
-    /// Interface for components to implement that render their own contents within the content of a page, but don't need to implement a layout engine.
+    /// Interface for components to implement that layout their own contents within the content of a PDF page, but don't need to implement a layout engine.
     /// </summary>
-    public interface IPDFVisualRenderComponent : IPDFRenderComponent
+    public interface IPDFLayoutComponent : IPDFRenderComponent
     {
         /// <summary>
         /// Returns the required size to be made available within the layout for the component to render into.
@@ -172,7 +169,7 @@ namespace Scryber
         /// <param name="context">The current layout context</param>
         /// <param name="appliedstyle">The style applied to the component</param>
         /// <returns>The required size of the component content (excluding any padding or margins)</returns>
-        PDFSize GetRequiredSizeForLayout(PDFSize available, PDFLayoutContext context, Style appliedstyle);
+        Size GetRequiredSizeForLayout(Size available, PDFLayoutContext context, Style appliedstyle);
 
         /// <summary>
         /// Applies the final render size(s) back to the visual render component.
@@ -181,38 +178,38 @@ namespace Scryber
         /// <param name="border">The border rectangle (content + padding)</param>
         /// <param name="total">The total bounds (content + padding + margins)</param>
         /// <param name="style">The full style</param>
-        void SetRenderSizes(PDFRect content, PDFRect border, PDFRect total, Style style);
+        void SetRenderSizes(Rect content, Rect border, Rect total, Style style);
     }
 
     #endregion
 
-    #region public interface IPDFVisualComponent : IPDFStyledComponent
+    #region public interface IVisualComponent : IStyledComponent
 
     /// <summary>
-    /// A PDF Visual Component that has a physical dimension and content
+    /// A Visual Component that has a physical dimension and content
     /// </summary>
-    public interface IPDFVisualComponent : IPDFStyledComponent
+    public interface IVisualComponent : IPDFStyledComponent
     {
 
         /// <summary>
         /// Gets or sets the X position of this component
         /// </summary>
-        PDFUnit X { get; set; }
+        Unit X { get; set; }
 
         /// <summary>
         /// Gets or sets the Y position of this component
         /// </summary>
-        PDFUnit Y { get; set; }
+        Unit Y { get; set; }
 
         /// <summary>
         /// Gets or sets the explcit Width of this component
         /// </summary>
-        PDFUnit Width { get; set; }
+        Unit Width { get; set; }
 
         /// <summary>
         /// Gets or sets the explicit Height of this component
         /// </summary>
-        PDFUnit Height { get; set; }
+        Unit Height { get; set; }
 
         /// <summary>
         /// Gets the page that contains this Component
@@ -225,58 +222,47 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFDataStyledComponent
+    #region public interface IDataStyledComponent
 
     /// <summary>
     /// All instances that implement can have a specific key to their
     /// style so this can be stored repeatably (for multiple components with the same identifier),
     /// rather than dynamically built each time.
     /// </summary>
-    public interface IPDFDataStyledComponent
+    public interface IDataStyledComponent
     {
         string DataStyleIdentifier { get; set; }
     }
 
     #endregion
 
-    #region public interface IPDFViewPortComponent : IPDFComponent
+    
 
-    /// <summary>
-    /// Any Component that implements the IPDFViewPortComponent interface has it's own layout engine
-    /// to arrange its child contents and return the size
-    /// </summary>
-    public interface IPDFViewPortComponent : IComponent
-    {
-        IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style fullstyle);
-    }
-
-    #endregion
-
-    #region public interface IPDFInvisibleContainer : IPDFContainerComponent
+    #region public interface IInvisibleContainer : IPDFContainerComponent
 
     /// <summary>
     /// Placeholder for a container that does not affect rendering, 
     /// but it's children are laid out directly in the engine as if the components contents
     /// were part of the parent collection
     /// </summary>
-    public interface IPDFInvisibleContainer : IPDFContainerComponent
+    public interface IInvisibleContainer : IContainerComponent
     {
     }
 
     #endregion
 
-    #region public interface IPDFDataSetProviderCommand
+    #region public interface IDataSetProviderCommand
 
     /// <summary>
     /// Specific interface for a provider command that will populate a dataset table with the data retrieved from a command
     /// </summary>
-    public interface IPDFDataSetProviderCommand : IComponent
+    public interface IDataSetProviderCommand : IComponent
     {
         string GetDataTableName(System.Data.DataSet dataSet);
 
         object GetNullValue(System.Data.DbType type);
 
-        void FillData(System.Data.DataSet dataset, Scryber.Data.XPathDataSourceBase source, IPDFDataSetProviderCommand parent, PDFDataContext context);
+        void FillData(System.Data.DataSet dataset, Scryber.Data.XPathDataSourceBase source, IDataSetProviderCommand parent, DataContext context);
     }
 
     #endregion
@@ -285,12 +271,12 @@ namespace Scryber
     // layout breaks
     //
 
-    #region IPDFLayoutBreak : IPDFComponent
+    #region ILayoutBreak : IComponent
 
     /// <summary>
     /// Base interface for a break in the layout
     /// </summary>
-    public interface IPDFLayoutBreak : IComponent
+    public interface ILayoutBreak : IComponent
     {
         LayoutBreakType BreakType { get; }
     }
@@ -302,92 +288,18 @@ namespace Scryber
     //Support interfaces
     //
 
-    #region  public interface IPDFLayoutEngine
-
-    /// <summary>
-    /// Defines the interface for a layout engine. 
-    /// This is the actual class that implements the layout of individual Components
-    /// </summary>
-    public interface IPDFLayoutEngine : IDisposable
-    {
-        /// <summary>
-        /// Gets the parent layout engine that invoked this engine
-        /// </summary>
-        public IPDFLayoutEngine ParentEngine { get; }
-
-        /// <summary>
-        /// Gets or sets the flag for the engine to continue on and layout more components
-        /// </summary>
-        bool ContinueLayout { get; set; }
-
-        /// <summary>
-        /// Gets the current layout context in the engine
-        /// </summary>
-        PDFLayoutContext Context { get; }
-
-        /// <summary>
-        /// Main method to layout items
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="fullstyle"></param>
-        void Layout(PDFLayoutContext context, Style fullstyle);
-
-        /// <summary>
-        /// Moves the provided block and region to a new page along with the provided stack of blocks
-        /// </summary>
-        /// <param name="depth"></param>
-        /// <param name="region"></param>
-        /// <param name="block"></param>
-        /// <returns></returns>
-        bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block);
-
-        /// <summary>
-        /// Request to the engine to close the block and begin in a new region
-        /// </summary>
-        /// <param name="blockToClose"></param>
-        /// <param name="joinToRegion"></param>
-        /// <returns></returns>
-        PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(PDFLayoutBlock blockToClose, PDFLayoutRegion joinToRegion);
-    }
-
-    #endregion
-
-    #region public interface IPDFPooledLayoutEngine : IPDFLayoutEngine
-
-    /// <summary>
-    /// If a layout engine can be pooled against a particular object type, 
-    /// then this interface dictactes the type and re-initialize method.
-    /// </summary>
-    public interface IPDFPooledLayoutEngine : IPDFLayoutEngine
-    {
-        /// <summary>
-        /// Gets the type of component this pooled engine can layout
-        /// </summary>
-        ObjectType LayoutType { get; }
-
-        /// <summary>
-        /// (Re)Initializes the pooled layout engine so it can lay out a(nother) component
-        /// </summary>
-        /// <param name="container"></param>
-        /// <param name="parent"></param>
-        void Init(IComponent container, IPDFLayoutEngine parent);
-
-    }
-
-    #endregion
-
     
 
     //
     // Data Interfaces
     //
 
-    #region public interface IPDFDataProvider
+    #region public interface IDataProvider
 
     /// <summary>
     /// Interface for helpers to implement that allows components to make requests for specific data
     /// </summary>
-    public interface IPDFDataProvider : IPDFDataComponent
+    public interface IDataProvider : IComponent
     {
         //string ID { get; }
 
@@ -397,7 +309,7 @@ namespace Scryber
 
         bool IsValid(out string error);
 
-        object GetResponse(string resource, object args, PDFContextBase context);
+        object GetResponse(string resource, object args, ContextBase context);
     }
 
     #endregion
@@ -483,7 +395,7 @@ namespace Scryber
     /// </summary>
     public interface IPDFFormField : IComponent
     {
-        object GetFieldEntry(PDFContextBase context);
+        object GetFieldEntry(ContextBase context);
     }
 
     #endregion
@@ -512,7 +424,7 @@ namespace Scryber
     /// <summary>
     /// Interface for XObjects that are rendered into a stream independent of the main page stream of the document.
     /// </summary>
-    public interface IPDFXObjectComponent : IPDFContainerComponent, IResourceContainer, IPDFRenderComponent
+    public interface IPDFXObjectComponent : IContainerComponent, IResourceContainer, IPDFRenderComponent
     {
         IResourceContainer Resources { get; }
     }

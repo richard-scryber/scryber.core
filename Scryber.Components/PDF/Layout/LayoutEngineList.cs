@@ -33,16 +33,16 @@ namespace Scryber.PDF.Layout
         //
 
         private const string ListEngineLogCategory = "List Layout Engine";
-        private static readonly PDFUnit DefaultListItemAlley = 10;
-        public static readonly PDFUnit DefaultNumberWidth = Const.DefaultListNumberInset;
+        private static readonly Unit DefaultListItemAlley = 10;
+        public static readonly Unit DefaultNumberWidth = Const.DefaultListNumberInset;
         public const HorizontalAlignment DefaultListItemAlignment = HorizontalAlignment.Right;
 
         #region ivars
 
         private PDFLayoutBlock _itemblock;
         private PDFLayoutBlock _listBlock;
-        private PDFUnit _itemoffset = PDFUnit.Zero;
-        private PDFUnit _itemNumberWidth = PDFUnit.Zero;
+        private Unit _itemoffset = Unit.Zero;
+        private Unit _itemNumberWidth = Unit.Zero;
         private ListBase _list;
         private List<ListNumberEntry> _entries;
 
@@ -100,10 +100,10 @@ namespace Scryber.PDF.Layout
             
             //Set up the outer container block that will hold the list and all it's items
             _listBlock = this.CurrentBlock.BeginNewContainerBlock(this.List, this, this.FullStyle, pos.PositionMode);
-            PDFRect bounds = this.CurrentBlock.CurrentRegion.UnusedBounds;
+            Rect bounds = this.CurrentBlock.CurrentRegion.UnusedBounds;
 
             if (bounds.X > 0)
-                bounds.X = PDFUnit.Zero;
+                bounds.X = Unit.Zero;
             
             if (pos.Width.HasValue)
                 bounds.Width = pos.Width.Value;
@@ -116,7 +116,7 @@ namespace Scryber.PDF.Layout
             else if (pos.Margins.IsEmpty == false)
                 bounds.Height -= pos.Margins.Top + pos.Margins.Bottom;
 
-            PDFColumnOptions columnOptions = new PDFColumnOptions() { AlleyWidth = PDFUnit.Zero, AutoFlow = false, ColumnCount = 1 };
+            PDFColumnOptions columnOptions = new PDFColumnOptions() { AlleyWidth = Unit.Zero, AutoFlow = false, ColumnCount = 1 };
             _listBlock.InitRegions(bounds, pos, columnOptions, this.Context);
 
             this.OpenListNumbering();
@@ -187,11 +187,11 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private int BuildListEntries(out PDFUnit width)
+        private int BuildListEntries(out Unit width)
         {
             int index = 0;
             HorizontalAlignment halign = this.FullStyle.GetValue(StyleKeys.ListAlignmentKey, DefaultListItemAlignment);
-            PDFUnit defaultWidth = this.FullStyle.GetValue(StyleKeys.ListInsetKey, Const.DefaultListNumberInset);
+            Unit defaultWidth = this.FullStyle.GetValue(StyleKeys.ListInsetKey, Const.DefaultListNumberInset);
 
 
             width = defaultWidth;
@@ -230,16 +230,16 @@ namespace Scryber.PDF.Layout
                         continue;
                     }
 
-                    PDFUnit itemWidth;
+                    Unit itemWidth;
                     ListNumberingGroupStyle numberStyle;
                     HorizontalAlignment itemHAlign = halign;
                     string text;
                     Component itemNumber = BuildAListNumberComponent(item, full, ref itemHAlign, out numberStyle, out itemWidth, out text);
 
-                    if (itemWidth < PDFUnit.Zero)
+                    if (itemWidth < Unit.Zero)
                         itemWidth = defaultWidth;
                     else
-                        width = PDFUnit.Max(width, itemWidth);
+                        width = Unit.Max(width, itemWidth);
 
                     ListNumberEntry entry = new ListNumberEntry()
                     {
@@ -278,11 +278,11 @@ namespace Scryber.PDF.Layout
         /// <param name="text">If this item has explict text (e.g Definiton list) then this is returned, otherwise empty</param>
         /// <returns>The correct PDFListItemLabel for the item</returns>
         private Component BuildAListNumberComponent(ListItem item, Style itemstyle, ref HorizontalAlignment halign, 
-            out ListNumberingGroupStyle type, out PDFUnit itemWidth, out string text)
+            out ListNumberingGroupStyle type, out Unit itemWidth, out string text)
         {
             ListNumbering numbers = this.Component.Document.ListNumbering;
             type = numbers.CurrentGroup.Style;
-            itemWidth = itemstyle.GetValue(StyleKeys.ListInsetKey, (PDFUnit)(-1));
+            itemWidth = itemstyle.GetValue(StyleKeys.ListInsetKey, (Unit)(-1));
             text = itemstyle.GetValue(StyleKeys.ListLabelKey, string.Empty);
             halign = itemstyle.GetValue(StyleKeys.ListAlignmentKey, halign);
 
@@ -328,7 +328,7 @@ namespace Scryber.PDF.Layout
             _itemoffset = 0;
             foreach (ListNumberEntry entry in this._entries)
             {
-                PDFUnit h = this.LayoutAnItem(index, entry, listPosOpts);
+                Unit h = this.LayoutAnItem(index, entry, listPosOpts);
                 _itemoffset += h;
                 index++;
 
@@ -351,13 +351,13 @@ namespace Scryber.PDF.Layout
         /// <param name="entry"></param>
         /// <param name="listPosOpts"></param>
         /// <returns></returns>
-        private PDFUnit LayoutAnItem(int index, ListNumberEntry entry, PDFPositionOptions listPosOpts)
+        private Unit LayoutAnItem(int index, ListNumberEntry entry, PDFPositionOptions listPosOpts)
         {
             //restore the items applied style onto the stack
             this.StyleStack.Push(entry.AppliedStyle);
             
             Style full = entry.FullStyle;
-            PDFUnit numberWidth = entry.NumberWidth;
+            Unit numberWidth = entry.NumberWidth;
 
 
 
@@ -365,12 +365,12 @@ namespace Scryber.PDF.Layout
 
             PDFPositionOptions itemopts = full.CreatePostionOptions();
 
-            PDFUnit pageHeight = this.Context.DocumentLayout.CurrentPage.Height;
-            PDFUnit h = pageHeight;
-            PDFUnit w = _listBlock.AvailableBounds.Width;
-            PDFUnit y = _itemoffset;
+            Unit pageHeight = this.Context.DocumentLayout.CurrentPage.Height;
+            Unit h = pageHeight;
+            Unit w = _listBlock.AvailableBounds.Width;
+            Unit y = _itemoffset;
 
-            PDFUnit alley = DefaultListItemAlley;
+            Unit alley = DefaultListItemAlley;
 
             if (itemopts.HasAlleyWidth)
                 alley = itemopts.AlleyWidth;
@@ -394,7 +394,7 @@ namespace Scryber.PDF.Layout
             }
             w -= itemopts.Padding.Left + itemopts.Padding.Right;
 
-            PDFRect totalBounds = new PDFRect(PDFUnit.Zero,y,w,h);
+            Rect totalBounds = new Rect(Unit.Zero,y,w,h);
 
             this._itemblock = _listBlock.BeginNewContainerBlock(entry.ListItem, this, full, itemopts.PositionMode);
 
@@ -403,27 +403,27 @@ namespace Scryber.PDF.Layout
             
             //Alter the widths of the regions to allow for only the number width
             
-            PDFRect region1bounds = this._itemblock.Columns[0].TotalBounds;
-            PDFUnit difference = region1bounds.Width - numberWidth;
+            Rect region1bounds = this._itemblock.Columns[0].TotalBounds;
+            Unit difference = region1bounds.Width - numberWidth;
             region1bounds.Width = numberWidth;
             this._itemblock.Columns[0].TotalBounds = region1bounds;
             this._itemblock.Columns[0].HAlignment = entry.NumberAlignment;
 
-            PDFRect region2Bounds = this._itemblock.Columns[1].TotalBounds;
+            Rect region2Bounds = this._itemblock.Columns[1].TotalBounds;
             if (region2Bounds.X > 0)
                 region2Bounds.X -= difference;
             region2Bounds.Width += difference;
             this._itemblock.Columns[1].TotalBounds = region2Bounds;
 
-            PDFUnit numberHeight = this.LayoutItemNumber(entry, full);
+            Unit numberHeight = this.LayoutItemNumber(entry, full);
             
             this._itemblock.CurrentRegion.Close();
 
-            bool success = this._itemblock.MoveToNextRegion(true, PDFUnit.Zero, this.Context); //Pass Zero as we are not interested in overflowing yet
-            PDFUnit contentHeight = this.LayoutItemContent(entry);
+            bool success = this._itemblock.MoveToNextRegion(true, Unit.Zero, this.Context); //Pass Zero as we are not interested in overflowing yet
+            Unit contentHeight = this.LayoutItemContent(entry);
 
             //check that we can fit - addind the margins and padding back in.
-            PDFUnit itemHeight = PDFUnit.Max(numberHeight, contentHeight);
+            Unit itemHeight = Unit.Max(numberHeight, contentHeight);
             if (itemopts.Height.HasValue)
                 itemHeight = itemopts.Height.Value;
             else if (itemopts.Margins.IsEmpty == false)
@@ -506,12 +506,12 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="entry">The entry whose number should be laid out</param>
         /// <returns></returns>
-        private PDFUnit LayoutItemNumber(ListNumberEntry entry, Style fullstyle)
+        private Unit LayoutItemNumber(ListNumberEntry entry, Style fullstyle)
         {
             ListItem item = entry.ListItem;
             
             
-            PDFUnit avail = _itemblock.CurrentRegion.AvailableHeight;
+            Unit avail = _itemblock.CurrentRegion.AvailableHeight;
 
             ListItemLabel literal = (ListItemLabel)entry.NumberComponent;
             Style applied = literal.GetAppliedStyle();
@@ -537,8 +537,8 @@ namespace Scryber.PDF.Layout
             this._itemblock.CurrentRegion.CloseCurrentItem();
 
             // Calculate the height used and return
-            PDFUnit newAvail = _itemblock.CurrentRegion.AvailableHeight;
-            PDFUnit used = avail - newAvail;
+            Unit newAvail = _itemblock.CurrentRegion.AvailableHeight;
+            Unit used = avail - newAvail;
 
             if (null != applied)
                 this.StyleStack.Pop();
@@ -556,12 +556,12 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="entry"></param>
         /// <returns></returns>
-        private PDFUnit LayoutItemContent(ListNumberEntry entry)
+        private Unit LayoutItemContent(ListNumberEntry entry)
         {
             ComponentList contents = null;
-            IPDFContainerComponent container = entry.ListItem as IPDFContainerComponent;
+            IContainerComponent container = entry.ListItem as IContainerComponent;
 
-            PDFUnit avail = _itemblock.CurrentRegion.AvailableHeight;
+            Unit avail = _itemblock.CurrentRegion.AvailableHeight;
 
             if (container.HasContent)
             {
@@ -578,8 +578,8 @@ namespace Scryber.PDF.Layout
             this._itemblock.CurrentRegion.CloseCurrentItem();
 
             // Calculate the height used and return
-            PDFUnit newAvail = _itemblock.CurrentRegion.AvailableHeight;
-            PDFUnit used = avail - newAvail;
+            Unit newAvail = _itemblock.CurrentRegion.AvailableHeight;
+            Unit used = avail - newAvail;
             return used;
         }
 
@@ -599,7 +599,7 @@ namespace Scryber.PDF.Layout
         /// <param name="item"></param>
         /// <param name="itemindex"></param>
         /// <returns></returns>
-        protected virtual bool StartListInAnotherRegion(PDFUnit itemHeight, PDFLayoutBlock item, int itemindex)
+        protected virtual bool StartListInAnotherRegion(Unit itemHeight, PDFLayoutBlock item, int itemindex)
         {
             PDFLayoutRegion itemRegion = item.CurrentRegion;
             PDFLayoutBlock origListBlock = item.Parent as PDFLayoutBlock;
@@ -634,7 +634,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="requiredHeight"></param>
         /// <returns></returns>
-        protected virtual bool MoveFullListToNextRegion(PDFUnit requiredHeight)
+        protected virtual bool MoveFullListToNextRegion(Unit requiredHeight)
         {
             if (_didmovefulllist)
             {
@@ -677,9 +677,9 @@ namespace Scryber.PDF.Layout
         public override PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(PDFLayoutBlock blockToClose, PDFLayoutRegion joinToRegion)
         {
             PDFLayoutBlock orig = this.CurrentBlock;
-            PDFRect avail = this._listBlock.AvailableBounds;
+            Rect avail = this._listBlock.AvailableBounds;
             avail.Height = joinToRegion.AvailableHeight;
-            PDFThickness margins = _listBlock.Position.Margins;
+            Thickness margins = _listBlock.Position.Margins;
             
             PDFLayoutBlock newList = base.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
             this.CurrentBlock = (PDFLayoutBlock)newList.Parent;
@@ -720,7 +720,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// The layout width of the number region
             /// </summary>
-            public PDFUnit NumberWidth;
+            public Unit NumberWidth;
 
             /// <summary>
             /// The list item this entry holds the details for

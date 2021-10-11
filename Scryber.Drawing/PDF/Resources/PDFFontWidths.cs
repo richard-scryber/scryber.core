@@ -28,7 +28,7 @@ namespace Scryber.PDF.Resources
     /// Represents a standard set of ASCII character widths that will be rendered to the PDF file as a simple array.
     /// </summary>
     /// <remarks>The standard font widths instance does not support composite fonts</remarks>
-    public abstract class PDFFontWidths : PDFObject
+    public abstract class PDFFontWidths : TypedObject
     {
         #region ivars
 
@@ -116,7 +116,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        public PDFObjectRef RenderToPDF(PDFContextBase context, PDFWriter writer)
+        public PDFObjectRef RenderToPDF(ContextBase context, PDFWriter writer)
         {
             PDFObjectRef oref = writer.BeginObject();
             this.RenderWidthsArrayToPDF(context, writer);
@@ -131,7 +131,7 @@ namespace Scryber.PDF.Resources
         /// </summary>
         /// <param name="context"></param>
         /// <param name="writer"></param>
-        public abstract void RenderWidthsArrayToPDF(PDFContextBase context, PDFWriter writer);
+        public abstract void RenderWidthsArrayToPDF(ContextBase context, PDFWriter writer);
 
 
         /// <summary>

@@ -19,14 +19,14 @@ namespace Scryber.Core.UnitTests.Mocks
 
     public class MockSubParameter : MockParameter
     {
-        public PDFUnit SizeField;
+        public Unit SizeField;
 
         
 
 
         public MockSubParameter()
         {
-            this.SizeField = (PDFUnit)30;
+            this.SizeField = (Unit)30;
             this.BoldTitle = true;
             this.Title = "Mock object title";
             this.Background = new Color(1, 0, 0);

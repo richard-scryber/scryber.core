@@ -33,20 +33,20 @@ namespace Scryber.Components
 
         #region Databinding events
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (null != this.DataBinding)
-                this.DataBinding(this, new PDFDataBindEventArgs(context));
+                this.DataBinding(this, new DataBindEventArgs(context));
         }
 
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (null != this.DataBound)
-                this.DataBound(this, new PDFDataBindEventArgs(context));
+                this.DataBound(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -224,14 +224,14 @@ namespace Scryber.Components
         /// Databinds this outline
         /// </summary>
         /// <param name="context"></param>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             this.OnDataBinding(context);
             this.DoDataBind(context);
             this.OnDataBound(context);
         }
 
-        protected virtual void DoDataBind(PDFDataContext context)
+        protected virtual void DoDataBind(DataContext context)
         {
         }
 

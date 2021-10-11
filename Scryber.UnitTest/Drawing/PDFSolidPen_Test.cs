@@ -74,7 +74,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFSolidPenConstructor_Test()
         {
             Color color = StandardColors.Aqua; // TODO: Initialize to an appropriate value
-            PDFUnit width = 1;
+            Unit width = 1;
             PDFSolidPen target = new PDFSolidPen(color, width);
 
             Assert.IsNotNull(target);
@@ -94,7 +94,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             Assert.IsNotNull(target);
             Assert.IsTrue(target.Color.IsEmpty);
-            Assert.AreEqual(target.Width, PDFUnit.Zero);
+            Assert.AreEqual(target.Width, Unit.Zero);
         }
 
         

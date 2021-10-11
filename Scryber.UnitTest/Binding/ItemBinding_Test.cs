@@ -134,8 +134,8 @@ namespace Scryber.Core.UnitTests.Binding
 
                 Assert.AreEqual(expectedString, label.Text, "The label text does not match");
                 Assert.AreEqual(Scryber.Drawing.Color.Parse(expectedColor), label.FillColor, "The Label fill colour does not match");
-                Assert.AreEqual(Scryber.Drawing.PDFUnit.Parse(expectedUnit), label.X, "The label x offsets do not match");
-                Assert.AreEqual(Scryber.Drawing.PDFThickness.Parse(expectedThickness), label.Padding, "The label paddings do not match");
+                Assert.AreEqual(Scryber.Drawing.Unit.Parse(expectedUnit), label.X, "The label x offsets do not match");
+                Assert.AreEqual(Scryber.Drawing.Thickness.Parse(expectedThickness), label.Padding, "The label paddings do not match");
                 Assert.AreEqual(Scryber.Drawing.LineType.Dash, label.BorderStyle, "The label border styles do not match");
                 Assert.AreEqual(DateTime.Parse(expectedDate), date.Value, "The date time values do not match");
                 Assert.AreEqual(expectedInt, (int)num1.Value,"The integers do not match");
@@ -214,7 +214,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual(expectedBool, style.Font.FontBold, "The font bolds do not match");
 
                 Assert.IsTrue(style.IsValueDefined(Scryber.Styles.StyleKeys.PaddingTopKey), "The padding top is not set");
-                Assert.AreEqual(Scryber.Drawing.PDFUnit.Parse(expectedUnit), style.Padding.Top, "The padding top values do not match");
+                Assert.AreEqual(Scryber.Drawing.Unit.Parse(expectedUnit), style.Padding.Top, "The padding top values do not match");
 
             }
 
@@ -727,7 +727,7 @@ namespace Scryber.Core.UnitTests.Binding
                         TitleColor = new Color(1, 1, 1),
                         TitleFont = (FontSelector)"Segoe UI Light",
                         BodyFont = (FontSelector)"Segoe UI",
-                        BodySize = (PDFUnit)12
+                        BodySize = (Unit)12
                     }
                 };
 

@@ -305,7 +305,7 @@ namespace Scryber.PDF
         /// <param name="uniquename">A uniquename for the object</param>
         /// <param name="obj">The object to initialize</param>
         /// <returns>A PDFObjectRef to identify the object in the rest of the document</returns>
-        protected virtual PDFObjectRef InitializeIndirectObject(string name, IIndirectObject obj)
+        protected virtual PDFObjectRef InitializeIndirectObject(string name, IPDFIndirectObject obj)
         {
             this.XRefTable.Append(obj);
             
@@ -322,7 +322,7 @@ namespace Scryber.PDF
         /// <summary>
         /// Releases the the current object from the PDFStream stack.
         /// </summary>
-        protected virtual void ReleaseIndirectObject(IIndirectObject obj)
+        protected virtual void ReleaseIndirectObject(IPDFIndirectObject obj)
         {
             this.Stack.Pop();
             this.ReferenceStack.Pop();
@@ -1015,7 +1015,7 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="op">The PDFOpCode to write the string representation of</param>
         /// <param name="param">The file object parameter for the opcode</param>
-        public void WriteOpCodeS(PDFOpCode op, IFileObject param)
+        public void WriteOpCodeS(PDFOpCode op, IPDFFileObject param)
         {
             this.WriteSpace();
             this.WriteFileObject(param);
@@ -1029,7 +1029,7 @@ namespace Scryber.PDF
         /// <param name="op">The PDFOpCode to write the string representation of</param>
         /// <param name="param1">The first file object parameter for the opcode</param>
         /// <param name="param2">The second file object parameter for the opcode</param>
-        public void WriteOpCodeS(PDFOpCode op, IFileObject param1, IFileObject param2)
+        public void WriteOpCodeS(PDFOpCode op, IPDFFileObject param1, IPDFFileObject param2)
         {
             this.WriteSpace();
             this.WriteFileObject(param1);
@@ -1046,7 +1046,7 @@ namespace Scryber.PDF
         /// <param name="param1">The first file object parameter for the opcode</param>
         /// <param name="param2">The second file object parameter for the opcode</param>
         /// <param name="param3">The third file object parameter for the opcode</param>
-        public void WriteOpCodeS(PDFOpCode op, IFileObject param1, IFileObject param2, IFileObject param3)
+        public void WriteOpCodeS(PDFOpCode op, IPDFFileObject param1, IPDFFileObject param2, IPDFFileObject param3)
         {
             this.WriteSpace();
             this.WriteFileObject(param1);
@@ -1063,11 +1063,11 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="op">The PDFOpCode to write the string representation of</param>
         /// <param name="parameters">The list op parameters to write</param>
-        public void WriteOpCodeS(PDFOpCode op, params IFileObject[] parameters)
+        public void WriteOpCodeS(PDFOpCode op, params IPDFFileObject[] parameters)
         {
             if (parameters != null && parameters.Length > 0)
             {
-                foreach (IFileObject p in parameters)
+                foreach (IPDFFileObject p in parameters)
                 {
                     this.WriteSpace();
                     this.WriteFileObject(p);
@@ -1534,13 +1534,13 @@ namespace Scryber.PDF
         /// Writes one of the file objects (PDFBoolean, PDFName, PDFNumber etc) to the current stream
         /// </summary>
         /// <param name="obj">The file object to write</param>
-        public abstract void WriteFileObject(IFileObject obj);
+        public abstract void WriteFileObject(IPDFFileObject obj);
 
         /// <summary>
         /// Writes a space then one of the file objects (PDFBoolean, PDFName, PDFNumber etc) to the current stream
         /// </summary>
         /// <param name="obj">The file object to write</param>
-        public void WriteFileObjectS(IFileObject obj)
+        public void WriteFileObjectS(IPDFFileObject obj)
         {
             this.WriteSpace();
             this.WriteFileObject(obj);

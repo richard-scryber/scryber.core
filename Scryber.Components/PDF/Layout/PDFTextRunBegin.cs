@@ -35,7 +35,7 @@ namespace Scryber.PDF.Layout
 
         private PDFTextRenderOptions _renderopts;
         private List<PDFLayoutLine> _lines = new List<PDFLayoutLine>(); //All the lines in the entire block
-        private PDFRect[] _caclulatedBounds; //An array of 3 rects for the bounds - top line, all inner lines, and last
+        private Rect[] _caclulatedBounds; //An array of 3 rects for the bounds - top line, all inner lines, and last
 
         #endregion
 
@@ -77,9 +77,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         ///  Gets the width of this begin text run - PDFUnit.Zero
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -89,9 +89,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this begin text run - PDFUnit.Zero
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -100,7 +100,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the first line inset for this beginning text run.
         /// </summary>
-        public PDFUnit LineInset
+        public Unit LineInset
         {
             get;
             set;
@@ -109,7 +109,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the total bounds of this text run
         /// </summary>
-        public PDFRect TotalBounds
+        public Rect TotalBounds
         {
             get;
             set;
@@ -118,21 +118,21 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the start text cursor point within the page for this text
         /// </summary>
-        protected PDFSize StartTextCursor
+        protected Size StartTextCursor
         {
             get;
             private set;
         }
 
-        private PDFUnit _charspace, _wordspace;
+        private Unit _charspace, _wordspace;
         private bool _hascustomspace;
 
-        public PDFUnit CharSpace
+        public Unit CharSpace
         {
             get { return _charspace; }
         }
 
-        public PDFUnit WordSpace
+        public Unit WordSpace
         {
             get { return _wordspace; }
         }
@@ -158,18 +158,18 @@ namespace Scryber.PDF.Layout
         // implementation
         //
 
-        public override void SetOffsetY(PDFUnit y)
+        public override void SetOffsetY(Unit y)
         {
             base.SetOffsetY(y);
-            PDFRect bounds = this.TotalBounds;
+            Rect bounds = this.TotalBounds;
             bounds.Y += y;
             this.TotalBounds = bounds;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
-            PDFRect final = TotalBounds;
-            if (yoffset != PDFUnit.Zero)
+            Rect final = TotalBounds;
+            if (yoffset != Unit.Zero)
             {
                 final.Y += yoffset;
                 
@@ -195,9 +195,9 @@ namespace Scryber.PDF.Layout
         /// <param name="pageIndex"></param>
         /// <param name="xoffset"></param>
         /// <param name="yoffset"></param>
-        public void PushCompleteTextBlock(PDFTextRunEnd ending, PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        public void PushCompleteTextBlock(PDFTextRunEnd ending, PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
-            PDFRect[] all = new PDFRect[3];
+            Rect[] all = new Rect[3];
 
             if (this.Lines.Count == 1)
             {
@@ -219,13 +219,13 @@ namespace Scryber.PDF.Layout
 
 
 
-        private PDFRect CalculateOnlyLineBounds(PDFTextRunEnd end)
+        private Rect CalculateOnlyLineBounds(PDFTextRunEnd end)
         {
             PDFLayoutLine line = this._lines[0];
-            PDFRect full = new PDFRect(this.TotalBounds.Location, PDFSize.Empty);
+            Rect full = new Rect(this.TotalBounds.Location, Size.Empty);
 
             bool counting = false;
-            PDFUnit linewidth = PDFUnit.Zero;
+            Unit linewidth = Unit.Zero;
 
             foreach (PDFLayoutRun run in line.Runs)
             {
@@ -242,13 +242,13 @@ namespace Scryber.PDF.Layout
             return full;
         }
 
-        private PDFRect CalculateFirstLineBounds()
+        private Rect CalculateFirstLineBounds()
         {
             PDFLayoutLine line = this._lines[0];
-            PDFRect full = new PDFRect(this.TotalBounds.Location, PDFSize.Empty);
+            Rect full = new Rect(this.TotalBounds.Location, Size.Empty);
 
             bool counting = false;
-            PDFUnit linewidth = PDFUnit.Zero;
+            Unit linewidth = Unit.Zero;
 
             foreach (PDFLayoutRun run in line.Runs)
             {
@@ -263,12 +263,12 @@ namespace Scryber.PDF.Layout
             return full;
         }
 
-        private PDFRect CalculateLastLineBounds(PDFUnit voffset, PDFTextRunEnd end)
+        private Rect CalculateLastLineBounds(Unit voffset, PDFTextRunEnd end)
         {
             PDFLayoutLine line = this._lines[this._lines.Count -1];
-            PDFRect full = new PDFRect(this.TotalBounds.Location, PDFSize.Empty);
+            Rect full = new Rect(this.TotalBounds.Location, Size.Empty);
             full.Y += voffset;
-            PDFUnit linewidth = PDFUnit.Zero;
+            Unit linewidth = Unit.Zero;
             full.Height = line.Height;
 
             foreach (PDFLayoutRun run in line.Runs)
@@ -285,19 +285,19 @@ namespace Scryber.PDF.Layout
             return full;
         }
 
-        private PDFRect CalculateInnerTotalBounds(PDFUnit voffset, PDFTextRunEnd ending)
+        private Rect CalculateInnerTotalBounds(Unit voffset, PDFTextRunEnd ending)
         {
 
-            PDFRect full = this.TotalBounds.Clone();
-            full.Size = PDFSize.Empty;
+            Rect full = this.TotalBounds.Clone();
+            full.Size = Size.Empty;
             full.Y += voffset;
 
             //only want the lines that are between the first and last line
             int firstIndex = 1;
             int lastIndex = this.Lines.Count - 2;
 
-            PDFUnit maxright = PDFUnit.Zero;
-            PDFUnit minleft = new PDFUnit(Double.MaxValue);
+            Unit maxright = Unit.Zero;
+            Unit minleft = new Unit(Double.MaxValue);
 
             for (int i = firstIndex; i <= lastIndex; i++)
             {
@@ -307,14 +307,14 @@ namespace Scryber.PDF.Layout
                 maxright = PDFUnit.Max(maxright, line.FullWidth);
 #else
 
-                PDFUnit x = PDFUnit.Zero;
-                PDFUnit w = line.Width;
+                Unit x = Unit.Zero;
+                Unit w = line.Width;
                 if (line.Runs[0] is PDFTextRunSpacer)
                 {
                     x = line.Runs[0].Width;
                 }
-                maxright = PDFUnit.Max(maxright, w);
-                minleft = PDFUnit.Min(minleft, x);
+                maxright = Unit.Max(maxright, w);
+                minleft = Unit.Min(minleft, x);
                 full.Height += line.Height;
 #endif
             }
@@ -328,7 +328,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        public void SetTextSpacing(PDFUnit wordSpace, PDFUnit charSpace)
+        public void SetTextSpacing(Unit wordSpace, Unit charSpace)
         {
             this._charspace = charSpace;
             this._wordspace = wordSpace;
@@ -337,7 +337,7 @@ namespace Scryber.PDF.Layout
 
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            PDFRect bounds = this.TotalBounds;
+            Rect bounds = this.TotalBounds;
             bounds.X += context.Offset.X;
             bounds.Y += context.Offset.Y;
 
@@ -347,7 +347,7 @@ namespace Scryber.PDF.Layout
             {
                 for (int i = 0; i < this._caclulatedBounds.Length; i++)
                 {
-                    PDFRect b = this._caclulatedBounds[i];
+                    Rect b = this._caclulatedBounds[i];
                     if (b.IsEmpty == false)
                     {
                         if (i == 0)
@@ -366,7 +366,7 @@ namespace Scryber.PDF.Layout
 
             bounds.X += this.LineInset;
 
-            PDFSize cursor = new PDFSize(bounds.X,bounds.Y);
+            Size cursor = new Size(bounds.X,bounds.Y);
 
 
             //pdf text rendering is done from the baseline, we need the rendering to appear to start from the top
@@ -430,8 +430,8 @@ namespace Scryber.PDF.Layout
         public void RenderUnderlines(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
             
-            PDFUnit offsetV = this.TextRenderOptions.GetAscent() / UnderlineOffsetFactor;
-            PDFUnit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
+            Unit offsetV = this.TextRenderOptions.GetAscent() / UnderlineOffsetFactor;
+            Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
             
             this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
         }
@@ -439,20 +439,20 @@ namespace Scryber.PDF.Layout
         public void RenderStrikeThrough(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
             //Strike through is up offset one third the font ascent
-            PDFUnit offsetV = new PDFUnit(-this.TextRenderOptions.GetAscent().PointsValue * StrikeThroughOffset,PageUnits.Points);
+            Unit offsetV = new Unit(-this.TextRenderOptions.GetAscent().PointsValue * StrikeThroughOffset,PageUnits.Points);
 
-            PDFUnit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
+            Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
             this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
         }
 
         public void RenderOverLines(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
-            PDFUnit offsetV = new PDFUnit(-this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
-            PDFUnit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
+            Unit offsetV = new Unit(-this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
+            Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
             this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
         }
 
-        protected virtual void RenderTextDecoration(PDFTextRunEnd endRun, PDFRenderContext context, PDFWriter writer, PDFUnit vOffset, PDFUnit linethickness)
+        protected virtual void RenderTextDecoration(PDFTextRunEnd endRun, PDFRenderContext context, PDFWriter writer, Unit vOffset, Unit linethickness)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Text Decoration", "Starting to render text decorations");
@@ -464,12 +464,12 @@ namespace Scryber.PDF.Layout
             pen.SetUpGraphics(context.Graphics, this.TotalBounds);
 
             bool drawing = false;
-            PDFPoint linestart = new PDFPoint(this.StartTextCursor.Width, this.StartTextCursor.Height + vOffset);
+            Point linestart = new Point(this.StartTextCursor.Width, this.StartTextCursor.Height + vOffset);
             
 
             foreach (PDFLayoutLine line in this.Lines)
             {
-                PDFUnit linewidth = 0;
+                Unit linewidth = 0;
 
                 foreach (PDFLayoutRun run in line.Runs)
                 {
@@ -488,8 +488,8 @@ namespace Scryber.PDF.Layout
                         if (run is PDFTextRunCharacter)
                         {
                             PDFTextRunCharacter chars = (PDFTextRunCharacter)run;
-                            PDFPoint start = new PDFPoint(linestart.X + linewidth, linestart.Y);
-                            PDFPoint end = new PDFPoint(linestart.X + linewidth + chars.Width + chars.ExtraSpace, linestart.Y);
+                            Point start = new Point(linestart.X + linewidth, linestart.Y);
+                            Point end = new Point(linestart.X + linewidth + chars.Width + chars.ExtraSpace, linestart.Y);
                             context.Graphics.DrawLine(start, end);
                             if (context.ShouldLogDebug)
                                 context.TraceLog.Add(TraceLevel.Debug, "Text Decoration", "Drawn line from " + start + " to " + end);
@@ -501,10 +501,10 @@ namespace Scryber.PDF.Layout
                         else if (run is PDFTextRunNewLine)
                         {
                             PDFTextRunNewLine newline = (PDFTextRunNewLine)run;
-                            PDFSize offset = newline.Offset;
+                            Size offset = newline.Offset;
                             if (null != newline.NextLineSpacer)
                             {
-                                PDFUnit nextoffset = newline.NextLineSpacer.Width;
+                                Unit nextoffset = newline.NextLineSpacer.Width;
                                 offset.Width = nextoffset - offset.Width;
                             }
                             linestart.X += offset.Width;
@@ -518,8 +518,8 @@ namespace Scryber.PDF.Layout
                         else if (run is PDFTextRunProxy)
                         {
                             PDFTextRunProxy chars = (PDFTextRunProxy)run;
-                            PDFPoint start = new PDFPoint(linestart.X + linewidth, linestart.Y);
-                            PDFPoint end = new PDFPoint(linestart.X + linewidth + chars.Width, linestart.Y);
+                            Point start = new Point(linestart.X + linewidth, linestart.Y);
+                            Point end = new Point(linestart.X + linewidth + chars.Width, linestart.Y);
                             context.Graphics.DrawLine(start, end);
                             if (context.ShouldLogDebug)
                                 context.TraceLog.Add(TraceLevel.Debug, "Text Decoration", "Drawn line from " + start + " to " + end);

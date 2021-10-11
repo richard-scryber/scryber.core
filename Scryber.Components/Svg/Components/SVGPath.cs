@@ -24,12 +24,12 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override PDFRect GetBounds()
+        protected override Rect GetBounds()
         {
             return this.PathData.Bounds;
         }
 
-        protected override Drawing.GraphicsPath CreatePath(Drawing.PDFSize available, Style fullstyle)
+        protected override Drawing.GraphicsPath CreatePath(Drawing.Size available, Style fullstyle)
         {
             return this.PathData;
         }

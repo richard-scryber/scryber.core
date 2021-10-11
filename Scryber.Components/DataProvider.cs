@@ -19,7 +19,7 @@ namespace Scryber
             this._items = new List<PDFDataProvider>();
         }
 
-        public bool TryGetProvider(string key, out IPDFDataProvider provider)
+        public bool TryGetProvider(string key, out IDataProvider provider)
         {
             foreach (PDFDataProvider pro in this._items)
             {
@@ -33,7 +33,7 @@ namespace Scryber
             return false;
         }
 
-        public bool TryGetDomainProvider(string key, string path, out IPDFDataProvider provider)
+        public bool TryGetDomainProvider(string key, string path, out IDataProvider provider)
         {
             foreach (PDFDataProvider prov in this._items)
             {
@@ -73,7 +73,7 @@ namespace Scryber
 
         }
 
-        public void AddProvider(IPDFDataProvider provider)
+        public void AddProvider(IDataProvider provider)
         {
             if (null == provider)
                 throw new ArgumentNullException("provider");
@@ -100,7 +100,7 @@ namespace Scryber
 
         public bool Required { get; set; }
 
-        public IPDFDataProvider Instance { get; private set; }
+        public IDataProvider Instance { get; private set; }
 
         public bool HasInstance
         {
@@ -112,7 +112,7 @@ namespace Scryber
             this.Key = key;
         }
 
-        public PDFDataProvider(IPDFDataProvider instance, bool required = false)
+        public PDFDataProvider(IDataProvider instance, bool required = false)
             : this(instance.ProviderKey, required)
         {
             this.Instance = instance;
@@ -120,7 +120,7 @@ namespace Scryber
                 this.Domain = new System.Text.RegularExpressions.Regex(instance.DomainRegEx);
         }
 
-        public void SetInstance(IPDFDataProvider instance)
+        public void SetInstance(IDataProvider instance)
         {
             if (null == instance)
                 throw new ArgumentNullException("instance");

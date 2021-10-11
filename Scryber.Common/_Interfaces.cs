@@ -72,23 +72,23 @@ namespace Scryber
         /// <summary>
         /// Event that is raised when the object is initialized
         /// </summary>
-        event PDFInitializedEventHandler Initialized;
+        event InitializedEventHandler Initialized;
 
         /// <summary>
         /// Event that is raised when the object is loaded
         /// </summary>
-        event PDFLoadedEventHandler Loaded;
+        event LoadedEventHandler Loaded;
 
         /// <summary>
         /// Initializes a PDFComponent
         /// </summary>
-        void Init(PDFInitContext context);
+        void Init(InitContext context);
 
         /// <summary>
         /// Loads the component.
         /// </summary>
         /// <param name="context"></param>
-        void Load(PDFLoadContext context);
+        void Load(LoadContext context);
 
         /// <summary>
         /// Gets or sets the ID of the component
@@ -212,16 +212,16 @@ namespace Scryber
         /// <summary>
         /// Event that is raised before an Component is databound
         /// </summary>
-        event PDFDataBindEventHandler DataBinding;
+        event DataBindEventHandler DataBinding;
         /// <summary>
         /// Event that is raised after an object has been databound
         /// </summary>
-        event PDFDataBindEventHandler DataBound;
+        event DataBindEventHandler DataBound;
 
         /// <summary>
         /// Databinds a PFComponent
         /// </summary>
-        void DataBind(PDFDataContext context);
+        void DataBind(DataContext context);
     }
 
     #endregion
@@ -391,10 +391,10 @@ namespace Scryber
         bool Registered { get; }
     }
 
-    #region public interface IPDFXMLParsedDocument : IPDFDocument
+    #region public interface IParsedDocument : IDocument
 
     /// <summary>
-    /// Defines the contract for a component so that the PDFXmlParser can interact with it.
+    /// Defines the contract for a component so that the XmlParser can interact with it.
     /// </summary>
     /// <remarks>
     /// During the parsing the XMLParser will encounter pre</remarks>
@@ -426,7 +426,7 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFControlledComponent : IPDFRemoteComponent
+    #region public interface IControlledComponent : IRemoteComponent
 
     /// <summary>
     /// Defines an interface where the remote component can have a controller assigned, and the XML parser can hook up outlets and actions.
@@ -443,18 +443,15 @@ namespace Scryber
 
     
 
-    public interface IPDFDataComponent : IComponent
-    {
+    
 
-    }
-
-    #region public interface IPDFDataSource
+    #region public interface IDataSource
 
     /// <summary>
     /// Defines the interface that all controls must implement if 
     /// they want to be used as a source of data within the page.
     /// </summary>
-    public interface IPDFDataSource : IPDFDataComponent
+    public interface IDataSource : IComponent
     {
         /// <summary>
         /// If true then the data source can be interrogated to get the data schema for runtime analysis
@@ -470,14 +467,14 @@ namespace Scryber
         /// <returns>A PDFDataSchema that describes the underlying data structure at runtime.</returns>
         /// <exception cref="Scryber.Data.PDFException" >Thrown if this source does not support data schema analysis</exception>
         /// <exception cref="System.ArgumentException" >Thrown if the provided path is not a valid xpath</exception>
-        PDFDataSchema GetDataSchema(string path, PDFDataContext context);
+        DataSchema GetDataSchema(string path, DataContext context);
 
         /// <summary>
         /// Performs the selection of data configured on this source
         /// </summary>
         /// <param name="path">The optional restriction.</param>
         /// <returns>The top level data associated with this DataSource control.</returns>
-        object Select(string path, PDFDataContext context);
+        object Select(string path, DataContext context);
 
         /// <summary>
         /// Performs a select of the provided data based on the path in the current data context
@@ -486,7 +483,7 @@ namespace Scryber
         /// <param name="current">The current data to select the data from</param>
         /// <param name="context">The current data context</param>
         /// <returns>The </returns>
-        object Select(string path, object current, PDFDataContext context);
+        object Select(string path, object current, DataContext context);
 
         /// <summary>
         /// Performs a test of the provided expression against the provided data in the current context
@@ -495,7 +492,7 @@ namespace Scryber
         /// <param name="withData"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        bool EvaluateTestExpression(string expr, object withData, PDFDataContext context);
+        bool EvaluateTestExpression(string expr, object withData, DataContext context);
 
 
         /// <summary>
@@ -505,7 +502,7 @@ namespace Scryber
         /// <param name="withData"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        object Evaluate(string expr, object withData, PDFDataContext context);
+        object Evaluate(string expr, object withData, DataContext context);
 
     }
 
@@ -566,7 +563,7 @@ namespace Scryber
         /// <param name="expressionvalue">The defined expression to be used when binding</param>
         /// <param name="forProperty">The property the expression should be bound to</param>
         /// <returns></returns>
-        PDFInitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty);
+        InitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty);
 
         /// <summary>
         /// Gets a binding expression delegate for the provided expression and related property 
@@ -575,7 +572,7 @@ namespace Scryber
         /// <param name="expressionvalue">The defined expression to be used when binding</param>
         /// <param name="forProperty">The property the expression should be bound to</param>
         /// <returns></returns>
-        PDFLoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty);
+        LoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty);
 
 
         /// <summary>
@@ -587,7 +584,7 @@ namespace Scryber
         /// <param name="forProperty">The property the expression should be bound to</param>
         /// <param name="classType">The type that contains the property</param>
         /// <returns></returns>
-        PDFDataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty);
+        DataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty);
 
     }
 

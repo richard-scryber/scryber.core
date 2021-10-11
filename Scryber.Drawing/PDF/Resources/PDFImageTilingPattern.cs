@@ -70,7 +70,7 @@ namespace Scryber.PDF.Resources
         /// <summary>
         /// Gets or sets the size to render the image
         /// </summary>
-        public PDFSize ImageSize
+        public Drawing.Size ImageSize
         {
             get;
             set;
@@ -123,7 +123,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             IStreamFilter[] filters = writer.DefaultStreamFilters;
             PDFObjectRef pattern = writer.BeginObject();
@@ -134,10 +134,10 @@ namespace Scryber.PDF.Resources
             writer.WriteDictionaryNumberEntry("TilingType", (int)this.TilingType);
             writer.BeginDictionaryEntry("BBox");
 
-            PDFPoint offset = new PDFPoint(this.Start.X, this.Start.Y-this.ImageSize.Height);// this.Start;
-            PDFSize size = this.ImageSize;
+            Drawing.Point offset = new Drawing.Point(this.Start.X, this.Start.Y-this.ImageSize.Height);// this.Start;
+            Drawing.Size size = this.ImageSize;
 
-            PDFSize graphicsSize = new PDFSize(size.Width + offset.X, size.Height + offset.Y);
+            Drawing.Size graphicsSize = new Drawing.Size(size.Width + offset.X, size.Height + offset.Y);
 
             writer.WriteArrayRealEntries(true, offset.X.PointsValue,
                                                offset.Y.PointsValue,
@@ -157,7 +157,7 @@ namespace Scryber.PDF.Resources
             using (PDFGraphics g = PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, 
                 graphicsSize, context))
             {
-                offset = new PDFPoint(offset.X, 0.0);
+                offset = new Drawing.Point(offset.X, 0.0);
                 g.PaintImageRef(this.Image, size, offset);
             }
             long len = writer.EndStream();

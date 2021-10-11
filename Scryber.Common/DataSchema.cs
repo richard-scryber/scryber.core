@@ -28,7 +28,7 @@ namespace Scryber
     /// in a data source schema for a specific path.
     /// Allows runtime analysis and evaluation of a data source.
     /// </summary>
-    public class PDFDataSchema
+    public class DataSchema
     {
         //
         // properties
@@ -43,12 +43,12 @@ namespace Scryber
 
         #endregion
 
-        #region public PDFDataItemCollection Items { get; private set; }
+        #region public DataItemCollection Items { get; private set; }
 
         /// <summary>
         /// Gets the collection of data items in this schema
         /// </summary>
-        public PDFDataItemCollection Items { get; private set; }
+        public DataItemCollection Items { get; private set; }
 
         #endregion
 
@@ -56,14 +56,14 @@ namespace Scryber
         // .ctor
         //
 
-        #region public PDFDataSchema(string rootpath, PDFDataItemCollection items)
+        #region public DataSchema(string rootpath, DataItemCollection items)
 
         /// <summary>
         /// Creates a new instance of the data schema with the specified root path and items
         /// </summary>
         /// <param name="rootpath"></param>
         /// <param name="items"></param>
-        public PDFDataSchema(string rootpath, PDFDataItemCollection items)
+        public DataSchema(string rootpath, DataItemCollection items)
         {
             this.RootPath = rootpath;
             this.Items = items;
@@ -71,27 +71,44 @@ namespace Scryber
 
         #endregion
 
+        //
+        // statics
+        //
+
+        /// <summary>
+        /// Gets the separator used between names for a full path
+        /// </summary>
+        public static readonly string PathSeparator = "/";
 
 
+        #region public static string CombineElementNames(params string[] names)
+
+        /// <summary>
+        /// Combines all the names into a single path
+        /// </summary>
+        /// <param name="names"></param>
+        /// <returns></returns>
         public static string CombineElementNames(params string[] names)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string s in names)
             {
                 if (sb.Length > 0)
-                    sb.Append("/");
+                    sb.Append(PathSeparator);
                 sb.Append(s);
             }
 
             return sb.ToString();            
         }
+
+        #endregion
     }
 
     /// <summary>
     /// Represents a single chunck of selectable data returned from a data source.
     /// This can either be an item with inner child items, or a discreet value source.
     /// </summary>
-    public class PDFDataItem
+    public class DataItem
     {
 
         #region public string FullPath { get; private set; }
@@ -161,11 +178,26 @@ namespace Scryber
 
         #endregion
 
+        #region public bool HasAttributes {get;}
+
+        /// <summary>
+        /// Returns true if this DataItem has inner attributes
+        /// </summary>
         public bool HasAttributes { get { return null != _attrs && _attrs.Count > 0; } }
 
-        private PDFDataItemCollection _attrs;
+        #endregion
 
-        public IEnumerable<PDFDataItem> Attributes
+        #region public IEnumerable<DataItem> Attributes
+
+        private DataItemCollection _attrs;
+
+        /// <summary>
+        /// Gets or sets the attributes in this data item
+        /// </summary>
+        /// <remarks>
+        /// Any content set on the instance will be coppied into a new DataItemCollection if it is not already
+        /// </remarks>
+        public IEnumerable<DataItem> Attributes
         {
             get
             {
@@ -177,22 +209,28 @@ namespace Scryber
                 {
                     _attrs = null;
                 }
+                else if (value is DataItemCollection dic)
+                {
+                    _attrs = dic;
+                }
                 else
                 {
-                    _attrs = new PDFDataItemCollection(value);
+                    _attrs = new DataItemCollection(value);
                 }
             }
         }
 
-        #region public PDFDataItemCollection Children { get; private set; }
+        #endregion
 
-        private PDFDataItemCollection _children;
+        #region public DataItemCollection Children { get; private set; }
+
+        private DataItemCollection _children;
 
         /// <summary>
         /// Gets the inner collection of child data items. 
         /// Will be null if this instance has no children
         /// </summary>
-        public PDFDataItemCollection Children { get { return _children; } set { _children = value; } }
+        public DataItemCollection Children { get { return _children; } set { _children = value; } }
 
         #endregion
 
@@ -200,7 +238,7 @@ namespace Scryber
         // .ctor
         //
 
-        #region public PDFDataItem(string fullpath, string relativepath, string name, string title, System.Xml.XmlNodeType nodeType, Type datatype)
+        #region public DataItem(string fullpath, string relativepath, string name, string title, System.Xml.XmlNodeType nodeType, Type datatype)
 
         /// <summary>
         /// Creates a new simple data item (with no children)
@@ -208,14 +246,14 @@ namespace Scryber
         /// <param name="fullpath"></param>
         /// <param name="name"></param>
         /// <param name="datatype"></param>
-        public PDFDataItem(string fullpath, string relativepath, string name, string title, System.Xml.XmlNodeType nodeType, DataType datatype)
+        public DataItem(string fullpath, string relativepath, string name, string title, System.Xml.XmlNodeType nodeType, DataType datatype)
             : this(fullpath, relativepath, name, title, nodeType, datatype, null)
         {
         }
 
         #endregion
 
-        #region public PDFDataItem(string path, string name, PDFDataItemCollection children)
+        #region public DataItem(string path, string name, PDFDataItemCollection children)
 
         /// <summary>
         /// Creates a new container data item (has children and the DataType is Array)
@@ -223,14 +261,14 @@ namespace Scryber
         /// <param name="fullpath"></param>
         /// <param name="name"></param>
         /// <param name="children"></param>
-        public PDFDataItem(string fullpath, string relativepath, string name, PDFDataItemCollection children)
+        public DataItem(string fullpath, string relativepath, string name, DataItemCollection children)
             : this(fullpath, relativepath, name, name, System.Xml.XmlNodeType.Element, Scryber.DataType.Array, children)
         {
         }
 
         #endregion
 
-        #region protected PDFDataItem(string path, string name, string title, System.Xml.XmlNodeType nodeType, Type datatype, bool hasChildren, PDFDataItemCollection children)
+        #region protected DataItem(string path, string name, string title, System.Xml.XmlNodeType nodeType, Type datatype, bool hasChildren, DataItemCollection children)
 
         /// <summary>
         /// Protected constructor that initializes all the parameters.
@@ -240,7 +278,7 @@ namespace Scryber
         /// <param name="datatype"></param>
         /// <param name="hasChildren"></param>
         /// <param name="children"></param>
-        protected PDFDataItem(string fullpath, string relativepath, string name, string title, System.Xml.XmlNodeType nodeType, DataType datatype, PDFDataItemCollection children)
+        protected DataItem(string fullpath, string relativepath, string name, string title, System.Xml.XmlNodeType nodeType, DataType datatype, DataItemCollection children)
         {
             if (string.IsNullOrEmpty(fullpath))
                 throw new ArgumentNullException("path");
@@ -276,12 +314,12 @@ namespace Scryber
     /// Represents a read only collection of data items (either as children of 
     /// another data item or as the root items in the schema)
     /// </summary>
-    public class PDFDataItemCollection : IEnumerable<PDFDataItem>
+    public class DataItemCollection : IEnumerable<DataItem>
     {
 
         #region ivars
 
-        private List<PDFDataItem> _inneritems;
+        private List<DataItem> _inneritems;
 
         #endregion
 
@@ -313,28 +351,28 @@ namespace Scryber
 
         #endregion
 
-        #region public PDFDataItem this[int index] {get;}
+        #region public DataItem this[int index] {get;}
 
         /// <summary>
         /// Gets the data item at the specified index.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public PDFDataItem this[int index]
+        public DataItem this[int index]
         {
             get { return _inneritems[index]; }
         }
 
         #endregion
 
-        #region public PDFDataItem this[string path] {get;}
+        #region public DataItem this[string path] {get;}
 
         /// <summary>
         /// Gets the data item with the specified path (case sensitive)
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public PDFDataItem this[string path]
+        public DataItem this[string path]
         {
             get
             {
@@ -353,15 +391,15 @@ namespace Scryber
         // .ctor
         //
 
-        #region public PDFDataItemCollection(IEnumerable<PDFDataItem> items)
+        #region public DataItemCollection(IEnumerable<DataItem> items)
 
         /// <summary>
-        /// Creates a new instace of the PDFDataItemCollection with a read only collection of items specified
+        /// Creates a new instace of the DataItemCollection with a read only collection of items specified
         /// </summary>
         /// <param name="items">The PDFDataItes in this collection</param>
-        public PDFDataItemCollection(IEnumerable<PDFDataItem> items)
+        public DataItemCollection(IEnumerable<DataItem> items)
         {
-            this._inneritems = new List<PDFDataItem>(items);
+            this._inneritems = new List<DataItem>(items);
         }
 
         #endregion
@@ -370,27 +408,27 @@ namespace Scryber
         // methods
         //
 
-        #region public void CopyTo(PDFDataItem[] array, int arrayIndex)
+        #region public void CopyTo(DataItem[] array, int arrayIndex)
 
         /// <summary>
         /// Copies the items in this collection to an array starting at the specified index.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(PDFDataItem[] array, int arrayIndex)
+        public void CopyTo(DataItem[] array, int arrayIndex)
         {
             _inneritems.CopyTo(array, arrayIndex);
         }
 
         #endregion
 
-        #region public IEnumerator<PDFDataItem> GetEnumerator()
+        #region public IEnumerator<DataItem> GetEnumerator()
 
         /// <summary>
         /// Returns an enumerator for the data item collection
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<PDFDataItem> GetEnumerator()
+        public IEnumerator<DataItem> GetEnumerator()
         {
             return _inneritems.GetEnumerator();
         }

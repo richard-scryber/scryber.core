@@ -27,11 +27,11 @@ namespace Scryber.Drawing
     /// A mutable list of points that can enumerated over, and can be parsed from a string in the format 'x1 y1, x2 y2, x3...'
     /// </summary>
     [PDFParsableValue()]
-    public class PDFPointArray : IEnumerable<PDFPoint>
+    public class PointArray : IEnumerable<Point>
     {
-        private List<PDFPoint> _items;
+        private List<Point> _items;
 
-        public PDFPoint this[int index]
+        public Point this[int index]
         {
             get { return this._items[index]; }
             set { this._items[index] = value; }
@@ -42,59 +42,59 @@ namespace Scryber.Drawing
             get { return _items.Count; }
         }
 
-        public PDFPointArray()
+        public PointArray()
         {
-            _items = new List<PDFPoint>();
+            _items = new List<Point>();
         }
 
-        public PDFPointArray(params PDFUnit[] xys)
+        public PointArray(params Unit[] xys)
             : this()
         {
             if (xys.Length % 2 != 0)
                 throw new ArgumentOutOfRangeException("xys");
             for (int i = 0; i < xys.Length; i+= 2)
             {
-                PDFUnit x = xys[i];
-                PDFUnit y = xys[i + 1];
-                this.Add(new PDFPoint(x, y));
+                Unit x = xys[i];
+                Unit y = xys[i + 1];
+                this.Add(new Point(x, y));
             }
         }
 
-        public PDFPointArray(params PDFPoint[] items)
-            : this((IEnumerable<PDFPoint>)items)
+        public PointArray(params Point[] items)
+            : this((IEnumerable<Point>)items)
         {
         }
 
-        public PDFPointArray(IEnumerable<PDFPoint> items)
+        public PointArray(IEnumerable<Point> items)
             : this()
         {
             this.AddRange(items);
         }
 
 
-        public void Add(PDFPoint point)
+        public void Add(Point point)
         {
             this._items.Add(point);
         }
 
 
-        public void Add(PDFUnit x, PDFUnit y)
+        public void Add(Unit x, Unit y)
         {
-            this.Add(new PDFPoint(x, y));
+            this.Add(new Point(x, y));
         }
 
-        public void AddRange(IEnumerable<PDFPoint> items)
+        public void AddRange(IEnumerable<Point> items)
         {
             if (null != items)
             {
-                foreach (PDFPoint pt in items)
+                foreach (Point pt in items)
                 {
                     this.Add(pt);
                 }
             }
         }
 
-        public bool Remove(PDFPoint pt)
+        public bool Remove(Point pt)
         {
             return this._items.Remove(pt);
         }
@@ -109,14 +109,14 @@ namespace Scryber.Drawing
             this._items.Clear();
         }
 
-        public PDFPoint[] ToArray()
+        public Point[] ToArray()
         {
             return this._items.ToArray();
         }
 
         #region IEnumerable
 
-        public IEnumerator<PDFPoint> GetEnumerator()
+        public IEnumerator<Point> GetEnumerator()
         {
             return this._items.GetEnumerator();
         }
@@ -130,18 +130,18 @@ namespace Scryber.Drawing
 
         private const char Separator = ' ';
 
-        public static PDFPointArray Parse(string value)
+        public static PointArray Parse(string value)
         {
             if (string.IsNullOrEmpty(value) == false)
             {
-                PDFPointArray all = new PDFPointArray();
+                PointArray all = new PointArray();
                 //TODO: Init with capacity
                 try
                 {
                     string[] pts = value.Split(Separator);
                     foreach (string one in pts)
                     {
-                        PDFPoint parsed = PDFPoint.Parse(one);
+                        Point parsed = Point.Parse(one);
                         all.Add(parsed);
                     }
                 }
@@ -154,7 +154,7 @@ namespace Scryber.Drawing
                 return all;
             }
             else
-                return new PDFPointArray();
+                return new PointArray();
 
         }
     }

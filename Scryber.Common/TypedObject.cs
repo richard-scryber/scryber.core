@@ -24,11 +24,14 @@ using Scryber.PDF;
 namespace Scryber
 {
     /// <summary>
-    /// This is the base class for all PDF objects to inherit from
+    /// This is the base class for all ITypedObjects to inherit from so they set their type from the ObjectType.
     /// </summary>
-    public abstract class PDFObject : IPDFObject //, IDisposable
+    /// <remarks>
+    /// Using a Type rather than the built in System.Type, all objects so multiple classes can share the same type (Tables, Panels, Text etc.)
+    /// </remarks>
+    public abstract class TypedObject : ITypedObject
     {
-        #region PDFObjectType ItemType {get;}
+        #region ObjectType Type {get;}
 
         private ObjectType _type;
         /// <summary>
@@ -45,36 +48,12 @@ namespace Scryber
         /// Protected constructor for the PDFObject
         /// </summary>
         /// <param name="type">The identifying type name for this instance</param>
-        protected PDFObject(ObjectType type)
+        protected TypedObject(ObjectType type)
         {
             this._type = type;
         }
 
-        //#region IDisposable Members
-
-        ///// <summary>
-        ///// Disposes this instance and release all resources for this method.
-        ///// </summary>
-        //public void Dispose()
-        //{
-        //    this.Dispose(true);
-        //}
-
-        ///// <summary>
-        ///// Inheritors should override this method to release all unmanaged resources
-        ///// </summary>
-        ///// <param name="disposing">True if this instance is being disposed of - i.e: this is called from the Dispose() method</param>
-        //protected virtual void Dispose(bool disposing)
-        //{
-
-        //}
-
-        //~PDFObject()
-        //{
-        //    this.Dispose(false);
-        //}
-
-        //#endregion
+        
     }
 
     

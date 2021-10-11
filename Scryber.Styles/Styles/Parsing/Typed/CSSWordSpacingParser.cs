@@ -9,7 +9,7 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSWordSpacingParser : CSSStyleValueParser
     {
-        public static readonly PDFUnit NormalSpacing = PDFUnit.Zero;
+        public static readonly Unit NormalSpacing = Unit.Zero;
 
         public CSSWordSpacingParser()
             : base(CSSStyleItems.WordSpacing)
@@ -18,7 +18,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            PDFUnit size = PDFUnit.Zero;
+            Unit size = Unit.Zero;
             bool result = true;
             if (reader.ReadNextValue())
             {
@@ -42,14 +42,14 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertWordSpacing(StyleBase style, object value, out PDFUnit space)
+        protected bool DoConvertWordSpacing(StyleBase style, object value, out Unit space)
         {
             if(null == value)
             {
-                space = PDFUnit.Empty;
+                space = Unit.Empty;
                 return false;
             }
-            else if(value is PDFUnit unit)
+            else if(value is Unit unit)
             {
                 space = unit;
                 return true;
@@ -60,13 +60,13 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                space = PDFUnit.Empty;
+                space = Unit.Empty;
                 return false;
             }
         }
 
 
-        public static bool TryGetWordSpacing(string value, out PDFUnit size)
+        public static bool TryGetWordSpacing(string value, out Unit size)
         {
             switch (value.ToLower())
             {

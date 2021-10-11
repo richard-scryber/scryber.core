@@ -33,24 +33,24 @@ namespace Scryber.Data
 
         #region public event PDFDataBindEventHandler DataBinding;
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (null != this.DataBinding)
-                this.DataBinding(this, new PDFDataBindEventArgs(context));
+                this.DataBinding(this, new DataBindEventArgs(context));
         }
 
         #endregion
 
         #region public event PDFDataBindEventHandler DataBound;
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (null != this.DataBound)
-                this.DataBound(this, new PDFDataBindEventArgs(context));
+                this.DataBound(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -126,7 +126,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public abstract object GetValue(PDFDataContext context);
+        public abstract object GetValue(DataContext context);
 
 
         #region public void DataBind(PDFDataContext context) + DoDataBind(PDFDataContext context)
@@ -135,7 +135,7 @@ namespace Scryber.Data
         /// Supports the databinding capabilites of the parameter by raising the events
         /// </summary>
         /// <param name="context"></param>
-        public virtual void DataBind(PDFDataContext context)
+        public virtual void DataBind(DataContext context)
         {
             this.OnDataBinding(context);
             this.DoDataBind(context);
@@ -147,7 +147,7 @@ namespace Scryber.Data
         /// Inheritors can override this method to perform their own actions during databinding
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void DoDataBind(PDFDataContext context)
+        protected virtual void DoDataBind(DataContext context)
         {
         }
 
@@ -167,7 +167,7 @@ namespace Scryber.Data
         /// Binds each of the XSLTArguments in this list
         /// </summary>
         /// <param name="context"></param>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             if (this.Count > 0)
             {
@@ -202,7 +202,7 @@ namespace Scryber.Data
             set;
         }
 
-        public override object GetValue(PDFDataContext context)
+        public override object GetValue(DataContext context)
         {
             return Value;
         }
@@ -237,7 +237,7 @@ namespace Scryber.Data
             set;
         }
 
-        public override object GetValue(PDFDataContext context)
+        public override object GetValue(DataContext context)
         {
             throw new NotSupportedException("Not Supported in .Net Core");
             //string name = this.QSParamName;
@@ -285,7 +285,7 @@ namespace Scryber.Data
             set;
         }
 
-        public override object GetValue(PDFDataContext context)
+        public override object GetValue(DataContext context)
         {
             string name = this.ItemName;
             if (string.IsNullOrEmpty(name))

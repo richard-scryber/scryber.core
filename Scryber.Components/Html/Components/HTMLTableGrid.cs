@@ -53,7 +53,7 @@ namespace Scryber.Html.Components
         }
     }
 
-    public class HTMLTableSection : Scryber.Components.VisualComponent, IPDFInvisibleContainer
+    public class HTMLTableSection : Scryber.Components.VisualComponent, IInvisibleContainer
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

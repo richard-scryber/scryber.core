@@ -69,15 +69,15 @@ namespace Scryber.Styles
 
         [PDFAttribute("x")]
         [PDFDesignable("X", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit X
+        public Unit X
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.PositionXKey,out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -97,15 +97,15 @@ namespace Scryber.Styles
 
         [PDFAttribute("y")]
         [PDFDesignable("Y", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit Y
+        public Unit Y
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.PositionYKey,out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -180,15 +180,15 @@ namespace Scryber.Styles
         #region public PDFRect ViewPort {get;set;}
 
         [PDFAttribute("viewport")]
-        public PDFRect ViewPort
+        public Rect ViewPort
         {
             get
             {
-                PDFRect f;
+                Rect f;
                 if (this.TryGetValue(StyleKeys.PositionViewPort, out f))
                     return f;
                 else
-                    return PDFRect.Empty;
+                    return Rect.Empty;
 
             }
             set
@@ -239,15 +239,15 @@ namespace Scryber.Styles
         [PDFAttribute("width")]
         [Obsolete("This has now moved to the PDFSizeStyle",true)]
         [PDFDesignable("Width", Ignore =true,  Category = "Size", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit Width
+        public Unit Width
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -269,15 +269,15 @@ namespace Scryber.Styles
         [PDFAttribute("height")]
         [PDFDesignable("Height", Ignore = true, Category = "Size", Priority = 1, Type = "PDFUnit")]
         [Obsolete("This has now moved to the PDFSizeStyle", true)]
-        public PDFUnit Height
+        public Unit Height
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeHeightKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set

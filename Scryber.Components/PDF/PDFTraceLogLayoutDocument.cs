@@ -71,7 +71,7 @@ namespace Scryber.PDF
 
         private PDFObjectRef[] GetAllPages(PDFObjectRef pageTreeRef, PDFFile origFile)
         {
-            IFileObject fo = origFile.GetContent(pageTreeRef);
+            IPDFFileObject fo = origFile.GetContent(pageTreeRef);
             if (null == fo || !(fo is PDFDictionary))
                 return new PDFObjectRef[] { };
 
@@ -89,7 +89,7 @@ namespace Scryber.PDF
                 return new PDFObjectRef[] { };
 
             List<PDFObjectRef> allPages = new List<PDFObjectRef>();
-            foreach (IFileObject item in kids)
+            foreach (IPDFFileObject item in kids)
             {
                 PDFObjectRef pageRef = item as PDFObjectRef;
                 if (null != pageRef)
@@ -148,7 +148,7 @@ namespace Scryber.PDF
                 PDFObjectRef catalog = writer.LastObjectReference();
                 PDFObjectRef pageTree = this.OutputPageTree(context, writer);
 
-                foreach (KeyValuePair<PDFName, IFileObject> item in this.ExistingCatalog)
+                foreach (KeyValuePair<PDFName, IPDFFileObject> item in this.ExistingCatalog)
                 {
                     if (item.Key.Value == "Pages")
                     {

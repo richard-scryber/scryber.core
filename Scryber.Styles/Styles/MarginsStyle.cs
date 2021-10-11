@@ -35,17 +35,17 @@ namespace Scryber.Styles
         [PDFAttribute("top")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"margin-top\"")]
         [PDFDesignable("Margins Top", Category = "Margins", Type = "PDFUnit")]
-        public PDFUnit Top
+        public Unit Top
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.MarginsTopKey, out found))
                     return found;
                 else if (this.TryGetValue(StyleKeys.MarginsAllKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -65,17 +65,17 @@ namespace Scryber.Styles
         [PDFAttribute("bottom")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"margin-bottom\"")]
         [PDFDesignable("Margins Bottom", Category = "Margins", Type = "PDFUnit")]
-        public PDFUnit Bottom
+        public Unit Bottom
         {
             get
             {
-                PDFUnit b;
+                Unit b;
                 if(this.TryGetValue(StyleKeys.MarginsBottomKey,out b))
                     return b;
                 else if (this.TryGetValue(StyleKeys.MarginsAllKey, out b))
                     return b;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -95,17 +95,17 @@ namespace Scryber.Styles
         [PDFAttribute("left")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"margin-left\"")]
         [PDFDesignable("Margins Left", Category = "Margins", Type = "PDFUnit")]
-        public PDFUnit Left
+        public Unit Left
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.MarginsLeftKey, out found))
                     return found;
                 else if (this.TryGetValue(StyleKeys.MarginsAllKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -125,17 +125,17 @@ namespace Scryber.Styles
         [PDFAttribute("right")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"margin-right\"")]
         [PDFDesignable("Margins Right", Category = "Margins", Type = "PDFUnit")]
-        public PDFUnit Right
+        public Unit Right
         {
             get
             {
-                PDFUnit r;
+                Unit r;
                 if (this.TryGetValue(StyleKeys.MarginsRightKey, out r))
                     return r;
                 else if (this.TryGetValue(StyleKeys.MarginsAllKey, out r))
                     return r;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -155,15 +155,15 @@ namespace Scryber.Styles
         [PDFAttribute("all")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"margin\"")]
         [PDFDesignable("Margins All", Category = "Margins", Type = "PDFUnit")]
-        public PDFUnit All
+        public Unit All
         {
             get
             {
-                PDFUnit b;
+                Unit b;
                 if (this.TryGetValue(StyleKeys.MarginsAllKey, out b))
                     return b;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -183,12 +183,12 @@ namespace Scryber.Styles
         {
         }
 
-        public bool TryGetThickness(out PDFThickness thickness)
+        public bool TryGetThickness(out Thickness thickness)
         {
             return this.AssertOwner().TryGetThickness(this.IsInherited, StyleKeys.MarginsAllKey, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey, out thickness);
         }
 
-        public void SetThickness(PDFThickness thickness)
+        public void SetThickness(Thickness thickness)
         {
             this.AssertOwner().SetThickness(this.IsInherited, thickness, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey);
         }

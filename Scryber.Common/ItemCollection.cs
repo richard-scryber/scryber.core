@@ -122,7 +122,7 @@ namespace Scryber
             return index;
         }
 
-        public void Init(PDFInitContext context)
+        public void Init(InitContext context)
         {
             foreach (string key in this.Keys)
             {

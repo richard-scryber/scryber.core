@@ -20,7 +20,7 @@ namespace Scryber.Styles
 
         private OutputFormat _format = OutputFormat.PDF;
 
-        protected override void DoDataBind(PDFDataContext context, bool includechildren)
+        protected override void DoDataBind(DataContext context, bool includechildren)
         {
             _format = context.OutputFormat;
 

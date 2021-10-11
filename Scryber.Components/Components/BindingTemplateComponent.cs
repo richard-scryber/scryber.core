@@ -45,7 +45,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <param name="item"></param>
-        protected virtual void OnItemDataBound(PDFDataContext context, IComponent item)
+        protected virtual void OnItemDataBound(DataContext context, IComponent item)
         {
             if (this.HasRegisteredEvents)
             {
@@ -70,7 +70,7 @@ namespace Scryber.Components
         /// <summary>
         /// The parent Component the items were added to.
         /// </summary>
-        private IPDFContainerComponent _toparent;
+        private IContainerComponent _toparent;
         
 
         //
@@ -92,7 +92,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <param name="includeChildren"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             if (_addedonbind != null && _addedonbind.Count > 0)
                 this.ClearPreviousBoundComponents(_addedonbind, _toparent);
@@ -104,7 +104,7 @@ namespace Scryber.Components
 
             if (includeChildren)
             {
-                IPDFContainerComponent container = GetContainerParent();
+                IContainerComponent container = GetContainerParent();
                 DoDataBindToContainer(context, container);
             }
         }
@@ -115,7 +115,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <param name="container"></param>
-        protected virtual void DoDataBindToContainer(PDFDataContext context, IPDFContainerComponent container)
+        protected virtual void DoDataBindToContainer(DataContext context, IContainerComponent container)
         {
             //If we have a template and should be binding on it
             
@@ -130,7 +130,7 @@ namespace Scryber.Components
 
         }
 
-        protected IPDFContainerComponent GetContainerParent()
+        protected IContainerComponent GetContainerParent()
         {
             Component ele = this;
             while (null != ele)
@@ -139,10 +139,10 @@ namespace Scryber.Components
                 if (par == null)
                     throw RecordAndRaise.ArgumentNull(Errors.TemplateComponentParentMustBeContainer);
 
-                else if ((par is IPDFContainerComponent) == false)
+                else if ((par is IContainerComponent) == false)
                     ele = par;
                 else
-                    return par as IPDFContainerComponent;
+                    return par as IContainerComponent;
             }
 
             //If we get this far then we haven't got a viable container to add our items to.
@@ -156,13 +156,13 @@ namespace Scryber.Components
         /// <param name="containerposition"></param>
         /// <param name="template"></param>
         /// <param name="context"></param>
-        protected virtual void DoBindDataIntoContainer(IPDFContainerComponent container, int containerposition, PDFDataContext context)
+        protected virtual void DoBindDataIntoContainer(IContainerComponent container, int containerposition, DataContext context)
         {
             int prevcount = context.CurrentIndex;
-            PDFDataStack stack = context.DataStack;
+            DataStack stack = context.DataStack;
 
             object data = stack.HasData ? context.DataStack.Current : null;
-            IPDFDataSource source = stack.HasData ? context.DataStack.Source : null;
+            IDataSource source = stack.HasData ? context.DataStack.Source : null;
 
             int count = 0;
             int added = 0;
@@ -266,7 +266,7 @@ namespace Scryber.Components
         /// <param name="index"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        protected abstract ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count);
+        protected abstract ITemplate GetTemplateForBinding(DataContext context, int index, int count);
 
 
         #region protected virtual IEnumerator CreateEnumerator(IEnumerable enumerable)
@@ -299,20 +299,20 @@ namespace Scryber.Components
 
         #region protected virtual int InstantiateAndAddFromTemplate(PDFDataContext context, int count, int index, IPDFContainerComponent container, IPDFTemplate template)
 
-        private PDFInitContext _initContext;
-        private PDFLoadContext _loadContext;
+        private InitContext _initContext;
+        private LoadContext _loadContext;
 
-        private PDFInitContext GetInitContext(PDFDataContext dataContext)
+        private InitContext GetInitContext(DataContext dataContext)
         {
             if (null == _initContext)
-                _initContext = new PDFInitContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
+                _initContext = new InitContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
             return _initContext;
         }
 
-        private PDFLoadContext GetLoadContext(PDFDataContext dataContext)
+        private LoadContext GetLoadContext(DataContext dataContext)
         {
             if (null == _loadContext)
-                _loadContext = new PDFLoadContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
+                _loadContext = new LoadContext(dataContext.Items, dataContext.TraceLog, dataContext.PerformanceMonitor, this.Document);
             return _loadContext;
         }
 
@@ -325,14 +325,14 @@ namespace Scryber.Components
         /// <param name="container"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        protected virtual int InstantiateAndAddWithTemplate(ITemplate template, int count, int index, IPDFContainerComponent container, PDFDataContext context)
+        protected virtual int InstantiateAndAddWithTemplate(ITemplate template, int count, int index, IContainerComponent container, DataContext context)
         {
 
             if (null == template)
                 return 0;
 
-            PDFInitContext init = GetInitContext(context);
-            PDFLoadContext load = GetLoadContext(context);
+            InitContext init = GetInitContext(context);
+            LoadContext load = GetLoadContext(context);
             
             IEnumerable<IComponent> created = template.Instantiate(count, this);
             int added = 0;
@@ -366,7 +366,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="all"></param>
         /// <param name="container"></param>
-        private void ClearPreviousBoundComponents(ICollection<IComponent> all, IPDFContainerComponent container)
+        private void ClearPreviousBoundComponents(ICollection<IComponent> all, IContainerComponent container)
         {
             //dispose and clear
             foreach (Component ele in all)
@@ -387,7 +387,7 @@ namespace Scryber.Components
         /// <param name="container"></param>
         /// <param name="index"></param>
         /// <param name="ele"></param>
-        private void InsertComponentInContainer(IPDFContainerComponent container, int index, IComponent ele, PDFInitContext init, PDFLoadContext load)
+        private void InsertComponentInContainer(IContainerComponent container, int index, IComponent ele, InitContext init, LoadContext load)
         {
             ele.Init(init);
             IComponentList list = container.Content as IComponentList;

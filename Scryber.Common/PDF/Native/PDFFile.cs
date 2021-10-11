@@ -27,7 +27,7 @@ namespace Scryber.PDF.Native
     /// <summary>
     /// Represents a complete PDFDocument that already exists as a file (or binary data).
     /// </summary>
-    public class PDFFile : PDFObject, IDisposable
+    public class PDFFile : TypedObject, IDisposable
     {
 
         public const string CatalogName = "Catalog";
@@ -289,9 +289,9 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="oref"></param>
         /// <returns></returns>
-        public IFileObject GetContent(PDFObjectRef oref)
+        public IPDFFileObject GetContent(PDFObjectRef oref)
         {
-            IParsedIndirectObject obj = this._reader.GetObject(oref);
+            IPDFParsedIndirectObject obj = this._reader.GetObject(oref);
             if (null == obj)
                 return null;
             else
@@ -308,9 +308,9 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="oref"></param>
         /// <returns></returns>
-        public IFileObject AssertGetContent(PDFObjectRef oref)
+        public IPDFFileObject AssertGetContent(PDFObjectRef oref)
         {
-            IFileObject result = this.GetContent(oref);
+            IPDFFileObject result = this.GetContent(oref);
             if (null == result)
                 throw new NullReferenceException(String.Format(CommonErrors.AnIndirectObjectWithReferenceCouldNotBeFound, oref));
 
@@ -331,7 +331,7 @@ namespace Scryber.PDF.Native
         public bool TryGetStreamData(PDFObjectRef oref, out byte[] data)
         {
             data = null;
-            IParsedIndirectObject obj = this._reader.GetObject(oref);
+            IPDFParsedIndirectObject obj = this._reader.GetObject(oref);
 
             if (null == obj)
                 return false;

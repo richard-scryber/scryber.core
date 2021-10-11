@@ -81,7 +81,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this item
         /// </summary>
-        public abstract PDFUnit Height { get; }
+        public abstract Unit Height { get; }
 
         #endregion
 
@@ -90,19 +90,19 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this item
         /// </summary>
-        public abstract PDFUnit Width { get; }
+        public abstract Unit Width { get; }
 
         #endregion
 
         /// <summary>
         /// Gets the Y Offset from the parent of this item
         /// </summary>
-        public virtual PDFUnit OffsetY { get { return PDFUnit.Zero; } }
+        public virtual Unit OffsetY { get { return Unit.Zero; } }
 
         /// <summary>
         /// Gets the X Offset from the parent of this item
         /// </summary>
-        public virtual PDFUnit OffsetX { get { return PDFUnit.Zero; } }
+        public virtual Unit OffsetX { get { return Unit.Zero; } }
 
         //
         // ctor(s)
@@ -133,7 +133,7 @@ namespace Scryber.PDF.Layout
         /// <param name="context">The current layout context</param>
         /// <param name="xoffset">Any horizontal adjustment to be applied when the component layout is set</param>
         /// <param name="yoffset">Any vertical adjustment to be applied when the component layout is set</param>
-        protected abstract void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset);
+        protected abstract void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset);
 
         //
         // Implementation Methods
@@ -145,7 +145,7 @@ namespace Scryber.PDF.Layout
         /// Checks if this layout item supports splitting of components across pages
         /// </summary>
         /// <returns></returns>
-        public virtual bool MoveToNextRegion( PDFUnit requiredHeight, PDFLayoutContext context)
+        public virtual bool MoveToNextRegion( Unit requiredHeight, PDFLayoutContext context)
         {
             return false;
         }
@@ -315,7 +315,7 @@ namespace Scryber.PDF.Layout
         /// The base implementation does nothing. Inheritors should override this to perform their own re-sizing
         /// </summary>
         /// <param name="width">The maximum width allowed</param>
-        public virtual void SetMaxWidth(PDFUnit width)
+        public virtual void SetMaxWidth(Unit width)
         {
             
         }
@@ -331,7 +331,7 @@ namespace Scryber.PDF.Layout
         /// <param name="pageIndex"></param>
         /// <param name="xoffset"></param>
         /// <param name="yoffset"></param>
-        public void PushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        public void PushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             SetOwnerPageIndex(pageIndex);
 
@@ -355,7 +355,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="height"></param>
         /// <param name="includeChildren"></param>
-        public virtual void ResetAvailableHeight(PDFUnit height, bool includeChildren)
+        public virtual void ResetAvailableHeight(Unit height, bool includeChildren)
         {
         }
 
@@ -397,13 +397,13 @@ namespace Scryber.PDF.Layout
         /// <param name="border">The border style (which indicates the corner radius)</param>
         /// <param name="context">The current render context</param>
         /// <param name="rect">The rectangle to be output</param>
-        protected virtual void OutputBackground(PDFBrush bg, PDFUnit? corner, PDFRenderContext context, PDFRect rect)
+        protected virtual void OutputBackground(PDFBrush bg, Unit? corner, PDFRenderContext context, Rect rect)
         {
             var g = context.Graphics;
             
             if (null != bg)
             {
-                if (corner.HasValue && corner.Value != PDFUnit.Zero)
+                if (corner.HasValue && corner.Value != Unit.Zero)
                     g.FillRoundRectangle(bg, rect, corner.Value);
                 else
                     g.FillRectangle(bg, rect);
@@ -421,13 +421,13 @@ namespace Scryber.PDF.Layout
         /// <param name="border">The border style</param>
         /// <param name="context">The current render context</param>
         /// <param name="rect">The rectangle that shoud be rendered as the border</param>
-        protected virtual void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, PDFRect rect)
+        protected virtual void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
         {
             var g = context.Graphics;
             
             if (null != border.AllPen && border.AllSides > 0)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != PDFUnit.Zero)
+                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
                     g.DrawRoundRectangle(border.AllPen, rect, border.AllSides, border.CornerRadius.Value);
                 else
                     g.DrawRectangle(border.AllPen, rect, border.AllSides);
@@ -435,7 +435,7 @@ namespace Scryber.PDF.Layout
 
             if(null != border.TopPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != PDFUnit.Zero)
+                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
                     g.DrawRoundRectangle(border.TopPen, rect, Sides.Top, border.CornerRadius.Value);
                 else
                     g.DrawRectangle(border.TopPen, rect, Sides.Top);
@@ -443,7 +443,7 @@ namespace Scryber.PDF.Layout
 
             if (null != border.RightPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != PDFUnit.Zero)
+                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
                     g.DrawRoundRectangle(border.RightPen, rect, Sides.Right, border.CornerRadius.Value);
                 else
                     g.DrawRectangle(border.RightPen, rect, Sides.Right);
@@ -451,7 +451,7 @@ namespace Scryber.PDF.Layout
 
             if (null != border.BottomPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != PDFUnit.Zero)
+                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
                     g.DrawRoundRectangle(border.BottomPen, rect, Sides.Bottom, border.CornerRadius.Value);
                 else
                     g.DrawRectangle(border.BottomPen, rect, Sides.Bottom);
@@ -459,7 +459,7 @@ namespace Scryber.PDF.Layout
 
             if (null != border.LeftPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != PDFUnit.Zero)
+                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
                     g.DrawRoundRectangle(border.LeftPen, rect, Sides.Left, border.CornerRadius.Value);
                 else
                     g.DrawRectangle(border.LeftPen, rect, Sides.Left);
@@ -475,7 +475,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="context">The current render context</param>
         /// <param name="cliprect">The rectangle that shoud be rendered as the border</param>
-        protected virtual void OutputClipping(PDFRenderContext context, PDFRect cliprect, PDFUnit corner, Sides sides, PDFThickness inset)
+        protected virtual void OutputClipping(PDFRenderContext context, Rect cliprect, Unit corner, Sides sides, Thickness inset)
         {
             var g = context.Graphics;
             g.SaveGraphicsState();
@@ -488,7 +488,7 @@ namespace Scryber.PDF.Layout
                 cliprect.Height -= (inset.Top + inset.Bottom);
             }
 
-            if (corner != PDFUnit.Zero)
+            if (corner != Unit.Zero)
                 g.SetClipRect(cliprect, sides, corner);
             else
             {

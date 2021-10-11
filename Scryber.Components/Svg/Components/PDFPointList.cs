@@ -6,13 +6,13 @@ using System.Collections;
 namespace Scryber.Svg.Components
 {
     [PDFParsableValue]
-    public class PDFPointList : ICollection<PDFPoint>
+    public class PDFPointList : ICollection<Point>
     {
-        private List<PDFPoint> _points;
+        private List<Point> _points;
 
         public PDFPointList()
         {
-            _points = new List<PDFPoint>();
+            _points = new List<Point>();
         }
 
         public int Count
@@ -24,12 +24,12 @@ namespace Scryber.Svg.Components
 
 
 
-        public PDFPoint this[int index]
+        public Point this[int index]
         {
             get { return this._points[index]; }
         }
 
-        public void Add(PDFPoint item)
+        public void Add(Point item)
         {
             this._points.Add(item);
         }
@@ -39,22 +39,22 @@ namespace Scryber.Svg.Components
             this._points.Clear();
         }
 
-        public bool Contains(PDFPoint item)
+        public bool Contains(Point item)
         {
             return this._points.Contains(item);
         }
 
-        public void CopyTo(PDFPoint[] array, int arrayIndex)
+        public void CopyTo(Point[] array, int arrayIndex)
         {
             this._points.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<PDFPoint> GetEnumerator()
+        public IEnumerator<Point> GetEnumerator()
         {
             return this._points.GetEnumerator();
         }
 
-        public bool Remove(PDFPoint item)
+        public bool Remove(Point item)
         {
             return this._points.Remove(item);
         }
@@ -77,10 +77,10 @@ namespace Scryber.Svg.Components
 
             for (int i = 1; i < vals.Length; i+= 2)
             {
-                PDFUnit one, two;
+                Unit one, two;
 
-                if (PDFUnit.TryParse(vals[i - 1], out one) && PDFUnit.TryParse(vals[i], out two))
-                    all.Add(new PDFPoint(one, two));
+                if (Unit.TryParse(vals[i - 1], out one) && Unit.TryParse(vals[i], out two))
+                    all.Add(new Point(one, two));
             }
 
             return all;

@@ -36,7 +36,7 @@ namespace Scryber.Binding
 
         private string _expr;
         private System.Xml.XPath.XPathExpression _compiled;
-        private PDFValueConverter _converter;
+        private ValueConverter _converter;
         private System.Reflection.PropertyInfo _property;
 
         #endregion
@@ -47,7 +47,7 @@ namespace Scryber.Binding
         /// Gets the converter associated with this instance to change the string value from the 
         /// XPath expression to the native value required for the property.
         /// </summary>
-        protected PDFValueConverter Converter
+        protected ValueConverter Converter
         {
             get { return _converter; }
         }
@@ -95,7 +95,7 @@ namespace Scryber.Binding
         /// </summary>
         /// <param name="sender">The instance that raised the event</param>
         /// <param name="args"></param>
-        public void BindComponent(object sender, PDFDataBindEventArgs args)
+        public void BindComponent(object sender, DataBindEventArgs args)
         {
             if (null == sender)
                 throw new ArgumentNullException("sender");
@@ -104,9 +104,9 @@ namespace Scryber.Binding
             if (null == args.Context)
                 throw new ArgumentNullException("args.Context");
 
-            PDFDataStack stack = args.Context.DataStack;
+            DataStack stack = args.Context.DataStack;
 
-            IPDFDataSource src = stack.Source;
+            IDataSource src = stack.Source;
 
             //Pop the current one so we can get the next one up (for count and position operations)
             object data = stack.Pop();
@@ -143,7 +143,7 @@ namespace Scryber.Binding
         /// <param name="component">The component to bind the resultant value onto.</param>
         /// <param name="data">The current data value in the context to extract the value from.</param>
         /// <param name="context">The current context</param>
-        protected abstract void DoBindComponent(object component, object data, PDFDataContext context);
+        protected abstract void DoBindComponent(object component, object data, DataContext context);
 
         #endregion
 
@@ -159,7 +159,7 @@ namespace Scryber.Binding
         /// <param name="data">The current data object on the stack</param>
         /// <param name="context">The current data context</param>
         /// <returns>A prepared XPath expression</returns>
-        protected System.Xml.XPath.XPathExpression GetExpression(object data, PDFDataContext context)
+        protected System.Xml.XPath.XPathExpression GetExpression(object data, DataContext context)
         {
             if (null == _compiled)
             {
@@ -182,7 +182,7 @@ namespace Scryber.Binding
         /// <param name="instance">The instance the set the property value on.</param>
         /// <param name="value">The value to set</param>
         /// <param name="context">The current data context</param>
-        protected void SetToConvertedValue(object instance, string value, PDFDataContext context)
+        protected void SetToConvertedValue(object instance, string value, DataContext context)
         {
             try
             {
@@ -207,7 +207,7 @@ namespace Scryber.Binding
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="context"></param>
-        protected void SetToEmptyValue(object instance, PDFDataContext context)
+        protected void SetToEmptyValue(object instance, DataContext context)
         {
             if (this.Property.PropertyType.IsClass)
                 this.Property.SetValue(instance, null);
@@ -300,7 +300,7 @@ namespace Scryber.Binding
         /// <param name="convert">A value converter to change the string result into the required type.</param>
         /// <param name="property">The property this expression is bound to.</param>
         /// <returns>The expression that ban be attached to an event</returns>
-        public static BindingXPathExpression Create(string expr, PDFValueConverter convert, System.Reflection.PropertyInfo property)
+        public static BindingXPathExpression Create(string expr, ValueConverter convert, System.Reflection.PropertyInfo property)
         {
             if (null == property)
                 throw new ArgumentNullException("property");
@@ -360,7 +360,7 @@ namespace Scryber.Binding
         /// <param name="component"></param>
         /// <param name="data"></param>
         /// <param name="context"></param>
-        protected override void DoBindComponent(object component, object data, PDFDataContext context)
+        protected override void DoBindComponent(object component, object data, DataContext context)
         {
             System.Xml.XPath.XPathExpression expr = this.GetExpression(data, context);
 
@@ -427,7 +427,7 @@ namespace Scryber.Binding
         /// <param name="component"></param>
         /// <param name="data"></param>
         /// <param name="context"></param>
-        protected override void DoBindComponent(object component, object data, PDFDataContext context)
+        protected override void DoBindComponent(object component, object data, DataContext context)
         {
             System.Xml.XPath.XPathExpression expr = this.GetExpression(data, context);
 
@@ -483,7 +483,7 @@ namespace Scryber.Binding
         /// <param name="component"></param>
         /// <param name="data"></param>
         /// <param name="context"></param>
-        protected override void DoBindComponent(object component, object data, PDFDataContext context)
+        protected override void DoBindComponent(object component, object data, DataContext context)
         {
             System.Xml.XPath.XPathExpression expr = this.GetExpression(data, context);
             System.Xml.XPath.XPathNavigator nav;
@@ -525,7 +525,7 @@ namespace Scryber.Binding
         /// <param name="component"></param>
         /// <param name="data"></param>
         /// <param name="context"></param>
-        protected override void DoBindComponent(object component, object data, PDFDataContext context)
+        protected override void DoBindComponent(object component, object data, DataContext context)
         {
             System.Xml.XPath.XPathExpression expr = this.GetExpression(data, context);
 

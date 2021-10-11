@@ -29,7 +29,7 @@ namespace Scryber.Data
     /// </summary>
     [PDFRequiredFramework("0.9")]
     [PDFParsableComponent("Match")]
-    public class DataRelationMatch : PDFObject
+    public class DataRelationMatch : TypedObject
     {
 
         #region public string ChildName {get;set;}

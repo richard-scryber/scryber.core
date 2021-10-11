@@ -44,7 +44,7 @@ namespace Scryber.Data
         }
 
 
-        public override void AddRelation(IPDFDataSetProviderCommand parentCommand, IPDFDataSetProviderCommand childCommand, System.Data.DataSet dataset, PDFDataContext context)
+        public override void AddRelation(IDataSetProviderCommand parentCommand, IDataSetProviderCommand childCommand, System.Data.DataSet dataset, DataContext context)
         {
             string childtablename = childCommand.GetDataTableName(dataset);
             if (string.IsNullOrEmpty(childtablename))

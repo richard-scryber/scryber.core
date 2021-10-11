@@ -16,7 +16,7 @@ namespace Scryber.Drawing
         private static readonly char[] _splitChars = new char[] { ' ' };
 
         private double[] _widths;
-        private PDFUnit _explicit;
+        private Unit _explicit;
 
         /// <summary>
         /// Gets the values associated with this set of column widths
@@ -26,7 +26,7 @@ namespace Scryber.Drawing
             get { return _widths; }
         }
 
-        public PDFUnit Explicit
+        public Unit Explicit
         {
             get { return _explicit; }
         }
@@ -50,7 +50,7 @@ namespace Scryber.Drawing
             }
         }
 
-        public ColumnWidths(PDFUnit explicitWidth)
+        public ColumnWidths(Unit explicitWidth)
         {
             this._widths = null;
             this._explicit = explicitWidth;
@@ -59,10 +59,10 @@ namespace Scryber.Drawing
         public ColumnWidths(double[] widths)
         {
             this._widths = widths;
-            this._explicit = PDFUnit.Empty;
+            this._explicit = Unit.Empty;
         }
 
-        public PDFUnit[] GetPercentColumnWidths(PDFUnit available, PDFUnit alley, int colCount)
+        public Unit[] GetPercentColumnWidths(Unit available, Unit alley, int colCount)
         {
             
             if (null == this.Widths || this.Widths.Length == 0)
@@ -76,7 +76,7 @@ namespace Scryber.Drawing
                 throw new ArgumentOutOfRangeException("The total percentage column widths are greater than 100%");
 
 
-            PDFUnit[] all = new PDFUnit[colCount];
+            Unit[] all = new Unit[colCount];
             total = available.PointsValue;
             double totalAlley = alley.PointsValue * (colCount - 1);
             double totalAvail = total - totalAlley;
@@ -86,14 +86,14 @@ namespace Scryber.Drawing
             
 
             double[] widths = this.Widths;
-            PDFUnit[] calc = new PDFUnit[colCount];
+            Unit[] calc = new Unit[colCount];
             
             for (int i = 0; i < colCount; i++)
             {
                 if(i >= widths.Length || widths[i] <= UndefinedWidth)
                 {
                     //don't have a value so set to zero and increment the remainder counter
-                    calc[i] = PDFUnit.Zero;
+                    calc[i] = Unit.Zero;
                     remainerCount++;
                 }
                 else 
@@ -111,15 +111,15 @@ namespace Scryber.Drawing
 
                 for(var i = 0; i < colCount; i++)
                 {
-                    if (calc[i] == PDFUnit.Zero)
-                        calc[i] = new PDFUnit(each, PageUnits.Points);
+                    if (calc[i] == Unit.Zero)
+                        calc[i] = new Unit(each, PageUnits.Points);
                 }
             }
 
             return calc;
         }
 
-        public PDFUnit[] GetExplicitColumnWidths(PDFUnit available, PDFUnit alley, out int count)
+        public Unit[] GetExplicitColumnWidths(Unit available, Unit alley, out int count)
         {
             if (!this.HasExplicitWidth)
                 throw new InvalidOperationException("The column widths does not have an explicit value");
@@ -131,19 +131,19 @@ namespace Scryber.Drawing
             // The the available = 650 - (alley * (4 -1)) = 620;
             // Actual width = 620 / 4 = 155;
 
-            PDFUnit expl = this.Explicit + alley;
+            Unit expl = this.Explicit + alley;
             int maxCount = (int)Math.Floor(available.PointsValue / expl.PointsValue);
             if(maxCount < 2)
             {
                 count = 1;
-                return new PDFUnit[] { available };
+                return new Unit[] { available };
             }
 
             double totalAlley = alley.PointsValue * (maxCount - 1);
             double maxWidth = available.PointsValue - totalAlley;
             double actual = maxWidth / maxCount;
 
-            PDFUnit[] all = new PDFUnit[(int)maxCount];
+            Unit[] all = new Unit[(int)maxCount];
             for (var i = 0; i < maxCount; i++)
                 all[i] = actual;
 
@@ -162,15 +162,15 @@ namespace Scryber.Drawing
                 return "[" + string.Join(" ", _widths) + "]";
         }
 
-        public static PDFUnit[] GetEqualColumnWidths(PDFUnit available, PDFUnit alley, int colCount)
+        public static Unit[] GetEqualColumnWidths(Unit available, Unit alley, int colCount)
         {
             double total = available.PointsValue;
             total -= (alley.PointsValue * (colCount - 1));
             double each = total / colCount;
 
-            PDFUnit[] all = new PDFUnit[colCount];
+            Unit[] all = new Unit[colCount];
             for (var i = 0; i < colCount; i++)
-                all[i] = new PDFUnit(each, PageUnits.Points);
+                all[i] = new Unit(each, PageUnits.Points);
 
             return all;
         }
@@ -187,8 +187,8 @@ namespace Scryber.Drawing
                 var expl = all[0];
                 if(char.IsLetter(expl, expl.Length - 1))
                 {
-                    PDFUnit val;
-                    if (PDFUnit.TryParse(expl, out val))
+                    Unit val;
+                    if (Unit.TryParse(expl, out val))
                         return new ColumnWidths(val);
                     else
                         throw new ArgumentException("The value '" + value + "' could not be converted to column widths. Either use an explicit width (e.g. 200pt) or a set of percentage widths (e.g. 30% 40% 30%, or 0.3 0.4 0.3) ", "value");

@@ -73,8 +73,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12; 
-            PDFFont target = new PDFFont(family, size);
+            Unit size = 12; 
+            Font target = new Font(family, size);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, family);
@@ -91,8 +91,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test1()
         {
             StandardFont font = StandardFont.Helvetica;
-            PDFUnit size = 12;
-            PDFFont target = new PDFFont(font, size);
+            Unit size = 12;
+            Font target = new Font(font, size);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, font.ToString());
@@ -111,10 +111,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test3()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
+            Unit size = 12;
             FontStyle style = FontStyle.Italic;
             int weight = FontWeights.Black;
-            PDFFont target = new PDFFont(family, size, weight, style);
+            Font target = new Font(family, size, weight, style);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, family);
@@ -133,13 +133,13 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test4()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
+            Unit size = 12;
             FontStyle style = FontStyle.Regular;
             int weight = FontWeights.Light;
-            PDFFont basefont = new PDFFont(family, size, weight, style);
+            Font basefont = new Font(family, size, weight, style);
 
             size = 24;
-            PDFFont target = new PDFFont(basefont, size);
+            Font target = new Font(basefont, size);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, basefont.FamilyName);
@@ -156,9 +156,9 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test5()
         {
             StandardFont font = StandardFont.Helvetica;
-            PDFUnit size = 20;
+            Unit size = 20;
 
-            PDFFont target = new PDFFont(font, size);
+            Font target = new Font(font, size);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, font.ToString());
@@ -176,14 +176,14 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test6()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
+            Unit size = 12;
             FontStyle style = FontStyle.Italic;
             int fontWeight = FontWeights.Black;
-            PDFFont basefont = new PDFFont(family, size, fontWeight, style);
+            Font basefont = new Font(family, size, fontWeight, style);
 
             style = FontStyle.Italic;
             fontWeight = FontWeights.Light;
-            PDFFont target = new PDFFont(basefont, fontWeight,  style);
+            Font target = new Font(basefont, fontWeight,  style);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, basefont.FamilyName);
@@ -201,15 +201,15 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFFontConstructor_Test7()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
+            Unit size = 12;
             FontStyle style = FontStyle.Regular;
             int weight = FontWeights.Regular;
-            PDFFont basefont = new PDFFont(family, size);
+            Font basefont = new Font(family, size);
 
             style = FontStyle.Italic;
             size = 24;
             weight = FontWeights.Bold;
-            PDFFont target = new PDFFont(basefont, size, weight, style);
+            Font target = new Font(basefont, size, weight, style);
 
             Assert.IsNotNull(target);
             Assert.AreEqual(target.FamilyName, basefont.FamilyName);
@@ -226,30 +226,30 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Fonts")]
         public void Equals_Test()
         {
-            PDFFont one = new PDFFont("Sans-Serif", 12, FontWeights.Black, FontStyle.Italic);
-            PDFFont two = new PDFFont("Sans-Serif", 12, FontWeights.Black, FontStyle.Italic);
+            Font one = new Font("Sans-Serif", 12, FontWeights.Black, FontStyle.Italic);
+            Font two = new Font("Sans-Serif", 12, FontWeights.Black, FontStyle.Italic);
 
-            bool actual = PDFFont.Equals(one, two);
+            bool actual = Font.Equals(one, two);
             Assert.IsTrue(actual);
 
             //Change font family
-            two = new PDFFont("Times", 12, FontWeights.Black, FontStyle.Italic);
-            actual = PDFFont.Equals(one, two);
+            two = new Font("Times", 12, FontWeights.Black, FontStyle.Italic);
+            actual = Font.Equals(one, two);
             Assert.IsFalse(actual);
 
             //Change size
-            two = new PDFFont("Sans-Serif", 24, FontWeights.Black, FontStyle.Italic);
-            actual = PDFFont.Equals(one, two);
+            two = new Font("Sans-Serif", 24, FontWeights.Black, FontStyle.Italic);
+            actual = Font.Equals(one, two);
             Assert.IsFalse(actual);
 
             //Change style
-            two = new PDFFont("Sans-Serif", 12, FontWeights.Black, FontStyle.Oblique);
-            actual = PDFFont.Equals(one, two);
+            two = new Font("Sans-Serif", 12, FontWeights.Black, FontStyle.Oblique);
+            actual = Font.Equals(one, two);
             Assert.IsFalse(actual);
 
             //Change weight
-            two = new PDFFont("Sans-Serif", 12, FontWeights.Light, FontStyle.Oblique);
-            actual = PDFFont.Equals(one, two);
+            two = new Font("Sans-Serif", 12, FontWeights.Light, FontStyle.Oblique);
+            actual = Font.Equals(one, two);
             Assert.IsFalse(actual);
 
         }
@@ -261,18 +261,18 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Fonts")]
         public void Equals_Test1()
         {
-            PDFFont one = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
-            PDFFont two = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
+            Font one = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
+            Font two = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
             object oneobj = one;
             object twoobj = two;
-            bool actual = PDFFont.Equals(oneobj, twoobj);
+            bool actual = Font.Equals(oneobj, twoobj);
             Assert.IsTrue(actual);
 
 
-            two = new PDFFont("Sans-Serif", 14, FontWeights.Black, FontStyle.Regular);
+            two = new Font("Sans-Serif", 14, FontWeights.Black, FontStyle.Regular);
             oneobj = one;
             twoobj = two;
-            actual = PDFFont.Equals(oneobj, twoobj);
+            actual = Font.Equals(oneobj, twoobj);
             Assert.IsFalse(actual);
 
         }
@@ -284,8 +284,8 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Fonts")]
         public void Equals_Test2()
         {
-            PDFFont one = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
-            PDFFont two = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
+            Font one = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
+            Font two = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
 
             bool actual = one.Equals(two);
             Assert.IsTrue(actual);
@@ -293,22 +293,22 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsTrue(actual);
 
             //Change font family
-            two = new PDFFont("Times", 12, FontWeights.Bold, FontStyle.Italic);
+            two = new Font("Times", 12, FontWeights.Bold, FontStyle.Italic);
             actual = one.Equals(two);
             Assert.IsFalse(actual);
 
             //Change size
-            two = new PDFFont("Sans-Serif", 24, FontWeights.Bold, FontStyle.Italic);
+            two = new Font("Sans-Serif", 24, FontWeights.Bold, FontStyle.Italic);
             actual = one.Equals(two);
             Assert.IsFalse(actual);
 
             //Change style
-            two = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Regular);
+            two = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Regular);
             actual = one.Equals(two);
             Assert.IsFalse(actual);
 
             //Change weight
-            two = new PDFFont("Sans-Serif", 12, FontWeights.Regular, FontStyle.Italic);
+            two = new Font("Sans-Serif", 12, FontWeights.Regular, FontStyle.Italic);
             actual = one.Equals(two);
             Assert.IsFalse(actual);
         }
@@ -327,15 +327,15 @@ namespace Scryber.Core.UnitTests.Drawing
 
             string expected = "Sans-Serif";
             string actual;
-            actual = PDFFont.GetFullName(family, false, false);
+            actual = Font.GetFullName(family, false, false);
             Assert.AreEqual(expected, actual);
 
             expected = "Sans-Serif,Bold";
-            actual = PDFFont.GetFullName(family, true, false);
+            actual = Font.GetFullName(family, true, false);
             Assert.AreEqual(expected, actual);
 
             expected = "Sans-Serif,Bold Italic";
-            actual = PDFFont.GetFullName(family, true, true);
+            actual = Font.GetFullName(family, true, true);
             Assert.AreEqual(expected, actual);
 
         }
@@ -351,22 +351,22 @@ namespace Scryber.Core.UnitTests.Drawing
             bool bold = false; // TODO: Initialize to an appropriate value
             bool italic = false; // TODO: Initialize to an appropriate value
             string expected = family;
-            string actual = PDFFont.GetFullName(family, bold, italic);
+            string actual = Font.GetFullName(family, bold, italic);
             Assert.AreEqual(expected, actual);
 
             bold = true;
             expected = "Sans-Serif,Bold";
-            actual = PDFFont.GetFullName(family, bold, italic);
+            actual = Font.GetFullName(family, bold, italic);
             Assert.AreEqual(expected, actual);
 
             italic = true;
             expected = "Sans-Serif,Bold Italic";
-            actual = PDFFont.GetFullName(family, bold, italic);
+            actual = Font.GetFullName(family, bold, italic);
             Assert.AreEqual(expected, actual);
 
             bold = false;
             expected = "Sans-Serif,Italic";
-            actual = PDFFont.GetFullName(family, bold, italic);
+            actual = Font.GetFullName(family, bold, italic);
             Assert.AreEqual(expected, actual);
         }
 
@@ -377,33 +377,33 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Fonts")]
         public void GetHashCode_Test()
         {
-            PDFFont one = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Regular);
-            PDFFont two = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Regular);
+            Font one = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Regular);
+            Font two = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Regular);
 
             int expected = one.GetHashCode();
             int actual = two.GetHashCode();
             Assert.AreEqual(expected, actual);
 
             //change style
-            two = new PDFFont("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
+            two = new Font("Sans-Serif", 12, FontWeights.Bold, FontStyle.Italic);
             expected = one.GetHashCode();
             actual = two.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
             //change size
-            two = new PDFFont("Sans-Serif", 24, FontWeights.Bold, FontStyle.Regular);
+            two = new Font("Sans-Serif", 24, FontWeights.Bold, FontStyle.Regular);
             expected = one.GetHashCode();
             actual = two.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
             //change weight
-            two = new PDFFont("Sans-Serif", 12, FontWeights.Black, FontStyle.Regular);
+            two = new Font("Sans-Serif", 12, FontWeights.Black, FontStyle.Regular);
             expected = one.GetHashCode();
             actual = two.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
             //change family
-            two = new PDFFont("Times", 12, FontWeights.Bold, FontStyle.Regular);
+            two = new Font("Times", 12, FontWeights.Bold, FontStyle.Regular);
             expected = one.GetHashCode();
             actual = two.GetHashCode();
             Assert.AreNotEqual(expected, actual);
@@ -420,8 +420,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FamilyName_Test()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
-            PDFFont target = new PDFFont(family, size);
+            Unit size = 12;
+            Font target = new Font(family, size);
             Assert.AreEqual(family, target.FamilyName);
 
             family = "Times";
@@ -438,8 +438,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FontStyle_Test()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
-            PDFFont target = new PDFFont(family, size);
+            Unit size = 12;
+            Font target = new Font(family, size);
 
             FontStyle expected = FontStyle.Regular;
             FontStyle actual = target.FontStyle;
@@ -466,16 +466,16 @@ namespace Scryber.Core.UnitTests.Drawing
         public void FullName_Test()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
+            Unit size = 12;
             FontStyle style = FontStyle.Regular; //Just bold
             int weight = FontWeights.Bold;
-            PDFFont target = new PDFFont(family, size, weight, style);
+            Font target = new Font(family, size, weight, style);
 
             string expected = "Sans-Serif,Bold";
             string actual = target.FullName;
             Assert.AreEqual(expected, actual);
 
-            target = new PDFFont(target, FontWeights.Regular, FontStyle.Regular);
+            target = new Font(target, FontWeights.Regular, FontStyle.Regular);
             expected = "Sans-Serif";
             actual = target.FullName;
             Assert.AreEqual(expected, actual);
@@ -489,54 +489,54 @@ namespace Scryber.Core.UnitTests.Drawing
         public void IsStandard_Test()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
+            Unit size = 12;
             FontStyle style = FontStyle.Regular; //Just bold
             int weight = FontWeights.Bold;
-            PDFFont target = new PDFFont(family, size, weight, style);
+            Font target = new Font(family, size, weight, style);
 
             bool actual;
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont(StandardFont.Helvetica, 12);
+            target = new Font(StandardFont.Helvetica, 12);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont("Helvetica", 12);
+            target = new Font("Helvetica", 12);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont("Helvetica", 12, weight, FontStyle.Italic);
+            target = new Font("Helvetica", 12, weight, FontStyle.Italic);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont(target, FontWeights.Bold, FontStyle.Italic);
+            target = new Font(target, FontWeights.Bold, FontStyle.Italic);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont("Times", 12);
+            target = new Font("Times", 12);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont("Zapf Dingbats", 12);
+            target = new Font("Zapf Dingbats", 12);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
-            target = new PDFFont("Symbol", 12);
+            target = new Font("Symbol", 12);
             actual = target.IsStandard;
             Assert.IsTrue(actual);
 
             //False for oblique, or weights other than bold or regular
 
-            target = new PDFFont("Helvetica", 12, FontWeights.Black, FontStyle.Italic);
+            target = new Font("Helvetica", 12, FontWeights.Black, FontStyle.Italic);
             actual = target.IsStandard;
             Assert.IsFalse(actual);
 
-            target = new PDFFont("Helvetica", 12, FontWeights.Light, FontStyle.Regular);
+            target = new Font("Helvetica", 12, FontWeights.Light, FontStyle.Regular);
             actual = target.IsStandard;
             Assert.IsFalse(actual);
 
-            target = new PDFFont("Helvetica", 12, FontWeights.Regular, FontStyle.Oblique);
+            target = new Font("Helvetica", 12, FontWeights.Regular, FontStyle.Oblique);
             actual = target.IsStandard;
             Assert.IsFalse(actual);
         }
@@ -549,11 +549,11 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Size_Test()
         {
             string family = "Sans-Serif";
-            PDFUnit size = 12;
-            PDFFont target = new PDFFont(family, size);
+            Unit size = 12;
+            Font target = new Font(family, size);
 
-            PDFUnit expected = 12;
-            PDFUnit actual = target.Size;
+            Unit expected = 12;
+            Unit actual = target.Size;
 
             Assert.AreEqual(expected, actual);
 
@@ -562,7 +562,7 @@ namespace Scryber.Core.UnitTests.Drawing
             actual = target.Size;
             Assert.AreEqual(expected, actual);
 
-            expected = new PDFUnit(30, PageUnits.Millimeters);
+            expected = new Unit(30, PageUnits.Millimeters);
             target.Size = expected;
             actual = target.Size;
             Assert.AreEqual(expected, actual);

@@ -46,7 +46,7 @@ namespace Scryber.Components
             set { _generationIndex = value; }
         }
 
-        public void InstantiateTemplate(ITemplate template, PDFLayoutContext context, PDFRect available, int pageindex)
+        public void InstantiateTemplate(ITemplate template, PDFLayoutContext context, Rect available, int pageindex)
         {
             if (null == template)
                 throw new ArgumentNullException("template");
@@ -58,21 +58,21 @@ namespace Scryber.Components
             if (generated.Count == 0)
                 return;
 
-            PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
+            InitContext init = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
             {
                 Compression = context.Compression,
                 OutputFormat = context.OutputFormat,
                 Conformance = context.Conformance
             };
 
-            PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
+            LoadContext load = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
             {
                 Compression = context.Compression,
                 OutputFormat = context.OutputFormat,
                 Conformance = context.Conformance
             };
 
-            PDFDataContext data = new PDFDataContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
+            DataContext data = new DataContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document)
             {
                 Compression = context.Compression,
                 OutputFormat = context.OutputFormat,
@@ -80,7 +80,7 @@ namespace Scryber.Components
             };
 
 
-            IPDFContainerComponent container = this;
+            IContainerComponent container = this;
             IComponentList components = container.Content as IComponentList;
 
             for (int index = 0; index < generated.Count; index++)

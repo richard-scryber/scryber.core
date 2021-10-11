@@ -22,6 +22,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
@@ -80,7 +81,7 @@ namespace Scryber.Components
                 {
                     if (Component is TableRow)
                         return Component as TableRow;
-                    else if (Component is IPDFInvisibleContainer)
+                    else if (Component is IInvisibleContainer)
                         Component = Component.Parent;
                     else
                         Component = null;
@@ -157,10 +158,10 @@ namespace Scryber.Components
             Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
-            style.Padding.All = (PDFUnit)4;
+            style.Padding.All = (Unit)4;
             style.Border.Color = new Color(153);
             style.Border.LineStyle = LineType.Solid;
-            style.Border.Width = (PDFUnit)1;
+            style.Border.Width = (Unit)1;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row
             return style;
         }

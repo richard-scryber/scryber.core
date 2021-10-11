@@ -18,7 +18,7 @@ namespace Scryber.PDF
 
         public PDFResourceCollection OwnerResources { get; set; }
 
-        protected override void DoInit(PDFInitContext context)
+        protected override void DoInit(InitContext context)
         {
             if (this.GenerationData != null)
                 this.TryInitAllContent();

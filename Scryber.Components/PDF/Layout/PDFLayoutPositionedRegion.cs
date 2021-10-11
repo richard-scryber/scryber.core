@@ -65,7 +65,7 @@ namespace Scryber.PDF.Layout
         /// <param name="contentbounds"></param>
         /// <param name="columnindex"></param>
         /// <param name="position"></param>
-        public PDFLayoutPositionedRegion(PDFLayoutBlock block, IComponent owner, PDFRect contentbounds, int columnindex, PDFPositionOptions position)
+        public PDFLayoutPositionedRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, PDFPositionOptions position)
             : base(block, owner, contentbounds, columnindex, position.HAlign, position.VAlign, position.PositionMode)
         {
             this.PositionOptions = position;
@@ -90,14 +90,14 @@ namespace Scryber.PDF.Layout
             //We override this to reduce the size of the region so that it
             //fits the explicit size or the content within it
 
-            PDFUnit h = PDFUnit.Zero;
-            PDFUnit w = PDFUnit.Zero;
+            Unit h = Unit.Zero;
+            Unit w = Unit.Zero;
 
             //In theory there should just be one block
             foreach (PDFLayoutItem item in this.Contents)
             {
                 h += item.Height;
-                w = PDFUnit.Max(w, item.Width);
+                w = Unit.Max(w, item.Width);
             }
 
             if (this.PositionMode != Drawing.PositionMode.Absolute && this.PositionMode != Drawing.PositionMode.Relative)
@@ -107,8 +107,8 @@ namespace Scryber.PDF.Layout
                 if (this.PositionOptions.Height.HasValue)
                     h = this.PositionOptions.Height.Value;
             }
-            this.UsedSize = new PDFSize(w, h);
-            this.TotalBounds = new PDFRect(this.TotalBounds.Location, this.UsedSize);
+            this.UsedSize = new Size(w, h);
+            this.TotalBounds = new Rect(this.TotalBounds.Location, this.UsedSize);
 
             return base.DoClose(ref msg);
         }

@@ -338,7 +338,7 @@ namespace Scryber.PDF.Resources
             {
                 if (string.IsNullOrEmpty(_fullname))
                 {
-                    string fn = PDFFont.GetFullName(this.Family,this.Bold,this.Italic);
+                    string fn = Font.GetFullName(this.Family,this.Bold,this.Italic);
                     
                     return fn;
                 }
@@ -431,8 +431,8 @@ namespace Scryber.PDF.Resources
         {
             if (obj is PDFFontDefinition)
                 return this.Equals((PDFFontDefinition)obj);
-            else if (obj is PDFFont)
-                return this.Equals((PDFFont)obj);
+            else if (obj is Font)
+                return this.Equals((Font)obj);
                 return false;
         }
 
@@ -454,7 +454,7 @@ namespace Scryber.PDF.Resources
         /// </summary>
         /// <param name="font"></param>
         /// <returns></returns>
-        public bool Equals(PDFFont font)
+        public bool Equals(Font font)
         {
             if (null == font)
                 return false;
@@ -504,14 +504,14 @@ namespace Scryber.PDF.Resources
         /// <param name="wordBoundary">If true then strings will be fitted based on wordboundaries rather than characters.</param>
         /// <param name="charsfitted">Set to the number of characters of the string that were actually fitted in the width.</param>
         /// <returns>The actual size consumed by the allocated characters.</returns>
-        public PDFSize MeasureStringWidth(string chars, int startOffset, double fontSize, double available, bool wordBoundary, out int charsfitted)
+        public Size MeasureStringWidth(string chars, int startOffset, double fontSize, double available, bool wordBoundary, out int charsfitted)
         {
             if (null == this.TTFFile)
                 throw new NullReferenceException(string.Format(Errors.FontDefinitionDoesNotHaveFile, this.FullName));
             OpenType.SubTables.CMapEncoding encoding = AssertGetTTFEncoding();
 
             System.Drawing.SizeF size = this.TTFFile.MeasureString(encoding, chars, startOffset, fontSize, available, wordBoundary, out charsfitted);
-            return new PDFSize(size.Width, size.Height);
+            return new Size(size.Width, size.Height);
         }
 
         #endregion
@@ -528,14 +528,14 @@ namespace Scryber.PDF.Resources
         /// <param name="wordBoundary">If true then strings will be fitted based on wordboundaries rather than characters.</param>
         /// <param name="charsfitted">Set to the number of characters of the string that were actually fitted in the width.</param>
         /// <returns>The actual size consumed by the allocated characters.</returns>
-        public PDFSize MeasureStringWidth(string chars, int startOffset, double fontSize, double available, double? wordSpace, double charSpace, double hScale, bool vertical, bool wordBoundary, out int charsfitted)
+        public Size MeasureStringWidth(string chars, int startOffset, double fontSize, double available, double? wordSpace, double charSpace, double hScale, bool vertical, bool wordBoundary, out int charsfitted)
         {
             if (null == this.TTFFile)
                 throw new NullReferenceException(string.Format(Errors.FontDefinitionDoesNotHaveFile, this.FullName));
             OpenType.SubTables.CMapEncoding encoding = AssertGetTTFEncoding();
 
             System.Drawing.SizeF size = this.TTFFile.MeasureString(encoding, chars, startOffset, fontSize, available, wordSpace, charSpace, hScale, vertical, wordBoundary, out charsfitted);
-            return new PDFSize(size.Width, size.Height);
+            return new Size(size.Width, size.Height);
         }
 
         private OpenType.SubTables.CMapEncoding AssertGetTTFEncoding()
@@ -549,7 +549,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        public FontMetrics GetFontMetrics(PDFUnit fontSize)
+        public FontMetrics GetFontMetrics(Unit fontSize)
         {
             double scale = fontSize.PointsValue / ((double)this.FontUnitsPerEm);
             if (null != this.Descriptor)
@@ -605,7 +605,7 @@ namespace Scryber.PDF.Resources
 
         #region public PDFObjectRef RenderToPDF(string name, PDFContextBase context, PDFWriter writer)
 
-        public PDFObjectRef RenderToPDF(string rsrcName, PDFFontWidths widths, PDFContextBase context, PDFWriter writer)
+        public PDFObjectRef RenderToPDF(string rsrcName, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         {
             if(this.IsStandard)
             {
@@ -632,7 +632,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        public virtual PDFObjectRef RenderCompositeFont(string subset, PDFFontWidths widths, PDFContextBase context, PDFWriter writer)
+        public virtual PDFObjectRef RenderCompositeFont(string subset, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         {
             string fullfontname = PDFFontDescriptor.GetSubsetName(subset, this.PostscriptFontName);
 
@@ -695,7 +695,7 @@ namespace Scryber.PDF.Resources
 
         private const string suffix = "endcmap CMapName currentdict /CMap defineresource pop end end";
 
-        private PDFObjectRef WriteUnicodeFontInfo(string fullname, PDFFontWidths widths, PDFContextBase context, PDFWriter writer)
+        private PDFObjectRef WriteUnicodeFontInfo(string fullname, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         {
             if (widths is PDFCompositeFontWidths)
             {
@@ -764,7 +764,7 @@ namespace Scryber.PDF.Resources
                 return null;
         }
 
-        private PDFObjectRef WriteDescendantFontInfo(string fullname, PDFFontWidths widths, PDFContextBase context, PDFWriter writer)
+        private PDFObjectRef WriteDescendantFontInfo(string fullname, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Add(TraceLevel.Debug, "Font Definition", "Rendering the Descendant font information in Unicode font");
@@ -841,7 +841,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context">The current render context</param>
         /// <param name="writer">The PDFWriter to render the font to</param>
         /// <returns>Any Object reference for the PDFInderectObject rendered</returns>
-        public virtual PDFObjectRef RenderStandardFont(string name, PDFContextBase context, PDFWriter writer)
+        public virtual PDFObjectRef RenderStandardFont(string name, ContextBase context, PDFWriter writer)
         {
             return this.RenderAnsiFont(name, null, context, writer);
         }
@@ -857,7 +857,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        public virtual PDFObjectRef RenderAnsiFont(string name, PDFFontWidths widths, PDFContextBase context, PDFWriter writer)
+        public virtual PDFObjectRef RenderAnsiFont(string name, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         {
             if (context.ShouldLogVerbose)
                 context.TraceLog.Begin(TraceLevel.Verbose, "Font Definition", "Rendering ANSI font '" + this.FullName + "' to the document");

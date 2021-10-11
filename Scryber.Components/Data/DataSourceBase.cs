@@ -27,7 +27,7 @@ namespace Scryber.Data
     /// <summary>
     /// Abstract base class for all components that extract and return data
     /// </summary>
-    public abstract class DataSourceBase : DataComponentBase, IPDFDataSource
+    public abstract class DataSourceBase : DataComponentBase, IDataSource
     {
 
 
@@ -73,7 +73,7 @@ namespace Scryber.Data
         /// <param name="path">The path to source the data from - for an XML DataSource this is an XPath query</param>
         /// <param name="data">The data to extract the result from</param>
         /// <returns>The required data (could be null)</returns>
-        public object Select(string path, PDFDataContext context)
+        public object Select(string path, DataContext context)
         {
             if (path == null)
                 path = string.Empty;
@@ -101,7 +101,7 @@ namespace Scryber.Data
         /// <param name="withData">The data to perforn the select operation on</param>
         /// <param name="context">The current data context</param>
         /// <returns>The required data (could be null)</returns>
-        public object Select(string path, object withData, PDFDataContext context)
+        public object Select(string path, object withData, DataContext context)
         {
             object data;
             if (path == null)
@@ -121,7 +121,7 @@ namespace Scryber.Data
 
         #endregion
 
-        public bool EvaluateTestExpression(string expr, object withData, PDFDataContext context)
+        public bool EvaluateTestExpression(string expr, object withData, DataContext context)
         {
             if (expr == null)
                 expr = string.Empty;
@@ -138,7 +138,7 @@ namespace Scryber.Data
             return result;
         }
 
-        public object Evaluate(string expr, object withData, PDFDataContext context)
+        public object Evaluate(string expr, object withData, DataContext context)
         {
             if (expr == null)
                 expr = string.Empty;
@@ -165,7 +165,7 @@ namespace Scryber.Data
         /// <param name="context"></param>
         /// <returns>The data schema associated with the source</returns>
         /// <exception cref="System.NotSupportedException" >Thrown if this data source does not support schema extraction</exception>
-        public virtual PDFDataSchema GetDataSchema(string path, PDFDataContext context)
+        public virtual DataSchema GetDataSchema(string path, DataContext context)
         {
             return null;
         }
@@ -180,7 +180,7 @@ namespace Scryber.Data
         /// <param name="context">The current data context</param>
         /// <param name="root">If true then this is a select of the top level data on the source</param>
         /// <returns></returns> 
-        protected abstract object DoSelectData(string path, PDFDataContext context);
+        protected abstract object DoSelectData(string path, DataContext context);
 
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Scryber.Data
         /// <param name="withData"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract object DoSelectData(string path, object withData, PDFDataContext context);
+        protected abstract object DoSelectData(string path, object withData, DataContext context);
 
         /// <summary>
         /// Abstract method that all inheritors must override to
@@ -201,7 +201,7 @@ namespace Scryber.Data
         /// <param name="withdata"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract bool DoEvaluateTestExpression(string expr, object withdata, PDFDataContext context);
+        protected abstract bool DoEvaluateTestExpression(string expr, object withdata, DataContext context);
 
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Scryber.Data
         /// <param name="withdata"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract object DoEvaluateExpression(string expr, object withdata, PDFDataContext context);
+        protected abstract object DoEvaluateExpression(string expr, object withdata, DataContext context);
     }
 
 

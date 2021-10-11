@@ -32,7 +32,7 @@ namespace Scryber.Svg.Components
 
 
         [PDFAttribute("stroke-width")]
-        public override PDFUnit StrokeWidth
+        public override Unit StrokeWidth
         {
             get => base.StrokeWidth;
             set => base.StrokeWidth = value;
@@ -108,7 +108,7 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("font-size")]
-        public override PDFUnit FontSize
+        public override Unit FontSize
         {
             get => base.FontSize;
             set => base.FontSize = value;

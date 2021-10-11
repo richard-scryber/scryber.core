@@ -33,9 +33,9 @@ namespace Scryber.Components
 
         public PDFListNumberGroup Group { get; set; }
 
-        public PDFUnit NumberWidth { get; set; }
+        public Unit NumberWidth { get; set; }
 
-        public PDFUnit AlleyWidth { get; set; }
+        public Unit AlleyWidth { get; set; }
 
         public ListItemLabel(string text)
             : base(text)

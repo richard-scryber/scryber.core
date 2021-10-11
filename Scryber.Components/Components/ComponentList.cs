@@ -24,7 +24,7 @@ using System.Collections.ObjectModel;
 
 namespace Scryber.Components
 {
-    public class ComponentList : PDFObject, ICollection<Component>, IComponentList, IDisposable
+    public class ComponentList : TypedObject, ICollection<Component>, IComponentList, IDisposable
     {
         /// <summary>
         /// Event that is raised when the contents of the collection are changed
@@ -339,10 +339,10 @@ namespace Scryber.Components
         /// Databinds each of the components in the list.
         /// </summary>
         /// <param name="context"></param>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             Component[] all = this.Items.ToArray();
-            foreach (PDFObject obj in all)
+            foreach (TypedObject obj in all)
             {
                 if (obj is IBindableComponent)
                     ((IBindableComponent)obj).DataBind(context);

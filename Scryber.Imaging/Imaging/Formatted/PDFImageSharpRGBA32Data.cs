@@ -20,7 +20,7 @@ namespace Scryber.Imaging.Formatted
         }
 
 
-        protected override long DoRenderImageData(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        protected override long DoRenderImageData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             var config = SixLabors.ImageSharp.Configuration.Default;
             var ops = new Rgba32().CreatePixelOperations();
@@ -44,7 +44,7 @@ namespace Scryber.Imaging.Formatted
         }
 
 
-        protected override long DoRenderAlphaData(IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        protected override long DoRenderAlphaData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             int width = this.PixelWidth;
             long total = 0;

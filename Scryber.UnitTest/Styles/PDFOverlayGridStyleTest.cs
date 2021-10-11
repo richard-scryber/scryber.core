@@ -182,7 +182,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void OverlayGrid_GridYOffsetTest()
         {
             OverlayGridStyle target = new OverlayGridStyle();
-            PDFUnit expected = OverlayGridStyle.DefaultYOffset;
+            Unit expected = OverlayGridStyle.DefaultYOffset;
             Assert.AreEqual(expected, target.GridYOffset);
 
             expected = 20;
@@ -209,7 +209,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void OverlayGrid_GridXOffsetTest()
         {
             OverlayGridStyle target = new OverlayGridStyle();
-            PDFUnit expected = OverlayGridStyle.DefaultXOffset;
+            Unit expected = OverlayGridStyle.DefaultXOffset;
             Assert.AreEqual(expected, target.GridXOffset);
 
             expected = 20;
@@ -236,7 +236,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void OverlayGrid_GridSpacingTest()
         {
             OverlayGridStyle target = new OverlayGridStyle();
-            PDFUnit expected = OverlayGridStyle.DefaultGridSpacing;
+            Unit expected = OverlayGridStyle.DefaultGridSpacing;
             Assert.AreEqual(expected, target.GridSpacing);
 
             expected = 20;

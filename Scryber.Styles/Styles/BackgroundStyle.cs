@@ -134,11 +134,11 @@ namespace Scryber.Styles
         #region public PDFUnit PatternXPosition {get;set;} + RemovePatternXPosition()
 
         [PDFAttribute("x-pos")]
-        public PDFUnit PatternXPosition
+        public Unit PatternXPosition
         {
             get
             {
-                PDFUnit xpos;
+                Unit xpos;
                 if (this.TryGetValue(StyleKeys.BgXPosKey,out xpos))
                     return xpos;
                 else
@@ -160,11 +160,11 @@ namespace Scryber.Styles
         #region public PDFUnit PatternYPosition {get;set;} + RemovePatternYPosition()
 
         [PDFAttribute("y-pos")]
-        public PDFUnit PatternYPosition
+        public Unit PatternYPosition
         {
             get
             {
-                PDFUnit ypos;
+                Unit ypos;
                 if (this.TryGetValue(StyleKeys.BgYPosKey, out ypos))
                     return ypos;
                 else
@@ -186,11 +186,11 @@ namespace Scryber.Styles
         #region public PDFUnit PatternXStep {get;set;} + RemovePatternXStep()
 
         [PDFAttribute("x-step")]
-        public PDFUnit PatternXStep
+        public Unit PatternXStep
         {
             get
             {
-                PDFUnit xstep;
+                Unit xstep;
                 if (this.TryGetValue(StyleKeys.BgXStepKey,out xstep))
                     return xstep;
                 else
@@ -212,11 +212,11 @@ namespace Scryber.Styles
         #region public PDFUnit PatternYStep {get;set;} + RemovePatternYStep()
 
         [PDFAttribute("y-step")]
-        public PDFUnit PatternYStep
+        public Unit PatternYStep
         {
             get
             {
-                PDFUnit ystep;
+                Unit ystep;
                 if (this.TryGetValue(StyleKeys.BgYStepKey,out ystep))
                     return ystep;
                 else
@@ -238,11 +238,11 @@ namespace Scryber.Styles
         #region public PDFUnit PatternXSize {get;set;} + RemovePatternXSize()
 
         [PDFAttribute("x-size")]
-        public PDFUnit PatternXSize
+        public Unit PatternXSize
         {
             get
             {
-                PDFUnit xsize;
+                Unit xsize;
                 if (this.TryGetValue(StyleKeys.BgXSizeKey,out xsize))
                     return xsize;
                 else
@@ -264,11 +264,11 @@ namespace Scryber.Styles
         #region public PDFUnit PatternYSize {get;set;} + RemovePatternYSize()
 
         [PDFAttribute("y-size")]
-        public PDFUnit PatternYSize
+        public Unit PatternYSize
         {
             get
             {
-                PDFUnit ysize;
+                Unit ysize;
                 if (this.TryGetValue(StyleKeys.BgYSizeKey, out ysize))
                     return ysize;
                 else

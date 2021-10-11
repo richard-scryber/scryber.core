@@ -61,7 +61,7 @@ namespace Scryber.Core.UnitTests.Imaging
             img.BorderStyle = LineType.Solid;
 
             page.Contents.Add(img);
-            page.Padding = new PDFThickness(20);
+            page.Padding = new Thickness(20);
 
             doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
 
@@ -87,7 +87,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             page.Contents.Add(img);
 
-            page.Padding = new PDFThickness(20);
+            page.Padding = new Thickness(20);
             doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
             doc.AppendTraceLog = true;
 
@@ -151,7 +151,7 @@ namespace Scryber.Core.UnitTests.Imaging
             page.ColumnCount = 3;
             page.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(page);
-            page.Padding = new PDFThickness(20);
+            page.Padding = new Thickness(20);
             page.FontSize = 12;
 
             var factory = new Scryber.Imaging.ImageFactoryPng();
@@ -173,7 +173,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
                 Span label = new Span();
                 label.Contents.Add(new TextLiteral(img.ID));
-                label.Margins = new PDFThickness(0, 0, 10, 0);
+                label.Margins = new Thickness(0, 0, 10, 0);
                 page.Contents.Add(label);
 
                 ids.Add(System.IO.Path.GetFileName(src));
@@ -250,7 +250,7 @@ namespace Scryber.Core.UnitTests.Imaging
             page.ColumnCount = 3;
             page.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(page);
-            page.Padding = new PDFThickness(20);
+            page.Padding = new Thickness(20);
             page.FontSize = 12;
             var factory = new Scryber.Imaging.ImageFactoryTiff();
             doc.ImageFactories.Add(new Options.PDFImageFactory("TIFF", new System.Text.RegularExpressions.Regex(".*\\.tiff", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
@@ -272,7 +272,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
                 Span label = new Span();
                 label.Contents.Add(new TextLiteral(id));
-                label.Margins = new PDFThickness(0, 0, 10, 0);
+                label.Margins = new Thickness(0, 0, 10, 0);
                 page.Contents.Add(label);
 
                 ids.Add(id);
@@ -333,7 +333,7 @@ namespace Scryber.Core.UnitTests.Imaging
             page.ColumnCount = 3;
             page.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(page);
-            page.Padding = new PDFThickness(20);
+            page.Padding = new Thickness(20);
             page.FontSize = 12;
 
             var factory = new Scryber.Imaging.ImageFactoryGif();
@@ -356,7 +356,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
                 Span label = new Span();
                 label.Contents.Add(new TextLiteral(id));
-                label.Margins = new PDFThickness(0, 0, 10, 0);
+                label.Margins = new Thickness(0, 0, 10, 0);
                 page.Contents.Add(label);
 
                 ids.Add(id);

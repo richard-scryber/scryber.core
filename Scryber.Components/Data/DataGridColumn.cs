@@ -175,7 +175,7 @@ namespace Scryber.Data
         {
         }
 
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             if (null != this._itemstyle)
                 this._itemstyle.DataBind(context);
@@ -190,7 +190,7 @@ namespace Scryber.Data
         }
 
 
-        public virtual Component DoBuildHeaderCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public virtual Component DoBuildHeaderCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             if (context.TraceLog.ShouldLog(TraceLevel.Debug))
                 context.TraceLog.Add(TraceLevel.Debug, "DataGrid Columns", string.Format("Building header cell {0}{1} with column '{2}'", rowindex, columnindex, string.IsNullOrEmpty(this.HeaderText) ? this.ID : this.HeaderText));
@@ -218,7 +218,7 @@ namespace Scryber.Data
             return cell;
         }
 
-        void headerCell_DataBound(object sender, PDFDataBindEventArgs e)
+        void headerCell_DataBound(object sender, DataBindEventArgs e)
         {
             TableCell cell = (TableCell)sender;
 
@@ -239,7 +239,7 @@ namespace Scryber.Data
                 this._headstyle.MergeInto(cell.Style, Style.DirectStylePriority);
         }
 
-        void headerlbl_DataBinding(object sender, PDFDataBindEventArgs args)
+        void headerlbl_DataBinding(object sender, DataBindEventArgs args)
         {
             this.DataBind(args.Context);
             Label lbl = (Label)sender;
@@ -249,7 +249,7 @@ namespace Scryber.Data
                 this.HasHeader = true;
         }
 
-        public virtual Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public virtual Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             if (context.TraceLog.ShouldLog(TraceLevel.Debug))
                 context.TraceLog.Add(TraceLevel.Debug, "DataGrid Columns", string.Format("Building item cell {0}{1} with column '{2}'", rowindex, columnindex, string.IsNullOrEmpty(this.HeaderText) ? this.ID : this.HeaderText));
@@ -270,7 +270,7 @@ namespace Scryber.Data
             return cell;
         }
 
-        void cell_DataBound(object sender, PDFDataBindEventArgs e)
+        void cell_DataBound(object sender, DataBindEventArgs e)
         {
             if (this.Visible)
                 this.AllInvisible = false;
@@ -306,7 +306,7 @@ namespace Scryber.Data
         }
 
 
-        public virtual Component DoBuildFooterCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public virtual Component DoBuildFooterCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             if (context.TraceLog.ShouldLog(TraceLevel.Debug))
                 context.TraceLog.Add(TraceLevel.Debug, "DataGrid Columns", string.Format("Building footer cell {0}{1} with column '{2}'", rowindex, columnindex, string.IsNullOrEmpty(this.HeaderText) ? this.ID : this.HeaderText));
@@ -320,7 +320,7 @@ namespace Scryber.Data
             lbl.Text = this.FooterText;
             cell.Contents.Add(lbl);
 
-            lbl.DataBound += new PDFDataBindEventHandler(footerlbl_DataBound);
+            lbl.DataBound += new DataBindEventHandler(footerlbl_DataBound);
 
             if (gridColumnIndex < 0)
                 gridColumnIndex = columnindex;
@@ -331,7 +331,7 @@ namespace Scryber.Data
             return cell;
         }
 
-        void footerCell_DataBound(object sender, PDFDataBindEventArgs args)
+        void footerCell_DataBound(object sender, DataBindEventArgs args)
         {
             TableCell cell = (TableCell)sender;
             cell.StyleClass = this.HeaderCellClass;
@@ -343,7 +343,7 @@ namespace Scryber.Data
                 this._footstyle.MergeInto(cell.Style, Style.DirectStylePriority);
         }
 
-        void footerlbl_DataBound(object sender, PDFDataBindEventArgs args)
+        void footerlbl_DataBound(object sender, DataBindEventArgs args)
         {
             this.DataBind(args.Context);
             Label lbl = (Label)sender;
@@ -353,7 +353,7 @@ namespace Scryber.Data
                 this.HasFooter = true;
         }
 
-        public virtual bool RemoveIfColumnHidden(PDFDataContext context)
+        public virtual bool RemoveIfColumnHidden(DataContext context)
         {
             if (this.AllInvisible)
             {
@@ -385,12 +385,12 @@ namespace Scryber.Data
 
         
 
-        public virtual void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public virtual void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this.ApplyAutoBindingMember(item);
         }
 
-        protected abstract void ApplyAutoBindingMember(PDFDataItem item);
+        protected abstract void ApplyAutoBindingMember(DataItem item);
 
         /// <summary>
         /// Evaluates the XPath expression against the current data context - raising an exception if there is no current data on the stack
@@ -398,7 +398,7 @@ namespace Scryber.Data
         /// <param name="path"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        protected object AssertGetDataItemValue(string path, PDFDataBindEventArgs args)
+        protected object AssertGetDataItemValue(string path, DataBindEventArgs args)
         {
             if (args.Context.DataStack.HasData == false)
                 throw new PDFDataException(Errors.CouldNotBindDataComponent);

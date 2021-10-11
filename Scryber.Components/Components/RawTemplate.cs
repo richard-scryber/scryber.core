@@ -49,7 +49,7 @@ namespace Scryber.Components
             }
         }
 
-        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
             return _value;
         }

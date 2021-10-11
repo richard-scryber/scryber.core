@@ -36,7 +36,7 @@ namespace Scryber.PDF.Graphics
             this.Exponent = exponent;
         }
 
-        public override void WriteFunctionDictionary(PDFContextBase context, PDFWriter writer)
+        public override void WriteFunctionDictionary(ContextBase context, PDFWriter writer)
         {
             writer.BeginDictionary();
             writer.WriteDictionaryNumberEntry("FunctionType", 2);

@@ -12,7 +12,7 @@ namespace Scryber.Binding
             this.IndexValue = index;
         }
 
-        protected override object DoGetMyValue(object parent, PDFDataContext context)
+        protected override object DoGetMyValue(object parent, DataContext context)
         {
             if (parent is IList)
                 return (parent as IList)[IndexValue];

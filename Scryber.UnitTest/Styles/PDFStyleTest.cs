@@ -74,10 +74,10 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(false, actual.Width.HasValue);
             Assert.AreEqual(false, actual.X.HasValue);
             Assert.AreEqual(false, actual.Y.HasValue);
-            Assert.AreEqual(PDFThickness.Empty(), actual.Margins);
+            Assert.AreEqual(Thickness.Empty(), actual.Margins);
             Assert.AreEqual(OverflowAction.NewPage, actual.OverflowAction);
             Assert.AreEqual(OverflowSplit.Any, actual.OverflowSplit);
-            Assert.AreEqual(PDFThickness.Empty(), actual.Padding);
+            Assert.AreEqual(Thickness.Empty(), actual.Padding);
             Assert.AreEqual(PositionMode.Block, actual.PositionMode);
             Assert.AreEqual(VerticalAlignment.Top, actual.VAlign);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
@@ -129,24 +129,24 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(true, actual.Width.HasValue);
             Assert.AreEqual(true, actual.X.HasValue);
             Assert.AreEqual(true, actual.Y.HasValue);
-            Assert.AreEqual((PDFUnit)100, actual.Width);
-            Assert.AreEqual((PDFUnit)20, actual.X);
-            Assert.AreEqual((PDFUnit)50, actual.Y);
+            Assert.AreEqual((Unit)100, actual.Width);
+            Assert.AreEqual((Unit)20, actual.X);
+            Assert.AreEqual((Unit)50, actual.Y);
             Assert.AreEqual(null, actual.Height);
 
-            Assert.AreEqual((PDFUnit)200, actual.MaximumWidth);
-            Assert.AreEqual((PDFUnit)150, actual.MinimumWidth);
-            Assert.AreEqual((PDFUnit)90, actual.MaximumHeight);
-            Assert.AreEqual((PDFUnit)50, actual.MinimumHeight);
+            Assert.AreEqual((Unit)200, actual.MaximumWidth);
+            Assert.AreEqual((Unit)150, actual.MinimumWidth);
+            Assert.AreEqual((Unit)90, actual.MaximumHeight);
+            Assert.AreEqual((Unit)50, actual.MinimumHeight);
 
             Assert.AreEqual(OverflowAction.Truncate, actual.OverflowAction);
             Assert.AreEqual(OverflowSplit.Never, actual.OverflowSplit);
 
-            Assert.AreEqual((PDFUnit)10, actual.Margins.Left);
-            Assert.AreEqual((PDFUnit)20, actual.Margins.Bottom);
+            Assert.AreEqual((Unit)10, actual.Margins.Left);
+            Assert.AreEqual((Unit)20, actual.Margins.Bottom);
 
-            Assert.AreEqual((PDFUnit)20, actual.Padding.Left);
-            Assert.AreEqual((PDFUnit)40, actual.Padding.Right);
+            Assert.AreEqual((Unit)20, actual.Padding.Left);
+            Assert.AreEqual((Unit)40, actual.Padding.Right);
 
             Assert.AreEqual(PositionMode.Relative, actual.PositionMode); //mode is relative (because we have an xand a y)
             Assert.AreEqual(VerticalAlignment.Middle, actual.VAlign);
@@ -171,7 +171,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Default value unit for first line inset and word spacing is Zero.
             Assert.IsTrue(actual.FirstLineInset.HasValue);
-            Assert.AreEqual(PDFUnit.Zero, actual.FirstLineInset.Value);
+            Assert.AreEqual(Unit.Zero, actual.FirstLineInset.Value);
 
             Assert.IsFalse(actual.WordSpacing.HasValue);
             Assert.IsNull(actual.Font, "Font is not null");
@@ -214,15 +214,15 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.IsInstanceOfType(actual.Stroke, typeof(PDFSolidPen));
             Assert.AreEqual(StandardColors.Purple, ((PDFSolidPen)actual.Stroke).Color);
-            Assert.AreEqual((PDFUnit)2, actual.Stroke.Width);
+            Assert.AreEqual((Unit)2, actual.Stroke.Width);
 
-            Assert.IsInstanceOfType(actual.Font, typeof(PDFFont));
+            Assert.IsInstanceOfType(actual.Font, typeof(Font));
             Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.Selector);
-            Assert.AreEqual((PDFUnit)36, actual.Font.Size);
+            Assert.AreEqual((Unit)36, actual.Font.Size);
 
             
             Assert.IsTrue(actual.WordSpacing.HasValue);
-            Assert.AreEqual((PDFUnit)1.0, actual.WordSpacing.Value);
+            Assert.AreEqual((Unit)1.0, actual.WordSpacing.Value);
 
             Assert.IsTrue(actual.WrapText.HasValue);
             Assert.AreEqual(Text.WordWrap.NoWrap, actual.WrapText.Value);
@@ -602,7 +602,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Margins;
             Assert.IsNotNull(actual);
 
-            actual.All = (PDFUnit)10;
+            actual.All = (Unit)10;
             Assert.AreEqual(actual.All, target.Margins.All);
         }
 
@@ -653,7 +653,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Padding;
             Assert.IsNotNull(actual);
 
-            actual.All = (PDFUnit)10;
+            actual.All = (Unit)10;
             Assert.AreEqual(actual.All, target.Padding.All);
 
         }
@@ -671,7 +671,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.PageStyle;
             Assert.IsNotNull(actual);
 
-            actual.Width = (PDFUnit)10;
+            actual.Width = (Unit)10;
             Assert.AreEqual(actual.Width, target.PageStyle.Width);
 
         }
@@ -705,19 +705,19 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Size;
             Assert.IsNotNull(actual);
 
-            actual.Width = (PDFUnit)10;
-            actual.MinimumWidth = (PDFUnit)9;
-            actual.MaximumWidth = (PDFUnit)11;
-            actual.Height = (PDFUnit)20;
-            actual.MinimumHeight = (PDFUnit)19;
-            actual.MaximumHeight = (PDFUnit)21;
+            actual.Width = (Unit)10;
+            actual.MinimumWidth = (Unit)9;
+            actual.MaximumWidth = (Unit)11;
+            actual.Height = (Unit)20;
+            actual.MinimumHeight = (Unit)19;
+            actual.MaximumHeight = (Unit)21;
 
             Assert.AreEqual(actual.Width, target.Size.Width);
-            Assert.AreEqual(actual.MinimumWidth, (PDFUnit)9);
-            Assert.AreEqual(actual.MinimumHeight, (PDFUnit)19);
-            Assert.AreEqual(actual.MaximumWidth, (PDFUnit)11);
-            Assert.AreEqual(actual.MaximumHeight, (PDFUnit)21);
-            Assert.AreEqual(actual.Height, (PDFUnit)20);
+            Assert.AreEqual(actual.MinimumWidth, (Unit)9);
+            Assert.AreEqual(actual.MinimumHeight, (Unit)19);
+            Assert.AreEqual(actual.MaximumWidth, (Unit)11);
+            Assert.AreEqual(actual.MaximumHeight, (Unit)21);
+            Assert.AreEqual(actual.Height, (Unit)20);
         }
 
         /// <summary>
@@ -733,7 +733,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual = target.Stroke;
             Assert.IsNotNull(actual);
 
-            actual.Width = (PDFUnit)10;
+            actual.Width = (Unit)10;
             Assert.AreEqual(actual.Width, target.Stroke.Width);
         }
 

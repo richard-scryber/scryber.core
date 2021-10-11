@@ -28,8 +28,8 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     if (setValue)
                     {
-                        onStyle.SetValue(StyleKeys.ClipTopKey, (PDFUnit)0.1);
-                        onStyle.SetValue(StyleKeys.ClipBottomKey, (PDFUnit)0.1);
+                        onStyle.SetValue(StyleKeys.ClipTopKey, (Unit)0.1);
+                        onStyle.SetValue(StyleKeys.ClipBottomKey, (Unit)0.1);
                     }
                     else
                     {
@@ -44,11 +44,11 @@ namespace Scryber.Styles.Parsing.Typed
 
         }
 
-        protected bool DoConvertOverflowY(StyleBase style, object value, out PDFUnit clipping)
+        protected bool DoConvertOverflowY(StyleBase style, object value, out Unit clipping)
         {
             if (null == value)
             {
-                clipping = PDFUnit.Empty;
+                clipping = Unit.Empty;
                 return false;
             }
             else if (TryParseOverflow(value.ToString(), out bool clip))
@@ -60,18 +60,18 @@ namespace Scryber.Styles.Parsing.Typed
 
                     style.RemoveValue(StyleKeys.ClipTopKey);
                     style.RemoveValue(StyleKeys.ClipBottomKey);
-                    clipping = PDFUnit.Empty;
+                    clipping = Unit.Empty;
                     return false;
                 }
                 else
                 {
-                    clipping = (PDFUnit)0.1;
+                    clipping = (Unit)0.1;
                     return true;
                 }
             }
             else
             {
-                clipping = PDFUnit.Empty;
+                clipping = Unit.Empty;
                 return false;
             }
         }

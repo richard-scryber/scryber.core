@@ -64,7 +64,7 @@ namespace Scryber.Styles.Parsing
             return this.SetStyleValue(onComponent.Style, reader, parser.Context);
         }
 
-        public bool SetStyleValue(Style style, CSSStyleItemReader reader, PDFContextBase context)
+        public bool SetStyleValue(Style style, CSSStyleItemReader reader, ContextBase context)
         {
             var attr = reader.CurrentAttribute;
             //var val = reader.CurrentTextValue;
@@ -195,7 +195,7 @@ namespace Scryber.Styles.Parsing
         /// <param name="part"></param>
         /// <param name="unit"></param>
         /// <returns></returns>
-        public static bool ParseCSSUnit(string part, out PDFUnit unit)
+        public static bool ParseCSSUnit(string part, out Unit unit)
         {
             
             double factor;
@@ -203,7 +203,7 @@ namespace Scryber.Styles.Parsing
             int unitLength;
             if (EndsWithRelativeUnit(part))
             {
-                unit = PDFUnit.Zero;
+                unit = Unit.Zero;
                 return false;
             }
             else if (EndsWithAbsoluteUnit(part, out unitLength, out factor))
@@ -213,19 +213,19 @@ namespace Scryber.Styles.Parsing
                 {
                     if (double.TryParse(part.Substring(0, part.Length - unitLength), out parsed))
                     {
-                        unit = new PDFUnit(parsed * factor, PageUnits.Points);
+                        unit = new Unit(parsed * factor, PageUnits.Points);
                         return true;
                     }
                 }
             }
             else if (double.TryParse(part, out parsed))
             {
-                unit = new PDFUnit(parsed, PageUnits.Points);
+                unit = new Unit(parsed, PageUnits.Points);
                 return true;
             }
 
             // could not parse
-            unit = PDFUnit.Zero;
+            unit = Unit.Zero;
             return false;
         }
 

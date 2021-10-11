@@ -37,17 +37,17 @@ namespace Scryber.Styles
 
         [PDFAttribute("top")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"padding-top\"")]
-        public PDFUnit Top
+        public Unit Top
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.PaddingTopKey, out found))
                     return found;
                 else if (this.TryGetValue(StyleKeys.PaddingAllKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -66,17 +66,17 @@ namespace Scryber.Styles
 
         [PDFAttribute("bottom")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"padding-bottom\"")]
-        public PDFUnit Bottom
+        public Unit Bottom
         {
             get
             {
-                PDFUnit b;
+                Unit b;
                 if (this.TryGetValue(StyleKeys.PaddingBottomKey, out b))
                     return b;
                 else if (this.TryGetValue(StyleKeys.PaddingAllKey, out b))
                     return b;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -95,17 +95,17 @@ namespace Scryber.Styles
 
         [PDFAttribute("left")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"padding-left\"")]
-        public PDFUnit Left
+        public Unit Left
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.PaddingLeftKey, out found))
                     return found;
                 else if (this.TryGetValue(StyleKeys.PaddingAllKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -124,17 +124,17 @@ namespace Scryber.Styles
 
         [PDFAttribute("right")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"padding-right\"")]
-        public PDFUnit Right
+        public Unit Right
         {
             get
             {
-                PDFUnit r;
+                Unit r;
                 if (this.TryGetValue(StyleKeys.PaddingRightKey, out r))
                     return r;
                 else if (this.TryGetValue(StyleKeys.PaddingAllKey, out r))
                     return r;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -153,15 +153,15 @@ namespace Scryber.Styles
 
         [PDFAttribute("all")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"padding\"")]
-        public PDFUnit All
+        public Unit All
         {
             get
             {
-                PDFUnit b;
+                Unit b;
                 if (this.TryGetValue(StyleKeys.PaddingAllKey, out b))
                     return b;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -183,12 +183,12 @@ namespace Scryber.Styles
         }
 
 
-        public bool TryGetThickness(out PDFThickness thickness)
+        public bool TryGetThickness(out Thickness thickness)
         {
             return this.AssertOwner().TryGetThickness(this.IsInherited, StyleKeys.PaddingAllKey, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey, out thickness);
         }
 
-        public void SetThickness(PDFThickness thickness)
+        public void SetThickness(Thickness thickness)
         {
             this.AssertOwner().SetThickness(this.IsInherited, thickness, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey);
         }

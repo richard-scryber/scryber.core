@@ -1283,7 +1283,7 @@ namespace Scryber.Core.UnitTests.Html
                     Assert.AreEqual(900, ffone.FontWeight, "Inline @fontface was not black");
                     Assert.IsNotNull(ffone.Source, "No source was set");
 
-                    var name = PDFFont.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
+                    var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
                     var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
                     Assert.IsNotNull(rsrc1);
 
@@ -1631,7 +1631,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password");
+                doc.RenderOptions.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password");
                 doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("RestrictedHtml.pdf"))
@@ -1670,7 +1670,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var doc = Document.ParseDocument(path))
             {
-                doc.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password", "Password");
+                doc.RenderOptions.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password", "Password");
                 doc.Params["title"] = "Hello World";
                 using (var stream = DocStreams.GetOutputStream("ProtectedHtml.pdf"))
                 {
@@ -1874,7 +1874,7 @@ namespace Scryber.Core.UnitTests.Html
             var page = new Page();
             doc.Pages.Add(page);
 
-            var div = new Div() { Padding = new PDFThickness(10) };
+            var div = new Div() { Padding = new Thickness(10) };
             page.Contents.Add(div);
 
             div.Contents.Add(new TextLiteral("Hello World"));

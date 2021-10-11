@@ -31,23 +31,23 @@ namespace Scryber.PDF.Graphics
 
         #region DrawRectangle(PDFRectangle) + 3 overloads
 
-        public void DrawRectangle(PDFPen pen, PDFRect rect)
+        public void DrawRectangle(PDFPen pen, Rect rect)
         {
             this.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        public void DrawRectangle(PDFPen pen, PDFRect rect, Sides sides)
+        public void DrawRectangle(PDFPen pen, Rect rect, Sides sides)
         {
             this.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height, sides);
         }
 
         
-        public void DrawRectangle(PDFPen pen, PDFPoint location, PDFSize size)
+        public void DrawRectangle(PDFPen pen, Point location, Size size)
         {
             this.DrawRectangle(pen, location.X, location.Y, size.Width, size.Height);
         }
 
-        public void DrawRectangle(PDFPen pen, PDFPoint location, PDFSize size, Sides sides)
+        public void DrawRectangle(PDFPen pen, Point location, Size size, Sides sides)
         {
             this.DrawRectangle(pen, location.X, location.Y, size.Width, size.Height, sides);
         }
@@ -58,13 +58,13 @@ namespace Scryber.PDF.Graphics
 
         #region DrawRectangle(X,Y,Width,Height)
 
-        public void DrawRectangle(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        public void DrawRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
 
             this.SaveGraphicsState();
-            PDFRect rect = new PDFRect(x, y, width, height);
+            Rect rect = new Rect(x, y, width, height);
             pen.SetUpGraphics(this, rect);
             this.RenderRectangle(x, y, width, height);
             this.RenderStrokePathOp();
@@ -72,12 +72,12 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        public void DrawRectangle(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Sides sides)
+        public void DrawRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Sides sides)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
 
-            PDFRect rect = new PDFRect(x, y, width, height);
+            Rect rect = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
             pen.SetUpGraphics(this, rect);
@@ -141,17 +141,17 @@ namespace Scryber.PDF.Graphics
 
         #region FillRectangle(PDFBrush brush, PDFRectangle) + 2 overloads
 
-        public void FillRectangle(PDFBrush brush, PDFRect rect)
+        public void FillRectangle(PDFBrush brush, Rect rect)
         {
             this.FillRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        public void FillRectangle(PDFBrush brush, PDFPoint location, PDFSize size)
+        public void FillRectangle(PDFBrush brush, Point location, Size size)
         {
             this.FillRectangle(brush, location.X, location.Y, size.Width, size.Height);
         }
 
-        public void FillRectangle(PDFBrush brush, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        public void FillRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
@@ -160,7 +160,7 @@ namespace Scryber.PDF.Graphics
                 FillRectangle(brush.UnderBrush, x, y, width, height);
 
             this.SaveGraphicsState();
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
             brush.SetUpGraphics(this, bounds);
             
             this.RenderRectangle(x, y, width, height);
@@ -175,23 +175,23 @@ namespace Scryber.PDF.Graphics
 
         #region DrawRoundRectangle()
 
-        public void DrawRoundRectangle(PDFPen pen, PDFRect rect, PDFUnit cornerRadius)
+        public void DrawRoundRectangle(PDFPen pen, Rect rect, Unit cornerRadius)
         {
             this.DrawRoundRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height, cornerRadius);
         }
 
-        public void DrawRoundRectangle(PDFPen pen, PDFPoint pos, PDFSize size, PDFUnit cornerRadius)
+        public void DrawRoundRectangle(PDFPen pen, Point pos, Size size, Unit cornerRadius)
         {
             this.DrawRoundRectangle(pen, pos.X, pos.Y, size.Width, size.Height, cornerRadius);
         }
 
-        public void DrawRoundRectangle(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit cornerRadius)
+        public void DrawRoundRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
 
             this.SaveGraphicsState();
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             pen.SetUpGraphics(this, bounds);
             this.DoOutputRoundRectangle(x, y, width, height, cornerRadius);
@@ -201,22 +201,22 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        public void DrawRoundRectangle(PDFPen pen, PDFRect rect, Sides sides, PDFUnit cornerRadius)
+        public void DrawRoundRectangle(PDFPen pen, Rect rect, Sides sides, Unit cornerRadius)
         {
             this.DrawRoundRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height, sides, cornerRadius);
         }
 
-        public void DrawRoundRectangle(PDFPen pen, PDFPoint pos, PDFSize size, Sides sides, PDFUnit cornerRadius)
+        public void DrawRoundRectangle(PDFPen pen, Point pos, Size size, Sides sides, Unit cornerRadius)
         {
             this.DrawRoundRectangle(pen, pos.X, pos.Y, size.Width, size.Height, sides, cornerRadius);
         }
 
-        public void DrawRoundRectangle(PDFPen pen, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Sides sides, PDFUnit cornerRadius)
+        public void DrawRoundRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit cornerRadius)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
 
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
             pen.SetUpGraphics(this, bounds);
@@ -230,19 +230,19 @@ namespace Scryber.PDF.Graphics
 
         #region FillRoundRectangle()
 
-        public void FillRoundRectangle(PDFBrush brush, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
-            PDFRect rect = new PDFRect(x, y, width, height);
+            Rect rect = new Rect(x, y, width, height);
             this.FillRoundRectangle(brush, rect, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, PDFPoint pos, PDFSize size, PDFUnit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Point pos, Size size, Unit cornerRadius)
         {
-            PDFRect r = new PDFRect(pos, size);
+            Rect r = new Rect(pos, size);
             this.FillRoundRectangle(brush, r, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, PDFRect rect, PDFUnit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Rect rect, Unit cornerRadius)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
@@ -261,17 +261,17 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        public void FillRoundRectangle(PDFBrush brush, PDFRect rect, Sides sides, PDFUnit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Rect rect, Sides sides, Unit cornerRadius)
         {
             this.FillRoundRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height, sides, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, PDFPoint pos, PDFSize size, Sides sides, PDFUnit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Point pos, Size size, Sides sides, Unit cornerRadius)
         {
             this.FillRoundRectangle(brush, pos.X, pos.Y, size.Width, size.Height, sides, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, Sides sides, PDFUnit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit cornerRadius)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
@@ -279,7 +279,7 @@ namespace Scryber.PDF.Graphics
             if (null != brush.UnderBrush)
                 this.FillRoundRectangle(brush.UnderBrush, x, y, width, height, sides, cornerRadius);
 
-            PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect bounds = new Rect(x, y, width, height);
             this.SaveGraphicsState();
             brush.SetUpGraphics(this, bounds);
             this.DoOutputRoundRectangleWithSidesFill(x, y, width, height, cornerRadius, sides);
@@ -290,9 +290,9 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
-        private void DoOutputRoundRectangle(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit cornerRadius)
+        private void DoOutputRoundRectangle(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
-            PDFUnit handleoffset = (PDFUnit)(cornerRadius.PointsValue * CircularityFactor);
+            Unit handleoffset = (Unit)(cornerRadius.PointsValue * CircularityFactor);
             this.RenderMoveTo(x, y + height - cornerRadius);
             //left vertical
             this.RenderLineTo(x, y + cornerRadius);
@@ -312,9 +312,9 @@ namespace Scryber.PDF.Graphics
             this.RenderBezierCurveTo(x, y + height - cornerRadius, x + cornerRadius - handleoffset, y + height, x, y + height - cornerRadius + handleoffset);
         }
 
-        private void DoOutputRoundRectangleWithSidesFill(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit cornerRadius, Sides sides)
+        private void DoOutputRoundRectangleWithSidesFill(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius, Sides sides)
         {
-            PDFUnit handleoffset = (PDFUnit)(cornerRadius.PointsValue * CircularityFactor);
+            Unit handleoffset = (Unit)(cornerRadius.PointsValue * CircularityFactor);
             
             //position cursor at left bottom
             if ((sides & Sides.Left) > 0 && (sides & Sides.Bottom) > 0)
@@ -372,9 +372,9 @@ namespace Scryber.PDF.Graphics
             
         }
 
-        private void DoOutputRoundRectangleWithSidesPath(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height, PDFUnit cornerRadius, Sides sides)
+        private void DoOutputRoundRectangleWithSidesPath(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius, Sides sides)
         {
-            PDFUnit handleoffset = (PDFUnit)(cornerRadius.PointsValue * CircularityFactor);
+            Unit handleoffset = (Unit)(cornerRadius.PointsValue * CircularityFactor);
             
             bool requiresmove = false;
 

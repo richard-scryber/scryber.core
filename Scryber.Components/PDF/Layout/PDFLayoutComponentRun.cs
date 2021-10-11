@@ -47,7 +47,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The total bounds of the component
         /// </summary>
-        public PDFRect TotalBounds { get; set; }
+        public Rect TotalBounds { get; set; }
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The border rect relative the top left of the TotalBounds
         /// </summary>
-        public PDFRect BorderRect { get; set; }
+        public Rect BorderRect { get; set; }
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The content rectangle relative to the top left of the TotalBounds
         /// </summary>
-        public PDFRect ContentRect { get; set; }
+        public Rect ContentRect { get; set; }
 
         #endregion
 
@@ -117,7 +117,7 @@ namespace Scryber.PDF.Layout
         /// <param name="margins"></param>
         /// <param name="padding"></param>
         /// <param name="options"></param>
-        public void InitSize(PDFRect total, PDFRect border, PDFRect content, PDFPositionOptions options)
+        public void InitSize(Rect total, Rect border, Rect content, PDFPositionOptions options)
         {
             this.TotalBounds = total;
             this.BorderRect = border;
@@ -149,7 +149,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this component run
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return this.TotalBounds.Width; }
         }
@@ -161,7 +161,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this component run
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return this.TotalBounds.Height; }
         }
@@ -174,7 +174,7 @@ namespace Scryber.PDF.Layout
         /// Sets the vertical offset of this run wrt the line
         /// </summary>
         /// <param name="y"></param>
-        public override void SetOffsetY(PDFUnit y)
+        public override void SetOffsetY(Unit y)
         {
             this.TotalBounds = this.TotalBounds.Offset(0, y);
         }
@@ -187,9 +187,9 @@ namespace Scryber.PDF.Layout
         /// Pushes the component arrangement onto this layouts component
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageindex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageindex, Unit xoffset, Unit yoffset)
         {
-            PDFRect total = this.TotalBounds.Offset(xoffset, yoffset);
+            Rect total = this.TotalBounds.Offset(xoffset, yoffset);
             this.TotalBounds = total;
         }
 
@@ -197,16 +197,16 @@ namespace Scryber.PDF.Layout
 
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            PDFSize prevSize = context.Space;
-            PDFPoint prevLoc = context.Offset;
+            Size prevSize = context.Space;
+            Point prevLoc = context.Offset;
             Style laststyle = context.FullStyle;
 
             PDFObjectRef oref;
             if (this.Owner is IPDFRenderComponent)
             {
-                PDFPoint loc = context.Offset;
+                Point loc = context.Offset;
                 loc = loc.Offset(this.TotalBounds.Location);
-                PDFSize size = this.TotalBounds.Size;
+                Size size = this.TotalBounds.Size;
                PDFPositionOptions opts = this.PositionOptions;
 
                 context.Offset = loc;
@@ -223,7 +223,7 @@ namespace Scryber.PDF.Layout
 
                 var background = this.FullStyle.CreateBackgroundBrush();
 
-                PDFRect borderRect = new PDFRect(loc, size);
+                Rect borderRect = new Rect(loc, size);
                 if (null != background)
                     this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
                 

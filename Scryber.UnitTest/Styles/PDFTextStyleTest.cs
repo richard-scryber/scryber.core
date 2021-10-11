@@ -144,24 +144,24 @@ namespace Scryber.Core.UnitTests.Styles
         public void Text_FirstLineInsetTest()
         {
             TextStyle target = new TextStyle();
-            PDFUnit expected = PDFUnit.Zero;
+            Unit expected = Unit.Zero;
             Assert.AreEqual(expected, target.FirstLineInset);
             
 
             expected = 10;
-            PDFUnit actual;
+            Unit actual;
             target.FirstLineInset = expected;
             actual = target.FirstLineInset;
             Assert.AreEqual(expected, actual);
             
 
-            expected = new PDFUnit(20, PageUnits.Millimeters);
+            expected = new Unit(20, PageUnits.Millimeters);
             target.FirstLineInset = expected;
             actual = target.FirstLineInset;
             Assert.AreEqual(expected, actual);
            
 
-            expected = PDFUnit.Zero;
+            expected = Unit.Zero;
             target.RemoveFirstLineInset();
             actual = target.FirstLineInset;
             Assert.AreEqual(expected, actual);
@@ -176,21 +176,21 @@ namespace Scryber.Core.UnitTests.Styles
         public void Text_LeadingTest()
         {
             TextStyle target = new TextStyle();
-            PDFUnit expected = PDFUnit.Zero;
+            Unit expected = Unit.Zero;
             Assert.AreEqual(expected, target.Leading);
 
             expected = 10;
-            PDFUnit actual;
+            Unit actual;
             target.Leading = expected;
             actual = target.Leading;
             Assert.AreEqual(expected, actual);
 
-            expected = new PDFUnit(20, PageUnits.Millimeters);
+            expected = new Unit(20, PageUnits.Millimeters);
             target.Leading = expected;
             actual = target.Leading;
             Assert.AreEqual(expected, actual);
 
-            expected = PDFUnit.Zero;
+            expected = Unit.Zero;
             target.RemoveLeading();
             actual = target.Leading;
             Assert.AreEqual(expected, actual);
@@ -263,8 +263,8 @@ namespace Scryber.Core.UnitTests.Styles
             
             // Default value
 
-            PDFUnit expected = 0;
-            PDFUnit actual = target.WordSpacing;
+            Unit expected = 0;
+            Unit actual = target.WordSpacing;
             Assert.AreEqual(expected, actual);
 
             // Set Value

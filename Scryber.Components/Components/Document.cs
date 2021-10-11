@@ -44,7 +44,7 @@ namespace Scryber.Components
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
     public partial class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IPDFStyledComponent,
-                                                      IPDFTemplateParser, IParsedDocument, IControlledComponent
+                                                      ITemplateParser, IParsedDocument, IControlledComponent
     {
         //
         // events
@@ -538,7 +538,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public PDFStyleCollection Styles {get;} + protected virtual PDFStyleCollection CreateStyleCollection()
+        #region public StyleCollection Styles {get;} + protected virtual StyleCollection CreateStyleCollection()
 
         private StyleCollection _styles;
 
@@ -602,44 +602,9 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public Secure.DocumentPermissions Permissions {get;set;}
+        
 
-        private PDF.Secure.DocumentPermissions _perms;
-
-        /// <summary>
-        /// Gets or sets the permissions for this document
-        /// </summary>
-        [PDFElement("Permissions")]
-        public PDF.Secure.DocumentPermissions Permissions
-        {
-            get
-            {
-                if (_perms == null)
-                    _perms = new PDF.Secure.DocumentPermissions();
-                return _perms;
-            }
-            set
-            {
-                _perms = value;
-            }
-        }
-
-        #endregion
-
-        #region public IPDFSecurePasswordProvider PasswordProvider {get;set;}
-
-        private PDF.Secure.IPDFSecurePasswordProvider _password;
-
-        /// <summary>
-        /// Gets or sets a password provider
-        /// </summary>
-        public PDF.Secure.IPDFSecurePasswordProvider PasswordProvider
-        {
-            get { return this._password; }
-            set { this._password = value; }
-        }
-
-        #endregion
+        
 
         #region IPDFStyledComponent.Style {get;} + IPDFStyledComponent.HasStyle {get;}
 
@@ -1006,7 +971,7 @@ namespace Scryber.Components
             Styles.FontStyle fs = new Styles.FontStyle();
             style.StyleItems.Add(fs);
             fs.FontFamily = (FontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
-            fs.FontSize = new PDFUnit(24.0, PageUnits.Points);
+            fs.FontSize = new Unit(24.0, PageUnits.Points);
 
 
             return style;
@@ -1207,7 +1172,7 @@ namespace Scryber.Components
         /// <param name="font">The font to get the resource for</param>
         /// <param name="create">true if the PDFFontResource should be created if it is not already listed</param>
         /// <returns>A PDFFontResource that will be included in the document (or null if it is not loaded and should not be created)</returns>
-        public virtual PDFFontResource GetFontResource(PDFFont font, bool create, bool throwOnNotFound = true)
+        public virtual PDFFontResource GetFontResource(Font font, bool create, bool throwOnNotFound = true)
         {
             var found = this.FontMatcher.GetFont(font, create);
             if(null == found)
@@ -1520,7 +1485,7 @@ namespace Scryber.Components
             PerformanceMonitor perfmon = this.PerformanceMonitor;
             ItemCollection items = this.Params;
 
-            PDFInitContext icontext = CreateInitContext(log, perfmon, items);
+            InitContext icontext = CreateInitContext(log, perfmon, items);
 
             log.Begin(TraceLevel.Message, "Document", "Beginning Document Initialize");
             perfmon.Begin(PerformanceMonitorType.Document_Init_Stage);
@@ -1531,7 +1496,7 @@ namespace Scryber.Components
             log.End(TraceLevel.Message, "Document", "Completed Document Initialize");
             this.GenerationStage = DocumentGenerationStage.Initialized;
 
-            PDFLoadContext loadcontext = CreateLoadContext(log, perfmon, items);
+            LoadContext loadcontext = CreateLoadContext(log, perfmon, items);
 
             log.Begin(TraceLevel.Message, "Document", "Beginning Document Load");
             perfmon.Begin(PerformanceMonitorType.Document_Load_Stage);
@@ -1544,16 +1509,16 @@ namespace Scryber.Components
         }
 
 
-        protected virtual PDFInitContext CreateInitContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
+        protected virtual InitContext CreateInitContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
         {
-            PDFInitContext icontext = new PDFInitContext(items, log, perfmon, this);
+            InitContext icontext = new InitContext(items, log, perfmon, this);
             this.PopulateContextBase(icontext);
             return icontext;
         }
 
-        protected virtual PDFLoadContext CreateLoadContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
+        protected virtual LoadContext CreateLoadContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
         {
-            PDFLoadContext loadcontext = new PDFLoadContext(items, log, perfmon, this);
+            LoadContext loadcontext = new LoadContext(items, log, perfmon, this);
             this.PopulateContextBase(loadcontext);
             return loadcontext;
         }
@@ -1567,7 +1532,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to check the document initialization stage
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoInit(PDFInitContext context)
+        protected override void DoInit(InitContext context)
         {
             if (this.GenerationStage != DocumentGenerationStage.None)
                 throw new PDFException(Errors.DocumentHasAlreadyBeenInitialized);
@@ -1592,7 +1557,7 @@ namespace Scryber.Components
 
         #region protected virtual void DoInitStyles(PDFInitContext context)
 
-        protected virtual void DoInitStyles(PDFInitContext context)
+        protected virtual void DoInitStyles(InitContext context)
         {
             if (this.Styles != null && this.Styles.Count > 0)
             {
@@ -1627,7 +1592,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to check the document generation stage.
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoLoad(PDFLoadContext context)
+        protected override void DoLoad(LoadContext context)
         {
             if (this.GenerationStage < DocumentGenerationStage.Initialized)
                 throw new PDFException(Errors.DocumentHasNotBeenInitialized);
@@ -1652,7 +1617,7 @@ namespace Scryber.Components
 
         #region protected virtual void DoLoadStyles(PDFDataContext context)
 
-        protected virtual void DoLoadStyles(PDFLoadContext context)
+        protected virtual void DoLoadStyles(LoadContext context)
         {
             if (this.Styles != null && this.Styles.Count > 0)
             {
@@ -1692,7 +1657,7 @@ namespace Scryber.Components
             PerformanceMonitor perfmon = this.PerformanceMonitor;
             ItemCollection items = this.Params;
 
-            PDFDataContext context = this.CreateDataContext(log, perfmon, items);
+            DataContext context = this.CreateDataContext(log, perfmon, items);
 
             context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document Databind");
             context.PerformanceMonitor.Begin(PerformanceMonitorType.Document_Bind_Stage);
@@ -1708,10 +1673,10 @@ namespace Scryber.Components
         /// Creates a new data context that is passed to the main data binding method
         /// </summary>
         /// <returns></returns>
-        protected virtual PDFDataContext CreateDataContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
+        protected virtual DataContext CreateDataContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items)
         {
 
-            PDFDataContext context = new PDFDataContext(items, log, perfmon, this);
+            DataContext context = new DataContext(items, log, perfmon, this);
             this.PopulateContextBase(context);
             return context;
         }
@@ -1725,7 +1690,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="context"></param>
         /// <param name="includeChildren"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             if (this.GenerationStage < DocumentGenerationStage.Loaded)
                 throw new PDFException(Errors.DocumentHasNotBeenLoaded);
@@ -1762,7 +1727,7 @@ namespace Scryber.Components
 
         #region protected virtual void DoBindStyles(PDFDataContext context)
 
-        protected virtual void DoBindStyles(PDFDataContext context)
+        protected virtual void DoBindStyles(DataContext context)
         {
             if (this.Styles != null && this.Styles.Count > 0)
             {
@@ -1820,9 +1785,9 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public virtual IPDFDataProvider AssertGetProvider(string key)
+        public virtual IDataProvider AssertGetProvider(string key)
         {
-            IPDFDataProvider provider;
+            IDataProvider provider;
             if (this.DataProviders.TryGetProvider(key, out provider))
             {
                 string error;
@@ -1973,7 +1938,7 @@ namespace Scryber.Components
 
 
             //Layout components before rendering
-            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.Formatting, context.Items, context.TraceLog, context.PerformanceMonitor);
+            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.Items, context.TraceLog, context.PerformanceMonitor);
             this.RegisterPreLayout(layoutcontext);
 
             context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document layout");
@@ -2069,8 +2034,7 @@ namespace Scryber.Components
         private Document CreateTraceLogAppendDocument(PDFDocumentGenerationData genData, PDFFile origFile, PDFResourceCollection resources)
         {
             var appended = new TraceLogDocument(this.FileName, origFile, genData, resources);
-            appended.PasswordProvider = this.PasswordProvider;
-            appended.Permissions = this.Permissions;
+            appended.RenderOptions = this.RenderOptions;
             appended.DocumentID = this.DocumentID;
             return appended;
         }
@@ -2161,9 +2125,9 @@ namespace Scryber.Components
         /// <param name="items">A PDFItemCollection</param>
         /// <param name="log">The log to use</param>
         /// <returns>A new layout context</returns>
-        protected virtual PDFLayoutContext CreateLayoutContext(Style style, PDFOutputFormatting format, ItemCollection items, TraceLog log, PerformanceMonitor perfmon)
+        protected virtual PDFLayoutContext CreateLayoutContext(Style style, ItemCollection items, TraceLog log, PerformanceMonitor perfmon)
         {
-            PDFLayoutContext context = new PDFLayoutContext(style, format, items, log, perfmon, this);
+            PDFLayoutContext context = new PDFLayoutContext(style, items, log, perfmon, this);
             PopulateContextBase(context);
             return context;
         }
@@ -2223,8 +2187,7 @@ namespace Scryber.Components
 
 
             Style def = this.CreateDefaultStyle();
-            PDFOutputFormatting format = this.GetOutputFormat(this.RenderOptions.OuptputCompliance);
-            PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, format, def, this.Params, log, perfmon, this);
+            PDFRenderContext context = new PDFRenderContext(DrawingOrigin.TopLeft, 0, def, this.Params, log, perfmon, this);
 
             this.PopulateContextBase(context);
             return context;
@@ -2232,19 +2195,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region protected virtual PDFOutputFormatting GetOutputFormat(string formatName)
-
-        /// <summary>
-        /// Gets the required document formatter based on it's name
-        /// </summary>
-        /// <param name="formatName"></param>
-        /// <returns></returns>
-        protected virtual PDFOutputFormatting GetOutputFormat(string formatName)
-        {
-            return PDFOutputFormatting.GetFormat(formatName);
-        }
-
-        #endregion
+        
 
         #region private void PopulateContextBase(PDFContextBase context)
 
@@ -2252,7 +2203,7 @@ namespace Scryber.Components
         /// Fills the context base options for any created context
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void PopulateContextBase(PDFContextBase context)
+        protected virtual void PopulateContextBase(ContextBase context)
         {
             context.Compression = this.RenderOptions.Compression;
             context.Conformance = this.ConformanceMode;
@@ -2359,7 +2310,7 @@ namespace Scryber.Components
 
                         if (!this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out cached))
                         {
-                            IPDFDataProvider prov;
+                            IDataProvider prov;
                             if (isfile)
                                 data = ImageData.LoadImageFromLocalFile(src, owner);
 

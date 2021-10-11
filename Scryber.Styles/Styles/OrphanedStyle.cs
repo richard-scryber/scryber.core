@@ -56,7 +56,7 @@ namespace Scryber.Styles
             get { return _globalPool; }
         }
 
-        protected override void DoDataBind(PDFDataContext context, bool includechildren)
+        protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
         }

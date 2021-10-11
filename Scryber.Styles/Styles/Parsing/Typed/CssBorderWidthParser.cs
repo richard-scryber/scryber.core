@@ -9,9 +9,9 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSBorderWidthParser : CSSUnitStyleParser
     {
-        private static readonly PDFUnit ThinSize = (PDFUnit)0.2;
-        private static readonly PDFUnit MediumSize = (PDFUnit)1.0;
-        private static readonly PDFUnit ThickSize = (PDFUnit)3.0;
+        private static readonly Unit ThinSize = (Unit)0.2;
+        private static readonly Unit MediumSize = (Unit)1.0;
+        private static readonly Unit ThickSize = (Unit)3.0;
 
         public CSSBorderWidthParser()
             : this(CSSStyleItems.BorderWidth, StyleKeys.BorderWidthKey)
@@ -19,7 +19,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         }
 
-        public CSSBorderWidthParser(string attr, StyleKey<PDFUnit> styleKey)
+        public CSSBorderWidthParser(string attr, StyleKey<Unit> styleKey)
             : base(attr, styleKey)
         {
 
@@ -27,13 +27,13 @@ namespace Scryber.Styles.Parsing.Typed
 
         
 
-        protected override bool DoConvertUnit(StyleBase onStyle, object value, out PDFUnit result)
+        protected override bool DoConvertUnit(StyleBase onStyle, object value, out Unit result)
         {
             bool success = false;
 
             if(null == value)
             {
-                result = PDFUnit.Empty;
+                result = Unit.Empty;
                 return false;
             }
             var str = value.ToString();

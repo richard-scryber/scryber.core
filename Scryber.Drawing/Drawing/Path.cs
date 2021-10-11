@@ -85,7 +85,7 @@ namespace Scryber.Drawing
             this._data.RemoveAt(this._data.Count - 1);
         }
 
-        public void FillAllPoints(List<PDFPoint> points)
+        public void FillAllPoints(List<Point> points)
         {
             foreach (PathData data in this._data)
             {

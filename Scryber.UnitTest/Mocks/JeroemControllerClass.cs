@@ -12,28 +12,28 @@ namespace Scryber.Core.UnitTests.Mocks
 
 
         [PDFAction("init-para")]
-        public void ParagraphInit(object sender, PDFInitEventArgs args)
+        public void ParagraphInit(object sender, InitEventArgs args)
         {
             (sender as HTMLParagraph).Contents.Add(new Label() { Text = "We are initialized", StyleClass = "block" });
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Initialized the paragraph");
         }
 
         [PDFAction("load-para")]
-        public void ParagraphLoad(object sender, PDFLoadEventArgs args)
+        public void ParagraphLoad(object sender, LoadEventArgs args)
         {
             (sender as HTMLParagraph).Contents.Add(new Label() { Text = "We have loaded", StyleClass = "block" });
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Loaded the paragraph");
         }
 
         [PDFAction("bind-para")]
-        public void ParagraphBinding(object sender, PDFDataBindEventArgs args)
+        public void ParagraphBinding(object sender, DataBindEventArgs args)
         {
             (sender as HTMLParagraph).Contents.Add(new Label() { Text = "We are binding", StyleClass = "block" });
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Binding the paragraph");
         }
 
         [PDFAction("bound-para")]
-        public void ParagraphBound(object sender, PDFDataBindEventArgs args)
+        public void ParagraphBound(object sender, DataBindEventArgs args)
         {
             (sender as HTMLParagraph).Contents.Add(new Label() { Text = "We have bound", StyleClass = "block" });
             args.Context.TraceLog.Add(TraceLevel.Message, "Custom Code", "Bound the paragraph");
@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Mocks
         }
 
         [PDFAction("row-bound")]
-        public void TemplateItemCellBound(object sender, PDFDataBindEventArgs args)
+        public void TemplateItemCellBound(object sender, DataBindEventArgs args)
         {
             //This is the wrapper component
             var row = sender as TableCell;
@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Mocks
         }
 
         [PDFAction()]
-        public void Initialized(object sender, PDFInitEventArgs args)
+        public void Initialized(object sender, InitEventArgs args)
         {
             Document.Info.Title = "My Title";
         }
@@ -134,7 +134,7 @@ namespace Scryber.Core.UnitTests.Mocks
 
 
         [PDFAction(IsAction = false)]
-        public void ImageBound(object sender, PDFDataBindEventArgs args)
+        public void ImageBound(object sender, DataBindEventArgs args)
         {
             
 

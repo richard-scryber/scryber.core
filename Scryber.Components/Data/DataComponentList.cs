@@ -27,7 +27,7 @@ namespace Scryber.Data
         /// Initializes each of the components in this list
         /// </summary>
         /// <param name="context"></param>
-        public void Init(PDFInitContext context)
+        public void Init(InitContext context)
         {
             foreach (IComponent comp in this)
             {
@@ -43,7 +43,7 @@ namespace Scryber.Data
         /// Invokes the load on each of the components in this list
         /// </summary>
         /// <param name="context"></param>
-        public void Load(PDFLoadContext context)
+        public void Load(LoadContext context)
         {
             foreach (IComponent comp in this)
             {
@@ -60,7 +60,7 @@ namespace Scryber.Data
         /// that implement the IPDFBindable interface
         /// </summary>
         /// <param name="context"></param>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             IComponent[] all = this.ToArray();
 
@@ -78,9 +78,9 @@ namespace Scryber.Data
         {
             foreach (Component comp in content)
             {
-                if (comp is IPDFInvisibleContainer)
+                if (comp is IInvisibleContainer)
                 {
-                    IPDFInvisibleContainer container = comp as IPDFInvisibleContainer;
+                    IInvisibleContainer container = comp as IInvisibleContainer;
                     if (container.HasContent)
                         this.BuildAllItems(container.Content, found);
                 }

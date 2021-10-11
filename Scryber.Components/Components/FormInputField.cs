@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
@@ -64,7 +65,7 @@ namespace Scryber.Components
         }
 
 
-        protected Form GetParentForm(PDFContextBase context)
+        protected Form GetParentForm(ContextBase context)
         {
             var parent = this.Parent;
             while (null != parent && !(parent is Form))
@@ -99,7 +100,7 @@ namespace Scryber.Components
 
         
 
-        protected virtual PDFAcrobatFormFieldWidget GetFieldEntry(PDFContextBase context)
+        protected virtual PDFAcrobatFormFieldWidget GetFieldEntry(ContextBase context)
         {
             if (string.IsNullOrEmpty(this.Name))
             {

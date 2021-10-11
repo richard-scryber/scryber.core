@@ -20,21 +20,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml;
 using Scryber.Logging;
 
 namespace Scryber
 {
-
-    public class PDFInitContext : PDFContextBase
+    public class LoadContext : ContextBase
     {
-        public PDFInitContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
+        public LoadContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(items, log, perfmon, document)
         {
         }
-
-        
     }
-
-
 }

@@ -36,6 +36,8 @@ namespace Scryber.PDF
     public class PDFDocumentRenderOptions : IDisposable
     {
 
+        public OutputFormat Format { get { return OutputFormat.PDF; }}
+
         /// <summary>
         /// Specifies if the document should render all component names, or just the required names (for navigation etc)
         /// </summary>
@@ -118,6 +120,44 @@ namespace Scryber.PDF
             set;
         }
 
+        #region public IPDFSecurePasswordProvider PasswordProvider {get;set;}
+
+        private IPDFSecurePasswordProvider _password;
+
+        /// <summary>
+        /// Gets or sets a password provider
+        /// </summary>
+        public IPDFSecurePasswordProvider PasswordProvider
+        {
+            get { return this._password; }
+            set { this._password = value; }
+        }
+
+        #endregion
+
+        #region public Secure.DocumentPermissions Permissions {get;set;}
+
+        private PDFDocumentPermissions _perms;
+
+        /// <summary>
+        /// Gets or sets the permissions for this document
+        /// </summary>
+        [PDFElement("Permissions")]
+        public PDFDocumentPermissions Permissions
+        {
+            get
+            {
+                if (_perms == null)
+                    _perms = new PDFDocumentPermissions();
+                return _perms;
+            }
+            set
+            {
+                _perms = value;
+            }
+        }
+
+        #endregion
 
         public PDFDocumentRenderOptions()
         {
@@ -160,10 +200,10 @@ namespace Scryber.PDF
             if (null == this.WriterFactory)
             {
                 IDocumentPasswordSettings settings = null;
-                if (forDoc.PasswordProvider != null && forDoc.PasswordProvider.IsSecure(forDoc.LoadedSource, out settings))
+                if (this.PasswordProvider != null && this.PasswordProvider.IsSecure(forDoc.LoadedSource, out settings))
                     this.WriterFactory = GetSecureWriter(forDoc, settings);
 
-                else if(forDoc.Permissions.HasRestrictions)
+                else if(this.Permissions.HasRestrictions)
                 {
                     if (forDoc.ConformanceMode == ParserConformanceMode.Lax)
                     {
@@ -171,8 +211,8 @@ namespace Scryber.PDF
                         Guid pass = Guid.NewGuid();
                         var passS = pass.ToString().Substring(14);
 
-                        forDoc.PasswordProvider = new DocumentPasswordProvider(passS);
-                        forDoc.PasswordProvider.IsSecure(forDoc.LoadedSource, out settings);
+                        this.PasswordProvider = new DocumentPasswordProvider(passS);
+                        this.PasswordProvider.IsSecure(forDoc.LoadedSource, out settings);
 
                         this.WriterFactory = GetSecureWriter(forDoc, settings);
                     }
@@ -182,6 +222,7 @@ namespace Scryber.PDF
                 else
                     this.WriterFactory = GetStandardWriter(forDoc);
             }
+
             return this.WriterFactory.GetInstance(forDoc, outputStream, generation, this, log);
             
         }
@@ -195,7 +236,7 @@ namespace Scryber.PDF
             SecureString user = null;
 
             PDFDocumentID id = forDoc.DocumentID;
-            var permissions = forDoc.Permissions;
+            var permissions = this.Permissions;
             
 
             if (null != settings)
@@ -211,7 +252,7 @@ namespace Scryber.PDF
             }
 
             if (null == permissions)
-                permissions = new DocumentPermissions();
+                permissions = new PDFDocumentPermissions();
 
             var encFactory = permissions.GetFactory();
             var enc = encFactory.InitEncrypter(owner, user, id, permissions.GetRestrictions(), forDoc.PerformanceMonitor);

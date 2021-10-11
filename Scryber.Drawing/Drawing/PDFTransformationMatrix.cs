@@ -60,7 +60,7 @@ namespace Scryber.Drawing
             this._matrix = innerMatrix;
         }
 
-        public void SetTranslation(PDFUnit offsetX, PDFUnit offsetY)
+        public void SetTranslation(Unit offsetX, Unit offsetY)
         {
             SetTranslation((float)offsetX.PointsValue, (float)offsetY.PointsValue);
         }
@@ -85,10 +85,10 @@ namespace Scryber.Drawing
             _matrix.Shear(skewX, skewY);
         }
 
-        public PDFRect TransformBounds(PDFRect bounds, TransformationOrigin origin)
+        public Rect TransformBounds(Rect bounds, TransformationOrigin origin)
         {
-            PDFUnit xoffset = 0;
-            PDFUnit yoffset = 0;
+            Unit xoffset = 0;
+            Unit yoffset = 0;
 
             switch (origin)
             {
@@ -117,7 +117,7 @@ namespace Scryber.Drawing
             bounds.X -= xoffset;
             bounds.Y -= yoffset;
 
-            PDFRect transformed = TransformBounds(bounds);
+            Rect transformed = TransformBounds(bounds);
 
             transformed.X += xoffset;
             transformed.Y += yoffset;
@@ -125,7 +125,7 @@ namespace Scryber.Drawing
             return transformed;
         }
 
-        public PDFRect TransformBounds(PDFRect bounds)
+        public Rect TransformBounds(Rect bounds)
         {
             if (this.IsIdentity)
                 return bounds;
@@ -157,17 +157,17 @@ namespace Scryber.Drawing
                 minY = Math.Min(minY, all[i].Y);
             }
 
-            return new PDFRect(minX, minY, maxX - minX, maxY - minY);
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
-        public PDFPoint TransformPoint(PDFPoint pt)
+        public Point TransformPoint(Point pt)
         {
             if (IsIdentity)
                 return pt;
 
             System.Drawing.PointF[] ptf = new System.Drawing.PointF[] { new System.Drawing.PointF((float)pt.X.PointsValue, (float)pt.Y.PointsValue) };
             this._matrix.TransformPoints(ptf);
-            return new PDFPoint(ptf[0].X, ptf[0].Y);
+            return new Point(ptf[0].X, ptf[0].Y);
         }
 
         //
@@ -201,13 +201,13 @@ namespace Scryber.Drawing
         // graphics adapters
         //
 
-        public bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             graphics.SetTransformationMatrix(this, true, true);
             return true;
         }
 
-        public void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
             //Do Nothing
         }

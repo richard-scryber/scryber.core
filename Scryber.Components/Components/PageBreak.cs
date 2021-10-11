@@ -25,7 +25,7 @@ using Scryber.Styles;
 namespace Scryber.Components
 {
     [PDFParsableComponent("PageBreak")]
-    public class PageBreak : VisualComponent, IPDFLayoutBreak
+    public class PageBreak : VisualComponent, ILayoutBreak
     {
 
         public LayoutBreakType BreakType

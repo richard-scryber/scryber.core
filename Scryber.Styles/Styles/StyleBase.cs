@@ -32,7 +32,7 @@ namespace Scryber.Styles
     /// <summary>
     /// Abstract base class for all full styles (contains the StyleItems, AND the values associated with those items).
     /// </summary>
-    public abstract class StyleBase : PDFObject
+    public abstract class StyleBase : TypedObject
     {
         private const int DirectFillFactor = 5;
         private const int InheritedFillFactor = 5;
@@ -359,7 +359,7 @@ namespace Scryber.Styles
 
         #region protected virtual void DoDataBind(PDFDataContext context, bool includechildren)
 
-        protected virtual void DoDataBind(PDFDataContext context, bool includechildren)
+        protected virtual void DoDataBind(DataContext context, bool includechildren)
         {
             if (includechildren && this.StyleItems.Count > 0)
             {
@@ -693,47 +693,47 @@ namespace Scryber.Styles
         /// <param name="bottom"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        internal bool TryGetThickness(bool inherited, StyleKey<PDFUnit> all, StyleKey<PDFUnit> top, StyleKey<PDFUnit> left, StyleKey<PDFUnit> bottom, StyleKey<PDFUnit> right, out PDFThickness thickness)
+        internal bool TryGetThickness(bool inherited, StyleKey<Unit> all, StyleKey<Unit> top, StyleKey<Unit> left, StyleKey<Unit> bottom, StyleKey<Unit> right, out Thickness thickness)
         {
             Dictionary<StyleKey, StyleValueBase> lookup = inherited ? _inherited : _direct;
 
-            thickness = new Scryber.Drawing.PDFThickness();
+            thickness = new Scryber.Drawing.Thickness();
             bool hasvalues = false;
             StyleValueBase found;
 
             if(null == lookup || lookup.Count == 0)
             {
-                thickness = PDFThickness.Empty();
+                thickness = Thickness.Empty();
                 return false;
             }
 
             if (lookup.TryGetValue(all, out found))
             {
-                thickness.SetAll(((StyleValue<PDFUnit>)found).Value(this));
+                thickness.SetAll(((StyleValue<Unit>)found).Value(this));
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(top, out found))
             {
-                thickness.Top = ((StyleValue<PDFUnit>)found).Value(this);
+                thickness.Top = ((StyleValue<Unit>)found).Value(this);
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(left, out found))
             {
-                thickness.Left = ((StyleValue<PDFUnit>)found).Value(this);
+                thickness.Left = ((StyleValue<Unit>)found).Value(this);
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(bottom, out found))
             {
-                thickness.Bottom = ((StyleValue<PDFUnit>)found).Value(this);
+                thickness.Bottom = ((StyleValue<Unit>)found).Value(this);
                 hasvalues = true;
             }
 
             if (lookup.TryGetValue(right, out found))
             {
-                thickness.Right = ((StyleValue<PDFUnit>)found).Value(this);
+                thickness.Right = ((StyleValue<Unit>)found).Value(this);
                 hasvalues = true;
             }
 
@@ -754,14 +754,14 @@ namespace Scryber.Styles
         /// <param name="left"></param>
         /// <param name="bottom"></param>
         /// <param name="right"></param>
-        internal void SetThickness(bool inherited, Scryber.Drawing.PDFThickness thickness, StyleKey<PDFUnit> top, StyleKey<PDFUnit> left, StyleKey<PDFUnit> bottom, StyleKey<PDFUnit> right)
+        internal void SetThickness(bool inherited, Scryber.Drawing.Thickness thickness, StyleKey<Unit> top, StyleKey<Unit> left, StyleKey<Unit> bottom, StyleKey<Unit> right)
         {
             Dictionary<StyleKey, StyleValueBase> lookup = inherited ? this.InheritedValues : this.DirectValues;
 
-            lookup[top] = new StyleValue<PDFUnit>(top, thickness.Top);
-            lookup[left] = new StyleValue<Scryber.Drawing.PDFUnit>(left, thickness.Left);
-            lookup[bottom] = new StyleValue<Scryber.Drawing.PDFUnit>(bottom, thickness.Bottom);
-            lookup[right] = new StyleValue<Scryber.Drawing.PDFUnit>(right, thickness.Right);
+            lookup[top] = new StyleValue<Unit>(top, thickness.Top);
+            lookup[left] = new StyleValue<Scryber.Drawing.Unit>(left, thickness.Left);
+            lookup[bottom] = new StyleValue<Scryber.Drawing.Unit>(bottom, thickness.Bottom);
+            lookup[right] = new StyleValue<Scryber.Drawing.Unit>(right, thickness.Right);
         }
 
         #endregion
@@ -779,8 +779,8 @@ namespace Scryber.Styles
         /// <returns></returns>
         internal protected virtual PageSize DoCreatePageSize()
         {
-            StyleValue<PDFUnit> w;
-            StyleValue<PDFUnit> h;
+            StyleValue<Unit> w;
+            StyleValue<Unit> h;
 
             //We use the explicit Position width and height
             bool hasw = this.TryGetValue(StyleKeys.SizeWidthKey, out w);
@@ -793,7 +793,7 @@ namespace Scryber.Styles
                 hash = this.TryGetValue(StyleKeys.PageHeightKey, out h);
 
             if (hasw && hash)
-                return new PageSize(new PDFSize(w.Value(this), h.Value(this)));
+                return new PageSize(new Size(w.Value(this), h.Value(this)));
             else
             {
                 //if we don't have any explicit sizes - and we need both we use the paper size
@@ -837,7 +837,7 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
                 options.FillWidth = b.Value(this);
 
-            StyleValue<PDFUnit> unit;
+            StyleValue<Unit> unit;
 
             // X
             if (this.TryGetValue(StyleKeys.PositionXKey, out unit))
@@ -914,7 +914,7 @@ namespace Scryber.Styles
 
             //viewport
 
-            StyleValue<PDFRect> rect;
+            StyleValue<Rect> rect;
             if (this.TryGetValue(StyleKeys.PositionViewPort, out rect))
                 options.ViewPort = rect.Value(this);
 
@@ -958,7 +958,7 @@ namespace Scryber.Styles
             else
                 options.OverflowSplit = OverflowSplit.Any;
 
-            PDFThickness thickness;
+            Thickness thickness;
 
             //clipping
 
@@ -972,7 +972,7 @@ namespace Scryber.Styles
                     options.OverflowAction = OverflowAction.Clip;
             }
             else
-                options.ClipInset = PDFThickness.Empty();
+                options.ClipInset = Thickness.Empty();
             
 
             //margins
@@ -980,14 +980,14 @@ namespace Scryber.Styles
             if (this.TryGetThickness(StyleKeys.MarginsItemKey.Inherited, StyleKeys.MarginsAllKey, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey, out thickness))
                 options.Margins = thickness;
             else
-                options.Margins = PDFThickness.Empty();
+                options.Margins = Thickness.Empty();
 
             //padding
 
             if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey, out thickness))
                 options.Padding = thickness;
             else
-                options.Padding = PDFThickness.Empty();
+                options.Padding = Thickness.Empty();
 
             //columns
 
@@ -1066,16 +1066,16 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="force">If true, then even if there are no values in the style, a default font will be returned.</param>
         /// <returns></returns>
-        internal protected virtual PDFFont DoCreateFont(bool force)
+        internal protected virtual Font DoCreateFont(bool force)
         {
             bool hasvalues = false;
             StyleValue<FontSelector> familyVal;
-            StyleValue<PDFUnit> sizeVal;
+            StyleValue<Unit> sizeVal;
             StyleValue<int> boldVal;
             StyleValue<Drawing.FontStyle> italicVal;
 
             FontSelector family;
-            PDFUnit size;
+            Unit size;
             int weight = FontWeights.Regular;
             Drawing.FontStyle style = Drawing.FontStyle.Regular;
             
@@ -1094,7 +1094,7 @@ namespace Scryber.Styles
                 hasvalues = true;
             }
             else
-                size = new PDFUnit(Const.DefaultFontSize, PageUnits.Points);
+                size = new Unit(Const.DefaultFontSize, PageUnits.Points);
 
             if (this.TryGetValue(StyleKeys.FontWeightKey, out boldVal))
             {
@@ -1110,7 +1110,7 @@ namespace Scryber.Styles
 
             if (force || hasvalues)
             {
-                PDFFont font = new PDFFont(family, size, weight, style);
+                Font font = new Font(family, size, weight, style);
                 return font;
             }
             else
@@ -1190,11 +1190,11 @@ namespace Scryber.Styles
             options.Background = this.DoCreateBackgroundBrush();
             options.Stroke = this.DoCreateStrokePen();
 
-            StyleValue<PDFUnit> flindent;
+            StyleValue<Unit> flindent;
             if (this.TryGetValue(StyleKeys.TextFirstLineIndentKey,out flindent))
                 options.FirstLineInset = flindent.Value(this);
 
-            StyleValue<PDFUnit> space;
+            StyleValue<Unit> space;
             if (this.TryGetValue(StyleKeys.TextWordSpacingKey, out space))
                 options.WordSpacing = space.Value(this);
 
@@ -1213,7 +1213,7 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.TextDirectionKey, out dir))
                 options.TextDirection = dir.Value(this);
 
-            StyleValue<PDFUnit> lead;
+            StyleValue<Unit> lead;
             if (this.TryGetValue(StyleKeys.TextLeadingKey, out lead))
                 options.Leading = lead.Value(this);
 
@@ -1272,9 +1272,9 @@ namespace Scryber.Styles
                                                               StyleKeys.BorderBottomWidthKey,
                                                               StyleKeys.BorderBottomStyleKey,
                                                               StyleKeys.BorderBottomDashKey);
-            PDFUnit? corner;
+            Unit? corner;
 
-            StyleValue<PDFUnit> cornerValue;
+            StyleValue<Unit> cornerValue;
             if (this.TryGetValue(StyleKeys.BorderCornerRadiusKey, out cornerValue))
                 corner = cornerValue.Value(this);
             else
@@ -1305,35 +1305,35 @@ namespace Scryber.Styles
 
 
         private static Dash DefaultDash = new Dash(new int[] { 4 }, 0);
-        private static PDFUnit DefaultWidth = new PDFUnit(1, PageUnits.Points);
+        private static Unit DefaultWidth = new Unit(1, PageUnits.Points);
 
         /// <summary>
         /// The size of the x step if it is not repeated in the x direction
         /// </summary>
-        public static readonly PDFUnit NoXRepeatStepSize = int.MaxValue;
+        public static readonly Unit NoXRepeatStepSize = int.MaxValue;
 
         /// <summary>
         /// The size of the y step if it is not repeated in the y direction
         /// </summary>
-        public static readonly PDFUnit NoYRepeatStepSize = int.MaxValue;
+        public static readonly Unit NoYRepeatStepSize = int.MaxValue;
 
         /// <summary>
         /// The size value if repeating should use the natural zise of the pattern or image
         /// </summary>
-        public static readonly PDFUnit RepeatNaturalSize = 0;
+        public static readonly Unit RepeatNaturalSize = 0;
 
-        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<Color> sideColor, StyleKey<PDFUnit> sideWidth, StyleKey<LineType> sideLine, StyleKey<Dash> sideDash)
+        internal protected virtual PDFPen DoCreateBorderSidePen(Sides side, StyleKey<Color> sideColor, StyleKey<Unit> sideWidth, StyleKey<LineType> sideLine, StyleKey<Dash> sideDash)
         {
             PDFPen pen = null;
 
             StyleValue<LineType> styleValue;
             StyleValue<Dash> dashValue;
             StyleValue<Color> colValue;
-            StyleValue<PDFUnit> widthValue;
+            StyleValue<Unit> widthValue;
 
             LineType line = LineType.None;
             Color col = Color.Transparent;
-            PDFUnit width = 0;
+            Unit width = 0;
             Dash dash = null;
 
 
@@ -1439,7 +1439,7 @@ namespace Scryber.Styles
             StyleValue<LineType> penstyle;
             StyleValue<Dash> dash;
             StyleValue<Color> c;
-            StyleValue<PDFUnit> width;
+            StyleValue<Unit> width;
 
             if (this.TryGetValue(StyleKeys.BorderStyleKey, out penstyle))
             {
@@ -1562,7 +1562,7 @@ namespace Scryber.Styles
             StyleValue<LineType> penstyle;
             StyleValue<Dash> dash;
             StyleValue<Color> c;
-            StyleValue<PDFUnit> width;
+            StyleValue<Unit> width;
 
             if (this.TryGetValue(StyleKeys.StrokeStyleKey, out penstyle))
             {
@@ -1739,7 +1739,7 @@ namespace Scryber.Styles
                     else
                     {
                         PDFImageBrush img = new PDFImageBrush(imgsrc.Value(this));
-                        StyleValue<PDFUnit> unitValue;
+                        StyleValue<Unit> unitValue;
 
                         if (repeat == PatternRepeat.RepeatX || repeat == PatternRepeat.RepeatBoth)
                             img.XStep = (this).TryGetValue(StyleKeys.BgXStepKey, out unitValue) ? unitValue.Value(this) : RepeatNaturalSize;
@@ -1751,8 +1751,8 @@ namespace Scryber.Styles
                         else
                             img.YStep = NoYRepeatStepSize;
 
-                        img.XPostion = (this).TryGetValue(StyleKeys.BgXPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
-                        img.YPostion = (this).TryGetValue(StyleKeys.BgYPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
+                        img.XPostion = (this).TryGetValue(StyleKeys.BgXPosKey, out unitValue) ? unitValue.Value(this) : Unit.Zero;
+                        img.YPostion = (this).TryGetValue(StyleKeys.BgYPosKey, out unitValue) ? unitValue.Value(this) : Unit.Zero;
 
                         if ((this).TryGetValue(StyleKeys.BgXSizeKey, out unitValue))
                             img.XSize = unitValue.Value(this);
@@ -1832,7 +1832,7 @@ namespace Scryber.Styles
                 else
                 {
                     PDFImageBrush img = new PDFImageBrush(imgsrc.Value(this));
-                    StyleValue<PDFUnit> unitValue;
+                    StyleValue<Unit> unitValue;
 
                     if (repeat == PatternRepeat.RepeatX || repeat == PatternRepeat.RepeatBoth)
                         img.XStep = (this).TryGetValue(StyleKeys.FillXStepKey, out unitValue) ? unitValue.Value(this) : RepeatNaturalSize;
@@ -1844,8 +1844,8 @@ namespace Scryber.Styles
                     else
                         img.YStep = NoYRepeatStepSize;
 
-                    img.XPostion = (this).TryGetValue(StyleKeys.FillXPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
-                    img.YPostion = (this).TryGetValue(StyleKeys.FillYPosKey, out unitValue) ? unitValue.Value(this) : PDFUnit.Zero;
+                    img.XPostion = (this).TryGetValue(StyleKeys.FillXPosKey, out unitValue) ? unitValue.Value(this) : Unit.Zero;
+                    img.YPostion = (this).TryGetValue(StyleKeys.FillYPosKey, out unitValue) ? unitValue.Value(this) : Unit.Zero;
 
                     if ((this).TryGetValue(StyleKeys.FillXSizeKey, out unitValue))
                         img.XSize = unitValue.Value(this);
@@ -1880,39 +1880,39 @@ namespace Scryber.Styles
 
         #region internal protected virtual PDFThickness DoCreateMarginsThickness()
 
-        internal protected virtual PDFThickness DoCreateMarginsThickness()
+        internal protected virtual Thickness DoCreateMarginsThickness()
         {
-            PDFThickness thickness;
+            Thickness thickness;
             if (this.TryGetThickness(StyleKeys.MarginsItemKey.Inherited, StyleKeys.MarginsAllKey, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey, out thickness))
                 return thickness;
             else
-                return PDFThickness.Empty();
+                return Thickness.Empty();
         }
 
         #endregion
 
         #region internal protected virtual PDFThickness DoCreatePaddingThickness()
 
-        internal protected virtual PDFThickness DoCreatePaddingThickness()
+        internal protected virtual Thickness DoCreatePaddingThickness()
         {
-            PDFThickness thickness;
+            Thickness thickness;
             if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey, out thickness))
                 return thickness;
             else
-                return PDFThickness.Empty();
+                return Thickness.Empty();
         }
 
         #endregion
 
         #region internal protected virtual PDFThickness DoCreateClippingThickness()
 
-        internal protected virtual PDFThickness DoCreateClippingThickness()
+        internal protected virtual Thickness DoCreateClippingThickness()
         {
-            PDFThickness thickness;
+            Thickness thickness;
             if(this.TryGetThickness(StyleKeys.ClipItemKey.Inherited, StyleKeys.ClipAllKey, StyleKeys.ClipTopKey, StyleKeys.ClipLeftKey, StyleKeys.ClipBottomKey, StyleKeys.ClipRightKey, out thickness))
                 return thickness;
             else
-                return PDFThickness.Empty();
+                return Thickness.Empty();
         }
 
         #endregion
@@ -1969,13 +1969,13 @@ namespace Scryber.Styles
             }
         }
 
-        public static void SetMargins(this StyleBase stylebase, PDFThickness thickness)
+        public static void SetMargins(this StyleBase stylebase, Thickness thickness)
         {
             stylebase.SetThickness(StyleKeys.MarginsItemKey.Inherited, thickness, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey);
         }
 
 
-        public static void SetPadding(this StyleBase stylebase, PDFThickness thickness)
+        public static void SetPadding(this StyleBase stylebase, Thickness thickness)
         {
             stylebase.SetThickness(StyleKeys.PaddingItemKey.Inherited, thickness, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey);
         }

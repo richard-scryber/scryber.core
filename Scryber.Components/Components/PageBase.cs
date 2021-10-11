@@ -26,11 +26,12 @@ using Scryber.PDF.Resources;
 using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Graphics;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
     public abstract class PageBase : VisualComponent, IPDFStyledComponent, IResourceContainer, IPDFViewPortComponent,
-                                                  IRemoteComponent, IControlledComponent, INamingContainer, IPDFTopAndTailedComponent
+                                                  IRemoteComponent, IControlledComponent, INamingContainer, ITopAndTailedComponent
     {
 
         //inner classes
@@ -529,7 +530,7 @@ namespace Scryber.Components
 
         #region public override PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles)
 
-        public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
+        public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
         {
             Style full = styles.GetFullStyle(this);
             PageSize size = this.GetPageSize(full);
@@ -674,7 +675,7 @@ namespace Scryber.Components
             return this.Register((PDFResource)rsrc).Value;
         }
 
-        public PDFName RegisterFont(Scryber.Drawing.PDFFont font)
+        public PDFName RegisterFont(Scryber.Drawing.Font font)
         {            
             PDFFontResource defn = this.Document.GetFontResource(font, true);
             defn.RegisterUse(this.Resources, this);
@@ -744,7 +745,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to update the items collection (if and only if this page has some of it's own items)
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             this.OriginalItems = context.Items;
 
@@ -766,7 +767,7 @@ namespace Scryber.Components
         /// Overrides the base implementation to restore the items collection to it's original value
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnDataBound(PDFDataContext context)
+        protected override void OnDataBound(DataContext context)
         {
             base.OnDataBound(context);
 

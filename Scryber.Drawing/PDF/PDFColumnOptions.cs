@@ -12,7 +12,7 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets the width of the alley between the columns
         /// </summary>
-        public PDFUnit AlleyWidth { get; set; }
+        public Unit AlleyWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the individual width of the columns

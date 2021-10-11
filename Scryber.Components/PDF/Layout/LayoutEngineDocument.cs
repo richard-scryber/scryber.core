@@ -100,7 +100,7 @@ namespace Scryber.PDF.Layout
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Push_Component_Layout);
 
-            this.Context.DocumentLayout.PushComponentLayout(this.Context, 0, PDFUnit.Zero, PDFUnit.Zero);
+            this.Context.DocumentLayout.PushComponentLayout(this.Context, 0, Unit.Zero, Unit.Zero);
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Push_Component_Layout);
             

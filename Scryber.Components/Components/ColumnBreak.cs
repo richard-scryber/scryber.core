@@ -28,7 +28,7 @@ namespace Scryber.Components
     /// or this break is rendered on the last column it is equivalent to a page break.
     /// </summary>
     [PDFParsableComponent("ColumnBreak")]
-    public class ColumnBreak : Component, IPDFLayoutBreak
+    public class ColumnBreak : Component, ILayoutBreak
     {
 
         public LayoutBreakType BreakType

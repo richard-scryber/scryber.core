@@ -33,8 +33,8 @@ namespace Scryber.PDF.Layout
         //
 
         private const string ListEngineLogCategory = "List Item Layout Engine";
-        private static readonly PDFUnit DefaultListItemAlley = 10;
-        public static readonly PDFUnit DefaultNumberWidth = Const.DefaultListNumberInset;
+        private static readonly Unit DefaultListItemAlley = 10;
+        public static readonly Unit DefaultNumberWidth = Const.DefaultListNumberInset;
         public const HorizontalAlignment DefaultListItemAlignment = HorizontalAlignment.Right;
 
         #region ivars
@@ -114,8 +114,8 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            PDFThickness padding = PDFThickness.Empty();
-            PDFUnit inset = PDFUnit.Zero;
+            Thickness padding = Thickness.Empty();
+            Unit inset = Unit.Zero;
 
             //When laying out an item we inset the content by the required amount and then add a
             //relatively positioned number block to the current child collection.
@@ -157,7 +157,7 @@ namespace Scryber.PDF.Layout
                 this.ListItem.Contents.Remove(num);
         }
 
-        protected internal override bool MoveToNextRegion(PDFUnit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
+        protected internal override bool MoveToNextRegion(Unit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
         {
             bool success = base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
             if (!success)
@@ -200,7 +200,7 @@ namespace Scryber.PDF.Layout
         /// <param name="itemWidth">If an explicit width has been set then this is returned (otherwise -1)</param>
         /// <param name="text">If this item has explict text (e.g Definiton list) then this is returned, otherwise empty</param>
         /// <returns>The correct PDFListItemLabel for the item</returns>
-        private ListItemLabel BuildAListNumberComponent(ListItem item, PDFUnit itemWidth, PDFUnit alleyWidth, PDFListNumberGroup group)
+        private ListItemLabel BuildAListNumberComponent(ListItem item, Unit itemWidth, Unit alleyWidth, PDFListNumberGroup group)
         {
             
 

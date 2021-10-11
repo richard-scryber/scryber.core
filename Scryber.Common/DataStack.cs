@@ -14,10 +14,10 @@ namespace Scryber
     /// <summary>
     /// A stack of data and source instances that represent the current stack of data in a binding operation.
     /// </summary>
-    public class PDFDataStack
+    public class DataStack
     {
         private Stack<object> stack = new Stack<object>();
-        private Stack<IPDFDataSource> sources = new Stack<IPDFDataSource>();
+        private Stack<IDataSource> sources = new Stack<IDataSource>();
         
         /// <summary>
         /// Returns true if there is at least one object on the data stack
@@ -40,7 +40,7 @@ namespace Scryber
             }
         }
 
-        public IPDFDataSource Source
+        public IDataSource Source
         {
             get
             {
@@ -54,7 +54,7 @@ namespace Scryber
         /// Pushes a new object onto the data stack
         /// </summary>
         /// <param name="data"></param>
-        public void Push(object data, IPDFDataSource source)
+        public void Push(object data, IDataSource source)
         {
             //if (null == source)
             //    throw new ArgumentNullException("source");
@@ -76,10 +76,10 @@ namespace Scryber
         }
 
 
-        public virtual PDFDataStack Clone()
+        public virtual DataStack Clone()
         {
-            PDFDataStack clone = this.MemberwiseClone() as PDFDataStack;
-            clone.sources = new Stack<IPDFDataSource>(this.sources);
+            DataStack clone = this.MemberwiseClone() as DataStack;
+            clone.sources = new Stack<IDataSource>(this.sources);
             clone.stack = new Stack<object>(this.stack);
             return clone;
         }

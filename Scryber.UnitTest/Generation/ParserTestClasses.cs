@@ -49,21 +49,21 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
 
         #region IPDFComponent implementation for parsing - don't use
 
-        public event PDFInitializedEventHandler Initialized;
+        public event InitializedEventHandler Initialized;
 
-        void IComponent.Init(PDFInitContext context)
+        void IComponent.Init(InitContext context)
         {
             if (null != this.Initialized)
-                this.Initialized(this, new PDFInitEventArgs(context));
+                this.Initialized(this, new InitEventArgs(context));
         }
 
 
-        public event PDFLoadedEventHandler Loaded;
+        public event LoadedEventHandler Loaded;
 
-        public void Load(PDFLoadContext context)
+        public void Load(LoadContext context)
         {
             if (null != this.Loaded)
-                this.Loaded(this, new PDFLoadEventArgs(context));
+                this.Loaded(this, new LoadEventArgs(context));
         }
 
         string IComponent.ElementName
@@ -184,21 +184,21 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
 
         #region IPDFComponent implementation for parsing - Needed for remote reference
 
-        public event PDFInitializedEventHandler Initialized;
+        public event InitializedEventHandler Initialized;
 
-        void IComponent.Init(PDFInitContext context)
+        void IComponent.Init(InitContext context)
         {
             if (null != this.Initialized)
-                this.Initialized(this, new PDFInitEventArgs(context));
+                this.Initialized(this, new InitEventArgs(context));
         }
 
         
-        public event PDFLoadedEventHandler Loaded;
+        public event LoadedEventHandler Loaded;
 
-        public void Load(PDFLoadContext context)
+        public void Load(LoadContext context)
         {
             if(null != this.Loaded)
-                this.Loaded(this, new PDFLoadEventArgs(context));
+                this.Loaded(this, new LoadEventArgs(context));
         }
 
         string IComponent.ElementName
@@ -294,6 +294,6 @@ namespace Scryber.Core.UnitTests.Generation.Fakes.More
         /// A simple value element
         /// </summary>
         [PDFElement("Simple")]
-        public Scryber.Drawing.PDFThickness Thickness { get; set; }
+        public Scryber.Drawing.Thickness Thickness { get; set; }
     }
 }

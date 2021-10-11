@@ -25,7 +25,7 @@ using Scryber.Logging;
 
 namespace Scryber.PDF
 {
-    public class PDFWriter14 : PDFWriter, IStreamFactory
+    public class PDFWriter14 : PDFWriter, IPDFStreamFactory
     {
         private const string TraceCategory = "PDFWriter";
         private const TraceLevel TraceDefaultLevel = TraceLevel.Debug;
@@ -184,7 +184,7 @@ namespace Scryber.PDF
         /// <param name="filters"></param>
         /// <param name="forobject"></param>
         /// <returns></returns>
-        public virtual PDFStream CreateStream(IStreamFilter[] filters, IIndirectObject forobject)
+        public virtual PDFStream CreateStream(IStreamFilter[] filters, IPDFIndirectObject forobject)
         {
             PDFIndirectObject indirect = (PDFIndirectObject)forobject;
             return new PDFStream(filters, indirect);
@@ -311,7 +311,7 @@ namespace Scryber.PDF
         /// Writes an individual IndirectObject to the base stream
         /// </summary>
         /// <param name="pfo"></param>
-        protected virtual void WriteAnIndirectObject(IIndirectObject pfo)
+        protected virtual void WriteAnIndirectObject(IPDFIndirectObject pfo)
         {
             if (pfo.Written == true)
                 throw new InvalidOperationException(Errors.IndirectObjectHasAlreadyBeenWritten);
@@ -350,7 +350,7 @@ namespace Scryber.PDF
         /// Outputs the IndirectObjects stream data onto the base stream
         /// </summary>
         /// <param name="pfo"></param>
-        protected virtual void WriteIndirectStreamData(IIndirectObject pfo)
+        protected virtual void WriteIndirectStreamData(IPDFIndirectObject pfo)
         {
             this.BaseStream.Write(Constants.StartStream);
             pfo.Stream.WriteTo(this.BaseStream);
@@ -365,7 +365,7 @@ namespace Scryber.PDF
         /// Outputs the IndirectObjects object data onto the base stream
         /// </summary>
         /// <param name="pfo"></param>
-        protected virtual void WriteIndirecObjectData(IIndirectObject pfo)
+        protected virtual void WriteIndirecObjectData(IPDFIndirectObject pfo)
         {
             pfo.ObjectData.WriteTo(this.BaseStream);
         }
@@ -951,7 +951,7 @@ namespace Scryber.PDF
         /// Writes the  file object to the current stream (by calling WriteData on the passed IFileObject)
         /// </summary>
         /// <param name="obj"></param>
-        public override void WriteFileObject(IFileObject obj)
+        public override void WriteFileObject(IPDFFileObject obj)
         {
             obj.WriteData(this);
         }
@@ -1276,7 +1276,7 @@ namespace Scryber.PDF
                             {
                                 if (null != entry.Reference)
                                 {
-                                    IIndirectObject pfo = entry.Reference;
+                                    IPDFIndirectObject pfo = entry.Reference;
                                     Log(TraceLevel.Debug, "Disposing indirect object '" + pfo.ToString());
                                     pfo.Dispose();
                                 }

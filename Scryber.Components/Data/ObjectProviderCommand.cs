@@ -128,7 +128,7 @@ namespace Scryber.Data
         /// Extends the base implementation to ensure the parameters are also databound
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
 
@@ -158,7 +158,7 @@ namespace Scryber.Data
         /// <param name="source"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected override void DoEnsureDataLoaded(XPathDataSourceBase source, System.Data.DataSet ds, PDFDataContext context)
+        protected override void DoEnsureDataLoaded(XPathDataSourceBase source, System.Data.DataSet ds, DataContext context)
         {
             MethodInfo meth = AssertGetCallableMethod(source);
 

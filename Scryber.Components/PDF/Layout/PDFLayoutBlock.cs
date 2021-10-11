@@ -109,7 +109,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the actual width of each column
         /// </summary>
-        public PDFUnit[] ColumnWidths { get; private set; }
+        public Unit[] ColumnWidths { get; private set; }
 
         #endregion
 
@@ -136,18 +136,18 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the view port rectangle for the xObject
         /// </summary>
-        public PDFRect XObjectViewPort {get;set;}
+        public Rect XObjectViewPort {get;set;}
 
         #endregion
 
         #region public PDFRect AvailableBounds { get; private set; }
 
-        private PDFRect _avail;
+        private Rect _avail;
 
         /// <summary>
         /// Gets or sets the available bounds of this block relative to the Absolute bounds
         /// </summary>
-        public PDFRect AvailableBounds
+        public Rect AvailableBounds
         {
             get { return _avail; }
             set { _avail = value; }
@@ -157,12 +157,12 @@ namespace Scryber.PDF.Layout
 
         #region public PDFRect TotalBounds { get; set;}
 
-        private PDFRect _total = PDFRect.Empty;
+        private Rect _total = Rect.Empty;
 
         /// <summary>
         /// Gets the absolute bounds (inc margins and padding) for this block
         /// </summary>
-        public PDFRect TotalBounds 
+        public Rect TotalBounds 
         {
             get { return _total; }
             set { _total = value; }
@@ -173,12 +173,12 @@ namespace Scryber.PDF.Layout
         #region public PDFRect TransformedBounds {get;set;} 
 
 
-        private PDFPoint _transformBounds;
+        private Point _transformBounds;
 
         /// <summary>
         /// Returns any transformation offset to be applied to the block, 
         /// </summary>
-        public PDFPoint TransformedOffset
+        public Point TransformedOffset
         {
             get { return _transformBounds; }
             set
@@ -214,7 +214,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the total used size
         /// </summary>
-        public PDFSize Size { get; set; }
+        public Size Size { get; set; }
 
         #endregion
 
@@ -236,7 +236,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the position of this block on the page
         /// </summary>
-        public PDFPoint PagePosition { get; set; }
+        public Point PagePosition { get; set; }
 
 
         #region  protected bool IsContainer { get; set; }
@@ -254,7 +254,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this block
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get
             {
@@ -263,7 +263,7 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     if (this.ColumnOptions.ColumnCount == 0)
-                        return PDFUnit.Zero;
+                        return Unit.Zero;
                     else if (this.ColumnOptions.ColumnCount == 1)
                         return this.Columns[0].Width;
                     else
@@ -281,7 +281,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this block
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get
             {
@@ -294,15 +294,15 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     if (this.ColumnOptions.ColumnCount == 0)
-                        return PDFUnit.Zero;
+                        return Unit.Zero;
                     else if (this.ColumnOptions.ColumnCount == 1)
                         return this.Columns[0].Height;
                     else
                     {
-                        PDFUnit h = PDFUnit.Zero;
+                        Unit h = Unit.Zero;
                         for (int i = 0; i < this.ColumnOptions.ColumnCount; i++)
                         {
-                            h = PDFUnit.Max(h, this.Columns[i].Height);
+                            h = Unit.Max(h, this.Columns[i].Height);
                         }
                         return h;
                     }
@@ -402,9 +402,9 @@ namespace Scryber.PDF.Layout
         // methods
         //
 
-        public PDFUnit GetPageYOffset()
+        public Unit GetPageYOffset()
         {
-            return PDFUnit.Zero;
+            return Unit.Zero;
         }
 
         #region protected override bool DoClose(ref string msg)
@@ -460,7 +460,7 @@ namespace Scryber.PDF.Layout
         /// <param name="autoflow">If true and there is more than one column, 
         /// they will be linked so that content overflows from one to the next. Otherwise the MoveToNextRegion(explicit) must be used.</param>
         /// <param name="alley"></param>
-        public virtual void InitRegions(PDFRect totalbounds, PDFPositionOptions position, PDFColumnOptions columns, PDFLayoutContext context)
+        public virtual void InitRegions(Rect totalbounds, PDFPositionOptions position, PDFColumnOptions columns, PDFLayoutContext context)
         {
             var log = context.TraceLog;
             if (log.ShouldLog(TraceLevel.Debug))
@@ -470,9 +470,9 @@ namespace Scryber.PDF.Layout
             this.TotalBounds = totalbounds;
             
             //Added to include margins
-            PDFThickness pad = position.Padding;
-            PDFThickness marg = position.Margins;
-            PDFRect avail = new PDFRect(pad.Left + marg.Left, pad.Top + marg.Top, 
+            Thickness pad = position.Padding;
+            Thickness marg = position.Margins;
+            Rect avail = new Rect(pad.Left + marg.Left, pad.Top + marg.Top, 
                                         totalbounds.Width - (pad.Left + pad.Right + marg.Left + marg.Right), 
                                         totalbounds.Height - (pad.Top + pad.Bottom + marg.Top + marg.Bottom));
             if (position.Width.HasValue)
@@ -488,7 +488,7 @@ namespace Scryber.PDF.Layout
 
             this.AvailableBounds = avail;
 
-            this.Size = PDFSize.Empty;
+            this.Size = Size.Empty;
             this.Position = position;
 
             
@@ -496,12 +496,12 @@ namespace Scryber.PDF.Layout
             if (columns.ColumnCount == 1 && columns.ColumnWidths.IsEmpty)
             {
                 this.Columns = new PDFLayoutRegion[columns.ColumnCount];
-                avail = new PDFRect(PDFPoint.Empty, avail.Size);
+                avail = new Rect(Point.Empty, avail.Size);
                 this.Columns[0] = new PDFLayoutRegion(this, this.Owner, avail, 0, position.HAlign, position.VAlign);
             }
             else
             {
-                PDFUnit[] widths;
+                Unit[] widths;
                 int count;
                 if (columns.ColumnWidths.HasExplicitWidth)
                 {
@@ -520,21 +520,21 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     count = 1;
-                    widths = new PDFUnit[] { avail.Width };
+                    widths = new Unit[] { avail.Width };
                 }
 
                 this.Columns = new PDFLayoutRegion[count];
                 this.ColumnWidths = widths;
                 this.ColumnOptions.ColumnCount = count;
 
-                PDFUnit x = 0;// position.Padding.Left;
-                PDFUnit y = 0;// position.Padding.Top;
-                PDFUnit h = this.AvailableBounds.Height;
+                Unit x = 0;// position.Padding.Left;
+                Unit y = 0;// position.Padding.Top;
+                Unit h = this.AvailableBounds.Height;
                 PDFLayoutRegion previous = null;
 
                 for (int i = 0; i < this.ColumnOptions.ColumnCount; i++)
                 {
-                    PDFRect regionbounds = new PDFRect(x, y, widths[i], h);
+                    Rect regionbounds = new Rect(x, y, widths[i], h);
                     PDFLayoutRegion column = new PDFLayoutRegion(this, this.Owner, regionbounds, i, position.HAlign, position.VAlign);
 
                     //Set up the linked regions
@@ -607,7 +607,7 @@ namespace Scryber.PDF.Layout
         /// Attempts to move to the next region, returning true if possible, otherwise false.
         /// </summary>
         /// <returns></returns>
-        public override bool MoveToNextRegion(PDFUnit requiredHeight, PDFLayoutContext context)
+        public override bool MoveToNextRegion(Unit requiredHeight, PDFLayoutContext context)
         {
             bool force = false;
             return this.MoveToNextRegion(force, requiredHeight, context);
@@ -619,7 +619,7 @@ namespace Scryber.PDF.Layout
         /// <param name="force">If false then the regions must have been set up to AutoOverflow from one to the next (soft flow),
         /// if force is true then if there is a next region it will be used.</param>
         /// <returns></returns>
-        public bool MoveToNextRegion(bool force, PDFUnit requiredHeight, PDFLayoutContext context)
+        public bool MoveToNextRegion(bool force, Unit requiredHeight, PDFLayoutContext context)
         {
             //requiredHeight = PDFUnit.Zero;
             PDFLayoutRegion region = this.CurrentRegion;
@@ -640,7 +640,7 @@ namespace Scryber.PDF.Layout
         /// Overrides the default implementation to push the component layouts on this blocks regions
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             bool logdebug = context.ShouldLogDebug;
 
@@ -651,8 +651,8 @@ namespace Scryber.PDF.Layout
             //Offset our total bounds
             if (this.MovesWithLayout())
             {
-                PDFRect total = this.TotalBounds;
-                total = new PDFRect(xoffset + total.X, yoffset + total.Y, total.Width, total.Height);
+                Rect total = this.TotalBounds;
+                total = new Rect(xoffset + total.X, yoffset + total.Y, total.Width, total.Height);
                 this.TotalBounds = total;
             }
 
@@ -695,12 +695,12 @@ namespace Scryber.PDF.Layout
         /// Gets the required size of the block to fill it's content (or the explicit size)
         /// </summary>
         /// <returns></returns>
-        private PDFSize GetRequiredSize(out bool explicitHeight, out bool explicitWidth)
+        private Size GetRequiredSize(out bool explicitHeight, out bool explicitWidth)
         {
             explicitHeight = false;
             explicitWidth = false;
-            PDFUnit w = this.Width;
-            PDFUnit h = this.Height;
+            Unit w = this.Width;
+            Unit h = this.Height;
             if (this.Position.Width.HasValue)
             {
                 w = this.Position.Width.Value;
@@ -730,7 +730,7 @@ namespace Scryber.PDF.Layout
                 explicitHeight = true;
             }
 
-            return new PDFSize(w, h);
+            return new Size(w, h);
         }
 
         #endregion
@@ -748,8 +748,8 @@ namespace Scryber.PDF.Layout
             }
 
             bool explicitWidth, explicitHeight;
-            PDFSize sz = this.GetRequiredSize(out explicitHeight, out explicitWidth);
-            PDFRect full = this.TotalBounds;
+            Size sz = this.GetRequiredSize(out explicitHeight, out explicitWidth);
+            Rect full = this.TotalBounds;
             full.Height = sz.Height;
             full.Width = sz.Width;
 
@@ -768,14 +768,14 @@ namespace Scryber.PDF.Layout
                 for (int i = 0; i < this.ColumnOptions.ColumnCount; i++)
                 {
                     //with columns we only shrink the height, not the width
-                    PDFRect one = this.Columns[i].TotalBounds;
+                    Rect one = this.Columns[i].TotalBounds;
                     one.Height = full.Height;
                     this.Columns[i].TotalBounds = one;
                 }
             }
             else
             {
-                PDFRect content = this.Columns[0].TotalBounds;
+                Rect content = this.Columns[0].TotalBounds;
                 content.Height = full.Height;
                 content.Width = full.Width;
                 this.Columns[0].TotalBounds = content;
@@ -786,8 +786,8 @@ namespace Scryber.PDF.Layout
                 {
                     if (reg.PositionMode == PositionMode.Relative || reg.PositionOptions.FloatMode != FloatMode.None)
                     {
-                        PDFRect content = reg.TotalBounds;
-                        PDFSize bottomright = new PDFSize(content.X + content.Width, content.Y + content.Height);
+                        Rect content = reg.TotalBounds;
+                        Size bottomright = new Size(content.X + content.Width, content.Y + content.Height);
 
                         if (reg.PositionOptions.Margins.IsEmpty == false && ((reg.Owner is ImageBase) == false || reg.PositionOptions.FloatMode == FloatMode.None))
                         {
@@ -835,10 +835,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public void SetContentSize(PDFUnit width, PDFUnit height)
+        public void SetContentSize(Unit width, Unit height)
         {
-            this.Size = new PDFSize(width, height);
-            PDFRect total = this.TotalBounds;
+            this.Size = new Size(width, height);
+            Rect total = this.TotalBounds;
             total.Width = width;
             total.Height = height;
             if (this.Position.Margins.IsEmpty == false)
@@ -940,13 +940,13 @@ namespace Scryber.PDF.Layout
             if (null == beforeline)
                 beforeline = before.BeginNewLine();
 
-            PDFRect space;
+            Rect space;
             if (pos.PositionMode == PositionMode.Absolute)
                 //Page sizing
-                space = new PDFRect(PDFUnit.Zero, PDFUnit.Zero, page.Width, page.Height);
+                space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
             else
                 //Block sizing
-                space = new PDFRect(PDFPoint.Empty, this.AvailableBounds.Size);
+                space = new Rect(Point.Empty, this.AvailableBounds.Size);
 
             //Calculate the available space
             
@@ -989,7 +989,7 @@ namespace Scryber.PDF.Layout
 
         #region public override void ResetAvailableHeight(PDFUnit height, bool includeChildren)
 
-        public override void ResetAvailableHeight(PDFUnit height, bool includeChildren)
+        public override void ResetAvailableHeight(Unit height, bool includeChildren)
         {
             this._avail.Height = height;
             if (includeChildren && null != this.Columns)
@@ -1049,8 +1049,8 @@ namespace Scryber.PDF.Layout
             }
 
             Style prevStyle = context.FullStyle;
-            PDFSize prevSize = context.Space;
-            PDFPoint prevLoc = context.Offset;
+            Size prevSize = context.Space;
+            Point prevLoc = context.Offset;
             PDFObjectRef xobj = null;
 
             try
@@ -1064,8 +1064,8 @@ namespace Scryber.PDF.Layout
                 {
                     context.Graphics.SaveGraphicsState();
                     //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
-                    PDFUnit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
-                    PDFUnit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
+                    Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
+                    Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
 
                     //Defaulting to transforming around the centre of the shape.
 
@@ -1107,11 +1107,11 @@ namespace Scryber.PDF.Layout
 
 
 
-                PDFRect total = this.TotalBounds;
+                Rect total = this.TotalBounds;
                 total = total.Offset(context.Offset);
 
-                PDFRect borderRect = total.Inset(this.Position.Margins);
-                PDFRect contentRect = borderRect.Inset(this.Position.Padding);
+                Rect borderRect = total.Inset(this.Position.Margins);
+                Rect contentRect = borderRect.Inset(this.Position.Padding);
 
                 //Get the border to draw
                 PDFPenBorders border = this.FullStyle.CreateBorderPen();
@@ -1221,7 +1221,7 @@ namespace Scryber.PDF.Layout
         protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
         {
             
-            PDFPoint prev = context.Offset;
+            Point prev = context.Offset;
 
             if (this.Columns.Length > 1)
             {
@@ -1280,7 +1280,7 @@ namespace Scryber.PDF.Layout
         /// <param name="grid">The grid style to use for rendering</param>
         /// <param name="context">The current render context</param>
         /// <param name="contentRect">The content rectagle that encloses all the columns</param>
-        private void OutputRegionOverlay(OverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
+        private void OutputRegionOverlay(OverlayGridStyle grid, PDFRenderContext context, Rect contentRect)
         {
             if (null == grid)
                 throw new ArgumentNullException("grid");
@@ -1288,7 +1288,7 @@ namespace Scryber.PDF.Layout
             PDFSolidBrush solid = PDFSolidBrush.Create(grid.GridColor);
             solid.Opacity = ColumnOverlayOpacity;
             var graphics = context.Graphics;
-            PDFPoint pos = contentRect.Location;
+            Point pos = contentRect.Location;
 
             foreach (PDFLayoutRegion region in this.Columns)
             {
@@ -1307,7 +1307,7 @@ namespace Scryber.PDF.Layout
         /// <param name="grid">The grid to render</param>
         /// <param name="context"></param>
         /// <param name="rect">The rectangle to use to render the grid within</param>
-        private void OutputOverlayGrid(PDFPen pen, OverlayGridStyle grid, PDFRenderContext context, PDFRect rect)
+        private void OutputOverlayGrid(PDFPen pen, OverlayGridStyle grid, PDFRenderContext context, Rect rect)
         {
             if (null == pen)
                 return;
@@ -1324,18 +1324,18 @@ namespace Scryber.PDF.Layout
 
             
 
-            PDFRect absolutebounds = rect;
+            Rect absolutebounds = rect;
             pen.SetUpGraphics(graphics, absolutebounds);
             
             //vertical lines first
-            PDFUnit space = grid.GridSpacing;
+            Unit space = grid.GridSpacing;
             if (space <= 0)
                 throw new ArgumentOutOfRangeException("Cannot render a grid with zero or less spacing");
 
-            PDFUnit x1 = absolutebounds.X + grid.GridXOffset;
-            PDFUnit y1 = absolutebounds.Y;
-            PDFUnit y2 = absolutebounds.Y + absolutebounds.Height;
-            PDFUnit x2 = x1 + absolutebounds.Width;
+            Unit x1 = absolutebounds.X + grid.GridXOffset;
+            Unit y1 = absolutebounds.Y;
+            Unit y2 = absolutebounds.Y + absolutebounds.Height;
+            Unit x2 = x1 + absolutebounds.Width;
 
             while (x1 < x2)
             {
@@ -1365,14 +1365,14 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        internal void Offset(PDFUnit x, PDFUnit y)
+        internal void Offset(Unit x, Unit y)
         {
-            PDFRect content = this.AvailableBounds;
+            Rect content = this.AvailableBounds;
             content.Y += y;
             content.X += x;
             this.AvailableBounds = content;
             
-            PDFRect total = this.TotalBounds;
+            Rect total = this.TotalBounds;
             total.Y += y;
             total.X += x;
             this.TotalBounds = total;
@@ -1387,14 +1387,14 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        internal void Shrink(PDFUnit width, PDFUnit height)
+        internal void Shrink(Unit width, Unit height)
         {
-            PDFRect content = this.AvailableBounds;
+            Rect content = this.AvailableBounds;
             content.Width -= width;
             content.Height -= height;
             this.AvailableBounds = content;
 
-            PDFRect total = this.TotalBounds;
+            Rect total = this.TotalBounds;
             total.Width -= width;
             total.Height -= height;
             this.TotalBounds = total;

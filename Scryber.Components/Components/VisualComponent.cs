@@ -26,7 +26,7 @@ using Scryber.Drawing;
 
 namespace Scryber.Components
 {
-    public abstract class VisualComponent : ContainerComponent, IPDFVisualComponent, IPDFStyledComponent, IPDFDataStyledComponent
+    public abstract class VisualComponent : ContainerComponent, IVisualComponent, IPDFStyledComponent, IDataStyledComponent
     {
 
 
@@ -92,14 +92,14 @@ namespace Scryber.Components
         [PDFAttribute("x", Const.PDFStylesNamespace)]
         [PDFDesignable("X", Ignore = true, Category ="Position",Priority = 1,Type ="PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"left\"")]
-        public virtual PDFUnit X
+        public virtual Unit X
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.PositionXKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.PositionXKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -114,7 +114,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> x;
+                StyleValue<Unit> x;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionXKey, out x);
             }
         }
@@ -129,14 +129,14 @@ namespace Scryber.Components
         [PDFAttribute("y", Const.PDFStylesNamespace)]
         [PDFDesignable("Y", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"top\"")]
-        public virtual PDFUnit Y
+        public virtual Unit Y
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.PositionYKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.PositionYKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -151,7 +151,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> x;
+                StyleValue<Unit> x;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionYKey, out x);
             }
         }
@@ -166,14 +166,14 @@ namespace Scryber.Components
         [PDFAttribute("width", Const.PDFStylesNamespace)]
         [PDFDesignable("Width", Category = "Size", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"width\"")]
-        public virtual PDFUnit Width
+        public virtual Unit Width
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.SizeWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.SizeWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -190,7 +190,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> width;
+                StyleValue<Unit> width;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeWidthKey, out width);
             }
         }
@@ -205,14 +205,14 @@ namespace Scryber.Components
         [PDFAttribute("height", Const.PDFStylesNamespace)]
         [PDFDesignable("Height", Category = "Size", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"height\"")]
-        public virtual PDFUnit Height
+        public virtual Unit Height
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.SizeHeightKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.SizeHeightKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -227,7 +227,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> height;
+                StyleValue<Unit> height;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeHeightKey, out height);
             }
         }
@@ -243,14 +243,14 @@ namespace Scryber.Components
         [PDFAttribute("min-width", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"min-width\"")]
         [PDFDesignable("Min. Width", Ignore = true, Category = "Size", Priority = 10, Type = "PDFUnit")]
-        public virtual PDFUnit MinimumWidth
+        public virtual Unit MinimumWidth
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.SizeMinimumWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.SizeMinimumWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -267,7 +267,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> width;
+                StyleValue<Unit> width;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeMinimumWidthKey, out width);
             }
         }
@@ -282,14 +282,14 @@ namespace Scryber.Components
         [PDFAttribute("min-height", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"min-height\"")]
         [PDFDesignable("Min. Height", Ignore = true, Category = "Size", Priority = 10, Type = "PDFUnit")]
-        public virtual PDFUnit MinimumHeight
+        public virtual Unit MinimumHeight
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.SizeMinimumHeightKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.SizeMinimumHeightKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -304,7 +304,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> height;
+                StyleValue<Unit> height;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeMinimumHeightKey, out height);
             }
         }
@@ -320,14 +320,14 @@ namespace Scryber.Components
         [PDFAttribute("max-width", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"max-width\"")]
         [PDFDesignable("Max Width", Ignore = true, Category = "Size", Priority = 10, Type = "PDFUnit")]
-        public virtual PDFUnit MaximumWidth
+        public virtual Unit MaximumWidth
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.SizeMaximumWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.SizeMaximumWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -344,7 +344,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> width;
+                StyleValue<Unit> width;
                 return this.HasStyle && this.Style.TryGetValue(StyleKeys.SizeMaximumWidthKey, out width);
             }
         }
@@ -359,14 +359,14 @@ namespace Scryber.Components
         [PDFAttribute("max-height", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"max-height\"")]
         [PDFDesignable("Max Height", Ignore = true, Category = "Size", Priority = 10, Type = "PDFUnit")]
-        public virtual PDFUnit MaximumHeight
+        public virtual Unit MaximumHeight
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.SizeMaximumHeightKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.SizeMaximumHeightKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -381,7 +381,7 @@ namespace Scryber.Components
         {
             get
             {
-                StyleValue<PDFUnit> height;
+                StyleValue<Unit> height;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeMaximumHeightKey, out height);
             }
         }
@@ -398,14 +398,14 @@ namespace Scryber.Components
         [PDFAttribute("margins",Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.thickness_css", JSParams = "\"margin\"")]
         [PDFDesignable("Margins", Category = "Layout", Priority = 2, Type = "PDFThickness")]
-        public PDFThickness Margins
+        public Thickness Margins
         {
             get
             {
                 if (this.HasStyle)
                     return this.Style.CreateMarginsThickness();
                 else
-                    return PDFThickness.Empty();
+                    return Thickness.Empty();
             }
             set
             {
@@ -423,14 +423,14 @@ namespace Scryber.Components
         [PDFAttribute("padding",Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.thickness_css", JSParams = "\"padding\"")]
         [PDFDesignable("Padding", Category = "Layout", Priority = 2, Type = "PDFThickness")]
-        public PDFThickness Padding
+        public Thickness Padding
         {
             get
             {
                 if (this.HasStyle)
                     return this.Style.CreatePaddingThickness();
                 else
-                    return PDFThickness.Empty();
+                    return Thickness.Empty();
             }
             set
             {
@@ -554,14 +554,14 @@ namespace Scryber.Components
         [PDFAttribute("border-width", Const.PDFStylesNamespace)]
         [PDFDesignable("Width", Category = "Border", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.borderwidth_css", JSParams = "\"border-width\"")]
-        public PDFUnit BorderWidth
+        public Unit BorderWidth
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.BorderWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -680,14 +680,14 @@ namespace Scryber.Components
         [PDFAttribute("border-corner-radius", Const.PDFStylesNamespace)]
         [PDFDesignable("Corner Radius", Category = "Border", Priority = 2, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"border-radius\"")]
-        public PDFUnit BorderCornerRadius
+        public Unit BorderCornerRadius
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.BorderCornerRadiusKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.BorderCornerRadiusKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -830,14 +830,14 @@ namespace Scryber.Components
         [PDFAttribute("stroke-width", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"stroke-width\"")]
         [PDFDesignable("Width", Category = "Stroke", Priority = 1, Type = "PDFUnit")]
-        public virtual PDFUnit StrokeWidth
+        public virtual Unit StrokeWidth
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.StrokeWidthKey, PDFUnit.Empty);
+                    return this.Style.GetValue(StyleKeys.StrokeWidthKey, Unit.Empty);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -964,14 +964,14 @@ namespace Scryber.Components
         [PDFAttribute("font-size", Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams ="\"font-size\"")]
         [PDFDesignable("Size", Category = "Font", Priority = 1, Type = "PDFUnit")]
-        public virtual PDFUnit FontSize
+        public virtual Unit FontSize
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FontSizeKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.FontSizeKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -1211,7 +1211,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("alley-width", Const.PDFStylesNamespace)]
         [PDFDesignable("Alley",Ignore = true)]
-        public PDFUnit AlleyWidth
+        public Unit AlleyWidth
         {
             get
             {
@@ -1277,14 +1277,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("text-leading",Const.PDFStylesNamespace)]
         [PDFDesignable("Leading", Category = "Text", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit TextLeading
+        public Unit TextLeading
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.TextLeadingKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.TextLeadingKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -1326,14 +1326,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("text-char-spacing", Const.PDFStylesNamespace)]
         [PDFDesignable("Char Spacing", Category = "Text", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit TextCharacterSpacing
+        public Unit TextCharacterSpacing
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.TextCharSpacingKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.TextCharSpacingKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
 
             }
             set
@@ -1351,14 +1351,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("text-word-spacing", Const.PDFStylesNamespace)]
         [PDFDesignable("Word Spacing", Category = "Text", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit TextWordSpacing
+        public Unit TextWordSpacing
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.TextWordSpacingKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.TextWordSpacingKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -1400,14 +1400,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("text-first-indent", Const.PDFStylesNamespace)]
         [PDFDesignable("Indent", Ignore = true, Category = "Text", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit TextFirstLineIndent
+        public Unit TextFirstLineIndent
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.TextFirstLineIndentKey, PDFUnit.Zero);
+                    return this.Style.GetValue(StyleKeys.TextFirstLineIndentKey, Unit.Zero);
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
 
             }
             set
@@ -1625,7 +1625,7 @@ namespace Scryber.Components
         /// Inheritors should override this method to provide their own databing implementations.
         /// </summary>
         /// <param name="includeChildren">Flag to identifiy if children should be databound also</param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             if (includeChildren && this.HasStyle)
                 this.Style.DataBind(context);

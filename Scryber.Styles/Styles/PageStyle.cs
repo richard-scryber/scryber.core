@@ -92,15 +92,15 @@ namespace Scryber.Styles
         #region public PDFUnit Width {get;set;} + RemoveWidth()
 
         [PDFAttribute("width")]
-        public PDFUnit Width
+        public Unit Width
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.PageWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -119,15 +119,15 @@ namespace Scryber.Styles
         #region public PDFUnit Height {get;set;} + RemoveHeight()
 
         [PDFAttribute("height")]
-        public PDFUnit Height
+        public Unit Height
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.PageHeightKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set

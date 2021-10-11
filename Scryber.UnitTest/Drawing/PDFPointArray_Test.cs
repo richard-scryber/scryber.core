@@ -33,7 +33,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PointArrayConstructor_1()
         {
-            PDFPointArray ary = new PDFPointArray();
+            PointArray ary = new PointArray();
             Assert.IsNotNull(ary);
             Assert.AreEqual(ary.Count, 0);
         }
@@ -42,12 +42,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PointArrayConstructor_2()
         {
-            List<PDFPoint> list = new List<PDFPoint>();
-            list.Add(new PDFPoint(1, 1));
-            list.Add(new PDFPoint(2, 2));
-            list.Add(new PDFPoint(3, 3));
+            List<Point> list = new List<Point>();
+            list.Add(new Point(1, 1));
+            list.Add(new Point(2, 2));
+            list.Add(new Point(3, 3));
 
-            PDFPointArray ary = new PDFPointArray(list);
+            PointArray ary = new PointArray(list);
             Assert.IsNotNull(ary);
             Assert.AreEqual(list.Count, ary.Count);
             for (int i = 0; i < list.Count; i++)
@@ -61,11 +61,11 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PointArrayConstructor_3()
         {
             
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray(pt1, pt2, pt3);
+            PointArray ary = new PointArray(pt1, pt2, pt3);
             Assert.IsNotNull(ary);
             Assert.AreEqual(3, ary.Count);
             Assert.AreEqual(pt1, ary[0]);
@@ -78,21 +78,21 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PointArrayConstructor_4()
         {
-            PDFUnit x1 = 1;
-            PDFUnit y1 = 2;
-            PDFUnit x2 = 3;
-            PDFUnit y2 = 4;
-            PDFUnit x3 = 5;
-            PDFUnit y3 = 6;
+            Unit x1 = 1;
+            Unit y1 = 2;
+            Unit x2 = 3;
+            Unit y2 = 4;
+            Unit x3 = 5;
+            Unit y3 = 6;
 
-            PDFPointArray ary = new PDFPointArray(x1, y1, x2, y2, x3, y3);
+            PointArray ary = new PointArray(x1, y1, x2, y2, x3, y3);
 
             Assert.IsNotNull(ary);
             Assert.AreEqual(3, ary.Count);
 
-            Assert.AreEqual(new PDFPoint(x1, y1), ary[0]);
-            Assert.AreEqual(new PDFPoint(x2, y2), ary[1]);
-            Assert.AreEqual(new PDFPoint(x3, y3), ary[2]);
+            Assert.AreEqual(new Point(x1, y1), ary[0]);
+            Assert.AreEqual(new Point(x2, y2), ary[1]);
+            Assert.AreEqual(new Point(x3, y3), ary[2]);
 
         }
 
@@ -100,11 +100,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PointArrayAdd()
         {
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray();
+            PointArray ary = new PointArray();
             Assert.IsNotNull(ary);
             Assert.AreEqual(0, ary.Count);
 
@@ -113,7 +113,7 @@ namespace Scryber.Core.UnitTests.Drawing
             ary.Add(pt3);
             Assert.AreEqual(3, ary.Count);
 
-            PDFPoint pt4 = new PDFPoint(4, 5);
+            Point pt4 = new Point(4, 5);
             ary.Add(pt4);
 
         }
@@ -122,11 +122,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PointArrayItem()
         {
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray();
+            PointArray ary = new PointArray();
             Assert.IsNotNull(ary);
             Assert.AreEqual(0, ary.Count);
 
@@ -137,14 +137,14 @@ namespace Scryber.Core.UnitTests.Drawing
 
             Assert.AreEqual(pt2, ary[1]);
 
-            PDFPoint pt4 = new PDFPoint(4, 5);
+            Point pt4 = new Point(4, 5);
             ary.Add(pt4);
 
             Assert.AreEqual(pt4, ary[3]);
 
             try
             {
-                PDFPoint notvalid = ary[-1];
+                Point notvalid = ary[-1];
                 throw new InvalidOperationException("No exception thrown when accessing a point out side of the bounds of the PointArray");
             }
             catch (ArgumentOutOfRangeException)
@@ -154,7 +154,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             try
             {
-                PDFPoint notvalid = ary[ary.Count];
+                Point notvalid = ary[ary.Count];
                 throw new InvalidOperationException("No exception thrown when accessing a point out side of the bounds of the PointArray");
             }
             catch (ArgumentOutOfRangeException)
@@ -169,12 +169,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PointArrayAddRange()
         {
-            List<PDFPoint> list = new List<PDFPoint>();
-            list.Add(new PDFPoint(1, 1));
-            list.Add(new PDFPoint(2, 2));
-            list.Add(new PDFPoint(3, 3));
+            List<Point> list = new List<Point>();
+            list.Add(new Point(1, 1));
+            list.Add(new Point(2, 2));
+            list.Add(new Point(3, 3));
 
-            PDFPointArray ary = new PDFPointArray(list);
+            PointArray ary = new PointArray(list);
             Assert.IsNotNull(ary);
             Assert.AreEqual(list.Count, ary.Count);
             
@@ -194,11 +194,11 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PointArrayClear()
         {
 
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray(pt1, pt2, pt3);
+            PointArray ary = new PointArray(pt1, pt2, pt3);
             Assert.IsNotNull(ary);
             Assert.AreEqual(3, ary.Count);
 
@@ -208,7 +208,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             try
             {
-                PDFPoint notvalid = ary[0];
+                Point notvalid = ary[0];
                 throw new InvalidOperationException("No exception thrown when accessing a point out side of the bounds of the PointArray");
             }
             catch (ArgumentOutOfRangeException)
@@ -224,11 +224,11 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PointArrayRemove()
         {
 
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray(pt1, pt2, pt3);
+            PointArray ary = new PointArray(pt1, pt2, pt3);
             Assert.IsNotNull(ary);
             Assert.AreEqual(3, ary.Count);
 
@@ -240,7 +240,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             try
             {
-                PDFPoint notvalid = ary[2];
+                Point notvalid = ary[2];
                 throw new InvalidOperationException("No exception thrown when accessing a point out side of the bounds of the PointArray");
             }
             catch (ArgumentOutOfRangeException)
@@ -249,7 +249,7 @@ namespace Scryber.Core.UnitTests.Drawing
             }
 
             //not present in array
-            wasremoved = ary.Remove(new PDFPoint(4, 4));
+            wasremoved = ary.Remove(new Point(4, 4));
 
             Assert.AreEqual(false, wasremoved);
             Assert.AreEqual(2, ary.Count);
@@ -261,11 +261,11 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PointArrayRemoveAt()
         {
 
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray(pt1, pt2, pt3);
+            PointArray ary = new PointArray(pt1, pt2, pt3);
             Assert.IsNotNull(ary);
             Assert.AreEqual(3, ary.Count);
 
@@ -276,7 +276,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             try
             {
-                PDFPoint notvalid = ary[2];
+                Point notvalid = ary[2];
                 throw new InvalidOperationException("No exception thrown when accessing a point out side of the bounds of the PointArray");
             }
             catch (ArgumentOutOfRangeException)
@@ -300,15 +300,15 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PointArrayToArray_3()
         {
 
-            PDFPoint pt1 = new PDFPoint(1, 1);
-            PDFPoint pt2 = new PDFPoint(2, 2);
-            PDFPoint pt3 = new PDFPoint(3, 3);
+            Point pt1 = new Point(1, 1);
+            Point pt2 = new Point(2, 2);
+            Point pt3 = new Point(3, 3);
 
-            PDFPointArray ary = new PDFPointArray(pt1, pt2, pt3);
+            PointArray ary = new PointArray(pt1, pt2, pt3);
             Assert.IsNotNull(ary);
             Assert.AreEqual(3, ary.Count);
 
-            PDFPoint[] all = ary.ToArray();
+            Point[] all = ary.ToArray();
             Assert.AreEqual(3, all.Length);
 
             Assert.AreEqual(pt1, all[0]);

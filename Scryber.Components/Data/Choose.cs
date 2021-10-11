@@ -102,7 +102,7 @@ namespace Scryber.Data
 
         
 
-        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
 
             //If we are not visible then don't do anything and return null

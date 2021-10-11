@@ -148,7 +148,7 @@ namespace Scryber.Svg
         private void ParseSVGMoveCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
             int index = 0;
-            PDFUnit x, y;
+            Unit x, y;
 
             while (index < args.Length)
             {
@@ -158,9 +158,9 @@ namespace Scryber.Svg
                     if (AssertParseUnit(args, ref index, cmd, out x) && AssertParseUnit(args, ref index, cmd, out y))
                     {
                         if (absolute)
-                            path.MoveTo(new PDFPoint(x, y));
+                            path.MoveTo(new Point(x, y));
                         else
-                            path.MoveBy(new PDFPoint(x, y));
+                            path.MoveBy(new Point(x, y));
                     }
                 }
                 else if (string.IsNullOrEmpty(args[index]))
@@ -170,7 +170,7 @@ namespace Scryber.Svg
 
         private void ParseSVGLineCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit x,y;
+            Unit x,y;
             int index = 0;
             while (index < args.Length)
             {
@@ -183,9 +183,9 @@ namespace Scryber.Svg
                         return;
 
                     if (absolute)
-                        path.LineTo(new PDFPoint(x, y));
+                        path.LineTo(new Point(x, y));
                     else
-                        path.LineFor(new PDFPoint(x, y));
+                        path.LineFor(new Point(x, y));
                 }
                 else if (string.IsNullOrEmpty(args[index]))
                     index++;
@@ -194,7 +194,7 @@ namespace Scryber.Svg
 
         private void ParseSVGVerticalCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit v;
+            Unit v;
             int index = 0;
             while (index < args.Length)
             {
@@ -216,7 +216,7 @@ namespace Scryber.Svg
 
         private void ParseSVGHorizontalCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit h;
+            Unit h;
             int index = 0;
 
             
@@ -245,7 +245,7 @@ namespace Scryber.Svg
 
         private void ParseSVGCubicCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit startHandleX, startHandleY, endHandleX, endHandleY, endPtX, endPtY;
+            Unit startHandleX, startHandleY, endHandleX, endHandleY, endPtX, endPtY;
             int index = 0;
 
             while (index < args.Length)
@@ -267,9 +267,9 @@ namespace Scryber.Svg
                         return;
 
                     if (absolute)
-                        path.CubicCurveTo(new PDFPoint(endPtX, endPtY), new PDFPoint(startHandleX, startHandleY), new PDFPoint(endHandleX, endHandleY));
+                        path.CubicCurveTo(new Point(endPtX, endPtY), new Point(startHandleX, startHandleY), new Point(endHandleX, endHandleY));
                     else
-                        path.CubicCurveFor(new PDFPoint(endPtX, endPtY), new PDFPoint(startHandleX, startHandleY), new PDFPoint(endHandleX, endHandleY));
+                        path.CubicCurveFor(new Point(endPtX, endPtY), new Point(startHandleX, startHandleY), new Point(endHandleX, endHandleY));
                 }
                 else if (string.IsNullOrEmpty(args[index]))
                     index++;
@@ -278,7 +278,7 @@ namespace Scryber.Svg
 
         private void ParseSVGQuadraticCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit handleX, handleY, endPtX, endPtY;
+            Unit handleX, handleY, endPtX, endPtY;
             int index = 0;
 
             while (index < args.Length)
@@ -296,9 +296,9 @@ namespace Scryber.Svg
                         return;
 
                     if (absolute)
-                        path.QuadraticCurveTo(new PDFPoint(endPtX, endPtY), new PDFPoint(handleX, handleY));
+                        path.QuadraticCurveTo(new Point(endPtX, endPtY), new Point(handleX, handleY));
                     else
-                        path.QuadraticCurveFor(new PDFPoint(endPtX, endPtY), new PDFPoint(handleX, handleY));
+                        path.QuadraticCurveFor(new Point(endPtX, endPtY), new Point(handleX, handleY));
                 }
                 else if (string.IsNullOrEmpty(args[index]))
                     index++;
@@ -318,7 +318,7 @@ namespace Scryber.Svg
         /// The start handle is inferred as a reflection of the previous handle point</remarks>
         private void ParseSVGSmoothCubicCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit endHandleX, endHandleY, endPtX, endPtY;
+            Unit endHandleX, endHandleY, endPtX, endPtY;
             int index = 0;
 
             while (index < args.Length)
@@ -335,9 +335,9 @@ namespace Scryber.Svg
                         return;
 
                     if (absolute)
-                        path.SmoothCubicCurveTo(new PDFPoint(endPtX, endPtY), new PDFPoint(endHandleX, endHandleY));
+                        path.SmoothCubicCurveTo(new Point(endPtX, endPtY), new Point(endHandleX, endHandleY));
                     else
-                        path.SmoothCubicCurveFor(new PDFPoint(endPtX, endPtY), new PDFPoint(endHandleX, endHandleY));
+                        path.SmoothCubicCurveFor(new Point(endPtX, endPtY), new Point(endHandleX, endHandleY));
                 }
                 else if (string.IsNullOrEmpty(args[index]))
                     index++;
@@ -358,7 +358,7 @@ namespace Scryber.Svg
         /// <remarks>The handle is inferred as a reflection of the previous handle</remarks>
         private void ParseSVGSmoothQuadraticCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit endPtX, endPtY;
+            Unit endPtX, endPtY;
             int index = 0;
 
             while (index < args.Length)
@@ -372,9 +372,9 @@ namespace Scryber.Svg
                         return;
 
                     if (absolute)
-                        path.SmoothQuadraticCurveTo(new PDFPoint(endPtX, endPtY));
+                        path.SmoothQuadraticCurveTo(new Point(endPtX, endPtY));
                     else
-                        path.SmoothQuadraticCurveFor(new PDFPoint(endPtX, endPtY));
+                        path.SmoothQuadraticCurveFor(new Point(endPtX, endPtY));
                 }
                 else if (string.IsNullOrEmpty(args[index]))
                     index++;
@@ -406,7 +406,7 @@ namespace Scryber.Svg
         /// </remarks>
         private void ParseSVGArcCommand(GraphicsPath path, char cmd, bool absolute, string[] args)
         {
-            PDFUnit rx, ry, endx, endy;
+            Unit rx, ry, endx, endy;
             double ang;
             bool large, sweep;
             int index = 0;
@@ -438,9 +438,9 @@ namespace Scryber.Svg
                         return;
 
                     if (absolute)
-                        path.ArcTo(rx, ry, ang, large ? PathArcSize.Large : PathArcSize.Small, sweep ? PathArcSweep.Positive : PathArcSweep.Negative, new PDFPoint(endx, endy));
+                        path.ArcTo(rx, ry, ang, large ? PathArcSize.Large : PathArcSize.Small, sweep ? PathArcSweep.Positive : PathArcSweep.Negative, new Point(endx, endy));
                     else
-                        path.ArcFor(rx, ry, ang, large ? PathArcSize.Large : PathArcSize.Small, sweep ? PathArcSweep.Positive : PathArcSweep.Negative, new PDFPoint(endx, endy));
+                        path.ArcFor(rx, ry, ang, large ? PathArcSize.Large : PathArcSize.Small, sweep ? PathArcSweep.Positive : PathArcSweep.Negative, new Point(endx, endy));
                 }
                 else if (string.IsNullOrEmpty(args[index]))
                     index++;
@@ -573,17 +573,17 @@ namespace Scryber.Svg
         /// <param name="parsed"></param>
         /// <returns></returns>
         /// <remarks>If the argument is not present or cannot be parsed then either an exception will be thrown, or an error raised on the trace log, depending on the Strict switch</remarks>
-        protected bool AssertParseUnit(string[] args, ref int arrayIndex, char cmd, out PDFUnit parsed)
+        protected bool AssertParseUnit(string[] args, ref int arrayIndex, char cmd, out Unit parsed)
         {
             while(arrayIndex < args.Length && string.IsNullOrEmpty(args[arrayIndex])) arrayIndex++;
 
             if (arrayIndex >= args.Length)
             {
-                parsed = PDFUnit.Empty;
+                parsed = Unit.Empty;
                 RaiseError("No required argument found for pdf unit in '" + cmd + "' command");
                 return false;
             }
-            else if (PDFUnit.TryParse(args[arrayIndex], out parsed) == false)
+            else if (Unit.TryParse(args[arrayIndex], out parsed) == false)
             {
                 RaiseError("Could not parse the string '" + args[arrayIndex] + "' into a valid unit value");
                 return false;

@@ -100,7 +100,7 @@ namespace Scryber.Data
         // methods
         //
 
-        protected override void ApplyAutoBindingMember(PDFDataItem item)
+        protected override void ApplyAutoBindingMember(DataItem item)
         {
             throw new NotSupportedException("AutoBinding onto a template column is not suported");
         }
@@ -116,12 +116,12 @@ namespace Scryber.Data
         /// <param name="columnindex"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Component DoBuildHeaderCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public override Component DoBuildHeaderCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             Component comp = base.DoBuildHeaderCell(grid, row, rowindex, columnindex, context);
             if (null != this.HeaderTemplate)
             {
-                this.AddTemplateToContainer((IPDFContainerComponent)comp, APPEND, this.HeaderTemplate);
+                this.AddTemplateToContainer((IContainerComponent)comp, APPEND, this.HeaderTemplate);
             }
             return comp;
         }
@@ -139,17 +139,17 @@ namespace Scryber.Data
         /// <param name="columnindex"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public override Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             Component comp = base.DoBuildItemCell(grid, row, rowindex, columnindex, context);
 
             if (rowindex % 2 == 1 && null != this.AlternatingItemTemplate)
             {
-                this.AddTemplateToContainer((IPDFContainerComponent)comp, APPEND, this.AlternatingItemTemplate);
+                this.AddTemplateToContainer((IContainerComponent)comp, APPEND, this.AlternatingItemTemplate);
             }
             else if (null != this.ItemTemplate)
             {
-                this.AddTemplateToContainer((IPDFContainerComponent)comp, APPEND, this.ItemTemplate);
+                this.AddTemplateToContainer((IContainerComponent)comp, APPEND, this.ItemTemplate);
             }
 
             return comp;
@@ -168,12 +168,12 @@ namespace Scryber.Data
         /// <param name="columnindex"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Component DoBuildFooterCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public override Component DoBuildFooterCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             Component comp = base.DoBuildFooterCell(grid, row, rowindex, columnindex, context);
             if (null != this.FooterTemplate)
             {
-                this.AddTemplateToContainer((IPDFContainerComponent)comp, APPEND, this.FooterTemplate);
+                this.AddTemplateToContainer((IContainerComponent)comp, APPEND, this.FooterTemplate);
             }
             return comp;
         }
@@ -188,7 +188,7 @@ namespace Scryber.Data
 
         private const int APPEND = -1; //mark the index so it appends to the container
 
-        protected int AddTemplateToContainer(IPDFContainerComponent container, int index, ITemplate template)
+        protected int AddTemplateToContainer(IContainerComponent container, int index, ITemplate template)
         {
             int count = 0;
             IEnumerable<IComponent> generated = template.Instantiate(index, container);
@@ -209,7 +209,7 @@ namespace Scryber.Data
             return count;
         }
 
-        void PDFDataGridTemplateColumn_DataBinding(object sender, PDFDataBindEventArgs e)
+        void PDFDataGridTemplateColumn_DataBinding(object sender, DataBindEventArgs e)
         {
             ((Component)sender).Visible = this.Visible;
         }

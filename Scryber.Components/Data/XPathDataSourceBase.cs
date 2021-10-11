@@ -29,7 +29,7 @@ namespace Scryber.Data
     /// <summary>
     /// The XPath data source base is the root data source for the XPath data binding components (SQLXPathDataSource, XMLDataSource, OBjectXPathDataSource)
     /// </summary>
-    public abstract class XPathDataSourceBase : DataSourceBase, IPDFContainerComponent
+    public abstract class XPathDataSourceBase : DataSourceBase, IContainerComponent
     {
         private const string LOG_CATEGORY = "XPath DataSource Base";
 
@@ -78,7 +78,7 @@ namespace Scryber.Data
 
         private ComponentList _contents = null;
 
-        ComponentList IPDFContainerComponent.Content
+        ComponentList IContainerComponent.Content
         {
             get {
                 if (null == _contents)
@@ -87,7 +87,7 @@ namespace Scryber.Data
             }
         }
 
-        bool IPDFContainerComponent.HasContent
+        bool IContainerComponent.HasContent
         {
             get { return null != _contents && _contents.Count > 0; }
         }
@@ -192,7 +192,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="context"></param>
         /// <param name="includeChildren"></param>
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             this._hasbeenbound = true;
             base.DoDataBind(context, includeChildren);
@@ -212,7 +212,7 @@ namespace Scryber.Data
 
         #endregion
 
-        protected override bool DoEvaluateTestExpression(string expr, object withData, PDFDataContext context)
+        protected override bool DoEvaluateTestExpression(string expr, object withData, DataContext context)
         {
             System.Xml.XPath.XPathNavigator nav;
             if (withData is System.Xml.XPath.XPathNavigator)
@@ -239,7 +239,7 @@ namespace Scryber.Data
                 return null != result;
         }
 
-        protected override object DoEvaluateExpression(string expr, object withData, PDFDataContext context)
+        protected override object DoEvaluateExpression(string expr, object withData, DataContext context)
         {
             System.Xml.XPath.XPathNavigator nav;
             if (withData is System.Xml.XPath.XPathNavigator)
@@ -261,7 +261,7 @@ namespace Scryber.Data
 
         #region protected override object DoSelectData(string path, object withData, PDFDataContext context)
 
-        protected override object DoSelectData(string path, object withData, PDFDataContext context)
+        protected override object DoSelectData(string path, object withData, DataContext context)
         {
             System.Xml.XPath.XPathNavigator nav;
             if (withData is System.Xml.XPath.XPathNavigator)
@@ -288,7 +288,7 @@ namespace Scryber.Data
         /// <param name="context"></param>
         /// <param name="root">If true then this is the top level selection of data and should use this sources assigned data. If false then it should use the current data context.</param>
         /// <returns></returns>
-        protected override object DoSelectData(string path, PDFDataContext context)
+        protected override object DoSelectData(string path, DataContext context)
         {
             
             //Get sthe source data from the implementation
@@ -385,12 +385,12 @@ namespace Scryber.Data
         /// <param name="context"></param>
         /// <returns>The data schema associated with the source</returns>
         /// <exception cref="System.NotSupportedException" >Thrown if this data source does not support schema extraction</exception>
-        public override PDFDataSchema GetDataSchema(string path, PDFDataContext context)
+        public override DataSchema GetDataSchema(string path, DataContext context)
         {
             System.Data.DataSet ds;
             if (this.HasData(out ds))
             {
-                PDFDataSchema schema = DataSetSchemaGenerator.CreateSchemaFromSet(ds, context);
+                DataSchema schema = DataSetSchemaGenerator.CreateSchemaFromSet(ds, context);
                 if (!string.IsNullOrEmpty(path))
                 {
                     if (path == schema.RootPath)
@@ -403,7 +403,7 @@ namespace Scryber.Data
                         {
                             if (one.FullPath == path)
                             {
-                                PDFDataSchema child = new PDFDataSchema(one.FullPath, one.Children);
+                                DataSchema child = new DataSchema(one.FullPath, one.Children);
                                 return child;
                             }
                         }
@@ -444,7 +444,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected virtual string GetCacheKey(PDFDataContext context)
+        protected virtual string GetCacheKey(DataContext context)
         {
             return this.UniqueID;
         }
@@ -530,6 +530,6 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="context">The current data context</param>
         /// <returns>An XPath navigator that represents the current source</returns>
-        protected abstract XPathDataCacheItem LoadSourceXPathData(PDFDataContext context);
+        protected abstract XPathDataCacheItem LoadSourceXPathData(DataContext context);
     }
 }

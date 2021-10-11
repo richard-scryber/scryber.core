@@ -110,8 +110,8 @@ namespace Scryber.PDF.Layout
 
 
             //Size, border, margins
-            PDFRect bounds = new PDFRect(PDFPoint.Empty, pgsize.Size);
-            PDFRect contentrect = GetContentRectFromBounds(bounds, options.Margins, options.Padding);
+            Rect bounds = new Rect(Point.Empty, pgsize.Size);
+            Rect contentrect = GetContentRectFromBounds(bounds, options.Margins, options.Padding);
 
 
             //Columns
@@ -173,7 +173,7 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, LayoutEnginePage.LOG_CATEGORY, "Un-registered the page numbering");
         }
 
-        private PDFSize GetNextPageSize(IComponent owner, Style full, PDFSize orig)
+        private Size GetNextPageSize(IComponent owner, Style full, Size orig)
         {
             var name = full.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
 
@@ -269,7 +269,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="copyfrom"></param>
         /// <returns></returns>
-        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, PDFSize size)
+        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, Size size)
         {
             //Take a reference of the current stack and replace with the page stack from first page
             StyleStack orig = this.Context.StyleStack;
@@ -306,7 +306,7 @@ namespace Scryber.PDF.Layout
         /// <param name="alley"></param>
         /// <param name="colcount"></param>
         /// <param name="action"></param>
-        protected virtual PDFLayoutPage BuildNewPage(PDFSize pgsize, PDFPositionOptions options, PDFColumnOptions colOpts, OverflowAction action)
+        protected virtual PDFLayoutPage BuildNewPage(Size pgsize, PDFPositionOptions options, PDFColumnOptions colOpts, OverflowAction action)
         {
             PDFLayoutDocument doclayout = this.DocumentLayout;
             PDFLayoutPage pg = doclayout.BeginNewPage(this.Page, this, this.FullStyle, action);
@@ -441,7 +441,7 @@ namespace Scryber.PDF.Layout
             if (null == container)
                 throw new ArgumentNullException("container");
 
-            PDFRect avail =  this.DocumentLayout.CurrentPage.LastOpenBlock().CurrentRegion.TotalBounds;
+            Rect avail =  this.DocumentLayout.CurrentPage.LastOpenBlock().CurrentRegion.TotalBounds;
             int pg = this.DocumentLayout.CurrentPageIndex;
 
             container.InstantiateTemplate(template, this.Context, avail, pg);

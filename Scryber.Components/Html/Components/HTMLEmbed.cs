@@ -6,7 +6,7 @@ namespace Scryber.Html.Components
 {
     [PDFParsableComponent("embedded")]
     [PDFRemoteParsableComponent("embed", SourceAttribute = "src")]
-    public class HTMLEmbed : VisualComponent, IPDFInvisibleContainer
+    public class HTMLEmbed : VisualComponent, IInvisibleContainer
     {
 
         [PDFAttribute("class")]

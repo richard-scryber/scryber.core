@@ -31,7 +31,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.HorizontalAlignment = HorizontalAlignment.Center;
             pg.VerticalAlignment = VerticalAlignment.Top;
             pg.FontSize = 30;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
 
             doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
@@ -62,7 +62,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.HorizontalAlignment = HorizontalAlignment.Center;
             pg.VerticalAlignment = VerticalAlignment.Top;
             pg.FontSize = 30;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
 
             doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
@@ -92,7 +92,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.HorizontalAlignment = HorizontalAlignment.Center;
             pg.VerticalAlignment = VerticalAlignment.Top;
             pg.FontSize = 30;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
 
             doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
@@ -123,7 +123,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.HorizontalAlignment = HorizontalAlignment.Center;
             pg.VerticalAlignment = VerticalAlignment.Top;
             pg.FontSize = 30;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
 
             doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
@@ -153,7 +153,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.HorizontalAlignment = HorizontalAlignment.Center;
             pg.VerticalAlignment = VerticalAlignment.Top;
             pg.FontSize = 30;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
 
             doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 
@@ -185,7 +185,7 @@ namespace Scryber.Core.UnitTests.Layout
             pg.HorizontalAlignment = HorizontalAlignment.Center;
             pg.VerticalAlignment = VerticalAlignment.Top;
             pg.FontSize = 30;
-            pg.Margins = new Scryber.Drawing.PDFThickness(20);
+            pg.Margins = new Scryber.Drawing.Thickness(20);
 
             doc.ViewPreferences.PageLayout = PageLayoutMode.SinglePage;
 

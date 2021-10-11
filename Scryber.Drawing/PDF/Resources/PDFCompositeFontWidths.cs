@@ -204,7 +204,7 @@ namespace Scryber.PDF.Resources
         }
 
 
-        public override void RenderWidthsArrayToPDF(PDFContextBase context, PDFWriter writer)
+        public override void RenderWidthsArrayToPDF(ContextBase context, PDFWriter writer)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Add(TraceLevel.Debug, "PDFFontWidths", "Width information will be rendered as a CID lookup set");

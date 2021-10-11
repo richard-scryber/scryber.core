@@ -40,8 +40,8 @@ namespace Scryber.PDF.Layout
         private PDFLayoutBlock _header, _footer;
         private PDFLayoutBlock _current;
         private PDFImageXObject _badgexobj;
-        private PDFSize _badgeSize;
-        private PDFPoint _badgePosition;
+        private Size _badgeSize;
+        private Point _badgePosition;
         private bool _outputbadge = true;
         private int _pageindex = -1;
 
@@ -63,7 +63,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the actual size of the content on the page
         /// </summary>
-        public PDFSize Size { get; private set; }
+        public Size Size { get; private set; }
 
         #endregion
 
@@ -242,7 +242,7 @@ namespace Scryber.PDF.Layout
         /// <param name="cansplit"></param>
         /// <param name="colcount"></param>
         /// <param name="alley"></param>
-        public virtual void InitPage(PDFSize size, PDFPositionOptions options, PDFColumnOptions columns, PDFLayoutContext context)
+        public virtual void InitPage(Size size, PDFPositionOptions options, PDFColumnOptions columns, PDFLayoutContext context)
         {
             this.Size = size;
             this.PositionOptions = options;
@@ -251,7 +251,7 @@ namespace Scryber.PDF.Layout
 
 
             PDFLayoutBlock block = new PDFLayoutBlock(this, this.Owner, this.Engine, this.FullStyle, split);
-            PDFRect totalbounds = new PDFRect(PDFPoint.Empty,this.Size);
+            Rect totalbounds = new Rect(Point.Empty,this.Size);
 
             
             block.InitRegions(totalbounds, options, columns, context);
@@ -331,7 +331,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock block = new PDFLayoutBlock(this, owner, this.Engine, full, OverflowSplit.Never);
             
             //Take the magins away from the total bounds before initializing the regions
-            PDFRect content = this.ContentBlock.TotalBounds;
+            Rect content = this.ContentBlock.TotalBounds;
 
             if (this.PositionOptions.Margins.IsEmpty == false)
             {
@@ -372,7 +372,7 @@ namespace Scryber.PDF.Layout
             if (null != this.ContentBlock)
             {
                 //Offset the content block by the height of the header
-                PDFUnit h = this.HeaderBlock.Height;
+                Unit h = this.HeaderBlock.Height;
                 this.ContentBlock.Offset(0, h);
                 this.ContentBlock.Shrink(0, h);
             }
@@ -390,7 +390,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock block = new PDFLayoutBlock(this, owner, this.Engine, full, OverflowSplit.Never);
 
             //Take the magins away from the total bounds before initializing the regions
-            PDFRect content = this.ContentBlock.TotalBounds;
+            Rect content = this.ContentBlock.TotalBounds;
             if (this.PositionOptions.Margins.IsEmpty == false)
             {
                 content.Width -= this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
@@ -418,9 +418,9 @@ namespace Scryber.PDF.Layout
             this.FooterBlock.Close();
 
             //Need to move the footer to the bottom of the page
-            PDFUnit height = this.FooterBlock.TotalBounds.Height;
-            PDFUnit posY = this.FooterBlock.TotalBounds.Y;
-            PDFUnit offset = this.Height - posY - height;
+            Unit height = this.FooterBlock.TotalBounds.Height;
+            Unit posY = this.FooterBlock.TotalBounds.Y;
+            Unit offset = this.Height - posY - height;
 
             this.FooterBlock.Offset(0, offset);
             this.CurrentBlock = ContentBlock;
@@ -446,7 +446,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this page
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return this.Size.Width; }
         }
@@ -458,7 +458,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this page
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return this.Size.Height; }
         }
@@ -471,7 +471,7 @@ namespace Scryber.PDF.Layout
         /// Overrides the base abstract method to push the arrangement on this pages' top block
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex,  PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex,  Unit xoffset, Unit yoffset)
         {
             pageIndex = this.PageIndex;
 
@@ -562,9 +562,9 @@ namespace Scryber.PDF.Layout
 
             
             // calculate the position based on the X and Y Offset plus the corners.
-            _badgePosition = new PDFPoint(style.XOffset, style.YOffset);
-            _badgeSize = new PDFSize(_badgexobj.ImageData.DisplayWidth, _badgexobj.ImageData.DisplayHeight);
-            PDFSize pageSize = this.Size;
+            _badgePosition = new Point(style.XOffset, style.YOffset);
+            _badgeSize = new Size(_badgexobj.ImageData.DisplayWidth, _badgexobj.ImageData.DisplayHeight);
+            Size pageSize = this.Size;
 
             switch (style.Corner)
             { 
@@ -616,7 +616,7 @@ namespace Scryber.PDF.Layout
         /// Overrides the move to the next region - not complete
         /// </summary>
         /// <returns></returns>
-        public override bool MoveToNextRegion( PDFUnit requiredHeight, PDFLayoutContext context)
+        public override bool MoveToNextRegion( Unit requiredHeight, PDFLayoutContext context)
         {
             if (this.ContentBlock.Position.OverflowAction == OverflowAction.NewPage)
             {
@@ -725,7 +725,7 @@ namespace Scryber.PDF.Layout
             }
 
             context.PageSize = this.Size;
-            context.Offset = new PDFPoint();
+            context.Offset = new Point();
             context.Space = context.PageSize;
 
             if (context.ShouldLogVerbose)
@@ -791,8 +791,8 @@ namespace Scryber.PDF.Layout
             writer.BeginStream(oref, filters);
 
 
-            PDFPoint pt = context.Offset.Clone();
-            PDFSize sz = context.Space.Clone();
+            Point pt = context.Offset.Clone();
+            Size sz = context.Space.Clone();
 
             using (PDFGraphics g = this.CreateGraphics(writer, context.StyleStack, context))
             {
@@ -848,7 +848,7 @@ namespace Scryber.PDF.Layout
 
         
 
-        public virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, PDFContextBase context)
+        public virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
         {
            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, this.Size, context);
         }

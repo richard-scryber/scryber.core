@@ -170,15 +170,15 @@ namespace Scryber.Styles
 
         [PDFAttribute("size")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"font-size\"")]
-        public PDFUnit FontSize
+        public Unit FontSize
         {
             get
             {
-                PDFUnit found;
+                Unit found;
                 if (this.TryGetValue(StyleKeys.FontSizeKey, out found))
                     return found;
                 else
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
             }
             set
             {
@@ -199,7 +199,7 @@ namespace Scryber.Styles
         }
 
 
-        public PDFFont CreateFont()
+        public Font CreateFont()
         {
             return this.AssertOwner().DoCreateFont(true);
         }

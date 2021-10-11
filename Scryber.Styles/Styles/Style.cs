@@ -56,12 +56,12 @@ namespace Scryber.Styles
         #region public event PDFDataBindEventHandler DataBinding + OnDataBinding(args)
 
         [PDFAttribute("on-databinding")]
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (this.DataBinding != null)
-                this.DataBinding(this, new PDFDataBindEventArgs(context));
+                this.DataBinding(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -69,12 +69,12 @@ namespace Scryber.Styles
         #region public event PDFDataBindEventHandler DataBound + OnDataBound(args)
 
         [PDFAttribute("on-databound")]
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (this.DataBound != null)
-                this.DataBound(this, new PDFDataBindEventArgs(context));
+                this.DataBound(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -936,7 +936,7 @@ namespace Scryber.Styles
         // public methods
         //
 
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             this.OnDataBinding(context);
             this.DoDataBind(context, true);
@@ -1007,7 +1007,7 @@ namespace Scryber.Styles
         /// Creates and returns the font for this style.
         /// </summary>
         /// <returns></returns>
-        public PDFFont CreateFont()
+        public Font CreateFont()
         {
             return this.DoCreateFont(true);
         }
@@ -1020,7 +1020,7 @@ namespace Scryber.Styles
         /// Returns the PDFThickness associated with the Padding for this style
         /// </summary>
         /// <returns></returns>
-        public PDFThickness CreatePaddingThickness()
+        public Thickness CreatePaddingThickness()
         {
             return this.DoCreatePaddingThickness();
         }
@@ -1033,7 +1033,7 @@ namespace Scryber.Styles
         /// Returns the PDFThickness associated with the Margins for this style
         /// </summary>
         /// <returns></returns>
-        public PDFThickness CreateMarginsThickness()
+        public Thickness CreateMarginsThickness()
         {
             return this.DoCreateMarginsThickness();
         }
@@ -1046,7 +1046,7 @@ namespace Scryber.Styles
         /// the PDFThickness associated with the Clipping for this style
         /// </summary>
         /// <returns></returns>
-        public PDFThickness CreateClippingThickness()
+        public Thickness CreateClippingThickness()
         {
             return this.DoCreateClippingThickness();
         }

@@ -54,7 +54,7 @@ namespace Scryber.PDF.Resources
             
         }
     
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             PDFObjectRef oref = writer.BeginObject();
             writer.BeginDictionaryS();

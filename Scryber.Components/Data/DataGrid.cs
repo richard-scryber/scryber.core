@@ -236,7 +236,7 @@ namespace Scryber.Data
         #endregion
 
 
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             this.BindStyles(context);
 
@@ -246,7 +246,7 @@ namespace Scryber.Data
 
             RemoveAnyExistingContent();
 
-            IPDFDataSource source;
+            IDataSource source;
             if (this.HasAssignedDataSourceComponent(context, out source))
             {
                 data = source.Select(this.SelectPath, context);
@@ -290,24 +290,24 @@ namespace Scryber.Data
         {
             if (null != _built && _built.Parent != null)
             {
-                ((IPDFContainerComponent)_built.Parent).Content.Remove(_built);
+                ((IContainerComponent)_built.Parent).Content.Remove(_built);
             }
         }
 
-        protected virtual void BindStyles(PDFDataContext context)
+        protected virtual void BindStyles(DataContext context)
         {
            
         }
 
-        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
             throw new NotSupportedException("We don't support this on a data grid - it works differently");
         }
 
 
-        protected override void DoBindDataIntoContainer(IPDFContainerComponent container, int containerposition, PDFDataContext context)
+        protected override void DoBindDataIntoContainer(IContainerComponent container, int containerposition, DataContext context)
         {
-            IPDFDataSource origSource = context.DataStack.Source;
+            IDataSource origSource = context.DataStack.Source;
             object origData = context.DataStack.Pop();
 
             
@@ -487,7 +487,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private bool RemoveHiddenColumns(PDFDataContext context)
+        private bool RemoveHiddenColumns(DataContext context)
         {
             bool allhidden = true;
             //reverse order as we can remove items from the collection.
@@ -504,7 +504,7 @@ namespace Scryber.Data
             return allhidden;
         }
 
-        private void RemoveHeadersAndFooters(TableGrid grid, PDFDataContext context)
+        private void RemoveHeadersAndFooters(TableGrid grid, DataContext context)
         {
             bool hasHeaders = false;
             bool hasFooters = false;
@@ -547,7 +547,7 @@ namespace Scryber.Data
             return false;
         }
 
-        private bool ShowEmptyTemplate(IPDFContainerComponent container, int index, PDFDataContext context)
+        private bool ShowEmptyTemplate(IContainerComponent container, int index, DataContext context)
         {
             if (null == this.EmptyTemplate)
                 return false;
@@ -572,22 +572,22 @@ namespace Scryber.Data
             }
         }
 
-        protected virtual void AddAutoBindColumns(PDFDataContext context)
+        protected virtual void AddAutoBindColumns(DataContext context)
         {
             if (string.IsNullOrEmpty(this.DataSourceID))
                 throw new InvalidOperationException("Can only auto bind the schema when the DataGrid has an explicit DataSourceID and the referencing source supports Schema derriving");
 
-            IPDFDataSource found = base.FindDocumentComponentById(this.DataSourceID) as IPDFDataSource;
+            IDataSource found = base.FindDocumentComponentById(this.DataSourceID) as IDataSource;
             if (null == found || found.SupportsDataSchema == false)
                 throw new InvalidOperationException("Can only auto bind the schema when the DataGrid has an explicit DataSourceID and the referencing source supports Schema derriving");
 
-            PDFDataSchema schema = found.GetDataSchema(this.SelectPath, context);
+            DataSchema schema = found.GetDataSchema(this.SelectPath, context);
 
             if (null == schema || schema.Items == null || schema.Items.Count == 0)
                 context.TraceLog.Add(TraceLevel.Warning, "PDFDataGrid", string.Format("Cannot autobind the columns as no schema items were returned for the path '{0}'", this.SelectPath));
             else
             {
-                foreach (PDFDataItem item in schema.Items)
+                foreach (DataItem item in schema.Items)
                 {
                     if (ShouldIncludeAutoBoundItem(item))
                     {
@@ -606,7 +606,7 @@ namespace Scryber.Data
             }
         }
 
-        private bool ShouldIncludeAutoBoundItem(PDFDataItem item)
+        private bool ShouldIncludeAutoBoundItem(DataItem item)
         {
             bool include = false;
             switch (this.AutoBindContent)
@@ -670,14 +670,14 @@ namespace Scryber.Data
             
         }
 
-        private void InitAndLoadRoot(Component built, PDFContextBase context)
+        private void InitAndLoadRoot(Component built, ContextBase context)
         {
             if(context.TraceLog.ShouldLog(TraceLevel.Debug))
                 context.TraceLog.Add(TraceLevel.Debug, "DataGrid", "Initializing and loading root component before binding");
 
             var log = context.TraceLog;
-            PDFInitContext init = new PDFInitContext(context.Items, log, context.PerformanceMonitor, this.Document);
-            PDFLoadContext load = new PDFLoadContext(context.Items, log, context.PerformanceMonitor, this.Document);
+            InitContext init = new InitContext(context.Items, log, context.PerformanceMonitor, this.Document);
+            LoadContext load = new LoadContext(context.Items, log, context.PerformanceMonitor, this.Document);
 
             built.Init(init);
             built.Load(load);
@@ -691,7 +691,7 @@ namespace Scryber.Data
         /// and the data in the binding action.
         /// </summary>
         /// <param name="actions"></param>
-        private void BindActionedComponents(List<BindingActionList> actions, PDFDataContext context)
+        private void BindActionedComponents(List<BindingActionList> actions, DataContext context)
         {
             if(context.TraceLog.ShouldLog(TraceLevel.Debug))
                 context.TraceLog.Begin(TraceLevel.Debug, "DataGrid", "Starting to bind " + actions.Count.ToString() + "components with their respective data items");

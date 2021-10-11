@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace Scryber.Data
 {
-    public abstract class DataTableProviderCommandBase : XPathProviderCommandBase, IPDFDataSetProviderCommand
+    public abstract class DataTableProviderCommandBase : XPathProviderCommandBase, IDataSetProviderCommand
     {
 
         //
@@ -127,7 +127,7 @@ namespace Scryber.Data
         /// <summary>
         /// Gets the Data Schema associated with the last loaded data.
         /// </summary>
-        public PDFDataSchema DataSchema
+        public DataSchema DataSchema
         {
             get;
             private set;
@@ -174,7 +174,7 @@ namespace Scryber.Data
         /// <param name="source"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected override void DoEnsureDataLoaded(XPathDataSourceBase source, DataSet ds, PDFDataContext context)
+        protected override void DoEnsureDataLoaded(XPathDataSourceBase source, DataSet ds, DataContext context)
         {
             
             //We are always top level here so top element namespace should be the same as inner element namespace
@@ -199,7 +199,7 @@ namespace Scryber.Data
 
         #endregion
 
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
             if (includeChildren)
@@ -209,7 +209,7 @@ namespace Scryber.Data
 
         }
 
-        protected virtual void DataBindChildren(PDFDataContext context)
+        protected virtual void DataBindChildren(DataContext context)
         {
             if(this.HasParameters)
             {
@@ -240,7 +240,7 @@ namespace Scryber.Data
         /// <param name="source"></param>
         /// <param name="parent"></param>
         /// <param name="context"></param>
-        public abstract void FillData(DataSet dataset, XPathDataSourceBase source, IPDFDataSetProviderCommand parent, PDFDataContext context);
+        public abstract void FillData(DataSet dataset, XPathDataSourceBase source, IDataSetProviderCommand parent, DataContext context);
 
         #endregion
 
@@ -287,7 +287,7 @@ namespace Scryber.Data
 
         #region protected virtual PDFDataSchema DoPopulateDataSchema(DataSet dataset, PDFDataContext context)
 
-        protected virtual PDFDataSchema DoPopulateDataSchema(DataSet dataset, PDFDataContext context)
+        protected virtual DataSchema DoPopulateDataSchema(DataSet dataset, DataContext context)
         {
             return DataSetSchemaGenerator.CreateSchemaFromSet(dataset, context);
         }
@@ -303,7 +303,7 @@ namespace Scryber.Data
         /// <param name="ds"></param>
         /// <param name="attributenames"></param>
         /// <param name="context"></param>
-        protected virtual void ApplyAttributes(DataSet ds, string attributenames, PDFDataContext context)
+        protected virtual void ApplyAttributes(DataSet ds, string attributenames, DataContext context)
         {
             DataTable dt = ds.Tables[this.GetDataTableName(ds)];
             if (attributenames == "*")
@@ -341,16 +341,16 @@ namespace Scryber.Data
         /// <param name="ds"></param>
         /// <param name="source"></param>
         /// <param name="context"></param>
-        protected virtual void FillRelatedData(DataRelation rel, DataSet ds, XPathDataSourceBase source, PDFDataContext context)
+        protected virtual void FillRelatedData(DataRelation rel, DataSet ds, XPathDataSourceBase source, DataContext context)
         {
             string cmd = rel.ChildCommand;
             XPathProviderCommandBase provider = source.Commands[cmd];
             if (null == provider)
                 throw new NullReferenceException(string.Format(Errors.CommandWithNameCannotBeFound, cmd, source.ID));
-            if (!(provider is IPDFDataSetProviderCommand))
+            if (!(provider is IDataSetProviderCommand))
                 throw new InvalidCastException(string.Format(Errors.CommandForRelatedDataMustMatchType, typeof(SqlProviderCommand), typeof(SqlProviderCommand)));
 
-            IPDFDataSetProviderCommand dsProvider = (IPDFDataSetProviderCommand)provider;
+            IDataSetProviderCommand dsProvider = (IDataSetProviderCommand)provider;
             dsProvider.FillData(ds, source, this, context);
 
             rel.AddRelation(this, dsProvider, ds, context);

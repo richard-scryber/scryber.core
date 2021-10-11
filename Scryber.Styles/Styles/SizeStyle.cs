@@ -22,15 +22,15 @@ namespace Scryber.Styles
 
         [PDFAttribute("width")]
         [PDFDesignable("Width", Category = "Size", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit Width
+        public Unit Width
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -50,15 +50,15 @@ namespace Scryber.Styles
 
         [PDFAttribute("height")]
         [PDFDesignable("Height", Category = "Size", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit Height
+        public Unit Height
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeHeightKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -78,15 +78,15 @@ namespace Scryber.Styles
         #region public PDFUnit MinimumWidth {get;set;} + RemoveMinimumWidth()
 
         [PDFAttribute("min-width")]
-        public PDFUnit MinimumWidth
+        public Unit MinimumWidth
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeMinimumWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -105,15 +105,15 @@ namespace Scryber.Styles
         #region public PDFUnit MinimumHeight {get;set;} + RemoveMinimumHeight()
 
         [PDFAttribute("min-height")]
-        public PDFUnit MinimumHeight
+        public Unit MinimumHeight
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeMinimumHeightKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -132,15 +132,15 @@ namespace Scryber.Styles
         #region public PDFUnit MaximumWidth {get;set;} + RemoveMaximumWidth()
 
         [PDFAttribute("max-width")]
-        public PDFUnit MaximumWidth
+        public Unit MaximumWidth
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeMaximumWidthKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set
@@ -159,15 +159,15 @@ namespace Scryber.Styles
         #region public PDFUnit MaximumHeight {get;set;} + RemoveMaximumHeight()
 
         [PDFAttribute("max-height")]
-        public PDFUnit MaximumHeight
+        public Unit MaximumHeight
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(StyleKeys.SizeMaximumHeightKey, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
 
             }
             set

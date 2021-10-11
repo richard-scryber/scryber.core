@@ -81,7 +81,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFUnitConstructor_Test()
         {
             int pointvalue = 0;
-            PDFUnit target = new PDFUnit(pointvalue);
+            Unit target = new Unit(pointvalue);
             Assert.AreEqual(0.0, target.PointsValue);
             Assert.AreEqual(0.0, target.ToInches().Value);
             Assert.AreEqual(0.0, target.ToMillimeters().Value);
@@ -96,7 +96,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void PDFUnitConstructor_Test1()
         {
             double pointvalue = 0; 
-            PDFUnit target = new PDFUnit(pointvalue);
+            Unit target = new Unit(pointvalue);
             Assert.AreEqual(0.0, target.PointsValue);
             Assert.AreEqual(0.0, target.ToInches().Value);
             Assert.AreEqual(0.0, target.ToMillimeters().Value);
@@ -112,7 +112,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             double value = 0F; 
             PageUnits units = PageUnits.Millimeters;
-            PDFUnit target = new PDFUnit(value, units);
+            Unit target = new Unit(value, units);
             Assert.AreEqual(0.0, target.PointsValue);
             Assert.AreEqual(0.0, target.ToInches().Value);
             Assert.AreEqual(0.0, target.ToMillimeters().Value);
@@ -125,7 +125,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             double mm = 25.4;
             PageUnits units = PageUnits.Millimeters;
-            PDFUnit target = new PDFUnit(mm, units);
+            Unit target = new Unit(mm, units);
             Assert.AreEqual(25.4, target.Value);
             Assert.AreEqual(25.4, target.ToMillimeters().Value);
             Assert.AreEqual(1.0, target.ToInches().Value);
@@ -148,22 +148,22 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Units_Test()
         {
-            PDFUnit target = new PDFUnit(72);
+            Unit target = new Unit(72);
             PageUnits expected = PageUnits.Points;
             PageUnits actual;
             actual = target.Units;
             Assert.AreEqual(expected, actual, "Default units were not Points");
 
-            target = new PDFUnit(72, PageUnits.Points);
+            target = new Unit(72, PageUnits.Points);
             actual = target.Units;
             Assert.AreEqual(expected, actual, "Units were not Points");
 
-            target = new PDFUnit(25.4, PageUnits.Millimeters);
+            target = new Unit(25.4, PageUnits.Millimeters);
             actual = target.Units;
             expected = PageUnits.Millimeters;
             Assert.AreEqual(expected, actual, "Units were not Millimeters");
 
-            target = new PDFUnit(1, PageUnits.Inches);
+            target = new Unit(1, PageUnits.Inches);
             actual = target.Units;
             expected = PageUnits.Inches;
             Assert.AreEqual(expected, actual, "Units were not Inches");
@@ -178,22 +178,22 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Value_Test()
         {
-            PDFUnit target = new PDFUnit(72);
+            Unit target = new Unit(72);
             double expected = 72;
             double actual;
             actual = target.Value;
             Assert.AreEqual(expected, actual, "1. Value was not in Points");
 
-            target = new PDFUnit(72, PageUnits.Points);
+            target = new Unit(72, PageUnits.Points);
             actual = target.Value;
             Assert.AreEqual(expected, actual, "2. Value was not in Points");
 
-            target = new PDFUnit(25.4, PageUnits.Millimeters);
+            target = new Unit(25.4, PageUnits.Millimeters);
             actual = target.Value;
             expected = 25.4;
             Assert.AreEqual(expected, actual, "3. Values was not in mm");
 
-            target = new PDFUnit(1, PageUnits.Inches);
+            target = new Unit(1, PageUnits.Inches);
             actual = target.Value;
             expected = 1;
             Assert.AreEqual(expected, actual, "4. Value was not in inches");
@@ -212,13 +212,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void IsEmpty_Test()
         {
-            PDFUnit target = new PDFUnit();
+            Unit target = new Unit();
             bool actual;
             bool expected = true;
             actual = target.IsEmpty;
             Assert.AreEqual(expected, actual, "parameterless constructor did not return an Empty Unit value");
 
-            target = new PDFUnit(1.0, PageUnits.Inches);
+            target = new Unit(1.0, PageUnits.Inches);
             expected = false;
             actual = target.IsEmpty;
             Assert.AreEqual(expected, actual, "A valid unit returned true for being empty");
@@ -236,13 +236,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PointsValue_Test()
         {
-            PDFUnit target = new PDFUnit(1.0,PageUnits.Inches);
+            Unit target = new Unit(1.0,PageUnits.Inches);
             double actual;
             actual = target.PointsValue;
             double expected = 72;
             Assert.AreEqual(expected, actual, "Points value was incorrect");
 
-            target = new PDFUnit(25.4 * 4.0, PageUnits.Millimeters);
+            target = new Unit(25.4 * 4.0, PageUnits.Millimeters);
             expected = 72.0 * 4.0;
             actual = target.PointsValue;
             Assert.AreEqual(expected, actual, "Points value for millimeters was incorrect");
@@ -260,13 +260,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void RealValue_Test()
         {
-            PDFUnit target = new PDFUnit(1.0, PageUnits.Inches);
+            Unit target = new Unit(1.0, PageUnits.Inches);
             PDFReal actual;
             actual = target.RealValue;
             PDFReal expected = 72;
             Assert.AreEqual(expected, actual, "Real value was incorrect");
 
-            target = new PDFUnit(25.4 * 4.0, PageUnits.Millimeters);
+            target = new Unit(25.4 * 4.0, PageUnits.Millimeters);
             expected = 72.0 * 4.0;
             actual = target.PointsValue;
             Assert.AreEqual(expected, actual, "Real value for millimeters was incorrect");
@@ -287,21 +287,21 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Add_Test()
         {
-            PDFUnit left = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit right = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit expected = new PDFUnit(20, PageUnits.Millimeters);
-            PDFUnit actual;
-            actual = PDFUnit.Add(left, right);
+            Unit left = new Unit(10, PageUnits.Millimeters);
+            Unit right = new Unit(10, PageUnits.Millimeters);
+            Unit expected = new Unit(20, PageUnits.Millimeters);
+            Unit actual;
+            actual = Unit.Add(left, right);
             Assert.AreEqual(expected, actual, "Addition of mm failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
             actual = left + right;
             Assert.AreEqual(expected, actual, "Addition of mm failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
-            left = new PDFUnit(10, PageUnits.Inches);
-            right = new PDFUnit(10, PageUnits.Inches);
-            expected = new PDFUnit(20, PageUnits.Inches);
-            actual = PDFUnit.Add(left, right);
+            left = new Unit(10, PageUnits.Inches);
+            right = new Unit(10, PageUnits.Inches);
+            expected = new Unit(20, PageUnits.Inches);
+            actual = Unit.Add(left, right);
             Assert.AreEqual(expected, actual, "Addition of inches failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
@@ -309,10 +309,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "Addition of inches failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
-            left = new PDFUnit(10, PageUnits.Points);
-            right = new PDFUnit(10, PageUnits.Points);
-            expected = new PDFUnit(20, PageUnits.Points);
-            actual = PDFUnit.Add(left, right);
+            left = new Unit(10, PageUnits.Points);
+            right = new Unit(10, PageUnits.Points);
+            expected = new Unit(20, PageUnits.Points);
+            actual = Unit.Add(left, right);
             Assert.AreEqual(expected, actual, "Addition of points failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
@@ -329,11 +329,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Add_Test2()
         {
-            PDFUnit left = new PDFUnit(25.4, PageUnits.Millimeters); //1 inch
-            PDFUnit right = new PDFUnit(1, PageUnits.Inches); //1 inch
-            PDFUnit expected = new PDFUnit(144, PageUnits.Points); //2 inches
-            PDFUnit actual;
-            actual = PDFUnit.Add(left, right);
+            Unit left = new Unit(25.4, PageUnits.Millimeters); //1 inch
+            Unit right = new Unit(1, PageUnits.Inches); //1 inch
+            Unit expected = new Unit(144, PageUnits.Points); //2 inches
+            Unit actual;
+            actual = Unit.Add(left, right);
             Assert.AreEqual(expected, actual, "Addition of mixed units failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
@@ -343,10 +343,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
 
 
-            left = new PDFUnit(144, PageUnits.Points); //2 inches
-            right = new PDFUnit(2, PageUnits.Inches); //2 inches
-            expected = new PDFUnit(25.4 * 4.0, PageUnits.Millimeters); //4 inches
-            actual = PDFUnit.Add(left, right);
+            left = new Unit(144, PageUnits.Points); //2 inches
+            right = new Unit(2, PageUnits.Inches); //2 inches
+            expected = new Unit(25.4 * 4.0, PageUnits.Millimeters); //4 inches
+            actual = Unit.Add(left, right);
             Assert.AreEqual(expected, actual, "Addition of mixed units failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
@@ -355,10 +355,10 @@ namespace Scryber.Core.UnitTests.Drawing
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
 
-            left = new PDFUnit(25.4, PageUnits.Millimeters);
-            right = new PDFUnit(72, PageUnits.Points);
-            expected = new PDFUnit(2, PageUnits.Inches);
-            actual = PDFUnit.Add(left, right);
+            left = new Unit(25.4, PageUnits.Millimeters);
+            right = new Unit(72, PageUnits.Points);
+            expected = new Unit(2, PageUnits.Inches);
+            actual = Unit.Add(left, right);
             Assert.AreEqual(expected, actual, "Addition of mixed units failed");
             TestContext.WriteLine("Value {0} plus {1}  calcualted as {2}", left, right, actual);
 
@@ -379,11 +379,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Subtract_Test()
         {
-            PDFUnit left = new PDFUnit(20, PageUnits.Millimeters);
-            PDFUnit right = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit expected = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit actual;
-            actual = PDFUnit.Subtract(left, right);
+            Unit left = new Unit(20, PageUnits.Millimeters);
+            Unit right = new Unit(10, PageUnits.Millimeters);
+            Unit expected = new Unit(10, PageUnits.Millimeters);
+            Unit actual;
+            actual = Unit.Subtract(left, right);
             Assert.AreEqual(expected, actual, "Subtraction of mm units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
@@ -391,10 +391,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "Subtraction of mm units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
-            left = new PDFUnit(20, PageUnits.Inches);
-            right = new PDFUnit(10, PageUnits.Inches);
-            expected = new PDFUnit(10, PageUnits.Inches);
-            actual = PDFUnit.Subtract(left, right);
+            left = new Unit(20, PageUnits.Inches);
+            right = new Unit(10, PageUnits.Inches);
+            expected = new Unit(10, PageUnits.Inches);
+            actual = Unit.Subtract(left, right);
             Assert.AreEqual(expected, actual, "Subtraction of inches units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
@@ -402,10 +402,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "Subtraction of inches units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
-            left = new PDFUnit(20, PageUnits.Points);
-            right = new PDFUnit(10, PageUnits.Points);
-            expected = new PDFUnit(10, PageUnits.Points);
-            actual = PDFUnit.Subtract(left, right);
+            left = new Unit(20, PageUnits.Points);
+            right = new Unit(10, PageUnits.Points);
+            expected = new Unit(10, PageUnits.Points);
+            actual = Unit.Subtract(left, right);
             Assert.AreEqual(expected, actual, "Subtraction of Point units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
@@ -422,11 +422,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Subtract_Test2()
         {
-            PDFUnit left = new PDFUnit(50.8, PageUnits.Millimeters); //1 inch
-            PDFUnit right = new PDFUnit(1, PageUnits.Inches); //1 inch
-            PDFUnit expected = new PDFUnit(72, PageUnits.Points); //2 inches
-            PDFUnit actual;
-            actual = PDFUnit.Subtract(left, right);
+            Unit left = new Unit(50.8, PageUnits.Millimeters); //1 inch
+            Unit right = new Unit(1, PageUnits.Inches); //1 inch
+            Unit expected = new Unit(72, PageUnits.Points); //2 inches
+            Unit actual;
+            actual = Unit.Subtract(left, right);
             Assert.AreEqual(expected, actual, "Subtraction of mixed units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
@@ -436,10 +436,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
 
 
-            left = new PDFUnit(144, PageUnits.Points); //2 inches
-            right = new PDFUnit(1, PageUnits.Inches); //2 inches
-            expected = new PDFUnit(25.4, PageUnits.Millimeters); //4 inches
-            actual = PDFUnit.Subtract(left, right);
+            left = new Unit(144, PageUnits.Points); //2 inches
+            right = new Unit(1, PageUnits.Inches); //2 inches
+            expected = new Unit(25.4, PageUnits.Millimeters); //4 inches
+            actual = Unit.Subtract(left, right);
             Assert.AreEqual(expected, actual, "Subtraction of mixed units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
@@ -448,10 +448,10 @@ namespace Scryber.Core.UnitTests.Drawing
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
 
-            left = new PDFUnit(50.8, PageUnits.Millimeters);
-            right = new PDFUnit(72, PageUnits.Points);
-            expected = new PDFUnit(1, PageUnits.Inches);
-            actual = PDFUnit.Subtract(left, right);
+            left = new Unit(50.8, PageUnits.Millimeters);
+            right = new Unit(72, PageUnits.Points);
+            expected = new Unit(1, PageUnits.Inches);
+            actual = Unit.Subtract(left, right);
             Assert.AreEqual(expected, actual, "Subtraction of mixed units failed");
             TestContext.WriteLine("Value {0} minus {1} calcualted as {2}", left, right, actual);
 
@@ -472,11 +472,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void DivideDouble_Test()
         {
-            PDFUnit left = new PDFUnit(10,PageUnits.Inches);
+            Unit left = new Unit(10,PageUnits.Inches);
             double right = 2; 
-            PDFUnit expected = new PDFUnit(5, PageUnits.Inches);
-            PDFUnit actual;
-            actual = PDFUnit.Divide(left, right);
+            Unit expected = new Unit(5, PageUnits.Inches);
+            Unit actual;
+            actual = Unit.Divide(left, right);
             Assert.AreEqual(expected, actual, "Divide in inches failed");
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for divide op");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
@@ -486,11 +486,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for divide op");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(100, PageUnits.Millimeters);
+            left = new Unit(100, PageUnits.Millimeters);
             right = 2;
-            expected = new PDFUnit(50, PageUnits.Millimeters);
+            expected = new Unit(50, PageUnits.Millimeters);
 
-            actual = PDFUnit.Divide(left, right);
+            actual = Unit.Divide(left, right);
             Assert.AreEqual(expected, actual, "Divide in millimeters failed");
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for divide");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
@@ -500,11 +500,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for divide op");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(144, PageUnits.Points);
+            left = new Unit(144, PageUnits.Points);
             right = 2;
-            expected = new PDFUnit(72, PageUnits.Points);
+            expected = new Unit(72, PageUnits.Points);
 
-            actual = PDFUnit.Divide(left, right);
+            actual = Unit.Divide(left, right);
             Assert.AreEqual(expected, actual, "Divide in points failed");
             Assert.AreEqual(actual.Units, PageUnits.Points, "Units changed for divide");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
@@ -522,11 +522,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void DivideInt_Test()
         {
-            PDFUnit left = new PDFUnit(10, PageUnits.Inches);
+            Unit left = new Unit(10, PageUnits.Inches);
             int right = 2;
-            PDFUnit expected = new PDFUnit(5, PageUnits.Inches);
-            PDFUnit actual;
-            actual = PDFUnit.Divide(left, right);
+            Unit expected = new Unit(5, PageUnits.Inches);
+            Unit actual;
+            actual = Unit.Divide(left, right);
             Assert.AreEqual(expected, actual, "Divide in inches failed");
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for divide op");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
@@ -536,11 +536,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for divide op");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(100, PageUnits.Millimeters);
+            left = new Unit(100, PageUnits.Millimeters);
             right = 2;
-            expected = new PDFUnit(50, PageUnits.Millimeters);
+            expected = new Unit(50, PageUnits.Millimeters);
 
-            actual = PDFUnit.Divide(left, right);
+            actual = Unit.Divide(left, right);
             Assert.AreEqual(expected, actual, "Divide in millimeters failed");
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for divide");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
@@ -549,11 +549,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "Divide op in millimeters failed");
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for divide op");
 
-            left = new PDFUnit(144, PageUnits.Points);
+            left = new Unit(144, PageUnits.Points);
             right = 2;
-            expected = new PDFUnit(72, PageUnits.Points);
+            expected = new Unit(72, PageUnits.Points);
 
-            actual = PDFUnit.Divide(left, right);
+            actual = Unit.Divide(left, right);
             Assert.AreEqual(expected, actual, "Divide in points failed");
             Assert.AreEqual(actual.Units, PageUnits.Points, "Units changed for divide");
             TestContext.WriteLine("Value {0} divided by {1} calculated as {2}", left, right, actual);
@@ -575,11 +575,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void MultiplyDouble_Test()
         {
-            PDFUnit left = new PDFUnit(10, PageUnits.Inches);
+            Unit left = new Unit(10, PageUnits.Inches);
             double right = 2;
-            PDFUnit expected = new PDFUnit(20, PageUnits.Inches);
-            PDFUnit actual;
-            actual = PDFUnit.Multiply(left, right);
+            Unit expected = new Unit(20, PageUnits.Inches);
+            Unit actual;
+            actual = Unit.Multiply(left, right);
             Assert.AreEqual(expected, actual, "Multiply in inches failed");
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for Multiply op");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
@@ -589,11 +589,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for Multiply op");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(100, PageUnits.Millimeters);
+            left = new Unit(100, PageUnits.Millimeters);
             right = 2;
-            expected = new PDFUnit(200, PageUnits.Millimeters);
+            expected = new Unit(200, PageUnits.Millimeters);
 
-            actual = PDFUnit.Multiply(left, right);
+            actual = Unit.Multiply(left, right);
             Assert.AreEqual(expected, actual, "Multiply in millimeters failed");
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for Multiply");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
@@ -603,11 +603,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for Multiply op");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(144, PageUnits.Points);
+            left = new Unit(144, PageUnits.Points);
             right = 2;
-            expected = new PDFUnit(288, PageUnits.Points);
+            expected = new Unit(288, PageUnits.Points);
 
-            actual = PDFUnit.Multiply(left, right);
+            actual = Unit.Multiply(left, right);
             Assert.AreEqual(expected, actual, "Multiply in points failed");
             Assert.AreEqual(actual.Units, PageUnits.Points, "Units changed for Multiply");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
@@ -626,11 +626,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void MultiplyInt_Test()
         {
-            PDFUnit left = new PDFUnit(10, PageUnits.Inches);
+            Unit left = new Unit(10, PageUnits.Inches);
             int right = 2;
-            PDFUnit expected = new PDFUnit(20, PageUnits.Inches);
-            PDFUnit actual;
-            actual = PDFUnit.Multiply(left, right);
+            Unit expected = new Unit(20, PageUnits.Inches);
+            Unit actual;
+            actual = Unit.Multiply(left, right);
             Assert.AreEqual(expected, actual, "Multiply in inches failed");
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for Multiply op");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
@@ -640,11 +640,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Inches, "Units changed for Multiply op");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(100, PageUnits.Millimeters);
+            left = new Unit(100, PageUnits.Millimeters);
             right = 2;
-            expected = new PDFUnit(200, PageUnits.Millimeters);
+            expected = new Unit(200, PageUnits.Millimeters);
 
-            actual = PDFUnit.Multiply(left, right);
+            actual = Unit.Multiply(left, right);
             Assert.AreEqual(expected, actual, "Multiply in millimeters failed");
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for Multiply");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
@@ -654,11 +654,11 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(actual.Units, PageUnits.Millimeters, "Units changed for Multiply op");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(144, PageUnits.Points);
+            left = new Unit(144, PageUnits.Points);
             right = 2;
-            expected = new PDFUnit(288, PageUnits.Points);
+            expected = new Unit(288, PageUnits.Points);
 
-            actual = PDFUnit.Multiply(left, right);
+            actual = Unit.Multiply(left, right);
             Assert.AreEqual(expected, actual, "Multiply in points failed");
             Assert.AreEqual(actual.Units, PageUnits.Points, "Units changed for Multiply");
             TestContext.WriteLine("Value {0} multiplied by {1} calculated as {2}", left, right, actual);
@@ -683,56 +683,56 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Compare_Test()
         {
-            PDFUnit one = new PDFUnit(72, PageUnits.Points);
-            PDFUnit two = new PDFUnit(72, PageUnits.Points);
+            Unit one = new Unit(72, PageUnits.Points);
+            Unit two = new Unit(72, PageUnits.Points);
 
             int expected = 0;//equal
 
-            int actual = PDFUnit.Compare(one, two);
+            int actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of equal Points to Points failed");
             TestContext.WriteLine("Point value {0} is equal to {1}", one, two);
 
-            one = new PDFUnit(1, PageUnits.Inches);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(1, PageUnits.Inches);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of equal Inches to Points failed");
             TestContext.WriteLine("Inch value {0} is equal to Point value {1}", one, two);
 
-            one = new PDFUnit(25.4, PageUnits.Millimeters);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(25.4, PageUnits.Millimeters);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of equal Millimeters to Points failed");
             TestContext.WriteLine("mm value {0} is equal to Point value {1}", one, two);
 
             expected = 1; //greater than
 
-            one = new PDFUnit(144, PageUnits.Points);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(144, PageUnits.Points);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of greater than Points to Points failed");
             TestContext.WriteLine("Point value {0} is greater than Point value {1}", one, two);
 
-            one = new PDFUnit(50.8, PageUnits.Millimeters);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(50.8, PageUnits.Millimeters);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of greater than Millimeters to Points failed");
             TestContext.WriteLine("mm value {0} is greater than Point value {1}", one, two);
 
-            one = new PDFUnit(2, PageUnits.Inches);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(2, PageUnits.Inches);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of greater than Inches to Points failed");
             TestContext.WriteLine("Inches value {0} is greater than Point value {1}", one, two);
 
             expected = -1; //less than
 
-            one = new PDFUnit(36, PageUnits.Points);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(36, PageUnits.Points);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of less than Points to Points failed");
             TestContext.WriteLine("Point value {0} is less than Point value {1}", one, two);
 
-            one = new PDFUnit(12.8, PageUnits.Millimeters);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(12.8, PageUnits.Millimeters);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of less than Millimeters to Points failed");
             TestContext.WriteLine("Millimeter value {0} is less than Point value {1}", one, two);
 
-            one = new PDFUnit(0.5, PageUnits.Inches);
-            actual = PDFUnit.Compare(one, two);
+            one = new Unit(0.5, PageUnits.Inches);
+            actual = Unit.Compare(one, two);
             Assert.AreEqual(expected, actual, "Compare of less than Inches to Points failed");
             TestContext.WriteLine("Inches value {0} is less than Point value {1}", one, two);
 
@@ -746,56 +746,56 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void CompareTo_Test()
         {
-            PDFUnit target = new PDFUnit(72, PageUnits.Points);
-            object obj = new PDFUnit(72, PageUnits.Points);
+            Unit target = new Unit(72, PageUnits.Points);
+            object obj = new Unit(72, PageUnits.Points);
             int expected = 0;
             int actual;
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared equal");
             TestContext.WriteLine("object value {0} is equal to Point value {1}", obj, target);
 
-            obj = new PDFUnit(1, PageUnits.Inches);
+            obj = new Unit(1, PageUnits.Inches);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared equal");
             TestContext.WriteLine("object value {0} is equal to Point value {1}", obj, target);
 
-            obj = new PDFUnit(25.4, PageUnits.Millimeters);
+            obj = new Unit(25.4, PageUnits.Millimeters);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared equal");
             TestContext.WriteLine("object value {0} is equal to Point value {1}", obj, target);
 
             expected = -1; //less than
 
-            obj = new PDFUnit(144, PageUnits.Points);
+            obj = new Unit(144, PageUnits.Points);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared less than");
             TestContext.WriteLine("object value {0} is less than Point value {1}", obj, target);
 
 
-            obj = new PDFUnit(2, PageUnits.Inches);
+            obj = new Unit(2, PageUnits.Inches);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared less than");
             TestContext.WriteLine("object value {0} is less than Point value {1}", obj, target);
 
-            obj = new PDFUnit(50.8, PageUnits.Millimeters);
+            obj = new Unit(50.8, PageUnits.Millimeters);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared less than");
             TestContext.WriteLine("object value {0} is less than Point value {1}", obj, target);
 
             expected = 1; //greater than
 
-            obj = new PDFUnit(36, PageUnits.Points);
+            obj = new Unit(36, PageUnits.Points);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared greater than");
             TestContext.WriteLine("object value {0} is greater than Point value {1}", obj, target);
 
 
-            obj = new PDFUnit(0.5, PageUnits.Inches);
+            obj = new Unit(0.5, PageUnits.Inches);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared greater than");
             TestContext.WriteLine("object value {0} is greater than Point value {1}", obj, target);
 
-            obj = new PDFUnit(12.7, PageUnits.Millimeters);
+            obj = new Unit(12.7, PageUnits.Millimeters);
             actual = target.CompareTo(obj);
             Assert.AreEqual(expected, actual, "Object and Unit were not compared greater than");
             TestContext.WriteLine("object value {0} is greater than Point value {1}", obj, target);
@@ -809,55 +809,55 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void CompareTo_Test1()
         {
-            PDFUnit target = new PDFUnit(72, PageUnits.Points);
-            PDFUnit unit = new PDFUnit(72, PageUnits.Points);
+            Unit target = new Unit(72, PageUnits.Points);
+            Unit unit = new Unit(72, PageUnits.Points);
             int expected = 0;
             int actual;
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared equal");
             TestContext.WriteLine("Unit value {0} is equal to {1}", target, unit);
 
-            unit = new PDFUnit(1, PageUnits.Inches);
+            unit = new Unit(1, PageUnits.Inches);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared equal");
             TestContext.WriteLine("Unit value {0} is equal to {1}", target, unit);
 
-            unit = new PDFUnit(25.4, PageUnits.Millimeters);
+            unit = new Unit(25.4, PageUnits.Millimeters);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared equal");
             TestContext.WriteLine("Unit value {0} is equal to {1}", target, unit);
 
             expected = -1; //less than
 
-            unit = new PDFUnit(144, PageUnits.Points);
+            unit = new Unit(144, PageUnits.Points);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared less than");
             TestContext.WriteLine("Unit value {0} is less than to {1}", target, unit);
 
-            unit = new PDFUnit(2, PageUnits.Inches);
+            unit = new Unit(2, PageUnits.Inches);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared less than");
             TestContext.WriteLine("Unit value {0} is less than to {1}", target, unit);
 
-            unit = new PDFUnit(50.8, PageUnits.Millimeters);
+            unit = new Unit(50.8, PageUnits.Millimeters);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared less than");
             TestContext.WriteLine("Unit value {0} is less than to {1}", target, unit);
 
             expected = 1; //greater than
 
-            unit = new PDFUnit(36, PageUnits.Points);
+            unit = new Unit(36, PageUnits.Points);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared greater than");
             TestContext.WriteLine("Unit value {0} is greater than to {1}", target, unit);
 
 
-            unit = new PDFUnit(0.5, PageUnits.Inches);
+            unit = new Unit(0.5, PageUnits.Inches);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared greater than");
             TestContext.WriteLine("Unit value {0} is greater than to {1}", target, unit);
 
-            unit = new PDFUnit(12.7, PageUnits.Millimeters);
+            unit = new Unit(12.7, PageUnits.Millimeters);
             actual = target.CompareTo(unit);
             Assert.AreEqual(expected, actual, "Unit and Unit were not compared greater than");
             TestContext.WriteLine("Unit value {0} is greater than to {1}", target, unit);
@@ -875,11 +875,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void EqualStatic_Test()
         {
-            PDFUnit left = new PDFUnit(72,PageUnits.Points); 
-            PDFUnit right = new PDFUnit(1, PageUnits.Inches);
+            Unit left = new Unit(72,PageUnits.Points); 
+            Unit right = new Unit(1, PageUnits.Inches);
             bool expected = true;
             bool actual;
-            actual = PDFUnit.Equals(left, right);
+            actual = Unit.Equals(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as equal");
             TestContext.WriteLine("Value {0} equals {1} calculated as {2}", left, right, actual);
 
@@ -887,9 +887,9 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as equal");
             TestContext.WriteLine("Value {0} equals {1} calculated as {2}", left, right, actual);
 
-            left = new PDFUnit(144, PageUnits.Points);
+            left = new Unit(144, PageUnits.Points);
             expected = false;
-            actual = PDFUnit.Equals(left, right);
+            actual = Unit.Equals(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as un-equal");
             TestContext.WriteLine("Value {0} equals {1} calculated as {2}", left, right, actual);
 
@@ -905,15 +905,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void EqualToObject_Test1()
         {
-            PDFUnit target = new PDFUnit(72,PageUnits.Points);
-            object obj = new PDFUnit(1, PageUnits.Inches);
+            Unit target = new Unit(72,PageUnits.Points);
+            object obj = new Unit(1, PageUnits.Inches);
             bool expected = true; 
             bool actual;
             actual = target.Equals(obj);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as equal");
             TestContext.WriteLine("Value {0} equals {1} calculated as {2}", target, obj, actual);
 
-            obj = new PDFUnit(2, PageUnits.Inches);
+            obj = new Unit(2, PageUnits.Inches);
             expected = false;
             actual = target.Equals(obj);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as un-equal");
@@ -928,15 +928,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void EqualToUnit_Test2()
         {
-            PDFUnit target = new PDFUnit(72, PageUnits.Points);
-            PDFUnit unit = new PDFUnit(1, PageUnits.Inches);
+            Unit target = new Unit(72, PageUnits.Points);
+            Unit unit = new Unit(1, PageUnits.Inches);
             bool expected = true;
             bool actual;
             actual = target.Equals(unit);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as equal");
             TestContext.WriteLine("Value {0} equals {1} calculated as {2}", target, unit, actual);
 
-            unit = new PDFUnit(2, PageUnits.Inches);
+            unit = new Unit(2, PageUnits.Inches);
             expected = false;
             actual = target.Equals(unit);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as un-equal");
@@ -954,11 +954,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void NotEquals_Test()
         {
-            PDFUnit left = new PDFUnit(72,PageUnits.Points); 
-            PDFUnit right = new PDFUnit(1, PageUnits.Inches); 
+            Unit left = new Unit(72,PageUnits.Points); 
+            Unit right = new Unit(1, PageUnits.Inches); 
             bool expected = false; //They are equal
             bool actual;
-            actual = PDFUnit.NotEquals(left, right);
+            actual = Unit.NotEquals(left, right);
             Assert.AreEqual(expected, actual, "1. Evaluated NotEquals falied");
             TestContext.WriteLine("Value {0} not equal to {1} calculated as {2}", left, right, actual);
 
@@ -966,10 +966,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "2. Evaluated'!=' failed");
             TestContext.WriteLine("Value {0} not equal to {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(2, PageUnits.Inches);
+            right = new Unit(2, PageUnits.Inches);
             expected = true;
 
-            actual = PDFUnit.NotEquals(left, right);
+            actual = Unit.NotEquals(left, right);
             Assert.AreEqual(expected, actual, "3. Evaluated NotEquals falied");
             TestContext.WriteLine("Value {0} not equal to {1} calculated as {2}", left, right, actual);
 
@@ -989,12 +989,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void GreaterThan_Test()
         {
-            PDFUnit left = new PDFUnit(144, PageUnits.Points);
-            PDFUnit right = new PDFUnit(1, PageUnits.Inches);
+            Unit left = new Unit(144, PageUnits.Points);
+            Unit right = new Unit(1, PageUnits.Inches);
 
             bool expected = true;
             bool actual;
-            actual = PDFUnit.GreaterThan(left, right);
+            actual = Unit.GreaterThan(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as greater than");
             TestContext.WriteLine("Value {0} greater than {1} calculated as {2}", left, right, actual);
 
@@ -1002,10 +1002,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as greater than op");
             TestContext.WriteLine("Value {0} greater than {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(2, PageUnits.Inches);
+            right = new Unit(2, PageUnits.Inches);
             expected = false; //same value
 
-            actual = PDFUnit.GreaterThan(left, right);
+            actual = Unit.GreaterThan(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as not greater than");
             TestContext.WriteLine("Value {0} greater than {1} calculated as {2}", left, right, actual);
 
@@ -1013,10 +1013,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as not greater than op");
             TestContext.WriteLine("Value {0} greater than {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(3, PageUnits.Inches);
+            right = new Unit(3, PageUnits.Inches);
             expected = false; //different larger value
 
-            actual = PDFUnit.GreaterThan(left, right);
+            actual = Unit.GreaterThan(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as not greater than");
             TestContext.WriteLine("Value {0} greater than {1} calculated as {2}", left, right, actual);
 
@@ -1033,12 +1033,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void GreaterThanEqual_Test()
         {
-            PDFUnit left = new PDFUnit(144, PageUnits.Points);
-            PDFUnit right = new PDFUnit(1, PageUnits.Inches);
+            Unit left = new Unit(144, PageUnits.Points);
+            Unit right = new Unit(1, PageUnits.Inches);
 
             bool expected = true;
             bool actual;
-            actual = PDFUnit.GreaterThanEqual(left, right);
+            actual = Unit.GreaterThanEqual(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as greater than equal");
             TestContext.WriteLine("Value {0} greater than or equal to {1} calculated as {2}", left, right, actual);
 
@@ -1046,10 +1046,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as greater than equal op");
             TestContext.WriteLine("Value {0} greater than or equal to {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(2, PageUnits.Inches);
+            right = new Unit(2, PageUnits.Inches);
             expected = true; //same value
 
-            actual = PDFUnit.GreaterThanEqual(left, right);
+            actual = Unit.GreaterThanEqual(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as not greater than equal");
             TestContext.WriteLine("Value {0} greater than or equal to {1} calculated as {2}", left, right, actual);
 
@@ -1057,10 +1057,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as not greater than equal op");
             TestContext.WriteLine("Value {0} greater than or equal to {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(3, PageUnits.Inches);
+            right = new Unit(3, PageUnits.Inches);
             expected = false; //different larger value
 
-            actual = PDFUnit.GreaterThanEqual(left, right);
+            actual = Unit.GreaterThanEqual(left, right);
             Assert.AreEqual(expected, actual, "The PDFUnits were not evaluated as not greater than equal");
             TestContext.WriteLine("Value {0} greater than or equal to {1} calculated as {2}", left, right, actual);
 
@@ -1081,12 +1081,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void LessThan_Test()
         {
-            PDFUnit left = new PDFUnit(72, PageUnits.Points);
-            PDFUnit right = new PDFUnit(2, PageUnits.Inches);
+            Unit left = new Unit(72, PageUnits.Points);
+            Unit right = new Unit(2, PageUnits.Inches);
 
             bool expected = true;
             bool actual;
-            actual = PDFUnit.LessThan(left, right);
+            actual = Unit.LessThan(left, right);
             Assert.AreEqual(expected, actual, "1. The PDFUnits were not evaluated as less than");
             TestContext.WriteLine("Value {0} less than {1} calculated as {2}", left, right, actual);
 
@@ -1094,10 +1094,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "2. The PDFUnits were not evaluated as less than op");
             TestContext.WriteLine("Value {0} less than {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(1, PageUnits.Inches);
+            right = new Unit(1, PageUnits.Inches);
             expected = false; //same value
 
-            actual = PDFUnit.LessThan(left, right);
+            actual = Unit.LessThan(left, right);
             Assert.AreEqual(expected, actual, "3. The PDFUnits were not evaluated as not less than");
             TestContext.WriteLine("Value {0} less than {1} calculated as {2}", left, right, actual);
 
@@ -1105,10 +1105,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "4. The PDFUnits were not evaluated as not less than op");
             TestContext.WriteLine("Value {0} less than {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(0.5, PageUnits.Inches);
+            right = new Unit(0.5, PageUnits.Inches);
             expected = false; //different larger value
 
-            actual = PDFUnit.LessThan(left, right);
+            actual = Unit.LessThan(left, right);
             Assert.AreEqual(expected, actual, "5. The PDFUnits were not evaluated as not less than");
             TestContext.WriteLine("Value {0} less than {1} calculated as {2}", left, right, actual);
 
@@ -1124,12 +1124,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void LessThanEqual_Test()
         {
-            PDFUnit left = new PDFUnit(72, PageUnits.Points);
-            PDFUnit right = new PDFUnit(2, PageUnits.Inches);
+            Unit left = new Unit(72, PageUnits.Points);
+            Unit right = new Unit(2, PageUnits.Inches);
 
             bool expected = true;
             bool actual;
-            actual = PDFUnit.LessThanEqual(left, right);
+            actual = Unit.LessThanEqual(left, right);
             Assert.AreEqual(expected, actual, "1. The PDFUnits were not evaluated as less than equal");
             TestContext.WriteLine("Value {0} less than or equal to {1} calculated as {2}", left, right, actual);
 
@@ -1137,10 +1137,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "2. The PDFUnits were not evaluated as less than equal op");
             TestContext.WriteLine("Value {0} less than or equal to {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(1, PageUnits.Inches);
+            right = new Unit(1, PageUnits.Inches);
             expected = true; //same value
 
-            actual = PDFUnit.LessThanEqual(left, right);
+            actual = Unit.LessThanEqual(left, right);
             Assert.AreEqual(expected, actual, "3. The PDFUnits were not evaluated as not less than equal");
             TestContext.WriteLine("Value {0} less than or equal to {1} calculated as {2}", left, right, actual);
 
@@ -1148,10 +1148,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "4. The PDFUnits were not evaluated as not less than equal op");
             TestContext.WriteLine("Value {0} less than or equal to {1} calculated as {2}", left, right, actual);
 
-            right = new PDFUnit(0.5, PageUnits.Inches);
+            right = new Unit(0.5, PageUnits.Inches);
             expected = false; //larger value
 
-            actual = PDFUnit.LessThanEqual(left, right);
+            actual = Unit.LessThanEqual(left, right);
             Assert.AreEqual(expected, actual, "5. The PDFUnits were not evaluated as not less than equal");
             TestContext.WriteLine("Value {0} less than or equal to {1} calculated as {2}", left, right, actual);
 
@@ -1171,11 +1171,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Max_Test()
         {
-            PDFUnit a = new PDFUnit(72, PageUnits.Points);
-            PDFUnit b = new PDFUnit(2, PageUnits.Inches);
-            PDFUnit expected = b;
-            PDFUnit actual;
-            actual = PDFUnit.Max(a, b);
+            Unit a = new Unit(72, PageUnits.Points);
+            Unit b = new Unit(2, PageUnits.Inches);
+            Unit expected = b;
+            Unit actual;
+            actual = Unit.Max(a, b);
             Assert.AreEqual(expected, actual, "Max returned incorrect value");
             TestContext.WriteLine("Max value of {0} and {1} calculated as {2}", a, b, actual);
         }
@@ -1187,11 +1187,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Min_Test()
         {
-            PDFUnit a = new PDFUnit(72, PageUnits.Points);
-            PDFUnit b = new PDFUnit(2, PageUnits.Inches);
-            PDFUnit expected = a;
-            PDFUnit actual;
-            actual = PDFUnit.Min(a, b);
+            Unit a = new Unit(72, PageUnits.Points);
+            Unit b = new Unit(2, PageUnits.Inches);
+            Unit expected = a;
+            Unit actual;
+            actual = Unit.Min(a, b);
             Assert.AreEqual(expected, actual, "Min returned incorrect value");
             TestContext.WriteLine("Min value of {0} and {1} calculated as {2}", a, b, actual);
         }
@@ -1211,15 +1211,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Parse_Test()
         {
-            Parse("10pt", new PDFUnit(10,PageUnits.Points));
-            Parse("20.543pt", new PDFUnit(20.543, PageUnits.Points));
-            Parse("000123.456", new PDFUnit(123.456));
-            Parse("1.5in", new PDFUnit(1.5, PageUnits.Inches));
-            Parse("234567890123.12345mm", new PDFUnit(234567890123.12345, PageUnits.Millimeters));
+            Parse("10pt", new Unit(10,PageUnits.Points));
+            Parse("20.543pt", new Unit(20.543, PageUnits.Points));
+            Parse("000123.456", new Unit(123.456));
+            Parse("1.5in", new Unit(1.5, PageUnits.Inches));
+            Parse("234567890123.12345mm", new Unit(234567890123.12345, PageUnits.Millimeters));
 
             try
             {
-                Parse("ThisIsAFailpt", new PDFUnit());
+                Parse("ThisIsAFailpt", new Unit());
                 throw new Exception("No exception raised for invalid argument");
             }
             catch (ArgumentException)
@@ -1229,10 +1229,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
         }
 
-        private PDFUnit Parse(string value, PDFUnit expected)
+        private Unit Parse(string value, Unit expected)
         {
-            PDFUnit actual;
-            actual = PDFUnit.Parse(value);
+            Unit actual;
+            actual = Unit.Parse(value);
             Assert.AreEqual(expected, actual, "Parse failed for '" + value + "'");
             this.TestContext.WriteLine("Parsed string '{0}' to PDFUnit {1}", value, expected);
             return expected;
@@ -1249,19 +1249,19 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void TryParse_Test()
         {
-            TryParse("10pt", true, new PDFUnit(10, PageUnits.Points));
-            TryParse("20.543pt",true, new PDFUnit(20.543, PageUnits.Points));
-            TryParse("000123.456", true, new PDFUnit(123.456));
-            TryParse("1.5in", true, new PDFUnit(1.5, PageUnits.Inches));
-            TryParse("234567890123.12345mm", true, new PDFUnit(234567890123.12345, PageUnits.Millimeters));
-            TryParse("ThisIsAFailpt", false, PDFUnit.Empty);
+            TryParse("10pt", true, new Unit(10, PageUnits.Points));
+            TryParse("20.543pt",true, new Unit(20.543, PageUnits.Points));
+            TryParse("000123.456", true, new Unit(123.456));
+            TryParse("1.5in", true, new Unit(1.5, PageUnits.Inches));
+            TryParse("234567890123.12345mm", true, new Unit(234567890123.12345, PageUnits.Millimeters));
+            TryParse("ThisIsAFailpt", false, Unit.Empty);
 
         }
 
-        private void TryParse(string value, bool expectedresult, PDFUnit expectedvalue)
+        private void TryParse(string value, bool expectedresult, Unit expectedvalue)
         {
-            PDFUnit parsed;
-            bool actualresult = PDFUnit.TryParse(value, out parsed);
+            Unit parsed;
+            bool actualresult = Unit.TryParse(value, out parsed);
             Assert.AreEqual(expectedresult, actualresult,"The expected TryParse returned value was not the same as the expected result");
             Assert.AreEqual(expectedvalue, parsed, "The parsed value for TryParse was not the same as the expected value");
             if(expectedresult)
@@ -1285,40 +1285,40 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Convert_Test()
         {
-            PDFUnit expected = new PDFUnit(1, PageUnits.Inches);
-            PDFUnit actual;
+            Unit expected = new Unit(1, PageUnits.Inches);
+            Unit actual;
 
-            PDFUnit unit = new PDFUnit(25.4, PageUnits.Millimeters);
-            actual = PDFUnit.Convert(unit, PageUnits.Inches);
+            Unit unit = new Unit(25.4, PageUnits.Millimeters);
+            actual = Unit.Convert(unit, PageUnits.Inches);
             Assert.AreEqual(expected.Value, actual.Value, "The converted millimeters to inches failed");
             TestContext.WriteLine("Value {0} converted to {1}", unit, actual);
 
-            unit = new PDFUnit(72, PageUnits.Points);
-            actual = PDFUnit.Convert(unit, PageUnits.Inches);
+            unit = new Unit(72, PageUnits.Points);
+            actual = Unit.Convert(unit, PageUnits.Inches);
             Assert.AreEqual(expected.Value, actual.Value, "The converted points to inches failed");
             TestContext.WriteLine("Value {0} converted to {1}", unit, actual);
 
-            expected = new PDFUnit(144, PageUnits.Points);
+            expected = new Unit(144, PageUnits.Points);
 
-            unit = new PDFUnit(2, PageUnits.Inches);
-            actual = PDFUnit.Convert(unit, PageUnits.Points);
+            unit = new Unit(2, PageUnits.Inches);
+            actual = Unit.Convert(unit, PageUnits.Points);
             Assert.AreEqual(expected.Value, actual.Value, "The converted inches to points failed");
             TestContext.WriteLine("Value {0} converted to {1}", unit, actual);
 
-            unit = new PDFUnit(50.8, PageUnits.Millimeters);
-            actual = PDFUnit.Convert(unit, PageUnits.Points);
+            unit = new Unit(50.8, PageUnits.Millimeters);
+            actual = Unit.Convert(unit, PageUnits.Points);
             Assert.AreEqual(expected.Value, actual.Value, "The converted millimeters to points failed");
             TestContext.WriteLine("Value {0} converted to {1}", unit, actual);
 
-            expected = new PDFUnit(12.7, PageUnits.Millimeters);
+            expected = new Unit(12.7, PageUnits.Millimeters);
 
-            unit = new PDFUnit(0.5, PageUnits.Inches);
-            actual = PDFUnit.Convert(unit, PageUnits.Millimeters);
+            unit = new Unit(0.5, PageUnits.Inches);
+            actual = Unit.Convert(unit, PageUnits.Millimeters);
             Assert.AreEqual(expected.Value, actual.Value, "The converted inches to millimeters failed");
             TestContext.WriteLine("Value {0} converted to {1}", unit, actual);
 
-            unit = new PDFUnit(36, PageUnits.Points);
-            actual = PDFUnit.Convert(unit, PageUnits.Millimeters);
+            unit = new Unit(36, PageUnits.Points);
+            actual = Unit.Convert(unit, PageUnits.Millimeters);
             Assert.AreEqual(expected.Value, actual.Value, "The converted points to millimeters failed");
             TestContext.WriteLine("Value {0} converted to {1}", unit, actual);
         }
@@ -1335,9 +1335,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToInches_Test()
         {
-            PDFUnit target = new PDFUnit(72,PageUnits.Points); 
-            PDFUnit expected = new PDFUnit(1,PageUnits.Inches);
-            PDFUnit actual;
+            Unit target = new Unit(72,PageUnits.Points); 
+            Unit expected = new Unit(1,PageUnits.Inches);
+            Unit actual;
             actual = target.ToInches();
             Assert.AreEqual(expected.Value, actual.Value, "ToInches() did not return the correct Value from Points");
             Assert.AreEqual(expected.Units, actual.Units, "ToInches() did not return the correct Units from Points");
@@ -1351,9 +1351,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToMillimeters_Test()
         {
-            PDFUnit target = new PDFUnit(72, PageUnits.Points);
-            PDFUnit expected = new PDFUnit(25.4, PageUnits.Millimeters);
-            PDFUnit actual;
+            Unit target = new Unit(72, PageUnits.Points);
+            Unit expected = new Unit(25.4, PageUnits.Millimeters);
+            Unit actual;
             actual = target.ToMillimeters();
             Assert.AreEqual(expected.Value, actual.Value, "ToMillimeters() did not return the correct Value from Points");
             Assert.AreEqual(expected.Units, actual.Units, "ToMillimeters() did not return the correct Units from Points");
@@ -1366,9 +1366,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToPoints_Test()
         {
-            PDFUnit target = new PDFUnit(1, PageUnits.Inches);
-            PDFUnit expected = new PDFUnit(72, PageUnits.Points);
-            PDFUnit actual;
+            Unit target = new Unit(1, PageUnits.Inches);
+            Unit expected = new Unit(72, PageUnits.Points);
+            Unit actual;
             actual = target.ToPoints();
             Assert.AreEqual(expected.Value, actual.Value, "ToPoints() did not return the correct Value from Points");
             Assert.AreEqual(expected.Units, actual.Units, "ToPoints() did not return the correct Units from Points");
@@ -1385,17 +1385,17 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToString_Test()
         {
-            ConfirmString("0pt", true, new PDFUnit(0, PageUnits.Points));
-            ConfirmString("20pt", true, new PDFUnit(20, PageUnits.Points));
-            ConfirmString("123.456pt", true, new PDFUnit(123.456));
-            ConfirmString("1.5in", true, new PDFUnit(1.5, PageUnits.Inches));
+            ConfirmString("0pt", true, new Unit(0, PageUnits.Points));
+            ConfirmString("20pt", true, new Unit(20, PageUnits.Points));
+            ConfirmString("123.456pt", true, new Unit(123.456));
+            ConfirmString("1.5in", true, new Unit(1.5, PageUnits.Inches));
 
             //Three decimal places seems the most accurate.
-            ConfirmString("234567890123.12344mm", true, new PDFUnit(234567890123.12344, PageUnits.Millimeters));
+            ConfirmString("234567890123.12344mm", true, new Unit(234567890123.12344, PageUnits.Millimeters));
         }
 
 
-        private void ConfirmString(string expected, bool shouldmatch, PDFUnit value)
+        private void ConfirmString(string expected, bool shouldmatch, Unit value)
         {
             string actual= value.ToString();
             if (shouldmatch)
@@ -1415,9 +1415,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void GetHashCode_Test()
         {
-            PDFUnit target = new PDFUnit(72, PageUnits.Points);
+            Unit target = new Unit(72, PageUnits.Points);
 
-            int expected = new PDFUnit(1, PageUnits.Inches).GetHashCode();
+            int expected = new Unit(1, PageUnits.Inches).GetHashCode();
             int actual;
             actual = target.GetHashCode();
             Assert.AreEqual(expected, actual, "The hash codes for equvalent values should be the same");
@@ -1440,8 +1440,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void op_ImplicitFromDouble_Test()
         {
             double value = 100; 
-            PDFUnit expected = new PDFUnit(value); 
-            PDFUnit actual;
+            Unit expected = new Unit(value); 
+            Unit actual;
             actual = value;
             Assert.AreEqual(expected, actual, "Impicit cast from double and constructed value did not match");
         }
@@ -1457,8 +1457,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void op_ImplicitFromInt_Test()
         {
             int value = 100;
-            PDFUnit expected = new PDFUnit(100);
-            PDFUnit actual;
+            Unit expected = new Unit(100);
+            Unit actual;
             actual = value;
             Assert.AreEqual(expected, actual, "Impicit cast from int and constructed value did not match");
         }
@@ -1478,10 +1478,10 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Empty_Test()
         {
-            PDFUnit actual;
-            PDFUnit expected = new PDFUnit();
+            Unit actual;
+            Unit expected = new Unit();
 
-            actual = PDFUnit.Empty;
+            actual = Unit.Empty;
             Assert.AreEqual(expected, actual, "Returned Empty was not equal to an empty PDFUnit");
             Assert.AreEqual(expected.PointsValue, actual.PointsValue);
             Assert.AreEqual(expected.Units, actual.Units);
@@ -1500,9 +1500,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Zero_Test()
         {
-            PDFUnit actual;
-            actual = PDFUnit.Zero;
-            PDFUnit expected = new PDFUnit(0, PageUnits.Points);
+            Unit actual;
+            actual = Unit.Zero;
+            Unit expected = new Unit(0, PageUnits.Points);
             Assert.AreEqual(expected, actual, "Returned Zero was not 0pts");
             Assert.AreEqual(expected.PointsValue, actual.PointsValue);
             Assert.AreEqual(expected.Units, actual.Units);

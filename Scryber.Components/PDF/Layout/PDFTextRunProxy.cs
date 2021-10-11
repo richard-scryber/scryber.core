@@ -32,7 +32,7 @@ namespace Scryber.PDF.Layout
     {
         #region ivars
 
-        private PDFSize _measuredSize;
+        private Size _measuredSize;
         private Scryber.Text.PDFTextProxyOp _proxy;
 
         #endregion
@@ -42,7 +42,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this character run
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return this._measuredSize.Width; }
         }
@@ -54,7 +54,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this character run
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return this._measuredSize.Height; }
         }
@@ -74,14 +74,14 @@ namespace Scryber.PDF.Layout
         #endregion
 
 
-        public PDFTextRunProxy(PDFSize size, Scryber.Text.PDFTextProxyOp proxy, PDFLayoutLine line, IComponent owner)
+        public PDFTextRunProxy(Size size, Scryber.Text.PDFTextProxyOp proxy, PDFLayoutLine line, IComponent owner)
             : base(line, owner)
         {
             this._measuredSize = size;
             this._proxy = proxy;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
         }

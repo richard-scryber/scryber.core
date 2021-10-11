@@ -31,9 +31,9 @@ namespace Scryber.Drawing
         
         private List<Path> _paths = new List<Path>();
         private Stack<Path> _stack = new Stack<Path>();
-        private PDFRect _bounds;
-        private PDFPoint _cursor;
-        private PDFPoint _lasthandle;
+        private Rect _bounds;
+        private Point _cursor;
+        private Point _lasthandle;
         private GraphicFillMode _mode = GraphicFillMode.Winding;
 
         public GraphicFillMode Mode
@@ -63,13 +63,13 @@ namespace Scryber.Drawing
             }
         }
 
-        public PDFPoint Cursor
+        public Point Cursor
         {
             get { return _cursor; }
             set { _cursor = value; }
         }
 
-        public PDFPoint LastHandle
+        public Point LastHandle
         {
             get { return _lasthandle; }
             set { _lasthandle = value; }
@@ -86,7 +86,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets the bounds of this path
         /// </summary>
-        public PDFRect Bounds
+        public Rect Bounds
         {
             get { return _bounds; }
         }
@@ -116,10 +116,10 @@ namespace Scryber.Drawing
 
             _stack = new Stack<Path>();
             _stack.Push(p);
-            _bounds = PDFRect.Empty;
+            _bounds = Rect.Empty;
         }
 
-        public void MoveTo(PDFPoint start)
+        public void MoveTo(Point start)
         {
             PathMoveData move = new PathMoveData();
             move.MoveTo = start;
@@ -128,17 +128,17 @@ namespace Scryber.Drawing
             Cursor = start;
         }
 
-        public void MoveBy(PDFPoint delta)
+        public void MoveBy(Point delta)
         {
             PathMoveData move = new PathMoveData();
-            PDFPoint pos = ConvertDeltaToActual(delta);
+            Point pos = ConvertDeltaToActual(delta);
             move.MoveTo = pos;
             CurrentPath.Add(move);
             IncludeInBounds(pos);
             Cursor = pos;
         }
 
-        public void LineTo(PDFPoint end)
+        public void LineTo(Point end)
         {
             PathLineData line = new PathLineData();
             line.LineTo = end;
@@ -147,50 +147,50 @@ namespace Scryber.Drawing
             Cursor = end;
         }
 
-        public void LineFor(PDFPoint delta)
+        public void LineFor(Point delta)
         {
             PathLineData line = new PathLineData();
-            PDFPoint end = ConvertDeltaToActual(delta);
+            Point end = ConvertDeltaToActual(delta);
             line.LineTo = end;
             CurrentPath.Add(line);
             IncludeInBounds(end);
             Cursor = end;
         }
 
-        public void VerticalLineTo(PDFUnit y)
+        public void VerticalLineTo(Unit y)
         {
             PathLineData line = new PathLineData();
-            PDFPoint end = new PDFPoint(this.Cursor.X, y);
+            Point end = new Point(this.Cursor.X, y);
             line.LineTo = end;
             CurrentPath.Add(line);
             IncludeInBounds(end);
             Cursor = end;
         }
 
-        public void VerticalLineFor(PDFUnit dy)
+        public void VerticalLineFor(Unit dy)
         {
             PathLineData line = new PathLineData();
-            PDFPoint end = ConvertDeltaToActual(0, dy);
+            Point end = ConvertDeltaToActual(0, dy);
             line.LineTo = end;
             CurrentPath.Add(line);
             IncludeInBounds(end);
             Cursor = end;
         }
 
-        public void HorizontalLineTo(PDFUnit x)
+        public void HorizontalLineTo(Unit x)
         {
             PathLineData line = new PathLineData();
-            PDFPoint end = new PDFPoint(x, this.Cursor.Y);
+            Point end = new Point(x, this.Cursor.Y);
             line.LineTo = end;
             CurrentPath.Add(line);
             IncludeInBounds(end);
             Cursor = end;
         }
 
-        public void HorizontalLineFor(PDFUnit dx)
+        public void HorizontalLineFor(Unit dx)
         {
             PathLineData line = new PathLineData();
-            PDFPoint end = ConvertDeltaToActual(dx, 0);
+            Point end = ConvertDeltaToActual(dx, 0);
             line.LineTo = end;
             CurrentPath.Add(line);
             IncludeInBounds(end);
@@ -209,7 +209,7 @@ namespace Scryber.Drawing
                 this.EndPath();
         }
 
-        public void QuadraticCurveTo(PDFPoint end, PDFPoint handle)
+        public void QuadraticCurveTo(Point end, Point handle)
         {
             PathQuadraticCurve arc = new PathQuadraticCurve() { EndPoint = end, ControlPoint = handle };
 
@@ -221,10 +221,10 @@ namespace Scryber.Drawing
         }
 
 
-        public void QuadraticCurveFor(PDFPoint endDelta, PDFPoint handleDelta)
+        public void QuadraticCurveFor(Point endDelta, Point handleDelta)
         {
-            PDFPoint end = ConvertDeltaToActual(endDelta);
-            PDFPoint handle = ConvertDeltaToActual(handleDelta);
+            Point end = ConvertDeltaToActual(endDelta);
+            Point handle = ConvertDeltaToActual(handleDelta);
             PathQuadraticCurve arc = new PathQuadraticCurve() { EndPoint = end, ControlPoint = handle };
 
             CurrentPath.Add(arc);
@@ -234,45 +234,45 @@ namespace Scryber.Drawing
             LastHandle = handle;
         }
 
-        public void SmoothQuadraticCurveFor(PDFPoint endDelta)
+        public void SmoothQuadraticCurveFor(Point endDelta)
         {
-            PDFPoint end = ConvertDeltaToActual(endDelta);
+            Point end = ConvertDeltaToActual(endDelta);
 
-            if (this.LastHandle == PDFPoint.Empty)
+            if (this.LastHandle == Point.Empty)
             {
                 this.LineTo(end);
             }
             else
             {
-                PDFPoint handle = GetReflectedLastHandle();
+                Point handle = GetReflectedLastHandle();
                 this.QuadraticCurveTo(end, handle);
             }
         }
 
-        public void SmoothQuadraticCurveTo(PDFPoint end)
+        public void SmoothQuadraticCurveTo(Point end)
         {
-            if (this.LastHandle == PDFPoint.Empty)
+            if (this.LastHandle == Point.Empty)
             {
                 this.LineTo(end);
             }
             else
             {
-                PDFPoint handle = GetReflectedLastHandle();
+                Point handle = GetReflectedLastHandle();
                 this.QuadraticCurveTo(end, handle);
             }
 
         }
 
-        private PDFPoint GetReflectedLastHandle()
+        private Point GetReflectedLastHandle()
         {
-            PDFUnit handlex = new PDFUnit((Cursor.X.PointsValue - LastHandle.X.PointsValue));
-            PDFUnit handley = new PDFUnit((Cursor.Y.PointsValue - LastHandle.Y.PointsValue));
-            PDFPoint handle = new PDFPoint(handlex, handley);
+            Unit handlex = new Unit((Cursor.X.PointsValue - LastHandle.X.PointsValue));
+            Unit handley = new Unit((Cursor.Y.PointsValue - LastHandle.Y.PointsValue));
+            Point handle = new Point(handlex, handley);
             handle = ConvertDeltaToActual(handle);
             return handle;
         }
 
-        public void CubicCurveTo(PDFPoint end, PDFPoint handleStart, PDFPoint handleEnd)
+        public void CubicCurveTo(Point end, Point handleStart, Point handleEnd)
         {
             PathBezierCurveData arc = new PathBezierCurveData(end, handleStart, handleEnd, true, true);
             CurrentPath.Add(arc);
@@ -284,49 +284,49 @@ namespace Scryber.Drawing
             LastHandle = handleEnd;
         }
 
-        public void SmoothCubicCurveTo(PDFPoint end, PDFPoint handleEnd)
+        public void SmoothCubicCurveTo(Point end, Point handleEnd)
         {
-            if (this.LastHandle == PDFPoint.Empty)
+            if (this.LastHandle == Point.Empty)
             {
                 CubicCurveToWithHandleEnd(end, handleEnd);
             }
             else
             {
-                PDFPoint handleStart = GetReflectedLastHandle();
+                Point handleStart = GetReflectedLastHandle();
                 CubicCurveTo(end, handleStart, handleEnd);
             }
         }
 
-        public void SmoothCubicCurveFor(PDFPoint endDelta, PDFPoint handleEndDelta)
+        public void SmoothCubicCurveFor(Point endDelta, Point handleEndDelta)
         {
-            PDFPoint end = ConvertDeltaToActual(endDelta);
-            PDFPoint handleEnd = ConvertDeltaToActual(handleEndDelta);
+            Point end = ConvertDeltaToActual(endDelta);
+            Point handleEnd = ConvertDeltaToActual(handleEndDelta);
 
-            if (this.LastHandle == PDFPoint.Empty)
+            if (this.LastHandle == Point.Empty)
             {
                 CubicCurveToWithHandleEnd(end, handleEnd);
             }
             else
             {
-                PDFPoint handleStart = GetReflectedLastHandle();
+                Point handleStart = GetReflectedLastHandle();
                 CubicCurveTo(end, handleStart, handleEnd);
             }
         }
 
-        public void CubicCurveToWithHandleStart(PDFPoint end, PDFPoint handleStart)
+        public void CubicCurveToWithHandleStart(Point end, Point handleStart)
         {
-            PathBezierCurveData arc = new PathBezierCurveData(end, handleStart, PDFPoint.Empty, true, false);
+            PathBezierCurveData arc = new PathBezierCurveData(end, handleStart, Point.Empty, true, false);
             CurrentPath.Add(arc);
             IncludeInBounds(end);
             IncludeInBounds(handleStart);
 
             Cursor = end;
-            LastHandle = PDFPoint.Empty;
+            LastHandle = Point.Empty;
         }
 
-        public void CubicCurveToWithHandleEnd(PDFPoint end, PDFPoint handleEnd)
+        public void CubicCurveToWithHandleEnd(Point end, Point handleEnd)
         {
-            PathBezierCurveData arc = new PathBezierCurveData(end, PDFPoint.Empty, handleEnd, false, true);
+            PathBezierCurveData arc = new PathBezierCurveData(end, Point.Empty, handleEnd, false, true);
             CurrentPath.Add(arc);
             IncludeInBounds(end);
             IncludeInBounds(handleEnd);
@@ -336,11 +336,11 @@ namespace Scryber.Drawing
         }
 
 
-        public void CubicCurveFor(PDFPoint delta, PDFPoint deltaHandleStart, PDFPoint deltaHandleEnd)
+        public void CubicCurveFor(Point delta, Point deltaHandleStart, Point deltaHandleEnd)
         {
-            PDFPoint end = ConvertDeltaToActual(delta);
-            PDFPoint handleStart = ConvertDeltaToActual(deltaHandleStart);
-            PDFPoint handleEnd = ConvertDeltaToActual(deltaHandleEnd);
+            Point end = ConvertDeltaToActual(delta);
+            Point handleStart = ConvertDeltaToActual(deltaHandleStart);
+            Point handleEnd = ConvertDeltaToActual(deltaHandleEnd);
 
             PathBezierCurveData arc = new PathBezierCurveData(end, handleStart, handleEnd, true, true);
             CurrentPath.Add(arc);
@@ -352,26 +352,26 @@ namespace Scryber.Drawing
             LastHandle = handleEnd;
         }
 
-        public void CubicCurveForWithHandleStart(PDFPoint delta, PDFPoint deltaHandleStart)
+        public void CubicCurveForWithHandleStart(Point delta, Point deltaHandleStart)
         {
-            PDFPoint end = ConvertDeltaToActual(delta);
-            PDFPoint handleStart = ConvertDeltaToActual(deltaHandleStart);
+            Point end = ConvertDeltaToActual(delta);
+            Point handleStart = ConvertDeltaToActual(deltaHandleStart);
             
-            PathBezierCurveData arc = new PathBezierCurveData(end, handleStart, PDFPoint.Empty, true, false);
+            PathBezierCurveData arc = new PathBezierCurveData(end, handleStart, Point.Empty, true, false);
             CurrentPath.Add(arc);
             IncludeInBounds(end);
             IncludeInBounds(handleStart);
 
             Cursor = end;
-            LastHandle = PDFPoint.Empty;
+            LastHandle = Point.Empty;
         }
 
-        public void CubicCurveForWithHandleEnd(PDFPoint delta, PDFPoint deltaHandleEnd)
+        public void CubicCurveForWithHandleEnd(Point delta, Point deltaHandleEnd)
         {
-            PDFPoint end = ConvertDeltaToActual(delta);
-            PDFPoint handleEnd = ConvertDeltaToActual(deltaHandleEnd);
+            Point end = ConvertDeltaToActual(delta);
+            Point handleEnd = ConvertDeltaToActual(deltaHandleEnd);
 
-            PathBezierCurveData arc = new PathBezierCurveData(end, PDFPoint.Empty, handleEnd, false, true);
+            PathBezierCurveData arc = new PathBezierCurveData(end, Point.Empty, handleEnd, false, true);
             CurrentPath.Add(arc);
             IncludeInBounds(end);
             IncludeInBounds(handleEnd);
@@ -382,7 +382,7 @@ namespace Scryber.Drawing
 
 
 
-        internal void ArcTo(PDFUnit rx, PDFUnit ry, double ang, PathArcSize size, PathArcSweep sweep, PDFPoint end)
+        internal void ArcTo(Unit rx, Unit ry, double ang, PathArcSize size, PathArcSweep sweep, Point end)
         {
             PathArcData arc = new PathArcData() { RadiusX = rx, RadiusY = ry, XAxisRotation = ang, ArcSize = size, ArcSweep = sweep, EndPoint = end };
             CurrentPath.Add(arc);
@@ -402,9 +402,9 @@ namespace Scryber.Drawing
            
         }
 
-        internal void ArcFor(PDFUnit rx, PDFUnit ry, double ang, PathArcSize size, PathArcSweep sweep, PDFPoint enddelta)
+        internal void ArcFor(Unit rx, Unit ry, double ang, PathArcSize size, PathArcSweep sweep, Point enddelta)
         {
-            PDFPoint end = ConvertDeltaToActual(enddelta);
+            Point end = ConvertDeltaToActual(enddelta);
             PathArcData arc = new PathArcData() { RadiusX = rx, RadiusY = ry, XAxisRotation = ang, ArcSize = size, ArcSweep = sweep, EndPoint = end };
             CurrentPath.Add(arc);
 
@@ -443,7 +443,7 @@ namespace Scryber.Drawing
             _paths.Add(p);
         }
 
-        private void IncludeInBounds(PDFPoint pt)
+        private void IncludeInBounds(Point pt)
         {
             if (_bounds.Width < pt.X)
                 _bounds.Width = pt.X;
@@ -451,19 +451,19 @@ namespace Scryber.Drawing
                 _bounds.Height = pt.Y;
         }
 
-        private PDFPoint ConvertDeltaToActual(PDFPoint delta)
+        private Point ConvertDeltaToActual(Point delta)
         {
-            return new PDFPoint(this.Cursor.X + delta.X, this.Cursor.Y + delta.Y);
+            return new Point(this.Cursor.X + delta.X, this.Cursor.Y + delta.Y);
         }
 
-        private PDFPoint ConvertDeltaToActual(PDFUnit dx, PDFUnit dy)
+        private Point ConvertDeltaToActual(Unit dx, Unit dy)
         {
-            return new PDFPoint(this.Cursor.X + dx, this.Cursor.Y + dy);
+            return new Point(this.Cursor.X + dx, this.Cursor.Y + dy);
         }
 
-        public PDFPoint[] GetAllPoints()
+        public Point[] GetAllPoints()
         {
-            List<PDFPoint> pts = new List<PDFPoint>();
+            List<Point> pts = new List<Point>();
             foreach (Path path in this.Paths)
             {
                 path.FillAllPoints(pts);

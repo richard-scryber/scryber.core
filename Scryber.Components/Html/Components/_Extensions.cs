@@ -8,7 +8,7 @@ namespace Scryber.Html.Components
     public static class HtmlComponentExtensions
     {
 
-        public static void AddDataContent(this ContainerComponent container, string dataContent, PDFContextBase context)
+        public static void AddDataContent(this ContainerComponent container, string dataContent, ContextBase context)
         {
             var found = GetDataContent(container, dataContent, context);
             if (null == found)
@@ -18,7 +18,7 @@ namespace Scryber.Html.Components
 
             if (null != content)
             {
-                IPDFContainerComponent icontainer = container;
+                IContainerComponent icontainer = container;
 
                 foreach (var item in content)
                 {
@@ -29,7 +29,7 @@ namespace Scryber.Html.Components
 
         }
 
-        public static ITemplate GetDataContent(this ContainerComponent container, string dataContent, PDFContextBase context)
+        public static ITemplate GetDataContent(this ContainerComponent container, string dataContent, ContextBase context)
         {
             if (string.IsNullOrEmpty(dataContent))
                 return null;

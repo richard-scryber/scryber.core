@@ -89,14 +89,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("clipping-inset", Styles.Style.PDFStylesNamespace)]
         [PDFDesignable(Ignore = true)]
-        public PDFThickness ClippingInset
+        public Thickness ClippingInset
         {
             get
             {
                 if (this.HasStyle)
                     return this.Style.CreateClippingThickness();
                 else
-                    return PDFThickness.Empty();
+                    return Thickness.Empty();
             }
             set
             {

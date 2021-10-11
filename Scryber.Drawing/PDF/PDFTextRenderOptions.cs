@@ -33,12 +33,12 @@ namespace Scryber.PDF
 
         #region public PDFFont Font {get;set;}
 
-        private PDFFont _font;
+        private Font _font;
 
         /// <summary>
         /// Gets or sets the pdf font for these rendering options
         /// </summary>
-        public PDFFont Font
+        public Font Font
         {
             get { return _font; }
             set
@@ -113,12 +113,12 @@ namespace Scryber.PDF
 
         #region public PDFUnit? FirstLineInset {get;set;}
 
-        private PDFUnit? _fistlineinset = PDFUnit.Empty;
+        private Unit? _fistlineinset = Unit.Empty;
 
         /// <summary>
         /// Gets or sets the required indent for the first line of text in a paragraph
         /// </summary>
-        public PDFUnit? FirstLineInset
+        public Unit? FirstLineInset
         {
             get { return _fistlineinset; }
             set { _fistlineinset = value; }
@@ -128,12 +128,12 @@ namespace Scryber.PDF
 
         #region public PDFUnit? Leading {get;set;}
 
-        private PDFUnit? _leading;
+        private Unit? _leading;
 
         /// <summary>
         /// Gets or sets the (nullable) line leading for these rendering options
         /// </summary>
-        public PDFUnit? Leading
+        public Unit? Leading
         {
             get { return _leading; }
             set { _leading = value; }
@@ -145,12 +145,12 @@ namespace Scryber.PDF
 
         #region public double? WordSpacing {get;set;}
 
-        private PDFUnit? _wordspace;
+        private Unit? _wordspace;
 
         /// <summary>
         /// Gets or sets (nullable) the word spacing for this text rendering
         /// </summary>
-        public PDFUnit? WordSpacing
+        public Unit? WordSpacing
         {
             get { return _wordspace; }
             set { _wordspace = value; }
@@ -160,11 +160,11 @@ namespace Scryber.PDF
 
         #region public PDFUnit? CharacterSpacing {get;}
 
-        private PDFUnit? _charSpace;
+        private Unit? _charSpace;
         /// <summary>
         /// Gets or sets (nullable) the character spacing for text rendering
         /// </summary>
-        public PDFUnit? CharacterSpacing
+        public Unit? CharacterSpacing
         {
             get { return _charSpace; }
             set { _charSpace = value; }
@@ -280,7 +280,7 @@ namespace Scryber.PDF
         /// Gets the line height based on either the assigned leading (if set), or the Font metrics line height.
         /// </summary>
         /// <returns></returns>
-        public PDFUnit GetLineHeight()
+        public Unit GetLineHeight()
         {
             if (this.Leading.HasValue)
                 return this.Leading.Value;
@@ -298,10 +298,10 @@ namespace Scryber.PDF
         /// e.g. The distance between the base line and the top of a capital A
         /// </summary>
         /// <returns></returns>
-        public PDFUnit GetAscent()
+        public Unit GetAscent()
         {
             if (null == this.Font)
-                return PDFUnit.Zero;
+                return Unit.Zero;
             else if (null != this.Font.FontMetrics)
                 return this.Font.FontMetrics.Ascent;
             else
@@ -311,10 +311,10 @@ namespace Scryber.PDF
 
         #endregion
 
-        public PDFUnit GetDescender()
+        public Unit GetDescender()
         {
             if (null == this.Font)
-                return PDFUnit.Zero;
+                return Unit.Zero;
             else if (null != this.Font.FontMetrics)
                 return this.Font.FontMetrics.Descent;
             else
@@ -327,7 +327,7 @@ namespace Scryber.PDF
         /// Gets the first line inset if assigned, or Zero.
         /// </summary>
         /// <returns></returns>
-        public PDFUnit GetFirstLineInset()
+        public Unit GetFirstLineInset()
         {
             if (this.FirstLineInset.HasValue)
                 return this.FirstLineInset.Value;

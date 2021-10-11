@@ -28,7 +28,7 @@ namespace Scryber.Components
 {
     [PDFParsableComponent("Text")]
     [PDFJSConvertor("scryber.studio.design.convertors.text")]
-    public class TextLiteral : Component, IPDFTextLiteral, IPDFTextComponent
+    public class TextLiteral : Component, IPDFTextLiteral, ITextComponent
     {
 
         private string _text;
@@ -83,7 +83,7 @@ namespace Scryber.Components
         }
 
 
-        public virtual PDFTextReader CreateReader(PDFContextBase context, Style fullstyle)
+        public virtual PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {
             if (string.IsNullOrEmpty(this.Text))
                 return null;

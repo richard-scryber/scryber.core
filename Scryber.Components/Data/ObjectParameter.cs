@@ -32,9 +32,9 @@ namespace Scryber.Data
 
         #region public event PDFDataBindEventHandler DataBinding;
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataBindEventArgs args)
+        protected virtual void OnDataBinding(DataBindEventArgs args)
         {
             if (null != this.DataBinding)
                 this.DataBinding(this, args);
@@ -44,9 +44,9 @@ namespace Scryber.Data
 
         #region public event PDFDataBindEventHandler DataBound;
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataBindEventArgs args)
+        protected virtual void OnDataBound(DataBindEventArgs args)
         {
             if (null != this.DataBound)
                 this.DataBound(this, args);
@@ -116,11 +116,11 @@ namespace Scryber.Data
         /// Supports the databinding capabilites of the parameter by raising the events
         /// </summary>
         /// <param name="context"></param>
-        public virtual void DataBind(PDFDataContext context)
+        public virtual void DataBind(DataContext context)
         {
             if (null != this.DataBinding || null != this.DataBound)
             {
-                PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
+                DataBindEventArgs args = new DataBindEventArgs(context);
                 this.OnDataBinding(args);
 
                 this.OnDataBound(args);
@@ -189,7 +189,7 @@ namespace Scryber.Data
                 return null;
             }
         }
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             if (this.Count > 0)
             {

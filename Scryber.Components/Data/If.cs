@@ -126,12 +126,12 @@ namespace Scryber.Data
         //
 
 
-        protected override ITemplate GetTemplateForBinding(PDFDataContext context, int index, int count)
+        protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
             return this.Template;
         }
 
-        protected override void DoDataBindToContainer(PDFDataContext context, IPDFContainerComponent container)
+        protected override void DoDataBindToContainer(DataContext context, IContainerComponent container)
         {
 
             if(this.Test && this.Visible)
@@ -139,7 +139,7 @@ namespace Scryber.Data
             
         }
 
-        protected virtual bool EvaluateTestExpression(string expr, IPDFDataSource source, object data, PDFDataContext context)
+        protected virtual bool EvaluateTestExpression(string expr, IDataSource source, object data, DataContext context)
         {
             return source.EvaluateTestExpression(expr, data, context);
         }

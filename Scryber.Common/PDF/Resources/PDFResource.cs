@@ -26,7 +26,7 @@ namespace Scryber.PDF.Resources
     /// <summary>
     /// An abstract base class for all resource objects that are rendered to a PDFDocumnet, but are 
     /// </summary>
-    public abstract class PDFResource : PDFObject, IPDFResource, IDisposable, IEquatable<PDFResource>
+    public abstract class PDFResource : TypedObject, IPDFResource, IDisposable, IEquatable<PDFResource>
     {
 
         #region public static string XObjectResourceType {get;}
@@ -179,7 +179,7 @@ namespace Scryber.PDF.Resources
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        protected abstract PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer);
+        protected abstract PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer);
 
 
         #region public PDFObjectRef EnsureRendered(PDFContextBase context, PDFWriter writer)
@@ -192,7 +192,7 @@ namespace Scryber.PDF.Resources
         /// <param name="writer">The writer to output any instructions to</param>
         /// <returns>A PDFObject reference for this resource</returns>
         /// <remarks>In order to ensure that this resource is output, then call the RegisterUse with a resource collection.</remarks>
-        public PDFObjectRef EnsureRendered(PDFContextBase context, PDFWriter writer)
+        public PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer)
         {
 
             if (this.Registered)

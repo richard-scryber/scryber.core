@@ -13,7 +13,7 @@ namespace Scryber.Data
     public static class DataSetSchemaGenerator
     {
 
-        public static PDFDataSchema CreateSchemaFromSet(System.Data.DataSet dataSet, PDFDataContext context)
+        public static DataSchema CreateSchemaFromSet(System.Data.DataSet dataSet, DataContext context)
         {
             return DoPopulateDataSchema(dataSet, context);
         }
@@ -21,25 +21,25 @@ namespace Scryber.Data
 
         #region private static PDFDataSchema DoPopulateDataSchema(DataSet dataset, PDFDataContext context)
 
-        private static PDFDataSchema DoPopulateDataSchema(DataSet dataset, PDFDataContext context)
+        private static DataSchema DoPopulateDataSchema(DataSet dataset, DataContext context)
         {
             string dsName = dataset.DataSetName;
             string dsXmlName = System.Xml.XmlConvert.EncodeLocalName(dsName);
             System.Data.DataTable[] tables = GetTopLevelTables(dataset);
-            List<PDFDataItem> topItems = new List<PDFDataItem>();
+            List<DataItem> topItems = new List<DataItem>();
 
             foreach (System.Data.DataTable table in tables)
             {
                 string tableName = table.TableName;
                 string tableXmlName = System.Xml.XmlConvert.EncodeLocalName(tableName);
-                string path = PDFDataSchema.CombineElementNames(dsXmlName, tableXmlName);
-                PDFDataItemCollection columns = new PDFDataItemCollection(GetTableColumnSchema(path, table));
-                PDFDataItem topTable = new PDFDataItem(path, tableName, tableName, columns);
+                string path = DataSchema.CombineElementNames(dsXmlName, tableXmlName);
+                DataItemCollection columns = new DataItemCollection(GetTableColumnSchema(path, table));
+                DataItem topTable = new DataItem(path, tableName, tableName, columns);
                 topItems.Add(topTable);
 
                 //TODO: Load child schemas
             }
-            PDFDataSchema schema = new PDFDataSchema(dsName, new PDFDataItemCollection(topItems));
+            DataSchema schema = new DataSchema(dsName, new DataItemCollection(topItems));
             return schema;
         }
 
@@ -53,9 +53,9 @@ namespace Scryber.Data
         /// <param name="path">the current path to the table</param>
         /// <param name="table">The data table to extract the columns for</param>
         /// <returns></returns>
-        private static IEnumerable<PDFDataItem> GetTableColumnSchema(string path, System.Data.DataTable table)
+        private static IEnumerable<DataItem> GetTableColumnSchema(string path, System.Data.DataTable table)
         {
-            List<PDFDataItem> all = new List<PDFDataItem>();
+            List<DataItem> all = new List<DataItem>();
             foreach (System.Data.DataColumn col in table.Columns)
             {
                 if (col.ColumnMapping == System.Data.MappingType.Hidden)
@@ -64,7 +64,7 @@ namespace Scryber.Data
                 }
                 else
                 {
-                    PDFDataItem item = GetColumnDataItem(path, col);
+                    DataItem item = GetColumnDataItem(path, col);
                     if (null != item)
                         all.Add(item);
                 }
@@ -82,7 +82,7 @@ namespace Scryber.Data
         /// <param name="path"></param>
         /// <param name="col"></param>
         /// <returns></returns>
-        private static PDFDataItem GetColumnDataItem(string path, System.Data.DataColumn col)
+        private static DataItem GetColumnDataItem(string path, System.Data.DataColumn col)
         {
             string name = col.ColumnName;
             string relativePath = System.Xml.XmlConvert.EncodeLocalName(name);
@@ -109,9 +109,9 @@ namespace Scryber.Data
             else
                 throw new ArgumentOutOfRangeException("col.ColumnMapping");
 
-            string fullpath = PDFDataSchema.CombineElementNames(path, relativePath);
+            string fullpath = DataSchema.CombineElementNames(path, relativePath);
             
-            PDFDataItem item = new PDFDataItem(fullpath, relativePath, name, title, nodetype, GetDataTypeFromSystemType(col));
+            DataItem item = new DataItem(fullpath, relativePath, name, title, nodetype, GetDataTypeFromSystemType(col));
             return item;
 
         }

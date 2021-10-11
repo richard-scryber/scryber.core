@@ -48,7 +48,7 @@ namespace Scryber.Styles.Parsing
             return false;
         }
 
-        public bool SetStyleValue(Style style, CSSStyleItemReader reader, PDFContextBase context)
+        public bool SetStyleValue(Style style, CSSStyleItemReader reader, ContextBase context)
         {
             IParserStyleFactory found;
 

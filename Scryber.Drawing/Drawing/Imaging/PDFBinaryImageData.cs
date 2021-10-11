@@ -50,7 +50,7 @@ namespace Scryber.Drawing.Imaging
         }
 
 
-        public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, PDFContextBase context, PDFWriter writer)
+        public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Message, "Image Data", "Rendering image data for '" + name.ToString() + "'");
@@ -93,7 +93,7 @@ namespace Scryber.Drawing.Imaging
 
 
 
-        protected virtual void RenderImageInformation(PDFContextBase context, PDFWriter writer)
+        protected virtual void RenderImageInformation(ContextBase context, PDFWriter writer)
         {
             writer.WriteDictionaryNumberEntry("Width", this.PixelWidth);
             writer.WriteDictionaryNumberEntry("Height", this.PixelHeight);
@@ -118,7 +118,7 @@ namespace Scryber.Drawing.Imaging
 
         }
 
-        protected virtual bool ShouldApplyFilters(PDFContextBase context)
+        protected virtual bool ShouldApplyFilters(ContextBase context)
         {
             if (this.HasFilter)
             {
@@ -128,7 +128,7 @@ namespace Scryber.Drawing.Imaging
             return false;
         }
 
-        protected void WriteFilterNames(PDFContextBase context, PDFWriter writer)
+        protected void WriteFilterNames(ContextBase context, PDFWriter writer)
         {
             if (this.ShouldApplyFilters(context))
             {
@@ -170,7 +170,7 @@ namespace Scryber.Drawing.Imaging
             throw new NotSupportedException("Implementors must use their own custom color space rendering");
         }
 
-        protected virtual int RenderImageStreamData(PDFContextBase context, PDFWriter writer)
+        protected virtual int RenderImageStreamData(ContextBase context, PDFWriter writer)
         {
             if (this.Data.LongLength > (long)int.MaxValue)
                 throw new ArgumentOutOfRangeException("This image is too large to be included in a PDF file");
@@ -200,7 +200,7 @@ namespace Scryber.Drawing.Imaging
             //End of add
         }
 
-        protected byte[] ApplyFiltersToData(byte[] data, PDFContextBase context)
+        protected byte[] ApplyFiltersToData(byte[] data, ContextBase context)
         {
             if (this.ShouldApplyFilters(context))
             {
@@ -243,7 +243,7 @@ namespace Scryber.Drawing.Imaging
             this._filterdata = null;
         }
 
-        public byte[] GetCachedFilteredData(IStreamFilter[] filters, PDFContextBase context)
+        public byte[] GetCachedFilteredData(IStreamFilter[] filters, ContextBase context)
         {
             if (null == filters || filters.Length == 0)
                 return null;
@@ -285,7 +285,7 @@ namespace Scryber.Drawing.Imaging
             return full;
         }
 
-        protected void SetCachedFilteredData(IStreamFilter[] filters, byte[] data, PDFContextBase context)
+        protected void SetCachedFilteredData(IStreamFilter[] filters, byte[] data, ContextBase context)
         {
             if (null == filters)
                 throw new ArgumentNullException("filters");

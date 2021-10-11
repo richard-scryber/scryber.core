@@ -32,7 +32,7 @@ namespace Scryber.PDF.Native
         private bool _free;
         private int _index;
         private int _generation;
-        private IIndirectObject _ref;
+        private IPDFIndirectObject _ref;
         private long _offset;
         private PDFXRefTableEntry _nextfree;
 
@@ -68,13 +68,13 @@ namespace Scryber.PDF.Native
             set { _nextfree = value; }
         }
 
-        public IIndirectObject Reference
+        public IPDFIndirectObject Reference
         {
             get { return _ref; }
             internal set { _ref = value; }
         }
 
-        public PDFXRefTableEntry(int index, int generation, bool free, IIndirectObject reference)
+        public PDFXRefTableEntry(int index, int generation, bool free, IPDFIndirectObject reference)
         {
             this._free = free;
             this._generation = generation;

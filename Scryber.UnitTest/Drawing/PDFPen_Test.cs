@@ -77,7 +77,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Create_Test()
         {
             Color color = StandardColors.Aqua;
-            PDFUnit width = 1;
+            Unit width = 1;
             PDFSolidPen expected = new PDFSolidPen();
             expected.Color = color;
             expected.Width = width;
@@ -198,13 +198,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void Width_Test()
         {
-            PDFUnit expected = 1;
+            Unit expected = 1;
             PDFPen target = PDFPen.Create(StandardColors.Aqua, expected);
 
-            PDFUnit actual = target.Width;
+            Unit actual = target.Width;
             Assert.AreEqual(expected, actual);
 
-            expected = new PDFUnit(4, PageUnits.Millimeters);
+            expected = new Unit(4, PageUnits.Millimeters);
             target.Width = expected;
             actual = target.Width;
             Assert.AreEqual(expected, actual);

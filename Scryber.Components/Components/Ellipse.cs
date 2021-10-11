@@ -44,9 +44,9 @@ namespace Scryber.Components
 
 
 
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
-            PDFRect bounds = GetPrescribedBounds(available, fullstyle);
+            Rect bounds = GetPrescribedBounds(available, fullstyle);
             StyleValue<bool> isclosed;
             StyleValue<double> rotation;
             fullstyle.TryGetValue(StyleKeys.ShapeClosedKey, out isclosed);
@@ -63,7 +63,7 @@ namespace Scryber.Components
         //used for calculating the handle points of a bezier curve to approximage an arc
         public const double CircularityFactor = 0.5522847498;
 
-        public static void BuildElipse(GraphicsPath path, PDFRect rect, bool closed, double angle)
+        public static void BuildElipse(GraphicsPath path, Rect rect, bool closed, double angle)
         {
 
             double width = rect.Width.PointsValue;
@@ -88,52 +88,52 @@ namespace Scryber.Components
             double rotation = angle * InRadians;
 
             //start at left, middle
-            PDFPoint start = Rotate(new PDFPoint(-radX, 0), rotation);
+            Point start = Rotate(new Point(-radX, 0), rotation);
 
 
             //4 curve definitions with 3 points each.
-            PDFPoint[,] curves = new PDFPoint[4, 3];
+            Point[,] curves = new Point[4, 3];
 
 
             //arc to center, top
-            curves[0, 0] = Rotate(new PDFPoint(0, -radY), rotation);
-            curves[0, 1] = Rotate(new PDFPoint(-radX, -lengthY), rotation);
-            curves[0, 2] = Rotate(new PDFPoint(-lengthX, -radY), rotation);
+            curves[0, 0] = Rotate(new Point(0, -radY), rotation);
+            curves[0, 1] = Rotate(new Point(-radX, -lengthY), rotation);
+            curves[0, 2] = Rotate(new Point(-lengthX, -radY), rotation);
 
 
 
             //arc to right, middle
-            curves[1, 0] = Rotate(new PDFPoint(radX, 0), rotation);
-            curves[1, 1] = Rotate(new PDFPoint(lengthX, -radY), rotation);
-            curves[1, 2] = Rotate(new PDFPoint(radX, -lengthY), rotation);
+            curves[1, 0] = Rotate(new Point(radX, 0), rotation);
+            curves[1, 1] = Rotate(new Point(lengthX, -radY), rotation);
+            curves[1, 2] = Rotate(new Point(radX, -lengthY), rotation);
 
 
             //arc to center, bottom
-            curves[2, 0] = Rotate(new PDFPoint(0, radY), rotation);
-            curves[2, 1] = Rotate(new PDFPoint(radX, lengthY), rotation);
-            curves[2, 2] = Rotate(new PDFPoint(lengthX, radY), rotation);
+            curves[2, 0] = Rotate(new Point(0, radY), rotation);
+            curves[2, 1] = Rotate(new Point(radX, lengthY), rotation);
+            curves[2, 2] = Rotate(new Point(lengthX, radY), rotation);
 
 
             //arc to left middle
-            curves[3, 0] = Rotate(new PDFPoint(-radX, 0), rotation);
-            curves[3, 1] = Rotate(new PDFPoint(-lengthX, radY), rotation);
-            curves[3, 2] = Rotate(new PDFPoint(-radX, lengthY), rotation);
+            curves[3, 0] = Rotate(new Point(-radX, 0), rotation);
+            curves[3, 1] = Rotate(new Point(-lengthX, radY), rotation);
+            curves[3, 2] = Rotate(new Point(-radX, lengthY), rotation);
 
             //get the minimun x and y values
-            PDFUnit minx = start.X;
-            PDFUnit miny = start.Y;
+            Unit minx = start.X;
+            Unit miny = start.Y;
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    PDFPoint pt = curves[i, j];
-                    minx = PDFUnit.Min(minx, pt.X);
-                    miny = PDFUnit.Min(miny, pt.Y);
+                    Point pt = curves[i, j];
+                    minx = Unit.Min(minx, pt.X);
+                    miny = Unit.Min(miny, pt.Y);
                 }
 
             }
-            PDFUnit offsetx = 0 - minx;
-            PDFUnit offsety = 0 - miny;
+            Unit offsetx = 0 - minx;
+            Unit offsety = 0 - miny;
 
             //translate the point by the minimum values so the topleft is always 0,0 in the boundary rect.
 
@@ -143,7 +143,7 @@ namespace Scryber.Components
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    PDFPoint pt = curves[i, j];
+                    Point pt = curves[i, j];
                     pt = Translate(pt, offsetx, offsety);
                     curves[i, j] = pt;
                 }
@@ -170,7 +170,7 @@ namespace Scryber.Components
         // not needed or implemented
         //
 
-        protected override PDFPoint[] GetPoints(PDFRect bounds, Style style)
+        protected override Point[] GetPoints(Rect bounds, Style style)
         {
             throw new NotImplementedException();
         }

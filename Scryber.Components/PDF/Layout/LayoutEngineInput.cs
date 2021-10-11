@@ -74,7 +74,7 @@ namespace Scryber.PDF.Layout
             
         }
 
-        protected override void DoLayoutTextComponent(IPDFTextComponent text, Style style)
+        protected override void DoLayoutTextComponent(ITextComponent text, Style style)
         {
             var region = this.Context.DocumentLayout.CurrentPage.LastOpenBlock().CurrentRegion;
 

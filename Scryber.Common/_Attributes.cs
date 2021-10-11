@@ -323,7 +323,7 @@ namespace Scryber
 
         
         public PDFArrayAttribute()
-            : this(typeof(PDFObject))
+            : this(typeof(TypedObject))
         {
         }
 

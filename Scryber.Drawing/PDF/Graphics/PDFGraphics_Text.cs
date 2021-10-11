@@ -100,7 +100,7 @@ namespace Scryber.PDF.Graphics
         /// <summary>
         /// Gets the current font size
         /// </summary>
-        public PDFFont CurrentFont
+        public Drawing.Font CurrentFont
         {
             get;
             private set;
@@ -110,7 +110,7 @@ namespace Scryber.PDF.Graphics
 
         #region protected SetCurrentFont(PDFFont font)
 
-        public void SetCurrentFont(PDFFont font)
+        public void SetCurrentFont(Drawing.Font font)
         {
             PDFResource rsrc = font.Resource; // this.Container.Document.GetResource(PDFResource.FontDefnResourceType, font.FullName, true);
             if (null == rsrc)
@@ -163,24 +163,24 @@ namespace Scryber.PDF.Graphics
         /// <returns></returns>
         /// <remarks>Uses the TTFFontFile if available, otherwise will default to using the GDI+ measure,
         /// which is slower but supports postscript fonts</remarks>
-        public PDFSize MeasureString(string chars, int startIndex, PDFSize available, PDFTextRenderOptions options, out int charsfitted)
+        public Drawing.Size MeasureString(string chars, int startIndex, Drawing.Size available, PDFTextRenderOptions options, out int charsfitted)
         {
             
             PDFFontResource frsc = this.CurrentFontResource;
-            PDFUnit fsize = this.CurrentFont.Size;
+            Unit fsize = this.CurrentFont.Size;
 
             if (null == frsc)
                 throw new InvalidOperationException("Current font has not be set on the graphics class, so strings cannot be measured");
 
             PDFFontDefinition defn = frsc.Definition;
-            PDFSize measured;
+            Drawing.Size measured;
             if (defn.CanMeasureStrings)
             {
                 bool trimtoword = true;
                 if (options.WrapText.HasValue)
                 {
                     if (options.WrapText == WordWrap.NoWrap)
-                        available.Width = new PDFUnit(int.MaxValue, PageUnits.Points);
+                        available.Width = new Unit(int.MaxValue, PageUnits.Points);
                     else if (options.WrapText == WordWrap.Character)
                         trimtoword = false;
                 }
@@ -229,9 +229,9 @@ namespace Scryber.PDF.Graphics
             return measured;
         }
 
-        private double GetLineLeft(PDFSize size, PDFTextRenderOptions options)
+        private double GetLineLeft(Drawing.Size size, PDFTextRenderOptions options)
         {
-            if (options != null && options.FirstLineInset != PDFUnit.Empty)
+            if (options != null && options.FirstLineInset != Unit.Empty)
                 return options.FirstLineInset.Value.ToPoints().Value;
             else
                 return 0.0;
@@ -240,7 +240,7 @@ namespace Scryber.PDF.Graphics
         
 
 
-        private void ReleaseTextRenderOptions(PDFTextRenderOptions options, PDFRect bounds)
+        private void ReleaseTextRenderOptions(PDFTextRenderOptions options, Rect bounds)
         {
             if (options.FillBrush != null)
                 options.FillBrush.ReleaseGraphics(this, bounds);
@@ -248,7 +248,7 @@ namespace Scryber.PDF.Graphics
                 options.Stroke.ReleaseGraphics(this, bounds);
         }
 
-        public TextRenderMode SetTextRenderOptions(PDFTextRenderOptions options, PDFRect bounds)
+        public TextRenderMode SetTextRenderOptions(PDFTextRenderOptions options, Rect bounds)
         {
             
             TextRenderMode mode = TextRenderMode.NoOp;
@@ -285,7 +285,7 @@ namespace Scryber.PDF.Graphics
 
         public void SetTextLeading(PDFTextRenderOptions options)
         {
-            PDFUnit h;
+            Unit h;
             if (options.Leading.HasValue)
                 h = options.Leading.Value;
             else if (options.Font.FontMetrics != null)
@@ -312,7 +312,7 @@ namespace Scryber.PDF.Graphics
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtHScaling, (PDFReal)options.CharacterHScale.Value * 100.0);
         }
 
-        public void SetTextSpacing(PDFUnit? wordSpacingOffset, PDFUnit? charSpacingOffset, PDFUnit fontSize)
+        public void SetTextSpacing(Unit? wordSpacingOffset, Unit? charSpacingOffset, Unit fontSize)
         {
             if (charSpacingOffset.HasValue)
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtCharSpacing, (PDFReal)charSpacingOffset.Value.PointsValue);
@@ -483,13 +483,13 @@ namespace Scryber.PDF.Graphics
         /// </summary>
         /// <param name="offset"></param>
         /// <param name="absolute"></param>
-        public void MoveTextCursor(PDFSize offset, bool absolute)
+        public void MoveTextCursor(Drawing.Size offset, bool absolute)
         {
             if (absolute)
             {
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtMoveNextOffset, GetXPosition(offset.Width), GetYPosition(offset.Height));
             }
-            else if (offset == PDFSize.Empty)
+            else if (offset == Drawing.Size.Empty)
             {
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtNextLine);
             }

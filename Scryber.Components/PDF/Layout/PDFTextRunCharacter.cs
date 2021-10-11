@@ -32,9 +32,9 @@ namespace Scryber.PDF.Layout
     {
         #region ivars
 
-        private PDFSize _measuredSize;
+        private Size _measuredSize;
         private string _chars;
-        private PDFUnit _extra;
+        private Unit _extra;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this character run
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return this._measuredSize.Width; }
         }
@@ -55,7 +55,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this character run
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return this._measuredSize.Height; }
         }
@@ -75,13 +75,13 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        public PDFUnit ExtraSpace
+        public Unit ExtraSpace
         {
             get { return _extra; }
             set { _extra = value; }
         }
 
-        public PDFTextRunCharacter(PDFSize size, string characters, PDFLayoutLine line, IComponent owner)
+        public PDFTextRunCharacter(Size size, string characters, PDFLayoutLine line, IComponent owner)
             : base(line, owner)
         {
             this._measuredSize = size;
@@ -95,7 +95,7 @@ namespace Scryber.PDF.Layout
             return null;
         }
 
-        public override void SetMaxWidth(PDFUnit width)
+        public override void SetMaxWidth(Unit width)
         {
             base.SetMaxWidth(width);
             this._measuredSize.Width = width;
@@ -119,7 +119,7 @@ namespace Scryber.PDF.Layout
     {
          #region ivars
 
-        private PDFSize _measuredSize;
+        private Size _measuredSize;
         private int _offset, _count;
         private string _chars;
 
@@ -130,7 +130,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of this character run
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return this._measuredSize.Width; }
         }
@@ -142,7 +142,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of this character run
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return this._measuredSize.Height; }
         }
@@ -188,7 +188,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        public PDFTextRunPartialCharacter(PDFSize size, string characters, int offset, int count, PDFLayoutLine line, IComponent owner)
+        public PDFTextRunPartialCharacter(Size size, string characters, int offset, int count, PDFLayoutLine line, IComponent owner)
             : base(line, owner)
         {
             this._measuredSize = size;

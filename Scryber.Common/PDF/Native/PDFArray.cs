@@ -25,7 +25,7 @@ namespace Scryber.PDF.Native
     /// <summary>
     /// An array containing any number of PDFFileObjects of any type. The PDFArray is itself a PDFFileObject
     /// </summary>
-    public class PDFArray : IFileObject, ICollection<IFileObject>, IObjectContainer
+    public class PDFArray : IPDFFileObject, ICollection<IPDFFileObject>, IPDFObjectContainer
     {
         public ObjectType Type { get { return ObjectTypes.Array; } }
 
@@ -41,19 +41,19 @@ namespace Scryber.PDF.Native
         /// Initializes a new PDFArray adding the range of PDFFileObject(s) to itself
         /// </summary>
         /// <param name="items">The items to add</param>
-        public PDFArray(IEnumerable<IFileObject> items)
+        public PDFArray(IEnumerable<IPDFFileObject> items)
             : this()
         {
             if(null != items)
                 this.InnerList.AddRange(items);
         }
 
-        private List<IFileObject> _items = new List<IFileObject>();
+        private List<IPDFFileObject> _items = new List<IPDFFileObject>();
 
         /// <summary>
         /// The inner list to hold the contents
         /// </summary>
-        protected List<IFileObject> InnerList
+        protected List<IPDFFileObject> InnerList
         {
             get { return this._items; }
         }
@@ -64,7 +64,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public IFileObject this[int index]
+        public IPDFFileObject this[int index]
         {
             get { return this.InnerList[index]; }
             set { this.InnerList[index] = value; }
@@ -77,7 +77,7 @@ namespace Scryber.PDF.Native
         /// Adds a new item to the array
         /// </summary>
         /// <param name="item">The item to add</param>
-        public void Add(IFileObject item)
+        public void Add(IPDFFileObject item)
         {
             this.InnerList.Add(item);
         }
@@ -95,7 +95,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="item">The item to find</param>
         /// <returns>True if found</returns>
-        public bool Contains(IFileObject item)
+        public bool Contains(IPDFFileObject item)
         {
             return this.InnerList.Contains(item);
         }
@@ -105,7 +105,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="array">The target array to copy to</param>
         /// <param name="arrayIndex">The index of the target array to start copying items into</param>
-        public void CopyTo(IFileObject[] array, int arrayIndex)
+        public void CopyTo(IPDFFileObject[] array, int arrayIndex)
         {
             this.InnerList.CopyTo(array, arrayIndex);
         }
@@ -132,7 +132,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="item">The item to remove</param>
         /// <returns>True if the item was removed</returns>
-        public bool Remove(IFileObject item)
+        public bool Remove(IPDFFileObject item)
         {
             return this.InnerList.Remove(item);
         }
@@ -153,7 +153,7 @@ namespace Scryber.PDF.Native
         /// Returns an enumerator that can itterate though each of the items in the list
         /// </summary>
         /// <returns>The enumerator</returns>
-        public IEnumerator<IFileObject> GetEnumerator()
+        public IEnumerator<IPDFFileObject> GetEnumerator()
         {
             return this.InnerList.GetEnumerator();
         }
@@ -176,7 +176,7 @@ namespace Scryber.PDF.Native
         public void WriteData(PDFWriter writer)
         {
             writer.BeginArrayS();
-            foreach (IFileObject pfo in this)
+            foreach (IPDFFileObject pfo in this)
             {
                 writer.BeginArrayEntry();
                 pfo.WriteData(writer);
@@ -199,7 +199,7 @@ namespace Scryber.PDF.Native
 
         #region IObjectContainer Members
 
-        void IObjectContainer.Add(IFileObject obj)
+        void IPDFObjectContainer.Add(IPDFFileObject obj)
         {
             this.Add(obj);
         }

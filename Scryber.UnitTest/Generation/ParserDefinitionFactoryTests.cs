@@ -186,7 +186,7 @@ namespace Scryber.Core.UnitTests.Generation
         public void IsSimpleObjectTypeTest()
         {
             IFormatProvider invariant = System.Globalization.CultureInfo.InvariantCulture;
-            PDFValueConverter converter;
+            ValueConverter converter;
             
             //Enumueration
             Assert.IsTrue(ParserDefintionFactory.IsSimpleObjectType(typeof(Scryber.DrawingOrigin), out converter));
@@ -278,7 +278,7 @@ namespace Scryber.Core.UnitTests.Generation
         public void IsSimpleObjectExplictCultureTest()
         {
             IFormatProvider french = System.Globalization.CultureInfo.GetCultureInfo("fr-FR");
-            PDFValueConverter converter;
+            ValueConverter converter;
 
             //Enumueration
             Assert.IsTrue(ParserDefintionFactory.IsSimpleObjectType(typeof(Scryber.DrawingOrigin), out converter));
@@ -373,8 +373,8 @@ namespace Scryber.Core.UnitTests.Generation
         public void IsCustomParsableObjectTypeTest()
         {
             IFormatProvider invariant = System.Globalization.CultureInfo.InvariantCulture;
-            PDFValueConverter convert;
-            Type type = typeof(Scryber.Drawing.PDFThickness); //thickness is parsable
+            ValueConverter convert;
+            Type type = typeof(Scryber.Drawing.Thickness); //thickness is parsable
             string thickvalue = "12 45.3in 12.5 4mm";
 
             bool expected = true;
@@ -382,11 +382,11 @@ namespace Scryber.Core.UnitTests.Generation
 
             Assert.AreEqual(expected, actual, "PDFThickness is not registered as parsable");
             Assert.IsNotNull(convert);
-            Scryber.Drawing.PDFThickness thick = (Scryber.Drawing.PDFThickness)convert(thickvalue, type, invariant);
-            Assert.AreEqual(thick.Top, (Scryber.Drawing.PDFUnit)12);
-            Assert.AreEqual(thick.Right, new Scryber.Drawing.PDFUnit(45.3, Scryber.Drawing.PageUnits.Inches));
-            Assert.AreEqual(thick.Bottom, (Scryber.Drawing.PDFUnit)12.5);
-            Assert.AreEqual(thick.Left, new Scryber.Drawing.PDFUnit(4, Scryber.Drawing.PageUnits.Millimeters));
+            Scryber.Drawing.Thickness thick = (Scryber.Drawing.Thickness)convert(thickvalue, type, invariant);
+            Assert.AreEqual(thick.Top, (Scryber.Drawing.Unit)12);
+            Assert.AreEqual(thick.Right, new Scryber.Drawing.Unit(45.3, Scryber.Drawing.PageUnits.Inches));
+            Assert.AreEqual(thick.Bottom, (Scryber.Drawing.Unit)12.5);
+            Assert.AreEqual(thick.Left, new Scryber.Drawing.Unit(4, Scryber.Drawing.PageUnits.Millimeters));
 
             type = typeof(Scryber.PDF.Graphics.PDFPen); //pen is not parsable
             expected = false;

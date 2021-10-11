@@ -40,8 +40,9 @@ using System.Net.Http;
 using System.Collections;
 using System.Xml;
 using System.Diagnostics.CodeAnalysis;
+using Scryber.Drawing;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Resources
 {
     //TODO: change the enumeration names to PDF...
 
@@ -612,7 +613,7 @@ namespace Scryber.Drawing
 
         #region public static PDFFontDefinition GetFontDefinition(PDFFont font)
 
-        public static PDFFontDefinition GetFontDefinition(PDFFont font, bool throwNotFound = true)
+        public static PDFFontDefinition GetFontDefinition(Font font, bool throwNotFound = true)
         {
             //Make sure we are initialized and OK
             AssertInitialized();
@@ -670,7 +671,7 @@ namespace Scryber.Drawing
 #if FALLBACKTOREGULAR
 
 
-            if (null == fref && weight != FontWeights.Regular && !PDFFont.IsStandardFontFamily(family))
+            if (null == fref && weight != FontWeights.Regular && !Font.IsStandardFontFamily(family))
             {
                 return IsFontDefined(family, style, FontWeights.Regular);
             }
@@ -679,7 +680,7 @@ namespace Scryber.Drawing
             if (null == fref)
             {
                 //check if we are a standard font (that is not available in the custom or system families
-                if (PDFFont.IsStandardFontFamily(family))
+                if (Font.IsStandardFontFamily(family))
                     return true;
                 else
                     return false;
@@ -845,7 +846,7 @@ namespace Scryber.Drawing
             if (null == fref)
             {
 
-                if (usesubstitute && weight != FontWeights.Regular && !PDFFont.IsStandardFontFamily(family))
+                if (usesubstitute && weight != FontWeights.Regular && !Font.IsStandardFontFamily(family))
                     return GetFontDefinition(family, style, FontWeights.Regular, throwNotFound);
 
                 //We dont have the explicit font so if we should substitue then 
@@ -1488,7 +1489,7 @@ namespace Scryber.Drawing
         // PDFFontSource ensure methods
         //
 
-        public static bool TryEnsureFont(IComponent mapper, PDFContextBase context, FontSource source, string familyName, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
+        public static bool TryEnsureFont(IComponent mapper, ContextBase context, FontSource source, string familyName, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
         {
             AssertInitialized();
 
@@ -1563,7 +1564,7 @@ namespace Scryber.Drawing
             return found;
         }
 
-        private static bool TryLoadRemoteDefinition(PDFContextBase context, string url, string family, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
+        private static bool TryLoadRemoteDefinition(ContextBase context, string url, string family, Scryber.Drawing.FontStyle style, int weight, out PDFFontDefinition definition)
         {
             bool tried = true;
             definition = null;

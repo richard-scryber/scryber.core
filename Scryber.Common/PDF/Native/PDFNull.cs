@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.PDF.Native
 {
-    public sealed class PDFNull : IFileObject
+    public sealed class PDFNull : IPDFFileObject
     {
         public ObjectType Type { get { return ObjectTypes.Null; } }
 

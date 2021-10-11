@@ -36,7 +36,7 @@ namespace Scryber.PDF
         /// </summary>
         public PDFPen BottomPen { get; set; }
 
-        public PDFUnit? CornerRadius { get; set; }
+        public Unit? CornerRadius { get; set; }
 
         public bool HasBorders
         {

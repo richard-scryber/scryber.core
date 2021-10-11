@@ -24,7 +24,7 @@ namespace Scryber.Styles.Parsing
 
         public string Content { get; set; }
 
-        public PDFContextBase Context
+        public ContextBase Context
         {
             get;
             private set;
@@ -32,7 +32,7 @@ namespace Scryber.Styles.Parsing
 
         private TraceLog _log;
 
-        public CSSStyleParser(string content, PDFContextBase context)
+        public CSSStyleParser(string content, ContextBase context)
         {
             this.Context = context;
             this.Content = content;

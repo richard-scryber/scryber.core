@@ -57,7 +57,7 @@ namespace Scryber.Core.UnitTests.Generation
             BindingItemExpression itembind = BindingItemExpression.Create(expr, prop);
 
             //Set the items value to be extracted
-            PDFDataBindEventArgs args = CreateDataBindArgs();
+            DataBindEventArgs args = CreateDataBindArgs();
             string expected = "This is the test";
             args.Context.Items["Root"] = expected;
 
@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Generation
             BindingItemExpression itembind = BindingItemExpression.Create(expr, prop);
 
             //DO NOT Set the items value to be extracted
-            PDFDataBindEventArgs args = CreateDataBindArgs();
+            DataBindEventArgs args = CreateDataBindArgs();
             //string expected = "This is the test";
             //args.Context.Items["Root"] = expected;
 
@@ -115,7 +115,7 @@ namespace Scryber.Core.UnitTests.Generation
             BindingItemExpression itembind = BindingItemExpression.Create(expr, prop);
 
             //Set the items value to be extracted as an inner property on the source
-            PDFDataBindEventArgs args = CreateDataBindArgs();
+            DataBindEventArgs args = CreateDataBindArgs();
             string expected = "This is the test";
             FakeSource root = new FakeSource();
             root.Value = expected;
@@ -157,7 +157,7 @@ namespace Scryber.Core.UnitTests.Generation
             BindingItemExpression itembind = BindingItemExpression.Create(expr, prop);
 
             //Set the items value to be extracted as an inner property on the source
-            PDFDataBindEventArgs args = CreateDataBindArgs();
+            DataBindEventArgs args = CreateDataBindArgs();
 
             //Set the root entry to the top of the object braph
             args.Context.Items["Root"] = root;
@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Generation
             BindingItemExpression itembind = BindingItemExpression.Create(expr, prop);
 
             //Set the items value to be extracted as an inner property on the source
-            PDFDataBindEventArgs args = CreateDataBindArgs();
+            DataBindEventArgs args = CreateDataBindArgs();
 
             //Set the root entry to the top of the object braph
             args.Context.Items["Root"] = root;
@@ -236,7 +236,7 @@ namespace Scryber.Core.UnitTests.Generation
             BindingItemExpression itembind = BindingItemExpression.Create(expr, prop);
 
             //Set the items value to be extracted as an inner property on the source
-            PDFDataBindEventArgs args = CreateDataBindArgs();
+            DataBindEventArgs args = CreateDataBindArgs();
 
             //Set the root entry to the top of the object braph
             args.Context.Items["Dynamic"] = data;
@@ -276,7 +276,7 @@ namespace Scryber.Core.UnitTests.Generation
 
         }
 
-        private static PDFDataBindEventArgs CreateDataBindArgs()
+        private static DataBindEventArgs CreateDataBindArgs()
         {
             var config = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             Assert.IsNotNull(config, "THere is no scryber config service");
@@ -284,8 +284,8 @@ namespace Scryber.Core.UnitTests.Generation
             var log = config.TracingOptions.GetTraceLog();
 
             ItemCollection items = new ItemCollection(null);
-            PDFDataContext context = new PDFDataContext(items, log, new PerformanceMonitor(true), null);
-            PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
+            DataContext context = new DataContext(items, log, new PerformanceMonitor(true), null);
+            DataBindEventArgs args = new DataBindEventArgs(context);
             return args;
         }
 

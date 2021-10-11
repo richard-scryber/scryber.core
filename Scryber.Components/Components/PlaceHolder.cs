@@ -28,7 +28,7 @@ using Scryber.PDF.Native;
 namespace Scryber.Components
 {
     [PDFParsableComponent("PlaceHolder")]
-    public class PlaceHolder : ContainerComponent, IPDFInvisibleContainer
+    public class PlaceHolder : ContainerComponent, IInvisibleContainer
     {
 
         #region public string ParsableContents {get; set;}
@@ -117,14 +117,14 @@ namespace Scryber.Components
         {
         }
 
-        protected override void DoLoad(PDFLoadContext context)
+        protected override void DoLoad(LoadContext context)
         {
             base.DoLoad(context);
 
             //this.EnsureContentsParsed(this.ParsableContents, context);
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
 
@@ -132,7 +132,7 @@ namespace Scryber.Components
         }
 
 
-        protected override void OnDataBound(PDFDataContext context)
+        protected override void OnDataBound(DataContext context)
         {
             base.OnDataBound(context);
 
@@ -160,7 +160,7 @@ namespace Scryber.Components
         /// <param name="data"></param>
         /// <param name="context"></param>
         /// <returns>True if we did do the actual parsing when this method was called, otherwise false.</returns>
-        protected virtual bool EnsureContentsParsed(PDFContextBase context)
+        protected virtual bool EnsureContentsParsed(ContextBase context)
         {
             if (!this._parsed)
             {
@@ -173,8 +173,8 @@ namespace Scryber.Components
 
                 //Do the init and load for these components
 
-                PDFInitContext init = new PDFInitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
-                PDFLoadContext load = new PDFLoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                InitContext init = new InitContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
+                LoadContext load = new LoadContext(context.Items, context.TraceLog, context.PerformanceMonitor, this.Document);
                 foreach (IComponent child in all)
                 {
                     child.Init(init);
@@ -194,7 +194,7 @@ namespace Scryber.Components
                 return false;
         }
 
-        protected virtual IEnumerable<IComponent> DoParseContents(PDFContextBase context)
+        protected virtual IEnumerable<IComponent> DoParseContents(ContextBase context)
         {
             System.Xml.XmlNamespaceManager mgr = GetNamespaceManager();
             ITemplate gen = null;

@@ -261,10 +261,10 @@ namespace Scryber.Expressive
                 }
                 else if(currentToken.Type == ExpressionTokenType.Unit)
                 {
-                    PDFUnit unit;
+                    Unit unit;
                     tokens.Dequeue();
 
-                    if (!PDFUnit.TryParse(currentToken.CurrentToken, out unit))
+                    if (!Unit.TryParse(currentToken.CurrentToken, out unit))
                         throw new UnrecognisedTokenException(currentToken.CurrentToken);
                     else
                         leftHandSide = new ConstantValueExpression(unit);

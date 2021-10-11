@@ -13,16 +13,16 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("cx")]
-        public PDFUnit CentreX { get; set; }
+        public Unit CentreX { get; set; }
 
         [PDFAttribute("cy")]
-        public PDFUnit CenterY { get; set; }
+        public Unit CenterY { get; set; }
 
         [PDFAttribute("rx")]
-        public PDFUnit RadiusX { get; set; }
+        public Unit RadiusX { get; set; }
 
         [PDFAttribute("ry")]
-        public PDFUnit RadiusY { get; set; }
+        public Unit RadiusY { get; set; }
 
 
         public SVGEllipse()
@@ -42,10 +42,10 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
 
-            PDFRect rect = this.GetRectBounds();
+            Rect rect = this.GetRectBounds();
             GraphicsPath path = new GraphicsPath();
 
             Ellipse.BuildElipse(path, rect, true, 0);
@@ -53,9 +53,9 @@ namespace Scryber.Svg.Components
             return path;
         }
 
-        protected virtual PDFRect GetRectBounds()
+        protected virtual Rect GetRectBounds()
         {
-            var rect = new PDFRect();
+            var rect = new Rect();
             rect.X = this.CentreX - this.RadiusX;
             rect.Width = this.RadiusX * 2;
             rect.Y = this.CenterY - this.RadiusY;

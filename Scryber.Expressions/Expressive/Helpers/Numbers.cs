@@ -8,7 +8,7 @@ namespace Scryber.Expressive.Helpers
     {
         private static object ConvertIfStringOrUnit(object s)
         {
-            if(s is PDFUnit unit)
+            if(s is Unit unit)
             {
                 return unit.PointsValue;
             }
@@ -16,7 +16,7 @@ namespace Scryber.Expressive.Helpers
             {
                 if (Decimal.TryParse(s.ToString(), out Decimal result))
                     return result;
-                else if (PDFUnit.TryParse(s.ToString(), out unit))
+                else if (Unit.TryParse(s.ToString(), out unit))
                     return unit.PointsValue;
                 else
                     throw new InvalidCastException("Cannot convert " + s.ToString() + " to a decimal");

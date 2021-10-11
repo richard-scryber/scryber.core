@@ -34,9 +34,9 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the height of the text 
         /// </summary>
-        public override Drawing.PDFUnit Height
+        public override Drawing.Unit Height
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
@@ -46,21 +46,21 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the width of the NewLine run
         /// </summary>
-        public override Drawing.PDFUnit Width
+        public override Drawing.Unit Width
         {
-            get { return PDFUnit.Zero; }
+            get { return Unit.Zero; }
         }
 
         #endregion
 
         #region public PDFSize Offset {get; set;}
 
-        private PDFSize _offest;
+        private Size _offest;
 
         /// <summary>
         /// Gets or sets the offset of the line this TextRun is an end to
         /// </summary>
-        public PDFSize Offset
+        public Size Offset
         {
             get { return _offest; }
             set { _offest = value; }
@@ -128,11 +128,11 @@ namespace Scryber.PDF.Layout
         /// <param name="pageIndex"></param>
         /// <param name="xoffset"></param>
         /// <param name="yoffset"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             if (NextLineSpacer != null)
             {
-                PDFSize offset = this.Offset;
+                Size offset = this.Offset;
                 offset.Width += xoffset;
 
                 PDFLayoutLine nextline = this.NextLineSpacer.Line;
@@ -158,11 +158,11 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            PDFSize offset = this.Offset;
+            Size offset = this.Offset;
             
             if (null != this.NextLineSpacer)
             {
-                PDFUnit nextoffset = NextLineSpacer.Width;
+                Unit nextoffset = NextLineSpacer.Width;
                 offset.Width = nextoffset - offset.Width;
             }
             

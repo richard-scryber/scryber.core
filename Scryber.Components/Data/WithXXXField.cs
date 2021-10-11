@@ -35,26 +35,26 @@ namespace Scryber.Data
 
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Field field = new Field();
             field.Value = (null == this.Value) ? null : this.Value.ToString();
             return field;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)
@@ -100,12 +100,12 @@ namespace Scryber.Data
 
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Date field = new Date();
 
@@ -114,14 +114,14 @@ namespace Scryber.Data
             return field;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)
@@ -177,12 +177,12 @@ namespace Scryber.Data
 
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Number field = new Number();
 
@@ -191,14 +191,14 @@ namespace Scryber.Data
             return field;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)
@@ -237,12 +237,12 @@ namespace Scryber.Data
 
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Field field = new Field();
             field.Value = this.Value.ToString();
@@ -250,14 +250,14 @@ namespace Scryber.Data
             return field;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)
@@ -308,12 +308,12 @@ namespace Scryber.Data
             
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Link link = new Link();
             link.Action = LinkAction.Uri;
@@ -325,14 +325,14 @@ namespace Scryber.Data
             return link;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)
@@ -373,12 +373,12 @@ namespace Scryber.Data
 
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Image link = new Image();
             link.Source = this.SourceUrl;
@@ -386,14 +386,14 @@ namespace Scryber.Data
             return link;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)
@@ -439,12 +439,12 @@ namespace Scryber.Data
 
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
         }
 
-        public override VisualComponent DoBuildItemField(PDFContextBase context)
+        public override VisualComponent DoBuildItemField(ContextBase context)
         {
             Scryber.Components.HtmlFragment fragment = new Components.HtmlFragment();
             fragment.RawContents = this.HtmlContent;
@@ -452,14 +452,14 @@ namespace Scryber.Data
             return fragment;
         }
 
-        public override void SetDataSourceBindingItem(PDFDataItem item, PDFDataContext context)
+        public override void SetDataSourceBindingItem(DataItem item, DataContext context)
         {
             this._autobindValue = item.RelativePath;
             this.DataBinding += PDFWithTextField_DataBinding;
             base.SetDataSourceBindingItem(item, context);
         }
 
-        private void PDFWithTextField_DataBinding(object sender, PDFDataBindEventArgs e)
+        private void PDFWithTextField_DataBinding(object sender, DataBindEventArgs e)
         {
             object val = AssertGetDataItemValue(this._autobindValue, e);
             if (null != val)

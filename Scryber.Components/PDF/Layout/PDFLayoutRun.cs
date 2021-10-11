@@ -71,7 +71,7 @@ namespace Scryber.PDF.Layout
         /// Inheritors should override if they need to do anything
         /// </summary>
         /// <param name="y"></param>
-        public virtual void SetOffsetY(PDFUnit y)
+        public virtual void SetOffsetY(Unit y)
         {
         }
 

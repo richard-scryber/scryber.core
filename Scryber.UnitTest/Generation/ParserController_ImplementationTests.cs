@@ -31,28 +31,28 @@ namespace Scryber.Core.UnitTests.Generation
         public List<string> Invoked = new List<string>(); //keeps a list of all the invoked events on the controller
 
         [PDFAction("handlepageinit")]
-        public void HandlePageInit(object sender, PDFInitEventArgs args)
+        public void HandlePageInit(object sender, InitEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("init");
         }
 
         [PDFAction("handlepageload")]
-        public void HandlePageLoad(object sender, PDFLoadEventArgs args)
+        public void HandlePageLoad(object sender, LoadEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("load");
         }
 
         [PDFAction("handlepagebinding")]
-        public void HandlePageBinding(object sender, PDFDataBindEventArgs args)
+        public void HandlePageBinding(object sender, DataBindEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("binding");
         }
 
         [PDFAction("handlepagebound")]
-        public void HandlePageBound(object sender, PDFDataBindEventArgs args)
+        public void HandlePageBound(object sender, DataBindEventArgs args)
         {
             Assert.IsNotNull(args.Context);
             Invoked.Add("bound");

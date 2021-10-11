@@ -327,13 +327,13 @@ namespace Scryber.Components
         {
             foreach (Component comp in content)
             {
-                if (comp is IPDFInvisibleContainer)
+                if (comp is IInvisibleContainer)
                 {
-                    IPDFInvisibleContainer container = comp as IPDFInvisibleContainer;
+                    IInvisibleContainer container = comp as IInvisibleContainer;
                     if (container.HasContent)
                         this.BuildAllItems(container.Content, found);
                 }
-                else if (comp is IPDFDataSource)
+                else if (comp is IDataSource)
                 {
                     continue;
                 }

@@ -27,7 +27,7 @@ namespace Scryber.Data
     /// <summary>
     /// Base class for all relations
     /// </summary>
-    public abstract class DataRelation : PDFObject, IBindableComponent
+    public abstract class DataRelation : TypedObject, IBindableComponent
     {
 
         //
@@ -36,24 +36,24 @@ namespace Scryber.Data
 
         #region public event PDFDataBindEventHandler DataBinding;
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (null != this.DataBinding)
-                this.DataBinding(this, new PDFDataBindEventArgs(context));
+                this.DataBinding(this, new DataBindEventArgs(context));
         }
 
         #endregion
 
         #region public event PDFDataBindEventHandler DataBound;
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (null != this.DataBound)
-                this.DataBound(this, new PDFDataBindEventArgs(context));
+                this.DataBound(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -108,7 +108,7 @@ namespace Scryber.Data
         /// </summary>
         /// <param name="owner">The command on which this relation is defined</param>
         /// <param name="dataset">The dataset to add the relation to</param>
-        public abstract void AddRelation(IPDFDataSetProviderCommand parent, IPDFDataSetProviderCommand child, DataSet dataset, PDFDataContext context);
+        public abstract void AddRelation(IDataSetProviderCommand parent, IDataSetProviderCommand child, DataSet dataset, DataContext context);
 
 
         #region public void DataBind(PDFDataContext context)
@@ -117,7 +117,7 @@ namespace Scryber.Data
         /// Supports the databinding capabilites of the parameter by raising the events
         /// </summary>
         /// <param name="context"></param>
-        public virtual void DataBind(PDFDataContext context)
+        public virtual void DataBind(DataContext context)
         {
             this.OnDataBinding(context);
             this.DoDataBind(context);
@@ -126,7 +126,7 @@ namespace Scryber.Data
 
         #endregion
 
-        protected virtual void DoDataBind(PDFDataContext context)
+        protected virtual void DoDataBind(DataContext context)
         {
         }
     }
@@ -136,7 +136,7 @@ namespace Scryber.Data
     public class PDFDataRelationList : List<DataRelation>
     {
 
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             if (this.Count > 0)
             {

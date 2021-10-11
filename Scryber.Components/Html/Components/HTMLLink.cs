@@ -47,17 +47,17 @@ namespace Scryber.Html.Components
 
             }
 
-            public virtual void AddContent(Component component, PDFContextBase context)
+            public virtual void AddContent(Component component, ContextBase context)
             {
 
             }
 
-            public virtual IEnumerable<IComponent> GetContent(IComponent owner, PDFContextBase context)
+            public virtual IEnumerable<IComponent> GetContent(IComponent owner, ContextBase context)
             {
                 return null;
             }
 
-            public virtual void DataBind(PDFDataContext context)
+            public virtual void DataBind(DataContext context)
             {
 
             }
@@ -82,7 +82,7 @@ namespace Scryber.Html.Components
                 this._index = 0;
             }
 
-            public override IEnumerable<IComponent> GetContent(IComponent owner, PDFContextBase context)
+            public override IEnumerable<IComponent> GetContent(IComponent owner, ContextBase context)
             {
                 if (null != this._gen)
                     return this._gen.Instantiate(_index, owner);
@@ -90,7 +90,7 @@ namespace Scryber.Html.Components
                     return null;
             }
 
-            public override void DataBind(PDFDataContext context)
+            public override void DataBind(DataContext context)
             {
                 
             }
@@ -120,7 +120,7 @@ namespace Scryber.Html.Components
                 this.LoadedSource = string.Empty;
             }
 
-            public override void AddContent(Component component, PDFContextBase context)
+            public override void AddContent(Component component, ContextBase context)
             {
                 var doc = component.Document;
 
@@ -136,7 +136,7 @@ namespace Scryber.Html.Components
                 }
             }
 
-            public override void DataBind(PDFDataContext context)
+            public override void DataBind(DataContext context)
             {
                 this._parsed.DataBind(context);
             }
@@ -239,14 +239,14 @@ namespace Scryber.Html.Components
         private bool _contentAdded = false;
         private bool _contentBound = false;
 
-        protected override void OnLoaded(PDFLoadContext context)
+        protected override void OnLoaded(LoadContext context)
         {
             base.OnLoaded(context);
 
             DoLoadReference(context);
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             base.OnDataBinding(context);
 
@@ -261,7 +261,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected override void OnDataBound(PDFDataContext context)
+        protected override void OnDataBound(DataContext context)
         {
             base.OnDataBound(context);
             
@@ -293,7 +293,7 @@ namespace Scryber.Html.Components
 
         #region protected virtual void DoLoadReference(PDFContextBase context)
         
-        protected virtual void DoLoadReference(PDFContextBase context)
+        protected virtual void DoLoadReference(ContextBase context)
         {
             if (String.IsNullOrEmpty(this.Href))
             {
@@ -360,7 +360,7 @@ namespace Scryber.Html.Components
             
         }
 
-        private void ParseLoadedContent(HTMLLinkType type, string content, string path, PDFContextBase context)
+        private void ParseLoadedContent(HTMLLinkType type, string content, string path, ContextBase context)
         {
             switch (type)
             {
@@ -389,7 +389,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected virtual string DoLoadRemoteReference(string path, PDFContextBase context)
+        protected virtual string DoLoadRemoteReference(string path, ContextBase context)
         {
             //TODO: Use the document for any client web requests.
             //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
@@ -446,7 +446,7 @@ namespace Scryber.Html.Components
         /// <summary>
         /// Forces the completion and loading of the remote result.
         /// </summary>
-        private string DoLoadReferenceResult(System.IO.Stream stream, string path, PDFContextBase context)
+        private string DoLoadReferenceResult(System.IO.Stream stream, string path, ContextBase context)
         {
 
             string content = string.Empty;
@@ -475,7 +475,7 @@ namespace Scryber.Html.Components
         #endregion
 
 
-        protected StyleCollection CreateInnerStyles(string content, PDFContextBase context)
+        protected StyleCollection CreateInnerStyles(string content, ContextBase context)
         {
             var collection = new StyleCollection();
 
@@ -488,7 +488,7 @@ namespace Scryber.Html.Components
         }
 
         
-        private bool ShouldAddContent(OutputFormat format, PDFContextBase context, out HTMLLinkType type)
+        private bool ShouldAddContent(OutputFormat format, ContextBase context, out HTMLLinkType type)
         {
             type = HTMLLinkType.Other;
 
@@ -523,7 +523,7 @@ namespace Scryber.Html.Components
                 return false;
         }
 
-        protected virtual void ParseCssStyles(StyleCollection collection, string content, PDFContextBase context)
+        protected virtual void ParseCssStyles(StyleCollection collection, string content, ContextBase context)
         {
             bool parseCss = true;
 

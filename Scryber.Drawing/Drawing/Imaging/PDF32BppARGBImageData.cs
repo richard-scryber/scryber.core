@@ -45,7 +45,7 @@ namespace Scryber.Drawing.Imaging
         {
         }
 
-        protected override void RenderImageInformation(PDFContextBase context, PDFWriter writer)
+        protected override void RenderImageInformation(ContextBase context, PDFWriter writer)
         {
             base.RenderImageInformation(context, writer);
             if (this.AlphaData != null)
@@ -55,7 +55,7 @@ namespace Scryber.Drawing.Imaging
             }
         }
 
-        private PDFObjectRef RenderAlpaImageData(PDFContextBase context, PDFWriter writer)
+        private PDFObjectRef RenderAlpaImageData(ContextBase context, PDFWriter writer)
         {
             context.TraceLog.Add(TraceLevel.Debug, "IMAGE", "Rendering image alpha mask");
             PDFObjectRef mask = writer.BeginObject();
@@ -109,12 +109,12 @@ namespace Scryber.Drawing.Imaging
             this._filteredAlpha = null;
         }
 
-        public byte[] GetAlphaFilteredData(IStreamFilter[] filters, PDFContextBase context)
+        public byte[] GetAlphaFilteredData(IStreamFilter[] filters, ContextBase context)
         {
             return _filteredAlpha;
         }
 
-        public void SetAlphaFilteredData(IStreamFilter[] filters, byte[] data, PDFContextBase context)
+        public void SetAlphaFilteredData(IStreamFilter[] filters, byte[] data, ContextBase context)
         {
             if (null == data)
                 throw new ArgumentNullException("data");

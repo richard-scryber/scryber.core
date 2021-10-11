@@ -11,7 +11,7 @@ namespace Scryber.PDF.Resources
         /// Gets or sets the offset from the bottom left corner of the
         /// page (0,0) that the pattern repeats (top left of the pattern).
         /// </summary>
-        public PDFPoint Start
+        public Point Start
         {
             get;
             set;
@@ -24,7 +24,7 @@ namespace Scryber.PDF.Resources
         /// <summary>
         /// Gets or sets the distance between the start of each tile
         /// </summary>
-        public PDFSize Size
+        public Size Size
         {
             get;
             set;
@@ -32,7 +32,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        public PDFShadingPattern(IComponent owner, string key, PDFRect bounds, PatternType type = PatternType.ShadingPattern)
+        public PDFShadingPattern(IComponent owner, string key, Rect bounds, PatternType type = PatternType.ShadingPattern)
             : base(owner, type, key)
         {
             this.Start = bounds.Location;

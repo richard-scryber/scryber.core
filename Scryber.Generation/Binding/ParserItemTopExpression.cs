@@ -10,7 +10,7 @@ namespace Scryber.Binding
             this.ItemName = item;
         }
 
-        protected override object DoGetMyValue(object parent, PDFDataContext context)
+        protected override object DoGetMyValue(object parent, DataContext context)
         {
             if (this.ItemName == CurrentDataContextName)
             {

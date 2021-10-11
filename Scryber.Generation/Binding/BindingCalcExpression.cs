@@ -27,7 +27,7 @@ namespace Scryber.Binding
             this.BoundTo = property;
         }
 
-        public void BindComponent(object sender, PDFDataBindEventArgs args)
+        public void BindComponent(object sender, DataBindEventArgs args)
         {
             if (null == this.ItemValueProvider)
                 this.ItemValueProvider = args.Context.Items.ValueProvider(
@@ -43,7 +43,7 @@ namespace Scryber.Binding
 
         }
 
-        protected bool TryEvaluate(IVariableProvider provider, object owner, PDFDataContext context, out object value)
+        protected bool TryEvaluate(IVariableProvider provider, object owner, DataContext context, out object value)
         {
             value = null;
             bool result;

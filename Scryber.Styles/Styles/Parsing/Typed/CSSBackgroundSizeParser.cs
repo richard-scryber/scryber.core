@@ -13,7 +13,7 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style style, CSSStyleItemReader reader)
         {
             string h, v;
-            PDFUnit uh, uv;
+            Unit uh, uv;
             bool set = true;
             if (reader.ReadNextValue())
             {
@@ -32,7 +32,7 @@ namespace Scryber.Styles.Parsing.Typed
                             //Second is an expression so attach to the Y-pos ket
                             set &= this.AttachExpressionBindingHandler(style, StyleKeys.BgYSizeKey, v, DoConvertBgSize);
                         }
-                        else if (PDFUnit.TryParse(v, out uv))
+                        else if (Unit.TryParse(v, out uv))
                         {
                             //Not an expression so just set the value
                             style.Background.PatternYSize = uv;
@@ -62,7 +62,7 @@ namespace Scryber.Styles.Parsing.Typed
                         v = h;
 
                     
-                    if (PDFUnit.TryParse(h, out uh))
+                    if (Unit.TryParse(h, out uh))
                     {
                         style.Background.PatternXSize = uh;
                         set &= true;
@@ -75,7 +75,7 @@ namespace Scryber.Styles.Parsing.Typed
                         //Just the second one is an expression
                         set &= this.AttachExpressionBindingHandler(style, StyleKeys.BgYSizeKey, v, DoConvertBgSize);
                     }
-                    else if (PDFUnit.TryParse(v, out uv))
+                    else if (Unit.TryParse(v, out uv))
                     {
                         style.Background.PatternYSize = uv;
                         set &= true;
@@ -91,14 +91,14 @@ namespace Scryber.Styles.Parsing.Typed
         }
 
 
-        protected bool DoConvertBgSize(StyleBase forstyle, object value, out PDFUnit size)
+        protected bool DoConvertBgSize(StyleBase forstyle, object value, out Unit size)
         {
             if(null == value)
             {
-                size = PDFUnit.Empty;
+                size = Unit.Empty;
                 return false;
             }
-            else if(value is PDFUnit unit)
+            else if(value is Unit unit)
             {
                 size = unit;
                 return true;
@@ -108,17 +108,17 @@ namespace Scryber.Styles.Parsing.Typed
                 var str = value.ToString();
                 if(str == "cover")
                 {
-                    size = PDFUnit.Zero;
+                    size = Unit.Zero;
                     forstyle.SetValue(StyleKeys.BgRepeatKey, PatternRepeat.Fill);
                     return true;
                 }
-                else if(PDFUnit.TryParse(str, out size))
+                else if(Unit.TryParse(str, out size))
                 {
                     return true;
                 }
                 else
                 {
-                    size = PDFUnit.Zero;
+                    size = Unit.Zero;
                     return false;
                 }
             }

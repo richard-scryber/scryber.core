@@ -17,7 +17,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            PDFUnit absolute;
+            Unit absolute;
             bool result = false;
 
             if (reader.ReadNextValue())
@@ -38,14 +38,14 @@ namespace Scryber.Styles.Parsing.Typed
 
         }
 
-        protected bool DoConvertLineHeight(StyleBase onStyle, object value, out PDFUnit result)
+        protected bool DoConvertLineHeight(StyleBase onStyle, object value, out Unit result)
         {
             if(null == value)
             {
-                result = PDFUnit.Zero;
+                result = Unit.Zero;
                 return false;
             }
-            else if(value is PDFUnit unit)
+            else if(value is Unit unit)
             {
                 result = unit;
                 return true;
@@ -56,20 +56,20 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                result = PDFUnit.Zero;
+                result = Unit.Zero;
                 return false;
             }    
         }
 
 
-        public static bool TryParseLineHeight(StyleBase onStyle, string value, out PDFUnit height)
+        public static bool TryParseLineHeight(StyleBase onStyle, string value, out Unit height)
         {
             double proportional;
 
             //special case of a single double value - is proportional to the current font size if set.
             if (double.TryParse(value, out proportional))
             {
-                StyleValue<PDFUnit> fsize;
+                StyleValue<Unit> fsize;
                 if (onStyle.TryGetValue(StyleKeys.FontSizeKey, out fsize))
                 {
                     height = fsize.Value(onStyle) * proportional;

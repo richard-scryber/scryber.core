@@ -10,7 +10,7 @@ using Scryber.Logging;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("head")]
-    public class HTMLHead : ContainerComponent, IPDFInvisibleContainer
+    public class HTMLHead : ContainerComponent, IInvisibleContainer
     {
         private string _title;
 
@@ -52,7 +52,7 @@ namespace Scryber.Html.Components
             UpdateDocumentInfo(parent);
         }
 
-        protected override void OnDataBound(PDFDataContext context)
+        protected override void OnDataBound(DataContext context)
         {
             this.UpdateDocumentInfo(this.Parent);
             base.OnDataBound(context);
@@ -128,13 +128,13 @@ namespace Scryber.Html.Components
                                 if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document restrictions to " + meta.Content);
 
-                                ParseRestrictions(meta.Content, doc.Permissions, doc.TraceLog);
+                                ParseRestrictions(meta.Content, doc.RenderOptions.Permissions, doc.TraceLog);
                                 break;
                             case ("print-encryption"):
                                 if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Updating the document restrictions to " + meta.Content);
 
-                                ParseSecurityType(meta.Content, doc.Permissions, doc.TraceLog);
+                                ParseSecurityType(meta.Content, doc.RenderOptions.Permissions, doc.TraceLog);
 
                                 break;
                             default:
@@ -147,7 +147,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected void ParseSecurityType(string content, DocumentPermissions permissions, TraceLog log)
+        protected void ParseSecurityType(string content, PDFDocumentPermissions permissions, TraceLog log)
         {
             if (!string.IsNullOrEmpty(content))
             {
@@ -175,7 +175,7 @@ namespace Scryber.Html.Components
 
         private static readonly char[] _splits = new char[] { ' ', ',' };
 
-        protected void ParseRestrictions(string content, DocumentPermissions permissions, TraceLog log)
+        protected void ParseRestrictions(string content, PDFDocumentPermissions permissions, TraceLog log)
         {
             if (string.IsNullOrEmpty(content))
                 return;

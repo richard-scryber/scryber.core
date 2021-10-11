@@ -85,156 +85,156 @@ namespace Scryber
 
         }
 
-        public static PaperSize GetPaperFromSize(PDFSize sizeinmm)
+        public static PaperSize GetPaperFromSize(Drawing.Size sizeinmm)
         {
             return PaperSize.Custom;
         }
 
-        public static PDFSize GetSizeInMM(PaperSize paper)
+        public static Drawing.Size GetSizeInMM(PaperSize paper)
         {
-            PDFSize p = PDFSize.Empty;
+            Drawing.Size p = Drawing.Size.Empty;
             switch (paper)
             {
                 case (PaperSize.A0):
-                    p = new PDFSize(841.0, 1189.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(841.0, 1189.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A1):
-                    p = new PDFSize(594.0, 841.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(594.0, 841.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A2):
-                    p = new PDFSize(420.0, 594.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(420.0, 594.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A3):
-                    p = new PDFSize(297.0, 420.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(297.0, 420.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A4):
-                    p = new PDFSize(210.0, 297.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(210.0, 297.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A5):
-                    p = new PDFSize(148.0, 210.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(148.0, 210.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A6):
-                    p = new PDFSize(105.0, 148, PageUnits.Millimeters);
+                    p = new Drawing.Size(105.0, 148, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A7):
-                    p = new PDFSize(74.0, 105.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(74.0, 105.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A8):
-                    p = new PDFSize(52.0, 74.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(52.0, 74.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.A9):
-                    p = new PDFSize(37.0, 52.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(37.0, 52.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B0):
-                    p = new PDFSize(1000.0, 1414.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(1000.0, 1414.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B1):
-                    p = new PDFSize(707.0, 1000.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(707.0, 1000.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B2):
-                    p = new PDFSize(500.0, 707.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(500.0, 707.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B3):
-                    p = new PDFSize(353.0, 500.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(353.0, 500.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B4):
-                    p = new PDFSize(250.0, 353.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(250.0, 353.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B5):
-                    p = new PDFSize(176.0, 250.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(176.0, 250.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B6):
-                    p = new PDFSize(125.0, 176.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(125.0, 176.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B7):
-                    p = new PDFSize(88.0, 125.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(88.0, 125.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B8):
-                    p = new PDFSize(62.0, 88.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(62.0, 88.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.B9):
-                    p = new PDFSize(44.0, 62.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(44.0, 62.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C0):
-                    p = new PDFSize(917.0, 1297.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(917.0, 1297.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C1):
-                    p = new PDFSize(648.0, 917.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(648.0, 917.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C2):
-                    p = new PDFSize(458.0, 648.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(458.0, 648.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C3):
-                    p = new PDFSize(324.0, 458.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(324.0, 458.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C4):
-                    p = new PDFSize(229.0, 324.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(229.0, 324.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C5):
-                    p = new PDFSize(162.0, 229.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(162.0, 229.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C6):
-                    p = new PDFSize(114.0, 162.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(114.0, 162.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C7):
-                    p = new PDFSize(81.0, 114.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(81.0, 114.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C8):
-                    p = new PDFSize(57.0, 81.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(57.0, 81.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.C9):
-                    p = new PDFSize(40.0, 57.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(40.0, 57.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Quarto):
-                    p = new PDFSize(203.0, 254.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(203.0, 254.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Foolscap):
-                    p = new PDFSize(203.0, 330.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(203.0, 330.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Executive):
-                    p = new PDFSize(184.0, 267.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(184.0, 267.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.GovermentLetter):
-                    p = new PDFSize(203.0, 267.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(203.0, 267.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Letter):
-                    p = new PDFSize(216.0, 279.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(216.0, 279.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Legal):
-                    p = new PDFSize(216.0, 356.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(216.0, 356.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Tabloid):
-                    p = new PDFSize(297.0, 432.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(297.0, 432.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Post):
-                    p = new PDFSize(394.0, 489.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(394.0, 489.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Crown):
-                    p = new PDFSize(381.0, 508.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(381.0, 508.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.LargePost):
-                    p = new PDFSize(419.0, 533.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(419.0, 533.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Demy):
-                    p = new PDFSize(445.0, 572.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(445.0, 572.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Medium):
-                    p = new PDFSize(457.0, 584.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(457.0, 584.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Royal):
-                    p = new PDFSize(508.0, 635.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(508.0, 635.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Elephant):
-                    p = new PDFSize(584.0, 711.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(584.0, 711.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.DoubleDemy):
-                    p = new PDFSize(597.0, 889.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(597.0, 889.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.QuadDemy):
-                    p = new PDFSize(88.0, 1143.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(88.0, 1143.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Statement):
-                    p = new PDFSize(140.0, 216.0, PageUnits.Millimeters);
+                    p = new Drawing.Size(140.0, 216.0, PageUnits.Millimeters);
                     break;
                 case (PaperSize.Custom):
                 default:
@@ -245,9 +245,9 @@ namespace Scryber
 
         }
 
-        public static PDFSize GetSizeInDeviceIndependentUnits(PaperSize paperSize)
+        public static Drawing.Size GetSizeInDeviceIndependentUnits(PaperSize paperSize)
         {
-            PDFSize mm = Papers.GetSizeInMM(paperSize);
+            Drawing.Size mm = Papers.GetSizeInMM(paperSize);
             return mm.ToPoints();
         }
     }

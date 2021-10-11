@@ -150,7 +150,7 @@ namespace Scryber.Components
         /// <param name="context"></param>
         /// <param name="style"></param>
         /// <returns></returns>
-        protected override Text.PDFTextReader CreateReader(PDFContextBase context, Styles.Style style)
+        protected override Text.PDFTextReader CreateReader(ContextBase context, Styles.Style style)
         {
             if (context is PDF.PDFLayoutContext layout)
             {

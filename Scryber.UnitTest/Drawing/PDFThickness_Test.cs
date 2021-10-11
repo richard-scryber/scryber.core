@@ -71,8 +71,8 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFThicknessConstructor_Test()
         {
-            PDFUnit all = new PDFUnit(10);
-            PDFThickness target = new PDFThickness(all);
+            Unit all = new Unit(10);
+            Thickness target = new Thickness(all);
 
             Assert.AreEqual(all, target.Left);
             Assert.AreEqual(all, target.Top);
@@ -87,11 +87,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFThicknessConstructor_Test1()
         {
-            PDFUnit top = new PDFUnit(10); 
-            PDFUnit left = new PDFUnit(20); 
-            PDFUnit bottom = new PDFUnit(30); 
-            PDFUnit right = new PDFUnit(40);
-            PDFThickness target = new PDFThickness(top, right, bottom, left);
+            Unit top = new Unit(10); 
+            Unit left = new Unit(20); 
+            Unit bottom = new Unit(30); 
+            Unit right = new Unit(40);
+            Thickness target = new Thickness(top, right, bottom, left);
 
             Assert.AreEqual(left, target.Left);
             Assert.AreEqual(top, target.Top);
@@ -106,11 +106,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Add_Test()
         {
-            PDFThickness one = new PDFThickness(10, 20, 30, 40);
-            PDFThickness two = new PDFThickness(20, 30, 40, 50);
-            PDFThickness expected = new PDFThickness(30, 50, 70, 90);
-            PDFThickness actual;
-            actual = PDFThickness.Add(one, two);
+            Thickness one = new Thickness(10, 20, 30, 40);
+            Thickness two = new Thickness(20, 30, 40, 50);
+            Thickness expected = new Thickness(30, 50, 70, 90);
+            Thickness actual;
+            actual = Thickness.Add(one, two);
             Assert.AreEqual(expected, actual);
             
         }
@@ -122,9 +122,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Clone_Test()
         {
-            PDFThickness target = new PDFThickness(10, 20, 30, 40);
-            PDFThickness expected = new PDFThickness(10, 20, 30, 40);
-            PDFThickness actual;
+            Thickness target = new Thickness(10, 20, 30, 40);
+            Thickness expected = new Thickness(10, 20, 30, 40);
+            Thickness actual;
             actual = target.Clone();
             Assert.AreEqual(expected, actual);
             
@@ -137,19 +137,19 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void CompareTo_Test()
         {
-            PDFThickness target = new PDFThickness(10, 20, 30, 40);
-            PDFThickness other = new PDFThickness(10, 20, 30, 40);
+            Thickness target = new Thickness(10, 20, 30, 40);
+            Thickness other = new Thickness(10, 20, 30, 40);
             int expected = 0; 
             int actual;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(20, 30, 40, 50);
+            other = new Thickness(20, 30, 40, 50);
             expected = -1;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(0, 0, 10, 50);
+            other = new Thickness(0, 0, 10, 50);
             expected = 1;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
@@ -163,9 +163,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Empty_Test()
         {
-            PDFThickness expected = new PDFThickness(0, 0, 0, 0);
-            PDFThickness actual;
-            actual = PDFThickness.Empty();
+            Thickness expected = new Thickness(0, 0, 0, 0);
+            Thickness actual;
+            actual = Thickness.Empty();
             Assert.AreEqual(expected, actual);
             
         }
@@ -177,34 +177,34 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Equals_Test()
         {
-            PDFThickness target = new PDFThickness(10, 20, 30, 40);
-            PDFThickness other = new PDFThickness(10, 20, 30, 40);
+            Thickness target = new Thickness(10, 20, 30, 40);
+            Thickness other = new Thickness(10, 20, 30, 40);
             bool expected = true; 
             bool actual;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(20, 30, 40, 50);
+            other = new Thickness(20, 30, 40, 50);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(0, 20, 30, 40);
+            other = new Thickness(0, 20, 30, 40);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(10, 0, 30, 40);
+            other = new Thickness(10, 0, 30, 40);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(10, 20, 0, 40);
+            other = new Thickness(10, 20, 0, 40);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(10, 20, 30, 0);
+            other = new Thickness(10, 20, 30, 0);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
@@ -217,14 +217,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Equals_Test1()
         {
-            PDFThickness target = new PDFThickness(10, 20, 30, 40);
+            Thickness target = new Thickness(10, 20, 30, 40);
             object obj = null;
             bool expected = false;
             bool actual;
             actual = target.Equals(obj);
             Assert.AreEqual(expected, actual);
 
-            obj = new PDFThickness(10, 20, 30, 40);
+            obj = new Thickness(10, 20, 30, 40);
             expected = true;
             actual = target.Equals(obj);
             Assert.AreEqual(expected, actual);
@@ -237,29 +237,29 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void GetHashCode_Test()
         {
-            PDFThickness target = new PDFThickness(10, 20, 30, 40);
-            PDFThickness other = new PDFThickness(10, 20, 30, 40);
+            Thickness target = new Thickness(10, 20, 30, 40);
+            Thickness other = new Thickness(10, 20, 30, 40);
             int expected = other.GetHashCode();
             int actual;
             actual = target.GetHashCode();
             Assert.AreEqual(expected, actual);
 
-            other = new PDFThickness(10, 20, 30, 50);
+            other = new Thickness(10, 20, 30, 50);
             expected = other.GetHashCode();
             actual = target.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
-            other = new PDFThickness(0, 20, 30, 40);
+            other = new Thickness(0, 20, 30, 40);
             expected = other.GetHashCode();
             actual = target.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
-            other = new PDFThickness(10, 0, 30, 40);
+            other = new Thickness(10, 0, 30, 40);
             expected = other.GetHashCode();
             actual = target.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
-            other = new PDFThickness(10, 20, 0, 40);
+            other = new Thickness(10, 20, 0, 40);
             expected = other.GetHashCode();
             actual = target.GetHashCode();
             Assert.AreNotEqual(expected, actual);
@@ -272,13 +272,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Inflate_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness target = new PDFThickness(t,r,b,l);
-            PDFUnit w = new PDFUnit(5);
-            PDFUnit h = new PDFUnit(10);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness target = new Thickness(t,r,b,l);
+            Unit w = new Unit(5);
+            Unit h = new Unit(10);
             target.Inflate(w, h);
 
             Assert.AreEqual(l + w, target.Left);
@@ -295,12 +295,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Inflate_Test1()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness target = new PDFThickness(t, r, b, l);
-            PDFUnit all = new PDFUnit(10);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness target = new Thickness(t, r, b, l);
+            Unit all = new Unit(10);
             target.Inflate(all);
 
             Assert.AreEqual(l + all, target.Left);
@@ -316,11 +316,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Inflate_Test2()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness target = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness target = new Thickness(t, r, b, l);
 
             
             target.Inflate(t, r, b, l);
@@ -339,15 +339,15 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Parse_Test()
         {
             string value = "[10mm 20mm 30 40in]";
-            PDFThickness expected = new PDFThickness(new PDFUnit(10, PageUnits.Millimeters), new PDFUnit(20, PageUnits.Millimeters), new PDFUnit(30), new PDFUnit(40, PageUnits.Inches));
-            PDFThickness actual;
-            actual = PDFThickness.Parse(value);
+            Thickness expected = new Thickness(new Unit(10, PageUnits.Millimeters), new Unit(20, PageUnits.Millimeters), new Unit(30), new Unit(40, PageUnits.Inches));
+            Thickness actual;
+            actual = Thickness.Parse(value);
             Assert.AreEqual(expected, actual);
 
             value = "[20mm]";
-            PDFUnit all = new PDFUnit(20, PageUnits.Millimeters);
-            expected = new PDFThickness(all);
-            actual = PDFThickness.Parse(value);
+            Unit all = new Unit(20, PageUnits.Millimeters);
+            expected = new Thickness(all);
+            actual = Thickness.Parse(value);
             Assert.AreEqual(expected, actual);
         }
 
@@ -358,13 +358,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void SetAll_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness target = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness target = new Thickness(t, r, b, l);
 
-            PDFUnit all = new PDFUnit(10);
+            Unit all = new Unit(10);
             target.SetAll(all);
 
             Assert.AreEqual(all, target.Left);
@@ -380,16 +380,16 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Subtract_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness one = new Thickness(t, r, b, l);
 
-            PDFThickness two = new PDFThickness(1, 2, 3, 4);
-            PDFThickness expected = new PDFThickness(t - 1, r - 2, b - 3, l - 4);
-            PDFThickness actual;
-            actual = PDFThickness.Subtract(one, two);
+            Thickness two = new Thickness(1, 2, 3, 4);
+            Thickness expected = new Thickness(t - 1, r - 2, b - 3, l - 4);
+            Thickness actual;
+            actual = Thickness.Subtract(one, two);
             Assert.AreEqual(expected, actual);
             
         }
@@ -401,13 +401,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Clone_Test1()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness one = new Thickness(t, r, b, l);
             ICloneable target = one;
-            object expected = new PDFThickness(t, r, b, l);
+            object expected = new Thickness(t, r, b, l);
             object actual;
             actual = target.Clone();
             Assert.AreEqual(expected, actual);
@@ -421,11 +421,11 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToString_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit r = 20;
-            PDFUnit b = 40;
-            PDFUnit l = 30;
-            PDFThickness target = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit r = 20;
+            Unit b = 40;
+            Unit l = 30;
+            Thickness target = new Thickness(t, r, b, l);
             string expected = "[10pt 20pt 40pt 30pt]";
             string actual;
             actual = target.ToString();
@@ -440,15 +440,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void op_Addition_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit l = 20;
-            PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit l = 20;
+            Unit b = 40;
+            Unit r = 30;
+            Thickness one = new Thickness(t, r, b, l);
 
-            PDFThickness two = new PDFThickness(1, 2, 3, 4);
-            PDFThickness expected = new PDFThickness(t + 1, r + 2, b + 3, l + 4);
-            PDFThickness actual;
+            Thickness two = new Thickness(1, 2, 3, 4);
+            Thickness expected = new Thickness(t + 1, r + 2, b + 3, l + 4);
+            Thickness actual;
             actual = (one + two);
             Assert.AreEqual(expected, actual);
             
@@ -461,16 +461,16 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void op_Subtraction_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit l = 20;
-            PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit l = 20;
+            Unit b = 40;
+            Unit r = 30;
+            Thickness one = new Thickness(t, r, b, l);
 
-            PDFThickness two = new PDFThickness(1, 2, 3, 4);
-            PDFThickness expected = new PDFThickness(t - 1, r - 2, b - 3, l - 4);
+            Thickness two = new Thickness(1, 2, 3, 4);
+            Thickness expected = new Thickness(t - 1, r - 2, b - 3, l - 4);
 
-            PDFThickness actual;
+            Thickness actual;
             actual = (one - two);
             Assert.AreEqual(expected, actual);
             
@@ -483,14 +483,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Bottom_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit l = 20;
-            PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit l = 20;
+            Unit b = 40;
+            Unit r = 30;
+            Thickness one = new Thickness(t, r, b, l);
 
-            PDFUnit expected = b;
-            PDFUnit actual = one.Bottom;
+            Unit expected = b;
+            Unit actual = one.Bottom;
             Assert.AreEqual(expected, actual);
 
             b = 50;
@@ -507,27 +507,27 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void IsEmpty_Test()
         {
-            PDFThickness target = new PDFThickness(0, 0, 0, 0); 
+            Thickness target = new Thickness(0, 0, 0, 0); 
             bool actual = target.IsEmpty;
             Assert.IsTrue(actual);
 
-            target = new PDFThickness(1, 0, 0, 0);
+            target = new Thickness(1, 0, 0, 0);
             actual = target.IsEmpty;
             Assert.IsFalse(actual);
 
-            target = new PDFThickness(0, 1, 0, 0);
+            target = new Thickness(0, 1, 0, 0);
             actual = target.IsEmpty;
             Assert.IsFalse(actual);
 
-            target = new PDFThickness(0, 0, 1, 0);
+            target = new Thickness(0, 0, 1, 0);
             actual = target.IsEmpty;
             Assert.IsFalse(actual);
 
-            target = new PDFThickness(0, 0, 0, 1);
+            target = new Thickness(0, 0, 0, 1);
             actual = target.IsEmpty;
             Assert.IsFalse(actual);
 
-            target = new PDFThickness(1, 0, 0, -1);
+            target = new Thickness(1, 0, 0, -1);
             actual = target.IsEmpty;
             Assert.IsFalse(actual);
         }
@@ -539,14 +539,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Left_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit l = 20;
-            PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit l = 20;
+            Unit b = 40;
+            Unit r = 30;
+            Thickness one = new Thickness(t, r, b, l);
 
-            PDFUnit expected = l;
-            PDFUnit actual = one.Left;
+            Unit expected = l;
+            Unit actual = one.Left;
             Assert.AreEqual(expected, actual);
 
             l = 50;
@@ -562,14 +562,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Right_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit l = 20;
-            PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l);
+            Unit t = 10;
+            Unit l = 20;
+            Unit b = 40;
+            Unit r = 30;
+            Thickness one = new Thickness(t, r, b, l);
 
-            PDFUnit expected = r;
-            PDFUnit actual = one.Right;
+            Unit expected = r;
+            Unit actual = one.Right;
             Assert.AreEqual(expected, actual);
 
             r = 50;
@@ -585,14 +585,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Top_Test()
         {
-            PDFUnit t = 10;
-            PDFUnit l = 20;
-            PDFUnit b = 40;
-            PDFUnit r = 30;
-            PDFThickness one = new PDFThickness(t, r, b, l) ;
+            Unit t = 10;
+            Unit l = 20;
+            Unit b = 40;
+            Unit r = 30;
+            Thickness one = new Thickness(t, r, b, l) ;
 
-            PDFUnit expected = t;
-            PDFUnit actual = one.Top;
+            Unit expected = t;
+            Unit actual = one.Top;
             Assert.AreEqual(expected, actual);
 
             t = 50;

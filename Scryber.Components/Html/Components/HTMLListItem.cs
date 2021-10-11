@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Drawing;
-using Scryber.PDF.Layout;
+using Scryber.PDF;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("li")]
-    public class HTMLListItem : Scryber.Components.ListItem, IPDFViewPortComponent
+    public class HTMLListItem : Scryber.Components.ListItem
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -44,7 +44,7 @@ namespace Scryber.Html.Components
         public override HorizontalAlignment NumberAlignment { get => base.NumberAlignment; set => base.NumberAlignment = value; }
 
         [PDFAttribute("data-li-inset")]
-        public override PDFUnit NumberInset { get => base.NumberInset; set => base.NumberInset = value; }
+        public override Unit NumberInset { get => base.NumberInset; set => base.NumberInset = value; }
 
         [PDFAttribute("data-li-label")]
         public override string ItemLabelText { get => base.ItemLabelText; set => base.ItemLabelText = value; }

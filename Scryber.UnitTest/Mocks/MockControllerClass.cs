@@ -27,26 +27,26 @@ namespace Scryber.Core.UnitTests.Mocks
         //
 
         [PDFAction()]
-        public void DocumentInitialized(object sender, PDFInitEventArgs args)
+        public void DocumentInitialized(object sender, InitEventArgs args)
         {
             Results.Add("Controller Document Initialized");
         }
 
         [PDFAction()]
-        public void DocumentLoaded(object sender, PDFLoadEventArgs args)
+        public void DocumentLoaded(object sender, LoadEventArgs args)
         {
             this.Title.Text = "Set In the Load Event";
             Results.Add("Controller Document Loaded");
         }
 
         [PDFAction()]
-        public void DocumentBinding(object sender, PDFDataBindEventArgs args)
+        public void DocumentBinding(object sender, DataBindEventArgs args)
         {
             Results.Add("Controller Document DataBinding");
         }
 
         [PDFAction()]
-        public void DocumentDataBound(object sender, PDFDataBindEventArgs args)
+        public void DocumentDataBound(object sender, DataBindEventArgs args)
         {
             Results.Add("Controller Document Databound");
         }
@@ -80,7 +80,7 @@ namespace Scryber.Core.UnitTests.Mocks
         //
 
         [PDFAction()]
-        public void HeaderBinding(object sender, PDFDataBindEventArgs args)
+        public void HeaderBinding(object sender, DataBindEventArgs args)
         {
             if (null == this.Title)
                 throw new NullReferenceException("Title heading was not set");
@@ -96,7 +96,7 @@ namespace Scryber.Core.UnitTests.Mocks
         private string[] Entries = new string[] { "First", "Second", "Third" };
 
         [PDFAction()]
-        public void ForEachBinding(object sender, PDFDataBindEventArgs args)
+        public void ForEachBinding(object sender, DataBindEventArgs args)
         {
             var forEach = sender as ForEach;
             forEach.Value = Entries;
@@ -114,7 +114,7 @@ namespace Scryber.Core.UnitTests.Mocks
         }
 
         [PDFAction()]
-        public void ForEachListItemBound(object sender, PDFDataBindEventArgs args)
+        public void ForEachListItemBound(object sender, DataBindEventArgs args)
         {
             var li = sender as ListItem;
 
@@ -126,7 +126,7 @@ namespace Scryber.Core.UnitTests.Mocks
             Results.Add("Controller ForEach Label " + args.Context.CurrentIndex + " Databound");
         }
 
-        public IComponent PartialView(Document doc, PDFInitContext context)
+        public IComponent PartialView(Document doc, InitContext context)
         {
             var str = "";
 

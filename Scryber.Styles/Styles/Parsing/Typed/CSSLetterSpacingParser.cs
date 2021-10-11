@@ -9,7 +9,7 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSLetterSpacingParser : CSSStyleValueParser
     {
-        public static readonly PDFUnit NormalSpacing = PDFUnit.Zero;
+        public static readonly Unit NormalSpacing = Unit.Zero;
 
         public CSSLetterSpacingParser()
             : base(CSSStyleItems.LetterSpacing)
@@ -18,7 +18,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            PDFUnit size = PDFUnit.Zero;
+            Unit size = Unit.Zero;
             bool result = true;
             if (reader.ReadNextValue())
             {
@@ -39,14 +39,14 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertLetterSpacing(StyleBase style, object value, out PDFUnit spacing)
+        protected bool DoConvertLetterSpacing(StyleBase style, object value, out Unit spacing)
         {
             if(null == value)
             {
-                spacing = PDFUnit.Empty;
+                spacing = Unit.Empty;
                 return false;
             }
-            else if(value is PDFUnit unit)
+            else if(value is Unit unit)
             {
                 spacing = unit;
                 return true;
@@ -57,13 +57,13 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else
             {
-                spacing = PDFUnit.Empty;
+                spacing = Unit.Empty;
                 return false;
             }
 
         }
 
-        public static bool TryGetLetterSpacing(string value, out PDFUnit size)
+        public static bool TryGetLetterSpacing(string value, out Unit size)
         {
             switch (value.ToLower())
             {

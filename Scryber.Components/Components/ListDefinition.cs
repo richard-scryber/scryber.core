@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {

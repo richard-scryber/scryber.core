@@ -126,10 +126,10 @@ namespace Scryber.PDF.Layout
 
         protected virtual void CreateBlockRegions(PDFLayoutBlock containerBlock, PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            PDFRect unused = containerBlock.CurrentRegion.UnusedBounds;
-            PDFUnit yoffset = containerBlock.CurrentRegion.Height;
+            Rect unused = containerBlock.CurrentRegion.UnusedBounds;
+            Unit yoffset = containerBlock.CurrentRegion.Height;
 
-            PDFRect total = new PDFRect(PDFUnit.Zero, yoffset, unused.Width, unused.Height);
+            Rect total = new Rect(Unit.Zero, yoffset, unused.Width, unused.Height);
 
             if (position.Width.HasValue)
                 total.Width = position.Width.Value;
@@ -156,7 +156,7 @@ namespace Scryber.PDF.Layout
             if (containerRegion.HasOpenItem)
                 containerRegion.CloseCurrentItem();
 
-            PDFUnit required = PDFUnit.Zero;
+            Unit required = Unit.Zero;
             if (position.Height.HasValue)
                 required = position.Height.Value;
             //ADDED for min/max sizes.
@@ -201,7 +201,7 @@ namespace Scryber.PDF.Layout
                 block.Close();
 
             bool updateSize = false;
-            PDFSize updated = block.Size;
+            Size updated = block.Size;
 
             
 
@@ -227,8 +227,8 @@ namespace Scryber.PDF.Layout
             PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;
 
             //ADDED to support blocks flowing to the next region or page
-            PDFUnit vspace = containerRegion.TotalBounds.Height - containerRegion.UsedSize.Height;
-            PDFUnit req = block.Height;
+            Unit vspace = containerRegion.TotalBounds.Height - containerRegion.UsedSize.Height;
+            Unit req = block.Height;
 
             
 

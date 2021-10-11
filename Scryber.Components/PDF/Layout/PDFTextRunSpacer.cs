@@ -33,8 +33,8 @@ namespace Scryber.PDF.Layout
     {
         #region ivars
 
-        private PDFUnit _w;
-        private PDFUnit _h;
+        private Unit _w;
+        private Unit _h;
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the width of this spacer.
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get { return this._w; }
         }
@@ -59,7 +59,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the height of this spacer.
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get { return _h; }
         }
@@ -75,7 +75,7 @@ namespace Scryber.PDF.Layout
         #region public PDFTextRunSpacer(PDFUnit width, PDFUnit height, PDFLayoutLine line, IPDFComponent owner)
 
 
-        public PDFTextRunSpacer(PDFUnit width, PDFUnit height, PDFLayoutLine line, IComponent owner)
+        public PDFTextRunSpacer(Unit width, Unit height, PDFLayoutLine line, IComponent owner)
             : base(line, owner)
         {
             this.SetSpacing(width, height);
@@ -94,7 +94,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        protected virtual void SetSpacing(PDFUnit width, PDFUnit height)
+        protected virtual void SetSpacing(Unit width, Unit height)
         {
             this._w = width;
             this._h = height;
@@ -102,7 +102,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             if (xoffset > 0)
             {

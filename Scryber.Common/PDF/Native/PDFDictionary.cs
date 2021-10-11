@@ -25,7 +25,7 @@ namespace Scryber.PDF.Native
     /// <summary>
     /// A dictionary of PDFName Keys with PDFFileobject values. The dictionary is also a PDFFileObject
     /// </summary>
-    public class PDFDictionary : IFileObject, IDictionary<PDFName,IFileObject>, ICloneable
+    public class PDFDictionary : IPDFFileObject, IDictionary<PDFName,IPDFFileObject>, ICloneable
     {
         public ObjectType Type { get { return ObjectTypes.Dictionary; } }
  
@@ -36,12 +36,12 @@ namespace Scryber.PDF.Native
         {
         }
 
-        private Dictionary<PDFName, IFileObject> _dict = new Dictionary<PDFName, IFileObject>();
+        private Dictionary<PDFName, IPDFFileObject> _dict = new Dictionary<PDFName, IPDFFileObject>();
         
         /// <summary>
         /// Gets the inner dictionary of PDFName, PFFileObject pairs
         /// </summary>
-        protected Dictionary<PDFName, IFileObject> InnerDictionary
+        protected Dictionary<PDFName, IPDFFileObject> InnerDictionary
         {
             get { return this._dict; }
         }
@@ -49,9 +49,9 @@ namespace Scryber.PDF.Native
         /// <summary>
         /// Gets the inner collection of KeyValuePairs
         /// </summary>
-        protected ICollection<KeyValuePair<PDFName, IFileObject>> InnerCollection
+        protected ICollection<KeyValuePair<PDFName, IPDFFileObject>> InnerCollection
         {
-            get { return (ICollection<KeyValuePair<PDFName, IFileObject>>)this.InnerDictionary; }
+            get { return (ICollection<KeyValuePair<PDFName, IPDFFileObject>>)this.InnerDictionary; }
         }
 
         #region IDictionary<PDFName,PDFFileObject> Members
@@ -61,7 +61,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="key">The PDFName to use a the key</param>
         /// <param name="value">The PDFFileObject to associate</param>
-        public void Add(PDFName key, IFileObject value)
+        public void Add(PDFName key, IPDFFileObject value)
         {
             this.InnerDictionary.Add(key, value);
         }
@@ -100,7 +100,7 @@ namespace Scryber.PDF.Native
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public bool TryGetValue(string name, out IFileObject value)
+        public bool TryGetValue(string name, out IPDFFileObject value)
         {
             return this.TryGetValue((PDFName)name, out value);
         }
@@ -111,7 +111,7 @@ namespace Scryber.PDF.Native
         /// <param name="key">The key to find</param>
         /// <param name="value">The found data associated with the key if any</param>
         /// <returns>true if found</returns>
-        public bool TryGetValue(PDFName key, out IFileObject value)
+        public bool TryGetValue(PDFName key, out IPDFFileObject value)
         {
             return this.InnerDictionary.TryGetValue(key, out value);
         }
@@ -119,7 +119,7 @@ namespace Scryber.PDF.Native
         /// <summary>
         /// A collection of all the values in the dictionary
         /// </summary>
-        public ICollection<IFileObject> Values
+        public ICollection<IPDFFileObject> Values
         {
             get { return this.InnerDictionary.Values; }
         }
@@ -129,7 +129,7 @@ namespace Scryber.PDF.Native
         /// </summary>
         /// <param name="key">The PDFName key</param>
         /// <returns>The found PDFFileObject associated with the key</returns>
-        public IFileObject this[PDFName key]
+        public IPDFFileObject this[PDFName key]
         {
             get
             {
@@ -143,7 +143,7 @@ namespace Scryber.PDF.Native
 
         #endregion
 
-        public IFileObject this[string name]
+        public IPDFFileObject this[string name]
         {
             get { return this[(PDFName)name]; }
             set { this[(PDFName)name] = value; }
@@ -151,7 +151,7 @@ namespace Scryber.PDF.Native
 
         #region ICollection<KeyValuePair<PDFName,PDFFileObject>> Members
 
-        void ICollection<KeyValuePair<PDFName,IFileObject>>.Add(KeyValuePair<PDFName, IFileObject> item)
+        void ICollection<KeyValuePair<PDFName,IPDFFileObject>>.Add(KeyValuePair<PDFName, IPDFFileObject> item)
         {
             this.InnerCollection.Add(item);
         }
@@ -164,12 +164,12 @@ namespace Scryber.PDF.Native
             this.InnerDictionary.Clear();
         }
 
-        bool ICollection<KeyValuePair<PDFName,IFileObject>>.Contains(KeyValuePair<PDFName, IFileObject> item)
+        bool ICollection<KeyValuePair<PDFName,IPDFFileObject>>.Contains(KeyValuePair<PDFName, IPDFFileObject> item)
         {
             return this.InnerCollection.Contains(item);
         }
 
-        void ICollection<KeyValuePair<PDFName,IFileObject>>.CopyTo(KeyValuePair<PDFName, IFileObject>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<PDFName,IPDFFileObject>>.CopyTo(KeyValuePair<PDFName, IPDFFileObject>[] array, int arrayIndex)
         {
             this.InnerCollection.CopyTo(array, arrayIndex);
         }
@@ -190,7 +190,7 @@ namespace Scryber.PDF.Native
             get { return false; }
         }
 
-        bool ICollection<KeyValuePair<PDFName,IFileObject>>.Remove(KeyValuePair<PDFName, IFileObject> item)
+        bool ICollection<KeyValuePair<PDFName,IPDFFileObject>>.Remove(KeyValuePair<PDFName, IPDFFileObject> item)
         {
             return this.InnerCollection.Remove(item);
         }
@@ -203,7 +203,7 @@ namespace Scryber.PDF.Native
         /// Returns the KeyValuePair enumerator to enumerate over each entry in the dictionary
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<KeyValuePair<PDFName, IFileObject>> GetEnumerator()
+        public IEnumerator<KeyValuePair<PDFName, IPDFFileObject>> GetEnumerator()
         {
             return this.InnerCollection.GetEnumerator();
         }
@@ -227,7 +227,7 @@ namespace Scryber.PDF.Native
         public void WriteData(PDFWriter writer)
         {
             writer.BeginDictionaryS();
-            foreach (KeyValuePair<PDFName,IFileObject> kvp in this)
+            foreach (KeyValuePair<PDFName,IPDFFileObject> kvp in this)
             {
                 writer.BeginDictionaryEntry(kvp.Key);
                 kvp.Value.WriteData(writer);
@@ -244,7 +244,7 @@ namespace Scryber.PDF.Native
         {
             PDFDictionary theClone = (PDFDictionary)this.MemberwiseClone();
             theClone.Clear();
-            foreach (KeyValuePair<PDFName,IFileObject> item in this)
+            foreach (KeyValuePair<PDFName,IPDFFileObject> item in this)
             {
                 theClone.Add(item.Key, item.Value);
             }

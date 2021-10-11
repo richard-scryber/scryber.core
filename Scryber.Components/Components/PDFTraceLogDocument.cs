@@ -25,6 +25,7 @@ using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF.Resources;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
@@ -67,7 +68,7 @@ namespace Scryber.Components
             this.ViewPreferences = data.DocumentViewerPrefs;
         }
 
-        protected override void DoInit(PDFInitContext context)
+        protected override void DoInit(InitContext context)
         {
             context.TraceLog = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             
@@ -76,14 +77,14 @@ namespace Scryber.Components
             base.DoInit(context);
         }
 
-        protected virtual void InitStyles(PDFInitContext context)
+        protected virtual void InitStyles(InitContext context)
         {
             PDFTraceLogStyles stylesDoc = new PDFTraceLogStyles();
             this.Styles.Add(stylesDoc);
             stylesDoc.Init(context);
         }
 
-        private void InitContent(PDFInitContext context)
+        private void InitContent(InitContext context)
         {
             Section logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData, OwnerResources = this.OwnerResources };
             this.Pages.Add(logsect);

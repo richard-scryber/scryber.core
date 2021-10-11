@@ -113,7 +113,7 @@ namespace Scryber.Styles
             return _pageNums;
         }
 
-        protected internal override PDFThickness DoCreateMarginsThickness()
+        protected internal override Thickness DoCreateMarginsThickness()
         {
             if (null != this._pos)
                 return this._pos.Margins;
@@ -121,7 +121,7 @@ namespace Scryber.Styles
                 return base.DoCreateMarginsThickness();
         }
 
-        protected internal override PDFThickness DoCreatePaddingThickness()
+        protected internal override Thickness DoCreatePaddingThickness()
         {
             if (null != this._pos)
                 return this._pos.Padding;
@@ -129,7 +129,7 @@ namespace Scryber.Styles
                 return base.DoCreatePaddingThickness();
         }
 
-        protected internal override PDFThickness DoCreateClippingThickness()
+        protected internal override Thickness DoCreateClippingThickness()
         {
             if (null != this._pos)
                 return this._pos.ClipInset;

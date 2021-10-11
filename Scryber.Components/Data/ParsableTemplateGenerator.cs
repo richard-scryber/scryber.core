@@ -246,9 +246,9 @@ namespace Scryber.Data
                 IRemoteComponent remote = this.GetRemoteComponent(owner);
                 IDocument doc = owner.Document;
                 IComponent comp;
-                if (doc is IPDFTemplateParser)
+                if (doc is ITemplateParser)
                 {
-                    comp = ((IPDFTemplateParser)doc).ParseTemplate(remote,sr);
+                    comp = ((ITemplateParser)doc).ParseTemplate(remote,sr);
                 }
                 else
                     throw RecordAndRaise.NullReference(Errors.ParentDocumentMustBeTemplateParser);
@@ -339,8 +339,8 @@ namespace Scryber.Data
             public void PushToComponents(Component component)
             {
                 var next = this.NextIdentifier();
-                if (component is IPDFDataStyledComponent)
-                    (component as IPDFDataStyledComponent).DataStyleIdentifier = next;
+                if (component is IDataStyledComponent)
+                    (component as IDataStyledComponent).DataStyleIdentifier = next;
 
                 if(component is IPDFDataTemplateGenerator)
                 {
@@ -349,9 +349,9 @@ namespace Scryber.Data
                         dt.DataStyleStem = next;
                 }
 
-                if((component is IPDFContainerComponent) && (component as IPDFContainerComponent).HasContent)
+                if((component is IContainerComponent) && (component as IContainerComponent).HasContent)
                 {
-                    var container = (IPDFContainerComponent)component;
+                    var container = (IContainerComponent)component;
 
                     foreach (var comp in container.Content)
                     {

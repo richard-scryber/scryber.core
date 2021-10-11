@@ -75,11 +75,11 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void PDFArrayConstructor_Test()
         {
-            IEnumerable<IFileObject> items = null; // TODO: Initialize to an appropriate value
+            IEnumerable<IPDFFileObject> items = null; // TODO: Initialize to an appropriate value
             PDFArray target = new PDFArray(items);
             Assert.AreEqual(target.Count, 0);
 
-            items = new IFileObject[] { new PDFNumber(1), new PDFReal(2.0) };
+            items = new IPDFFileObject[] { new PDFNumber(1), new PDFReal(2.0) };
             target = new PDFArray(items);
 
             Assert.AreEqual(2, target.Count, "Initiailized array with entries was not created");
@@ -104,7 +104,7 @@ namespace Scryber.Core.UnitTests.Native
         public void Add_Test()
         {
             PDFArray target = new PDFArray();
-            IFileObject item = new PDFNumber(1);
+            IPDFFileObject item = new PDFNumber(1);
             target.Add(item);
             Assert.AreEqual(1, target.Count);
 
@@ -120,7 +120,7 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Clear_Test()
         {
-            PDFArray target = new PDFArray(new IFileObject[] { new PDFNumber(1), new PDFNumber(2) });
+            PDFArray target = new PDFArray(new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2) });
             Assert.AreEqual(2, target.Count);
             target.Clear();
             Assert.AreEqual(0, target.Count, "Entries not cleared from array");
@@ -133,12 +133,12 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Contains_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2) };
             PDFArray target = new PDFArray(all);
             
             Assert.AreEqual(all[0], all[0], "Basic assertion that PDFNumbers are equal failed");
 
-            IFileObject tofind = all[0];
+            IPDFFileObject tofind = all[0];
             bool contains = target.Contains(tofind);
             Assert.IsTrue(contains);
 
@@ -159,11 +159,11 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void CopyTo_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             PDFArray target = new PDFArray(all);
 
 
-            IFileObject[] array = new IFileObject[all.Length];
+            IPDFFileObject[] array = new IPDFFileObject[all.Length];
             int arrayIndex = 0;
             target.CopyTo(array, arrayIndex);
 
@@ -171,7 +171,7 @@ namespace Scryber.Core.UnitTests.Native
             Assert.AreEqual(all[1], array[1]);
             Assert.AreEqual(all[2], array[2]);
 
-            array = new IFileObject[all.Length + 2];
+            array = new IPDFFileObject[all.Length + 2];
             arrayIndex = 2;
             target.CopyTo(array, arrayIndex);
 
@@ -188,11 +188,11 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Indexer_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             PDFArray target = new PDFArray(all);
 
-            IFileObject expected = all[0];
-            IFileObject actual = target[0];
+            IPDFFileObject expected = all[0];
+            IPDFFileObject actual = target[0];
             Assert.AreEqual(expected, actual);
 
             expected = all[1];
@@ -231,11 +231,11 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void GetEnumerator_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             PDFArray target = new PDFArray(all);
 
             int index = 0;
-            foreach (IFileObject found in target)
+            foreach (IPDFFileObject found in target)
             {
                 Assert.AreEqual(all[index], found);
                 index++;
@@ -250,11 +250,11 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void GetEnumerator_Test1()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             IEnumerable target = new PDFArray(all);
 
             int index = 0;
-            foreach (IFileObject found in target)
+            foreach (IPDFFileObject found in target)
             {
                 Assert.AreEqual(all[index], found);
                 index++;
@@ -269,10 +269,10 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Add_Test1()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
-            IObjectContainer target = new PDFArray(all);
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFObjectContainer target = new PDFArray(all);
 
-            IFileObject obj = new PDFNumber(4);
+            IPDFFileObject obj = new PDFNumber(4);
             target.Add(obj);
             Assert.AreEqual(4, ((PDFArray)target).Count);
         }
@@ -284,9 +284,9 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Remove_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             PDFArray target = new PDFArray(all);
-            IFileObject toremove = all[1]; //Number 2
+            IPDFFileObject toremove = all[1]; //Number 2
 
             bool expected = true;
             bool actual;
@@ -308,7 +308,7 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void RemoveAt_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             PDFArray target = new PDFArray(all);
             int index  = 1;
 
@@ -329,7 +329,7 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void WriteData_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             
 
             PDFArray target = new PDFArray(all);
@@ -368,7 +368,7 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Count_Test()
         {
-            IFileObject[] all = new IFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
+            IPDFFileObject[] all = new IPDFFileObject[] { new PDFNumber(1), new PDFNumber(2), new PDFNumber(3) };
             PDFArray target = new PDFArray(all);
             int expected = all.Length;
             int actual = target.Count;

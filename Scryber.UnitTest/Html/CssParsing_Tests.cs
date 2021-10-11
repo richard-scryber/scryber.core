@@ -128,8 +128,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("body.grey div", two.Match.ToString());
             Assert.AreEqual(10, two.ValueCount); //All, Top, Left, Bottom and Right are all set for Margins and Padding
             // 96 pixels per inch, 72 points per inch
-            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, PDFUnit.Zero).PointsValue); 
-            Assert.AreEqual(11.25, two.GetValue(StyleKeys.MarginsAllKey, PDFUnit.Zero).PointsValue);
+            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, Unit.Zero).PointsValue); 
+            Assert.AreEqual(11.25, two.GetValue(StyleKeys.MarginsAllKey, Unit.Zero).PointsValue);
 
             var three = col[2] as StyleDefn;
 
@@ -139,15 +139,15 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual((Color)"#222", three.GetValue(StyleKeys.BgColorKey, StandardColors.Transparent));
             Assert.AreEqual((Color)"#808080", three.GetValue(StyleKeys.FillColorKey, StandardColors.Transparent));
 
-            Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsTopKey, 0.0));
-            Assert.AreEqual((PDFUnit)20, three.GetValue(StyleKeys.MarginsBottomKey, 0.0));
-            Assert.AreEqual((PDFUnit)10, three.GetValue(StyleKeys.MarginsLeftKey, 0.0));
-            Assert.AreEqual((PDFUnit)10, three.GetValue(StyleKeys.MarginsRightKey, 0.0));
+            Assert.AreEqual((Unit)20, three.GetValue(StyleKeys.MarginsTopKey, 0.0));
+            Assert.AreEqual((Unit)20, three.GetValue(StyleKeys.MarginsBottomKey, 0.0));
+            Assert.AreEqual((Unit)10, three.GetValue(StyleKeys.MarginsLeftKey, 0.0));
+            Assert.AreEqual((Unit)10, three.GetValue(StyleKeys.MarginsRightKey, 0.0));
 
-            Assert.AreEqual((PDFUnit)10, three.GetValue(StyleKeys.PaddingTopKey, 0.0));
-            Assert.AreEqual((PDFUnit)5, three.GetValue(StyleKeys.PaddingRightKey, 0.0));
-            Assert.AreEqual((PDFUnit)15, three.GetValue(StyleKeys.PaddingBottomKey, 0.0));
-            Assert.AreEqual((PDFUnit)1, three.GetValue(StyleKeys.PaddingLeftKey, 0.0));
+            Assert.AreEqual((Unit)10, three.GetValue(StyleKeys.PaddingTopKey, 0.0));
+            Assert.AreEqual((Unit)5, three.GetValue(StyleKeys.PaddingRightKey, 0.0));
+            Assert.AreEqual((Unit)15, three.GetValue(StyleKeys.PaddingBottomKey, 0.0));
+            Assert.AreEqual((Unit)1, three.GetValue(StyleKeys.PaddingLeftKey, 0.0));
         }
 
 
@@ -1198,7 +1198,7 @@ body.grey div.reverse{
         private Document BuildDocumentWithStyles(string css)
         {
             var doc = new Document();
-            var context = new PDFLoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
+            var context = new LoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc);
             var cssparser = new CSSStyleParser(css, context);
 
             //Add the parsed styles

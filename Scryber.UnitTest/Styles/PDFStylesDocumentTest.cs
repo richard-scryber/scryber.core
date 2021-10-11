@@ -120,7 +120,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void InitTest()
         {
             StylesDocument target = new StylesDocument(); // TODO: Initialize to an appropriate value
-            PDFInitContext context = new PDFInitContext(new ItemCollection(null), 
+            InitContext context = new InitContext(new ItemCollection(null), 
                 new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
             target.Initialized += target_Initialized;
             
@@ -311,7 +311,7 @@ namespace Scryber.Core.UnitTests.Styles
             actual.Flatten();
 
             Assert.AreEqual(StandardColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
-            Assert.AreEqual((PDFUnit)10, actual.Border.Width); // from defn
+            Assert.AreEqual((Unit)10, actual.Border.Width); // from defn
             Assert.AreEqual(3, actual.Columns.ColumnCount); //from defn2 
             Assert.AreEqual((FontSelector)"Helvetica", actual.Font.FontFamily);
         }

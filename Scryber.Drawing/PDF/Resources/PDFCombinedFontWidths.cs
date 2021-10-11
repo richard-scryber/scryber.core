@@ -13,7 +13,7 @@ namespace Scryber.PDF.Resources
             get { throw new NotImplementedException(); }
         }
 
-        public override void RenderWidthsArrayToPDF(PDFContextBase context, PDFWriter writer)
+        public override void RenderWidthsArrayToPDF(ContextBase context, PDFWriter writer)
         {
             throw new NotImplementedException();
         }

@@ -226,7 +226,7 @@ namespace Scryber.PDF.Secure
         /// Overrides the default implementation to encrypt the data, then write it to the underlying stream
         /// </summary>
         /// <param name="pfo"></param>
-        protected override void WriteIndirectStreamData(IIndirectObject pfo)
+        protected override void WriteIndirectStreamData(IPDFIndirectObject pfo)
         {
             if(this.TraceLog.ShouldLog(TraceLevel.Debug))
                 this.TraceLog.Begin(TraceLevel.Debug, "Secure Writer", "Encrypting stream for object '" + pfo.Number + " " + pfo.Generation + "'");

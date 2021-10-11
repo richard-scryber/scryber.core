@@ -56,7 +56,7 @@ namespace Scryber.Data
         {
         }
 
-        protected override void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
             return;
@@ -178,7 +178,7 @@ namespace Scryber.Data
         //    throw RecordAndRaise.ArgumentNull(Errors.TemplateComponentParentMustBeContainer);
         }
 
-        protected override void DoDataBindChildren(PDFDataContext context)
+        protected override void DoDataBindChildren(DataContext context)
         {
             base.DoDataBindChildren(context);
         }

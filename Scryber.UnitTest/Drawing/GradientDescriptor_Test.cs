@@ -164,7 +164,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Green)
             });
 
-            var fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
+            var fn = target.GetGradientFunction(Point.Empty, new Size(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             var fn2 = fn as PDFGradientFunction2;
@@ -189,7 +189,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Green, 50, null)
             });
 
-            fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
+            fn = target.GetGradientFunction(Point.Empty, new Size(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             fn2 = fn as PDFGradientFunction2;
@@ -214,7 +214,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Green, 100, null)
             });
 
-            fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
+            fn = target.GetGradientFunction(Point.Empty, new Size(100, 100));
 
             //This should not be a function 2 type as we add the Red colour at 0% too.
             Assert.IsNotInstanceOfType(fn, typeof(PDFGradientFunction2));
@@ -247,7 +247,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Green)
             });
 
-            var fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
+            var fn = target.GetGradientFunction(Point.Empty, new Size(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             var fn2 = fn as PDFGradientFunction2;
@@ -272,7 +272,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Green, 50, null)
             });
 
-            fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
+            fn = target.GetGradientFunction(Point.Empty, new Size(100, 100));
             Assert.IsInstanceOfType(fn, typeof(PDFGradientFunction2));
 
             fn2 = fn as PDFGradientFunction2;
@@ -297,7 +297,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Green, 100, null)
             });
 
-            fn = target.GetGradientFunction(PDFPoint.Empty, new PDFSize(100, 100));
+            fn = target.GetGradientFunction(Point.Empty, new Size(100, 100));
 
             //This should not be a function 2 type as we add the Red colour at 0% too.
             Assert.IsNotInstanceOfType(fn, typeof(PDFGradientFunction2));

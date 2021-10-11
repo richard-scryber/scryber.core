@@ -43,28 +43,28 @@ namespace Scryber.Components
             this.DefaultRotation = 0;
         }
 
-        protected override PDFPoint[] GetPoints(PDFRect bounds, Style style)
+        protected override Point[] GetPoints(Rect bounds, Style style)
         {
             double angle = style.GetValue(StyleKeys.ShapeRotationKey, this.DefaultRotation);
             double x = bounds.Width.PointsValue / 2;
             double y = bounds.Height.PointsValue / 2;
-            PDFPoint[] all = new PDFPoint[4];
+            Point[] all = new Point[4];
 
             //build the rectangle around the origin
-            all[0] = new PDFPoint(-x, -y);
-            all[1] = new PDFPoint(x, -y);
-            all[2] = new PDFPoint(x, y);
-            all[3] = new PDFPoint(-x, y);
+            all[0] = new Point(-x, -y);
+            all[1] = new Point(x, -y);
+            all[2] = new Point(x, y);
+            all[3] = new Point(-x, y);
 
             //rotate by the required amount
             double rotation = ToRadians(angle);
-            PDFUnit minx = 0;
-            PDFUnit miny = 0;
+            Unit minx = 0;
+            Unit miny = 0;
             if (rotation != 0)
             {
                 for (int i = 0; i < all.Length; i++)
                 {
-                    PDFPoint pt = all[i];
+                    Point pt = all[i];
                     pt = Rotate(pt, rotation);
                     if (i == 0)
                     {
@@ -73,8 +73,8 @@ namespace Scryber.Components
                     }
                     else
                     {
-                        minx = PDFUnit.Min(minx, pt.X);
-                        miny = PDFUnit.Min(miny, pt.Y);
+                        minx = Unit.Min(minx, pt.X);
+                        miny = Unit.Min(miny, pt.Y);
                     }
                     all[i] = pt;
                 }
@@ -86,8 +86,8 @@ namespace Scryber.Components
             }
 
             //then tanslate by the required amount (top left + half width and half height)
-            PDFUnit xoffset = 0 - minx;
-            PDFUnit yoffset = 0 - miny;
+            Unit xoffset = 0 - minx;
+            Unit yoffset = 0 - miny;
             for (int i = 0; i < all.Length; i++)
             {
                 all[i] = Translate(all[i], xoffset, yoffset);

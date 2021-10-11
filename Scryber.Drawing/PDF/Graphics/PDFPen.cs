@@ -73,9 +73,9 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
-        private PDFUnit _w;
+        private Unit _w;
 
-        public PDFUnit Width
+        public Unit Width
         {
             get { return _w; }
             set { _w = value; this.SetValue(SetValues.Width); }
@@ -118,7 +118,7 @@ namespace Scryber.PDF.Graphics
             this.ClearAll();
         }
 
-        public virtual bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public virtual bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             if (this.IsSet(SetValues.Caps))
                 graphics.RenderLineCap(this.LineCaps);
@@ -134,16 +134,16 @@ namespace Scryber.PDF.Graphics
             return true;
         }
 
-        public virtual void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public virtual void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
         }
 
-        public static PDFPen Create(Color color, PDFUnit width)
+        public static PDFPen Create(Color color, Unit width)
         {
             return new PDFSolidPen(color, width);
         }
 
-        public static PDFPen Create(PDFBrush brush, PDFUnit width)
+        public static PDFPen Create(PDFBrush brush, Unit width)
         {
             if (brush.FillStyle == FillType.Solid)
             {
@@ -171,12 +171,12 @@ namespace Scryber.PDF.Graphics
         {
         }
 
-        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, Rect bounds)
         {
             return false;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public override void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
         }
     }
@@ -209,14 +209,14 @@ namespace Scryber.PDF.Graphics
         {
         }
 
-        public PDFSolidPen(Color color, PDFUnit width)
+        public PDFSolidPen(Color color, Unit width)
             : this()
         {
             this.Width = width;
             this.Color = color;
         }
 
-        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             bool result = base.SetUpGraphics(graphics, bounds);
             if (this.IsSet(SetValues.Color))
@@ -256,13 +256,13 @@ namespace Scryber.PDF.Graphics
             this.Dash = dash;
         }
 
-        public PDFDashPen(Dash dash, Color color, PDFUnit width)
+        public PDFDashPen(Dash dash, Color color, Unit width)
             : base(color, width)
         {
             this.Dash = dash;
         }
 
-        public override bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             bool result = base.SetUpGraphics(graphics, bounds);
             if (this.IsSet(SetValues.Dash))

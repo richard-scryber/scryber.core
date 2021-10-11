@@ -14,7 +14,7 @@ namespace Scryber.PDF.Graphics
         {
         }
 
-        public abstract void WriteFunctionDictionary(PDFContextBase context, PDFWriter writer);
+        public abstract void WriteFunctionDictionary(ContextBase context, PDFWriter writer);
     }
 
 }

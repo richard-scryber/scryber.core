@@ -36,7 +36,7 @@ namespace Scryber.Components
     /// <summary>
     /// Base class for all complex pdf Components
     /// </summary>
-    public abstract class Component : PDFObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent
+    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent
     {
         // static event keys for the PDFEventList
 
@@ -98,7 +98,7 @@ namespace Scryber.Components
         /// Event that notifies receivers that this instance has now been fully initialized
         /// </summary>
         [PDFAttribute("on-init")]
-        public event PDFInitializedEventHandler Initialized
+        public event InitializedEventHandler Initialized
         {
             add { this.Events.AddHandler(InitEventKey, value); }
             remove { this.Events.RemoveHandler(InitEventKey, value); }
@@ -108,13 +108,13 @@ namespace Scryber.Components
         /// Raises the initialized event 
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void OnInitialized(PDFInitContext context)
+        protected virtual void OnInitialized(InitContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFInitializedEventHandler handler = (PDFInitializedEventHandler)this.Events[InitEventKey];
+                InitializedEventHandler handler = (InitializedEventHandler)this.Events[InitEventKey];
                 if (null != handler)
-                    handler(this, new PDFInitEventArgs(context));
+                    handler(this, new InitEventArgs(context));
             }
         }
 
@@ -126,7 +126,7 @@ namespace Scryber.Components
         /// Event that notifies receivers that this instance has now been loaded
         /// </summary>
         [PDFAttribute("on-loaded")]
-        public event PDFLoadedEventHandler Loaded
+        public event LoadedEventHandler Loaded
         {
             add { this.Events.AddHandler(LoadedEventKey, value); }
             remove { this.Events.RemoveHandler(LoadedEventKey, value); }
@@ -136,13 +136,13 @@ namespace Scryber.Components
         /// Raises the loaded event. 
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void OnLoaded(PDFLoadContext context)
+        protected virtual void OnLoaded(LoadContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFLoadedEventHandler handler = (PDFLoadedEventHandler)this.Events[LoadedEventKey];
+                LoadedEventHandler handler = (LoadedEventHandler)this.Events[LoadedEventKey];
                 if (null != handler)
-                    handler(this, new PDFLoadEventArgs(context));
+                    handler(this, new LoadEventArgs(context));
             }
         }
 
@@ -154,7 +154,7 @@ namespace Scryber.Components
         /// Notifies receivers that this instance is in the process of being data bound
         /// </summary>
         [PDFAttribute("on-databinding")]
-        public event PDFDataBindEventHandler DataBinding
+        public event DataBindEventHandler DataBinding
         {
             add { this.Events.AddHandler(DataBindingEventKey, value); }
             remove { this.Events.RemoveHandler(DataBindingEventKey, value); }
@@ -165,13 +165,13 @@ namespace Scryber.Components
         /// Raises the DataBinding event. Inheritors can override this method to perfom their own actions
         /// </summary>
         /// <param name="e">The arguments</param>
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFDataBindEventHandler handler = (PDFDataBindEventHandler)this.Events[DataBindingEventKey];
+                DataBindEventHandler handler = (DataBindEventHandler)this.Events[DataBindingEventKey];
                 if (null != handler)
-                    handler(this, new PDFDataBindEventArgs(context));
+                    handler(this, new DataBindEventArgs(context));
 
             }
         }
@@ -184,7 +184,7 @@ namespace Scryber.Components
         /// Notifies receivers that this instance has been databound
         /// </summary>
         [PDFAttribute("on-databound")]
-        public event PDFDataBindEventHandler DataBound
+        public event DataBindEventHandler DataBound
         {
             add { this.Events.AddHandler(DataBoundEventKey, value); }
             remove { this.Events.RemoveHandler(DataBoundEventKey, value); }
@@ -194,13 +194,13 @@ namespace Scryber.Components
         /// Raises the DataBound event. Inheritors can override this method to perfom their own actions
         /// </summary>
         /// <param name="e">The arguments</param>
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (this.HasRegisteredEvents)
             {
-                PDFDataBindEventHandler handler = (PDFDataBindEventHandler)this.Events[DataBoundEventKey];
+                DataBindEventHandler handler = (DataBindEventHandler)this.Events[DataBoundEventKey];
                 if (null != handler)
-                    handler(this, new PDFDataBindEventArgs(context));
+                    handler(this, new DataBindEventArgs(context));
 
             }
         }
@@ -874,7 +874,7 @@ namespace Scryber.Components
         /// <summary>
         /// Initializes the instance
         /// </summary>
-        public void Init(PDFInitContext context)
+        public void Init(InitContext context)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Component", "Init Component '" + this.UniqueID + "'");
@@ -890,7 +890,7 @@ namespace Scryber.Components
         /// <summary>
         /// Inheritors should override this method to perform their own initialization
         /// </summary>
-        protected virtual void DoInit(PDFInitContext context)
+        protected virtual void DoInit(InitContext context)
         {
         }
 
@@ -901,7 +901,7 @@ namespace Scryber.Components
         /// <summary>
         /// Load operation
         /// </summary>
-        public void Load(PDFLoadContext context)
+        public void Load(LoadContext context)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug,"Component", "Load Component '" + this.UniqueID + "'");
@@ -917,7 +917,7 @@ namespace Scryber.Components
         /// <summary>
         /// Inheritors should override this method to perform their own loading operations
         /// </summary>
-        protected virtual void DoLoad(PDFLoadContext context)
+        protected virtual void DoLoad(LoadContext context)
         {
         }
 
@@ -928,7 +928,7 @@ namespace Scryber.Components
         /// <summary>
         /// Databinds this page Component and any children
         /// </summary>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Component", "Databind Component '" + this.UniqueID + "'");
@@ -962,7 +962,7 @@ namespace Scryber.Components
         /// Inheritors should override this method to provide their own data binding implementations
         /// </summary>
         /// <param name="includeChildren"></param>
-        protected virtual void DoDataBind(PDFDataContext context, bool includeChildren)
+        protected virtual void DoDataBind(DataContext context, bool includeChildren)
         {
             if (this._outline != null)
                 this.Outline.DataBind(context);
@@ -991,9 +991,9 @@ namespace Scryber.Components
                         found = ele;
                         return true;
                     }
-                    else if (ele is IPDFContainerComponent)
+                    else if (ele is IContainerComponent)
                     {
-                        IPDFContainerComponent container = ele as IPDFContainerComponent;
+                        IContainerComponent container = ele as IContainerComponent;
                         if (container.HasContent && this.FindAComponentById(container.Content, id, out found))
                             return true;
                     }
@@ -1027,9 +1027,9 @@ namespace Scryber.Components
                         found = ele;
                         return true;
                     }
-                    else if (ele is IPDFContainerComponent)
+                    else if (ele is IContainerComponent)
                     {
-                        IPDFContainerComponent container = ele as IPDFContainerComponent;
+                        IContainerComponent container = ele as IContainerComponent;
                         if (container.HasContent && this.FindAComponentByName(container.Content, name, out found))
                             return true;
                     }
@@ -1082,7 +1082,7 @@ namespace Scryber.Components
 
         protected virtual bool ShouldRegisterOutline(PDFLayoutContext context)
         {
-            return this.HasOutline && !(this is IPDFInvisibleContainer);
+            return this.HasOutline && !(this is IInvisibleContainer);
         }
 
         protected virtual void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
@@ -1375,7 +1375,7 @@ namespace Scryber.Components
         #region public void SetArrangement(PDFComponentArrangement arrange) + GetArrangement() + ClearArrangement()
 
 
-        public void SetArrangement(PDFRenderContext context, Style style, PDFRect contentBounds)
+        public void SetArrangement(PDFRenderContext context, Style style, Rect contentBounds)
         {
             ComponentMultiArrangement arrange = new ComponentMultiArrangement();
             arrange.PageIndex = context.PageIndex;

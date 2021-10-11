@@ -46,22 +46,22 @@ namespace Scryber.Svg.Components
         // position
 
         [PDFAttribute("width")]
-        public override PDFUnit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { get => base.Width; set => base.Width = value; }
 
         [PDFAttribute("height")]
-        public override PDFUnit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { get => base.Height; set => base.Height = value; }
 
         [PDFAttribute("x")]
-        public override PDFUnit X { get => base.X; set => base.X = value; }
+        public override Unit X { get => base.X; set => base.X = value; }
 
         [PDFAttribute("y")]
-        public override PDFUnit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y { get => base.Y; set => base.Y = value; }
 
         [PDFAttribute("rx")]
-        public PDFUnit CornerRadiusX { get { return this.Style.Border.CornerRadius; } set { this.Style.Border.CornerRadius = value; } }
+        public Unit CornerRadiusX { get { return this.Style.Border.CornerRadius; } set { this.Style.Border.CornerRadius = value; } }
 
         [PDFAttribute("ry")]
-        public PDFUnit CornerRadiusY { get { return this.Style.Border.CornerRadius; } set { this.Style.Border.CornerRadius = value; } }
+        public Unit CornerRadiusY { get { return this.Style.Border.CornerRadius; } set { this.Style.Border.CornerRadius = value; } }
 
         // stroke
 
@@ -69,7 +69,7 @@ namespace Scryber.Svg.Components
         public override Color StrokeColor { get => base.StrokeColor; set => base.StrokeColor = value; }
 
         [PDFAttribute("stroke-width")]
-        public override PDFUnit StrokeWidth { get => base.StrokeWidth; set => base.StrokeWidth = value; }
+        public override Unit StrokeWidth { get => base.StrokeWidth; set => base.StrokeWidth = value; }
 
         [PDFAttribute("stroke-linecap")]
         public LineCaps StrokeLineCap
@@ -98,15 +98,15 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override void BuildPath(GraphicsPath path, PDFPoint[] points, Style style, bool end)
+        protected override void BuildPath(GraphicsPath path, Point[] points, Style style, bool end)
         {
-            if (this.CornerRadiusX != PDFUnit.Zero)
+            if (this.CornerRadiusX != Unit.Zero)
                 this.BuildRoundRectPath(path, points, style);
             else
                 base.BuildPath(path, points, style, end);
         }
 
-        private void BuildRoundRectPath(GraphicsPath path, PDFPoint[] points, Style style)
+        private void BuildRoundRectPath(GraphicsPath path, Point[] points, Style style)
         {
             throw new NotImplementedException("Round rectangle points are not currently supported");
         }

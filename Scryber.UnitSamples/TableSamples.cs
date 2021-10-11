@@ -68,7 +68,7 @@ namespace Scryber.UnitSamples
 
             var pg = new Page();
             doc.Pages.Add(pg);
-            pg.Padding = new PDFThickness(20);
+            pg.Padding = new Thickness(20);
 
             var tbl = new TableGrid();
             pg.Contents.Add(tbl);

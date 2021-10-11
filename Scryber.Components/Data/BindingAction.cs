@@ -20,10 +20,10 @@ namespace Scryber.Data
         /// </summary>
         public IBindableComponent Component { get; set; }
 
-        public IPDFDataSource Source { get; set; }
+        public IDataSource Source { get; set; }
 
 
-        public BindingAction(object data, IPDFDataSource source, IBindableComponent comp)
+        public BindingAction(object data, IDataSource source, IBindableComponent comp)
         {
             this.Data = data;
             this.Component = comp;
@@ -33,7 +33,7 @@ namespace Scryber.Data
 
     internal class BindingActionList : List<BindingAction>
     {
-        public void Add(object data, IPDFDataSource source, IBindableComponent comp)
+        public void Add(object data, IDataSource source, IBindableComponent comp)
         {
             BindingAction action = new BindingAction(data, source, comp);
             this.Add(action);

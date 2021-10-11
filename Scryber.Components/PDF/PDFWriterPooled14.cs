@@ -101,7 +101,7 @@ namespace Scryber.PDF
             base.EndObject();
         }
 
-        protected override void ReleaseIndirectObject(IIndirectObject obj)
+        protected override void ReleaseIndirectObject(IPDFIndirectObject obj)
         {
             base.ReleaseIndirectObject(obj);
             if (obj is PDFIndirectObject)
@@ -133,7 +133,7 @@ namespace Scryber.PDF
             this._available.Add(stream);
         }
 
-        public override PDFStream CreateStream(IStreamFilter[] filters, IIndirectObject forobject)
+        public override PDFStream CreateStream(IStreamFilter[] filters, IPDFIndirectObject forobject)
         {
             if (this._available.Count > 0 && forobject is PDFIndirectObject)
             {

@@ -235,7 +235,7 @@ namespace Scryber.PDF.Resources
         /// </summary>
         /// <param name="font"></param>
         /// <returns></returns>
-        public bool Equals(PDFFont font)
+        public bool Equals(Font font)
         {
             if (null == font)
                 throw new ArgumentNullException("font");
@@ -280,7 +280,7 @@ namespace Scryber.PDF.Resources
         /// <param name="writer"></param>
         /// <returns></returns>
         /// <remarks>Should only be called once for any document as the underlying resource holds any indirect object reference.</remarks>
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             return this.Definition.RenderToPDF(this.Name.Value, this.Widths, context, writer);
         }

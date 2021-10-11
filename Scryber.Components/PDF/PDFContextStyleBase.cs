@@ -27,7 +27,7 @@ namespace Scryber.PDF
     /// <summary>
     /// A context base class with style stack
     /// </summary>
-    public abstract class PDFContextStyleBase : PDFContextBase
+    public abstract class PDFContextStyleBase : ContextBase
     {
         
         private Styles.StyleStack _stylestack;

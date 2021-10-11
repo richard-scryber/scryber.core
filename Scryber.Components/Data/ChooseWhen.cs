@@ -73,7 +73,7 @@ namespace Scryber.Data
         {
         }
 
-        public virtual bool EvaluateTest(PDFDataContext context)
+        public virtual bool EvaluateTest(DataContext context)
         {
             /* if (!string.IsNullOrEmpty(_test))
             {
@@ -89,7 +89,7 @@ namespace Scryber.Data
                 return false;
         }
 
-        protected virtual bool EvaluateTestExpression(string expr, IPDFDataSource source, object data, PDFDataContext context)
+        protected virtual bool EvaluateTestExpression(string expr, IDataSource source, object data, DataContext context)
         {
             return source.EvaluateTestExpression(expr, data, context);
         }

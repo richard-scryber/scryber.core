@@ -27,17 +27,17 @@ namespace Scryber
     /// <summary>
     /// The context class for databinding
     /// </summary>
-    public class PDFDataContext : PDFContextBase
+    public class DataContext : ContextBase
     {
         
         #region public PDFDataStack DataStack {get;}
 
-        private PDFDataStack _datastack;
+        private DataStack _datastack;
         
         /// <summary>
         /// Gets the current DataStack that holds the objects to bind to.
         /// </summary>
-        public PDFDataStack DataStack
+        public DataStack DataStack
         {
             get { return _datastack; }
         }
@@ -86,8 +86,8 @@ namespace Scryber
         /// </summary>
         /// <param name="items"></param>
         /// <param name="log"></param>
-        public PDFDataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
-            : this(items, log, perfmon, new PDFDataStack(), document)
+        public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
+            : this(items, log, perfmon, new DataStack(), document)
         {
         }
 
@@ -101,7 +101,7 @@ namespace Scryber
         /// <param name="items"></param>
         /// <param name="log"></param>
         /// <param name="stack"></param>
-        public PDFDataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, PDFDataStack stack, IDocument document)
+        public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, DataStack stack, IDocument document)
             : base(items, log, perfmon, document)
         {
             this._datastack = stack;

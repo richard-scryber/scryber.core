@@ -20,7 +20,7 @@ namespace Scryber.Binding
                 this.Next.AppendExpression(expr);
         }
 
-        public object GetValue(object parent, PDFDataContext context)
+        public object GetValue(object parent, DataContext context)
         {
             if (null == parent)
                 return null;
@@ -31,7 +31,7 @@ namespace Scryber.Binding
             return value;
         }
 
-        protected abstract object DoGetMyValue(object parent, PDFDataContext context);
+        protected abstract object DoGetMyValue(object parent, DataContext context);
     }
 
 }

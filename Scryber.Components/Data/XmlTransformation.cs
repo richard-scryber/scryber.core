@@ -37,9 +37,9 @@ namespace Scryber.Data
 
         #region public event PDFDataBindEventHandler DataBinding;
 
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
-        protected virtual void OnDataBinding(PDFDataBindEventArgs args)
+        protected virtual void OnDataBinding(DataBindEventArgs args)
         {
             if (null != this.DataBinding)
                 this.DataBinding(this, args);
@@ -49,9 +49,9 @@ namespace Scryber.Data
 
         #region public event PDFDataBindEventHandler DataBound;
 
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
-        protected virtual void OnDataBound(PDFDataBindEventArgs args)
+        protected virtual void OnDataBound(DataBindEventArgs args)
         {
             if (null != this.DataBound)
                 this.DataBound(this, args);
@@ -127,7 +127,7 @@ namespace Scryber.Data
         //
 
 
-        public System.Xml.XPath.XPathNavigator TransformData(System.Xml.XPath.XPathNavigator nav, int cacheduration, IPDFDataSource source, PDFDataContext context)
+        public System.Xml.XPath.XPathNavigator TransformData(System.Xml.XPath.XPathNavigator nav, int cacheduration, IDataSource source, DataContext context)
         {
             //Check we have something to use for a transformation.
             if (string.IsNullOrEmpty(this.XSLTPath) && null == this.Transformer)
@@ -175,7 +175,7 @@ namespace Scryber.Data
             return result.CreateNavigator();
         }
 
-        protected virtual System.Xml.Xsl.XslCompiledTransform DoGetTransformer(int cacheduration, IPDFDataSource source, PDFDataContext context)
+        protected virtual System.Xml.Xsl.XslCompiledTransform DoGetTransformer(int cacheduration, IDataSource source, DataContext context)
         {
 
             if (null == _transformer)
@@ -216,7 +216,7 @@ namespace Scryber.Data
         }
 
 
-        protected virtual System.Xml.Xsl.XsltArgumentList DoGetArguments(PDFDataContext context)
+        protected virtual System.Xml.Xsl.XsltArgumentList DoGetArguments(DataContext context)
         {
             System.Xml.Xsl.XsltArgumentList args = new System.Xml.Xsl.XsltArgumentList();
             if (this.HasArguments)
@@ -250,11 +250,11 @@ namespace Scryber.Data
         /// Supports the databinding capabilites of the parameter by raising the events
         /// </summary>
         /// <param name="context"></param>
-        public virtual void DataBind(PDFDataContext context)
+        public virtual void DataBind(DataContext context)
         {
             if (null != this.DataBinding || null != this.DataBound)
             {
-                PDFDataBindEventArgs args = new PDFDataBindEventArgs(context);
+                DataBindEventArgs args = new DataBindEventArgs(context);
                 this.OnDataBinding(args);
 
                 this.OnDataBound(args);

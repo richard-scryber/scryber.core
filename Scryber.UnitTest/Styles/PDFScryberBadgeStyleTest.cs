@@ -163,8 +163,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = ScryberBadgeStyle.DefaultXOffset;
-            PDFUnit actual = target.XOffset;
+            Unit expected = ScryberBadgeStyle.DefaultXOffset;
+            Unit actual = target.XOffset;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -176,7 +176,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(100, PageUnits.Points);
+            expected = new Unit(100, PageUnits.Points);
             target.XOffset = expected;
             actual = target.XOffset;
             Assert.AreEqual(expected, actual);
@@ -200,8 +200,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = ScryberBadgeStyle.DefaultYOffset;
-            PDFUnit actual = target.YOffset;
+            Unit expected = ScryberBadgeStyle.DefaultYOffset;
+            Unit actual = target.YOffset;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -213,7 +213,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(100, PageUnits.Points);
+            expected = new Unit(100, PageUnits.Points);
             target.YOffset = expected;
             actual = target.YOffset;
             Assert.AreEqual(expected, actual);

@@ -53,14 +53,14 @@ namespace Scryber.Data
         {
         }
 
-        public override Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, PDFDataContext context)
+        public override Component DoBuildItemCell(TableGrid grid, TableRow row, int rowindex, int columnindex, DataContext context)
         {
             TableCell cell = (TableCell)base.DoBuildItemCell(grid, row, rowindex, columnindex, context);
 
             Date lbl = new Date();
             lbl.Value = this.Value;
             lbl.Visible = this.Visible;
-            lbl.DataBinding += new PDFDataBindEventHandler(date_DataBinding);
+            lbl.DataBinding += new DataBindEventHandler(date_DataBinding);
 
             cell.Contents.Add(lbl);
 
@@ -69,7 +69,7 @@ namespace Scryber.Data
 
 
 
-        void date_DataBinding(object sender, PDFDataBindEventArgs args)
+        void date_DataBinding(object sender, DataBindEventArgs args)
         {
             this.DataBind(args.Context);
             Date num = ((Date)sender);
@@ -92,7 +92,7 @@ namespace Scryber.Data
 
         private string _autobindItemPath;
 
-        protected override void ApplyAutoBindingMember(PDFDataItem item)
+        protected override void ApplyAutoBindingMember(DataItem item)
         {
             this._autobindItemPath = item.RelativePath;
         }

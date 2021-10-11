@@ -8,7 +8,7 @@ namespace Scryber.PDF.Secure
     /// <summary>
     /// Defines the permissions and security type for a PDFSecureDocument.
     /// </summary>
-    public class DocumentPermissions
+    public class PDFDocumentPermissions
     {
 
         private const int DefaultEncryptionRevision = 3;
@@ -126,7 +126,7 @@ namespace Scryber.PDF.Secure
         // .ctor
         //
 
-        public DocumentPermissions()
+        public PDFDocumentPermissions()
         {
             this.Revision = DefaultEncryptionRevision;
             this.Version = DefaultEncryptionVersion;

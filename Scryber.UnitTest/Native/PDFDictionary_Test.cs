@@ -90,7 +90,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1); 
+            IPDFFileObject value = new PDFNumber(1); 
             target.Add(key, value);
             Assert.AreEqual(1, target.Count);
 
@@ -119,7 +119,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
@@ -139,7 +139,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
@@ -167,7 +167,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
@@ -177,7 +177,7 @@ namespace Scryber.Core.UnitTests.Native
 
             int expected = 2;
             int actual = 0;
-            foreach (KeyValuePair<PDFName,IFileObject> pair in target)
+            foreach (KeyValuePair<PDFName,IPDFFileObject> pair in target)
             {
                 actual++;
             }
@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
@@ -224,15 +224,15 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Add_Test1()
         {
-            ICollection<KeyValuePair<PDFName, IFileObject>> target = new PDFDictionary(); 
+            ICollection<KeyValuePair<PDFName, IPDFFileObject>> target = new PDFDictionary(); 
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
-            KeyValuePair<PDFName, IFileObject> item = new KeyValuePair<PDFName, IFileObject>(key, value); // TODO: Initialize to an appropriate value
+            IPDFFileObject value = new PDFNumber(1);
+            KeyValuePair<PDFName, IPDFFileObject> item = new KeyValuePair<PDFName, IPDFFileObject>(key, value); // TODO: Initialize to an appropriate value
             target.Add(item);
             Assert.AreEqual(1, target.Count);
 
             PDFName key2 = new PDFName("Item2");
-            item = new KeyValuePair<PDFName, IFileObject>(key2, value);
+            item = new KeyValuePair<PDFName, IPDFFileObject>(key2, value);
             target.Add(item);
             Assert.AreEqual(2, target.Count);
         }
@@ -245,14 +245,14 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Contains_Test()
         {
-            ICollection<KeyValuePair<PDFName, IFileObject>> target = new PDFDictionary();
+            ICollection<KeyValuePair<PDFName, IPDFFileObject>> target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
-            KeyValuePair<PDFName, IFileObject> item = new KeyValuePair<PDFName, IFileObject>(key, value);
+            IPDFFileObject value = new PDFNumber(1);
+            KeyValuePair<PDFName, IPDFFileObject> item = new KeyValuePair<PDFName, IPDFFileObject>(key, value);
             target.Add(item);
 
             PDFName key2 = new PDFName("Item2");
-            item = new KeyValuePair<PDFName, IFileObject>(key2, value);
+            item = new KeyValuePair<PDFName, IPDFFileObject>(key2, value);
             target.Add(item);
 
             bool expected = true;
@@ -270,17 +270,17 @@ namespace Scryber.Core.UnitTests.Native
         public void CopyTo_Test()
         {
             PDFDictionary dictionary = new PDFDictionary();
-            ICollection<KeyValuePair<PDFName, IFileObject>> target = dictionary;
+            ICollection<KeyValuePair<PDFName, IPDFFileObject>> target = dictionary;
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
-            KeyValuePair<PDFName, IFileObject> item = new KeyValuePair<PDFName, IFileObject>(key, value); // TODO: Initialize to an appropriate value
+            IPDFFileObject value = new PDFNumber(1);
+            KeyValuePair<PDFName, IPDFFileObject> item = new KeyValuePair<PDFName, IPDFFileObject>(key, value); // TODO: Initialize to an appropriate value
             target.Add(item);
 
             PDFName key2 = new PDFName("Item2");
-            item = new KeyValuePair<PDFName, IFileObject>(key2, value);
+            item = new KeyValuePair<PDFName, IPDFFileObject>(key2, value);
             target.Add(item);
 
-            KeyValuePair<PDFName, IFileObject>[] array = new KeyValuePair<PDFName,IFileObject>[3];
+            KeyValuePair<PDFName, IPDFFileObject>[] array = new KeyValuePair<PDFName,IPDFFileObject>[3];
             int arrayIndex = 1;
             target.CopyTo(array, arrayIndex);
 
@@ -288,8 +288,8 @@ namespace Scryber.Core.UnitTests.Native
             Assert.IsNotNull(array[2]);
 
             PDFName arraykey = array[1].Key;
-            IFileObject expected = dictionary[arraykey];
-            IFileObject actual = array[1].Value;
+            IPDFFileObject expected = dictionary[arraykey];
+            IPDFFileObject actual = array[1].Value;
 
             Assert.AreEqual(expected, actual);
 
@@ -308,14 +308,14 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void Remove_Test1()
         {
-            ICollection<KeyValuePair<PDFName, IFileObject>> target = new PDFDictionary();
+            ICollection<KeyValuePair<PDFName, IPDFFileObject>> target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
-            KeyValuePair<PDFName, IFileObject> item = new KeyValuePair<PDFName, IFileObject>(key, value); // TODO: Initialize to an appropriate value
+            IPDFFileObject value = new PDFNumber(1);
+            KeyValuePair<PDFName, IPDFFileObject> item = new KeyValuePair<PDFName, IPDFFileObject>(key, value); // TODO: Initialize to an appropriate value
             target.Add(item);
 
             PDFName key2 = new PDFName("Item2");
-            item = new KeyValuePair<PDFName, IFileObject>(key2, value);
+            item = new KeyValuePair<PDFName, IPDFFileObject>(key2, value);
             target.Add(item);
 
             Assert.AreEqual(2, target.Count);
@@ -336,18 +336,18 @@ namespace Scryber.Core.UnitTests.Native
         [TestCategory("PDF Native")]
         public void GetEnumerator_Test1()
         {
-            ICollection<KeyValuePair<PDFName, IFileObject>> target = new PDFDictionary();
+            ICollection<KeyValuePair<PDFName, IPDFFileObject>> target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
-            KeyValuePair<PDFName, IFileObject> item = new KeyValuePair<PDFName, IFileObject>(key, value);
+            IPDFFileObject value = new PDFNumber(1);
+            KeyValuePair<PDFName, IPDFFileObject> item = new KeyValuePair<PDFName, IPDFFileObject>(key, value);
             target.Add(item);
 
             PDFName key2 = new PDFName("Item2");
-            item = new KeyValuePair<PDFName, IFileObject>(key2, value);
+            item = new KeyValuePair<PDFName, IPDFFileObject>(key2, value);
             target.Add(item);
 
             int index = 0;
-            foreach (KeyValuePair<PDFName,IFileObject> pair in target)
+            foreach (KeyValuePair<PDFName,IPDFFileObject> pair in target)
             {
                 index++;
             }
@@ -364,7 +364,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key,value);
 
             PDFName key2 = new PDFName("Item2");
@@ -373,7 +373,7 @@ namespace Scryber.Core.UnitTests.Native
             bool expected = true;
             bool actual;
 
-            IFileObject valueExpected = value;
+            IPDFFileObject valueExpected = value;
             actual = target.TryGetValue(key, out value);
 
             Assert.AreEqual(valueExpected, value);
@@ -407,7 +407,7 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
@@ -443,15 +443,15 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
-            IFileObject value2 = new PDFNumber(2);
+            IPDFFileObject value2 = new PDFNumber(2);
             target.Add(key2, value2);
 
             
-            IFileObject actual;
+            IPDFFileObject actual;
             actual = target[key];
 
             Assert.AreEqual(value, actual);
@@ -492,11 +492,11 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
-            IFileObject value2 = new PDFNumber(2);
+            IPDFFileObject value2 = new PDFNumber(2);
             target.Add(key2, value2);
 
             ICollection<PDFName> actual;
@@ -546,20 +546,20 @@ namespace Scryber.Core.UnitTests.Native
         {
             PDFDictionary target = new PDFDictionary();
             PDFName key = new PDFName("Item1");
-            IFileObject value = new PDFNumber(1);
+            IPDFFileObject value = new PDFNumber(1);
             target.Add(key, value);
 
             PDFName key2 = new PDFName("Item2");
-            IFileObject value2 = new PDFNumber(2);
+            IPDFFileObject value2 = new PDFNumber(2);
             target.Add(key2, value2);
 
-            ICollection<IFileObject> actual;
+            ICollection<IPDFFileObject> actual;
             actual = target.Values;
 
             bool hasone = false;
             bool hastwo = false;
 
-            foreach (IFileObject item in actual)
+            foreach (IPDFFileObject item in actual)
             {
                 if (item.Equals(value))
                     hasone = true;

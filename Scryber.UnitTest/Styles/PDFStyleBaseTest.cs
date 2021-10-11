@@ -110,7 +110,7 @@ namespace Scryber.Core.UnitTests.Styles
         public void DataBindTest()
         {
             Style target = CreatePDFStyleBase();
-            PDFDataContext context = new PDFDataContext(new ItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
+            DataContext context = new DataContext(new ItemCollection(null), new Logging.DoNothingTraceLog(TraceRecordLevel.Off), new PerformanceMonitor(true), null);
 
             bg_bound = false;
             fill_binding = false;
@@ -132,22 +132,22 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsTrue(fill_binding);
         }
 
-        void Fill_DataBinding(object sender, PDFDataBindEventArgs e)
+        void Fill_DataBinding(object sender, DataBindEventArgs e)
         {
             fill_binding = true;
         }
 
-        void Background_DataBound(object sender, PDFDataBindEventArgs e)
+        void Background_DataBound(object sender, DataBindEventArgs e)
         {
             bg_bound = true;
         }
 
-        void target_DataBound(object sender, PDFDataBindEventArgs e)
+        void target_DataBound(object sender, DataBindEventArgs e)
         {
             style_bound = true;
         }
 
-        void target_DataBinding(object sender, PDFDataBindEventArgs e)
+        void target_DataBinding(object sender, DataBindEventArgs e)
         {
             style_binding = true;
         }
@@ -180,11 +180,11 @@ namespace Scryber.Core.UnitTests.Styles
             target.MergeInto(style, lbl, state);
             style.Flatten(); //must flatten the style after a merge
 
-            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); // part of style
+            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); // part of style
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Aqua); // should have been replaced by targets color
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern); //from the target - not replaced by the change of color
             Assert.IsTrue(style.IsValueDefined(StyleKeys.BorderColorKey));
-            Assert.AreEqual(style.Border.Width, (Scryber.Drawing.PDFUnit)4); //from the target - not originally in style
+            Assert.AreEqual(style.Border.Width, (Scryber.Drawing.Unit)4); //from the target - not originally in style
             Assert.AreEqual(style.Border.Color, Scryber.Drawing.StandardColors.Blue); //from the target - not originally in style
 
             //No style class so should not be merged.
@@ -195,7 +195,7 @@ namespace Scryber.Core.UnitTests.Styles
             lbl = new Components.Label();
             lbl.ID = "mylabel";
             target.MergeInto(style, lbl, state);
-            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); 
+            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); 
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Yellow); 
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
             Assert.IsFalse(style.IsValueDefined(StyleKeys.BorderColorKey));
@@ -209,7 +209,7 @@ namespace Scryber.Core.UnitTests.Styles
             lbl.StyleClass = "sea";
             lbl.ID = "anotherlabel";
             target.MergeInto(style, lbl, state);
-            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10); 
+            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); 
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Yellow);
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
             Assert.IsFalse(style.IsValueDefined(StyleKeys.BorderColorKey));
@@ -220,7 +220,7 @@ namespace Scryber.Core.UnitTests.Styles
             img.StyleClass = "sea";
             img.ID = "mylabel";
             target.MergeInto(style, img, state);
-            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.PDFUnit)10);
+            Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10);
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Yellow);
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
             Assert.IsFalse(style.IsValueDefined(StyleKeys.BorderColorKey));

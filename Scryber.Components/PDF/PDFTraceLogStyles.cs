@@ -15,7 +15,7 @@ namespace Scryber.PDF
         {
         }
 
-        protected override void OnInit(PDFInitContext context)
+        protected override void OnInit(InitContext context)
         {
             base.OnInit(context);
             this.InitTraceLogStyles();

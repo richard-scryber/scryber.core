@@ -9,19 +9,19 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public abstract class CSSThicknessValueParser : CSSUnitStyleParser
     {
-        protected PDFUnit AutoValue { get; set; }
+        protected Unit AutoValue { get; set; }
 
-        public CSSThicknessValueParser(string cssName, StyleKey<PDFUnit> pdfAttr)
+        public CSSThicknessValueParser(string cssName, StyleKey<Unit> pdfAttr)
             : base(cssName, pdfAttr)
         {
-            AutoValue = PDFUnit.Zero;
+            AutoValue = Unit.Zero;
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             if (reader.ReadNextValue())
             {
-                PDFUnit found;
+                Unit found;
                 if(IsExpression(reader.CurrentTextValue))
                 {
                     if (this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, DoConvertThicknessValue))
@@ -38,14 +38,14 @@ namespace Scryber.Styles.Parsing.Typed
 
         }
 
-        protected bool DoConvertThicknessValue(StyleBase onStyle, object value, out PDFUnit found)
+        protected bool DoConvertThicknessValue(StyleBase onStyle, object value, out Unit found)
         {
             if (null == value)
             {
-                found = PDFUnit.Empty;
+                found = Unit.Empty;
                 return false;
             }
-            else if (value is PDFUnit unit)
+            else if (value is Unit unit)
             {
                 found = unit;
                 return true;
@@ -58,7 +58,7 @@ namespace Scryber.Styles.Parsing.Typed
                 return false;
         }
 
-        public static bool ParseThicknessValue(string value, PDFUnit auto, out PDFUnit found)
+        public static bool ParseThicknessValue(string value, Unit auto, out Unit found)
         {
             if (value.Equals("auto", StringComparison.OrdinalIgnoreCase))
             {

@@ -30,79 +30,79 @@ namespace Scryber.Generation
     /// </summary>
     public static class ConvertObjects
     {
-        private static readonly PDFValueConverter ConvertToInt32 = new PDFValueConverter(ToInt32);
+        private static readonly ValueConverter ConvertToInt32 = new ValueConverter(ToInt32);
         private static object ToInt32(string value, Type requiredType, IFormatProvider provider)
         {
             return int.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToInt16 = new PDFValueConverter(ToInt16);
+        private static readonly ValueConverter ConvertToInt16 = new ValueConverter(ToInt16);
         private static object ToInt16(string value, Type requiredType, IFormatProvider provider)
         {
             return short.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToInt64 = new PDFValueConverter(ToInt64);
+        private static readonly ValueConverter ConvertToInt64 = new ValueConverter(ToInt64);
         private static object ToInt64(string value, Type requiredType, IFormatProvider provider)
         {
             return long.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToUInt32 = new PDFValueConverter(ToUInt32);
+        private static readonly ValueConverter ConvertToUInt32 = new ValueConverter(ToUInt32);
         private static object ToUInt32(string value, Type requiredType, IFormatProvider provider)
         {
             return uint.Parse(value);
         }
 
-        private static readonly PDFValueConverter ConvertToUInt16 = new PDFValueConverter(ToUInt16);
+        private static readonly ValueConverter ConvertToUInt16 = new ValueConverter(ToUInt16);
         private static object ToUInt16(string value, Type requiredType, IFormatProvider provider)
         {
             return ushort.Parse(value);
         }
 
-        private static readonly PDFValueConverter ConvertToUInt64 = new PDFValueConverter(ToUInt64);
+        private static readonly ValueConverter ConvertToUInt64 = new ValueConverter(ToUInt64);
         private static object ToUInt64(string value, Type requiredType, IFormatProvider provider)
         {
             return ulong.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToFloat = new PDFValueConverter(ToFloat);
+        private static readonly ValueConverter ConvertToFloat = new ValueConverter(ToFloat);
         private static object ToFloat(string value, Type requiredType, IFormatProvider provider)
         {
             return float.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToDouble = new PDFValueConverter(ToDouble);
+        private static readonly ValueConverter ConvertToDouble = new ValueConverter(ToDouble);
         private static object ToDouble(string value, Type requiredType, IFormatProvider provider)
         {
             return double.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToDecimal = new PDFValueConverter(ToDecimal);
+        private static readonly ValueConverter ConvertToDecimal = new ValueConverter(ToDecimal);
         private static object ToDecimal(string value, Type requiredType, IFormatProvider provider)
         {
             return decimal.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToString = new PDFValueConverter(ToString);
+        private static readonly ValueConverter ConvertToString = new ValueConverter(ToString);
         private static object ToString(string value, Type requiredType, IFormatProvider provider)
         {
             return value;
         }
 
-        private static readonly PDFValueConverter ConvertToDateTime = new PDFValueConverter(ToDateTime);
+        private static readonly ValueConverter ConvertToDateTime = new ValueConverter(ToDateTime);
         private static object ToDateTime(string value, Type requiredType, IFormatProvider provider)
         {
             return DateTime.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToTimeSpan = new PDFValueConverter(ToTimeSpan);
+        private static readonly ValueConverter ConvertToTimeSpan = new ValueConverter(ToTimeSpan);
         private static object ToTimeSpan(string value, Type requiredType, IFormatProvider provider)
         {
             return TimeSpan.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToEnum = new PDFValueConverter(ToEnum);
+        private static readonly ValueConverter ConvertToEnum = new ValueConverter(ToEnum);
         private static object ToEnum(string value, Type requiredType, IFormatProvider provider)
         {
             if (value.IndexOf(' ') > -1)
@@ -110,25 +110,25 @@ namespace Scryber.Generation
             return Enum.Parse(requiredType, value);
         }
 
-        private static readonly PDFValueConverter ConvertToByte = new PDFValueConverter(ToByte);
+        private static readonly ValueConverter ConvertToByte = new ValueConverter(ToByte);
         private static object ToByte(string value, Type requiredType, IFormatProvider provider)
         {
             return byte.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToSByte = new PDFValueConverter(ToSByte);
+        private static readonly ValueConverter ConvertToSByte = new ValueConverter(ToSByte);
         private static object ToSByte(string value, Type requiredType, IFormatProvider provider)
         {
             return sbyte.Parse(value, provider);
         }
 
-        private static readonly PDFValueConverter ConvertToChar = new PDFValueConverter(ToChar);
+        private static readonly ValueConverter ConvertToChar = new ValueConverter(ToChar);
         private static object ToChar(string value, Type requiredType, IFormatProvider provider)
         {
             return char.Parse(value);
         }
 
-        private static readonly PDFValueConverter ConvertToGuid = new PDFValueConverter(ToGuid);
+        private static readonly ValueConverter ConvertToGuid = new ValueConverter(ToGuid);
         private static object ToGuid(string value, Type requiredType, IFormatProvider provider)
         {
             if (string.IsNullOrEmpty(value))
@@ -137,30 +137,30 @@ namespace Scryber.Generation
                 return new Guid(value);
         }
 
-        private static readonly PDFValueConverter ConvertToBool = new PDFValueConverter(ToBool);
+        private static readonly ValueConverter ConvertToBool = new ValueConverter(ToBool);
         private static object ToBool(string value, Type requiredType, IFormatProvider provider)
         {
             return bool.Parse(value);
         }
 
-        private static readonly PDFValueConverter ConvertToDBNull = new PDFValueConverter(ToDBNull);
+        private static readonly ValueConverter ConvertToDBNull = new ValueConverter(ToDBNull);
         private static object ToDBNull(string value, Type requiredType, IFormatProvider provider)
         {
             return DBNull.Value;
         }
 
-        private static readonly PDFValueConverter ConvertToUri = new PDFValueConverter(ToUri);
+        private static readonly ValueConverter ConvertToUri = new ValueConverter(ToUri);
         private static object ToUri(string value, Type requiredType, IFormatProvider provider)
         {
             return new Uri(value);
         }
 
-        public static bool IsSimpleObjectType(Type type, out PDFValueConverter convert)
+        public static bool IsSimpleObjectType(Type type, out ValueConverter convert)
         {
             bool result = false;
             if (type.IsEnum)
             {
-                convert = new PDFValueConverter(ConvertObjects.ToEnum);
+                convert = new ValueConverter(ConvertObjects.ToEnum);
                 return true;
             }
             TypeCode code = Type.GetTypeCode(type);
@@ -267,7 +267,7 @@ namespace Scryber.Generation
             return result;
         }
 
-        internal static bool IsCustomParsableObjectType(Type type, out PDFValueConverter convert)
+        internal static bool IsCustomParsableObjectType(Type type, out ValueConverter convert)
         {
             PDFParsableValueAttribute valattr = ParserDefintionFactory.GetCustomAttribute<PDFParsableValueAttribute>(type, true);
             if (null != valattr)
@@ -287,7 +287,7 @@ namespace Scryber.Generation
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static PDFValueConverter GetParsableValueConverter(Type t)
+        public static ValueConverter GetParsableValueConverter(Type t)
         {
             ConverterXml.ParseableConverter conv = ConverterXml.GetParserConverter(t);
             return conv.ValueConverter;

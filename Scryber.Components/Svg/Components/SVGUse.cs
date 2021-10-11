@@ -86,15 +86,15 @@ namespace Scryber.Svg.Components
         [PDFAttribute("x")]
         [PDFDesignable("X", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"left\"")]
-        public virtual PDFUnit X
+        public virtual Unit X
         {
             get
             {
-                StyleValue<PDFUnit> x;
+                StyleValue<Unit> x;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.PositionXKey, out x))
                     return x.Value(this.Style);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -109,7 +109,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<PDFUnit> x;
+                StyleValue<Unit> x;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionXKey, out x);
             }
         }
@@ -124,15 +124,15 @@ namespace Scryber.Svg.Components
         [PDFAttribute("y")]
         [PDFDesignable("Y", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"top\"")]
-        public virtual PDFUnit Y
+        public virtual Unit Y
         {
             get
             {
-                StyleValue<PDFUnit> y;
+                StyleValue<Unit> y;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.PositionYKey, out y))
                     return y.Value(this.Style);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -147,7 +147,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<PDFUnit> x;
+                StyleValue<Unit> x;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionYKey, out x);
             }
         }
@@ -162,15 +162,15 @@ namespace Scryber.Svg.Components
         [PDFAttribute("width")]
         [PDFDesignable("Width", Category = "Size", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"width\"")]
-        public virtual PDFUnit Width
+        public virtual Unit Width
         {
             get
             {
-                StyleValue<PDFUnit> width;
+                StyleValue<Unit> width;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.SizeWidthKey, out width))
                     return width.Value(this.Style);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -187,7 +187,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<PDFUnit> width;
+                StyleValue<Unit> width;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeWidthKey, out width);
             }
         }
@@ -202,15 +202,15 @@ namespace Scryber.Svg.Components
         [PDFAttribute("height")]
         [PDFDesignable("Height", Category = "Size", Priority = 1, Type = "PDFUnit")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"height\"")]
-        public virtual PDFUnit Height
+        public virtual Unit Height
         {
             get
             {
-                StyleValue<PDFUnit> height;
+                StyleValue<Unit> height;
                 if (this.HasStyle && this.Style.TryGetValue(StyleKeys.SizeHeightKey, out height))
                     return height.Value(this.Style);
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -225,7 +225,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<PDFUnit> height;
+                StyleValue<Unit> height;
                 return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeHeightKey, out height);
             }
         }
@@ -239,7 +239,7 @@ namespace Scryber.Svg.Components
 
 
 
-        protected override IEnumerable<IComponent> DoParseContents(PDFContextBase context)
+        protected override IEnumerable<IComponent> DoParseContents(ContextBase context)
         {
             if (!string.IsNullOrEmpty(this.HRef))
             {
@@ -249,7 +249,7 @@ namespace Scryber.Svg.Components
                 return base.DoParseContents(context);
         }
 
-        protected virtual IEnumerable<IComponent> GetContentFromHRef(string href, PDFContextBase context)
+        protected virtual IEnumerable<IComponent> GetContentFromHRef(string href, ContextBase context)
         {
             if (string.IsNullOrEmpty(href))
                 throw new ArgumentNullException(nameof(href));
@@ -294,7 +294,7 @@ namespace Scryber.Svg.Components
 
         private void ApplySizeStyle(IPDFStyledComponent found)
         {
-            StyleValue<PDFUnit> val;
+            StyleValue<Unit> val;
 
             if(this.HasX)
             {

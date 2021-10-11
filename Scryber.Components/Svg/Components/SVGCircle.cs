@@ -13,13 +13,13 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("cx")]
-        public PDFUnit CentreX { get; set; }
+        public Unit CentreX { get; set; }
 
         [PDFAttribute("cy")]
-        public PDFUnit CenterY { get; set; }
+        public Unit CenterY { get; set; }
 
         [PDFAttribute("r")]
-        public PDFUnit Radius { get; set; }
+        public Unit Radius { get; set; }
 
 
         public SVGCircle()
@@ -33,7 +33,7 @@ namespace Scryber.Svg.Components
 
         protected override void OnPreLayout(PDFLayoutContext context)
         {
-            PDFRect rect = GetBounds();
+            Rect rect = GetBounds();
 
             this.X = rect.X;
             this.Y = rect.Y;
@@ -43,7 +43,7 @@ namespace Scryber.Svg.Components
             base.OnPreLayout(context);
         }
 
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
             var bounds = this.GetRectBounds();
             var path = new GraphicsPath();
@@ -52,9 +52,9 @@ namespace Scryber.Svg.Components
             return path;
         }
 
-        private PDFRect GetRectBounds()
+        private Rect GetRectBounds()
         {
-            var rect = new PDFRect();
+            var rect = new Rect();
             rect.X = this.CentreX - this.Radius;
             rect.Width = this.Radius * 2;
             rect.Y = this.CenterY - this.Radius;

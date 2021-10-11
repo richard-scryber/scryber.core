@@ -82,7 +82,7 @@ namespace Scryber.Html.Parsing
 
         #endregion
 
-        public PDFContextBase Context
+        public ContextBase Context
         {
             get { return this._settings.Context; }
         }

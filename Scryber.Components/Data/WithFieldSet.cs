@@ -176,13 +176,13 @@ namespace Scryber.Data
         /// <param name="containerposition"></param>
         /// <param name="template"></param>
         /// <param name="context"></param>
-        protected override void DoBindDataIntoContainer(IPDFContainerComponent container, int containerposition, PDFDataContext context)
+        protected override void DoBindDataIntoContainer(IContainerComponent container, int containerposition, DataContext context)
         {
             int prevcount = context.CurrentIndex;
-            PDFDataStack stack = context.DataStack;
+            DataStack stack = context.DataStack;
 
             object origData = stack.HasData ? stack.Current : null;
-            IPDFDataSource source = stack.HasData ? stack.Source : null;
+            IDataSource source = stack.HasData ? stack.Source : null;
 
             foreach(WithField fld in this.Fields)
             {
@@ -197,16 +197,16 @@ namespace Scryber.Data
 
 
 
-        protected virtual void AddAutoBindFields(object data, IPDFDataSource source, PDFDataContext context)
+        protected virtual void AddAutoBindFields(object data, IDataSource source, DataContext context)
         {
             if (string.IsNullOrEmpty(this.DataSourceID))
                 throw new InvalidOperationException("Can only auto bind the schema when the With has an explicit DataSourceID and the referencing source supports Schema derriving");
 
-            IPDFDataSource found = base.FindDocumentComponentById(this.DataSourceID) as IPDFDataSource;
+            IDataSource found = base.FindDocumentComponentById(this.DataSourceID) as IDataSource;
             if (null == found || found.SupportsDataSchema == false)
                 throw new InvalidOperationException("Can only auto bind the schema when the With has an explicit DataSourceID and the referencing source supports Schema derriving");
 
-            PDFDataSchema schema = found.GetDataSchema(this.SelectPath, context);
+            DataSchema schema = found.GetDataSchema(this.SelectPath, context);
 
             if (null == schema || schema.Items == null || schema.Items.Count == 0)
                 context.TraceLog.Add(TraceLevel.Warning, "PDFWithFieldSet", string.Format("Cannot autobind the columns as no schema items were returned for the path '{0}'", this.SelectPath));
@@ -216,11 +216,11 @@ namespace Scryber.Data
                     context.TraceLog.Add(TraceLevel.Debug, "DataGrid", "Initializing and loading root component before binding");
 
                 var log = context.TraceLog;
-                PDFInitContext init = new PDFInitContext(context.Items, log, context.PerformanceMonitor, this.Document);
-                PDFLoadContext load = new PDFLoadContext(context.Items, log, context.PerformanceMonitor, this.Document);
+                InitContext init = new InitContext(context.Items, log, context.PerformanceMonitor, this.Document);
+                LoadContext load = new LoadContext(context.Items, log, context.PerformanceMonitor, this.Document);
 
 
-                foreach (PDFDataItem item in schema.Items)
+                foreach (DataItem item in schema.Items)
                 {
                     if (ShouldIncludeAutoBoundItem(item))
                     {
@@ -255,7 +255,7 @@ namespace Scryber.Data
             }
         }
 
-        private void BindActionedComponents(BindingActionList actions, PDFDataContext context)
+        private void BindActionedComponents(BindingActionList actions, DataContext context)
         {
             if (context.TraceLog.ShouldLog(TraceLevel.Debug))
                 context.TraceLog.Begin(TraceLevel.Debug, "PDFWithFieldSet", "Starting to bind " + actions.Count.ToString() + "components with their respective data items");
@@ -278,7 +278,7 @@ namespace Scryber.Data
 
         }
 
-        protected bool ShouldIncludeAutoBoundItem(PDFDataItem item)
+        protected bool ShouldIncludeAutoBoundItem(DataItem item)
         {
             switch (this.AutoBindContent)
             {

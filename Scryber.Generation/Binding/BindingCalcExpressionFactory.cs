@@ -85,7 +85,7 @@ namespace Scryber.Binding
         /// <summary>
         /// We don't do anything on Init
         /// </summary>
-        public PDFInitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
+        public InitializedEventHandler GetInitBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
             throw new NotSupportedException("Expression Binding is not supported on any other document lifecycle stage than the databinding");
         }
@@ -93,7 +93,7 @@ namespace Scryber.Binding
         /// <summary>
         /// We don't do anything on Load
         /// </summary>
-        public PDFLoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
+        public LoadedEventHandler GetLoadBindingExpression(string expressionvalue, Type classType, System.Reflection.PropertyInfo forProperty)
         {
             throw new NotSupportedException("Expression Binding is not supported on any other document lifecycle stage than the databinding");
         }
@@ -105,10 +105,10 @@ namespace Scryber.Binding
         /// <param name="classType"></param>
         /// <param name="forProperty"></param>
         /// <returns></returns>
-        public PDFDataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, PropertyInfo forProperty)
+        public DataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, PropertyInfo forProperty)
         {
             BindingCalcExpression expr = this.CreateBindingExpression(expressionvalue, forProperty);
-            return new PDFDataBindEventHandler(expr.BindComponent);
+            return new DataBindEventHandler(expr.BindComponent);
         }
 
 

@@ -25,7 +25,7 @@ using Scryber.Logging;
 namespace Scryber
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-    public abstract class PDFContextBase
+    public abstract class ContextBase
     {
 
         private ItemCollection _items;
@@ -114,7 +114,7 @@ namespace Scryber
 
         #endregion
 
-        public PDFContextBase(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
+        public ContextBase(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
         {
             this._format = OutputFormat.PDF;
 

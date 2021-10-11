@@ -65,7 +65,7 @@ namespace Scryber
 
         bool IsLogging { get; }
 
-        PDFContextBase Context { get; }
+        ContextBase Context { get; }
     }
 
     public interface IParserComponentFactory
@@ -87,7 +87,7 @@ namespace Scryber
 
     public interface IParserStyleFactory
     {
-        bool SetStyleValue(Styles.Style onStyle, CSSStyleItemReader styleReader, PDFContextBase context);
+        bool SetStyleValue(Styles.Style onStyle, CSSStyleItemReader styleReader, ContextBase context);
 
         bool SetStyleValue(IHtmlContentParser parser, IPDFStyledComponent component, CSSStyleItemReader stylereader);
     }

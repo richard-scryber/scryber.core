@@ -5,13 +5,13 @@ namespace Scryber.Styles.Parsing.Typed
 {
     public abstract class CSSThicknessAllParser : CSSStyleValueParser
     {
-        private StyleKey<PDFUnit> _all;
-        private StyleKey<PDFUnit> _left;
-        private StyleKey<PDFUnit> _right;
-        private StyleKey<PDFUnit> _top;
-        private StyleKey<PDFUnit> _bottom;
+        private StyleKey<Unit> _all;
+        private StyleKey<Unit> _left;
+        private StyleKey<Unit> _right;
+        private StyleKey<Unit> _top;
+        private StyleKey<Unit> _bottom;
 
-        public CSSThicknessAllParser(string cssAttr, StyleKey<PDFUnit> all, StyleKey<PDFUnit> left, StyleKey<PDFUnit> top, StyleKey<PDFUnit> right, StyleKey<PDFUnit> bottom)
+        public CSSThicknessAllParser(string cssAttr, StyleKey<Unit> all, StyleKey<Unit> left, StyleKey<Unit> top, StyleKey<Unit> right, StyleKey<Unit> bottom)
             : base(cssAttr)
         {
             _all = all;
@@ -25,19 +25,19 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             int count = 0;
-            PDFUnit[] all = new PDFUnit[4];
+            Unit[] all = new Unit[4];
             string[] exprs = new string[4];
 
             while (reader.ReadNextValue())
             {
-                PDFUnit found;
+                Unit found;
                 var str = reader.CurrentTextValue;
                 if (IsExpression(str))
                 {
                     exprs[count] = str;
                     count++;
                 }
-                else if (CSSThicknessValueParser.ParseThicknessValue(str, PDFUnit.Zero, out found))
+                else if (CSSThicknessValueParser.ParseThicknessValue(str, Unit.Zero, out found))
                 {
                     all[count] = found;
                     count++;
@@ -185,19 +185,19 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertThicknessValue(StyleBase style, object value, out PDFUnit converted)
+        protected bool DoConvertThicknessValue(StyleBase style, object value, out Unit converted)
         {
             if (null == value)
             {
-                converted = PDFUnit.Empty;
+                converted = Unit.Empty;
                 return false;
             }
-            else if (value is PDFUnit unit)
+            else if (value is Unit unit)
             {
                 converted = unit;
                 return true;
             }
-            else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), PDFUnit.Zero, out converted))
+            else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), Unit.Zero, out converted))
             {
                 return true;
             }

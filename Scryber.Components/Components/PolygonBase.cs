@@ -99,11 +99,11 @@ namespace Scryber.Components
         /// <param name="available"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected override GraphicsPath CreatePath(PDFSize available, Style fullstyle)
+        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
-            PDFRect rect = this.GetPrescribedBounds(available, fullstyle);
+            Rect rect = this.GetPrescribedBounds(available, fullstyle);
 
-            PDFPoint[] points = this.GetPoints(rect, fullstyle);
+            Point[] points = this.GetPoints(rect, fullstyle);
 
             GraphicsPath path = new GraphicsPath();
             this.BuildPath(path, points, fullstyle, true);
@@ -118,7 +118,7 @@ namespace Scryber.Components
         /// <param name="bounds">The bounds this polygo should fit into.</param>
         /// <param name="style">The style of the polygon</param>
         /// <returns>An array of points</returns>
-        protected virtual Drawing.PDFPoint[] GetPoints(Drawing.PDFRect bounds, Style style)
+        protected virtual Drawing.Point[] GetPoints(Drawing.Rect bounds, Style style)
         {
 
             int vCount = style.GetValue(StyleKeys.ShapeVertexCountKey, this.DefaultShapeVetexCount);
@@ -126,16 +126,16 @@ namespace Scryber.Components
 
             if (vCount > 2)
             {
-                PDFUnit radiusX = (bounds.Width / 2.0);
-                PDFUnit radiusY = (bounds.Height / 2.0);
-                PDFPoint centre = new PDFPoint(radiusX, radiusY);
+                Unit radiusX = (bounds.Width / 2.0);
+                Unit radiusY = (bounds.Height / 2.0);
+                Point centre = new Point(radiusX, radiusY);
 
                 return this.GetRegularPolygonPoints(centre, radiusX, radiusY, vCount, rotation);
             }
             else if (vCount != 0) //between 1 and 2 sides is invalid.
                 throw new PDFException(Errors.CannotCreatePolygonWithLessThan3Sides, null);
             else
-                return new PDFPoint[] { };
+                return new Point[] { };
         }
 
 
@@ -154,7 +154,7 @@ namespace Scryber.Components
         /// <param name="points">The points to add lines between</param>
         /// <param name="close">Closes the path (adds an extra line back to the starting point</param>
         /// <param name="end">If true then ends the path so no more points can be added to it</param>
-        protected virtual void BuildPath(GraphicsPath path, PDFPoint[] points, Style style, bool end)
+        protected virtual void BuildPath(GraphicsPath path, Point[] points, Style style, bool end)
         {
             if (path.HasCurrentPath == false)
                 path.BeginPath();
@@ -184,14 +184,14 @@ namespace Scryber.Components
         /// <param name="avail"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        protected virtual PDFRect GetPrescribedBounds(PDFSize avail, Style fullstyle)
+        protected virtual Rect GetPrescribedBounds(Size avail, Style fullstyle)
         {
-            PDFUnit x = fullstyle.GetValue(StyleKeys.PositionXKey, 0);
-            PDFUnit y = fullstyle.GetValue(StyleKeys.PositionYKey, 0);
-            PDFUnit w = fullstyle.GetValue(StyleKeys.SizeWidthKey, avail.Width);
-            PDFUnit h = fullstyle.GetValue(StyleKeys.SizeHeightKey, avail.Height);
+            Unit x = fullstyle.GetValue(StyleKeys.PositionXKey, 0);
+            Unit y = fullstyle.GetValue(StyleKeys.PositionYKey, 0);
+            Unit w = fullstyle.GetValue(StyleKeys.SizeWidthKey, avail.Width);
+            Unit h = fullstyle.GetValue(StyleKeys.SizeHeightKey, avail.Height);
 
-            return new PDFRect(x, y, w, h);
+            return new Rect(x, y, w, h);
         }
 
         #endregion
@@ -205,9 +205,9 @@ namespace Scryber.Components
         /// <param name="radius"></param>
         /// <param name="numsides"></param>
         /// <returns></returns>
-        protected PDFPoint[] GetRegularPolygonPoints(PDFPoint centre, PDFUnit radiusX, PDFUnit radiusY, int numsides, double rotationDegrees)
+        protected Point[] GetRegularPolygonPoints(Point centre, Unit radiusX, Unit radiusY, int numsides, double rotationDegrees)
         {
-            PDFPoint[] all = new PDFPoint[numsides];
+            Point[] all = new Point[numsides];
 
             rotationDegrees = rotationDegrees + DefaultRotation;
             double rotation = rotationDegrees * InRadians;
@@ -216,9 +216,9 @@ namespace Scryber.Components
             {
                 double factor = (double)i / (double)numsides;
                 double angle = rotation + (2 * Math.PI * factor);
-                PDFUnit x = centre.X + (radiusX * Math.Cos(angle));
-                PDFUnit y = centre.Y + (radiusY * Math.Sin(angle));
-                all[i] = new PDFPoint(x, y);
+                Unit x = centre.X + (radiusX * Math.Cos(angle));
+                Unit y = centre.Y + (radiusY * Math.Sin(angle));
+                all[i] = new Point(x, y);
             }
 
             return all;
@@ -232,11 +232,11 @@ namespace Scryber.Components
         /// <param name="pt"></param>
         /// <param name="radians"></param>
         /// <returns></returns>
-        protected static PDFPoint Rotate(PDFPoint pt, double radians)
+        protected static Point Rotate(Point pt, double radians)
         {
             if (radians != 0.0)
             {
-                PDFPoint pt2 = new PDFPoint();
+                Point pt2 = new Point();
                 //x*cos(theta) - y*sin(theta)
                 pt2.X = pt.X * Math.Cos(radians) - pt.Y * Math.Sin(radians);
                 pt2.Y = pt.X * Math.Sin(radians) + pt.Y * Math.Cos(radians);
@@ -252,7 +252,7 @@ namespace Scryber.Components
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        protected static PDFPoint Translate(PDFPoint pt, PDFUnit x, PDFUnit y)
+        protected static Point Translate(Point pt, Unit x, Unit y)
         {
             pt.X += x;
             pt.Y += y;

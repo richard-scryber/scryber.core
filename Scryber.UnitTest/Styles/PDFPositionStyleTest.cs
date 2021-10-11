@@ -278,8 +278,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.X;
+            Unit expected = Unit.Empty;
+            Unit actual = target.X;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -291,14 +291,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.X = expected;
             actual = target.X;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveX();
             actual = target.X;
             Assert.AreEqual(expected, actual);
@@ -320,8 +320,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Default value
 
-            PDFUnit expected = PDFUnit.Empty;
-            PDFUnit actual = target.Y;
+            Unit expected = Unit.Empty;
+            Unit actual = target.Y;
             Assert.AreEqual(expected, actual);
 
             // Set Value
@@ -333,14 +333,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // Change Value
 
-            expected = new PDFUnit(120, PageUnits.Millimeters);
+            expected = new Unit(120, PageUnits.Millimeters);
             target.Y = expected;
             actual = target.Y;
             Assert.AreEqual(expected, actual);
 
             // Remove Value
 
-            expected = PDFUnit.Empty;
+            expected = Unit.Empty;
             target.RemoveY();
             actual = target.Y;
             Assert.AreEqual(expected, actual);

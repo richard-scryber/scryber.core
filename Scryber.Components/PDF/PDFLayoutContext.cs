@@ -44,20 +44,6 @@ namespace Scryber.PDF
 
         #endregion
 
-        #region public PDFOutputFormatting OutputFormat {get;}
-
-        private PDFOutputFormatting _format;
-
-        /// <summary>
-        /// Gets the output format for the document
-        /// </summary>
-        public PDFOutputFormatting Formatting
-        {
-            get { return _format; }
-        }
-
-        #endregion
-
         #region public PDFGraphics Graphics {get;set;}
 
         /// <summary>
@@ -71,11 +57,9 @@ namespace Scryber.PDF
 
         #endregion
 
-        public PDFLayoutContext(Style style, PDFOutputFormatting format, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
+        public PDFLayoutContext(Style style, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(new StyleStack(style), items, log, perfmon, document)
         {
-            this._format = format;
-            
         }
 
 

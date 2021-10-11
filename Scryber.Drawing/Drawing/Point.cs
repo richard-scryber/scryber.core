@@ -25,19 +25,19 @@ namespace Scryber.Drawing
 {
     [PDFParsableValue()]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct PDFPoint : IEquatable<PDFPoint>, IComparable<PDFPoint>, ICloneable
+    public struct Point : IEquatable<Point>, IComparable<Point>, ICloneable
     {
-        private PDFUnit _x;
+        private Unit _x;
 
-        private PDFUnit _y;
+        private Unit _y;
 
-        public PDFUnit Y
+        public Unit Y
         {
             get { return _y; }
             set { _y = value; }
         }
 
-        public PDFUnit X
+        public Unit X
         {
             get { return this._x; }
             set { this._x = value; }
@@ -48,21 +48,21 @@ namespace Scryber.Drawing
             get { return this.X.IsEmpty && this.Y.IsEmpty; }
         }
 
-        public PDFPoint(double x, double y)
-            : this((PDFUnit)x, (PDFUnit)y)
+        public Point(double x, double y)
+            : this((Unit)x, (Unit)y)
         { }
 
-        public PDFPoint(PDFUnit x, PDFUnit y)
+        public Point(Unit x, Unit y)
         {
             this._x = x;
             this._y = y;
         }
 
-        public PDFPoint ToPoints()
+        public Point ToPoints()
         {
-            PDFUnit x = this.X.ToPoints();
-            PDFUnit y = this.Y.ToPoints();
-            return new PDFPoint(x,y);
+            Unit x = this.X.ToPoints();
+            Unit y = this.Y.ToPoints();
+            return new Point(x,y);
         }
 
 
@@ -71,36 +71,36 @@ namespace Scryber.Drawing
             return "[" + this.X.ToString() + ", " + this.Y.ToString() + "]";
         }
 
-        private static PDFPoint _empty = new PDFPoint(PDFUnit.Empty, PDFUnit.Empty);
+        private static Point _empty = new Point(Unit.Empty, Unit.Empty);
 
-        public static PDFPoint Empty
+        public static Point Empty
         {
             get { return _empty; }
         }
 
         #region IEquatable Members
 
-        public bool Equals(PDFPoint other)
+        public bool Equals(Point other)
         {
             return this.X.Equals(other.X) && this.Y.Equals(other.Y);
         }
 
         public override bool Equals(object obj)
         {
-            return this.Equals((PDFPoint)obj);
+            return this.Equals((Point)obj);
         }
 
         #endregion
 
 
-        public PDFPoint Offset(PDFPoint pt)
+        public Point Offset(Point pt)
         {
             return this.Offset(pt.X, pt.Y);
         }
 
-        public PDFPoint Offset(PDFUnit x, PDFUnit y)
+        public Point Offset(Unit x, Unit y)
         {
-            return new PDFPoint(this.X + x, this.Y + y);
+            return new Point(this.X + x, this.Y + y);
         }
 
         public override int GetHashCode()
@@ -110,10 +110,10 @@ namespace Scryber.Drawing
 
         #region IComparable<PDFSize> Members
 
-        public int CompareTo(PDFPoint other)
+        public int CompareTo(Point other)
         {
-            PDFUnit me = this.X.ToPoints() + this.Y.ToPoints();
-            PDFUnit them = other.X.ToPoints() + other.Y.ToPoints();
+            Unit me = this.X.ToPoints() + this.Y.ToPoints();
+            Unit them = other.X.ToPoints() + other.Y.ToPoints();
             if (me.Equals(them))
             {
                 me = this.X.ToPoints();
@@ -131,21 +131,21 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public static bool operator ==(PDFPoint one, PDFPoint two)
+        public static bool operator ==(Point one, Point two)
         {
             return (one.Equals(two));
         }
 
-        public static bool operator !=(PDFPoint one, PDFPoint two)
+        public static bool operator !=(Point one, Point two)
         {
             return !(one.Equals(two));
         }
 
         #region ICloneable<PDFPoint> Members
 
-        public PDFPoint Clone()
+        public Point Clone()
         {
-            return (PDFPoint)this.MemberwiseClone();
+            return (Point)this.MemberwiseClone();
         }
 
         object ICloneable.Clone()
@@ -159,29 +159,29 @@ namespace Scryber.Drawing
 
         private const char Separator = ',';
 
-        public static PDFPoint Parse(string input)
+        public static Point Parse(string input)
         {
             if (string.IsNullOrEmpty(input))
-                return PDFPoint.Empty;
+                return Point.Empty;
             else
             {
                 try
                 {
                     input = input.Trim();
-                    PDFUnit x, y;
+                    Unit x, y;
                     if (input.IndexOf(Separator) > 0)
                     {
                         string[] all = input.Split(Separator);
-                        x = PDFUnit.Parse(all[0]);
-                        y = PDFUnit.Parse(all[1]);
+                        x = Unit.Parse(all[0]);
+                        y = Unit.Parse(all[1]);
                     }
                     else
                     {
-                        x = PDFUnit.Parse(input);
+                        x = Unit.Parse(input);
                         y = x;
                     }
 
-                    PDFPoint pt = new PDFPoint(x, y);
+                    Point pt = new Point(x, y);
                     return pt;
                 }
                 catch (Exception ex)

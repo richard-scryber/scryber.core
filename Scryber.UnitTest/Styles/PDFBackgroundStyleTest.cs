@@ -297,9 +297,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_PatternXPositionTest()
         {
             BackgroundStyle target = new BackgroundStyle(); 
-            Assert.AreEqual(target.PatternXPosition, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternXPosition, Unit.Zero);
 
-            PDFUnit expected = (PDFUnit)10;
+            Unit expected = (Unit)10;
             target.PatternXPosition = expected;
             Assert.AreEqual(target.PatternXPosition, expected);
 
@@ -308,7 +308,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.PatternXPosition, expected);
 
             target.RemovePatternXPosition();
-            Assert.AreEqual(target.PatternXPosition, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternXPosition, Unit.Zero);
         }
 
         /// <summary>
@@ -319,9 +319,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_PatternXSizeTest()
         {
             BackgroundStyle target = new BackgroundStyle(); 
-            Assert.AreEqual(target.PatternXSize, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternXSize, Unit.Zero);
 
-            PDFUnit expected = (PDFUnit)10;
+            Unit expected = (Unit)10;
             target.PatternXSize = expected;
             Assert.AreEqual(target.PatternXSize, expected);
 
@@ -330,7 +330,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.PatternXSize, expected);
 
             target.RemovePatternXSize();
-            Assert.AreEqual(target.PatternXSize, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternXSize, Unit.Zero);
 
         }
 
@@ -342,9 +342,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_PatternXStepTest()
         {
             BackgroundStyle target = new BackgroundStyle(); // TODO: Initialize to an appropriate value
-            Assert.AreEqual(target.PatternXStep, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternXStep, Unit.Zero);
 
-            PDFUnit expected = (PDFUnit)10;
+            Unit expected = (Unit)10;
             target.PatternXStep = expected;
             Assert.AreEqual(target.PatternXStep, expected);
 
@@ -353,7 +353,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.PatternXStep, expected);
 
             target.RemovePatternXStep();
-            Assert.AreEqual(target.PatternXStep, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternXStep, Unit.Zero);
 
         }
 
@@ -368,9 +368,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_PatternYPositionTest()
         {
             BackgroundStyle target = new BackgroundStyle(); 
-            Assert.AreEqual(target.PatternYPosition, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternYPosition, Unit.Zero);
 
-            PDFUnit expected = (PDFUnit)10;
+            Unit expected = (Unit)10;
             target.PatternYPosition = expected;
             Assert.AreEqual(target.PatternYPosition, expected);
 
@@ -379,7 +379,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.PatternYPosition, expected);
 
             target.RemovePatternYPosition();
-            Assert.AreEqual(target.PatternYPosition, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternYPosition, Unit.Zero);
 
         }
 
@@ -391,9 +391,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_PatternYSizeTest()
         {
             BackgroundStyle target = new BackgroundStyle();
-            Assert.AreEqual(target.PatternYSize, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternYSize, Unit.Zero);
 
-            PDFUnit expected = (PDFUnit)10;
+            Unit expected = (Unit)10;
             target.PatternYSize = expected;
             Assert.AreEqual(target.PatternYSize, expected);
 
@@ -402,7 +402,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.PatternYSize, expected);
 
             target.RemovePatternYSize();
-            Assert.AreEqual(target.PatternYSize, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternYSize, Unit.Zero);
         }
 
         /// <summary>
@@ -413,9 +413,9 @@ namespace Scryber.Core.UnitTests.Styles
         public void Background_PatternYStepTest()
         {
             BackgroundStyle target = new BackgroundStyle();
-            Assert.AreEqual(target.PatternYStep, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternYStep, Unit.Zero);
 
-            PDFUnit expected = (PDFUnit)10;
+            Unit expected = (Unit)10;
             target.PatternYStep = expected;
             Assert.AreEqual(target.PatternYStep, expected);
 
@@ -424,7 +424,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(target.PatternYStep, expected);
 
             target.RemovePatternYStep();
-            Assert.AreEqual(target.PatternYStep, PDFUnit.Zero);
+            Assert.AreEqual(target.PatternYStep, Unit.Zero);
 
         }
     }

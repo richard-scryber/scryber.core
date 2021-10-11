@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.PDF.Native
 {
-    public class PDFIndirectObject : IIndirectObject, IDisposable
+    public class PDFIndirectObject : IPDFIndirectObject, IDisposable
     {
         private bool _disposed;
         private int _number;
@@ -32,7 +32,7 @@ namespace Scryber.PDF.Native
         private bool _written;
         private PDFStream _objdata;
         private PDFStream _stream = null;
-        private IStreamFactory _factory;
+        private IPDFStreamFactory _factory;
 
         #region public PDFObjectType Type {get;}
 
@@ -150,7 +150,7 @@ namespace Scryber.PDF.Native
         /// <summary>
         /// Creates a new non intialized Indirect object
         /// </summary>
-        public PDFIndirectObject(IStreamFactory factory)
+        public PDFIndirectObject(IPDFStreamFactory factory)
         {
             if (null == factory)
                 throw new ArgumentNullException("factory");

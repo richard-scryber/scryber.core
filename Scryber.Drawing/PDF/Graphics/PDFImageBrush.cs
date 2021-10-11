@@ -48,65 +48,65 @@ namespace Scryber.PDF.Graphics
             set { _source = value; }
         }
 
-        private PDFUnit _imgw;
+        private Unit _imgw;
 
-        public PDFUnit XSize
+        public Unit XSize
         {
             get { return _imgw; }
             set { _imgw = value; }
         }
 
-        private PDFUnit _imgh;
+        private Unit _imgh;
 
-        public PDFUnit YSize
+        public Unit YSize
         {
             get { return _imgh; }
             set { _imgh = value; }
         }
 
-        private PDFUnit _xpos;
+        private Unit _xpos;
 
         /// <summary>
         /// Gets or sets the horizontal offset at which the pattern starts.
         /// The default 0 will use the left as the starting point
         /// </summary>
-        public PDFUnit XPostion
+        public Unit XPostion
         {
             get { return _xpos; }
             set { _xpos = value; }
         }
 
-        private PDFUnit _ypos;
+        private Unit _ypos;
 
         /// <summary>
         /// Gets or sets the vertical offset at which the pattern starts.
         /// The default 0 will use the top as the starting point
         /// </summary>
-        public PDFUnit YPostion
+        public Unit YPostion
         {
             get { return _ypos; }
             set { _ypos = value; }
         }
 
-        private PDFUnit _xstep;
+        private Unit _xstep;
 
         /// <summary>
         /// Gets or sets the horizontal repeat step that the pattern will move to render each pattern
         /// The default 0 will use the native dimensions of the image as the offset
         /// </summary>
-        public PDFUnit XStep
+        public Unit XStep
         {
             get { return _xstep; }
             set { _xstep = value; }
         }
 
-        private PDFUnit _ystep;
+        private Unit _ystep;
 
         /// <summary>
         /// Gets or sets the horizontal repeat step that the pattern will move to render each pattern. 
         /// The default 0 will use the native dimensions of the image as the offset
         /// </summary>
-        public PDFUnit YStep
+        public Unit YStep
         {
             get { return _ystep; }
             set { _ystep = value; }
@@ -130,7 +130,7 @@ namespace Scryber.PDF.Graphics
 
 
 
-        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, Rect bounds)
         {
             Scryber.PDF.Resources.PDFImageXObject imagex;
 
@@ -167,21 +167,21 @@ namespace Scryber.PDF.Graphics
 
                 //Calculate the bounds of the pattern
 
-                PDFUnit width;
-                PDFUnit height;
-                PDFSize imgsize = CalculateAppropriateImageSize(imagex.ImageData);
+                Unit width;
+                Unit height;
+                Size imgsize = CalculateAppropriateImageSize(imagex.ImageData);
                 width = imgsize.Width;
                 height = imgsize.Height;
 
 
                 //Patterns are drawn from the bottom of the page so Y is the container height minus the vertical position and offset
-                PDFUnit y = 0;// g.ContainerSize.Height - (bounds.Y);// g.ContainerSize.Height - (bounds.Y + height + this.YPostion);
+                Unit y = 0;// g.ContainerSize.Height - (bounds.Y);// g.ContainerSize.Height - (bounds.Y + height + this.YPostion);
                 //X is simply the horizontal position plus offset
-                PDFUnit x = 0;// bounds.X + this.XPostion;
+                Unit x = 0;// bounds.X + this.XPostion;
 
                 tile.ImageSize = imgsize;
 
-                PDFSize step = new PDFSize();
+                Size step = new Size();
                 if (this.XStep == 0)
                     step.Width = width;
                 else
@@ -193,7 +193,7 @@ namespace Scryber.PDF.Graphics
                     step.Height = this.YStep;
                 tile.Step = step;
 
-                PDFPoint start = new PDFPoint(bounds.X + this.XPostion, bounds.Y + this.YPostion);
+                Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
 
                 if (g.Origin == DrawingOrigin.TopLeft)
                 {
@@ -210,16 +210,16 @@ namespace Scryber.PDF.Graphics
                 return false;
         }
 
-        private PDFSize CalculateAppropriateImageSize(ImageData imgdata)
+        private Size CalculateAppropriateImageSize(ImageData imgdata)
         {
             if (this.XSize > 0 && this.YSize > 0)
             {
                 //We have both explicit widths
-                return new PDFSize(this.XSize, this.YSize);
+                return new Size(this.XSize, this.YSize);
             }
 
-            PDFUnit imgw = imgdata.DisplayWidth;
-            PDFUnit imgh = imgdata.DisplayHeight;
+            Unit imgw = imgdata.DisplayWidth;
+            Unit imgh = imgdata.DisplayHeight;
 
             //If we have one dimension, then calculate the other proportionally.
             if (this.XSize > 0)
@@ -233,7 +233,7 @@ namespace Scryber.PDF.Graphics
                 imgh = this.XSize;
             }
 
-            return new PDFSize(imgw, imgh);
+            return new Size(imgw, imgh);
         }
 
         private const string IMAGEPATTERNRESOURCEKEY = "Scryber.Resources.ImageTile:{0}/{1}";
@@ -244,7 +244,7 @@ namespace Scryber.PDF.Graphics
             return string.Format(IMAGEPATTERNRESOURCEKEY, fullpath.ToLower(), code);
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public override void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
             g.ClearFillPattern();
         }

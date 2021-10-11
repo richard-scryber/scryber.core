@@ -66,12 +66,12 @@ namespace Scryber.PDF.Graphics
 
         #region public PDFContextBase Context {get;}
 
-        private PDFContextBase _context;
+        private ContextBase _context;
 
         /// <summary>
         /// Gets the current context associated with this PDFGraphics
         /// </summary>
-        public PDFContextBase Context
+        public ContextBase Context
         {
             get { return _context; }
             private set { _context = value; }
@@ -102,9 +102,9 @@ namespace Scryber.PDF.Graphics
 
         #region public PDFSize ContainerSize
 
-        private PDFSize _pageSize;
+        private Size _pageSize;
 
-        public PDFSize ContainerSize
+        public Size ContainerSize
         {
             get { return this._pageSize; }
         }
@@ -127,7 +127,7 @@ namespace Scryber.PDF.Graphics
 
         #region protected .ctor(writer, size, container)
 
-        protected PDFGraphics(PDFWriter writer, PDFSize size, IResourceContainer container)
+        protected PDFGraphics(PDFWriter writer, Size size, IResourceContainer container)
         {
             this._writer = writer;
             this._pageSize = size;
@@ -139,7 +139,7 @@ namespace Scryber.PDF.Graphics
 
         #region internal static PDFGraphics Create(writer, ownswriter, container, origin, size)
 
-        public static PDFGraphics Create(PDFWriter writer, bool ownswriter, IResourceContainer rsrc, DrawingOrigin origin, PDFSize size, PDFContextBase context)
+        public static PDFGraphics Create(PDFWriter writer, bool ownswriter, IResourceContainer rsrc, DrawingOrigin origin, Size size, ContextBase context)
         {
             if (origin == DrawingOrigin.BottomLeft)
                 throw new ArgumentException(Errors.GraphicsOnlySupportsTopDownDrawing, "origin");
@@ -356,7 +356,7 @@ namespace Scryber.PDF.Graphics
 
         #region protected internal RenderLineWidth() + RenderLineDash() + RenderLineJoin() + RenderLineCap() + RenderLineMitre()
 
-        public void RenderLineWidth(PDFUnit width)
+        public void RenderLineWidth(Unit width)
         {
             this.Writer.WriteOpCodeS(PDFOpCode.GraphLineWidth, width.ToPoints().RealValue);
         }
@@ -436,7 +436,7 @@ namespace Scryber.PDF.Graphics
 
         #region protected void RenderMoveTo(PDFUnit x, PDFUnit y) + 1 overload
 
-        protected void RenderMoveTo(PDFUnit x, PDFUnit y)
+        protected void RenderMoveTo(Unit x, Unit y)
         {
             this.RenderMoveTo(x.RealValue, y.RealValue);
         }
@@ -450,7 +450,7 @@ namespace Scryber.PDF.Graphics
 
         #region protected void RenderLineTo(PDFUnit x, PDFUnit y) + 1 overload
 
-        protected void RenderLineTo(PDFUnit x, PDFUnit y)
+        protected void RenderLineTo(Unit x, Unit y)
         {
             this.RenderLineTo(x.RealValue, y.RealValue);
         }
@@ -464,7 +464,7 @@ namespace Scryber.PDF.Graphics
 
         #region protected void RenderBezierCurveTo() + 5 overloads
 
-        protected void RenderBezierCurveTo(PDFUnit endX, PDFUnit endY, PDFUnit starthandleX, PDFUnit startHandleY, PDFUnit endhandleX, PDFUnit endhandleY)
+        protected void RenderBezierCurveTo(Unit endX, Unit endY, Unit starthandleX, Unit startHandleY, Unit endhandleX, Unit endhandleY)
         {
             this.RenderBezierCurveTo(endX.RealValue, endY.RealValue, starthandleX.RealValue, startHandleY.RealValue, endhandleX.RealValue, endhandleY.RealValue);
         }
@@ -481,7 +481,7 @@ namespace Scryber.PDF.Graphics
         }
 
 
-        protected void RenderBezierCurveToWithStartHandleOnly(PDFUnit endX, PDFUnit endY, PDFUnit starthandleX, PDFUnit startHandleY)
+        protected void RenderBezierCurveToWithStartHandleOnly(Unit endX, Unit endY, Unit starthandleX, Unit startHandleY)
         {
             this.RenderBezierCurveToWithStartHandleOnly(endX.RealValue, endY.RealValue, starthandleX.RealValue, startHandleY.RealValue);
         }
@@ -496,7 +496,7 @@ namespace Scryber.PDF.Graphics
         }
 
 
-        protected void RenderBezierCurveToWithEndHandleOnly(PDFUnit endX, PDFUnit endY, PDFUnit endhandleX, PDFUnit endHandleY)
+        protected void RenderBezierCurveToWithEndHandleOnly(Unit endX, Unit endY, Unit endhandleX, Unit endHandleY)
         {
             this.RenderBezierCurveToWithEndHandleOnly(endX.RealValue, endY.RealValue, endhandleX.RealValue, endHandleY.RealValue);
         }
@@ -521,7 +521,7 @@ namespace Scryber.PDF.Graphics
         /// <param name="y">The top position</param>
         /// <param name="width">The width</param>
         /// <param name="height">The height</param>
-        protected virtual void RenderRectangle(PDFUnit x, PDFUnit y, PDFUnit width, PDFUnit height)
+        protected virtual void RenderRectangle(Unit x, Unit y, Unit width, Unit height)
         {
             this.Writer.WriteOpCodeS(PDFOpCode.GraphRect, x.RealValue, this.ContainerSize.Height.RealValue - y.RealValue - height.RealValue, width.RealValue, height.RealValue);
         }
@@ -530,13 +530,13 @@ namespace Scryber.PDF.Graphics
 
         #region protected virtual void RenderLine() + RenderContinuationLine()
 
-        protected virtual void RenderLine(PDFUnit x1, PDFUnit y1, PDFUnit x2, PDFUnit y2)
+        protected virtual void RenderLine(Unit x1, Unit y1, Unit x2, Unit y2)
         {
             this.Writer.WriteOpCodeS(PDFOpCode.GraphMove, GetXPosition(x1), GetYPosition(y1));
             this.Writer.WriteOpCodeS(PDFOpCode.GraphLineTo, GetXPosition(x2), GetYPosition(y2));
         }
 
-        protected virtual void RenderContinuationLine(PDFUnit x, PDFUnit y)
+        protected virtual void RenderContinuationLine(Unit x, Unit y)
         {
             this.Writer.WriteOpCodeS(PDFOpCode.GraphLineTo, GetXPosition(x), GetYPosition(y));
         }
@@ -550,17 +550,17 @@ namespace Scryber.PDF.Graphics
 
         #region public PDFReal GetXPosition(PDFUnit x) + 4 Overloads
 
-        public PDFReal GetXPosition(PDFUnit ux)
+        public PDFReal GetXPosition(Unit ux)
         {
             return ux.RealValue;
         }
 
-        public PDFReal GetXPosition(PDFUnit ux, PDFUnit width)
+        public PDFReal GetXPosition(Unit ux, Unit width)
         {
             return ux.RealValue;
         }
 
-        public PDFReal GetXPosition(PDFUnit ux, PDFReal width)
+        public PDFReal GetXPosition(Unit ux, PDFReal width)
         {
             return ux.RealValue;
         }
@@ -584,12 +584,12 @@ namespace Scryber.PDF.Graphics
 
         #region public PDFReal GetYPosition() + 5 overloads
 
-        public PDFReal GetYPosition(PDFUnit uy)
+        public PDFReal GetYPosition(Unit uy)
         {
             return this.ContainerSize.Height.RealValue - uy.RealValue;
         }
 
-        public PDFReal GetYPosition(PDFUnit uy, PDFReal height)
+        public PDFReal GetYPosition(Unit uy, PDFReal height)
         {
             return this.ContainerSize.Height.RealValue - uy.RealValue - height;
         }
@@ -608,7 +608,7 @@ namespace Scryber.PDF.Graphics
 
         #region public PDFReal GetYOffset() + 1 overload
 
-        public PDFReal GetYOffset(PDFUnit uy)
+        public PDFReal GetYOffset(Unit uy)
         {
             return PDFReal.Zero - uy.RealValue;
         }
@@ -622,7 +622,7 @@ namespace Scryber.PDF.Graphics
 
         #region public PDFReal GetXOffset() + 1 overloads
 
-        public PDFReal GetXOffset(PDFUnit uy)
+        public PDFReal GetXOffset(Unit uy)
         {
             return uy.RealValue;
         }
@@ -636,26 +636,26 @@ namespace Scryber.PDF.Graphics
 
         #region public void SetClipRect(PDFRect rectangle) + 3 overloads
 
-        public void SetClipRect(PDFRect rectangle)
+        public void SetClipRect(Rect rectangle)
         {
             this.SetClipRect(rectangle.Location, rectangle.Size);
         }
 
-        public void SetClipRect(PDFPoint pt, PDFSize sz)
+        public void SetClipRect(Point pt, Size sz)
         {
             this.RenderRectangle(pt.X, pt.Y, sz.Width, sz.Height);
             this.Writer.WriteOpCodeS(PDFOpCode.GraphSetClip);
             this.Writer.WriteOpCodeS(PDFOpCode.GraphNoOp);
         }
 
-        public void SetClipRect(PDFRect rect, Sides sides, PDFUnit cornerradius)
+        public void SetClipRect(Rect rect, Sides sides, Unit cornerradius)
         {
             this.SetClipRect(rect.Location, rect.Size, sides, cornerradius);
         }
 
-        public void SetClipRect(PDFPoint pt, PDFSize sz, Sides sides, PDFUnit cornerradius)
+        public void SetClipRect(Point pt, Size sz, Sides sides, Unit cornerradius)
         {
-            if (cornerradius > PDFUnit.Zero)
+            if (cornerradius > Unit.Zero)
             {
                 this.DoOutputRoundRectangleWithSidesFill(pt.X, pt.Y, sz.Width, sz.Height, cornerradius, sides);
             }
@@ -698,7 +698,7 @@ namespace Scryber.PDF.Graphics
         /// <param name="imgsize"></param>
         /// <param name="pos"></param>
         /// <remarks>This does not include the image within the document or ensure that it is available</remarks>
-        public void PaintImageRef(Scryber.PDF.Resources.PDFImageXObject img, PDFSize imgsize, PDFPoint pos)
+        public void PaintImageRef(Scryber.PDF.Resources.PDFImageXObject img, Size imgsize, Point pos)
         {
             if (string.IsNullOrEmpty(img.Name.Value))
                 throw new ArgumentNullException("img.Name");

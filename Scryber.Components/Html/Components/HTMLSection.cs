@@ -62,7 +62,7 @@ namespace Scryber.Html.Components
         {
         }
 
-        protected override void OnDataBinding(PDFDataContext context)
+        protected override void OnDataBinding(DataContext context)
         {
             this.AddDataContent(this.DataContent, context);
             base.OnDataBinding(context);

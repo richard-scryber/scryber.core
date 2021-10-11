@@ -54,7 +54,7 @@ namespace Scryber.PDF.Resources
         #endregion
 
         
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             writer.WriteArrayNameEntries(this.Names);
             return null;

@@ -30,7 +30,7 @@ namespace Scryber.Data
     /// It is used in the databinding of template components and should not be used declaritively
     /// </summary>
     [PDFParsableComponent("TemplateInstance")]
-    public class TemplateInstance : ContainerComponent, INamingContainer, IPDFInvisibleContainer
+    public class TemplateInstance : ContainerComponent, INamingContainer, IInvisibleContainer
     {
         public TemplateInstance()
             : base(ObjectTypes.Template)

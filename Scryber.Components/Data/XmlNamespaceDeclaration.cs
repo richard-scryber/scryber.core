@@ -36,16 +36,16 @@ namespace Scryber.Data
         /// <summary>
         /// Event that is raised when this this namespace declaration is databinding
         /// </summary>
-        public event PDFDataBindEventHandler DataBinding;
+        public event DataBindEventHandler DataBinding;
 
         /// <summary>
         /// Raises the DataBinding event if something is registered to it
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void OnDataBinding(PDFDataContext context)
+        protected virtual void OnDataBinding(DataContext context)
         {
             if (null != this.DataBinding)
-                this.DataBinding(this, new PDFDataBindEventArgs(context));
+                this.DataBinding(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -55,16 +55,16 @@ namespace Scryber.Data
         /// <summary>
         /// Event that is raised when this this namespace declaration has been databound
         /// </summary>
-        public event PDFDataBindEventHandler DataBound;
+        public event DataBindEventHandler DataBound;
 
         /// <summary>
         /// Raises the DataBound event if something is registered to it
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void OnDataBound(PDFDataContext context)
+        protected virtual void OnDataBound(DataContext context)
         {
             if (null != this.DataBound)
-                this.DataBound(this, new PDFDataBindEventArgs(context));
+                this.DataBound(this, new DataBindEventArgs(context));
         }
 
         #endregion
@@ -124,7 +124,7 @@ namespace Scryber.Data
         /// Implements the databinding capability of the Namespace declaration
         /// </summary>
         /// <param name="context"></param>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             this.OnDataBinding(context);
             this.DoDataBind(context);
@@ -139,7 +139,7 @@ namespace Scryber.Data
         /// Inheritors can override this method to perform further actions during databinding
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void DoDataBind(PDFDataContext context)
+        protected virtual void DoDataBind(DataContext context)
         {
         }
 
@@ -158,7 +158,7 @@ namespace Scryber.Data
         /// Databinds all the NamespaceDeclarations in this collection
         /// </summary>
         /// <param name="context"></param>
-        public void DataBind(PDFDataContext context)
+        public void DataBind(DataContext context)
         {
             if (this.Count > 0)
             {

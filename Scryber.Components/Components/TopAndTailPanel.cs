@@ -27,7 +27,7 @@ namespace Scryber.Components
     /// Supports the use of headers and footers - add the header contents to this, measure, and then add to the main content.
     /// </summary>
     [PDFParsableComponent("TopAndTail")]
-    internal class TopAndTailPanel : Panel, IPDFTopAndTailedComponent
+    internal class TopAndTailPanel : Panel, ITopAndTailedComponent
     {
         
         #region  public IPDFTemplate Header {get;set;}

@@ -23,6 +23,7 @@ using System.Text;
 using Scryber.Drawing;
 using Scryber.PDF.Layout;
 using Scryber.Styles;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -68,7 +69,7 @@ namespace Scryber.Components
         /// Gets or sets the amount of indentation before list item (not including the width of the number)
         /// </summary>
         [PDFAttribute("number-inset", Styles.Style.PDFStylesNamespace)]
-        public virtual PDFUnit NumberInset
+        public virtual Unit NumberInset
         {
             get { return this.Style.List.NumberInset; }
             set { this.Style.List.NumberInset = value; }

@@ -24,19 +24,19 @@ using System.ComponentModel;
 namespace Scryber.Drawing
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct PDFSize : IEquatable<PDFSize>, IComparable<PDFSize>, ICloneable
+    public struct Size : IEquatable<Size>, IComparable<Size>, ICloneable
     {
-        private PDFUnit _w;
+        private Unit _w;
 
-        public PDFUnit Width
+        public Unit Width
         {
             get { return _w; }
             set { _w = value; }
         }
 
-        private PDFUnit _h;
+        private Unit _h;
 
-        public PDFUnit Height
+        public Unit Height
         {
             get { return _h; }
             set { _h = value; }
@@ -47,28 +47,28 @@ namespace Scryber.Drawing
             get { return this.Height.IsEmpty && this.Width.IsEmpty; }
         }
 
-        public PDFSize(double width, double height, PageUnits units)
-            : this(new PDFUnit(width, units), new PDFUnit(height, units))
+        public Size(double width, double height, PageUnits units)
+            : this(new Unit(width, units), new Unit(height, units))
         {
 
         }
 
-        public PDFSize(double width, double height)
-            : this((PDFUnit)width,(PDFUnit)height)
+        public Size(double width, double height)
+            : this((Unit)width,(Unit)height)
         {
         }
 
-        public PDFSize(PDFUnit width, PDFUnit height)
+        public Size(Unit width, Unit height)
         {
             this._h = height;
             this._w = width;
         }
 
-        public PDFSize ToPoints()
+        public Size ToPoints()
         {
-            PDFUnit w = this.Width.ToPoints();
-            PDFUnit h = this.Height.ToPoints();
-            return new PDFSize(w, h);
+            Unit w = this.Width.ToPoints();
+            Unit h = this.Height.ToPoints();
+            return new Size(w, h);
         }
 
         public override string ToString()
@@ -76,16 +76,16 @@ namespace Scryber.Drawing
             return "[" + this.Width.ToString() + ", " + this.Height.ToString() + "]";
         }
 
-        private static PDFSize _empty = new PDFSize(PDFUnit.Empty, PDFUnit.Empty);
+        private static Size _empty = new Size(Unit.Empty, Unit.Empty);
 
-        public static PDFSize Empty
+        public static Size Empty
         {
             get { return _empty; }
         }
 
         #region IEquatable Members
 
-        public bool Equals(PDFSize other)
+        public bool Equals(Size other)
         {
             return this.Width.Equals(other.Width) && this.Height.Equals(other.Height);
         }
@@ -95,7 +95,7 @@ namespace Scryber.Drawing
             if (null == obj)
                 return false;
 
-            return this.Equals((PDFSize)obj);
+            return this.Equals((Size)obj);
         }
 
         #endregion
@@ -107,10 +107,10 @@ namespace Scryber.Drawing
 
         #region IComparable<PDFSize> Members
 
-        public int CompareTo(PDFSize other)
+        public int CompareTo(Size other)
         {
-            PDFUnit me = this.Width.ToPoints() + this.Height.ToPoints();
-            PDFUnit them = other.Width.ToPoints() + other.Height.ToPoints();
+            Unit me = this.Width.ToPoints() + this.Height.ToPoints();
+            Unit them = other.Width.ToPoints() + other.Height.ToPoints();
             if (me.Equals(them))
             {
                 me = this.Width.ToPoints();
@@ -128,24 +128,24 @@ namespace Scryber.Drawing
 
         #endregion
 
-        public PDFSize Subtract(PDFThickness thickness)
+        public Size Subtract(Thickness thickness)
         {
-            return new PDFSize(this.Width - thickness.Left - thickness.Right, this.Height - thickness.Top - thickness.Bottom);
+            return new Size(this.Width - thickness.Left - thickness.Right, this.Height - thickness.Top - thickness.Bottom);
         }
 
-        public static bool operator ==(PDFSize one, PDFSize two)
+        public static bool operator ==(Size one, Size two)
         {
             return (one.Equals(two));
         }
 
-        public static bool operator !=(PDFSize one, PDFSize two)
+        public static bool operator !=(Size one, Size two)
         {
             return !(one.Equals(two));
         }
 
-        public PDFSize Clone()
+        public Size Clone()
         {
-            return (PDFSize)this.MemberwiseClone();
+            return (Size)this.MemberwiseClone();
         }
 
         object ICloneable.Clone()

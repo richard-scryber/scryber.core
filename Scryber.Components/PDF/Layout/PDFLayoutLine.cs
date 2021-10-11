@@ -50,20 +50,20 @@ namespace Scryber.PDF.Layout
         /// Gets the total height of this line. 
         /// This is normally only calculated once the line is closed.
         /// </summary>
-        public override PDFUnit Height
+        public override Unit Height
         {
             get
             {
                 if (null == this._runs || this._runs.Count == 0)
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
                 else if (this._runs.Count == 1)
                     return this._runs[0].Height;
                 else
                 {
-                    PDFUnit max = PDFUnit.Zero;
+                    Unit max = Unit.Zero;
                     foreach (PDFLayoutRun run in this._runs)
                     {
-                        max = PDFUnit.Max(max, run.Height);
+                        max = Unit.Max(max, run.Height);
                     }
                     return max;
                 }
@@ -78,7 +78,7 @@ namespace Scryber.PDF.Layout
         /// Gets the complete line width.
         /// This is the total width available to the line to use for all runs.
         /// </summary>
-        public PDFUnit FullWidth { get; private set; }
+        public Unit FullWidth { get; private set; }
 
         #endregion
 
@@ -88,11 +88,11 @@ namespace Scryber.PDF.Layout
         /// Gets the available width of the line.
         /// This is the remaining space after the used width is removed from the full width 
         /// </summary>
-        public PDFUnit AvailableWidth
+        public Unit AvailableWidth
         {
             get
             {
-                PDFUnit used = this.Width;
+                Unit used = this.Width;
                 return this.FullWidth - used;
             }
         }
@@ -104,17 +104,17 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the hoziontal space used by all the runs in this line
         /// </summary>
-        public override PDFUnit Width
+        public override Unit Width
         {
             get
             {
                 if (this._runs == null || _runs.Count == 0)
-                    return PDFUnit.Zero;
+                    return Unit.Zero;
                 else if (this._runs.Count == 1)
                     return this._runs[0].Width;
                 else
                 {
-                    PDFUnit total = PDFUnit.Zero;
+                    Unit total = Unit.Zero;
 
                     foreach (PDFLayoutRun run in this._runs)
                     {
@@ -149,20 +149,20 @@ namespace Scryber.PDF.Layout
 
         #region public PDFUnit OffsetY { get; set; }
 
-        private PDFUnit _xoffset;
-        private PDFUnit _yoffset;
+        private Unit _xoffset;
+        private Unit _yoffset;
 
         /// <summary>
         /// Gets or sets the offset of this line in it's container
         /// </summary>
-        public override PDFUnit OffsetY { get { return _yoffset; } }
+        public override Unit OffsetY { get { return _yoffset; } }
 
         #endregion
 
         /// <summary>
         /// Gets or sets the offset of this line in it's container
         /// </summary>
-        public override PDFUnit OffsetX { get { return _xoffset; } }
+        public override Unit OffsetX { get { return _xoffset; } }
 
 
         #region public HorizontalAlignment HAlignment {get;set;}
@@ -205,7 +205,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the offset from the top left of the line to the baseline of any text or component.
         /// </summary>
-        public PDFUnit BaseLineOffset { get; set; }
+        public Unit BaseLineOffset { get; set; }
 
         #endregion
 
@@ -221,9 +221,9 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        protected PDFUnit? ExtraCharacterSpace { get; set; }
+        protected Unit? ExtraCharacterSpace { get; set; }
 
-        protected PDFUnit? ExtraWordSpace { get; set; }
+        protected Unit? ExtraWordSpace { get; set; }
 
         //
         // ctor(s)
@@ -236,7 +236,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="region">The region that contains this line</param>
         /// <param name="fullwidth">The full available horizontal space for this line </param>
-        public PDFLayoutLine(PDFLayoutRegion region, PDFUnit fullwidth, HorizontalAlignment halign, VerticalAlignment valign, int lineindex)
+        public PDFLayoutLine(PDFLayoutRegion region, Unit fullwidth, HorizontalAlignment halign, VerticalAlignment valign, int lineindex)
             : base(region, null)
         {
             this.FullWidth = fullwidth;
@@ -294,7 +294,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="width">The required width</param>
         /// <returns>True if the width can be accomdated, otherwise false</returns>
-        public virtual bool CanFitWidth(PDFUnit width)
+        public virtual bool CanFitWidth(Unit width)
         {
             return width < this.AvailableWidth;
         }
@@ -351,8 +351,8 @@ namespace Scryber.PDF.Layout
         /// <param name="options">the positioning options</param>
         /// <param name="style">the full style of the component</param>
         /// <returns>The created run</returns>
-        public virtual PDFLayoutRun AddComponentRun(IComponent comp, PDFRect total, PDFRect border, 
-                                            PDFRect content, PDFUnit baselineOffset,
+        public virtual PDFLayoutRun AddComponentRun(IComponent comp, Rect total, Rect border, 
+                                            Rect content, Unit baselineOffset,
                                             PDFPositionOptions options, Style style)
         {
             PDFLayoutComponentRun comprun = new PDFLayoutComponentRun(this, comp, style);
@@ -364,7 +364,7 @@ namespace Scryber.PDF.Layout
             comprun.Close();
 
             //Added 13th June 2016
-            this.BaseLineOffset = PDFUnit.Max(this.BaseLineOffset, baselineOffset);
+            this.BaseLineOffset = Unit.Max(this.BaseLineOffset, baselineOffset);
             
             return comprun;
         }
@@ -396,7 +396,7 @@ namespace Scryber.PDF.Layout
             }
             else if (run is PDFTextRunEnd end)
             {
-                PDFUnit ascent = end.Start.TextRenderOptions.GetLineHeight() - end.Start.TextRenderOptions.GetDescender();
+                Unit ascent = end.Start.TextRenderOptions.GetLineHeight() - end.Start.TextRenderOptions.GetDescender();
                 if (ascent > this.BaseLineOffset)
                     this.BaseLineOffset = ascent;
             }
@@ -407,13 +407,13 @@ namespace Scryber.PDF.Layout
         /// Overides the base (empty) implementation so that the FullWidth is set correctly
         /// </summary>
         /// <param name="width"></param>
-        public override void SetMaxWidth(PDFUnit width)
+        public override void SetMaxWidth(Unit width)
         {
             if (this.FullWidth > width)
                 this.FullWidth = width;
         }
 
-        public virtual void SetOffset(PDFUnit x, PDFUnit y)
+        public virtual void SetOffset(Unit x, Unit y)
         {
             this._xoffset = x;
             this._yoffset = y;
@@ -423,7 +423,7 @@ namespace Scryber.PDF.Layout
         /// Overrides the default behaviour to enumerate over the line contents
         /// </summary>
         /// <param name="context"></param>
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageindex, PDFUnit xoffset, PDFUnit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageindex, Unit xoffset, Unit yoffset)
         {
             bool logdebug = context.ShouldLogDebug;
             if (logdebug)
@@ -445,7 +445,7 @@ namespace Scryber.PDF.Layout
 
             foreach (PDFLayoutRun run in this.Runs)
             {
-                PDFUnit itemYOffset = yoffset;
+                Unit itemYOffset = yoffset;
 
 
                 if (isspecial)
@@ -455,9 +455,9 @@ namespace Scryber.PDF.Layout
                 else if (this.VAlignment != VerticalAlignment.Top)
                 {
 
-                    PDFUnit used = run.Height;
-                    PDFUnit avail = this.Height;
-                    PDFUnit space = avail - used;
+                    Unit used = run.Height;
+                    Unit avail = this.Height;
+                    Unit space = avail - used;
 
                     if (this.VAlignment == VerticalAlignment.Middle)
                         space = space / 2;
@@ -474,7 +474,7 @@ namespace Scryber.PDF.Layout
                 context.TraceLog.End(TraceLevel.Debug, "Layout Line", "Pushed all the component layouts onto the runs in the line " + this.ToString());
         }
 
-        internal bool JustifyContent(PDFUnit total, PDFUnit current, PDFUnit available, bool all, List<PDFTextRunCharacter> runCache, ref PDFTextRenderOptions currOptions)
+        internal bool JustifyContent(Unit total, Unit current, Unit available, bool all, List<PDFTextRunCharacter> runCache, ref PDFTextRenderOptions currOptions)
         {
             if(this.Runs.Count < 1)
                 return false; 
@@ -538,8 +538,8 @@ namespace Scryber.PDF.Layout
 
                     charCount = 0;
                     spaceCount = 0;
-                    PDFUnit currWidth = 0;
-                    PDFUnit change = PDFUnit.Zero;
+                    Unit currWidth = 0;
+                    Unit change = Unit.Zero;
 
                     for (int i = 0; i < this.Runs.Count; i++)
                     {
@@ -572,7 +572,7 @@ namespace Scryber.PDF.Layout
                             PDFLayoutComponentRun comprun = (cur as PDFLayoutComponentRun);
                             if (i > 0)
                             {
-                                PDFRect bounds = comprun.TotalBounds;
+                                Rect bounds = comprun.TotalBounds;
                                 bounds.X +=(_linespacingOptions.WordSpace * spaceCount) + (_linespacingOptions.CharSpace * charCount);
                                 comprun.TotalBounds = bounds;
                             }
@@ -580,7 +580,7 @@ namespace Scryber.PDF.Layout
                         else if (cur is PDFTextRunNewLine)
                         {
                             PDFTextRunNewLine newLine = (cur as PDFTextRunNewLine);
-                            newLine.Offset = new PDFSize(newLine.Offset.Width + change, newLine.Offset.Height);
+                            newLine.Offset = new Size(newLine.Offset.Width + change, newLine.Offset.Height);
                         }
                     }
 
@@ -603,8 +603,8 @@ namespace Scryber.PDF.Layout
 
         public class ExtraSpacingOptions
         {
-            public PDFUnit WordSpace;
-            public PDFUnit CharSpace;
+            public Unit WordSpace;
+            public Unit CharSpace;
             public PDFTextRenderOptions Options;
 
             public override string ToString()
@@ -615,7 +615,7 @@ namespace Scryber.PDF.Layout
 
         public void ResetJustifySpacing(PDFTextRenderOptions options)
         {
-            _linespacingOptions = new ExtraSpacingOptions() { WordSpace = PDFUnit.Zero, CharSpace = PDFUnit.Zero, Options = options };
+            _linespacingOptions = new ExtraSpacingOptions() { WordSpace = Unit.Zero, CharSpace = Unit.Zero, Options = options };
         }
 
         private void AddCharactersAndSpaces(string chars, ref int charCount, ref int spaceCount)

@@ -26,7 +26,7 @@ namespace Scryber.PDF.Native
     /// <summary>
     /// Represents an existing IIndirectObject within a read file
     /// </summary>
-    public sealed class PDFFileIndirectObject : IParsedIndirectObject, IDisposable
+    public sealed class PDFFileIndirectObject : IPDFParsedIndirectObject, IDisposable
     {
 
 
@@ -35,7 +35,7 @@ namespace Scryber.PDF.Native
         private bool _deleted = false;
         private byte[] _stream;
         private string _data;
-        private IFileObject _parsed;
+        private IPDFFileObject _parsed;
 
         public int Number
         {
@@ -132,7 +132,7 @@ namespace Scryber.PDF.Native
             this._stream = data;
         }
 
-        public IFileObject GetContents()
+        public IPDFFileObject GetContents()
         {
             this.EnsureDataParsed();
             return this._parsed;

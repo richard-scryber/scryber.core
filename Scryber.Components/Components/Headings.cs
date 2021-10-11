@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.PDF;
 
 namespace Scryber.Components
 {
@@ -125,10 +126,10 @@ namespace Scryber.Components
 
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style style)
         {
-            return new PDF.Layout.LayoutEngineHeading(this, parent);
+            return new Scryber.PDF.Layout.LayoutEngineHeading(this, parent);
         }
 
-        protected static Style GetBaseStyles(PDFUnit fontsize, bool bold, bool italic, string groupname)
+        protected static Style GetBaseStyles(Unit fontsize, bool bold, bool italic, string groupname)
         {
             Style fs = new Style();
             fs.Padding.Top = 10;

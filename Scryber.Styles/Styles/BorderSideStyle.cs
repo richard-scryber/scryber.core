@@ -34,7 +34,7 @@ namespace Scryber.Styles
 
         private StyleKey<LineType> _line;
         private StyleKey<Color> _color;
-        private StyleKey<PDFUnit> _width;
+        private StyleKey<Unit> _width;
         private StyleKey<Dash> _dash;
 
         //Actual side we are
@@ -101,15 +101,15 @@ namespace Scryber.Styles
         [PDFAttribute("width")]
         [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"border-width\"")]
         [PDFDesignable("Border Width", Category = "Border", Priority = 1, Type = "PDFUnit")]
-        public PDFUnit Width
+        public Unit Width
         {
             get
             {
-                PDFUnit f;
+                Unit f;
                 if (this.TryGetValue(_width, out f))
                     return f;
                 else
-                    return PDFUnit.Empty;
+                    return Unit.Empty;
             }
             set
             {
@@ -171,7 +171,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Creates a new Border style
         /// </summary>
-        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<Color> colorKey, StyleKey<PDFUnit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<Dash> dashkey): 
+        public BorderSideStyle(Sides forSide, StyleKey forKey, StyleKey<Color> colorKey, StyleKey<Unit> widthkey, StyleKey<LineType> lineStyleKey, StyleKey<Dash> dashkey): 
             base(forKey)
         {
             _side = forSide;

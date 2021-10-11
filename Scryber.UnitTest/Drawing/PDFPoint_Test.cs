@@ -72,9 +72,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFPointConstructor_Test()
         {
-            PDFUnit x = new PDFUnit(10,PageUnits.Millimeters); 
-            PDFUnit y = new PDFUnit(20,PageUnits.Millimeters);
-            PDFPoint target = new PDFPoint(x, y);
+            Unit x = new Unit(10,PageUnits.Millimeters); 
+            Unit y = new Unit(20,PageUnits.Millimeters);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(x, y);
             Assert.AreEqual(x, target.X);
             Assert.AreEqual(y, target.Y);
             
@@ -89,7 +89,7 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             double x = 10.0; // TODO: Initialize to an appropriate value
             double y = 20.0; // TODO: Initialize to an appropriate value
-            PDFPoint target = new PDFPoint(x, y);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(x, y);
 
             Assert.AreEqual(x, target.X.PointsValue);
             Assert.AreEqual(y, target.Y.PointsValue);
@@ -102,9 +102,9 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Clone_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint expected = new PDFPoint(10, 20);
-            PDFPoint actual;
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point expected = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point actual;
             actual = target.Clone();
             Assert.AreEqual(expected, actual);
         }
@@ -116,19 +116,19 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void CompareTo_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint other = new PDFPoint(10, 20);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point other = new Scryber.Drawing.Point(10, 20);
             int expected = 0; // TODO: Initialize to an appropriate value
             int actual;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(20, 20);
+            other = new Scryber.Drawing.Point(20, 20);
             expected = -1;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(10, 10);
+            other = new Scryber.Drawing.Point(10, 10);
             expected = 1;
             actual = target.CompareTo(other);
             Assert.AreEqual(expected, actual);
@@ -141,19 +141,19 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Equals_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint other = new PDFPoint(10, 20);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point other = new Scryber.Drawing.Point(10, 20);
             bool expected = true; // TODO: Initialize to an appropriate value
             bool actual;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(20, 20);
+            other = new Scryber.Drawing.Point(20, 20);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(10, 10);
+            other = new Scryber.Drawing.Point(10, 10);
             expected = false;
             actual = target.Equals(other);
             Assert.AreEqual(expected, actual);
@@ -166,21 +166,21 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Equals_Test1()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint other = new PDFPoint(10, 20);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point other = new Scryber.Drawing.Point(10, 20);
             bool expected = true; 
             bool actual;
-            actual = PDFPoint.Equals(target, other);
+            actual = Scryber.Drawing.Point.Equals(target, other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(20, 20);
+            other = new Scryber.Drawing.Point(20, 20);
             expected = false;
-            actual = PDFPoint.Equals(target, other);
+            actual = Scryber.Drawing.Point.Equals(target, other);
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(10, 10);
+            other = new Scryber.Drawing.Point(10, 10);
             expected = false;
-            actual = PDFPoint.Equals(target, other);
+            actual = Scryber.Drawing.Point.Equals(target, other);
             Assert.AreEqual(expected, actual);
         }
 
@@ -191,17 +191,17 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void GetHashCode_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint other = new PDFPoint(10, 20);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point other = new Scryber.Drawing.Point(10, 20);
             int expected = target.GetHashCode();
             int actual = other.GetHashCode();
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(20, 20);
+            other = new Scryber.Drawing.Point(20, 20);
             actual = other.GetHashCode();
             Assert.AreNotEqual(expected, actual);
 
-            other = new PDFPoint(10, 10);
+            other = new Scryber.Drawing.Point(10, 10);
             actual = other.GetHashCode();
             Assert.AreNotEqual(expected, actual);
         }
@@ -214,8 +214,8 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Clone_Test1()
         {
-            ICloneable target = new PDFPoint(10, 20);
-            object expected = new PDFPoint(10, 20);
+            ICloneable target = new Scryber.Drawing.Point(10, 20);
+            object expected = new Scryber.Drawing.Point(10, 20);
             object actual;
             actual = target.Clone();
             Assert.AreEqual(expected, actual);
@@ -231,12 +231,12 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToPoints_Test()
         {
-            PDFUnit x = new PDFUnit(10,PageUnits.Millimeters);
-            PDFUnit y = new PDFUnit(20,PageUnits.Inches);
+            Unit x = new Unit(10,PageUnits.Millimeters);
+            Unit y = new Unit(20,PageUnits.Inches);
 
-            PDFPoint target = new PDFPoint(x, y);
-            
-            PDFPoint actual;
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(x, y);
+
+            Scryber.Drawing.Point actual;
             actual = target.ToPoints();
             Assert.AreEqual(x.PointsValue, actual.X.PointsValue);
             Assert.AreEqual(y.PointsValue, actual.Y.PointsValue);
@@ -249,10 +249,10 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void ToString_Test()
         {
-            PDFUnit x = new PDFUnit(10, PageUnits.Millimeters);
-            PDFUnit y = new PDFUnit(20, PageUnits.Inches);
+            Unit x = new Unit(10, PageUnits.Millimeters);
+            Unit y = new Unit(20, PageUnits.Inches);
 
-            PDFPoint target = new PDFPoint(x, y);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(x, y);
             string expected = "[10mm, 20in]";
             string actual;
             actual = target.ToString();
@@ -267,19 +267,19 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void op_Equality_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint other = new PDFPoint(10, 20);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point other = new Scryber.Drawing.Point(10, 20);
             bool expected = true;
             bool actual;
             actual = target == other;
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(20, 20);
+            other = new Scryber.Drawing.Point(20, 20);
             expected = false;
             actual = target == other;
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(10, 10);
+            other = new Scryber.Drawing.Point(10, 10);
             expected = false;
             actual = target == other;
             Assert.AreEqual(expected, actual);
@@ -294,19 +294,19 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void op_Inequality_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFPoint other = new PDFPoint(10, 20);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Scryber.Drawing.Point other = new Scryber.Drawing.Point(10, 20);
             bool expected = false;
             bool actual;
             actual = target != other;
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(20, 20);
+            other = new Scryber.Drawing.Point(20, 20);
             expected = true;
             actual = target != other;
             Assert.AreEqual(expected, actual);
 
-            other = new PDFPoint(10, 10);
+            other = new Scryber.Drawing.Point(10, 10);
             expected = true;
             actual = target != other;
             Assert.AreEqual(expected, actual);
@@ -319,10 +319,10 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Empty_Test()
         {
-            PDFPoint target = new PDFPoint(0, 0);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(0, 0);
 
-            PDFPoint actual;
-            actual = PDFPoint.Empty;
+            Scryber.Drawing.Point actual;
+            actual = Scryber.Drawing.Point.Empty;
             Assert.AreEqual(target, actual);
             
         }
@@ -334,23 +334,23 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void IsEmpty_Test()
         {
-            PDFPoint target = new PDFPoint(0, 0);
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(0, 0);
             bool expected = true;
             bool actual;
             actual = target.IsEmpty;
             Assert.AreEqual(expected, actual);
 
-            target = new PDFPoint(10, 0);
+            target = new Scryber.Drawing.Point(10, 0);
             actual = target.IsEmpty;
             expected = false;
             Assert.AreEqual(expected, actual);
 
-            target = new PDFPoint(0, 10);
+            target = new Scryber.Drawing.Point(0, 10);
             actual = target.IsEmpty;
             expected = false;
             Assert.AreEqual(expected, actual);
 
-            target = new PDFPoint(-10, 10);
+            target = new Scryber.Drawing.Point(-10, 10);
             actual = target.IsEmpty;
             expected = false;
             Assert.AreEqual(expected, actual);
@@ -363,14 +363,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void X_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFUnit expected = new PDFUnit(10);
-            PDFUnit actual;
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Unit expected = new Unit(10);
+            Unit actual;
             actual = target.X;
 
             Assert.AreEqual(expected, actual);
 
-            expected = new PDFUnit(20);
+            expected = new Unit(20);
             target.X = expected;
             actual = target.X;
 
@@ -384,14 +384,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void Y_Test()
         {
-            PDFPoint target = new PDFPoint(10, 20);
-            PDFUnit expected = new PDFUnit(20);
-            PDFUnit actual;
+            Scryber.Drawing.Point target = new Scryber.Drawing.Point(10, 20);
+            Unit expected = new Unit(20);
+            Unit actual;
             actual = target.Y;
 
             Assert.AreEqual(expected, actual);
 
-            expected = new PDFUnit(10);
+            expected = new Unit(10);
             target.Y = expected;
             actual = target.Y;
 

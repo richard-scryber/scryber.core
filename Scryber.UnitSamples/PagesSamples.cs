@@ -171,7 +171,7 @@ namespace Scryber.UnitSamples
                 sect.Footer = pg.Footer;
 
                 //Add a header
-                var contentTitle = new Head1() { Text = "This is the loaded content", Margins = new PDFThickness(20) };
+                var contentTitle = new Head1() { Text = "This is the loaded content", Margins = new Thickness(20) };
                 sect.Contents.Add(contentTitle);
 
                 //And add the body content to the section.
@@ -213,8 +213,8 @@ namespace Scryber.UnitSamples
                 {
                     new Head4(){
                         Text = "This is the header",
-                        Padding = new PDFThickness(10, 20, 10, 20),
-                        Margins = PDFThickness.Empty(),
+                        Padding = new Thickness(10, 20, 10, 20),
+                        Margins = Thickness.Empty(),
                         BackgroundColor = StandardColors.Silver,
                         HorizontalAlignment = HorizontalAlignment.Right
                     }
@@ -234,7 +234,7 @@ namespace Scryber.UnitSamples
                     FillColor = StandardColors.White,
                     FontSize = 12,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    Padding = new PDFThickness(10)
+                    Padding = new Thickness(10)
                 };
                 div.Contents.Add(new PageNumberLabel() { DisplayFormat = "{0} of {1}" });
 

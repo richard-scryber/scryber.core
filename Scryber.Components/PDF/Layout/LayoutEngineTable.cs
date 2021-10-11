@@ -39,7 +39,7 @@ namespace Scryber.PDF.Layout
         private PDFLayoutBlock _rowblock;
         private int _rowIndex = -1;
 
-        PDFUnit _rowOffset = PDFUnit.Zero;
+        Unit _rowOffset = Unit.Zero;
 
         protected TableGrid Table
         {
@@ -84,7 +84,7 @@ namespace Scryber.PDF.Layout
 
                 PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.PositionMode);
 
-                PDFRect available = this.CalculateTableSpace(tableBlock, tablepos);
+                Rect available = this.CalculateTableSpace(tableBlock, tablepos);
 
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Calculated Table Space to " + available);
@@ -172,7 +172,7 @@ namespace Scryber.PDF.Layout
         /// <param name="row">The row to lay out</param>
         /// <param name="index">The index of the row in the table</param>
         /// <returns></returns>
-        private PDFUnit DoLayoutTableRow(TableRow row, int index, bool repeating)
+        private Unit DoLayoutTableRow(TableRow row, int index, bool repeating)
         {
             if (this.Context.ShouldLogDebug)
                 this.Context.TraceLog.Begin(TraceLevel.Debug, TableEngineLogCategory, "Laying out the table row with index " + index);
@@ -193,7 +193,7 @@ namespace Scryber.PDF.Layout
 
 
             if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
-                return PDFUnit.Zero;
+                return Unit.Zero;
 
             if (repeating) //for repeating rows we hold it in the grid
             {
@@ -220,23 +220,23 @@ namespace Scryber.PDF.Layout
 
             //Set the height to the page height and then we can move it after if it's too big for the height, unless it's explicit.
 
-            PDFUnit pageHeight = this.Context.DocumentLayout.CurrentPage.Height;
-            PDFUnit h = pageHeight;// block.AvailableBounds.Height;
+            Unit pageHeight = this.Context.DocumentLayout.CurrentPage.Height;
+            Unit h = pageHeight;// block.AvailableBounds.Height;
 
             if (_heights[index].Explicit)
                 h = _heights[index].Size;
-            PDFUnit w = tableblock.AvailableBounds.Width;
-            PDFUnit y = _rowOffset;
+            Unit w = tableblock.AvailableBounds.Width;
+            Unit y = _rowOffset;
 
-            PDFRect totalbounds = new PDFRect(PDFUnit.Zero, y, w, h);
+            Rect totalbounds = new Rect(Unit.Zero, y, w, h);
 
-            PDFColumnOptions rowOpts = new PDFColumnOptions() { AlleyWidth = PDFUnit.Zero, AutoFlow = false, ColumnCount = this.AllCells.TotalColumnCount };
+            PDFColumnOptions rowOpts = new PDFColumnOptions() { AlleyWidth = Unit.Zero, AutoFlow = false, ColumnCount = this.AllCells.TotalColumnCount };
             this._rowblock.InitRegions(totalbounds, rowpos, rowOpts, this.Context);
 
 
 
             //Layout the inner cells
-            PDFUnit rowHeight = DoLayoutRowCells(row, index, repeating);
+            Unit rowHeight = DoLayoutRowCells(row, index, repeating);
 
             //Refresh the reference to the current block (just in case)
             tableblock = this.AllCells.CurrentGrid.TableBlock;
@@ -260,7 +260,7 @@ namespace Scryber.PDF.Layout
                     if (this.MoveFullTableToNextRegion())
                     {
                         _rowOffset += rowHeight;
-                        PDFRect avail = this.AllCells.CurrentGrid.TableBlock.AvailableBounds;
+                        Rect avail = this.AllCells.CurrentGrid.TableBlock.AvailableBounds;
                         //avail.Height = avail.Height - _rowOffset;
                         this.AllCells.CurrentGrid.AvailableSpace = avail;
 
@@ -278,7 +278,7 @@ namespace Scryber.PDF.Layout
                     origregion.AddToSize(origtable);
                     Style origRowStlye = this.StyleStack.Pop();
                     _rowOffset = 0;
-                    PDFUnit repeath = this.DoLayoutRepeatingRows(index);
+                    Unit repeath = this.DoLayoutRepeatingRows(index);
                     _rowOffset += origRow.Height;
                     origRow.Offset(0, repeath);
                     this.StyleStack.Push(origRowStlye);
@@ -321,9 +321,9 @@ namespace Scryber.PDF.Layout
 
         #region private PDFUnit DoLayoutRepeatingRows(ref int rowindex)
 
-        private PDFUnit DoLayoutRepeatingRows(int rowindex)
+        private Unit DoLayoutRepeatingRows(int rowindex)
         {
-            PDFUnit height = 0;
+            Unit height = 0;
             if (this.AllCells.HasRepeats)
             {
                 if(this.Context.ShouldLogDebug)
@@ -333,7 +333,7 @@ namespace Scryber.PDF.Layout
                 {
                     if (rref.RowIndex < rowindex)
                     {
-                        PDFUnit rowHeight = this.DoLayoutTableRow(rref.Row, rref.RowIndex, true);
+                        Unit rowHeight = this.DoLayoutTableRow(rref.Row, rref.RowIndex, true);
                         height += rowHeight;
                     }
                 }
@@ -351,9 +351,9 @@ namespace Scryber.PDF.Layout
         /// <param name="row">The cells to layout</param>
         /// <param name="rowindex">The index of the row we are laying out</param>
         /// <returns>The maximum height of the row</returns>
-        private PDFUnit DoLayoutRowCells(TableRow row, int rowindex, bool repeating)
+        private Unit DoLayoutRowCells(TableRow row, int rowindex, bool repeating)
         {
-            PDFUnit offsetX = PDFUnit.Zero;
+            Unit offsetX = Unit.Zero;
             int cellcount = _tblRef.AllCells.GetLength(1);
             int cellsprocessed = 0;
             int cellindex = 0;
@@ -364,13 +364,13 @@ namespace Scryber.PDF.Layout
                 CellReference cref = _tblRef.AllCells[rowindex, cellindex];
                 PDFLayoutRegion cellRegion = this._rowblock.CurrentRegion;
 
-                PDFUnit w = PDFUnit.Zero;
+                Unit w = Unit.Zero;
                 for (int i = 0; i < cref.ColumnSpan; i++)
                 {
                     w += _widths[cellindex + i].Size;
                 }
                 //set the total bounds for the region, and make the height the 
-                PDFRect total = new PDFRect(offsetX, cellRegion.TotalBounds.Y, w, cellRegion.TotalBounds.Height);
+                Rect total = new Rect(offsetX, cellRegion.TotalBounds.Y, w, cellRegion.TotalBounds.Height);
                 cellRegion.TotalBounds = total;
                 this._rowblock.CurrentRegion.SetMaxWidth(_widths[cellindex].Size);
 
@@ -394,14 +394,14 @@ namespace Scryber.PDF.Layout
                 //move on to the next region beyond the column span
                 for (int i = 0; i < cref.ColumnSpan; i++)
                 {
-                    this._rowblock.MoveToNextRegion(forced, PDFUnit.Zero, this.Context);
+                    this._rowblock.MoveToNextRegion(forced, Unit.Zero, this.Context);
                 }
 
                 cellindex += cref.ColumnSpan;
                 cellsprocessed++;
             }
 
-            PDFUnit maxh = this._tblRef.GetMaxCellHeightForRow(rowindex);
+            Unit maxh = this._tblRef.GetMaxCellHeightForRow(rowindex);
             this._tblRef.SetCellHeightForRow(rowindex, maxh);
 
             return maxh;
@@ -687,9 +687,9 @@ namespace Scryber.PDF.Layout
         /// Calculates the available space in the current block to 
         /// fit the table, and initializes it's region to this.
         /// </summary>
-        private PDFRect CalculateTableSpace(PDFLayoutBlock tableblock, PDFPositionOptions tablepos)
+        private Rect CalculateTableSpace(PDFLayoutBlock tableblock, PDFPositionOptions tablepos)
         {
-            PDFRect space = this.CurrentBlock.CurrentRegion.TotalBounds;
+            Rect space = this.CurrentBlock.CurrentRegion.TotalBounds;
             space.Y = this.CurrentBlock.CurrentRegion.Height;
             space.X = 0;
             space.Height -= space.Y;
@@ -715,7 +715,7 @@ namespace Scryber.PDF.Layout
                     space.Height -= tablepos.Margins.Top + tablepos.Margins.Bottom;
             }
 
-            PDFColumnOptions columnOptions = new PDFColumnOptions() { AlleyWidth = PDFUnit.Zero, AutoFlow = false, ColumnCount = 1 };
+            PDFColumnOptions columnOptions = new PDFColumnOptions() { AlleyWidth = Unit.Zero, AutoFlow = false, ColumnCount = 1 };
             tableblock.InitRegions(space, tablepos, columnOptions, this.Context);
 
             if (tablepos.Padding.IsEmpty == false)
@@ -744,17 +744,17 @@ namespace Scryber.PDF.Layout
             if (this.Context.ShouldLogDebug)
                 this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Starting to push the component sizes");
 
-            PDFUnit[] finalwidths = new PDFUnit[_widths.Length];
+            Unit[] finalwidths = new Unit[_widths.Length];
 
             //Set the width of the cells in each column
-            PDFUnit tableWidth = PDFUnit.Zero;
+            Unit tableWidth = Unit.Zero;
             for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
             {
-                PDFUnit maxColWidth = _tblRef.GetMaxCellWidthForColumn(colIndex);
+                Unit maxColWidth = _tblRef.GetMaxCellWidthForColumn(colIndex);
                 if (_widths[colIndex].Explicit)
                     maxColWidth = _widths[colIndex].Size;
                 else if (this.AllCells.CurrentGrid.Position.FillWidth)
-                    maxColWidth = PDFUnit.Max(maxColWidth, _widths[colIndex].Size);
+                    maxColWidth = Unit.Max(maxColWidth, _widths[colIndex].Size);
 
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Max column width for #" + colIndex + " is " + maxColWidth);
@@ -766,7 +766,7 @@ namespace Scryber.PDF.Layout
                 _tblRef.EnsureSufficientWidthForSpannedCells(colIndex, finalwidths);
             }
 
-            tableWidth = PDFUnit.Zero;
+            tableWidth = Unit.Zero;
             for (int colIndex = 0; colIndex < finalwidths.Length; colIndex++)
             {
                 tableWidth += finalwidths[colIndex];
@@ -803,7 +803,7 @@ namespace Scryber.PDF.Layout
                     for (int i = 0; i < grid.HeaderRows.Count; i++)
                     {
                         RowReference header = grid.HeaderRows[i];
-                        PDFRect rowbounds = header.Block.TotalBounds;
+                        Rect rowbounds = header.Block.TotalBounds;
                         rowbounds.Width = tableWidth;
                         header.Block.TotalBounds = rowbounds;
                         tableregion.AddToSize(header.Block);
@@ -815,7 +815,7 @@ namespace Scryber.PDF.Layout
                     PDFLayoutBlock row = rowref.Block;
                     if (null != row)
                     {
-                        PDFRect rowbounds = row.TotalBounds;
+                        Rect rowbounds = row.TotalBounds;
                         rowbounds.Width = tableWidth; // +row.Position.Padding.Left + row.Position.Padding.Right + row.Position.Margins.Left + row.Position.Margins.Right;
                         row.TotalBounds = rowbounds;
                         tableregion.AddToSize(row);
@@ -858,7 +858,7 @@ namespace Scryber.PDF.Layout
                 {
                     PDFLayoutBlock cellblock = cref.Block;
                     PDFLayoutRegion region = cellblock.Columns[0];
-                    PDFRect bounds = region.TotalBounds;
+                    Rect bounds = region.TotalBounds;
                     PDFPositionOptions cellpos = cellblock.Position;
 
                     bounds.Width = cellblock.Width - (cellpos.Padding.Left + cellpos.Padding.Right + cellpos.Margins.Left + cellpos.Margins.Right);
@@ -903,7 +903,7 @@ namespace Scryber.PDF.Layout
                     {
                         foreach (RowReference rref in gref.HeaderRows)
                         {
-                            PDFUnit h = rref.ExplicitHeight;
+                            Unit h = rref.ExplicitHeight;
                             PDFLayoutBlock rowblock = rref.Block;
 
                             for (int col = 0; col < this._tblRef.TotalColumnCount; col++)
@@ -914,7 +914,7 @@ namespace Scryber.PDF.Layout
                                 if (null != cellregion.Contents && cellregion.Contents.Count > 0)
                                 {
                                     PDFLayoutBlock cell = cellregion.Contents[0] as PDFLayoutBlock;
-                                    PDFRect total = cell.TotalBounds;
+                                    Rect total = cell.TotalBounds;
                                     total.Height = h;
                                     cell.TotalBounds = total;
                                 }
@@ -932,7 +932,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Builds a complete grid of references to all rows and cells within the table inc stlyes
         /// </summary>
-        private void BuildReferenceGrid(int rowcount, int columncount, PDFPositionOptions tablepos, PDFRect availableSpace, PDFLayoutBlock tableblock)
+        private void BuildReferenceGrid(int rowcount, int columncount, PDFPositionOptions tablepos, Rect availableSpace, PDFLayoutBlock tableblock)
         {
             
             TableReference tbl = new TableReference(rowcount, columncount, this.FullStyle, tablepos);
@@ -1057,14 +1057,14 @@ namespace Scryber.PDF.Layout
                         {
                             if (cref.HasExplicitWidth)
                             {
-                                widths[h].Size = PDFUnit.Max(widths[h].Size, cref.TotalWidth);
+                                widths[h].Size = Unit.Max(widths[h].Size, cref.TotalWidth);
                                 widths[h].Explicit = true;
                             }
                         }
 
                         if (cref.HasExplicitHeight)
                         {
-                            heights[v].Size = PDFUnit.Max(heights[v].Size, cref.TotalHeight);
+                            heights[v].Size = Unit.Max(heights[v].Size, cref.TotalHeight);
                             heights[v].Explicit = true;
                         }
                     }
@@ -1074,14 +1074,14 @@ namespace Scryber.PDF.Layout
 
                 if (rowref.HasExplicitHeight)
                 {
-                    heights[v].Size = PDFUnit.Max(heights[v].Size, rowref.ExplicitHeight);
+                    heights[v].Size = Unit.Max(heights[v].Size, rowref.ExplicitHeight);
                     heights[v].Explicit = true;
                 }
 
                 //We have an explicit height - so lets push this onto all the cells in the row.
                 if (heights[v].Explicit)
                 {
-                    PDFUnit maxh = heights[v].Size;
+                    Unit maxh = heights[v].Size;
                     for (int h = 0; h < columncount; h++)
                     {
                         CellReference cref = _tblRef.AllCells[v, h];
@@ -1168,7 +1168,7 @@ namespace Scryber.PDF.Layout
 
             foreach (CellReference cref in spanned)
             {
-                PDFUnit explicitTotal = PDFUnit.Zero;
+                Unit explicitTotal = Unit.Zero;
                 int loosecount = 0;
                 List<int> looseindexes = new List<int>();
 
@@ -1188,7 +1188,7 @@ namespace Scryber.PDF.Layout
 
                 if (loosecount > 0)
                 {
-                    PDFUnit remainder = cref.TotalWidth - explicitTotal;
+                    Unit remainder = cref.TotalWidth - explicitTotal;
                     remainder = remainder / loosecount;
                     foreach (int col in looseindexes)
                     {
@@ -1223,7 +1223,7 @@ namespace Scryber.PDF.Layout
 
         private bool AppyJustOneMissingWidth(CellReference cref, CellDimension[] widths)
         {
-            PDFUnit explicitTotal = PDFUnit.Zero;
+            Unit explicitTotal = Unit.Zero;
             int loosecount = 0;
             int looseindex = -1;
 
@@ -1243,7 +1243,7 @@ namespace Scryber.PDF.Layout
 
             if (loosecount == 1)
             {
-                PDFUnit remainder = cref.TotalWidth - explicitTotal;
+                Unit remainder = cref.TotalWidth - explicitTotal;
                 widths[looseindex].Size = remainder;
                 widths[looseindex].Explicit = true;
                 return true;
@@ -1263,8 +1263,8 @@ namespace Scryber.PDF.Layout
         private void CalculateUnassignedWidths()
         {
 
-            PDFUnit tablewidth;
-            PDFUnit totalexplicit = PDFUnit.Zero;
+            Unit tablewidth;
+            Unit totalexplicit = Unit.Zero;
 
             tablewidth = this.AllCells.CurrentGrid.AvailableSpace.Width;
 
@@ -1289,7 +1289,7 @@ namespace Scryber.PDF.Layout
             //make sure we actually have some widths
             if (nonExplicitCount > 0)
             {
-                PDFUnit unassignedwidth = tablewidth / nonExplicitCount;
+                Unit unassignedwidth = tablewidth / nonExplicitCount;
                 for (int i = 0; i < _widths.Length; i++)
                 {
                     if (_widths[i].Explicit == false)
@@ -1379,7 +1379,7 @@ namespace Scryber.PDF.Layout
             GridReference origGrid = this.AllCells.CurrentGrid;
 
             origGrid.EndRowIndex = rowindex - 1;
-            PDFSize origGridSize = origGrid.CalculateContentSize();
+            Size origGridSize = origGrid.CalculateContentSize();
 
             PDFLayoutBlock origTblblock = origGrid.TableBlock;
             if (origTblblock.IsClosed == false)
@@ -1402,7 +1402,7 @@ namespace Scryber.PDF.Layout
 
                 PDFLayoutBlock newTableBlock = this.AllCells.CurrentGrid.TableBlock;
                 PDFLayoutRegion newTableRegion = newTableBlock.CurrentRegion;
-                newTableRegion.UsedSize = PDFSize.Empty;
+                newTableRegion.UsedSize = Size.Empty;
 
                 if (newpage) //need to go back to the top
                     row.Offset(0, _rowOffset);// _rowOffset - row.Height);
@@ -1434,7 +1434,7 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutBlock orig = this.CurrentBlock;
             GridReference curr = this.AllCells.CurrentGrid;
-            PDFRect avail = curr.AvailableSpace;
+            Rect avail = curr.AvailableSpace;
             avail.Height = joinToRegion.AvailableHeight;
 
             //TODO: Use this to caclulate the space
@@ -1451,7 +1451,7 @@ namespace Scryber.PDF.Layout
 
             if (nextgrid.Position.Margins.IsEmpty == false)
             {
-                PDFThickness margins = nextgrid.Position.Margins;
+                Thickness margins = nextgrid.Position.Margins;
                 avail.Width -= margins.Left + margins.Right;
                 avail.Height -= margins.Top + margins.Right;
                 avail.X += margins.Left;
@@ -1460,7 +1460,7 @@ namespace Scryber.PDF.Layout
             }
             if (nextgrid.Position.Padding.IsEmpty == false)
             {
-                PDFThickness padding = nextgrid.Position.Padding;
+                Thickness padding = nextgrid.Position.Padding;
                 avail.Width -= padding.Left + padding.Right;
                 avail.Height -= padding.Top + padding.Bottom;
                 avail.X += padding.Left;
@@ -1497,9 +1497,9 @@ namespace Scryber.PDF.Layout
             private int _rowindex;
             private int _colindex;
             private PDFLayoutBlock _block;
-            private PDFUnit _totalWidth;
-            private PDFUnit _totalHeight;
-            private PDFThickness _margins;
+            private Unit _totalWidth;
+            private Unit _totalHeight;
+            private Thickness _margins;
             private RowReference _row;
             private bool _empty = false;
 
@@ -1585,7 +1585,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// Gets any margins associated with this cell's style
             /// </summary>
-            public PDFThickness Margins
+            public Thickness Margins
             {
                 get { return _margins; }
             }
@@ -1610,7 +1610,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// Gets the total explicit width specified for the cell
             /// </summary>
-            public PDFUnit TotalWidth
+            public Unit TotalWidth
             {
                 get { return _totalWidth; }
             }
@@ -1622,7 +1622,7 @@ namespace Scryber.PDF.Layout
             {
                 get
                 {
-                    return _totalWidth != PDFUnit.Zero;
+                    return _totalWidth != Unit.Zero;
                 }
             }
 
@@ -1633,7 +1633,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// Gets the total explicit height specified for the cell
             /// </summary>
-            public PDFUnit TotalHeight
+            public Unit TotalHeight
             {
                 get { return _totalHeight; }
                 set { _totalHeight = value; }
@@ -1641,7 +1641,7 @@ namespace Scryber.PDF.Layout
 
             public bool HasExplicitHeight
             {
-                get { return _totalHeight != PDFUnit.Zero; }
+                get { return _totalHeight != Unit.Zero; }
             }
 
             #endregion
@@ -1702,12 +1702,12 @@ namespace Scryber.PDF.Layout
                 if (opts.Width.HasValue)
                     _totalWidth = opts.Width.Value + _margins.Left + _margins.Right;
                 else
-                    _totalWidth = PDFUnit.Zero;
+                    _totalWidth = Unit.Zero;
 
                 if (opts.Height.HasValue)
                     _totalHeight = opts.Height.Value + _margins.Top + _margins.Right;
                 else
-                    _totalHeight = PDFUnit.Zero;
+                    _totalHeight = Unit.Zero;
 
                 StyleValue<int> cellspan;
                 if (fullstyle.TryGetValue(StyleKeys.TableCellColumnSpanKey, out cellspan))
@@ -1735,8 +1735,8 @@ namespace Scryber.PDF.Layout
             private Style _appliedStyle;
             private int _rowindex;
             private PDFLayoutBlock _block;
-            private PDFUnit _explicitHeight;
-            private PDFThickness _margins;
+            private Unit _explicitHeight;
+            private Thickness _margins;
             private GridReference _grid;
 
             #endregion
@@ -1805,7 +1805,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// Gets the margins for this Row
             /// </summary>
-            public PDFThickness Margins
+            public Thickness Margins
             {
                 get { return this._margins; }
             }
@@ -1817,7 +1817,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// Gets the total explicit height specified for the cell
             /// </summary>
-            public PDFUnit ExplicitHeight
+            public Unit ExplicitHeight
             {
                 get { return _explicitHeight; }
                 set { _explicitHeight = value; }
@@ -1828,7 +1828,7 @@ namespace Scryber.PDF.Layout
             /// </summary>
             public bool HasExplicitHeight
             {
-                get { return _explicitHeight != PDFUnit.Zero; }
+                get { return _explicitHeight != Unit.Zero; }
             }
 
             #endregion
@@ -1954,7 +1954,7 @@ namespace Scryber.PDF.Layout
             private Style _tableStyle;
             private PDFPositionOptions _posOpts;
             private TableReference _ownerTable;
-            private PDFRect _availspace;
+            private Rect _availspace;
 
             #endregion
 
@@ -2058,7 +2058,7 @@ namespace Scryber.PDF.Layout
             /// <summary>
             /// Gets or sets the available space with in the outer table block for this grid
             /// </summary>
-            public PDFRect AvailableSpace
+            public Rect AvailableSpace
             {
                 get { return _availspace; }
                 set { _availspace = value; }
@@ -2118,21 +2118,21 @@ namespace Scryber.PDF.Layout
 
             #region internal PDFSize CalculateContentSize()
 
-            internal PDFSize CalculateContentSize()
+            internal Size CalculateContentSize()
             {
-                PDFUnit h = PDFUnit.Zero;
-                PDFUnit w = PDFUnit.Zero;
+                Unit h = Unit.Zero;
+                Unit w = Unit.Zero;
                 for (int i = this.StartRowIndex; i <= this.EndRowIndex; i++)
                 {
                     RowReference row = this[i];
                     if (null != row.Block)
                     {
                         h += row.Block.Height;
-                        w = PDFUnit.Max(w, row.Block.Width);
+                        w = Unit.Max(w, row.Block.Width);
                     }
                 }
 
-                return new PDFSize(w, h);
+                return new Size(w, h);
             }
 
             #endregion
@@ -2481,16 +2481,16 @@ namespace Scryber.PDF.Layout
             /// </summary>
             /// <param name="rowindex"></param>
             /// <returns></returns>
-            public PDFUnit GetMaxCellHeightForRow(int rowindex)
+            public Unit GetMaxCellHeightForRow(int rowindex)
             {
-                PDFUnit maxH = PDFUnit.Zero;
+                Unit maxH = Unit.Zero;
                 for (int col = 0; col < _columncount; col++)
                 {
                     CellReference cref = this._cells[rowindex, col];
                     if (null != cref && null != cref.Block)
                     {
-                        PDFUnit h = cref.Block.TotalBounds.Height;
-                        maxH = PDFUnit.Max(h, maxH);
+                        Unit h = cref.Block.TotalBounds.Height;
+                        maxH = Unit.Max(h, maxH);
                     }
                 }
                 return maxH;
@@ -2505,16 +2505,16 @@ namespace Scryber.PDF.Layout
             /// </summary>
             /// <param name="colIndex"></param>
             /// <returns></returns>
-            public PDFUnit GetMaxCellWidthForColumn(int colIndex)
+            public Unit GetMaxCellWidthForColumn(int colIndex)
             {
-                PDFUnit maxW = PDFUnit.Zero;
+                Unit maxW = Unit.Zero;
                 for (int row = 0; row < _rowcount; row++)
                 {
                     CellReference cref = this._cells[row, colIndex];
                     if (null != cref && null != cref.Block && cref.IsEmpty == false && cref.ColumnSpan == 1)
                     {
-                        PDFUnit w = cref.Block.TotalBounds.Width;
-                        maxW = PDFUnit.Max(w, maxW);
+                        Unit w = cref.Block.TotalBounds.Width;
+                        maxW = Unit.Max(w, maxW);
                     }
                 }
                 return maxW;
@@ -2523,7 +2523,7 @@ namespace Scryber.PDF.Layout
             #endregion
 
 
-            public void EnsureSufficientWidthForSpannedCells(int colIndex, PDFUnit[] widths)
+            public void EnsureSufficientWidthForSpannedCells(int colIndex, Unit[] widths)
             {
                 for (int row = 0; row < _rowcount; row++)
                 {
@@ -2547,12 +2547,12 @@ namespace Scryber.PDF.Layout
 
                         if (null != act && null != act.Block && ((act.ColumnSpan-1) + cellCol == colIndex)) //we have a cell and this is the last
                         {
-                            PDFUnit widthUpToLast = PDFUnit.Zero;
+                            Unit widthUpToLast = Unit.Zero;
                             for (int i = 0; i < act.ColumnSpan-1; i++)
                             {
                                 widthUpToLast += widths[cellCol + i];
                             }
-                            PDFUnit required = act.Block.TotalBounds.Width;
+                            Unit required = act.Block.TotalBounds.Width;
                             required -= widthUpToLast;
                             if (required > widths[colIndex])
                                 widths[colIndex] = required;
@@ -2569,7 +2569,7 @@ namespace Scryber.PDF.Layout
             /// </summary>
             /// <param name="rowIndex"></param>
             /// <param name="h"></param>
-            public void SetCellHeightForRow(int rowIndex, PDFUnit h)
+            public void SetCellHeightForRow(int rowIndex, Unit h)
             {
                 RowReference rref = this._rows[rowIndex];
                 for (int col = 0; col < _columncount; col++)
@@ -2577,7 +2577,7 @@ namespace Scryber.PDF.Layout
                     CellReference cref = rref[col];
                     if (null != cref && null != cref.Block)
                     {
-                        PDFRect total = cref.Block.TotalBounds;
+                        Rect total = cref.Block.TotalBounds;
                         total.Height = h; //- cref.Margins.Top - cref.Margins.Bottom;
                         cref.Block.TotalBounds = total;
                     }
@@ -2598,7 +2598,7 @@ namespace Scryber.PDF.Layout
             /// </summary>
             /// <param name="colIndex"></param>
             /// <param name="w"></param>
-            public void SetCellWidthForColumn(int colIndex, PDFUnit[] widths)
+            public void SetCellWidthForColumn(int colIndex, Unit[] widths)
             {
                 try
                 {
@@ -2607,12 +2607,12 @@ namespace Scryber.PDF.Layout
                         CellReference cref = this._cells[row, colIndex];
                         if (null != cref && null != cref.Block && cref.IsEmpty == false)
                         {
-                            PDFUnit w = PDFUnit.Zero;
+                            Unit w = Unit.Zero;
                             for (int i = 0; i < cref.ColumnSpan; i++)
                             {
                                 w += widths[colIndex + i];
                             }
-                            PDFRect total = cref.Block.TotalBounds;
+                            Rect total = cref.Block.TotalBounds;
                             total.Width = w; //- cref.Margins.Left - cref.Margins.Right;
                             cref.Block.TotalBounds = total;
                         }
@@ -2627,7 +2627,7 @@ namespace Scryber.PDF.Layout
                                 CellReference cref = this._cells[row.RowIndex, colIndex];
                                 int colspan = cref.ColumnSpan;
 
-                                PDFUnit w = PDFUnit.Zero;
+                                Unit w = Unit.Zero;
                                 for (int i = 0; i < cref.ColumnSpan; i++)
                                 {
                                     w += widths[colIndex + i];
@@ -2640,7 +2640,7 @@ namespace Scryber.PDF.Layout
                                 if (cellregion.Contents != null && cellregion.Contents.Count > 0)
                                 {
                                     PDFLayoutBlock cell = cellregion.Contents[0] as PDFLayoutBlock;
-                                    PDFRect total = cell.TotalBounds;
+                                    Rect total = cell.TotalBounds;
                                     total.Width = w;
                                     cell.TotalBounds = total;
                                 }
@@ -2667,12 +2667,12 @@ namespace Scryber.PDF.Layout
             /// <param name="colIndex">The column region</param>
             /// <param name="xOffset">The horizontal offset from the start of the row</param>
             /// <param name="maxColWidth">The width of the column</param>
-            internal void SetRowOffsetAndWidthForColumn(int colIndex, PDFUnit[] widths)
+            internal void SetRowOffsetAndWidthForColumn(int colIndex, Unit[] widths)
             {
                 //TODO: This can be done with an outer loop
 
-                PDFUnit xOffset = PDFUnit.Zero;
-                PDFUnit maxColWidth = widths[colIndex];
+                Unit xOffset = Unit.Zero;
+                Unit maxColWidth = widths[colIndex];
                 for (int i = 0; i < colIndex; i++)
                 {
                     xOffset += widths[i];
@@ -2685,7 +2685,7 @@ namespace Scryber.PDF.Layout
                     {
                         PDFLayoutBlock rowblock = rowref.Block;
                         PDFLayoutRegion column = rowblock.Columns[colIndex];
-                        PDFRect colbounds = column.TotalBounds;
+                        Rect colbounds = column.TotalBounds;
                         colbounds.X = xOffset;
                         colbounds.Width = maxColWidth;
                         column.TotalBounds = colbounds;
@@ -2703,7 +2703,7 @@ namespace Scryber.PDF.Layout
                             {
                                 PDFLayoutBlock rowblock = rowref.Block;
                                 PDFLayoutRegion column = rowblock.Columns[colIndex];
-                                PDFRect colbounds = column.TotalBounds;
+                                Rect colbounds = column.TotalBounds;
                                 colbounds.X = xOffset;
                                 colbounds.Width = maxColWidth;
                                 column.TotalBounds = colbounds;
@@ -2748,18 +2748,18 @@ namespace Scryber.PDF.Layout
         /// </summary>
         private struct CellDimension
         {
-            private PDFUnit _sz;
+            private Unit _sz;
             private bool _explicit;
 
-            public PDFUnit Size { get { return _sz; } set { _sz = value; } }
+            public Unit Size { get { return _sz; } set { _sz = value; } }
             public bool Explicit { get { return _explicit; } set { _explicit = value; } }
 
-            public CellDimension(PDFUnit size)
+            public CellDimension(Unit size)
                 : this(size, true)
             {
             }
 
-            public CellDimension(PDFUnit size, bool isExplicit)
+            public CellDimension(Unit size, bool isExplicit)
             {
                 _sz = size;
                 _explicit = isExplicit;

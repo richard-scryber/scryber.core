@@ -27,12 +27,12 @@ namespace Scryber.PDF
 {
     
 
-    #region public interface IFileObject : ITypedObject
+    #region public interface IPDFFileObject : ITypedObject
 
     /// <summary>
     /// Base abstract class of all native file objects (PDFBoolean, PDFNumber etc...)
     /// </summary>
-    public interface IFileObject : ITypedObject
+    public interface IPDFFileObject : ITypedObject
     {
         /// <summary>
         /// Writes the underlying data of the file object to the passed text writer
@@ -44,12 +44,12 @@ namespace Scryber.PDF
 
     #endregion
 
-    #region public interface IIndirectObject : IDisposable
+    #region public interface IPDFIndirectObject : IDisposable
 
     /// <summary>
     /// Defines the interface that all indirect objects must adhere to.
     /// </summary>
-    public interface IIndirectObject : IDisposable
+    public interface IPDFIndirectObject : IDisposable
     {
         /// <summary>
         /// Gets the object number of this indirect object
@@ -106,30 +106,30 @@ namespace Scryber.PDF
 
     #endregion
 
-    #region public interface IParsedIndirectObject : IIndirectObject
+    #region public interface IPDFParsedIndirectObject : IIndirectObject
 
     /// <summary>
     /// Interface for indirect objects that have been parsed from an existing file
     /// </summary>
-    public interface IParsedIndirectObject : IIndirectObject
+    public interface IPDFParsedIndirectObject : IPDFIndirectObject
     {
         /// <summary>
         /// Returns the parsed object data 
         /// </summary>
         /// <returns></returns>
-        IFileObject GetContents();
+        IPDFFileObject GetContents();
     }
 
     #endregion
 
-    #region public interface IStreamFactory
+    #region public interface IPDFStreamFactory
 
     /// <summary>
     /// Interface for instance that creates PDFStreams indirect objects can use
     /// </summary>
-    public interface IStreamFactory
+    public interface IPDFStreamFactory
     {
-        PDFStream CreateStream(IStreamFilter[] filters, IIndirectObject forObject);
+        PDFStream CreateStream(IStreamFilter[] filters, IPDFIndirectObject forObject);
     }
 
     #endregion
@@ -172,20 +172,9 @@ namespace Scryber.PDF
     /// <summary>
     /// Interface that defines a container of IFileObjects
     /// </summary>
-    public interface IObjectContainer
+    public interface IPDFObjectContainer
     {
-        void Add(IFileObject obj);
-    }
-
-    #endregion
-
-    #region public interface IPDFObject : ITypedObject
-
-    /// <summary>
-    /// Base interface for all pdf objects
-    /// </summary>
-    public interface IPDFObject : ITypedObject //, IDisposable
-    {
+        void Add(IPDFFileObject obj);
     }
 
     #endregion
@@ -193,7 +182,7 @@ namespace Scryber.PDF
     #region public interface IPDFResource
 
     /// <summary>
-    /// Defines a top level resource that is contained in the PDF Document, and used for rendering the pages - e.g. Font or Image
+    /// Defines a top level resource that is contained in the  IDocument, and used for rendering the pages - e.g. Font or Image
     /// </summary>
     public interface IPDFResource : ISharedResource
     {
@@ -205,7 +194,7 @@ namespace Scryber.PDF
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        PDFObjectRef EnsureRendered(PDFContextBase context, PDFWriter writer);
+        PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer);
     }
 
     #endregion

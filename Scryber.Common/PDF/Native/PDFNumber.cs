@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.PDF.Native
 {
-    public struct PDFNumber : IFileObject
+    public struct PDFNumber : IPDFFileObject
     {
 
         public ObjectType Type { get { return ObjectTypes.Number; } }
@@ -103,7 +103,7 @@ namespace Scryber.PDF.Native
 
         public static PDFNumber Parse(string value, int offset, out int end)
         {
-            IFileObject obj = PDFParserHelper.ParseNumericValue(value, offset, out end);
+            IPDFFileObject obj = PDFParserHelper.ParseNumericValue(value, offset, out end);
             if (obj.Type == ObjectTypes.Number)
                 return (PDFNumber)obj;
             else

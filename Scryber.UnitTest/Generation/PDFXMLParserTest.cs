@@ -270,7 +270,7 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.IsInstanceOfType(obj.DefaultCollection[0], typeof(Fakes.More.ParserDifferentComplex));
             Fakes.More.ParserDifferentComplex dif = (Fakes.More.ParserDifferentComplex)obj.DefaultCollection[0];
             //Parsing order = Top Right Bottom Left.
-            Assert.AreEqual((Scryber.Drawing.PDFUnit)13, dif.Thickness.Left);
+            Assert.AreEqual((Scryber.Drawing.Unit)13, dif.Thickness.Left);
 
             Assert.IsInstanceOfType(obj.DefaultCollection[1], typeof(Fakes.ParserInnerComplex));
             Assert.AreEqual(42, obj.DefaultCollection[1].Index);
@@ -433,7 +433,7 @@ namespace Scryber.Core.UnitTests.Generation
 
             Assert.IsInstanceOfType(obj.DefaultCollection[0], typeof(Fakes.More.ParserDifferentComplex));
             Fakes.More.ParserDifferentComplex dif = (Fakes.More.ParserDifferentComplex)obj.DefaultCollection[0];
-            Assert.AreEqual((Scryber.Drawing.PDFUnit)13, dif.Thickness.Left);
+            Assert.AreEqual((Scryber.Drawing.Unit)13, dif.Thickness.Left);
 
             Assert.IsInstanceOfType(obj.DefaultCollection[1], typeof(Fakes.ParserInnerComplex));
             Assert.AreEqual(42, obj.DefaultCollection[1].Index);

@@ -28,7 +28,7 @@ namespace Scryber.Drawing
         private const double RadiansPerDegree = Math.PI / 180.0;
         private const double DoublePI = Math.PI * 2;
 
-        internal static IEnumerable<PathBezierCurveData> GetBezierCurvesForArc(PDFPoint start, PathArcData arc)
+        internal static IEnumerable<PathBezierCurveData> GetBezierCurvesForArc(Point start, PathArcData arc)
         {
             List<PathBezierCurveData> all = new List<PathBezierCurveData>();
 
@@ -118,9 +118,9 @@ namespace Scryber.Drawing
                     double dxe = t * (cosPhi * rx * sinTheta2 + sinPhi * ry * cosTheta2);
                     double dye = t * (sinPhi * rx * sinTheta2 - cosPhi * ry * cosTheta2);
 
-                    PDFPoint endPoint = new PDFPoint(endpointX, endpointY);
-                    PDFPoint startHandle = new PDFPoint((startX + dx1), (startY + dy1));
-                    PDFPoint endHandle = new PDFPoint((endpointX + dxe), (endpointY + dye));
+                    Point endPoint = new Point(endpointX, endpointY);
+                    Point startHandle = new Point((startX + dx1), (startY + dy1));
+                    Point endHandle = new Point((endpointX + dxe), (endpointY + dye));
 
                     PathBezierCurveData bezier = new PathBezierCurveData(endPoint, startHandle, endHandle, true, true);
                     all.Add(bezier);
@@ -151,7 +151,7 @@ namespace Scryber.Drawing
             return PathDataHelper.DoublePI - (ta - tb);
         }
 
-        internal static IEnumerable<PathBezierCurveData> GetBezierCurvesForQuadratic(PDFPoint start, PathQuadraticCurve quad)
+        internal static IEnumerable<PathBezierCurveData> GetBezierCurvesForQuadratic(Point start, PathQuadraticCurve quad)
         {
             PathBezierCurveData[] all = new PathBezierCurveData[1];
 
@@ -160,12 +160,12 @@ namespace Scryber.Drawing
                 double x1 = start.X.PointsValue + (quad.ControlPoint.X.PointsValue - start.X.PointsValue) * 2 / 3;
                 double y1 = start.Y.PointsValue + (quad.ControlPoint.Y.PointsValue - start.Y.PointsValue) * 2 / 3;
 
-                PDFPoint startHandle = new PDFPoint(x1, y1);
+                Point startHandle = new Point(x1, y1);
 
                 double x2 = quad.ControlPoint.X.PointsValue + (quad.EndPoint.X.PointsValue - quad.ControlPoint.X.PointsValue) / 3;
                 double y2 = quad.ControlPoint.Y.PointsValue + (quad.EndPoint.Y.PointsValue - quad.ControlPoint.Y.PointsValue) / 3;
 
-                PDFPoint endHandle = new PDFPoint(x2, y2);
+                Point endHandle = new Point(x2, y2);
 
                 PathBezierCurveData one = new PathBezierCurveData(quad.EndPoint, startHandle, endHandle, true, true);
                 all[0] = one;

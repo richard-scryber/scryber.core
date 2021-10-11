@@ -28,7 +28,7 @@ namespace Scryber.PDF.Resources
         /// <param name="key"></param>
         /// <param name="descriptor">The gradient descriptor</param>
         /// <param name="bounds">The bounds of the gradient on the page (rather than component level)</param>
-        public PDFRadialShadingPattern(IComponent owner, string key, GradientRadialDescriptor descriptor, PDFRect bounds)
+        public PDFRadialShadingPattern(IComponent owner, string key, GradientRadialDescriptor descriptor, Rect bounds)
             : base(owner, key, bounds)
         {
             this._descriptor = descriptor;
@@ -36,7 +36,7 @@ namespace Scryber.PDF.Resources
         }
 
 
-        protected override PDFObjectRef DoRenderToPDF(PDFContextBase context, PDFWriter writer)
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
             PDFObjectRef oref = writer.BeginObject(this.Name.Value);
             writer.BeginDictionary();
@@ -54,12 +54,12 @@ namespace Scryber.PDF.Resources
 
         }
 
-        protected virtual PDFObjectRef RenderShadingDictionary(PDFContextBase context, PDFWriter writer)
+        protected virtual PDFObjectRef RenderShadingDictionary(ContextBase context, PDFWriter writer)
         {
-            PDFPoint offset = new PDFPoint(this.Start.X, this.Start.Y);// this.Start;
-            PDFSize size = this.Size;
+            Point offset = new Point(this.Start.X, this.Start.Y);// this.Start;
+            Size size = this.Size;
 
-            PDFSize graphicsSize = new PDFSize(size.Width + offset.X, size.Height + offset.Y);
+            Size graphicsSize = new Size(size.Width + offset.X, size.Height + offset.Y);
             var func = this._descriptor.GetGradientFunction(offset, size);
             var coords = GetCoords(offset, size, _descriptor.Size, _descriptor.XCentre, _descriptor.YCentre);
             
@@ -108,7 +108,7 @@ namespace Scryber.PDF.Resources
         }
 
 
-        protected virtual double[] GetCoords(PDFPoint offset, PDFSize size, RadialSize radiusSize, PDFUnit? centreX, PDFUnit? centreY)
+        protected virtual double[] GetCoords(Point offset, Size size, RadialSize radiusSize, Unit? centreX, Unit? centreY)
         {
 
             double[] all = new double[6];
@@ -117,7 +117,7 @@ namespace Scryber.PDF.Resources
             var width = size.Width.PointsValue;
 
             //Get the centre and the radius
-            PDFPoint c = CacluateRadialCentre(centreX, centreY, height, width);
+            Point c = CacluateRadialCentre(centreX, centreY, height, width);
             double radius = CalculateRadiusForSize(radiusSize, height, width, c.X.PointsValue, c.Y.PointsValue);
 
             if (radius <= 0)
@@ -136,16 +136,16 @@ namespace Scryber.PDF.Resources
             return all;
         }
 
-        public static PDFPoint CacluateRadialCentre(PDFUnit? centreX, PDFUnit? centreY, double height, double width)
+        public static Point CacluateRadialCentre(Unit? centreX, Unit? centreY, double height, double width)
         {
             var rX = width / 2;
             var rY = height / 2;
-            PDFPoint c = new PDFPoint(rX, rY);
+            Point c = new Point(rX, rY);
 
             //calculate any explicit centres from the bbox origin of the rectangle.
             if (centreX.HasValue)
             {
-                if (centreX.Value == PDFUnit.Zero)
+                if (centreX.Value == Unit.Zero)
                     c.X = 0.0;
                 else if (centreX.Value.PointsValue == double.MaxValue)
                     c.X = width;
@@ -155,7 +155,7 @@ namespace Scryber.PDF.Resources
 
             if (centreY.HasValue)
             {
-                if (centreY.Value == PDFUnit.Zero)
+                if (centreY.Value == Unit.Zero)
                     c.Y = 0.0;
                 else if (centreX.Value.PointsValue == double.MaxValue)
                     c.Y = height;

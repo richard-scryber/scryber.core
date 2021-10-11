@@ -147,7 +147,7 @@ namespace Scryber.PDF.Resources
         /// Gets or sets the offset from the bottom left corner of the
         /// page (0,0) that the pattern repeats (top left of the pattern).
         /// </summary>
-        public PDFPoint Start
+        public Point Start
         {
             get;
             set;
@@ -160,7 +160,7 @@ namespace Scryber.PDF.Resources
         /// <summary>
         /// Gets or sets the distance between the start of each tile
         /// </summary>
-        public PDFSize Step
+        public Size Step
         {
             get;
             set;

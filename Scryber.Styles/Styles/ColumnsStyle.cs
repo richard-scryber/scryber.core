@@ -32,7 +32,7 @@ namespace Scryber.Styles
     [PDFJSConvertor("scryber.studio.design.convertors.styleItem", JSParams = "\"Columns\"")]
     public class ColumnsStyle : StyleItemBase
     {
-        public static readonly PDFUnit DefaultAlleyWidth = new PDFUnit(10, PageUnits.Points);
+        public static readonly Unit DefaultAlleyWidth = new Unit(10, PageUnits.Points);
         public const bool DefaultAutoFlow = true;
 
 
@@ -72,11 +72,11 @@ namespace Scryber.Styles
         /// Gets or sets the width of the column alley - space between the columns
         /// </summary>
         [PDFAttribute("alley-width")]
-        public PDFUnit AlleyWidth
+        public Unit AlleyWidth
         {
             get
             {
-                PDFUnit width;
+                Unit width;
                 if (this.TryGetValue(StyleKeys.ColumnAlleyKey,out width))
                     return width;
                 else

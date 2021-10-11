@@ -45,7 +45,7 @@ namespace Scryber
         /// <summary>
         /// Gets or sets the actual PDF boundary rectangle this component will render in (the border rectangle)
         /// </summary>
-        public PDFRect RenderBounds { get; set; }
+        public Rect RenderBounds { get; set; }
 
         /// <summary>
         /// Creates a new PDFComponentArrangement

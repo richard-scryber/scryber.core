@@ -33,12 +33,12 @@ namespace Scryber.PDF.Graphics
 
         public PDFBrush UnderBrush { get; set; }
 
-        public virtual void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public virtual void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
             
         }
 
-        public virtual bool SetUpGraphics(PDFGraphics graphics, PDFRect bounds)
+        public virtual bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
             return false;
         }
@@ -89,7 +89,7 @@ namespace Scryber.PDF.Graphics
             this._op = opacity;
         }
 
-        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, Rect bounds)
         {
             g.SetFillOpacity(this.Opacity);
             if (this.Color.IsEmpty == false)
@@ -101,7 +101,7 @@ namespace Scryber.PDF.Graphics
                 return false;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public override void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
             
         }
@@ -121,12 +121,12 @@ namespace Scryber.PDF.Graphics
             get { return FillType.None; }
         }
 
-        public override bool SetUpGraphics(PDFGraphics g, PDFRect bounds)
+        public override bool SetUpGraphics(PDFGraphics g, Rect bounds)
         {
             return false;
         }
 
-        public override void ReleaseGraphics(PDFGraphics g, PDFRect bounds)
+        public override void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
         }
 

@@ -3,6 +3,8 @@ using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
+
 
 namespace Scryber.Svg.Components
 {
@@ -11,16 +13,16 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("width")]
-        public override PDFUnit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { get => base.Width; set => base.Width = value; }
 
         [PDFAttribute("height")]
-        public override PDFUnit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { get => base.Height; set => base.Height = value; }
 
         [PDFAttribute("x")]
-        public override PDFUnit X { get => base.X; set => base.X = value; }
+        public override Unit X { get => base.X; set => base.X = value; }
 
         [PDFAttribute("y")]
-        public override PDFUnit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y { get => base.Y; set => base.Y = value; }
 
         private TextLiteralList _inner;
 
