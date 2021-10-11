@@ -9,12 +9,16 @@ using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
 
-namespace Scryber.Core.UnitTests.Layout
+namespace Scryber.UnitLayouts
 {
     [TestClass()]
     public class ImageLayoutTests
     {
         const string TestCategoryName = "Layout";
+
+        const string ImagePath = "../../../Content/Images/Toroid32.png";
+        const double ImageWidth = 682.0;
+        const double ImageHeight = 452.0;
 
         PDFLayoutDocument layout;
 
@@ -47,29 +51,17 @@ namespace Scryber.Core.UnitTests.Layout
             Assert.AreEqual(one, two, message);
         }
 
-        [TestMethod()]
-        public void JustATextRun()
-        {
-            var doc = new Document();
-            var pg = new Page();
-
-            pg.Margins = new Thickness(10);
-            pg.BackgroundColor = new Color(240, 240, 240);
-            pg.OverflowAction = OverflowAction.NewPage;
-            doc.Pages.Add(pg);
-            pg.Contents.Add(new TextLiteral("This is a text run that should flow over multiple lines in the page with a default line height"));
-        }
 
 
         [TestMethod]
         public void FixedSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72);
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0);
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72);
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0);
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -168,11 +160,11 @@ namespace Scryber.Core.UnitTests.Layout
         public void MaximumSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72);
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0);
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72);
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0);
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -289,11 +281,11 @@ namespace Scryber.Core.UnitTests.Layout
         public void MinimumSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -430,11 +422,11 @@ namespace Scryber.Core.UnitTests.Layout
         public void MixedActualAndMinSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -535,11 +527,11 @@ namespace Scryber.Core.UnitTests.Layout
         public void MixedActualAndMaxSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -640,11 +632,11 @@ namespace Scryber.Core.UnitTests.Layout
         public void FitContainerSizes()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -932,11 +924,11 @@ namespace Scryber.Core.UnitTests.Layout
         {
 
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -1218,11 +1210,11 @@ namespace Scryber.Core.UnitTests.Layout
         public void InlineMultipleImageLineHeight()
         {
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -1285,11 +1277,11 @@ namespace Scryber.Core.UnitTests.Layout
         {
 
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((682.0 / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((452.0 / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
+            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
 
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid32.png");
+            path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
@@ -1472,6 +1464,7 @@ namespace Scryber.Core.UnitTests.Layout
 
             PDFLayoutComponentRun lrun;
 
+            Assert.Inconclusive("We are not supporting this at the moment");
 
             //As we are inline we use the content rects to make sure we are the right size
             

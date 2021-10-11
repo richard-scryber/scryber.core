@@ -5,7 +5,7 @@ using Scryber.PDF.Layout;
 using Scryber.PDF;
 
 
-namespace Scryber.Core.UnitTests.Layout
+namespace Scryber.UnitLayouts
 {
     [TestClass()]
     public class PathLayout_Tests

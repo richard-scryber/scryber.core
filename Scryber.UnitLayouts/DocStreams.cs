@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scryber.Core.UnitTests
+namespace Scryber.UnitLayouts
 {
     public static class DocStreams
     {

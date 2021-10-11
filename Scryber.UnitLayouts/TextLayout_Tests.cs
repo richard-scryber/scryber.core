@@ -33,7 +33,7 @@ namespace Scryber.UnitLayouts
 
 
         /// <summary>
-        /// Cheks the font and line sizing and line height in a default font at 24 points
+        /// Checks the font and line sizing and line height in a default font at 24 points
         /// </summary>
         [TestMethod()]
         public void ASingleLiteral()

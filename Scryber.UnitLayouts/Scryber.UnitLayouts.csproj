@@ -22,4 +22,12 @@
     <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Content\" />
+    <None Remove="Content\Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\" />
+    <Folder Include="Content\Images\" />
+  </ItemGroup>
 </Project>

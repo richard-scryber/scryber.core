@@ -47,7 +47,7 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(panel);
 
             
-            using (var ms = DocStreams.GetOutputStream("PanelsExplicitSizing.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_ExplicitSizing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -140,7 +140,7 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(panel);
 
 
-            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthSizing.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthSizing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -243,7 +243,7 @@ namespace Scryber.UnitLayouts
 
 
             
-            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthWithSpacing.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthWithSpacing.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -347,7 +347,7 @@ namespace Scryber.UnitLayouts
 
 
             
-            using (var ms = DocStreams.GetOutputStream("PanelsFullWidthWithSpacingBoth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthWithSpacingBoth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -461,7 +461,7 @@ namespace Scryber.UnitLayouts
             panel.Contents.Add(lbl); //Will not push the panel beyond its minimumn width
 
             
-            using (var ms = DocStreams.GetOutputStream("PanelsMinWidthAndHeight.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_MinWidthAndHeight.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -526,7 +526,7 @@ namespace Scryber.UnitLayouts
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
             
-            using (var ms = DocStreams.GetOutputStream("PanelsBeyondMinWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_BeyondMinWidth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -586,7 +586,7 @@ namespace Scryber.UnitLayouts
             panel.Contents.Add(lbl); //WILL push the panel beyond its minimumn width
 
             
-            using (var ms = DocStreams.GetOutputStream("PanelsBeyondMinWidthAndHeight.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Panels_BeyondMinWidthAndHeight.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
