@@ -34,17 +34,17 @@ namespace Scryber.Drawing.Imaging
             get { return true; }
         }
 
-        internal PDFJpegImageData(string source, System.Drawing.Image jpeg)
-            : base(source, jpeg.Width, jpeg.Height)
+        internal PDFJpegImageData(string source, byte[] data, int width, int height)
+            : base(source, width, height)
         {
-            this.ColorSpace = ImageFormatParser.GetColorSpace(jpeg.PixelFormat);
-            this.ColorsPerSample = ImageFormatParser.GetColorChannels(this.ColorSpace);
-            this.BitsPerColor = ImageFormatParser.GetImageBitDepth(jpeg.PixelFormat) / this.ColorsPerSample;
-            this.Data = ImageFormatParser.GetRawBytesFromImage(jpeg);
+            this.ColorSpace = ColorSpace.RGB; // ImageFormatParser.GetColorSpace(jpeg.PixelFormat);
+            this.ColorsPerSample = 3;// ImageFormatParser.GetColorChannels(this.ColorSpace);
+            this.BitsPerColor = 8; // ImageFormatParser.GetImageBitDepth(jpeg.PixelFormat) / this.ColorsPerSample;
+            this.Data = data;// ImageFormatParser.GetRawBytesFromImage(jpeg);
             this.Filters = new IStreamFilter[] { new PDFJpegStreamFilter() };
-
-            this.HorizontalResolution = jpeg.HorizontalResolution > 10 ? (int)Math.Round(jpeg.HorizontalResolution, 0) : 96;
-            this.VerticalResolution =  jpeg.VerticalResolution > 10 ? (int)Math.Round(jpeg.VerticalResolution, 0) : 96;
+            //TODO: Fix the resolution
+            this.HorizontalResolution = 96;
+            this.VerticalResolution =  96;
 
         }
 

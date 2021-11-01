@@ -498,7 +498,7 @@ namespace Scryber.Drawing
 
                 value = value.Substring(0, close);//remove closing bracket
                 object parsedCs;
-                if (Enum.TryParse(typeof(ColorSpace), s, true, out parsedCs) == false)
+                if (EnumParser.TryParse(typeof(ColorSpace), s, true, out parsedCs) == false)
                     return false;
                 else
                     cs = (ColorSpace)parsedCs;

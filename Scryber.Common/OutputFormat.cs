@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics.Tracing;
 using System.Reflection;
-using System.Reflection.Metadata;
 
 namespace Scryber
 {

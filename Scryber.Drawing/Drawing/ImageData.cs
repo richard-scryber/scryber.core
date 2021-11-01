@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using Scryber.PDF.Native;
@@ -282,77 +281,89 @@ namespace Scryber.Drawing
         // static methods
         //
 
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData LoadImageFromURI(string uri, IComponent owner = null)
         {
-            //throw new NotSupportedException("Don't use the loading from a remote uri. Use the Document.RegisterRemoteFileRequest");
+            throw new NotSupportedException();
 
-            using (System.Net.Http.HttpClient wc = new System.Net.Http.HttpClient())
-            {
-                //wc. = System.Net.CredentialCache.DefaultNetworkCredentials;
+            //using (System.Net.Http.HttpClient wc = new System.Net.Http.HttpClient())
+            //{
+            //    //wc. = System.Net.CredentialCache.DefaultNetworkCredentials;
 
-                bool compress = false;
+            //    bool compress = false;
 
-                if (owner is IOptimizeComponent)
-                    compress = ((IOptimizeComponent)owner).Compress;
+            //    if (owner is IOptimizeComponent)
+            //        compress = ((IOptimizeComponent)owner).Compress;
 
-                ImageData img;
-                byte[] data = wc.GetByteArrayAsync(uri).Result;
-                img = InitImageData(uri, data, compress);
-                return img;
+            //    ImageData img;
+            //    byte[] data = wc.GetByteArrayAsync(uri).Result;
+            //    img = InitImageData(uri, data, compress);
+            //    return img;
 
-            }
+            //}
         }
 
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData LoadImageFromStream(string sourceKey, System.IO.Stream stream, IComponent owner = null)
         {
-            using (System.Drawing.Image bmp = System.Drawing.Image.FromStream(stream))
-            {
-                bool compress = false;
+            throw new NotSupportedException();
 
-                if (null != owner && owner is IOptimizeComponent)
-                    compress = ((IOptimizeComponent)owner).Compress;
+            //using (System.Drawing.Image bmp = System.Drawing.Image.FromStream(stream))
+            //{
+            //    bool compress = false;
 
-                ImageData img;
-                img = InitImageData(sourceKey, bmp, compress);
-                return img;
-            }
+            //    if (null != owner && owner is IOptimizeComponent)
+            //        compress = ((IOptimizeComponent)owner).Compress;
+
+            //    ImageData img;
+            //    img = InitImageData(sourceKey, bmp, compress);
+            //    return img;
+            //}
         }
 
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData LoadImageFromLocalFile(string path, IComponent owner = null)
         {
-            System.IO.FileInfo fi = new System.IO.FileInfo(path);
-            if (fi.Exists == false)
-                throw new ArgumentNullException("path", "The file at the path '" + path + "' does not exist.");
 
-            bool compress = false;
+            throw new NotSupportedException();
 
-            if (null != owner && owner is IOptimizeComponent)
-                compress = ((IOptimizeComponent)owner).Compress;
+            //System.IO.FileInfo fi = new System.IO.FileInfo(path);
+            //if (fi.Exists == false)
+            //    throw new ArgumentNullException("path", "The file at the path '" + path + "' does not exist.");
 
-            using (System.Drawing.Image bmp = System.Drawing.Image.FromFile(path))
-            {
-                ImageData img;
-                img = InitImageData(path, bmp, compress);
-                return img;
-            }
+            //bool compress = false;
+
+            //if (null != owner && owner is IOptimizeComponent)
+            //    compress = ((IOptimizeComponent)owner).Compress;
+
+            //using (System.Drawing.Image bmp = System.Drawing.Image.FromFile(path))
+            //{
+            //    ImageData img;
+            //    img = InitImageData(path, bmp, compress);
+            //    return img;
+            //}
         }
 
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData LoadImageFromUriData(string src, IDocument document, IComponent owner)
         {
-            if (null == document) throw new ArgumentNullException("document");
-            if (null == owner) throw new ArgumentNullException("owner");
 
-            var dataUri = ParseDataURI(src);
+            throw new NotSupportedException();
 
-            if (dataUri.encoding != "base64") throw new ArgumentException("src", $"unsupported encoding {dataUri.encoding}; expected base64");
-            if (dataUri.mediaType != "image/png") throw new ArgumentException("src", $"unsupported encoding {dataUri.mediaType}; expected image/png");
+            //if (null == document) throw new ArgumentNullException("document");
+            //if (null == owner) throw new ArgumentNullException("owner");
 
-            var binary = Convert.FromBase64String(dataUri.data);
+            //var dataUri = ParseDataURI(src);
 
-            using (var ms = new System.IO.MemoryStream(binary))
-            {
-                return ImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
-            }
+            //if (dataUri.encoding != "base64") throw new ArgumentException("src", $"unsupported encoding {dataUri.encoding}; expected base64");
+            //if (dataUri.mediaType != "image/png") throw new ArgumentException("src", $"unsupported encoding {dataUri.mediaType}; expected image/png");
+
+            //var binary = Convert.FromBase64String(dataUri.data);
+
+            //using (var ms = new System.IO.MemoryStream(binary))
+            //{
+            //    return ImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
+            //}
         }
 
         /// <summary>
@@ -362,133 +373,149 @@ namespace Scryber.Drawing
         /// <param name="sourcekey"></param>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static ImageData LoadImageFromBitmap(string sourcekey, System.Drawing.Bitmap bitmap, bool compress = false)
+        [Obsolete("Use the scryber.imaging capabilities", true)]
+        public static ImageData LoadImageFromBitmap(string sourcekey, object bitmap, bool compress = false)
         {
-            if (null == bitmap)
-                throw new ArgumentNullException("bitmap");
-            ImageData data = InitImageData(sourcekey, bitmap, compress);
+            throw new NotSupportedException();
+
+            //if (null == bitmap)
+            //    throw new ArgumentNullException("bitmap");
+            //ImageData data = InitImageData(sourcekey, bitmap, compress);
             
-            return data;
+            //return data;
         }
 
-
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData InitImageData(string uri, byte[] data, bool compress)
         {
-            ImageData img;
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(data))
-            {
-                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms, false);
-                img = InitImageData(uri, bmp, compress);
-                bmp.Dispose();
-            }
-            return img;
+            throw new NotSupportedException();
+
+            //ImageData img;
+            //using (System.IO.MemoryStream ms = new System.IO.MemoryStream(data))
+            //{
+            //    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms, false);
+            //    img = InitImageData(uri, bmp, compress);
+            //    bmp.Dispose();
+            //}
+            //return img;
         }
 
-        private static ImageData InitImageData(string uri, System.Drawing.Image bmp, bool compress)
+        [Obsolete("Use the scryber.imaging capabilities", true)]
+        private static ImageData InitImageData(string uri, object bmp, bool compress)
         {
-            ImageData imgdata;
-            bool dispose = false;
+            throw new NotSupportedException();
 
-            //if this image data is not a bitmap but a metafile (drawing instructions)
-            //we need to convert it to a bitmap image.
-            if (bmp is System.Drawing.Imaging.Metafile)
-            {
-                bmp = ConvertMetafileToBitmap(bmp as System.Drawing.Imaging.Metafile);
-                dispose = true;
-            }
-            if(compress)
-            {
-                bmp = ConvertToJpeg(bmp);
-            }
-            try
-            {
-                Imaging.ImageParser parser = Imaging.ImageFormatParser.GetParser(bmp);
-                imgdata = parser(uri, bmp);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException(String.Format(Errors.CouldNotParseTheImageAtPath, uri, ex.Message), "bmp", ex);
-            }
-            finally
-            {
-                if (dispose && null != bmp)
-                    bmp.Dispose();
-            }
+            //ImageData imgdata;
+            //bool dispose = false;
 
-            return imgdata;
+            ////if this image data is not a bitmap but a metafile (drawing instructions)
+            ////we need to convert it to a bitmap image.
+            //if (bmp is System.Drawing.Imaging.Metafile)
+            //{
+            //    bmp = ConvertMetafileToBitmap(bmp as System.Drawing.Imaging.Metafile);
+            //    dispose = true;
+            //}
+            //if(compress)
+            //{
+            //    bmp = ConvertToJpeg(bmp);
+            //}
+            //try
+            //{
+            //    Imaging.ImageParser parser = Imaging.ImageFormatParser.GetParser(bmp);
+            //    imgdata = parser(uri, bmp);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new ArgumentException(String.Format(Errors.CouldNotParseTheImageAtPath, uri, ex.Message), "bmp", ex);
+            //}
+            //finally
+            //{
+            //    if (dispose && null != bmp)
+            //        bmp.Dispose();
+            //}
+
+            //return imgdata;
         }
 
         //private static readonly System.Drawing.Imaging.ImageFormat jpegFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
         //private static readonly System.Drawing.Imaging.EncoderParameters jpegParams = new System.Drawing.Imaging.EncoderParameters();
 
-        private static Image ConvertToJpeg(Image bmp)
-        {
-            //if (bmp.RawFormat.Guid != jpegFormat.Guid)
-            //{
-            //    System.IO.MemoryStream ms = new System.IO.MemoryStream();
-            //    bmp.Save(ms, jpegFormat);
-            //    ms.Flush();
-            //    ms.Position = 0;
-            //    bmp.Dispose(); //Dispose of this one and use the one with the stream.
-            //    return Image.FromStream(ms);
+        //private static Image ConvertToJpeg(Image bmp)
+        //{
 
-            //}
-            //else
-            return bmp;
-        }
+        //if (bmp.RawFormat.Guid != jpegFormat.Guid)
+        //{
+        //    System.IO.MemoryStream ms = new System.IO.MemoryStream();
+        //    bmp.Save(ms, jpegFormat);
+        //    ms.Flush();
+        //    ms.Position = 0;
+        //    bmp.Dispose(); //Dispose of this one and use the one with the stream.
+        //    return Image.FromStream(ms);
 
+        //}
+        //else
+        // return bmp;
+        // }
+
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData Parse(string data)
         {
             return Parse(data, false);
         }
 
+        [Obsolete("Use the scryber.imaging capabilities", true)]
         public static ImageData Parse(string data, bool compress)
         {
-            if (string.IsNullOrEmpty(data) == false)
-            {
-                try
-                {
-                    byte[] binary = System.Convert.FromBase64String(data);
-                    using (System.IO.MemoryStream ms = new System.IO.MemoryStream(binary))
-                    {
-                        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms);
-                        return ImageData.LoadImageFromBitmap(Guid.NewGuid().ToString(), bmp, compress);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new PDFException("Cannot convert the BASE64 string to image data", ex);
-                }
-            }
-            else
-                return null;
+            throw new NotSupportedException();
+
+            //if (string.IsNullOrEmpty(data) == false)
+            //{
+            //    try
+            //    {
+            //        byte[] binary = System.Convert.FromBase64String(data);
+            //        using (System.IO.MemoryStream ms = new System.IO.MemoryStream(binary))
+            //        {
+            //            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms);
+            //            return ImageData.LoadImageFromBitmap(Guid.NewGuid().ToString(), bmp, compress);
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new PDFException("Cannot convert the BASE64 string to image data", ex);
+            //    }
+            //}
+            //else
+            //    return null;
         }
 
 
 
-
-        private static System.Drawing.Bitmap ConvertMetafileToBitmap(System.Drawing.Imaging.Metafile emf)
+        [Obsolete("Use the scryber.imaging capabilities", true)]
+        private static object ConvertMetafileToBitmap(object emf)
         {
-            using (System.IO.MemoryStream bmpStream = new System.IO.MemoryStream())
-            {
-                using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(emf.Width, emf.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-                {
-                    bmp.SetResolution(emf.HorizontalResolution, emf.VerticalResolution);
-                    using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
-                    {
-                        g.Clear(System.Drawing.Color.Transparent);
-                        g.DrawImage(emf, 0, 0);
-                    }
-                    bmp.Save(bmpStream, System.Drawing.Imaging.ImageFormat.Png);
-                }
-                bmpStream.Flush();
-                bmpStream.Position = 0;
-                System.Drawing.Bitmap final = new System.Drawing.Bitmap(bmpStream);
-                return final;
-            }
+            throw new NotSupportedException();
+
+            //using (System.IO.MemoryStream bmpStream = new System.IO.MemoryStream())
+            //{
+            //    using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(emf.Width, emf.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+            //    {
+            //        bmp.SetResolution(emf.HorizontalResolution, emf.VerticalResolution);
+            //        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
+            //        {
+            //            g.Clear(System.Drawing.Color.Transparent);
+            //            g.DrawImage(emf, 0, 0);
+            //        }
+            //        bmp.Save(bmpStream, System.Drawing.Imaging.ImageFormat.Png);
+            //    }
+            //    bmpStream.Flush();
+            //    bmpStream.Position = 0;
+            //    System.Drawing.Bitmap final = new System.Drawing.Bitmap(bmpStream);
+            //    return final;
+            //}
 
 
         }
+
 
         #region Parse URI data from inline src data:[<MIME-type>][;charset=<encoding>][;base64],<data>
 
@@ -496,7 +523,7 @@ namespace Scryber.Drawing
          * Parse a data uri and return a record 
          * @param uri 
          */
-        internal record UriData { public string mediaType; public string parameters; public string encoding; public string data; }
+        public struct UriData { public string mediaType; public string parameters; public string encoding; public string data; }
 
         private static readonly Regex splitter = new Regex(@"^data:([-\w]+\/[-+\w.]+)?((?:;?[\w]+=[-\w]+)*);(base64)?,(.*)");
 

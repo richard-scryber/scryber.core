@@ -1,27 +1,24 @@
 ﻿using System;
-using Scryber.PDF;
+using Scryber.OpenType.SubTables;
 using Scryber.PDF.Native;
-using Scryber.PDF.Resources;
-using Scryber.PDF.Graphics;
+using Scryber.Drawing;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
-    public class PDFGradientLinearBrush : PDFGradientBrush
+    public class PDFGradientRadialBrush : PDFGradientBrush
     {
-        private GradientLinearDescriptor _descriptor;
+        private GradientRadialDescriptor _descriptor;
 
-        public double Angle
+        public RadialShape Shape
         {
-            get { return this._descriptor.Angle; }
+            get { return _descriptor.Shape; }
         }
 
-        
-        public PDFGradientLinearBrush(GradientLinearDescriptor descriptor) : base(descriptor)
+        public PDFGradientRadialBrush(GradientRadialDescriptor descriptor)
+            : base(descriptor)
         {
-            this._descriptor = descriptor;
+            _descriptor = descriptor;
         }
-
-        
 
         public override void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {
@@ -34,8 +31,8 @@ namespace Scryber.Drawing
             var id = doc.GetIncrementID(ObjectTypes.Pattern);
 
             bounds = ConvertToPageRect(graphics, bounds);
-            
-            var linear = this.GetLinearShadingPattern(graphics, id, this._descriptor, bounds);
+
+            var linear = this.GetRadialShadingPattern(graphics, id, this._descriptor, bounds);
             if (null != linear)
             {
                 var name = graphics.Container.Register(linear);
@@ -47,7 +44,5 @@ namespace Scryber.Drawing
                 return false;
             }
         }
-
-        
     }
 }

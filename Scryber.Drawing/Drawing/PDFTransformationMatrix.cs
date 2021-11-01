@@ -26,10 +26,10 @@ namespace Scryber.Drawing
     public class PDFTransformationMatrix : IPDFGraphicsAdapter, ICloneable
     {
 
-        private System.Drawing.Drawing2D.Matrix _matrix;
+        private Matrix2D _matrix;
         
         
-        public float[] Components
+        public double[] Components
         {
             get { return _matrix.Elements; }
         }
@@ -43,7 +43,7 @@ namespace Scryber.Drawing
 
         public PDFTransformationMatrix()
         {
-            _matrix = new System.Drawing.Drawing2D.Matrix();
+            _matrix = new Scryber.Drawing.Matrix2D();
             _matrix.Reset();
         }
 
@@ -55,10 +55,12 @@ namespace Scryber.Drawing
             _matrix.Scale(scaleX, scaleY);
         }
 
-        protected PDFTransformationMatrix(System.Drawing.Drawing2D.Matrix innerMatrix)
+        public PDFTransformationMatrix(Matrix2D matrix)
         {
-            this._matrix = innerMatrix;
+            this._matrix = matrix;
         }
+
+        
 
         public void SetTranslation(Unit offsetX, Unit offsetY)
         {
@@ -133,28 +135,28 @@ namespace Scryber.Drawing
             float width = (float)bounds.Width.PointsValue;
             float height = (float)bounds.Height.PointsValue;
 
-            System.Drawing.PointF[] all = new System.Drawing.PointF[4];
+            Point[] all = new Point[4];
 
-            all[0] = new System.Drawing.PointF((float)bounds.X.PointsValue, (float)bounds.Y.PointsValue);
-            all[1] = new System.Drawing.PointF((float)bounds.X.PointsValue, (float)(bounds.Y.PointsValue + bounds.Height.PointsValue));
-            all[2] = new System.Drawing.PointF((float)(bounds.X.PointsValue + bounds.Width.PointsValue), (float)(bounds.Y.PointsValue + bounds.Height.PointsValue));
-            all[3] = new System.Drawing.PointF((float)(bounds.X.PointsValue + bounds.Width.PointsValue), (float)bounds.Y.PointsValue);
+            all[0] = new Point(bounds.X, bounds.Y);
+            all[1] = new Point(bounds.X.PointsValue, (bounds.Y.PointsValue + bounds.Height.PointsValue));
+            all[2] = new Point((bounds.X.PointsValue + bounds.Width.PointsValue), (bounds.Y.PointsValue + bounds.Height.PointsValue));
+            all[3] = new Point((bounds.X.PointsValue + bounds.Width.PointsValue), bounds.Y.PointsValue);
 
             
 
             this._matrix.TransformPoints(all);
 
-            double maxX = all[0].X;
-            double minX = all[0].X;
-            double maxY = all[0].Y;
-            double minY = all[0].Y;
+            double maxX = all[0].X.PointsValue;
+            double minX = all[0].X.PointsValue;
+            double maxY = all[0].Y.PointsValue;
+            double minY = all[0].Y.PointsValue;
 
             for (int i = 1; i < 4; i++)
             {
-                maxX = Math.Max(maxX, all[i].X);
-                minX = Math.Min(minX, all[i].X);
-                maxY = Math.Max(maxY, all[i].Y);
-                minY = Math.Min(minY, all[i].Y);
+                maxX = Math.Max(maxX, all[i].X.PointsValue);
+                minX = Math.Min(minX, all[i].X.PointsValue);
+                maxY = Math.Max(maxY, all[i].Y.PointsValue);
+                minY = Math.Min(minY, all[i].Y.PointsValue);
             }
 
             return new Rect(minX, minY, maxX - minX, maxY - minY);
@@ -165,9 +167,7 @@ namespace Scryber.Drawing
             if (IsIdentity)
                 return pt;
 
-            System.Drawing.PointF[] ptf = new System.Drawing.PointF[] { new System.Drawing.PointF((float)pt.X.PointsValue, (float)pt.Y.PointsValue) };
-            this._matrix.TransformPoints(ptf);
-            return new Point(ptf[0].X, ptf[0].Y);
+            return this._matrix.TransformPoint(pt);
         }
 
         //

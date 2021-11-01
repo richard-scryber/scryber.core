@@ -24,11 +24,9 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 //using System.Drawing;
-using System.Drawing.Text;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
-using Scryber.Configuration;
 using System.Reflection;
 using Scryber.OpenType;
 using System.IO;
@@ -920,7 +918,7 @@ namespace Scryber.PDF.Resources
                     if(null != _initex)
                     {
                         string msg = String.Format(Errors.CouldNotInitializeTheFonts, _initex.Message);
-                        throw new System.Configuration.ConfigurationErrorsException(msg, _initex);
+                        throw new PDFFontInitException(msg, _initex);
                     }
                     else if (_init == false) //we have not started the initialization
                     {
@@ -940,7 +938,7 @@ namespace Scryber.PDF.Resources
                         {
                             _initex = ex;
                             string msg = String.Format(Errors.CouldNotInitializeTheFonts, ex.Message);
-                            throw new System.Configuration.ConfigurationErrorsException(msg, ex);
+                            throw new PDFFontInitException(msg, ex);
                         }
                     }
                 }
@@ -948,7 +946,7 @@ namespace Scryber.PDF.Resources
             else if (null != _initex)
             {
                 string msg = String.Format(Errors.CouldNotInitializeTheFonts, _initex.Message);
-                throw new System.Configuration.ConfigurationErrorsException(msg, _initex);
+                throw new PDFFontInitException(msg, _initex);
             }
         }
 
@@ -1012,7 +1010,7 @@ namespace Scryber.PDF.Resources
                 genericBag.AddFontFamily("Helvetica", found);
             }
             else
-                throw new ConfigurationErrorsException("Could not find or load the standard font family for Helvetica");
+                throw new PDFFontInitException("Could not find or load the standard font family for Helvetica");
 
 
             if (_staticfamilies.TryGetFamily("Times", out found) || _staticfamilies.TryGetFamily("Times New Roman", out found))
@@ -1021,7 +1019,7 @@ namespace Scryber.PDF.Resources
                 genericBag.AddFontFamily("Times", found);
             }
             else
-                throw new ConfigurationErrorsException("Could not find or load the standard font family for Times");
+                throw new PDFFontInitException("Could not find or load the standard font family for Times");
 
 
             if (_staticfamilies.TryGetFamily("Courier", out found))
@@ -1030,7 +1028,7 @@ namespace Scryber.PDF.Resources
                 genericBag.AddFontFamily("Courier", found);
             }
             else
-                throw new ConfigurationErrorsException("Could not find or load the standard font family for Courier");
+                throw new PDFFontInitException("Could not find or load the standard font family for Courier");
 
             if (null != _systemfamilies && _systemfamilies.TryGetFamily("Comic Sans MS", out found))
             {
@@ -1047,7 +1045,7 @@ namespace Scryber.PDF.Resources
                 genericBag.AddFontFamily("Zapf Dingbats", found);
             }
             else
-                throw new ConfigurationErrorsException("Could not find or load the standard font family for Zaph Dingbats");
+                throw new PDFFontInitException("Could not find or load the standard font family for Zaph Dingbats");
 
 
             if (_staticfamilies.TryGetFamily("Symbol", out found))
@@ -1055,7 +1053,7 @@ namespace Scryber.PDF.Resources
                 genericBag.AddFontFamily("Symbol", found);
             }
             else
-                throw new ConfigurationErrorsException("Could not find or load the standard font family for Symbol");
+                throw new PDFFontInitException("Could not find or load the standard font family for Symbol");
 
             return genericBag;
         }
@@ -1155,7 +1153,7 @@ namespace Scryber.PDF.Resources
                         }
                         catch (Exception ex)
                         {
-                            throw new ConfigurationErrorsException(String.Format(Errors.CouldNotLoadTheFontFile, path, ex.Message), ex);
+                            throw new PDFFontInitException(String.Format(Errors.CouldNotLoadTheFontFile, path, ex.Message), ex);
                         }
 
                         if(weight <= 0)
@@ -1185,7 +1183,7 @@ namespace Scryber.PDF.Resources
                     }
                     else
                     {
-                        throw new ConfigurationErrorsException(String.Format(Errors.FontMappingMustHaveFilePathOrResourceName, family));
+                        throw new PDFFontInitException(String.Format(Errors.FontMappingMustHaveFilePathOrResourceName, family));
                     }
                 }
 
@@ -1416,7 +1414,7 @@ namespace Scryber.PDF.Resources
             }
             catch (Exception ex)
             {
-                throw new ConfigurationErrorsException(String.Format(Errors.CouldNotLoadTheResourceManagerForBase, basename), ex);
+                throw new PDFFontInitException(String.Format(Errors.CouldNotLoadTheResourceManagerForBase, basename), ex);
             }
             return mgr;
         }
@@ -1451,11 +1449,11 @@ namespace Scryber.PDF.Resources
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        private static Scryber.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs, Scryber.OpenType.SubTables.WeightClass wc)
+        private static Scryber.Drawing.FontStyle GetFontStyle(Scryber.OpenType.FontSelection fs, Scryber.OpenType.WeightClass wc)
         {
             Scryber.Drawing.FontStyle style = Scryber.Drawing.FontStyle.Regular;
 
-            if ((fs & Scryber.OpenType.SubTables.FontSelection.Italic) > 0)
+            if ((fs & Scryber.OpenType.FontSelection.Italic) > 0)
                 style |= Scryber.Drawing.FontStyle.Italic;
 
             return style;
@@ -1470,14 +1468,14 @@ namespace Scryber.PDF.Resources
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        private static int GetFontWeight(Scryber.OpenType.SubTables.FontSelection fs, Scryber.OpenType.SubTables.WeightClass wc)
+        private static int GetFontWeight(Scryber.OpenType.FontSelection fs, Scryber.OpenType.WeightClass wc)
         {
             int weight = FontWeights.Regular;
 
-            if ((fs & Scryber.OpenType.SubTables.FontSelection.Bold) > 0)
+            if ((fs & Scryber.OpenType.FontSelection.Bold) > 0)
                 weight = FontWeights.Bold;
 
-            if (wc > 0 && wc <= OpenType.SubTables.WeightClass.Black)
+            if (wc > 0 && wc <= OpenType.WeightClass.Black)
                 weight = (int)wc;
 
             return weight;

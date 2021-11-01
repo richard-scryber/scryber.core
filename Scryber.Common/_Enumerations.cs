@@ -384,4 +384,47 @@ namespace Scryber
         Custom
     }
 
+
+    public static class EnumParser
+    {
+
+        public static bool TryParse(Type enumType, string value, bool ignoreCase, out object parsed)
+        {
+#if NETSTANDARD2_0
+
+            string found;
+            if (ignoreCase)
+            {
+                found = Enum.GetNames(enumType).FirstOrDefault((val) => { return string.Equals(val, value, StringComparison.OrdinalIgnoreCase) ? true : false; });
+                if (string.IsNullOrEmpty(found))
+                {
+                    parsed = null;
+                    return false;
+                }
+                else
+                {
+                    parsed = Enum.Parse(enumType, value, ignoreCase);
+                    return true;
+                }
+            }
+            else
+            {
+                found = Enum.GetNames(enumType).FirstOrDefault((val) => { return string.Equals(val, value, StringComparison.Ordinal) ? true : false; });
+                if (string.IsNullOrEmpty(found))
+                {
+                    parsed = null;
+                    return false;
+                }
+                else
+                {
+                    parsed = Enum.Parse(enumType, value, ignoreCase);
+                    return true;
+                }
+            }
+#else
+            return Enum.TryParse(enumType, value, ignoreCase, out parsed);
+#endif
+            }
+    }
+
 }

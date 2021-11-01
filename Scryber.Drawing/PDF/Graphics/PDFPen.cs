@@ -22,7 +22,6 @@ using System.Text;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
-using Scryber.Drawing;
 using System.ComponentModel;
 using Scryber.Drawing;
 

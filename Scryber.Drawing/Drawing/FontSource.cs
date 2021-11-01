@@ -81,12 +81,13 @@ namespace Scryber.Drawing
 
             if (value.IndexOf(',') > 0)
             {
-                var all = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var all = value.Split(',');
                 FontSource curr = null;
                 FontSource next;
                 foreach (var one in all)
                 {
-                    if (TryParseOneValue(one, out next))
+
+                    if (!string.IsNullOrEmpty(one) && TryParseOneValue(one.Trim(), out next))
                     {
                         if (null == parsed)
                             parsed = next;
@@ -134,16 +135,16 @@ namespace Scryber.Drawing
 
             src = src.Trim();
 
-            if (src.StartsWith('\''))
+            if (src.StartsWith("'"))
             {
-                if (!src.EndsWith('\''))
+                if (!src.EndsWith("'"))
                     return false;
 
                 src = src.Substring(1, src.Length - 2);
             }
-            else if (src.StartsWith('"'))
+            else if (src.StartsWith("\""))
             {
-                if (!src.EndsWith('\"'))
+                if (!src.EndsWith("\""))
                     return false;
 
                 src = src.Substring(1, src.Length - 2);
@@ -165,16 +166,16 @@ namespace Scryber.Drawing
                 {
                     var formatS = value.Substring(open, close - open).Trim();
 
-                    if (formatS.StartsWith('\''))
+                    if (formatS.StartsWith("'"))
                     {
-                        if (!formatS.EndsWith('\''))
+                        if (!formatS.EndsWith("'"))
                             return false;
 
                         formatS = formatS.Substring(1, formatS.Length - 2);
                     }
-                    else if (formatS.StartsWith('"'))
+                    else if (formatS.StartsWith("\""))
                     {
-                        if (!formatS.EndsWith('\"'))
+                        if (!formatS.EndsWith("\""))
                             return false;
 
                         formatS = formatS.Substring(1, formatS.Length - 2);

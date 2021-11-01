@@ -29,5 +29,5 @@ namespace Scryber.Drawing.Imaging
     /// <param name="path"></param>
     /// <param name="bitmap"></param>
     /// <returns></returns>
-    internal delegate ImageData ImageParser(string path, System.Drawing.Image bitmap);
+    internal delegate ImageData ImageParser(string path, object bitmap);
 }

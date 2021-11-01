@@ -194,24 +194,7 @@ namespace Scryber.PDF.Graphics
         }
 
 
-        #region System.Drawing.Graphics CreateWinGraphics()
-
-        private System.Drawing.Bitmap _winbitmap = null;
-        private System.Drawing.Graphics _wingraphics = null;
-
-        protected internal System.Drawing.Graphics CreateWinGraphics()
-        {
-            if (_winbitmap == null)
-                this._winbitmap = new System.Drawing.Bitmap(1, 1);
-            if (_wingraphics == null)
-            {
-                _wingraphics = System.Drawing.Graphics.FromImage(this._winbitmap);
-                this._wingraphics.PageUnit = System.Drawing.GraphicsUnit.Point;
-            }
-            return this._wingraphics;
-        }
-
-        #endregion
+        
 
 
 
@@ -326,7 +309,7 @@ namespace Scryber.PDF.Graphics
 
         public void SetTransformationMatrix(PDFTransformationMatrix matrix, bool appliesToText, bool appliesToDrawing)
         {
-            float[] all = matrix.Components;
+            double[] all = matrix.Components;
             if (all.Length != Matrix2DTransformationLength)
                 throw new IndexOutOfRangeException("A 2D transformation matrix can only have 6 values");
 
@@ -734,12 +717,6 @@ namespace Scryber.PDF.Graphics
             {
                 if (this.OwnsWriter && this.Writer != null)
                     this.Writer.Dispose();
-
-                if (this._wingraphics != null)
-                    this._wingraphics.Dispose();
-
-                if (this._winbitmap != null)
-                    this._winbitmap.Dispose();
             }
         }
 

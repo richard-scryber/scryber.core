@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.Configuration;
 using System.ComponentModel;
 using Scryber.PDF;
 using Scryber.PDF.Native;

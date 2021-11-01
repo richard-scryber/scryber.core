@@ -22,9 +22,6 @@ using System.Text;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
-using System.CodeDom;
-using System.Runtime.CompilerServices;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Scryber.Drawing
 {
