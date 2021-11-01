@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
 using System.Reflection;
 using System.Text;
 using Scryber.Expressive;

@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Scryber.Expressive.Tokenisation;
-using System.Reflection.Metadata;
-using System.Diagnostics;
 using Scryber.Drawing;
 
 namespace Scryber.Expressive

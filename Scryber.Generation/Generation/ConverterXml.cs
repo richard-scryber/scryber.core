@@ -417,7 +417,7 @@ namespace Scryber.Generation
             if (value.IndexOf(' ') > -1)
                 value = value.Replace(' ', ',');
             object result;
-            if (Enum.TryParse(requiredType, value, true, out result))
+            if (EnumParser.TryParse(requiredType, value, true, out result))
                 return result;
             else if (settings.ConformanceMode == ParserConformanceMode.Lax)
             {

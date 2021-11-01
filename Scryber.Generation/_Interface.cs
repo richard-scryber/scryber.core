@@ -104,9 +104,9 @@ namespace Scryber
     /// </summary>
     public interface IPDFDataTemplateGenerator : IPDFTemplateGenerator
     {
-        public string DataStyleStem { get; set; }
+        string DataStyleStem { get; set; }
 
-        public bool UseDataStyleIdentifier { get; set; }
+        bool UseDataStyleIdentifier { get; set; }
     }
 
     #endregion

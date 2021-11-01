@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Scryber.Expressive.Expressions.Binary.Bitwise;
 
 namespace Scryber.Expressive.Tokenisation
