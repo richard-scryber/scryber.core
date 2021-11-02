@@ -65,14 +65,19 @@ namespace Scryber.Core.UnitTests.Binding
 
                 var path = this.TestContext.TestDir;
 
-#if MAC_OS
-                // back up from obj/Debug/TestDirectoryName
-                path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/Toroid24.jpg");
-#else
-                path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
-#endif
+
+                path = System.IO.Path.Combine(path, "../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
 
                 path = System.IO.Path.GetFullPath(path);
+
+                if (!System.IO.File.Exists(path))
+                {
+                    path = System.IO.Path.Combine(this.TestContext.TestDir, "../../Content/HTML/Images/Toroid24.jpg");
+                    path = System.IO.Path.GetFullPath(path);
+                    
+                    if (!System.IO.File.Exists(path))
+                        throw new System.IO.FileNotFoundException("Could not load the test image at path " + path);
+                }
 
                 var imgReader = Scryber.Imaging.ImageReader.Create();
                 ImageData data;
@@ -103,12 +108,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
             var path = this.TestContext.TestDir;
 
-#if MAC_OS
-            // back up from obj/Debug/TestDirectoryName
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Images/");
-#else
-            path = System.IO.Path.Combine(path, "../../Scryber.Core.UnitTest/Content/HTML/Images/"); ;
-#endif
+            path = System.IO.Path.Combine(path, "../../Scryber.UnitTest/Content/HTML/Images/"); ;
 
             path = System.IO.Path.GetFullPath(path);
             if (!path.EndsWith("/"))

@@ -129,7 +129,7 @@ namespace Scryber.PDF.Resources
         /// </summary>
         public FontEncoding Encoding
         {
-            get { return _defn.Encoding; }
+            get { return _defn.FontEncoding; }
         }
 
         #endregion

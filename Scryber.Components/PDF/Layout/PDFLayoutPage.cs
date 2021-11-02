@@ -712,9 +712,6 @@ namespace Scryber.PDF.Layout
                 if (null != this.FooterBlock)
                     this.FooterBlock.OutputToPDF(context, writer);
 
-                if (_outputbadge)
-                    this.PaintBadgeXObj(context, writer);
-
             }
             context.Offset = pt;
             context.Space = sz;
@@ -787,22 +784,6 @@ namespace Scryber.PDF.Layout
 
                 }
             }
-        }
-
-        private PDFObjectRef PaintBadgeXObj(PDFRenderContext context, PDFWriter writer)
-        {
-
-            if (null == _badgexobj)
-                throw new NullReferenceException("_badgexobj");
-
-            context.Graphics.SaveGraphicsState();
-
-            PDFObjectRef imgref = _badgexobj.EnsureRendered(context, writer);
-            context.Graphics.PaintImageRef(_badgexobj, _badgeSize, _badgePosition);
-
-            context.Graphics.RestoreGraphicsState();
-
-            return imgref;
         }
 
         //

@@ -1246,6 +1246,7 @@ namespace Scryber.PDF.Resources
                 byte[] bin;
                 FontReference fRef;
                 TTFFile file;
+                
                 //Courier
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNew.ttf", out ttrRef);
                 fRef = bag.AddFontResource("Courier", Scryber.Drawing.FontStyle.Regular, FontWeights.Regular, bin, ttrRef.HeadOffset);
