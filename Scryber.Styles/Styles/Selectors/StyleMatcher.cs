@@ -72,6 +72,9 @@ namespace Scryber.Styles.Selectors
 
         #region public static StyleMatcher Parse(string selector)
 
+        private static string[] _commaSplitter = new string[] {", "};
+        private static char[] _whitespaceSplitter = new char[] {' '};
+        
         public static StyleMatcher Parse(string selector)
         {
             if (string.IsNullOrEmpty(selector))
@@ -92,7 +95,7 @@ namespace Scryber.Styles.Selectors
 
             StringBuilder buffer = new StringBuilder();
 
-            var each = selector.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+            var each = selector.Split(_commaSplitter, StringSplitOptions.RemoveEmptyEntries);
             
             if (each.Length > 1)
             {
@@ -100,7 +103,7 @@ namespace Scryber.Styles.Selectors
 
                 foreach (var one in each)
                 {
-                    var all = one.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                    var all = one.Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
 
                     StylePlacement placement = StylePlacement.Any;
                     var parsed = ParseSelectorList(all, all.Length - 1, placement, buffer);
@@ -114,7 +117,7 @@ namespace Scryber.Styles.Selectors
             }
             else
             {
-                var all = String.IsNullOrEmpty(selector) ? new string[] { } : selector.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                var all = String.IsNullOrEmpty(selector) ? new string[] { } : selector.Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
                 
                 StylePlacement placement = StylePlacement.Any;
                 var one = ParseSelectorList(all, all.Length - 1, placement, buffer);
@@ -184,7 +187,6 @@ namespace Scryber.Styles.Selectors
                                 appliedId = sb.ToString();
                                 break;
                             default:
-
                                 break;
                         }
                         sb.Clear();
@@ -207,7 +209,6 @@ namespace Scryber.Styles.Selectors
                                 appliedId = sb.ToString();
                                 break;
                             default:
-
                                 break;
                         }
                         sb.Clear();
@@ -240,7 +241,6 @@ namespace Scryber.Styles.Selectors
                         appliedId = sb.ToString();
                         break;
                     default:
-
                         break;
                 }
                 sb.Clear();

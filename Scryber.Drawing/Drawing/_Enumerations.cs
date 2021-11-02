@@ -419,6 +419,15 @@ namespace Scryber.Drawing
     }
 
     /// <summary>
+    /// Defines the order in which matrix transformations are applied.
+    /// </summary>
+    public enum MatrixOrder
+    {
+        Append,
+        Prepend
+    }
+
+    /// <summary>
     /// Predefined enumeration of the supported radial gradient shapes
     /// </summary>
     public enum RadialShape

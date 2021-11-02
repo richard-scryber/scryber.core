@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Net.Sockets;
 using Scryber.Drawing;
 using Scryber.PDF.Resources;

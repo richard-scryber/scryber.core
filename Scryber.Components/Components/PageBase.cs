@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.PDF.Native;
-using System.Drawing;
 using Scryber.Styles;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;

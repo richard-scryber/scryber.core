@@ -50,6 +50,7 @@ namespace Scryber.Svg.Components
             get { return new SVGAspectRatio(AspectRatioAlign.None); }
         }
 
+        private static char[] _whitespaceSplitter = new char[] {' '};
         public static SVGAspectRatio Parse(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -64,7 +65,7 @@ namespace Scryber.Svg.Components
 
                 if (value.IndexOf(" ") > 0)
                 {
-                    var each = value.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    var each = value.Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
                     var one = each[0];
                     var two = each[1]; //safe with this, as we have definitely got at least 2
 

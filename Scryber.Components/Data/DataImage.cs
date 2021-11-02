@@ -7,7 +7,6 @@ using Scryber.Drawing;
 using Scryber.Drawing.Imaging;
 using Scryber.PDF.Resources;
 using Scryber.Styles;
-using System.Drawing;
 using System.ComponentModel;
 
 namespace Scryber.Data
@@ -55,18 +54,15 @@ namespace Scryber.Data
 
                 if (null == _xobj)
                 {
-
                     string name;
                     if (string.IsNullOrEmpty(this.ImageKey))
                         name = "DataImage_" + this.Document.GetIncrementID(ObjectTypes.ImageXObject);
                     else
                         name = this.ImageKey;
-
-                    System.ComponentModel.TypeConverter BitmapConverter = TypeDescriptor.GetConverter(typeof(Bitmap));
-                    Bitmap img = (Bitmap)BitmapConverter.ConvertFrom(this.Data.Raw);
-
-
-                    ImageData data = ImageData.LoadImageFromBitmap(name, img, this.Compress);
+                    
+                    Scryber.Imaging.ImageReader reader = Scryber.Imaging.ImageReader.Create();
+                    ImageData data = reader.ReadData(name, this.Data.Raw, this.Compress);
+                    
                     _xobj = PDFImageXObject.Load(data, this.Document.RenderOptions.Compression, name);
                     this.Document.SharedResources.Add(_xobj);
                 }

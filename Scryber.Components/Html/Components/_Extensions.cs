@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Drawing.Text;
-using System.Runtime.CompilerServices;
 using Scryber.Components;
 
 namespace Scryber.Html.Components

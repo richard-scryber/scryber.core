@@ -160,7 +160,7 @@ namespace Scryber.Data
                         break;
 
                     case TypeCode.Object:
-                        if (type == typeof(System.Drawing.Image) || type == typeof(System.Drawing.Bitmap) || type == typeof(byte[]))
+                        if (type == typeof(byte[]))
                             dtype = DataType.Image;
                         else if (type == typeof(Uri))
                             dtype = DataType.Url;

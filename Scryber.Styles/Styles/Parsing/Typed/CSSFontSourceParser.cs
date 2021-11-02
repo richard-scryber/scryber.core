@@ -2,7 +2,6 @@
 using Scryber.Html;
 using Scryber.Drawing;
 using System.Text;
-using System.Drawing.Text;
 using System.Configuration;
 
 namespace Scryber.Styles.Parsing.Typed

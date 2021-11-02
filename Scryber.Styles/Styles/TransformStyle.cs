@@ -283,15 +283,15 @@ namespace Scryber.Styles
         // public methods
         //
 
-        #region public System.Drawing.Drawing2D.MatrixOrder GetOrder()
+        #region public Scryber.Drawing.Drawing2D.MatrixOrder GetOrder()
 
         /// <summary>
         /// Returns the matrix drawing order
         /// </summary>
         /// <returns></returns>
-        public System.Drawing.Drawing2D.MatrixOrder GetOrder()
+        public Scryber.Drawing.MatrixOrder GetOrder()
         {
-            return System.Drawing.Drawing2D.MatrixOrder.Append;
+            return Scryber.Drawing.MatrixOrder.Append;
         }
 
         #endregion

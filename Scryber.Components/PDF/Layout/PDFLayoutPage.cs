@@ -483,10 +483,6 @@ namespace Scryber.PDF.Layout
 
             if (null != this.FooterBlock)
                 this.FooterBlock.PushComponentLayout(context, pageIndex, xoffset, yoffset);
-
-            
-
-            this.RegisterBadgeData(context);
         }
 
         #endregion
@@ -497,96 +493,6 @@ namespace Scryber.PDF.Layout
             base.SetOwnerPageIndex(pageIndex);
         }
 
-        #region private void RegisterBadgeData(PDFLayoutContext context)
-
-
-        private const string BadgeResourceStem = "Scryber.Properties.Resources.";
-        private const string BlackOnWhiteResourceName = "scryber_generatedby_bow";
-        private const string WhiteOnBlackResourceName = "scryber_generatedby_wob";
-        private const string EnvironmentBadgeName = "scryber_environment_flat";
-        private const int BadgeWidthInches = 1;
-
-
-        private void RegisterBadgeData(PDFLayoutContext context)
-        {
-            _outputbadge = this.PageOwner.ShowBadge;
-
-            if (!_outputbadge)
-            {
-                return;
-            }
-
-            ScryberBadgeStyle style;
-            if (!this.FullStyle.TryGetItem(StyleKeys.BadgeItemKey, out style))
-                style = new ScryberBadgeStyle();
-
-
-            //get any existing badge resource registered in the document
-
-            Document doc = context.DocumentLayout.DocumentComponent;
-
-            string rsrcName = BadgeResourceStem;
-            if (style.DisplayOption == BadgeType.BlackOnWhite)
-                rsrcName = rsrcName + BlackOnWhiteResourceName;
-            else if (style.DisplayOption == BadgeType.WhiteOnBlack)
-                rsrcName = rsrcName + WhiteOnBlackResourceName;
-            else if (style.DisplayOption == BadgeType.Environment)
-                rsrcName = rsrcName + EnvironmentBadgeName;
-
-            _badgexobj = doc.GetImageResource(rsrcName, this.PageOwner, false);
-            
-
-            if(null == _badgexobj)
-            {
-                //Document does not have a previous badge registed, so need to register it now.
-                System.Resources.ResourceManager mgr = new System.Resources.ResourceManager("Scryber.Components.Properties.Resources", typeof(Page).Assembly);
-                
-                System.Drawing.Bitmap bmp;
-                if (style.DisplayOption == BadgeType.BlackOnWhite)
-                    bmp = mgr.GetObject(BlackOnWhiteResourceName) as System.Drawing.Bitmap;
-                else if (style.DisplayOption == BadgeType.WhiteOnBlack)
-                    bmp = mgr.GetObject(WhiteOnBlackResourceName) as System.Drawing.Bitmap;
-                else
-                    bmp = mgr.GetObject(EnvironmentBadgeName) as System.Drawing.Bitmap;
-
-                ImageData data = ImageData.LoadImageFromBitmap(rsrcName, bmp, false);
-
-                string name = doc.GetIncrementID(ObjectTypes.ImageXObject);
-
-                _badgexobj = PDFImageXObject.Load(data, this.Document.RenderOptions.Compression, name);
-                doc.SharedResources.Add(_badgexobj);
-            }
-
-            //Make sure the badge is registered with the page too
-            _badgexobj.RegisterUse(this.Resources, this.PageOwner);
-
-            
-            // calculate the position based on the X and Y Offset plus the corners.
-            _badgePosition = new Point(style.XOffset, style.YOffset);
-            _badgeSize = new Size(_badgexobj.ImageData.DisplayWidth, _badgexobj.ImageData.DisplayHeight);
-            Size pageSize = this.Size;
-
-            switch (style.Corner)
-            { 
-                default:
-                case Corner.TopLeft:
-                    //Do Nothing
-                    break;
-                case Corner.TopRight:
-                    _badgePosition.X = (pageSize.Width - _badgePosition.X) - _badgeSize.Width;
-                    break;
-                case Corner.BottomRight:
-                    _badgePosition.X = (pageSize.Width - _badgePosition.X) - _badgeSize.Width;
-                    _badgePosition.Y = (pageSize.Height - _badgePosition.Y) - _badgeSize.Height;
-                    break;
-                case Corner.BottomLeft:
-                    _badgePosition.Y = (pageSize.Height - _badgePosition.Y) - _badgeSize.Height;
-                    break;
-            }
-
-        }
-
-        #endregion
 
         #region protected override bool DoClose(ref string msg)
 

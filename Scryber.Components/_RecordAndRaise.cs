@@ -287,21 +287,5 @@ namespace Scryber
 
         #endregion
 
-        #region internal static Exception ConfigurationException(...)
-
-        internal static Exception ConfigurationException(string message, params object[] param)
-        {
-            message = SafeFormat(message, param);
-            return new System.Configuration.ConfigurationErrorsException(message);
-        }
-
-        internal static Exception ConfigurationException(Exception inner, string message, params object[] param)
-        {
-            message = SafeFormat(message, param);
-            return new System.Configuration.ConfigurationErrorsException(message, inner);
-        }
-
-        #endregion
-
     }
 }

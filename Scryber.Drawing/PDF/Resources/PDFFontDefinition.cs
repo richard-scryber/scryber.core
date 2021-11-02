@@ -943,7 +943,7 @@ namespace Scryber.PDF.Resources
 
 
 
-        #region internal static PDFFontDefinition LoadOpenTypeFontFile(string path, string familyname, System.Drawing.FontStyle style)
+        #region internal static PDFFontDefinition LoadOpenTypeFontFile(string path, string familyname, Scryber.Drawing.FontStyle style)
 
         /// <summary>
         /// Loads an OpenType font file from the specified path based on the name and style
@@ -974,7 +974,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region internal static PDFFontDefinition LoadOpenTypeFontFile(byte[] data, string familyname, System.Drawing.FontStyle style)
+        #region internal static PDFFontDefinition LoadOpenTypeFontFile(byte[] data, string familyname, Scryber.Drawing.FontStyle style)
 
         /// <summary>
         /// Loads an OpenType font from the provided binary data based on the family name and font style
@@ -1004,7 +1004,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region internal static PDFFontDefinition LoadOpenTypeFontFile(Scryber.OpenType.TTFFile ttf, string familyname, System.Drawing.FontStyle style)
+        #region internal static PDFFontDefinition LoadOpenTypeFontFile(Scryber.OpenType.TTFFile ttf, string familyname, Scryber.Drawing.FontStyle style)
 
         /// <summary>
         /// Loads and returns a new PDFFontDefinition for the provided OpenType font with the name and style

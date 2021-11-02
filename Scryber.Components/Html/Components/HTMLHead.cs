@@ -206,11 +206,11 @@ namespace Scryber.Html.Components
                 return;
             }
 
-            string[] parts = content.Split(_splits, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] parts = content.Split(_splits, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {
-                switch (part)
+                switch (part.Trim())
                 {
                     case ("allow-printing"):
                     case ("printing"):

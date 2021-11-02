@@ -42,6 +42,7 @@ namespace Scryber.Styles.Selectors
         }
 
 
+        private static char[] _whitespaceSplitter = new char[] {' '};
         public static PageMatcher Parse(string selector)
         {
             if (string.IsNullOrEmpty(selector))
@@ -51,8 +52,15 @@ namespace Scryber.Styles.Selectors
 
             PageMatcher pgm = new PageMatcher();
             string[] all;
+            
             if (selector.IndexOf(" ") > 0)
-                all = selector.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            {
+                all = selector.Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < all.Length; i++)
+                {
+                    all[i] = all[i].Trim();
+                }
+            }
             else
                 all = new string[] { selector };
 

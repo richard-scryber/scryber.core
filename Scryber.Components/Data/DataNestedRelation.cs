@@ -62,13 +62,13 @@ namespace Scryber.Data
             DataTable child = dataset.Tables[childtablename];
             if (null == child)
             {
-                context.TraceLog.Add(TraceLevel.Message, SqlProviderCommand.SqlCommandLog, "Relation not created between '" + childtablename + "' and '" + parenttablename + "' as one or more tables are not in data set");
+                context.TraceLog.Add(TraceLevel.Message, "Data", "Relation not created between '" + childtablename + "' and '" + parenttablename + "' as one or more tables are not in data set");
                 return;
             }
             DataTable parent = dataset.Tables[parenttablename];
             if (null == parent)
             {
-                context.TraceLog.Add(TraceLevel.Message, SqlProviderCommand.SqlCommandLog, "Relation not created between '" + childtablename + "' and '" + parenttablename + "' as one or more tables are not in data set");
+                context.TraceLog.Add(TraceLevel.Message, "Data", "Relation not created between '" + childtablename + "' and '" + parenttablename + "' as one or more tables are not in data set");
                 return;
             }
 

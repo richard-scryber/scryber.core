@@ -2220,9 +2220,9 @@ namespace Scryber.Components
         #region public PDFImageData LoadImageData(IPDFComponent parent, string source)
 
         /// <summary>
-        /// Loads a file name or url from a source and returns the correct image data encapsulating the image stream
+        /// Loads a file name or url from a source and returns the correct ImageXObject encapsulating the image data
         /// </summary>
-        /// <param name="source">The full path or absolute location of the image data file</param>
+        /// <param name="src">The full path or absolute location of the image data file, or inline image data</param>
         /// <returns></returns>
         public PDFImageXObject LoadImageData(IComponent owner, string src)
         {
@@ -2242,77 +2242,40 @@ namespace Scryber.Components
                 src = RemoveReturns(src);
                 src = owner.MapPath(src);
 
-                if (this.ImageFactories.TryGetMatch(src, out factory))
+                var exists = this.SharedResources.GetResource(PDFImageXObject.XObjectResourceType, src) as PDFImageXObject;
+                
+                if (null != exists)
+                    return exists;
+                
+                else if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out cached))
+                {
+                    data = (ImageData) cached;
+                    key = GetIncrementID(ObjectTypes.ImageXObject);
+                }
+                else if (this.ImageFactories.TryGetMatch(src, out factory))
                 {
                     data = LoadImageDataFromFactory(owner, factory, src);
                     key = GetIncrementID(ObjectTypes.ImageXObject);
                 }
-                else
+                else if (this.RenderOptions.AllowMissingImages)
                 {
-                    bool isfile;
-                    bool isInlineData;
-
-                    if (System.Uri.IsWellFormedUriString(src, UriKind.Absolute))
-                    {
-                        isfile = false;
-                        isInlineData = "data" == (new System.Uri(src)).Scheme;
-                    }
-                    else if (System.IO.Path.IsPathRooted(src))
-                    {
-                        isfile = true;
-                        isInlineData = false;
-                    }
-                    else
-                        throw RecordAndRaise.Argument(Errors.CannotLoadFileWithRelativePath);
-
-                    if (isInlineData)
-                    {
-                        data = ImageData.LoadImageFromUriData(src, this, owner);
-                        key = GetIncrementID(ObjectTypes.ImageXObject); ;
-                    }
-                    else
-                    {
-                        var exists = this.SharedResources.GetResource(PDFImageXObject.XObjectResourceType, src) as PDFImageXObject;
-                        if (exists != null)
-                            return exists;
-
-                        if (!this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out cached))
-                        {
-                            IDataProvider prov;
-                            if (isfile)
-                                data = ImageData.LoadImageFromLocalFile(src, owner);
-
-                            else if (this.DataProviders.TryGetDomainProvider("", src, out prov))
-                            {
-                                object returned = prov.GetResponse(prov.ProviderKey + "Image", src, null);
-                                if (returned is ImageData)
-                                    data = (ImageData)returned;
-
-                                else if (returned is byte[])
-                                {
-                                    byte[] imgdata = (byte[])returned;
-                                    data = ImageData.InitImageData(src, imgdata, compress);
-                                }
-                                else
-                                    data = null;
-                            }
-                            else
-                            {
-
-                                data = ImageData.LoadImageFromURI(src, owner);
-                            }
-
-                            if (null != data)
-                            {
-                                key = GetIncrementID(ObjectTypes.ImageXObject);
-                                DateTime expires = this.GetImageCacheExpires();
-                                this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), key, data, expires);
-                            }
-                        }
-                        else
-                            data = (ImageData)cached;
-                    }
+                    this.TraceLog.Add(TraceLevel.Error, "Document", "Could not load the image data for '" + key + "'. As missing images are allowed, returning nothing.");
+                    data = null;
                 }
+                else
+                    throw new Scryber.Imaging.PDFImageFormatException("Could not load the image from source " + src);
+
+                if (null != data)
+                {
+                    IStreamFilter[] filters = null;
+                    if (this.RenderOptions.Compression == OutputCompressionType.FlateDecode)
+                        filters = new IStreamFilter[] { new PDF.PDFDeflateStreamFilter() };
+                    
+                    PDFImageXObject xobj = PDFImageXObject.Load(data, filters, key);
+                    return xobj;
+                }
+                else
+                    return null;
             }
             catch (Exception ex)
             {
@@ -2321,22 +2284,11 @@ namespace Scryber.Components
 
                 if (this.RenderOptions.AllowMissingImages)
                 {
-                    data = null;
+                    return null;
                 }
                 else
                     throw;
             }
-
-            if (null != data)
-            {
-                IStreamFilter[] filters = null;
-                if (this.RenderOptions.Compression == OutputCompressionType.FlateDecode)
-                    filters = new IStreamFilter[] { new PDF.PDFDeflateStreamFilter() };
-                PDFImageXObject xobj = PDFImageXObject.Load(data, filters, key);
-                return xobj;
-            }
-            else
-                return null;
         }
 
 

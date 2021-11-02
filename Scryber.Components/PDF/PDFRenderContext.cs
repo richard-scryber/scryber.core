@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF.Graphics;
@@ -76,11 +75,11 @@ namespace Scryber.PDF
 
         #endregion
 
-        #region public PDFPoint Offset {get;set;}
+        #region public Point Offset {get;set;}
 
-        private Drawing.Point _offset = Drawing.Point.Empty;
+        private Point _offset = Point.Empty;
 
-        public Drawing.Point Offset
+        public Point Offset
         {
             get { return _offset; }
             set { _offset = value; }
@@ -88,11 +87,11 @@ namespace Scryber.PDF
 
         #endregion
 
-        #region public PDFSize Space {get;set;}
+        #region public Size Space {get;set;}
 
-        private Drawing.Size _space;
+        private Size _space;
 
-        public Drawing.Size Space
+        public Size Space
         {
             get { return _space; }
             set { _space = value; }
@@ -100,11 +99,11 @@ namespace Scryber.PDF
 
         #endregion
 
-        #region public PDFSize PageSize
+        #region public Size PageSize
 
-        private Drawing.Size _size = Drawing.Size.Empty;
+        private Size _size = Size.Empty;
 
-        public Drawing.Size PageSize
+        public Size PageSize
         {
             get { return this._size; }
             set { this._size = value; }
@@ -125,7 +124,7 @@ namespace Scryber.PDF
 
         #endregion
 
-        #region public PDFStyle FullStyle
+        #region public Style FullStyle
 
         /// <summary>
         /// Gets or sets the full style for the current component
@@ -148,8 +147,8 @@ namespace Scryber.PDF
             : base(root, items, log, perfmon, document, OutputFormat.PDF)
         {
             this._origin = origin;
-            this._offset = new Drawing.Point();
-            this._space = new Drawing.Size();
+            this._offset = new Point();
+            this._space = new Size();
             this._pgCount = pageCount;
             this._pgindex = 0;
             

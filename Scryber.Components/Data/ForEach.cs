@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using Scryber.Components;
-using System.Drawing.Text;
 
 namespace Scryber.Data
 {

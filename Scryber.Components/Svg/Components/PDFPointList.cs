@@ -73,13 +73,13 @@ namespace Scryber.Svg.Components
             if (string.IsNullOrEmpty(value))
                 return all;
 
-            var vals = value.Split(Separators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var vals = value.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 1; i < vals.Length; i+= 2)
             {
                 Unit one, two;
 
-                if (Unit.TryParse(vals[i - 1], out one) && Unit.TryParse(vals[i], out two))
+                if (Unit.TryParse(vals[i - 1].Trim(), out one) && Unit.TryParse(vals[i].Trim(), out two))
                     all.Add(new Point(one, two));
             }
 

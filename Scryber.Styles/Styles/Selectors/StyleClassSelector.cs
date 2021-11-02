@@ -60,31 +60,6 @@ namespace Scryber.Styles.Selectors
                 return false;
             }
 
-            //We are not equal, so if we are shorted or the same length return false
-            if (component.StyleClass.Length <= this.ClassName.Length)
-                return false;
-
-            //Now we know we are longer
-
-            var starts = component.StyleClass.StartsWith(this.ClassName);
-            if (starts && Char.IsWhiteSpace(component.StyleClass, this.ClassName.Length))
-            {
-                if (null != this.AndClass)
-                    return AndClass.IsMatchedTo(component, state);
-                else
-                    return true;
-            }
-
-            var ends = component.StyleClass.EndsWith(this.ClassName);
-            int index = component.StyleClass.Length - this.ClassName.Length;
-            if (ends && Char.IsWhiteSpace(component.StyleClass, index))
-
-            
-
-            if (null != this.AndClass)
-                return this.AndClass.IsMatchedTo(component, state);
-            else
-                return true;
         }
 
         private bool ContainsClassName(string styleClass, int startIndex, out int foundIndex)

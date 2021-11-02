@@ -264,7 +264,7 @@ namespace Scryber.Data
         /// <summary>
         /// returns the name that should be given to a data table that has been loaded.
         /// </summary>
-        /// <param name="index">The index of the table being loaded. The first table will be 1.</param>
+        /// <param name="ds">The dataset to look for the table in.</param>
         /// <returns></returns>
         public virtual string GetDataTableName(DataSet ds)
         {
@@ -301,12 +301,12 @@ namespace Scryber.Data
         /// based on the comma separated list of names (or the catch all *)
         /// </summary>
         /// <param name="ds"></param>
-        /// <param name="attributenames"></param>
+        /// <param name="attributeNames"></param>
         /// <param name="context"></param>
-        protected virtual void ApplyAttributes(DataSet ds, string attributenames, DataContext context)
+        protected virtual void ApplyAttributes(DataSet ds, string attributeNames, DataContext context)
         {
             DataTable dt = ds.Tables[this.GetDataTableName(ds)];
-            if (attributenames == "*")
+            if (attributeNames == "*")
             {
                 foreach (DataColumn dc in dt.Columns)
                 {
@@ -315,7 +315,7 @@ namespace Scryber.Data
             }
             else
             {
-                string[] all = attributenames.Split(',');
+                string[] all = attributeNames.Split(',');
                 foreach (string name in all)
                 {
                     DataColumn dc;
@@ -348,7 +348,7 @@ namespace Scryber.Data
             if (null == provider)
                 throw new NullReferenceException(string.Format(Errors.CommandWithNameCannotBeFound, cmd, source.ID));
             if (!(provider is IDataSetProviderCommand))
-                throw new InvalidCastException(string.Format(Errors.CommandForRelatedDataMustMatchType, typeof(SqlProviderCommand), typeof(SqlProviderCommand)));
+                throw new InvalidCastException(string.Format(Errors.CommandForRelatedDataMustMatchType, typeof(IDataSetProviderCommand), typeof(IDataSetProviderCommand)));
 
             IDataSetProviderCommand dsProvider = (IDataSetProviderCommand)provider;
             dsProvider.FillData(ds, source, this, context);

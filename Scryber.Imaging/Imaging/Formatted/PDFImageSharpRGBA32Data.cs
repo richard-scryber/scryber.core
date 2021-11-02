@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing.Imaging;
 using System.Web;
 using Scryber.Drawing;
 using Scryber.PDF;

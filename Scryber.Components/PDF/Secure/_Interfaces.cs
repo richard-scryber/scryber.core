@@ -28,12 +28,12 @@ namespace Scryber.PDF.Secure
         /// Gets the Owner Password for the document. 
         /// If not set, then it must be set in code before a secure document is output
         /// </summary>
-        public SecureString OwnerPassword { get; }
+        SecureString OwnerPassword { get; }
 
         /// <summary>
         /// Gets the User Password for the document. If null then NO password is required to open and view the document
         /// </summary>
-        public SecureString UserPassword { get; }
+        SecureString UserPassword { get; }
 
     }
     

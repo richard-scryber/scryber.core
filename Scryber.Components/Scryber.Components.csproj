@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
@@ -9,7 +9,6 @@
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
-    <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
@@ -64,7 +63,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
 This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
-    <PackOnBuild>true</PackOnBuild>
+    <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
     <Version>1.0.1-alpha</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -73,7 +72,6 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
   </PropertyGroup>
@@ -93,6 +91,9 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <None Remove="PDF\" />
     <None Remove="PDF\Layout\" />
     <None Remove="PDF\Secure\" />
+    <EmbeddedResource Remove="Properties\Resources.resx" />
+    <Compile Remove="Properties\Resources.Designer.cs" />
+    <Compile Remove="Data\SqlProviderCommand.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -109,15 +110,12 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
     <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
+    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -125,19 +123,6 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     </Resource>
     <Resource Include="Resources\scryber_generatedby_wob.png" />
     <Resource Include="Resources\scryber_NotFoundLogo.png" />
-  </ItemGroup>
-   <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
     
   <ItemGroup>
@@ -147,6 +132,7 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
   </ItemGroup>
   
   <ItemGroup>
+    <Folder Include="Properties" />
     <Folder Include="Svg\Layout\" />
     <Folder Include="PDF\" />
     <Folder Include="PDF\Layout\" />

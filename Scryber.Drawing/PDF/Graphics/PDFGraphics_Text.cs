@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Text;
 using Scryber.Text;
 using Scryber.PDF.Native;
-using System.Drawing;
 using Scryber.PDF.Resources;
 using Scryber.PDF;
 using System.Runtime.CompilerServices;

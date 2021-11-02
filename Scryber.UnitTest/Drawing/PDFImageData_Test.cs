@@ -1,7 +1,7 @@
 ﻿using Scryber.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Drawing;
+
 using Scryber.PDF.Native;
 using Scryber;
 using System.Collections.Generic;
@@ -64,26 +64,26 @@ namespace Scryber.Core.UnitTests.Drawing
         public static void SetUpResource(TestContext testContext)
         {
             
-            var assembly = typeof(Scryber.Components.Block).Assembly;
-            var mgr = new System.Resources.ResourceManager("Scryber.Properties.Resources", assembly);
-            var bmp = mgr.GetObject("scryber_generatedby_bow") as System.Drawing.Bitmap;
-
-            _cached = bmp;
-            ImagePixelHeight = bmp.Height;
-            ImagePixelWidth = bmp.Width;
-            ImageResolution = (int)bmp.HorizontalResolution;
+            // var assembly = typeof(Scryber.Components.Block).Assembly;
+            // var mgr = new System.Resources.ResourceManager("Scryber.Properties.Resources", assembly);
+            // var bmp = mgr.GetObject("scryber_generatedby_bow") as System.Drawing.Bitmap;
+            //
+            // _cached = bmp;
+            // ImagePixelHeight = bmp.Height;
+            // ImagePixelWidth = bmp.Width;
+            // ImageResolution = (int)bmp.HorizontalResolution;
         }
 
-        static Bitmap _cached = null;
+        
 
-        internal Bitmap CreateImageBitmap()
-        {
-            if (null == _cached)
-            {
-                throw new NotImplementedException("The resource image could not be loaded from the resources");
-            }
-            return _cached;
-        }
+        // internal Bitmap CreateImageBitmap()
+        // {
+        //     if (null == _cached)
+        //     {
+        //         throw new NotImplementedException("The resource image could not be loaded from the resources");
+        //     }
+        //     return _cached;
+        // }
 
 
 
@@ -94,12 +94,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void LoadImageFromBitmap_Test()
         {
-            string sourcekey = ImageFilePath;
-            Bitmap bitmap = CreateImageBitmap();
-
-            PDFBinaryImageData actual = ImageData.LoadImageFromBitmap(sourcekey, bitmap, false) as PDFBinaryImageData;
-            Assert.IsNotNull(actual);
-            Assert.IsNotNull(actual.Data);
+            Assert.Inconclusive("Use the ImageReader");
         }
 
         /// <summary>
@@ -109,22 +104,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void LoadImageFromLocalFile_Test()
         {
-            string tmp = System.IO.Path.GetTempFileName();
-            Bitmap bmp = CreateImageBitmap();
-            bmp.Save(tmp);
-
-            try
-            {
-                string path = tmp;
-                PDFBinaryImageData actual;
-                actual = ImageData.LoadImageFromLocalFile(path) as PDFBinaryImageData;
-                Assert.IsNotNull(actual);
-                Assert.IsNotNull(actual.Data);
-            }
-            finally
-            {
-                System.IO.File.Delete(tmp);
-            }
+            Assert.Inconclusive("Use the ImageReader");
         }
 
         /// <summary>
@@ -135,10 +115,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LoadImageFromURI_Test()
         {
             string uri = ImageUrlPath;
-            PDFBinaryImageData actual;
-            actual = ImageData.LoadImageFromURI(uri) as PDFBinaryImageData; 
-            Assert.IsNotNull(actual);
-            Assert.IsNotNull(actual.Data);
+            Assert.Inconclusive("Use the ImageReader");
         }
 
         /// <summary>
@@ -148,19 +125,21 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void GetSize_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-
-            //GetSize() returns actual size based on pixels and resolution
-            double w = ((double)ImagePixelWidth) / ImageResolution;
-            double h = ((double)ImagePixelHeight) / ImageResolution;
-            Scryber.Drawing.Size expected = new Scryber.Drawing.Size(new Unit(w, PageUnits.Inches), new Unit(h, PageUnits.Inches));
-
-            int accuracy = 0;
-            Scryber.Drawing.Size actual;
-            actual = target.GetSize();
-            Assert.AreEqual(Math.Round(expected.Width.PointsValue, accuracy), Math.Round(actual.Width.PointsValue, accuracy));
-            Assert.AreEqual(Math.Round(expected.Height.PointsValue, accuracy), Math.Round(actual.Height.PointsValue, accuracy));
+            Assert.Inconclusive("Use the ImageReader");
+            
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            //
+            // //GetSize() returns actual size based on pixels and resolution
+            // double w = ((double)ImagePixelWidth) / ImageResolution;
+            // double h = ((double)ImagePixelHeight) / ImageResolution;
+            // Scryber.Drawing.Size expected = new Scryber.Drawing.Size(new Unit(w, PageUnits.Inches), new Unit(h, PageUnits.Inches));
+            //
+            // int accuracy = 0;
+            // Scryber.Drawing.Size actual;
+            // actual = target.GetSize();
+            //Assert.AreEqual(Math.Round(expected.Width.PointsValue, accuracy), Math.Round(actual.Width.PointsValue, accuracy));
+            //Assert.AreEqual(Math.Round(expected.Height.PointsValue, accuracy), Math.Round(actual.Height.PointsValue, accuracy));
         }
 
         /// <summary>
@@ -170,13 +149,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void SourcePath_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-
-            string expected = ImageFilePath;
-            string actual = target.SourcePath;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            //
+            // string expected = ImageFilePath;
+            // string actual = target.SourcePath;
+            //
+            // Assert.AreEqual(expected, actual);
 
         }
 
@@ -187,12 +167,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void VerticalResolution_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            int expected = ImageResolution;
-            int actual = target.VerticalResolution;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // int expected = ImageResolution;
+            // int actual = target.VerticalResolution;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -202,12 +183,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void HorizontalResolution_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            int expected = ImageResolution;
-            int actual = target.HorizontalResolution;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // int expected = ImageResolution;
+            // int actual = target.HorizontalResolution;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -217,12 +199,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void BitsPerColor_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            int expected = ImageBitsPerColor;
-            int actual = (int)target.BitsPerColor;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // int expected = ImageBitsPerColor;
+            // int actual = (int)target.BitsPerColor;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -232,12 +215,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void BytesPerLine_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            PDFBinaryImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false) as PDFBinaryImageData;
-            int expected = ImageBytesPerLine;
-            int actual = (int)target.BytesPerLine;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // PDFBinaryImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false) as PDFBinaryImageData;
+            // int expected = ImageBytesPerLine;
+            // int actual = (int)target.BytesPerLine;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -247,12 +231,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void ColorSpace_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            ColorSpace expected = ImageColorSpace;
-            ColorSpace actual = target.ColorSpace;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // ColorSpace expected = ImageColorSpace;
+            // ColorSpace actual = target.ColorSpace;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -262,12 +247,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void ColorsPerSample_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            int expected = ImageColorsPerSample;
-            int actual = target.ColorsPerSample;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // int expected = ImageColorsPerSample;
+            // int actual = target.ColorsPerSample;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -277,14 +263,15 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void DisplayHeight_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            double h = ((double)ImagePixelHeight) / ImageResolution;
-            Unit expected = new Unit(h, PageUnits.Inches);
-
-            Unit actual = target.DisplayHeight;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // double h = ((double)ImagePixelHeight) / ImageResolution;
+            // Unit expected = new Unit(h, PageUnits.Inches);
+            //
+            // Unit actual = target.DisplayHeight;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -294,13 +281,14 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void DisplayWidth_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            double w = ((double)ImagePixelWidth) / ImageResolution;
-            Unit expected = new Unit(w, PageUnits.Inches);
-            Unit actual = target.DisplayWidth;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // double w = ((double)ImagePixelWidth) / ImageResolution;
+            // Unit expected = new Unit(w, PageUnits.Inches);
+            // Unit actual = target.DisplayWidth;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -310,12 +298,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PixelHeight_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            int expected = ImagePixelHeight;
-            int actual = target.PixelHeight;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // int expected = ImagePixelHeight;
+            // int actual = target.PixelHeight;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -325,12 +314,13 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Graphics")]
         public void PixelWidth_Test()
         {
-            Bitmap bmp = CreateImageBitmap();
-            ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
-            int expected = ImagePixelWidth;
-            int actual = target.PixelWidth;
-
-            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Use the ImageReader");
+            // Bitmap bmp = CreateImageBitmap();
+            // ImageData target = ImageData.LoadImageFromBitmap(ImageFilePath, bmp, false);
+            // int expected = ImagePixelWidth;
+            // int actual = target.PixelWidth;
+            //
+            // Assert.AreEqual(expected, actual);
         }
 
 

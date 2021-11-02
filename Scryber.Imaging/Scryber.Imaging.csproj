@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>Scryber</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
@@ -29,8 +29,6 @@
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SixLabors.ImageSharp">
-      <HintPath>ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.dll</HintPath>
-    </Reference>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
   </ItemGroup>
 </Project>

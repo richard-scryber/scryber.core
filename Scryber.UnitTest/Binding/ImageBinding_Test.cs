@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Net.WebSockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.PDF;
 
 namespace Scryber.Core.UnitTests.Binding
@@ -72,10 +74,19 @@ namespace Scryber.Core.UnitTests.Binding
 
                 path = System.IO.Path.GetFullPath(path);
 
-                var data = Scryber.Drawing.ImageData.LoadImageFromLocalFile(path);
+                var imgReader = Scryber.Imaging.ImageReader.Create();
+                ImageData data;
+                
+                using (var fs = new System.IO.FileStream(path, FileMode.Open))
+                {
+                    data = imgReader.ReadStream(path, fs, false);
+                }
+                
+                
                 doc.Params["MyImage"] = data;
 
                 var img = doc.FindAComponentById("LoadedImage") as Image;
+                Assert.IsNotNull(img);
                 Assert.IsNull(img.Data);
 
                 doc.InitializeAndLoad(OutputFormat.PDF);
@@ -103,13 +114,23 @@ namespace Scryber.Core.UnitTests.Binding
             if (!path.EndsWith("/"))
                 path += "/";
 
-            var imgData1 = Scryber.Drawing.ImageData.LoadImageFromLocalFile(path + "Toroid24.jpg");
-            var imgData2 = Scryber.Drawing.ImageData.LoadImageFromLocalFile(path + "group.png"); ;
-
+            var imgReader = Scryber.Imaging.ImageReader.Create();
+            ImageData data1, data2;
+                
+            using (var fs = new System.IO.FileStream(path + "Toroid24.jpg", FileMode.Open))
+            {
+                data1 = imgReader.ReadStream(path, fs, false);
+            }
+            
+            using (var fs = new System.IO.FileStream(path + "group.png", FileMode.Open))
+            {
+                data2 = imgReader.ReadStream(path, fs, false);
+            }
+            
             var model = new
             {
-                img1 = imgData1,
-                img2 = imgData2
+                img1 = data1,
+                img2 = data2
             };
 
 
@@ -125,9 +146,9 @@ namespace Scryber.Core.UnitTests.Binding
     <doc:Section styles:margins='20pt'>
       <Content>
         
-        <doc:Image id='LoadedImage1' img-data='{@:model.img1}' />
+        <doc:Image id='LoadedImage1' img-data='{{model.img1}}' />
         <doc:PageBreak/>
-        <doc:Image id='LoadedImage2' img-data='{@:model.img2}' />
+        <doc:Image id='LoadedImage2' img-data='{{model.img2}}' />
       </Content>
     </doc:Section>
 
@@ -153,11 +174,11 @@ namespace Scryber.Core.UnitTests.Binding
             var found2 = doc.FindAComponentById("LoadedImage2") as Image;
             Assert.IsNotNull(found1);
             Assert.IsNotNull(found1.Data);
-            Assert.AreEqual(imgData1, found1.Data);
+            Assert.AreEqual(data1, found1.Data);
 
             Assert.IsNotNull(found2);
             Assert.IsNotNull(found2.Data);
-            Assert.AreEqual(imgData2, found2.Data);
+            Assert.AreEqual(data2, found2.Data);
             
         }
 

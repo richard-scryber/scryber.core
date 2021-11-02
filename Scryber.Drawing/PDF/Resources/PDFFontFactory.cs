@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
-//using System.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
@@ -638,7 +637,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public static bool IsFontDefined(string family, System.Drawing.FontStyle style)
+        #region public static bool IsFontDefined(string family, Scryber.Drawing.FontStyle style)
         /// <summary>
         /// Returns true if the available fonts contain one with the specified family and style
         /// </summary>
@@ -807,7 +806,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style, bool throwNotFound = true)
+        #region public static PDFFontDefinition GetFontDefinition(string family, Scryber.Drawing.FontStyle style, bool throwNotFound = true)
 
         /// <summary>
         /// Gets the PDFFontDefinition for the specified famil and style
@@ -1442,7 +1441,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region private static System.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs)
+        #region private static Scryber.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs)
 
         /// <summary>
         /// Converts a OpenType.FontSelection to a Drawing.FontStyle
@@ -1461,10 +1460,10 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region private static System.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs)
+        #region private static int GetFontWeight(Scryber.OpenType.FontSelection fs, Scryber.OpenType.WeightClass wc)
 
         /// <summary>
-        /// Converts a OpenType.FontSelection to a Drawing.FontStyle
+        /// Converts a OpenType.FontSelection to a font weight value
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>

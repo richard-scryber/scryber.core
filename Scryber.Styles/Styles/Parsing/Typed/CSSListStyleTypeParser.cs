@@ -1,7 +1,6 @@
 ﻿using System;
 using Scryber.Html;
 using Scryber.Drawing;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Scryber.Styles.Parsing.Typed
 {

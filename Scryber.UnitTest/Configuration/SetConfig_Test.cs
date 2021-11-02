@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Net.WebSockets;
+using Scryber.Imaging;
 
 namespace Scryber.Core.UnitTests.Configuration
 {
@@ -437,9 +438,11 @@ namespace Scryber.Core.UnitTests.Configuration
 
                 var binary = Convert.FromBase64String(path);
 
+                var reader = ImageReader.Create();
+
                 using (var ms = new System.IO.MemoryStream(binary))
                 {
-                    return ImageData.LoadImageFromStream(document.GetIncrementID(owner.Type) + "data_png", ms, owner);
+                    return reader.ReadStream(document.GetIncrementID(owner.Type) + "data_png", ms, false);
                 }
             }
 

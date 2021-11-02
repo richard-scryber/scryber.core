@@ -1217,80 +1217,72 @@ namespace Scryber.Core.UnitTests.Html
         {
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFace.html");
-            StyleFontFace ff;
 
-            using (var doc = Document.ParseDocument(path))
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
             {
-                doc.RenderOptions.Compression = OutputCompressionType.None;
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
 
-                var model = new
-                {
-                    fragmentContent = "Content for the fragment"
-                };
-                doc.Params["model"] = model;
+            using var stream = DocStreams.GetOutputStream("FontFace.pdf");
+            doc.SaveAsPDF(stream);
 
-                using (var stream = DocStreams.GetOutputStream("FontFace.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
+            //Check the remote style link for Fraunces
 
-                    //Check the remote style link for Fraunces
-
-                    var remote = doc.Styles[0] as StyleGroup;
+            var remote = doc.Styles[0] as StyleGroup;
                     
-                    Assert.IsNotNull(remote);
-                    Assert.AreEqual(4, remote.Styles.Count, "4 fonts were NOT loaded from the remote source");
+            Assert.IsNotNull(remote);
+            Assert.AreEqual(4, remote.Styles.Count, "4 fonts were NOT loaded from the remote source");
 
-                    bool[] checks = new bool[4];
-                    //Should be Italic 400 and 700 + Regular 400 and 700
-                    for(var i = 0; i < 4; i++)
-                    {
-                        var one = remote.Styles[i] as StyleFontFace;
-                        Assert.IsNotNull(one);
-                        Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
+            bool[] checks = new bool[4];
+            //Should be Italic 400 and 700 + Regular 400 and 700
+            for(var i = 0; i < 4; i++)
+            {
+                var one = remote.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
 
-                        if(one.FontStyle == Scryber.Drawing.FontStyle.Regular)
-                        {
-                            if (one.FontWeight == 400)
-                                checks[0] = true;
-                            else if (one.FontWeight == 700)
-                                checks[1] = true;
-                        }
-                        else if(one.FontStyle == Scryber.Drawing.FontStyle.Italic)
-                        {
-                            if (one.FontWeight == 400)
-                                checks[2] = true;
-                            else if (one.FontWeight == 700)
-                                checks[3] = true;
-                        }
-                    }
-
-                    Assert.IsTrue(checks[0], "No regular 400 weight");
-                    Assert.IsTrue(checks[1], "No regular 700 weight");
-                    Assert.IsTrue(checks[2], "No italic 400 weight");
-                    Assert.IsTrue(checks[3], "No italic 700 weight");
-
-                    //Check the local style groups for 2 fontface and 2 styles
-
-                    var inline = doc.Styles[1] as StyleGroup;
-
-                    Assert.IsNotNull(inline);
-                    Assert.AreEqual(4, inline.Styles.Count, "4 styles were not defined locally");
-
-                    var ffone = inline.Styles[0] as StyleFontFace;
-                    Assert.IsNotNull(ffone);
-                    Assert.AreEqual("Roboto", ffone.FontFamily.ToString(), "Inline @fontface was not Robototo");
-                    Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, ffone.FontStyle, "Inline @fontface was not regular");
-                    Assert.AreEqual(900, ffone.FontWeight, "Inline @fontface was not black");
-                    Assert.IsNotNull(ffone.Source, "No source was set");
-
-                    var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
-                    var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
-                    Assert.IsNotNull(rsrc1);
-
+                if(one.FontStyle == Scryber.Drawing.FontStyle.Regular)
+                {
+                    if (one.FontWeight == 400)
+                        checks[0] = true;
+                    else if (one.FontWeight == 700)
+                        checks[1] = true;
                 }
-
+                else if(one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                {
+                    if (one.FontWeight == 400)
+                        checks[2] = true;
+                    else if (one.FontWeight == 700)
+                        checks[3] = true;
+                }
             }
 
+            Assert.IsTrue(checks[0], "No regular 400 weight");
+            Assert.IsTrue(checks[1], "No regular 700 weight");
+            Assert.IsTrue(checks[2], "No italic 400 weight");
+            Assert.IsTrue(checks[3], "No italic 700 weight");
+
+            //Check the local style groups for 2 fontface and 2 styles
+
+            var inline = doc.Styles[1] as StyleGroup;
+
+            Assert.IsNotNull(inline);
+            Assert.AreEqual(4, inline.Styles.Count, "4 styles were not defined locally");
+
+            var ffone = inline.Styles[0] as StyleFontFace;
+            Assert.IsNotNull(ffone);
+            Assert.AreEqual("Roboto", ffone.FontFamily.ToString(), "Inline @fontface was not Robototo");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, ffone.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(900, ffone.FontWeight, "Inline @fontface was not black");
+            Assert.IsNotNull(ffone.Source, "No source was set");
+
+            var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
+            var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1);
         }
 
         /// <summary>
@@ -1304,102 +1296,97 @@ namespace Scryber.Core.UnitTests.Html
             path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceFallback.html");
 
 
-            using (var doc = Document.ParseDocument(path))
+            using var doc = Document.ParseDocument(path);
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            using var stream = DocStreams.GetOutputStream("FontFaceFallback.pdf");
+            doc.LayoutComplete += DocumentParsing_Layout;
+            doc.SaveAsPDF(stream);
+
+            //Check the remote style link for Fraunces
+
+            var remote = doc.Styles[0] as StyleGroup;
+
+            Assert.IsNotNull(remote);
+            Assert.AreEqual(6, remote.Styles.Count, "6 fonts were NOT loaded from the remote source");
+
+            bool[] checks = new bool[6];
+            //Should be Italic 100, 400 and 700 + Regular 100, 400 and 700
+            for (var i = 0; i < 6; i++)
             {
-                //doc.RenderOptions.Compression = OutputCompressionType.None;
+                var one = remote.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
 
-                using (var stream = DocStreams.GetOutputStream("FontFaceFallback.pdf"))
+                if (one.FontStyle == Scryber.Drawing.FontStyle.Regular)
                 {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
-
-                    //Check the remote style link for Fraunces
-
-                    var remote = doc.Styles[0] as StyleGroup;
-
-                    Assert.IsNotNull(remote);
-                    Assert.AreEqual(6, remote.Styles.Count, "6 fonts were NOT loaded from the remote source");
-
-                    bool[] checks = new bool[6];
-                    //Should be Italic 100, 400 and 700 + Regular 100, 400 and 700
-                    for (var i = 0; i < 6; i++)
-                    {
-                        var one = remote.Styles[i] as StyleFontFace;
-                        Assert.IsNotNull(one);
-                        Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
-
-                        if (one.FontStyle == Scryber.Drawing.FontStyle.Regular)
-                        {
-                            if (one.FontWeight == 400)
-                                checks[0] = true;
-                            else if (one.FontWeight == 700)
-                                checks[1] = true;
-                            else if (one.FontWeight == 100)
-                                checks[2] = true;
-                        }
-                        else if (one.FontStyle == Scryber.Drawing.FontStyle.Italic)
-                        {
-                            if (one.FontWeight == 400)
-                                checks[3] = true;
-                            else if (one.FontWeight == 700)
-                                checks[4] = true;
-                            else if (one.FontWeight == 100)
-                                checks[5] = true;
-
-                        }
-                    }
-
-                    Assert.IsNotNull(_layoutcontext);
-                    var pg = _layoutcontext.DocumentLayout.AllPages[0];
-                    var blocks = pg.ContentBlock.Columns[0].Contents;
-
-                    var regular = GetFontFallbackRunBegin(blocks[0]);
-                    var italic = GetFontFallbackRunBegin(blocks[1]);
-                    var thin = GetFontFallbackRunBegin(blocks[2]);
-                    var thinfallback = GetFontFallbackRunBegin(blocks[3]);
-                    var medfallback = GetFontFallbackRunBegin(blocks[4]);
-                    var medfallbackwithbold = GetFontFallbackRunBegin(blocks[5]);
-                    var blackfallback = GetFontFallbackRunBegin(blocks[6]);
-                    var courierfallback = GetFontFallbackRunBegin(blocks[7]);
-                    var fallbackwithstyle = GetFontFallbackRunBegin(blocks[8]);
-                    var unicode = GetFontFallbackRunBegin(blocks[9]);
-                    var uniUnsupported = GetFontFallbackRunBegin(blocks[10]);
-
-                    //no fallback
-                    AssertFontFallback(regular.TextRenderOptions, "Fraunces", 400, false);
-
-                    //no fallback italic
-                    AssertFontFallback(italic.TextRenderOptions, "Fraunces", 400, true);
-
-                    //no fallback thin
-                    AssertFontFallback(thin.TextRenderOptions, "Fraunces", 100, false);
-
-                    //fallback from 200 to 100
-                    AssertFontFallback(thinfallback.TextRenderOptions, "Fraunces", 100, false);
-
-                    //fallback from 300 to 400
-                    AssertFontFallback(medfallback.TextRenderOptions, "Fraunces", 400, false);
-
-                    //fallback from 300 to 400
-                    AssertFontFallback(medfallbackwithbold.TextRenderOptions, "Fraunces", 400, false);
-
-                    //fallback from 900 to 700
-                    AssertFontFallback(blackfallback.TextRenderOptions, "Fraunces", 700, false);
-
-                    //fallback from Roboto to courier
-                    AssertFontFallback(courierfallback.TextRenderOptions, "Courier", 400, false);
-
-                    //Roboto not loaded so use sans-serif
-                    AssertFontFallback(fallbackwithstyle.TextRenderOptions, "Helvetica", 400, false);
-
-                    //Use unicode font
-                    AssertFontFallback(unicode.TextRenderOptions, "Noto Serif Ethiopic", 400, false);
-
-                    //Unicode fails to courier
-                    AssertFontFallback(uniUnsupported.TextRenderOptions, "Courier", 400, false);
+                    if (one.FontWeight == 400)
+                        checks[0] = true;
+                    else if (one.FontWeight == 700)
+                        checks[1] = true;
+                    else if (one.FontWeight == 100)
+                        checks[2] = true;
                 }
+                else if (one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                {
+                    if (one.FontWeight == 400)
+                        checks[3] = true;
+                    else if (one.FontWeight == 700)
+                        checks[4] = true;
+                    else if (one.FontWeight == 100)
+                        checks[5] = true;
 
+                }
             }
+
+            Assert.IsNotNull(_layoutcontext);
+            var pg = _layoutcontext.DocumentLayout.AllPages[0];
+            var blocks = pg.ContentBlock.Columns[0].Contents;
+
+            var regular = GetFontFallbackRunBegin(blocks[0]);
+            var italic = GetFontFallbackRunBegin(blocks[1]);
+            var thin = GetFontFallbackRunBegin(blocks[2]);
+            var thinfallback = GetFontFallbackRunBegin(blocks[3]);
+            var medfallback = GetFontFallbackRunBegin(blocks[4]);
+            var medfallbackwithbold = GetFontFallbackRunBegin(blocks[5]);
+            var blackfallback = GetFontFallbackRunBegin(blocks[6]);
+            var courierfallback = GetFontFallbackRunBegin(blocks[7]);
+            var fallbackwithstyle = GetFontFallbackRunBegin(blocks[8]);
+            var unicode = GetFontFallbackRunBegin(blocks[9]);
+            var uniUnsupported = GetFontFallbackRunBegin(blocks[10]);
+
+            //no fallback
+            AssertFontFallback(regular.TextRenderOptions, "Fraunces", 400, false);
+
+            //no fallback italic
+            AssertFontFallback(italic.TextRenderOptions, "Fraunces", 400, true);
+
+            //no fallback thin
+            AssertFontFallback(thin.TextRenderOptions, "Fraunces", 100, false);
+
+            //fallback from 200 to 100
+            AssertFontFallback(thinfallback.TextRenderOptions, "Fraunces", 100, false);
+
+            //fallback from 300 to 400
+            AssertFontFallback(medfallback.TextRenderOptions, "Fraunces", 400, false);
+
+            //fallback from 300 to 400
+            AssertFontFallback(medfallbackwithbold.TextRenderOptions, "Fraunces", 400, false);
+
+            //fallback from 900 to 700
+            AssertFontFallback(blackfallback.TextRenderOptions, "Fraunces", 700, false);
+
+            //fallback from Roboto to courier
+            AssertFontFallback(courierfallback.TextRenderOptions, "Courier", 400, false);
+
+            //Roboto not loaded so use sans-serif
+            AssertFontFallback(fallbackwithstyle.TextRenderOptions, "Helvetica", 400, false);
+
+            //Use unicode font
+            AssertFontFallback(unicode.TextRenderOptions, "Noto Serif Ethiopic", 400, false);
+
+            //Unicode fails to courier
+            AssertFontFallback(uniUnsupported.TextRenderOptions, "Courier", 400, false);
         }
 
         private void AssertFontFallback(PDFTextRenderOptions options, string familyName, int weight, bool italic)

@@ -75,32 +75,22 @@ namespace Scryber.Html.Parsing
         /// </summary>
         public Markdown(bool loadOptionsFromConfigFile)
         {
-            if (!loadOptionsFromConfigFile) return;
+            if (!loadOptionsFromConfigFile) 
+                return;
 
-            var settings = ConfigurationManager.AppSettings;
-            foreach (string key in settings.Keys)
+            var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            if(null == service)
+                return;
+            
+            var options = service.GetScryberSection(typeof(MarkdownOptions), "markdown") as MarkdownOptions;
+            if (null != options)
             {
-                switch (key)
-                {
-                    case "Markdown.AutoHyperlink":
-                        _autoHyperlink = Convert.ToBoolean(settings[key]);
-                        break;
-                    case "Markdown.AutoNewlines":
-                        _autoNewlines = Convert.ToBoolean(settings[key]);
-                        break;
-                    case "Markdown.EmptyElementSuffix":
-                        _emptyElementSuffix = settings[key];
-                        break;
-                    case "Markdown.LinkEmails":
-                        _linkEmails = Convert.ToBoolean(settings[key]);
-                        break;
-                    case "Markdown.StrictBoldItalic":
-                        _strictBoldItalic = Convert.ToBoolean(settings[key]);
-                        break;
-                    case "Markdown.AsteriskIntraWordEmphasis":
-                        _asteriskIntraWordEmphasis = Convert.ToBoolean(settings[key]);
-                        break;
-                }
+                this._autoHyperlink = options.AutoHyperlink;
+                this._autoNewlines = options.AutoNewlines;
+                this._emptyElementSuffix = options.EmptyElementSuffix;
+                this._linkEmails = options.LinkEmails;
+                this._strictBoldItalic = options.StrictBoldItalic;
+                this._asteriskIntraWordEmphasis = options.AsteriskIntraWordEmphasis;
             }
         }
 

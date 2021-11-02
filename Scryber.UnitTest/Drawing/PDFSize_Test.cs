@@ -1,7 +1,6 @@
 ﻿using Scryber.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Drawing;
 
 namespace Scryber.Core.UnitTests.Drawing
 {
@@ -16,7 +15,7 @@ namespace Scryber.Core.UnitTests.Drawing
     {
 
 
-        private TestContext testContextInstance;
+        private TestContext _testContextInstance;
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -26,11 +25,11 @@ namespace Scryber.Core.UnitTests.Drawing
         {
             get
             {
-                return testContextInstance;
+                return _testContextInstance;
             }
             set
             {
-                testContextInstance = value;
+                _testContextInstance = value;
             }
         }
 

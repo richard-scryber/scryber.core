@@ -353,22 +353,5 @@ namespace Scryber
             }
         }
 
-        /// <summary>
-        /// Creates file stream and callsback the owner of the request, then completes.
-        /// </summary>
-        /// <param name="fileRequest"></param>
-        /// <returns>The result of the callback to the owner</returns>
-        protected async virtual Task<bool> FullfillFileRequestAsync(RemoteFileRequest fileRequest)
-        {
-            var content = await File.ReadAllBytesAsync(fileRequest.FilePath);
-            using (var stream = new MemoryStream(content))
-            {
-                var success = fileRequest.Callback(this.Owner, fileRequest, stream);
-                fileRequest.CompleteRequest(success);
-
-                return success;
-            }
-        }
-
     }
 }

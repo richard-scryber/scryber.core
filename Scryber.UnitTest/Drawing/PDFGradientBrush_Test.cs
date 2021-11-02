@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber.PDF.Native;
 using Scryber;
-using System.Drawing;
 using System.Collections.Generic;
 
 namespace Scryber.Core.UnitTests.Drawing
@@ -270,7 +269,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Red, null, null)
             });
 
-            PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
+            PDF.Graphics.PDFGradientLinearBrush target = new PDF.Graphics.PDFGradientLinearBrush(descriptor);
             Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
@@ -297,7 +296,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Red, null, null)
             });
 
-            PDFGradientLinearBrush target = new PDFGradientLinearBrush(descriptor);
+            PDF.Graphics.PDFGradientLinearBrush target = new PDF.Graphics.PDFGradientLinearBrush(descriptor);
             Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
@@ -324,7 +323,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Red, null, null)
             });
 
-            PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
+            PDF.Graphics.PDFGradientRadialBrush target = new PDF.Graphics.PDFGradientRadialBrush(descriptor);
             Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;
@@ -353,7 +352,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 new GradientColor(StandardColors.Red, null, null)
             });
 
-            PDFGradientRadialBrush target = new PDFGradientRadialBrush(descriptor);
+            PDF.Graphics.PDFGradientRadialBrush target = new PDF.Graphics.PDFGradientRadialBrush(descriptor);
             Scryber.Drawing.Color color = StandardColors.Red;
             double? opacity = null;
             double? distance = null;

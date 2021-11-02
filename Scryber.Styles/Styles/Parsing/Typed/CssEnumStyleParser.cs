@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing.Text;
 
 namespace Scryber.Styles.Parsing.Typed
 {
