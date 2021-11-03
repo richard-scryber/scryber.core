@@ -1,3 +1,6 @@
+using Scryber.OpenType;
+using Scryber.PDF;
+using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 
 namespace Scryber.Drawing
@@ -325,5 +328,29 @@ namespace Scryber.Drawing
         }
 
         #endregion
+        
+        
+        //
+        // abstract methods
+        //
+
+        public abstract Size MeasureStringWidth(string chars, int startOffset, double fontSizePts,
+            double availableWidth,
+            bool wordBoundary, out int charsFitted);
+        
+        public  abstract Size MeasureStringWidth(string chars, int startOffset, double fontSizePts,
+            double availableWidth, double? wordSpace, double? charSpace, double? hScale, bool vertical,
+            bool wordBoundary, out int charsFitted);
+
+        public abstract LineSize MeasureStringWidth(string chars, int startOffset, double fontSizePts,
+            double availableWidth, TypeMeasureOptions options);
+
+        public abstract TypeMeasureOptions GetMeasurementOptions(bool wordBoundary,
+            double? wordSpace = null, double? charSpace = null, double? hScale = null, bool? vertical = null);
+
+        public abstract FontMetrics GetFontMetrics(Unit fontSize);
+
+        public abstract PDFObjectRef RenderToPDF(string name, PDFFontWidths widths, ContextBase context,
+            PDFWriter writer);
     }
 }

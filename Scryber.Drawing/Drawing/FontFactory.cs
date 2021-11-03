@@ -486,7 +486,7 @@ namespace Scryber.Drawing
         }
         
         #endregion
-
+        
         #region private static string[] GetFontsDirectory()
         
         private const string FontsDirectoryName = "Fonts";
@@ -630,7 +630,7 @@ namespace Scryber.Drawing
         {
             var bag = new FamilyReferenceBag();
 
-            var assm = typeof(PDFFontFactory).Assembly;
+            var assm = typeof(FontFactory).Assembly;
             byte[] bin;
             FontReference fRef;
             ITypefaceInfo found;

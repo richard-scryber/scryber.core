@@ -381,7 +381,7 @@ namespace Scryber.PDF.Resources
         private const int SubSetRequiredLength = 6;
 
         /// <summary>
-        /// Returns a new subset name in the required format (6 uppercase letters)
+        /// Returns a new subset name in the required format (6 random uppercase letters)
         /// </summary>
         /// <returns></returns>
         public static string CreateSubset()
@@ -394,6 +394,13 @@ namespace Scryber.PDF.Resources
             return new string(chars);
         }
 
+        /// <summary>
+        /// Concatenates the font basename and the subset e.g. ABCDEF+Helvetica to uniquely identify it.
+        /// </summary>
+        /// <param name="subset">The subset name to use (from the CreateSubset method)</param>
+        /// <param name="basename">The font basename</param>
+        /// <returns>The concatenation of the 2 names</returns>
+        /// <exception cref="ArgumentException">Thrown if the subset is not the required length (6)</exception>
         internal static string GetSubsetName(string subset, string basename)
         {
             if (string.IsNullOrEmpty(subset))

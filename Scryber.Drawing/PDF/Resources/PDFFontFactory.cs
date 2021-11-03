@@ -38,12 +38,13 @@ using System.Collections;
 using System.Xml;
 using System.Diagnostics.CodeAnalysis;
 using Scryber.Drawing;
+using Scryber.OpenType.TTF;
 
 namespace Scryber.PDF.Resources
 {
     //TODO: change the enumeration names to PDF...
 
-     
+     [Obsolete("Use the Scryber.Drawing.FontFactory instead", true)]
     public static class PDFFontFactory
     {
         //

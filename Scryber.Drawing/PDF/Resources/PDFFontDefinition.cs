@@ -223,7 +223,7 @@ namespace Scryber.PDF.Resources
         /// <param name="wordBoundary">If true then strings will be fitted based on wordboundaries rather than characters.</param>
         /// <param name="charsfitted">Set to the number of characters of the string that were actually fitted in the width.</param>
         /// <returns>The actual size consumed by the allocated characters.</returns>
-        public Size MeasureStringWidth(string chars, int startOffset, double fontSize, double available, bool wordBoundary, out int charsfitted)
+        public override Size MeasureStringWidth(string chars, int startOffset, double fontSize, double available, bool wordBoundary, out int charsfitted)
         {
             if (null == this.TTFFile)
                 throw new NullReferenceException(string.Format(Errors.FontDefinitionDoesNotHaveFile, this.FullName));
@@ -247,14 +247,37 @@ namespace Scryber.PDF.Resources
         /// <param name="wordBoundary">If true then strings will be fitted based on wordboundaries rather than characters.</param>
         /// <param name="charsfitted">Set to the number of characters of the string that were actually fitted in the width.</param>
         /// <returns>The actual size consumed by the allocated characters.</returns>
-        public Size MeasureStringWidth(string chars, int startOffset, double fontSize, double available, double? wordSpace, double charSpace, double hScale, bool vertical, bool wordBoundary, out int charsfitted)
+        public override Size MeasureStringWidth(string chars, int startOffset, double fontSize, double available, 
+            double? wordSpace, double? charSpace, double? hScale, bool vertical, bool wordBoundary, out int charsfitted)
         {
             if (null == this.TTFFile)
                 throw new NullReferenceException(string.Format(Errors.FontDefinitionDoesNotHaveFile, this.FullName));
             OpenType.SubTables.CMapEncoding encoding = AssertGetTTFEncoding();
 
-            var size = this.TTFFile.MeasureString(encoding, chars, startOffset, fontSize, available, wordSpace, charSpace, hScale, vertical, wordBoundary, out charsfitted);
+            var size = this.TTFFile.MeasureString(encoding, chars, startOffset, fontSize, available, wordSpace, 
+                charSpace.HasValue ? charSpace.Value : 0.0, 
+                hScale.HasValue ? hScale.Value : 1.0, 
+                vertical, wordBoundary, out charsfitted);
+            
             return new Size(size.RequiredWidth, size.RequiredHeight);
+        }
+
+        public override LineSize MeasureStringWidth(string chars, int startOffset, double fontSizePts, double avaialableWidth,
+            TypeMeasureOptions options)
+        {
+            int fitted;
+            CMapEncoding encoding = AssertGetTTFEncoding();
+            return this.TTFFile.MeasureString(encoding, chars, startOffset, fontSizePts, avaialableWidth, options.BreakOnWordBoundaries, out fitted, options.FontUnits);
+        }
+
+        public override TypeMeasureOptions GetMeasurementOptions(bool wordBoundary, double? wordSpace = null, double? charSpace = null,
+            double? hScale = null, bool? vertical = null)
+        {
+            return new TypeMeasureOptions()
+            {
+                BreakOnWordBoundaries = wordBoundary,
+                CharacterSpacing = charSpace, WordSpacing = wordSpace,
+            };
         }
 
         private OpenType.SubTables.CMapEncoding AssertGetTTFEncoding()
@@ -268,7 +291,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        public FontMetrics GetFontMetrics(Unit fontSize)
+        public override FontMetrics GetFontMetrics(Unit fontSize)
         {
             double scale = fontSize.PointsValue / ((double)this.FontUnitsPerEm);
             if (null != this.Descriptor)
@@ -324,7 +347,7 @@ namespace Scryber.PDF.Resources
 
         #region public PDFObjectRef RenderToPDF(string name, PDFContextBase context, PDFWriter writer)
 
-        public PDFObjectRef RenderToPDF(string rsrcName, PDFFontWidths widths, ContextBase context, PDFWriter writer)
+        public override PDFObjectRef RenderToPDF(string rsrcName, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         {
             if(this.IsStandard)
             {
