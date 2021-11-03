@@ -958,7 +958,7 @@ namespace Scryber.PDF.Layout
                     if (txtopts.Leading.HasValue)
                         height = txtopts.Leading.Value;
                     else if (txtopts.Font != null && txtopts.Font.FontMetrics != null)
-                        height = txtopts.Font.FontMetrics.LineHeight;
+                        height = txtopts.Font.FontMetrics.TotalLineHeight;
                     else if (txtopts.Font != null)
                         height = txtopts.Font.Size;
                     else

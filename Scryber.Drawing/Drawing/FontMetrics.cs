@@ -57,13 +57,13 @@ namespace Scryber.Drawing
             get { return _asc; }
         }
 
-        private double _lineHeight;
+        private double _baselineOffset;
         /// <summary>
-        /// Gets the total height of the line (ascender + descender + line spacing) or (the distance between two baselines)
+        /// Gets the offset of the base line from the top
         /// </summary>
-        public double LineHeight
+        public double BaseLineOffset
         {
-            get { return _lineHeight; }
+            get { return _baselineOffset; }
         }
 
         private double _exh;
@@ -85,21 +85,24 @@ namespace Scryber.Drawing
             get { return _zero; }
         }
 
+        private double _total;
+
         /// <summary>
         /// Gets the amount of white space that should be between two lines of text (the leading)
         /// </summary>
-        public double LineSpacing
+        public double TotalLineHeight
         {
-            get { return this.LineHeight - (this.Ascent + this.Descent); }
+            get { return _total; }
         }
 
 
-        public FontMetrics(double emheight, double ascent, double descent, double lineheight, double exheight, double zeroWidth)
+        public FontMetrics(double emheight, double ascent, double descent, double totalLineheight, double baselineOffset, double exheight, double zeroWidth)
         {
             this._emh = emheight;
             this._desc = descent;
             this._asc = ascent;
-            this._lineHeight = lineheight;
+            this._total = totalLineheight;
+            this._baselineOffset = baselineOffset;
             this._exh = exheight;
             this._zero = zeroWidth;
         }

@@ -112,7 +112,7 @@ namespace Scryber.UnitLayouts
 
             //optima is 1000 FUnit em size and we use the font metrics
 
-            var space = metrics.LineSpacing; //line spacing; 4.8pt
+            var space = metrics.TotalLineHeight; //line spacing; 4.8pt
             var desc = metrics.Descent;  // descender height 6pt
             var asc = metrics.Ascent;  // ascender height 18pt
             

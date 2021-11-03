@@ -693,7 +693,6 @@ namespace Scryber.Drawing
                         "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
                 
                 // Times
-
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Times.timesNewRoman.ttf", out found))
                     bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("Ftimes",
                         "Times-Roman", "Times", false, false, TimesSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
@@ -928,13 +927,28 @@ namespace Scryber.Drawing
             if (string.IsNullOrEmpty(family))
                 throw new ArgumentNullException(nameof(family));
 
-            FontReference fref = _custom[family, style, weight];
-
+            FontReference fref;
+            
+            fref = _custom[family, style, weight];
+            
             if (null == fref)
                 fref = _system[family, style, weight];
+            
+            if (null == fref)
+                fref = _static[family, style, weight];
+            
             if (null == fref)
                 fref = _generic[family, style, weight];
 
+            if (null == fref)
+            {
+                if (throwNotFound)
+                    throw new PDFFontInitException("Could not find the font " + family + " with weight " + weight +
+                                                   " and style " + style);
+                else
+                    return null;
+            }
+            
             if (fref.IsLoaded == false)
             {
                 LoadFontDefinition(fref);

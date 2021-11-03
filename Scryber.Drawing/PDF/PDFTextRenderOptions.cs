@@ -285,12 +285,22 @@ namespace Scryber.PDF
             if (this.Leading.HasValue)
                 return this.Leading.Value;
             else if (null != this.Font.FontMetrics)
-                return this.Font.FontMetrics.LineHeight;
+                return this.Font.FontMetrics.TotalLineHeight;
             else
                 return this.Font.Size * 1.2;
         }
 
         #endregion
+
+        public Unit GetBaselineOffset()
+        {
+            if (null == this.Font)
+                return Unit.Zero;
+            else if (null != this.Font.FontMetrics)
+                return this.Font.FontMetrics.BaseLineOffset;
+            else
+                return this.Font.Size * 0.75;
+        }
 
         #region public PDFUnit GetAscent()
         /// <summary>

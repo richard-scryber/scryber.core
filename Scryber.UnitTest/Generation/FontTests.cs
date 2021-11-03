@@ -86,7 +86,7 @@ namespace Scryber.Core.UnitTests.Generation
                                               id='outerdoc' >
                                   <Pages>
 
-                                    <doc:Page id='titlepage' >
+                                    <doc:Page id='titlepage' styles:padding='10' >
                                       <Content>
                                         <doc:Span id='mylabel' styles:font-family='Helvetica' >This is text in the Helvetica font</doc:Span><doc:Br/>
                                         <doc:Span id='mylabel' styles:font-family='Times' >This is text in the Times font</doc:Span><doc:Br/>
@@ -106,23 +106,15 @@ namespace Scryber.Core.UnitTests.Generation
                 parsed = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
             }
 
-            parsed.LayoutComplete += StandardFont_LayoutComplete;
             using (var ms = DocStreams.GetOutputStream("StandardFont.pdf"))
                 parsed.SaveAsPDF(ms);
 
-        }
-
-        private void StandardFont_LayoutComplete(object sender, LayoutEventArgs args)
-        {
-            //Default font is Sans-Serif
-            var context = (PDF.PDFLayoutContext)(args.Context);
-            var doc = context.DocumentLayout.DocumentComponent;
-            var hel = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Helvetica") as PDFFontResource;
-            var times = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times") as PDFFontResource;
-            var cour = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Courier") as PDFFontResource;
-            var zapf = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Zapf Dingbats") as PDFFontResource;
-            var sym = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Symbol") as PDFFontResource;
-            var timesB = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times,Bold") as PDFFontResource;
+            var hel = parsed.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Helvetica") as PDFFontResource;
+            var times = parsed.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times") as PDFFontResource;
+            var cour = parsed.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Courier") as PDFFontResource;
+            var zapf = parsed.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Zapf Dingbats") as PDFFontResource;
+            var sym = parsed.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Symbol") as PDFFontResource;
+            var timesB = parsed.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Times,Bold") as PDFFontResource;
 
             Assert.IsNotNull(hel, "Helvetica is null");
             Assert.IsNotNull(times, "Times is null");
@@ -131,6 +123,8 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.IsNotNull(sym, "Symbol is null");
             Assert.IsNotNull(timesB, "Times Bold is null");
         }
+
+        
 
 
         [TestMethod()]

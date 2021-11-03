@@ -49,15 +49,15 @@ namespace Scryber.Core.UnitTests.Drawing
             double exheight = emheight * 0.5;
             double zerow = emheight * 0.6;
 
-            FontMetrics target = new FontMetrics(emheight, ascent, descent, lineheight, exheight, zerow);
+            FontMetrics target = new FontMetrics(emheight, ascent, descent, lineheight, ascent, exheight, zerow);
             
 
             Assert.IsNotNull(target);
             Assert.AreEqual(emheight, target.EmHeight);
             Assert.AreEqual(ascent, target.Ascent);
             Assert.AreEqual(descent, target.Descent);
-            Assert.AreEqual(lineheight, target.LineHeight);
-            Assert.AreEqual(lineheight - (ascent + descent), target.LineSpacing);
+            Assert.AreEqual(lineheight, target.TotalLineHeight);
+            Assert.AreEqual(ascent, target.BaseLineOffset);
             Assert.AreEqual(exheight, target.ExHeight);
             Assert.AreEqual(zerow, target.ZeroWidth);
         }

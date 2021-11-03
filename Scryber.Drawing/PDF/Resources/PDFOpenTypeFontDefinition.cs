@@ -197,8 +197,8 @@ namespace Scryber.PDF.Resources
         // string measurement
         //
 
-        private static readonly TypeMeasureOptions WordBreaks = TypeMeasureOptions.BreakOnWords;
-        private static readonly TypeMeasureOptions Default = TypeMeasureOptions.Default;
+        private static readonly TypeMeasureOptions WordBreaks = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = true };
+        private static readonly TypeMeasureOptions Default = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = false };
         
         #region public override TypeMeasureOptions GetMeasurementOptions(..)
         
@@ -299,21 +299,23 @@ namespace Scryber.PDF.Resources
                 double scale = fontSize.PointsValue / (double) (metrics.FUnitsPerEm);
 
                 double ascent = metrics.AscenderHeightFU * scale;
-                double descent = metrics.DescenderHeightFU * scale;
-                double line = (metrics.LineSpaceingFU + metrics.AscenderHeightFU - metrics.DescenderHeightFU) * scale;
+                double descent = Math.Abs(metrics.DescenderHeightFU) * scale;
+                double baseline = ascent + (metrics.LineSpaceingFU * scale);
+                double fullline = (metrics.FUnitsPerEm * 1.2) * scale;
                 double exHeight = metrics.xAvgWidthFU * scale;
                 double zeroWidth = metrics.xAvgWidthFU * scale;
 
-                return new FontMetrics(fontSize.PointsValue, ascent, descent, line, exHeight, zeroWidth);
+                return new FontMetrics(fontSize.PointsValue, ascent, descent, fullline, baseline, exHeight, zeroWidth);
             }
             else
             {
                 double ascent = fontSize.PointsValue * 0.75;
                 double descent = fontSize.PointsValue * 0.25;
-                double line = fontSize.PointsValue * 1.2;
+                double fullline = fontSize.PointsValue * 1.2;
+                double baseline = fontSize.PointsValue * 0.75;
                 double exHeight = fontSize.PointsValue * 0.5;
                 double zeroWidth = fontSize.PointsValue * 0.5;
-                return new FontMetrics(fontSize.PointsValue, ascent, descent, line, exHeight, zeroWidth);
+                return new FontMetrics(fontSize.PointsValue, ascent, descent, fullline, baseline, exHeight, zeroWidth);
             }
         }
         

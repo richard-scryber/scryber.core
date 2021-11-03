@@ -288,11 +288,11 @@ namespace Scryber.PDF.Graphics
             if (options.Leading.HasValue)
                 h = options.Leading.Value;
             else if (options.Font.FontMetrics != null)
-                h = options.Font.FontMetrics.LineHeight;
+                h = options.Font.FontMetrics.TotalLineHeight;
             else if (null != this.CurrentFontResource && options.Font != null && this.CurrentFontResource.FontName == options.Font.FullName)
             {
                 options.Font.FontMetrics = this.CurrentFontResource.Definition.GetFontMetrics(options.Font.Size);
-                h = options.Font.FontMetrics.LineHeight;
+                h = options.Font.FontMetrics.TotalLineHeight;
             }
 
             else
