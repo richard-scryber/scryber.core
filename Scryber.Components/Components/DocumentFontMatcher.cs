@@ -51,7 +51,7 @@ namespace Scryber.Components
 
                 string name;
                 PDFFontResource found;
-                PDFFontDefinition loaded;
+                FontDefinition loaded;
 
                 //Look for an existing exacy match based on the font
 
@@ -157,12 +157,12 @@ namespace Scryber.Components
             /// <param name="definition">If found, set to the loaded definition</param>
             /// <param name="matchedFamily">Set to the actual family in the font selector, that matched</param>
             /// <returns>True if a family, style and weight were exactly matched, else false</returns>
-            protected bool TryLoadExactFontDefinition(Font font, out PDFFontDefinition definition, out string matchedFamily)
+            protected bool TryLoadExactFontDefinition(Font font, out FontDefinition definition, out string matchedFamily)
             {
                 var sel = font.Selector;
                 while (null != sel)
                 {
-                    definition = PDFFontFactory.GetFontDefinition(sel.FamilyName, font.FontStyle, font.FontWeight, false);
+                    definition = FontFactory.GetFontDefinition(sel.FamilyName, font.FontStyle, font.FontWeight, false);
                     if (null != definition)
                     {
                         matchedFamily = sel.FamilyName;
@@ -248,12 +248,12 @@ namespace Scryber.Components
                 }
 
                 sel = forFont.Selector;
-                PDFFontDefinition matchedDefn = null;
+                FontDefinition matchedDefn = null;
 
                 while(null != sel)
                 {
                     int currProximity = bestProximity;
-                    PDFFontDefinition currDefinition;
+                    FontDefinition currDefinition;
 
                     if(this.TryGetDefinitionForSubstitution(sel.FamilyName, forFont.FontWeight, forFont.FontStyle, ref currProximity, out currDefinition)
                         && currProximity < bestProximity)
@@ -278,12 +278,12 @@ namespace Scryber.Components
 
             #region private bool TryGetDefinitionForSubstitution(string familyName, int fontWeight, FontStyle fontStyle, ref int proximity, out PDFFontDefinition bestDefn)
 
-            private bool TryGetDefinitionForSubstitution(string familyName, int fontWeight, FontStyle fontStyle, ref int proximity, out PDFFontDefinition bestDefn)
+            private bool TryGetDefinitionForSubstitution(string familyName, int fontWeight, FontStyle fontStyle, ref int proximity, out FontDefinition bestDefn)
             {
                 
-                PDFFontFactory.FontReference foundRef = null;
+                FontFactory.FontReference foundRef = null;
 
-                foreach (var reference in PDFFontFactory.GetAllFontsForFamilyAndStyle(familyName, fontStyle))
+                foreach (var reference in FontFactory.GetAllFontsForFamilyAndStyle(familyName, fontStyle))
                 {
                     
                     int newProx = Math.Abs(fontWeight - reference.Weight);
@@ -300,7 +300,7 @@ namespace Scryber.Components
                 //We found a reference with a higher proximity.
                 if(null != foundRef)
                 {
-                    bestDefn = PDFFontFactory.GetFontDefinition(foundRef.FamilyName, foundRef.Style, foundRef.Weight);
+                    bestDefn = FontFactory.GetFontDefinition(foundRef.FamilyName, foundRef.Style, foundRef.Weight);
                     return true;
                 }
                 else if(fontStyle != FontStyle.Regular && proximity == int.MaxValue)
@@ -419,7 +419,7 @@ namespace Scryber.Components
                 var mono = this.OwnerDocument.SharedResources.GetResource(PDFResource.FontDefnResourceType, rsrcName) as PDFFontResource;
                 if (null == mono)
                 {
-                    var monoDefn = PDFFontFactory.GetFontDefinition(defaultFont, defStyle, defWeight, true);
+                    var monoDefn = FontFactory.GetFontDefinition(defaultFont, defStyle, defWeight, true);
                     var fullname = Font.GetFullName(failed, weight, style);
                     mono = this.OwnerDocument.RegisterFontResource(fullname, this.OwnerDocument, monoDefn) ;
                     mono.RegisterSubstitution(failed, weight, style, isSubstitution: true);
@@ -438,7 +438,7 @@ namespace Scryber.Components
             /// <param name="matchedName">The family name that was matched against</param>
             /// <param name="definition">The definition that was used</param>
             /// <returns>The created font resource</returns>
-            protected PDFFontResource RegisterNewDocumentFontResource(string matchedName, int weight, FontStyle style, PDFFontDefinition definition, bool isSubstitution)
+            protected PDFFontResource RegisterNewDocumentFontResource(string matchedName, int weight, FontStyle style, FontDefinition definition, bool isSubstitution)
             {
                 var fullname = Font.GetFullName(matchedName, weight, style);
                 var rsrc = this.OwnerDocument.RegisterFontResource(fullname, this.OwnerDocument, definition);

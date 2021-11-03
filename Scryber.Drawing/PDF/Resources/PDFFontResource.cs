@@ -78,7 +78,7 @@ namespace Scryber.PDF.Resources
 
         private string _fontName;
         private FontResourceMatch _matches;
-        private PDFFontDefinition _defn;
+        private FontDefinition _defn;
         private PDFFontWidths _widths;
         private string _rsrcKey = null;
 
@@ -98,12 +98,12 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public PDFFontDefinition Definition {get;}
+        #region public FontDefinition Definition {get;}
 
         /// <summary>
         /// Gets the underlying definition of this font resource
         /// </summary>
-        public PDFFontDefinition Definition
+        public FontDefinition Definition
         {
             get { return _defn; }
         }
@@ -171,7 +171,7 @@ namespace Scryber.PDF.Resources
 
         #region private PDFFontResource(PDFFontDefinition defn, string resourceName)
 
-        private PDFFontResource(PDFFontDefinition defn, PDFFontWidths widths, string resourceName)
+        private PDFFontResource(FontDefinition defn, PDFFontWidths widths, string resourceName)
             : base(ObjectTypes.FontResource)
         {
             if (null == defn)
@@ -299,7 +299,7 @@ namespace Scryber.PDF.Resources
         /// <param name="defn"></param>
         /// <param name="resourceName"></param>
         /// <returns></returns>
-        public static PDFFontResource Load(PDFFontDefinition defn, string resourceName)
+        public static PDFFontResource Load(FontDefinition defn, string resourceName)
         {
             if (null == defn)
                 throw new ArgumentNullException("defn");

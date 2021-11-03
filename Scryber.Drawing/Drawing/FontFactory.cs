@@ -429,6 +429,18 @@ namespace Scryber.Drawing
         // Initialization and loading of font families
         //
 
+        public static FontDefinition GetFontDefinition(string fullName)
+        {
+            throw new NotImplementedException(
+                "Need to check that this is still used, rather than the Font family, weight and style");
+        }
+        
+        public static bool TryEnsureFont(IComponent mapper, ContextBase context, FontSource source, string familyName,
+            Scryber.Drawing.FontStyle style, int weight, out FontDefinition definition)
+        {
+            throw new NotImplementedException("Need to check the validity of this, as may not be needed");
+        }
+
         #region private static bool EnsureInitialized()
 
         /// <summary>
@@ -641,77 +653,77 @@ namespace Scryber.Drawing
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNew.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("Fcour",
-                        "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("Fcour",
+                        "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNewBold.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBo",
-                        "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourBo",
+                        "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNewBoldItalic.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBoOb",
-                        "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourBoOb",
+                        "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNewItalic.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourOb",
-                        "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourOb",
+                        "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
                 
                 // Helvetica
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Helvetica.Helvetica.ttf", out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("Fhel",
-                        "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("Fhel",
+                        "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Helvetica.HelveticaBold.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelBl",
-                        "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FhelBl",
+                        "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelObBl",
-                        "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FhelObBl",
+                        "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Helvetica.HelveticaOblique.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelOb",
-                        "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FhelOb",
+                        "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
                 
                 // Times
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Times.timesNewRoman.ttf", out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("Ftimes",
-                        "Times-Roman", "Times", false, false, TimesSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("Ftimes",
+                        "Times-Roman", "Times", false, false, TimesSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Times.timesNewRomanBold.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBo",
-                        "Times-Bold", "Times", true, false, TimesSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FtimesBo",
+                        "Times-Bold", "Times", true, false, TimesSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Times.timesNewRomanBoldItalic.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBoIt",
-                        "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FtimesBoIt",
+                        "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Times.timesNewRomanItalic.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesIt",
-                        "Times-Italic", "Times", false, true, TimesSpaceWidthFu);
+                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FtimesIt",
+                        "Times-Italic", "Times", false, true, TimesSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
                 
                 // Symbol
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Symbol.Symbol.ttf", out found))
                     bag.AddFont(found, found.Fonts[0]).Definition =
-                        PDFFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFu);
+                        PDFOpenTypeFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
                 
                 // Zapf
 
-                if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Zapf.ZapfDingbats.ttf", out found))
+                if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Zaph.ZapfDingbats.ttf", out found))
                     bag.AddFont(found, found.Fonts[0]).Definition =
-                        PDFFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFu);
+                        PDFOpenTypeFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
             }
             
 
@@ -750,7 +762,7 @@ namespace Scryber.Drawing
             else
                 throw new PDFFontInitException("Could not find or load the standard font family for Times");
 
-            if (_static.TryGetFamily("Courier", out found))
+            if (_static.TryGetFamily("Courier", out found) || _static.TryGetFamily("Courier New", out found))
             {
                 genericBag.AddFontFamily("Monospace", found);
                 genericBag.AddFontFamily("Courier", found);
@@ -788,6 +800,10 @@ namespace Scryber.Drawing
         {
             using (var stream = assm.GetManifestResourceStream(name))
             {
+                if (null == stream)
+                    throw new NullReferenceException("The binary resource stream for " + name +
+                                                     " could not be found in the assembly " + assm.FullName);
+                
                 info = reader.ReadTypeface(stream, name);
                 
                 if (info == null || !string.IsNullOrEmpty(info.ErrorMessage))
@@ -795,6 +811,9 @@ namespace Scryber.Drawing
                 
                 for (var i = 0; i < info.FontCount; i++)
                 {
+                    if (info.Fonts[i] is Scryber.OpenType.Utility.SingleTypefaceInfo sti)
+                        stream.Position = sti.OffsetInFile;
+                    
                     ITypefaceFont one = reader.GetFont(stream, name, info.Fonts[i]);
                     info.Fonts[i] = one;
                 }

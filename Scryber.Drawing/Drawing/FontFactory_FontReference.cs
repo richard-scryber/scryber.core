@@ -29,7 +29,7 @@ namespace Scryber.Drawing
             /// <summary>
             /// Gets or sets the font definition for this reference
             /// </summary>
-            internal PDFFontDefinition Definition { get; set; }
+            internal FontDefinition Definition { get; set; }
             
             internal bool IsLoaded { get; private set; }
 
@@ -89,13 +89,13 @@ namespace Scryber.Drawing
                     this.Font = loaded;
                 }
                 
-                var data = loaded.GetFileData(DataFormat.TTF);
+                //var data = loaded.GetFileData(DataFormat.TTF);
                 
                 if (this.Definition == null)
                 {
                     
                     this.Definition =
-                        PDFFontDefinition.LoadOpenTypeFontFile(data, this.FamilyName, this.Style, this.Weight, 0);
+                        PDFOpenTypeFontDefinition.Load(loaded, this.FamilyName, this.Style, this.Weight, null);
                 }
                 
 

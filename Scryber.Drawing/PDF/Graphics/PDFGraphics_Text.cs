@@ -171,7 +171,7 @@ namespace Scryber.PDF.Graphics
             if (null == frsc)
                 throw new InvalidOperationException("Current font has not be set on the graphics class, so strings cannot be measured");
 
-            PDFFontDefinition defn = frsc.Definition;
+            FontDefinition defn = frsc.Definition;
             Drawing.Size measured;
             if (defn.CanMeasureStrings)
             {
@@ -183,13 +183,13 @@ namespace Scryber.PDF.Graphics
                     else if (options.WrapText == WordWrap.Character)
                         trimtoword = false;
                 }
-                bool vertical = false; // Not currently supported.
-
+                
                 //inspect the spacing values - if any are set then we must use them in the calculations
                 bool complexSpacing = false;
+                bool vertical = false; // Not currently supported.
                 double? wordSpace = null;
-                double charSpace = Scryber.OpenType.TTFFile.NoCharacterSpace;
-                double hScale = Scryber.OpenType.TTFFile.NoHorizontalScale;
+                double? charSpace = null;
+                double? hScale = null;
 
                 if(options.WordSpacing.HasValue)
                 {
@@ -325,13 +325,13 @@ namespace Scryber.PDF.Graphics
                 }
                 else
                 {
-                    PDFFontDefinition defn = this.CurrentFontResource.Definition;
+                    FontDefinition defn = this.CurrentFontResource.Definition;
 
                     //calculate the required width of a space in PDF Text units
-                    double spaceOffsetPDFUnits = ((wordSpacingOffset.Value.PointsValue) * (double)PDFFontDefinition.PDFGlyphUnits) / fontSize.PointsValue;
+                    double spaceOffsetPDFUnits = ((wordSpacingOffset.Value.PointsValue) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits) / fontSize.PointsValue;
 
                     //caclulate the normal width of a space in PDF Text units
-                    double spaceWidthPDFUnits = (defn.SpaceWidthFontUnits / defn.FontUnitsPerEm) * (double)PDFFontDefinition.PDFGlyphUnits;
+                    double spaceWidthPDFUnits = (defn.SpaceWidthFontUnits / defn.FontUnitsPerEm) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits;
 
                     //calculate the actual space size (normal width + offset) in PDFTextUnits
                     double spaceActualPDFUnits = spaceWidthPDFUnits + spaceOffsetPDFUnits;

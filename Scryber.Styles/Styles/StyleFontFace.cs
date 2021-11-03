@@ -161,14 +161,14 @@ namespace Scryber.Styles
 
             if (null != doc && null != this.Source && null != this.FontFamily)
             {
-                PDFFontDefinition definition;
+                FontDefinition definition;
 
                 if (this.TryGetFont(doc, context, out definition))
                 {
                     string name = Drawing.Font.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
                     //PDFFontResource resource = PDFFontResource.Load(definition, name);
 
-                    doc.EnsureResource(PDFFontResource.FontDefnResourceType, name, definition);
+                    doc.EnsureResource(PDFResource.FontDefnResourceType, name, definition);
                 }
                 else
                     context.TraceLog.Add(TraceLevel.Warning, "CSS", "The font for " + this.Source.ToString() + " with name " + this.FontFamily + " could not be loaded. It may be an unsupported font file.");
@@ -185,13 +185,13 @@ namespace Scryber.Styles
         
 
         
-        private bool TryGetFont(IDocument doc, ContextBase context, out PDFFontDefinition definition)
+        private bool TryGetFont(IDocument doc, ContextBase context, out FontDefinition definition)
         {
             Drawing.FontStyle style = this.FontStyle;
             int weight = this.FontWeight;
             string name = this.FontFamily.FamilyName;
 
-            PDFFontFactory.TryEnsureFont(doc, context, this.Source, name, style, weight, out definition);
+            FontFactory.TryEnsureFont(doc, context, this.Source, name, style, weight, out definition);
             if (null != definition)
             {
                 return true;

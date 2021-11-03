@@ -1268,7 +1268,7 @@ namespace Scryber.Components
         {
             using (this.PerformanceMonitor.Record(PerformanceMonitorType.Font_Load, fullname))
             {
-                PDFFontDefinition defn = PDFFontFactory.GetFontDefinition(fullname);
+                FontDefinition defn = FontFactory.GetFontDefinition(fullname);
                 return RegisterFontResource(fullname, owner, defn);
             }
         }
@@ -1346,9 +1346,9 @@ namespace Scryber.Components
         protected PDFFontResource RegisterFontResource(string fullname, Component owner, object resource)
         {
 
-            if (resource is PDFFontDefinition)
+            if (resource is FontDefinition)
             {
-                PDFFontDefinition defn = (PDFFontDefinition)resource;
+                FontDefinition defn = (FontDefinition)resource;
                 string id = this.GetIncrementID(ObjectTypes.FontResource);
                 resource = PDFFontResource.Load(defn, id);
             }

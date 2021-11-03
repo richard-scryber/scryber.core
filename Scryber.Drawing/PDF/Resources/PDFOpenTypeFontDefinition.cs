@@ -300,7 +300,7 @@ namespace Scryber.PDF.Resources
 
                 double ascent = metrics.AscenderHeightFU * scale;
                 double descent = metrics.DescenderHeightFU * scale;
-                double line = metrics.LineSpaceingFU * scale;
+                double line = (metrics.LineSpaceingFU + metrics.AscenderHeightFU - metrics.DescenderHeightFU) * scale;
                 double exHeight = metrics.xAvgWidthFU * scale;
                 double zeroWidth = metrics.xAvgWidthFU * scale;
 
@@ -325,7 +325,7 @@ namespace Scryber.PDF.Resources
         /// Returns the PDFFontWidths for this font definition
         /// </summary>
         /// <returns></returns>
-        public PDFFontWidths GetWidths()
+        public override PDFFontWidths GetWidths()
         {
             if (this.IsStandard)
                 return new PDFEmptyFontWidths();
@@ -684,6 +684,71 @@ namespace Scryber.PDF.Resources
         }
 
         #endregion
+        
+        //
+        // Init Standard font methods
+        //
+        
+        internal static PDFOpenTypeFontDefinition InitStdSymbolType1WinAnsi(string name, string basetype, int spaceWidthFU, IOpenTypeFont font = null)
+        {
+            PDFOpenTypeFontDefinition f = new PDFOpenTypeFontDefinition();
+            f.SupportsVariants = false;
+            f.SubType = FontType.Type1;
+            f.BaseType = basetype;
+            f.FontEncoding = FontEncoding.WinAnsiEncoding;
+            f.Family = basetype;
+            f.Weight = FontWeights.Regular;
+            f.Italic = false;
+            f.SpaceWidthFontUnits = 577;
+            f.FontUnitsPerEm = 2048;
+            f.OpenTypeFont = font;
+            if (null != font)
+            {
+                var metrics = font.GetMetrics(TypeMeasureOptions.Default);
+                f.FontUnitsPerEm = metrics.FUnitsPerEm;
+                f.SpaceWidthFontUnits = metrics.xAvgWidthFU;
+                
+                if (font.TryGetTable<OpenType.SubTables.CMAPTable>(CMapName, out var table))
+                    f.CMapEncoding = GetOptimumEncoding(table, out var map);
+            }
+
+            f.IsStandard = true;
+
+            return f;
+        }
+        internal static PDFOpenTypeFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, bool bold, bool italic, int spaceWidthFU, IOpenTypeFont font = null)
+        {
+            return InitStdType1WinAnsi(name, basetype, family, family, bold, italic, spaceWidthFU, font);
+        }
+
+        internal static PDFOpenTypeFontDefinition InitStdType1WinAnsi(string name, string basetype, string family, string winName, bool bold, bool italic, int spaceWidthFU, IOpenTypeFont font = null)
+        {
+            PDFOpenTypeFontDefinition f = new PDFOpenTypeFontDefinition();
+            f.SubType = FontType.Type1;
+            f.BaseType = basetype;
+            f.FontEncoding = FontEncoding.WinAnsiEncoding;
+            f.Family = family;
+            f.WindowsName = winName;
+            f.Weight = bold ? FontWeights.Bold : FontWeights.Regular;
+            f.Italic = italic;
+            f.IsStandard = true;
+            f.OpenTypeFont = font;
+            f.SpaceWidthFontUnits = spaceWidthFU;
+            
+            if (null != font)
+            {
+                var metrics = font.GetMetrics(TypeMeasureOptions.Default);
+                f.FontUnitsPerEm = metrics.FUnitsPerEm;
+                f.SpaceWidthFontUnits = metrics.xAvgWidthFU;
+                
+                if (font.TryGetTable<OpenType.SubTables.CMAPTable>(CMapName, out var table))
+                    f.CMapEncoding = GetOptimumEncoding(table, out var map);
+            }
+
+            return f;
+
+        }
+        
         
         //
         // static load methods

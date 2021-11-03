@@ -180,10 +180,14 @@ namespace Scryber.Html.Components
             if(!string.IsNullOrEmpty(this.Media))
             {
                 if (this.Media == "all" || this.Media.StartsWith("all "))
-                    ;
+                {
+                    //we want to use this
+                }
                 else if (this.Media == "print" || this.Media.StartsWith("print "))
-                    ;
-                else
+                {
+                    //we want to use this too
+                }
+                else //we dont want it
                     return;
             }
 

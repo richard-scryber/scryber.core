@@ -352,5 +352,7 @@ namespace Scryber.Drawing
 
         public abstract PDFObjectRef RenderToPDF(string name, PDFFontWidths widths, ContextBase context,
             PDFWriter writer);
+
+        public abstract PDFFontWidths GetWidths();
     }
 }

@@ -34,6 +34,7 @@ namespace Scryber.PDF.Resources
     /// <remarks>
     /// Font Definitions are unique to a document and instances are not shared across multiple files
     /// </remarks>
+    [Obsolete("Use teh base FontDefinition or the PDFOpenTypeFontDefinition classes", true)]
     public class PDFFontDefinition : FontDefinition
     {
 
@@ -325,7 +326,7 @@ namespace Scryber.PDF.Resources
         /// Returns the PDFFontWidths for this font definition
         /// </summary>
         /// <returns></returns>
-        public PDFFontWidths GetWidths()
+        public override PDFFontWidths GetWidths()
         {
 
             
