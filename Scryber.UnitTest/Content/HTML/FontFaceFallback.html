@@ -43,14 +43,14 @@
         }
 
         .fallback {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Unknown Font', sans-serif;
         }
 
         .uni-eth {
             font-family: 'Noto Serif Ethiopic'
         }
 
-        /* Not currently supported open-type CCF font */
+
         .uni-tc {
             font-family: 'Noto Sans TC';
         }
@@ -78,7 +78,7 @@
     <p id="blackfallback" class="black">
         Black should fallback to bold (700) and <b>bold is no different.</b>
     </p>
-    <p id="courierfallback" style="font-family: Roboto">
+    <p id="courierfallback" style="font-family: None">
         A non-existent font with <b>Bold</b>, <i>Italic</i> and <b><i>Bold Italic</i></b>
     </p>
 
@@ -90,8 +90,8 @@
         የሰው፡ልጅ፡ሁሉ፡ሲወለድ፡ነጻና፡በክብርና፡በመብትም፡እኩልነት፡ያለው፡ነው።፡የተፈጥሮ፡ማስተዋልና
     </p>
     <!-- unsupported font-->
-    <p id="uniunsupported" class="uni-tc">
-        A Unicode traditional chinese in not supported font :
+    <p id="unitc" class="uni-tc">
+        A Unicode traditional chinese font :
         鑑於對人類家庭所有成員的固有尊嚴及其平等的和不移的權利的承認，乃是世界自由、正義與和平的基礎
     </p>
 </body>

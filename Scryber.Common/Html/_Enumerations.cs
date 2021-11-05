@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -100,6 +101,8 @@ namespace Scryber.Html
         public const string FontWeight = "font-weight";
         public const string FontSize = "font-size";
         public const string FontFamily = "font-family";
+        public const string FontDisplay = "font-display";
+        public const string FontStretch = "font-stretch";
         public const string FontLineHeight = "line-height";
         public const string Font = "font";
         public const string FontSource = "src";

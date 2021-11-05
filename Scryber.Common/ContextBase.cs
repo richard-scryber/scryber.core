@@ -33,9 +33,7 @@ namespace Scryber
         private PerformanceMonitor _perfmon;
         private ParserConformanceMode _conformance;
         private IDocument _doc;
-        private bool _shouldLogDebug;
-        private bool _shouldLogVerbose;
-        private bool _shouldLogMessage;
+        
 
 
         public ParserConformanceMode Conformance
@@ -67,7 +65,7 @@ namespace Scryber
         /// </summary>
         public bool ShouldLogDebug
         {
-            get { return _shouldLogDebug; }
+            get { return this.TraceLog.RecordLevel <= TraceRecordLevel.Diagnostic; }
         }
 
         /// <summary>
@@ -75,7 +73,7 @@ namespace Scryber
         /// </summary>
         public bool ShouldLogVerbose
         {
-            get { return _shouldLogVerbose; }
+            get { return this.TraceLog.RecordLevel <= TraceRecordLevel.Verbose; }
         }
 
         /// <summary>
@@ -83,7 +81,7 @@ namespace Scryber
         /// </summary>
         public bool ShouldLogMessage
         {
-            get { return _shouldLogMessage; }
+            get { return this.TraceLog.RecordLevel <= TraceRecordLevel.Messages; }
         }
 
         public IDocument Document
@@ -119,9 +117,7 @@ namespace Scryber
             if (null == log)
                 _log = new Logging.DoNothingTraceLog(Scryber.TraceRecordLevel.Off);
 
-            _shouldLogDebug = TraceRecordLevel.Diagnostic >= _log.RecordLevel;
-            _shouldLogVerbose = TraceRecordLevel.Verbose >= _log.RecordLevel;
-            _shouldLogMessage = TraceRecordLevel.Messages >= _log.RecordLevel;
+            
 
             this._items = items;
             this._perfmon = perfmon;

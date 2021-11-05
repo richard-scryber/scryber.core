@@ -85,6 +85,7 @@ namespace Scryber.Styles
             }
         }
 
+        [PDFAttribute("weight")]
         public int FontWeight
         {
             get
@@ -126,19 +127,13 @@ namespace Scryber.Styles
             }
             set
             {
-                Drawing.FontStyle curr;
-                if (!this.TryGetValue(StyleKeys.FontStyleKey, out curr))
-                    curr = Drawing.FontStyle.Regular;
+                Drawing.FontStyle curr = Drawing.FontStyle.Regular;
 
                 if (value)
                 {
-                    curr = curr | Drawing.FontStyle.Italic;
+                    curr = Drawing.FontStyle.Italic;
                 }
-                else
-                {
-                    curr = curr & (~Drawing.FontStyle.Italic);
-                }
-
+ 
                 this.SetValue(StyleKeys.FontStyleKey, curr);
             }
         }

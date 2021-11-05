@@ -328,7 +328,7 @@ namespace Scryber.Html.Components
 
             //Using the new remote reference loader
 
-            this._request = this.Document.RegisterRemoteFileRequest(path, (caller, args, stream) =>
+            this._request = this.Document.RegisterRemoteFileRequest("CSSLink",path, (caller, args, stream) =>
             {
                 if (args.Owner != this)
                     return false;
@@ -339,7 +339,16 @@ namespace Scryber.Html.Components
                         if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                             context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
 
-                        var str = DoLoadReferenceResult(stream, args.FilePath, context);
+                        
+                        string str;
+                        if (stream != null)
+                            str = DoLoadReferenceResult(stream, args.FilePath, context);
+                        else
+                            str = (args.Result as string) ?? throw new NullReferenceException(
+                                "The previous result was not set or is not a string, and no stream was provided");
+                        
+                        args.CompleteRequest(str, true, null);
+                        
                         this.ParseLoadedContent(type, str, args.FilePath, context);
 
                         if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
@@ -353,7 +362,7 @@ namespace Scryber.Html.Components
 
                     return this.IsContentLoaded;
                 }
-            }, this);
+            }, this, null);
 
             
         }

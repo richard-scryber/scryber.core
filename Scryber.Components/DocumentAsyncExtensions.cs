@@ -26,7 +26,7 @@ namespace Scryber.Components
             if (null == stream)
                 throw new ArgumentNullException(nameof(stream));
 
-            var asyncRemotes = new PDFRemoteFileAsyncRequestSet(doc);
+            var asyncRemotes = new RemoteFileAsyncRequestSet(doc);
             doc.RemoteRequests = asyncRemotes;
                         
             int completed = await doc.InitializeAndLoadAsync(format);

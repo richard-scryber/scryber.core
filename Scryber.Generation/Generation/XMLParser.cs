@@ -368,10 +368,10 @@ namespace Scryber.Generation
             if (parsed is IParsedDocument)
             {
                 IParsedDocument xpdoc = parsed as IParsedDocument;
-                xpdoc.TraceLog = this.Settings.TraceLog;
+                xpdoc.SetTraceLog(this.Settings.TraceLog);
+                xpdoc.SetConformanceMode(this.Settings.ConformanceMode);
                 xpdoc.AppendTraceLog = this.Settings.AppendLog;
                 xpdoc.PerformanceMonitor = this.Settings.PerformanceMonitor;
-                xpdoc.ConformanceMode = this.Settings.ConformanceMode;
             }
         }
 

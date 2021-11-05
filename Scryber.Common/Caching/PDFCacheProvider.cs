@@ -29,17 +29,15 @@ namespace Scryber.Caching
     public static class PDFCacheProvider
     {
 
-        public static DateTime NoAbsoluteExpiration = DateTime.MaxValue;
+        public static readonly DateTime NoAbsoluteExpiration = DateTime.MaxValue;
+        
+        public  static readonly TimeSpan NoCacheDuration = TimeSpan.Zero;
 
         /// <summary>
-        /// Gets the IPDFCacheProvider for a web based (ASP.NET) infrastructure
+        /// The defaul caching duration
         /// </summary>
-        /// <returns></returns>
-        public static ICacheProvider GetWeb()
-        {
-            throw new NotSupportedException("Not Supported in .Net Core");
-            //return new PDFWebCacheProvider();
-        }
+        public static TimeSpan DefaultCacheDuration = new TimeSpan(0, 30, 0);
+        
 
         /// <summary>
         /// Gets the IPDFCacheProvider for and application / service based infrastructure

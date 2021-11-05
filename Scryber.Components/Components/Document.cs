@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Net.Http;
 
 using Scryber.Styles;
 using Scryber.PDF.Resources;
@@ -32,10 +33,6 @@ using Scryber.PDF;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Native;
 using Scryber.Options;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using Scryber.OpenType.SubTables;
-using System.Net.Http;
 using Scryber.Logging;
 
 namespace Scryber.Components
@@ -44,7 +41,7 @@ namespace Scryber.Components
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
     public partial class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IStyledComponent,
-                                                      ITemplateParser, IParsedDocument, IControlledComponent
+                                                      ITemplateParser, IParsedDocument, IControlledComponent, IResourceRequester
     {
         //
         // events
@@ -734,17 +731,24 @@ namespace Scryber.Components
         /// <summary>
         /// Registers a file to be loaded from an external source or web url. With a callback to be used once the request has completed.
         /// </summary>
+        /// <param name="type">The type of resource this request this is for</param>
         /// <param name="filePath">The full path to the file to be loaded</param>
         /// <param name="callback">The delegate method to execute when the request has succeeded</param>
         /// <param name="owner">Optional owner for the request</param>
         /// <param name="arguments">Optional arguments that will be give back to the callback method</param>
         /// <returns>A new disposable RemoteFileRequest object</returns>
-        public virtual RemoteFileRequest RegisterRemoteFileRequest(string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
+        public virtual RemoteFileRequest RegisterRemoteFileRequest(string type, string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
         {
-            var request = new RemoteFileRequest(filePath, callback, owner, arguments);
+            var request = new RemoteFileRequest(type, filePath, callback, owner, arguments);
             this.RegisterRemoteFileRequest(request);
 
             return request;
+        }
+
+        IRemoteRequest IResourceRequester.RequestResource(string type, string path, RemoteRequestCallback callback,
+             IComponent owner, object arguments)
+        {
+            return this.RegisterRemoteFileRequest(type, path, callback, owner, arguments);
         }
 
         /// <summary>
@@ -755,13 +759,44 @@ namespace Scryber.Components
         {
             if (null == request)
                 throw new ArgumentNullException(nameof(request));
+            
+            object found;
+
+            if (null != this.CacheProvider &&
+                this.CacheProvider.TryRetrieveFromCache(request.ResourceType, request.FilePath, out found))
+            {
+                if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    this.TraceLog.Add(TraceLevel.Verbose, "Document", "Cache hit for remote request '" + request.ResourceType + ", " + request.FilePath + "'. Completing and calling back with the result");
+                
+                request.CompleteRequest(found, true);
+                request.Callback(request.Owner, request, null);
+            }
 
             this.RemoteRequests.AddRequest(request);
             this.OnRemoteFileRequestRegistered(request);
 
             if (this.RemoteRequests.ExecMode == DocumentExecMode.Immediate && request.IsCompleted == false)
             {
+                if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    this.TraceLog.Add(TraceLevel.Verbose,"Document", "Fulfilling the result for '" + request.FilePath + "' immediately as we are not asyncronous.");
+
                 this.RemoteRequests.FullfillRequest(request);
+            }
+
+            if (null != this.CacheProvider && request.CacheDuration > TimeSpan.Zero)
+            {
+                if (request.Result != null)
+                {
+                    if (this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        this.TraceLog.Add(TraceLevel.Verbose, "Document",
+                            "Adding the result for '" + request.FilePath +
+                            "' to the document cache, so it can be reused");
+
+                    this.CacheProvider.AddToCache(request.ResourceType, request.FilePath, request.Result,
+                        request.CacheDuration);
+                }
+                else if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    this.TraceLog.Add(TraceLevel.Verbose, "Document", "The result of the remote execution was null, so not adding it to the cache for file "+ request.FilePath +"'");
             }
         }
 
@@ -802,7 +837,7 @@ namespace Scryber.Components
                     _log = this.CreateTraceLog();
                 return _log;
             }
-            set
+            protected set
             {
                 _log = value;
                 if (null == value)
@@ -810,6 +845,15 @@ namespace Scryber.Components
                 else
                     _collector = _log.GetLogWithName(TraceLog.ScryberAppendTraceLogName) as Scryber.Logging.PDFCollectorTraceLog;
             }
+        }
+
+        /// <summary>
+        /// IParsed Document implementation to set the TraceLog
+        /// </summary>
+        /// <param name="log"></param>
+        void IParsedDocument.SetTraceLog(TraceLog log)
+        {
+            this.TraceLog = log;
         }
 
         /// <summary>
@@ -893,6 +937,15 @@ namespace Scryber.Components
         {
             get { return _confmode; }
             set { _confmode = value; }
+        }
+
+        /// <summary>
+        /// Explicit IParsedDocument implementation to set the conformance mode.
+        /// </summary>
+        /// <param name="mode"></param>
+        void IParsedDocument.SetConformanceMode(ParserConformanceMode mode)
+        {
+            this._confmode = mode;
         }
 
         #endregion

@@ -152,7 +152,9 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.FontFamily, new CSSFontFamilyParser());
             all.Add(CSSStyleItems.Font, new CSSFontParser());
             all.Add(CSSStyleItems.FontSource, new CSSFontSourceParser());
-
+            all.Add(CSSStyleItems.FontDisplay, new CSSFontDisplayParser());
+            all.Add(CSSStyleItems.FontStretch, new CSSFontStretchParser());
+            
             all.Add(CSSStyleItems.MarginsLeft, new CSSMarginsLeftParser());
             all.Add(CSSStyleItems.MarginsRight, new CSSMarginsRightParser());
             all.Add(CSSStyleItems.MarginsBottom, new CSSMarginsBottomParser());

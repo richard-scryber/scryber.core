@@ -18,10 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Scryber.PDF.Native;
-using Scryber.PDF.Resources;
 using Scryber.Logging;
 
 namespace Scryber
@@ -371,6 +367,8 @@ namespace Scryber
 
     #endregion
 
+    #region public interface ISharedResource
+    
     public interface ISharedResource
     {
         /// <summary>
@@ -390,6 +388,8 @@ namespace Scryber
 
         bool Registered { get; }
     }
+    
+    #endregion
 
     #region public interface IParsedDocument : IDocument
 
@@ -413,19 +413,19 @@ namespace Scryber
         Scryber.Logging.PerformanceMonitor PerformanceMonitor { get; set; }
 
         /// <summary>
-        /// Gets the current conformance mode (strict or lax)
+        /// Sets the current conformance mode (strict or lax)
         /// </summary>
-        ParserConformanceMode ConformanceMode { set; }
+        void SetConformanceMode(ParserConformanceMode mode);
 
         /// <summary>
         /// Gets the trace log associated with the current execution
         /// </summary>
-        TraceLog TraceLog { set; }
+        void SetTraceLog(TraceLog log);
 
     }
 
     #endregion
-
+    
     #region public interface IControlledComponent : IRemoteComponent
 
     /// <summary>
@@ -441,7 +441,37 @@ namespace Scryber
 
     #endregion
 
+    public interface IRemoteRequest
+    {
+        string ResourceType { get; }
+        
+        string FilePath { get; }  
+        
+        IComponent Owner { get; }
+        
+        object Arguments { get; }
+        
+        RemoteRequestCallback Callback { get; }
+        
+        Exception Error { get; }
+        
+        object Result { get; }
+        
+        bool IsCompleted { get; }
+        
+        bool IsSuccessful { get; }
+
+        void CompleteRequest(object cachableResult, bool success, Exception error);
+        
+    }
     
+    /// <summary>
+    /// Defines the interface that the supports making requests for external content, returned as a stream to the callback method.
+    /// </summary>
+    public interface IResourceRequester
+    {
+        IRemoteRequest RequestResource(string type, string path, RemoteRequestCallback callback, IComponent owner, object arguments);
+    }
 
     
 
@@ -473,6 +503,7 @@ namespace Scryber
         /// Performs the selection of data configured on this source
         /// </summary>
         /// <param name="path">The optional restriction.</param>
+        /// <param name="context"></param>
         /// <returns>The top level data associated with this DataSource control.</returns>
         object Select(string path, DataContext context);
 

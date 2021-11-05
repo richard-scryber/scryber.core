@@ -1298,6 +1298,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using var doc = Document.ParseDocument(path);
             //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
 
             using var stream = DocStreams.GetOutputStream("FontFaceFallback.pdf");
             doc.LayoutComplete += DocumentParsing_Layout;
@@ -1386,7 +1387,20 @@ namespace Scryber.Core.UnitTests.Html
             AssertFontFallback(unicode.TextRenderOptions, "Noto Serif Ethiopic", 400, false);
 
             //Unicode fails to courier
-            AssertFontFallback(uniUnsupported.TextRenderOptions, "Courier", 400, false);
+            AssertFontFallback(uniUnsupported.TextRenderOptions, "Noto Sans TC", 400, false);
+
+
+            //Cache check
+            //The previous fonts should be cached and available for re-use in the file.
+            
+            
+            using var doc2 = Document.ParseDocument(path);
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc2.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+
+            using var stream2 = DocStreams.GetOutputStream("FontFaceFallbackCached.pdf");
+            doc2.SaveAsPDF(stream2);
+
         }
 
         private void AssertFontFallback(PDFTextRenderOptions options, string familyName, int weight, bool italic)

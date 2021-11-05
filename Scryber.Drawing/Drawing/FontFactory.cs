@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Scryber.OpenType;
 using Scryber.Options;
 using Scryber.PDF.Resources;
@@ -29,6 +30,12 @@ namespace Scryber.Drawing
 
             internal LinkedFontReference(IFontInfo info, ITypefaceInfo typeface) : base(info, typeface)
             {
+            }
+
+            internal LinkedFontReference(string familyName, FontStyle style, int weight, ITypefaceFont font)
+                : base(familyName, style, weight, font, null)
+            {
+                
             }
 
             internal void Append(LinkedFontReference reference)
@@ -271,6 +278,17 @@ namespace Scryber.Drawing
                 return fontReference;
             }
 
+            public FontReference Add(int fontWeight, FontStyle style, ITypefaceFont font)
+            {
+                LinkedFontReference fontReference = new LinkedFontReference(this.FamilyName, style, fontWeight, font);
+                
+                if (null == this.Styles)
+                    this.Styles = new LinkedStyleReference(this.FamilyName, style);
+                
+                this.Styles.Add(fontReference);
+                return fontReference;
+            }
+
             internal bool TryGetFont(FontStyle style, int weight, out FontReference font)
             {
                 if (null == this.Styles)
@@ -391,6 +409,19 @@ namespace Scryber.Drawing
                     _families.Add(family.FamilyName, family);
                 }
                 var reference = family.Add(font, info);
+                return reference;
+            }
+
+            public FontReference AddFont(string familyName, int weight, FontStyle style, ITypefaceFont font)
+            {
+                FamilyReference family;
+                if (!_families.TryGetValue(familyName, out family))
+                {
+                    family = new FamilyReference(familyName);
+                    _families.Add(familyName, family);
+                }
+
+                var reference = family.Add(weight, style, font);
                 return reference;
             }
 
@@ -969,6 +1000,63 @@ namespace Scryber.Drawing
                 }
             }
 
+        }
+
+        public static IEnumerable<FontDefinition> LoadFontDefinitions(string family, int weight, FontStyle style, string source, Stream fromStream)
+        {
+            EnsureInitialized();
+            
+            if (string.IsNullOrEmpty(source))
+                throw new ArgumentNullException(nameof(source));
+            lock (_initLock)
+            {
+                using (var reader = new TypefaceReader())
+                {
+                    IEnumerable<ITypefaceFont> fonts;
+
+                    if (fromStream.CanSeek == false)
+                    {
+                        using (var seekable = GetSeekableStream(fromStream))
+                        {
+                            fonts = reader.GetFonts(seekable, source);
+                        }
+                    }
+                    else
+                        fonts = reader.GetFonts(fromStream, source);
+
+                    List<FontDefinition> all = new List<FontDefinition>();
+                    foreach (var font in fonts)
+                    {
+                        if (font.IsValid)
+                        {
+                            var reference = _custom.AddFont(family, weight, style, font);
+                            FontDefinition matched = PDFOpenTypeFontDefinition.Load(font, family, style, weight, null);
+                            reference.Definition = matched;
+                            all.Add(matched);
+                        }
+                    }
+
+                    return all;
+                }
+            }
+        }
+
+        private static Stream GetSeekableStream(Stream basicStream)
+        {
+            //var count = 2048;
+            //var buffer = new byte[count];
+
+            var ms = new MemoryStream();
+            basicStream.CopyTo(ms);
+            
+            // while ((count = basicStream.Read(buffer, 0, count)) > 0)
+            // {
+            //     ms.Write(buffer, 0, count);
+            // }
+            //
+            ms.Position = 0;
+            
+            return ms;
         }
     }
 }

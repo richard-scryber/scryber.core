@@ -20,25 +20,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using Scryber.PDF;
-using Scryber.PDF.Native;
-using Scryber.PDF.Resources;
 using System.Reflection;
 using Scryber.OpenType;
 using System.IO;
-using System.CodeDom.Compiler;
-using System.Data;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization.Formatters;
 using System.Net.Http;
 using System.Collections;
-using System.Xml;
-using System.Diagnostics.CodeAnalysis;
 using Scryber.Drawing;
-using Scryber.OpenType.TTF;
 
 namespace Scryber.PDF.Resources
 {

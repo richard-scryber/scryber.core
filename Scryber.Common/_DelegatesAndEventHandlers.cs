@@ -113,5 +113,13 @@ namespace Scryber
 
 
     
+    /// <summary>
+    /// A callback method that is raised from an IResourceRequester to load content from a remote resource.
+    /// </summary>
+    /// <param name="raiser">The component registered as the raiser of the request</param>
+    /// <param name="request">The details of the request, including any result if completed</param>
+    /// <param name="response">The response that was returned from a remote request if initiated</param>
+    public delegate bool RemoteRequestCallback(IComponent raiser, IRemoteRequest request, System.IO.Stream response);
+    
 
 }

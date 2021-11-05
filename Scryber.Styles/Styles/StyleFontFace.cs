@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using Scryber.Drawing;
+using Scryber.OpenType;
 using Scryber.PDF.Resources;
 
 namespace Scryber.Styles
@@ -9,6 +12,8 @@ namespace Scryber.Styles
     public class StyleFontFace : Style
     {
 
+        private const string FontLogCategory = "@font-face";
+        
         #region StyleItemFontFace inner class
 
         /// <summary>
@@ -156,25 +161,94 @@ namespace Scryber.Styles
         protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
-            
-            var doc = context.Document;
 
-            if (null != doc && null != this.Source && null != this.FontFamily)
+            if (context.Document is IResourceRequester doc && null != this.Source && null != this.FontFamily)
             {
                 FontDefinition definition;
-
+                string name = Drawing.Font.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
+                
                 if (this.TryGetFont(doc, context, out definition))
                 {
-                    string name = Drawing.Font.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
-                    //PDFFontResource resource = PDFFontResource.Load(definition, name);
-
-                    doc.EnsureResource(PDFResource.FontDefnResourceType, name, definition);
+                    context.Document.EnsureResource(PDFResource.FontDefnResourceType, name, definition);
                 }
                 else
-                    context.TraceLog.Add(TraceLevel.Warning, "CSS", "The font for " + this.Source.ToString() + " with name " + this.FontFamily + " could not be loaded. It may be an unsupported font file.");
+                {
+                    var source = GetSupportedSource(this.Source);
+                    if (context.ShouldLogVerbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, FontLogCategory,
+                            "Initiating the remote request for font " + name + " from source " + source.Source);
+                    
+                    doc.RequestResource(source.Type.ToString(), source.Source, ResolveFontRequest, context.Document, context);
+                }
             }
             else
-                context.TraceLog.Add(TraceLevel.Warning, "CSS", "No font-family or src was specified for the @font-face rule.");
+                context.TraceLog.Add(TraceLevel.Warning, FontLogCategory, "No font-family or src was specified for the @font-face rule.");
+        }
+
+        private bool ResolveFontRequest(IComponent owner, IRemoteRequest request, Stream response)
+        {
+            ContextBase context = (ContextBase) request.Arguments;
+            
+            FontDefinition definition;
+            IDocument doc = (IDocument) owner;
+            var fullName =
+                Scryber.Drawing.Font.GetFullName(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle);
+
+            if (null != response)
+            {
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Begin(TraceLevel.Verbose, FontLogCategory,
+                        "Response stream received for the font definition of " + fullName);
+
+                var all = FontFactory.LoadFontDefinitions(this.FontFamily.FamilyName, this.FontWeight, this.FontStyle,
+                    request.FilePath, response);
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Verbose, FontLogCategory,
+                        " Font factory has loaded" + all.ToArray().Length + " fonts from the stream.");
+
+                //do a check to make sure the font is there
+                definition =
+                    FontFactory.GetFontDefinition(this.FontFamily.FamilyName, this.FontStyle, this.FontWeight, true);
+
+                request.CompleteRequest(definition, true, null);
+
+                if (null != definition)
+                {
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.End(TraceLevel.Verbose, FontLogCategory,
+                            "Completed the loading of font definition " + definition.ToString());
+
+                    else if (context.ShouldLogMessage)
+                        context.TraceLog.Add(TraceLevel.Message, FontLogCategory,
+                            "Completed the loading of font definition " + definition.ToString() + " from file " +
+                            request.FilePath);
+                }
+            }
+            else
+            {
+                if(context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Debug, FontLogCategory, "Response stream was not set, so assigning the direct result as expected to be a font definition for source " + request.FilePath);
+                
+                definition = (FontDefinition) request.Result;
+            }
+
+            if (null != definition)
+            {
+                doc.EnsureResource(PDFResource.FontDefnResourceType, fullName, definition);
+                
+                if(context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Debug, FontLogCategory, "Added the font " + fullName + " to the document resources for " + definition.ToString());
+                
+                return true;
+            }
+            else
+            {
+                context.TraceLog.Add(TraceLevel.Warning, FontLogCategory, "Could not load a font definition for the font " + fullName + " from the source " + request.FilePath);
+                return false;
+            }
+
+
         }
 
         public override string ToString()
@@ -182,16 +256,31 @@ namespace Scryber.Styles
             return "@font-face";
         }
 
-        
+        protected virtual FontSource GetSupportedSource(FontSource source)
+        {
+            while (null != source)
+            {
+                if (source.Format == FontSourceFormat.WOFF)
+                    return source;
+                else if (source.Format == FontSourceFormat.TrueType)
+                    return source;
+                else if (source.Format == FontSourceFormat.OpenType)
+                    return source;
+                else
+                    source = source.Next;
+            }
 
+            return null;
+        }
         
-        private bool TryGetFont(IDocument doc, ContextBase context, out FontDefinition definition)
+        
+        private bool TryGetFont(IResourceRequester requestor, ContextBase context, out FontDefinition definition)
         {
             Drawing.FontStyle style = this.FontStyle;
             int weight = this.FontWeight;
             string name = this.FontFamily.FamilyName;
 
-            FontFactory.TryEnsureFont(doc, context, this.Source, name, style, weight, out definition);
+            definition = FontFactory.GetFontDefinition(name, style, weight, throwNotFound: false);
             if (null != definition)
             {
                 return true;
