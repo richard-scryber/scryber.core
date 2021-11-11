@@ -46,7 +46,7 @@ namespace Scryber.Drawing
                 if (null == this.Next)
                     this.Next = reference;
                 else if (reference.Weight == this.Weight)
-                    ; //do nothing
+                {} //do nothing
                 else if (this.Next.Weight > reference.Weight)
                 {
                     reference.Next = this.Next;
@@ -674,8 +674,7 @@ namespace Scryber.Drawing
             var bag = new FamilyReferenceBag();
 
             var assm = typeof(FontFactory).Assembly;
-            byte[] bin;
-            FontReference fRef;
+            
             ITypefaceInfo found;
             using (var reader = new TypefaceReader())
             {

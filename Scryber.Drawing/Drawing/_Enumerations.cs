@@ -38,6 +38,15 @@ namespace Scryber.Drawing
         Custom
     }
 
+    public enum ImageFormat
+    {
+        Png,
+        Jpeg,
+        Tiff,
+        Gif,
+        Bitmap
+    }
+
     /// <summary>
     /// Available page units
     /// </summary>

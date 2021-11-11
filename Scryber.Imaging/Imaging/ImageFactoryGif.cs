@@ -6,6 +6,7 @@ using Scryber.Imaging.Formatted;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Gif;
 
 namespace Scryber.Imaging
 {
@@ -31,7 +32,13 @@ namespace Scryber.Imaging
 
             if (format.Name == "GIF")
             {
-                data = GetImageDataForImage(img, path);
+                var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
+                
+                const bool hasAlpha = true;
+                const ColorSpace colorSpace = ColorSpace.RGB;
+                const int bitDepth = 8;
+                
+                data = GetImageDataForImage(ImageFormat.Gif, img, path, bitDepth, hasAlpha, colorSpace);
             }
 
 

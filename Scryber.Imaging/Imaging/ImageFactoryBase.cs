@@ -8,7 +8,7 @@ using Scryber.Drawing;
 using Scryber.Imaging.Formatted;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing.Processors.Quantization;
+
 
 namespace Scryber.Imaging
 {
@@ -25,12 +25,12 @@ namespace Scryber.Imaging
             return this.DoLoadImageDataAsync(document, owner, path).Result;
         }
 
-        public async virtual Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
+        public virtual async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             return await this.DoLoadImageDataAsync(document, owner, path);
         }
 
-        protected async virtual Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
+        protected virtual async Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             Stream stream = null;
             ImageData data = null;
@@ -38,11 +38,11 @@ namespace Scryber.Imaging
             {
                 if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
                 {
-                    stream = await LoadDataFromUri(path);
+                    stream = await LoadDataFromUriAsync(path);
                 }
                 else if (System.IO.Path.IsPathRooted(path))
                 {
-                    stream = await LoadDataFromFile(path);
+                    stream = await LoadDataFromFileAsync(path);
                 }
 
                 data = DoDecodeImageData(stream, document, owner, path);
@@ -60,9 +60,9 @@ namespace Scryber.Imaging
 
         }
 
-        protected virtual async Task<Stream> LoadDataFromUri(string path)
+        protected virtual async Task<Stream> LoadDataFromUriAsync(string path)
         {
-            var httpClient = Scryber.ServiceProvider.GetService<HttpClient>();
+            var httpClient = GetHttpClient();
             var disposeClient = false;
 
             if (null == httpClient)
@@ -79,16 +79,26 @@ namespace Scryber.Imaging
             }
             finally
             {
-                if (disposeClient && null != httpClient)
+                if (disposeClient)
                     httpClient.Dispose();
             }
         }
 
-        protected virtual async Task<Stream> LoadDataFromFile(string path)
+        protected virtual HttpClient GetHttpClient()
+        {
+            return Scryber.ServiceProvider.GetService<HttpClient>();
+        }
+        
+        /// <summary>
+        /// Runs syncronously, but matches the pattern and can be overriden to perform any async operation
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        protected virtual async Task<Stream> LoadDataFromFileAsync(string path)
         {
             return new System.IO.FileStream(path, FileMode.Open, FileAccess.Read);
         }
-
+        
         /// <summary>
         /// Method all inheritors should implement to return data 
         /// </summary>
@@ -142,7 +152,7 @@ namespace Scryber.Imaging
 
             lock (_lock)
             {
-                
+                //SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.AddImageFormat(SixLabors.ImageSharp.Formats);
                 _factories = new Dictionary<Type, FactoryCreateInstance>();
                 _factories.Add(typeof(Image<A8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
                 _factories.Add(typeof(Image<Argb32>), (img, src) => 
@@ -182,7 +192,7 @@ namespace Scryber.Imaging
         }
 
 
-        protected virtual ImageData GetImageDataForImage(Image baseImage, string source)
+        protected virtual PDFImageSharpData GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
         {
             if (null == baseImage)
                 throw new ArgumentNullException(nameof(baseImage));
@@ -191,7 +201,10 @@ namespace Scryber.Imaging
 
             var method = GetImageFactory(type, true);
 
-            return method(baseImage, source);
+            var data = method(baseImage, source) as PDFImageSharpData;
+            data.SetSourceImageFormat(format, bitdepth, hasAlpha, colorSpace);
+
+            return data;
         }
 
     }

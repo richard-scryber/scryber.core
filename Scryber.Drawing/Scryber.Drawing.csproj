@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Errors1.Designer.cs" />
+    <Compile Remove="Drawing\Imaging\**" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Text\_FontResources\" />
@@ -58,6 +59,7 @@
     <None Remove="PDF\Resources\" />
     <None Remove="Svg\" />
     <None Remove="PDF\Graphics\" />
+    <None Remove="Drawing\Imaging\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />
@@ -74,5 +76,6 @@
     <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanBold.ttf" />
     <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanBoldItalic.ttf" />
     <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanItalic.ttf" />
+    <EmbeddedResource Remove="Drawing\Imaging\**" />
   </ItemGroup>
 </Project>

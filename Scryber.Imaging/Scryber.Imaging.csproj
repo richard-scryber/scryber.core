@@ -29,6 +29,11 @@
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+    <Content Include="ImageSharp\NetStandard2.0\SixLabors.ImageSharp.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SixLabors.ImageSharp, Version=0.0.1.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13">
+      <HintPath>ImageSharp\Net5.0\SixLabors.ImageSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

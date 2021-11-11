@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Scryber.Components;
 using Scryber.Drawing;
-using Scryber.Drawing.Imaging;
 using Scryber.PDF.Resources;
 using Scryber.Styles;
 using System.ComponentModel;

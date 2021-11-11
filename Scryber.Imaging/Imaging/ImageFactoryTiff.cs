@@ -6,6 +6,8 @@ using Scryber.Imaging.Formatted;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Tga;
+using SixLabors.ImageSharp.Formats.Tiff;
 
 namespace Scryber.Imaging
 {
@@ -31,7 +33,12 @@ namespace Scryber.Imaging
 
             if (format.Name == "TIFF")
             {
-                data = GetImageDataForImage(img, path);
+                var meta = img.Metadata.GetFormatMetadata(TiffFormat.Instance);
+                const ColorSpace colorSpace = ColorSpace.RGB;
+                const int bitDepth = 8;
+                const bool hasAlpha = true;
+                
+                data = GetImageDataForImage(ImageFormat.Tiff, img, path, bitDepth, hasAlpha, colorSpace);
             }
 
 

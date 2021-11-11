@@ -422,8 +422,8 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, this.VAlignment, this.Contents.Count);
             line.SetOffset(line.OffsetX, this.UsedSize.Height);
-            if (null != last)
-                line.BaseLineOffset = last.BaseLineOffset;
+            //if (null != last)
+            //    line.BaseLineOffset = last.BaseLineOffset;
 
             this.Contents.Add(line);
 

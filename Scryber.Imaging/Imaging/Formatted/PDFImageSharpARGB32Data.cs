@@ -11,7 +11,7 @@ namespace Scryber.Imaging.Formatted
 
 
         public PDFImageSharpARGB32Data(Image img, string source)
-            : base(img, source)
+            : base(img, source, GetAlphaFlagForInfo(img.PixelType))
         {
         }
 
@@ -34,7 +34,6 @@ namespace Scryber.Imaging.Formatted
                 writer.WriteRaw(buffer, 0, buffer.Length);
                 total += buffer.Length;
             }
-
             return total;
         }
 

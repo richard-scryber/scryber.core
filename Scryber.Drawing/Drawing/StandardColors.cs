@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.Drawing
 {
-    public static class StandardColors
+    public class StandardColors
     {
 
         [System.Xml.Serialization.XmlAttribute("Aqua")]
@@ -210,5 +210,11 @@ namespace Scryber.Drawing
             
             return c;
         }
+    }
+
+    [Obsolete("Please use the Scryber.Drawing.StandardColors class, rather than the Scryber.Drawing.PDFColors", true)]
+    public class PDFColors : StandardColors
+    {
+        
     }
 }

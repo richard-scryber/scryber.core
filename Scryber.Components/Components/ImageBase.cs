@@ -29,7 +29,7 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Components
 {
-    public abstract class ImageBase : VisualComponent, IPDFImageComponent, IOptimizeComponent
+    public abstract class ImageBase : VisualComponent, IPDFImageComponent, IOptimizeComponent, IPDFRenderComponent
     {
 
         private PDFImageXObject _xobj = null;

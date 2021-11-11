@@ -6,6 +6,7 @@ using Scryber.Imaging.Formatted;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace Scryber.Imaging
 {
@@ -27,11 +28,43 @@ namespace Scryber.Imaging
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
             var img = Image.Load(config, stream, out format);
             
-            ImageData data = null;
+            PDFImageSharpData data = null;
 
             if (format.Name == "PNG")
             {
-                data = GetImageDataForImage(img, path);
+                var meta = img.Metadata.GetFormatMetadata(PngFormat.Instance);
+
+                
+                
+                ColorSpace colorSpace = meta.ColorType == PngColorType.Grayscale ? ColorSpace.G : ColorSpace.RGB;
+                int depth;
+
+                switch (meta.BitDepth)
+                {
+                    case (PngBitDepth.Bit1):
+                        depth = 1;
+                        break;
+                    case (PngBitDepth.Bit2):
+                        depth = 2;
+                        break;
+                    case (PngBitDepth.Bit4):
+                        depth = 4;
+                        break;
+                    case (PngBitDepth.Bit8):
+                        depth = 8;
+                        break;
+                    case (PngBitDepth.Bit16):
+                        depth = 16;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException("The bit depth for the Png image " + path +
+                                                           " was out of range : " + meta.BitDepth.ToString());
+                }
+                
+                var alpha = meta.HasTransparency;
+                
+                data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, path, depth, alpha, colorSpace);
+                
             }
 
 

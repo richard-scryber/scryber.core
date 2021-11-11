@@ -26,19 +26,19 @@ namespace Scryber.PDF
     public sealed class PDFDeflateStreamFilter : IStreamFilter
     { 
         private const int BufferLength = 1024;
-        private const string DefaultFilterName = "FlateDecode";
+        public const string DefaultFilterName = "FlateDecode";
 
-        private string _defalteName = DefaultFilterName;
+        private string _deflateName = DefaultFilterName;
        
         public string FilterName
         {
             get
             {
-                return _defalteName;
+                return _deflateName;
             }
             set
             {
-                _defalteName = value;
+                _deflateName = value;
             }
         }
 
@@ -73,7 +73,12 @@ namespace Scryber.PDF
                 byte[] output;
                 PDFDeflateZLib zlib = new PDFDeflateZLib();
                 output = zlib.Compress(orig);
-                return output;
+                
+                //The ZLib algorithm will return null if there is no compression
+                if (null == output)
+                    return orig;
+                else
+                    return output;
             }
             catch (Exception ex)
             {

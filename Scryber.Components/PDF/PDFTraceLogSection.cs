@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Components;
-using Scryber.Drawing.Imaging;
 using Scryber.PDF.Resources;
 using Scryber.Logging;
 
@@ -176,16 +175,6 @@ namespace Scryber.PDF
                 cell.Contents.Add(bold);
                 cell.Contents.Add(new LineBreak());
                 var str = img.ImageData.PixelWidth + " by " + img.ImageData.PixelHeight + " pixels, ";
-                if (img.ImageData is PDFBinaryImageData bin)
-                {
-                    str += Math.Round((double)bin.Data.Length / 1024.0, 2) + " original Kb";
-                    if (img.ImageData.HasFilter)
-                    {
-                        var data = bin.GetCachedFilteredData(img.ImageData.Filters, null);
-                        if (null != data)
-                            str += ", " + Math.Round((double)data.Length / 1024.0, 2) + " compressed Kb";
-                    }
-                }
                 cell.Contents.Add(new TextLiteral(str));
             }
             else

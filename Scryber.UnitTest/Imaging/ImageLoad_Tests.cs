@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using io = System.IO;
 using System.IO;
 using Scryber.Drawing;
+using Scryber.Imaging;
 using Scryber.PDF.Resources;
 
 namespace Scryber.Core.UnitTests.Imaging
@@ -20,7 +21,17 @@ namespace Scryber.Core.UnitTests.Imaging
         {
         }
 
-
+        private const int GroupHResolution = 144;
+        private const int GroupVResolution = 144;
+        private const int GroupWPixel = 396;
+        private const int GroupHPixel = 342;
+        private const int GroupBitsPerColor = 8;
+        private const int GroupColorsPerSample = 3*8;
+        private const ColorSpace GroupColorSpace = ColorSpace.RGB;
+        private static readonly Unit GroupDisplayWidth = new Unit(2.75, PageUnits.Inches);
+        private static readonly Unit GroupDisplayHeight = new Unit(2.375, PageUnits.Inches);
+        
+        
         [TestMethod()]
         public void LoadPngFromFile()
         {
@@ -34,8 +45,67 @@ namespace Scryber.Core.UnitTests.Imaging
                 throw new FileNotFoundException(path);
 
             var data = factory.LoadImageData(doc, page, path);
+            
+            Assert.IsNotNull(data, "The returned image data was null in the Group.png image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.png image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.png image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.png image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.png image");
+            Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.png image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasFilter);
+            Assert.IsNull(data.Filters);
+            Assert.IsFalse(data.IsPrecompressedData);
 
-            Assert.IsNotNull(data);
+            Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
+            var imgSharp = (PDFImageSharpData) data;
+            Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
+
+        }
+        
+        [TestMethod()]
+        public void LoadJpegFromFile()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryJpeg();
+            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "Group.jpg");
+            path = io.Path.GetFullPath(path);
+            
+            if (!io.File.Exists(path))
+                throw new FileNotFoundException(path);
+
+            var data = factory.LoadImageData(doc, page, path);
+            
+            Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.png image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.png image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.png image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.png image");
+            Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.png image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            
+            //We should have the JCTDecode filter for jpeg images
+            Assert.IsTrue(data.IsPrecompressedData);
+            Assert.IsTrue(data.HasFilter);
+            Assert.IsNotNull(data.Filters);
+            Assert.AreEqual(1, data.Filters.Length);
+            Assert.AreEqual("DCTDecode" , data.Filters[0].FilterName);
+
+            Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
+            var imgSharp = (PDFImageSharpData) data;
+            Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
+
         }
 
 
@@ -61,7 +131,11 @@ namespace Scryber.Core.UnitTests.Imaging
             img.BorderStyle = LineType.Solid;
 
             page.Contents.Add(img);
+
+            
+            
             page.Padding = new Thickness(20);
+            
 
             doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
 
@@ -70,33 +144,66 @@ namespace Scryber.Core.UnitTests.Imaging
                 doc.SaveAsPDF(stream);
             }
 
-            Assert.AreEqual(1, doc.SharedResources.Count);
+            Assert.AreEqual(1, doc.SharedResources.Count, "The image is not in the document, or more resources were loaded");
 
-            //Second time for performance
+            var xobj = doc.SharedResources[0] as PDFImageXObject;
+            Assert.IsNotNull(xobj, "There was no image xObject in the document");
+            Assert.IsTrue(xobj.Registered);
+            Assert.IsTrue(xobj.Source.EndsWith("Group.png"), "The source was expected to end with the name of the file");
+            Assert.AreEqual(path, xobj.Source, "The source did not match the xObject source");
+            var data = xobj.ImageData;
 
-            doc = new Document();
+            Assert.IsNotNull(data, "The image data was null");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.png image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.png image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.png image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.png image");
+            Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.png image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+        }
+
+        /// <summary>
+        /// This image does not compress with zip, and the algorithm returns null.
+        /// Should just write the raw image data
+        /// </summary>
+        [TestMethod]
+        public void ZeroCompressionImage()
+        {
+            var imgPath =
+                "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-16-alpha.png";
+
+            var doc = new Document();
+            doc.AppendTraceLog = true;
+            var factory = new Scryber.Imaging.ImageFactoryPng();
             doc.ImageFactories.Add(new Options.PDFImageFactory("PNG", new System.Text.RegularExpressions.Regex(".*\\.png", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
 
-            page = new Page();
-            doc.Pages.Add(page);
+            var pg = new Page() {Padding = 20.0, BorderColor = StandardColors.Black, BorderWidth = 1};
+            doc.Pages.Add(pg);
 
-            img = new Image();
-            img.Source = path;
-            img.BorderColor = StandardColors.Black;
-            img.BorderStyle = LineType.Solid;
+            var img = new Image() {Source = imgPath};
+            pg.Contents.Add(img);
 
-            page.Contents.Add(img);
-
-            page.Padding = new Thickness(20);
-            doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
-            doc.AppendTraceLog = true;
-
-            using (var stream = DocStreams.GetOutputStream("NewImagingTest_Performance.pdf"))
+            using (var stream = DocStreams.GetOutputStream("ImageCompressionZero.pdf"))
             {
                 doc.SaveAsPDF(stream);
             }
 
             Assert.AreEqual(1, doc.SharedResources.Count);
+            var resource = doc.SharedResources[0] as PDFImageXObject;
+            Assert.IsNotNull(resource);
+            var data = resource.ImageData as Scryber.Imaging.PDFImageSharpData;
+            Assert.IsNotNull(data);
+            var expectedRGB = 256 * 256 * 3;
+            var expectedAlpha = 256 * 256;
+            Assert.AreEqual(data.ImageDataLength, data.ImageOutputLength, "The image data and output lengths were not the same");
+            Assert.AreEqual(expectedRGB, data.ImageOutputLength, "The image data should be " + expectedRGB + " output length");
+            Assert.AreEqual(expectedAlpha, data.AlphaDataLength, "The image alpha should be " + expectedAlpha + " data length");
+
         }
 
 
@@ -120,19 +227,19 @@ namespace Scryber.Core.UnitTests.Imaging
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-16.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-2-tRNS.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-4-tRNS.png",
-
+            
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-8-tRNS.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-alpha-16.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-alpha-8.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray_4bpp.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/icon.png",
-
+            
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/indexed.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/interlaced.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-16-alpha.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-48bpp-interlaced.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-48bpp.png",
-
+            
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-8-tRNS.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/vim16x16_1.png",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/vim16x16_2.png",
@@ -174,6 +281,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 Span label = new Span();
                 label.Contents.Add(new TextLiteral(img.ID));
                 label.Margins = new Thickness(0, 0, 10, 0);
+                label.PositionMode = PositionMode.Block;
                 page.Contents.Add(label);
 
                 ids.Add(System.IO.Path.GetFileName(src));
@@ -308,7 +416,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
         string[] allGif = new string[]
         {
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/GlobalQuantizationTest.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/GlobalQuantizationTest.gif",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_1x4.gif",
             //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_4x1.gif",
             //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/cheers.gif",

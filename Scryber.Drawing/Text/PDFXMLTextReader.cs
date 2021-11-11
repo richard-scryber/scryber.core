@@ -167,7 +167,7 @@ namespace Scryber.Text
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Cannot read");
-                throw ex;
+                throw;
             }
         }
 

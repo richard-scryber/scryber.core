@@ -6,7 +6,6 @@ using Scryber.PDF.Native;
 using Scryber;
 using System.Collections.Generic;
 using System.Linq;
-using Scryber.Drawing.Imaging;
 
 namespace Scryber.Core.UnitTests.Drawing
 {

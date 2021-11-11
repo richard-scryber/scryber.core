@@ -232,31 +232,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(expected, actual);
 
         }
-
-        private void InitStylesDocument(StylesDocument target)
-        {
-            StyleDefn defn = new StyleDefn();
-            defn.AppliedType = typeof(Label);
-            defn.AppliedClass = "sea";
-
-            defn.Border.Color = StandardColors.Red;
-            defn.Border.Width = 10;
-            defn.Font.FontFamily = (FontSelector)"Helvetica";
-            target.Styles.Add(defn);
-
-            StyleDefn defn2 = new StyleDefn();
-            defn2.AppliedClass = "sea";
-
-            defn2.Border.Color = StandardColors.Gray;
-            defn2.Columns.ColumnCount = 3;
-            target.Styles.Add(defn2);
-
-            StyleDefn defn3 = new StyleDefn();
-            defn3.AppliedClass = "other";
-            defn3.Border.Width = 20;
-            defn3.Stroke.Color = StandardColors.Aqua;
-            target.Styles.Add(defn3);
-        }
+        
 
 
         /// <summary>
@@ -266,13 +242,12 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            string classname = "sea";
+            string classname = ".sea";
             StylesDocument target = new StylesDocument();
 
             // same class, same type = applied
             StyleDefn defn = new StyleDefn();
-            defn.AppliedType = typeof(Label);
-            defn.AppliedClass = classname;
+            defn.Match = "label" + classname;
 
             defn.Border.Color = StandardColors.Red;
             defn.Border.Width = 10;
@@ -281,7 +256,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             // same class no type = applied (lower priority)
             StyleDefn defn2 = new StyleDefn();
-            defn2.AppliedClass = classname;
+            defn2.Match = classname;
 
             defn2.Border.Color = StandardColors.Gray;
             defn2.Columns.ColumnCount = 3;
@@ -289,15 +264,14 @@ namespace Scryber.Core.UnitTests.Styles
 
             // different class = not applied
             StyleDefn defn3 = new StyleDefn();
-            defn3.AppliedClass = "other";
+            defn3.Match = ".other";
             defn3.Border.Width = 20;
             defn3.Stroke.Color = StandardColors.Aqua;
             target.Styles.Add(defn3);
 
             //same class but different type = not applied
             StyleDefn defn4 = new StyleDefn();
-            defn4.AppliedClass = classname;
-            defn4.AppliedType = typeof(Image);
+            defn4.Match = "img" + classname;
             defn4.Font.FontFamily = (FontSelector)"Symbol";
             target.Styles.Add(defn4);
 
@@ -305,7 +279,7 @@ namespace Scryber.Core.UnitTests.Styles
             
 
             Style actual = new Style();
-            Label lbl = new Label();
+            Label lbl = new Label() {ElementName = "label"};
             lbl.StyleClass = classname;
             target.MergeInto(actual, lbl, ComponentState.Normal);
             actual.Flatten();

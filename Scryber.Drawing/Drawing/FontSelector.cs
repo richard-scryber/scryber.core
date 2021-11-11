@@ -93,6 +93,11 @@ namespace Scryber.Drawing
             return this.Equals(obj as FontSelector);
         }
 
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
         public bool Equals(FontSelector selector)
         {
             if (null == selector)

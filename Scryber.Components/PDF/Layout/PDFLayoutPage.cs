@@ -39,10 +39,6 @@ namespace Scryber.PDF.Layout
         private static PDFLayoutBlock[] _empty = new PDFLayoutBlock[] {};
         private PDFLayoutBlock _header, _footer;
         private PDFLayoutBlock _current;
-        private PDFImageXObject _badgexobj;
-        private Size _badgeSize;
-        private Point _badgePosition;
-        private bool _outputbadge = true;
         private int _pageindex = -1;
 
         //

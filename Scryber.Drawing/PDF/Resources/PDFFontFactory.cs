@@ -1573,7 +1573,7 @@ namespace Scryber.PDF.Resources
                 }
                 catch (Exception ex)
                 {
-                    context.TraceLog.Add(TraceLevel.Error, "FONT", "Could not load the font from the url " + url);
+                    context.TraceLog.Add(TraceLevel.Error, "FONT", "Could not load the font from the url " + url, ex);
                     definition = null;
                     tried = false;
                 }

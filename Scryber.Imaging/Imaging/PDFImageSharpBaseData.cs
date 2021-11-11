@@ -5,6 +5,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.Metadata;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -14,15 +15,58 @@ namespace Scryber.Imaging
     {
         
 
-        public bool HasAlpha
-        {
-            get;
-            protected set;
-        }
+        public long ImageOutputLength { get; protected set; }
+        
+        public long ImageDataLength { get; protected set; }
+        
+        public long AlphaOutputLength { get; protected set; }
 
+        public long AlphaDataLength { get; protected set; }
+        
+        
         public PDFImageSharpData(SixLabors.ImageSharp.Image img, string source)
             : base(source, img.Width, img.Height)
         {
+        }
+        
+        protected virtual void InitPixelData(bool hasAlpha, ColorSpace color, int bitsPerColor, int colorsPerSample, double horizResolution, double vertResolution, PixelResolutionUnit resolutionUnits)
+        {
+            this.ColorSpace = color;
+            this.HasAlpha = hasAlpha;
+            this.BitsPerColor = bitsPerColor;
+            this.ColorsPerSample = colorsPerSample;
+            this.HorizontalResolution = GetResolution(horizResolution, resolutionUnits);
+            this.VerticalResolution = GetResolution(vertResolution, resolutionUnits);
+
+        }
+
+        /// <summary>
+        /// Used by the ImageFactories after the image has loaded to update the format.
+        /// </summary>
+        /// <param name="imageFormat"></param>
+        /// <param name="bitDepth"></param>
+        /// <param name="hasAlpha"></param>
+        /// <param name="colorSpace"></param>
+        internal void SetSourceImageFormat(ImageFormat imageFormat, int bitDepth, bool hasAlpha, ColorSpace colorSpace)
+        {
+            this.HasAlpha = hasAlpha;
+            this.ColorSpace = colorSpace;
+        }
+
+        private int GetResolution(double res, PixelResolutionUnit units)
+        {
+            switch (units)
+            {
+                case PixelResolutionUnit.PixelsPerCentimeter:
+                    return (int) Math.Round(res * 2.54);
+                case PixelResolutionUnit.PixelsPerInch:
+                    return (int) Math.Round(res);
+                case PixelResolutionUnit.PixelsPerMeter:
+                    return (int) Math.Round(((res * 2.54) / 100.0));
+                case PixelResolutionUnit.AspectRatio:
+                default:
+                    return (int) Math.Round(res);
+            }
         }
 
         public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
@@ -36,7 +80,6 @@ namespace Scryber.Imaging
 
             this.Filters = filters;
             PDFObjectRef oref = writer.BeginObject(name.Value);
-            long outputLen = 0;
 
             try
             {
@@ -70,23 +113,32 @@ namespace Scryber.Imaging
 
                 writer.BeginStream(oref, filters);
 
-                outputLen = this.DoRenderImageData(filters, context, writer);
+                this.ImageDataLength = this.DoRenderImageData(filters, context, writer);
 
-                if (logverbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Images", "Rendered the image data with " + outputLen + " bytes");
+                
 
+                this.ImageOutputLength = writer.EndStream();
 
-                long filteredLen = writer.EndStream();
-
-                if (this.HasFilter)
+                if (this.ShouldWriteFilter(filters, this.ImageDataLength, this.ImageOutputLength))
                 {
-                    if (logmessages)
-                        context.TraceLog.Add(TraceLevel.Message, "Images", "Updated the primary image data with filters '" + GetFilterName(filters) + " and stream size has gone from " + outputLen + " to " + filteredLen + " bytes");
+                    if (logverbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, "Images",
+                            "Updated the primary image data with filters '" + GetFilterName(filters) +
+                            " and stream size has gone from " + this.ImageDataLength + " to " + this.ImageOutputLength + " bytes");
 
-                    outputLen = filteredLen;
+                    this.WriteDataStreamInformation(this.Filters, this.ImageOutputLength, writer);
+                    
+                    if (logverbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, "Images", "Rendered the image data with " + this.ImageOutputLength + " bytes");
+
                 }
+                else
+                {
+                    if (logverbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, "Images", "Rendered the image data with " + this.ImageDataLength + " bytes and no compression");
 
-                this.WriteDataStreamInformation(filters, outputLen, writer);
+                    this.WriteDataStreamInformation(null, this.ImageDataLength, writer);
+                }
 
                 writer.EndDictionary();
 
@@ -101,9 +153,9 @@ namespace Scryber.Imaging
                 writer.EndObject();
 
                 if (logverbose)
-                    context.TraceLog.End(TraceLevel.Message, "Images", "Completed the rendering of primary image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + outputLen + "bytes, " + GetFilterName(filters));
+                    context.TraceLog.End(TraceLevel.Message, "Images", "Completed the rendering of primary image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + this.ImageOutputLength + "bytes, and filters " + GetFilterName(filters));
                 else if (logmessages)
-                    context.TraceLog.Add(TraceLevel.Message, "Images", "Rendered the primary image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + outputLen + "bytes");
+                    context.TraceLog.Add(TraceLevel.Message, "Images", "Rendered the primary image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + this.ImageOutputLength + "bytes");
             }
 
             return oref;
@@ -163,7 +215,6 @@ namespace Scryber.Imaging
             if (logverbose)
                 context.TraceLog.Begin(TraceLevel.Message, "Images", "Began rendering the alpha image " + (this.SourcePath ?? "[UNKNOWN]") + " to the output");
 
-            long outputLen = 0;
             PDFObjectRef mask = writer.BeginObject();
 
             try
@@ -182,24 +233,25 @@ namespace Scryber.Imaging
 
                 writer.BeginStream(mask, filters);
 
-                outputLen = this.DoRenderAlphaData(filters, context, writer);
+                this.AlphaDataLength = this.DoRenderAlphaData(filters, context, writer);
 
                 if (logverbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Images", "Rendered the alpha image data with " + outputLen + " bytes");
+                    context.TraceLog.Add(TraceLevel.Verbose, "Images", "Rendered the alpha image data with " + this.AlphaDataLength + " bytes");
 
-                long filteredLen = writer.EndStream();
+                this.AlphaOutputLength = writer.EndStream();
 
 
-                if (this.HasFilter)
+                if (this.ShouldWriteFilter(filters, AlphaDataLength, AlphaOutputLength))
                 {
                     if (logmessages)
-                        context.TraceLog.Add(TraceLevel.Message, "Images", $"Updated the alpha image data with filters '{GetFilterName(filters)}' and stream size has gone from {outputLen} to {filteredLen} bytes");
+                        context.TraceLog.Add(TraceLevel.Message, "Images", $"Updated the alpha image data with filters '{GetFilterName(filters)}' and stream size has gone from {AlphaDataLength} to {AlphaOutputLength} bytes");
 
-                    outputLen = filteredLen;
+                    this.WriteDataStreamInformation(this.Filters, AlphaOutputLength, writer);
                 }
-
-                this.WriteDataStreamInformation(this.Filters, filteredLen, writer);
-
+                else
+                {
+                    this.WriteDataStreamInformation(null, AlphaOutputLength, writer);
+                }
                 writer.EndDictionary();
 
             }
@@ -213,9 +265,9 @@ namespace Scryber.Imaging
                 writer.EndObject();
 
                 if (logverbose)
-                    context.TraceLog.End(TraceLevel.Message, "Images", "Completed the rendering of alpha image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + outputLen + "bytes, " + GetFilterName(filters));
+                    context.TraceLog.End(TraceLevel.Message, "Images", "Completed the rendering of alpha image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + this.AlphaOutputLength + "bytes, " + GetFilterName(filters));
                 else if (logmessages)
-                    context.TraceLog.Add(TraceLevel.Message, "Images", "Rendered the alpha image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + outputLen + "bytes");
+                    context.TraceLog.Add(TraceLevel.Message, "Images", "Rendered the alpha image object for " + (this.SourcePath ?? "[UNKNOWN]") + " to the output with size " + this.AlphaOutputLength + "bytes");
             }
 
             return mask;
@@ -263,6 +315,26 @@ namespace Scryber.Imaging
         public override void ResetFilterCache()
         {
             
+        }
+
+        /// <summary>
+        /// Returns true if the filters and filtered length should be written to the output otherwise false.
+        /// </summary>
+        /// <param name="filters"></param>
+        /// <param name="dataLength"></param>
+        /// <param name="filteredLength"></param>
+        /// <returns></returns>
+        /// <remarks>Sometimes if we are using Deflate zip compression, the compression does not cause any reduction in size.
+        /// If this is the case the raw data is written, rather than the compressed data. So we check to see if there are filters,
+        /// and if there is we check to make sure the data filter name is FlateDecode, and it was compressed</remarks>
+        private bool ShouldWriteFilter(IStreamFilter[] filters, long dataLength, long filteredLength)
+        {
+            if (null == filters || filters.Length == 0)
+                return false;
+            else if (filters.Length == 1 && filters[0].FilterName == PDFDeflateStreamFilter.DefaultFilterName)
+                return dataLength != filteredLength;
+            else
+                return true;
         }
 
         #region private string GetFilterName(IStreamFilter[] filters)

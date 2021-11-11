@@ -12,7 +12,7 @@ namespace Scryber.Styles
     public class StyleFontFace : Style
     {
 
-        private const string FontLogCategory = "@font-face";
+        private const string FontLogCategory = "Style Font Face";
         
         #region StyleItemFontFace inner class
 

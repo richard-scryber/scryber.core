@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Web;
 using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -14,11 +16,13 @@ namespace Scryber.Imaging.Formatted
     {
 
         public PDFImageSharpRGBA32Data(Image img, string source)
-            : base(img, source)
+            : base(img, source, GetAlphaFlagForInfo(img.PixelType))
         {
         }
 
 
+        
+        
         protected override long DoRenderImageData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             var config = SixLabors.ImageSharp.Configuration.Default;
@@ -53,12 +57,11 @@ namespace Scryber.Imaging.Formatted
 
             for (int r = 0; r < this.PixelHeight; r++)
             {
-                ReadOnlySpan<Rgba32> span = this.PixelImage.GetPixelRowSpan(r);
-                
-                for (int p = 0; p < buffer.Length; p++)
-                {
+                var span = this.PixelImage.GetPixelRowSpan(r);
+
+                for (var p = 0; p < buffer.Length; p++)
                     buffer[p] = span[p].A;
-                }
+                
                 writer.WriteRaw(buffer, 0, buffer.Length);
 
                 total += buffer.Length;

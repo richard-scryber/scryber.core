@@ -149,6 +149,9 @@ namespace Scryber.Drawing
 
         #region public PDFUnit DisplayHeight {get;}
 
+        /// <summary>
+        /// Gets the natural height of the image in inches based on the number of pixels high and the vertical Resolution
+        /// </summary>
         public Unit DisplayHeight
         {
             get { return new Unit(((double)this.PixelHeight) / (double)this.VerticalResolution, PageUnits.Inches); }
@@ -158,6 +161,9 @@ namespace Scryber.Drawing
 
         #region public PDFUnit DisplayWidth {get;}
 
+        /// <summary>
+        /// Gets the natural width of the image in inches based on the number of pixels wide and the horizontal Resolution
+        /// </summary>
         public Unit DisplayWidth
         {
             get { return new Unit(((double)this.PixelWidth) / (double)this.HorizontalResolution, PageUnits.Inches); }
@@ -205,6 +211,22 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public bool HasAlpha {get; protected set;}
+        
+        /// <summary>
+        /// If true then this image has a standard color channel of image data, and an alpha mask channel.
+        /// Inheritors can set the value.
+        /// </summary>
+        public bool HasAlpha
+        {
+            get;
+            protected set;
+        }
+        
+        #endregion
+        
+        #region public ObjectType Type { get;}
+        
         private ObjectType _type;
 
         /// <summary>
@@ -214,7 +236,10 @@ namespace Scryber.Drawing
         {
             get { return _type; }
         }
+        
+        #endregion
 
+        
         //
         // ctor(s)
         //
@@ -262,7 +287,7 @@ namespace Scryber.Drawing
             if (hres < 1.0)
                 hres = DefaultResolution;
             double vres = (double)this.VerticalResolution;
-            if (vres <= 1)
+            if (vres <= 1.0)
                 vres = DefaultResolution;
 
             double w = ((double)this.PixelWidth) / hres;

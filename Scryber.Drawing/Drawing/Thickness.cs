@@ -244,6 +244,21 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region operator cast double
+        
+        /// <summary>
+        /// Returns a new thickness where all units are the value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static implicit operator Thickness(double value)
+        {
+            var unit = (Unit) value;
+            return new Thickness(unit);
+        }
+        
+        #endregion
+        
         #region operator +, -
 
         public static Thickness operator +  (Thickness one, Thickness two)
