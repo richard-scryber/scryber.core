@@ -38,6 +38,7 @@ namespace Scryber.Drawing
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public struct Color : ITypedObject, IEquatable<Color>
     {
+        private const string TransparentName = "Transparent";
         internal const float UnassignedFloat = -1;
         internal const int UnassignedByte = -1;
 
@@ -427,7 +428,11 @@ namespace Scryber.Drawing
 
         public override string ToString()
         {
+            if (this.ColorSpace == ColorSpace.None && this.IsEmpty)
+                return TransparentName;
+            
             System.Text.StringBuilder sb = new StringBuilder(20); //CMYK(3,3,3,3)
+            
             sb.Append(this.ColorSpace.ToString().ToLower());
             sb.Append("(");
             switch (this.ColorSpace)
@@ -453,7 +458,8 @@ namespace Scryber.Drawing
                     sb.Append(",");
                     sb.Append(this._three);
                     break;
-                case ColorSpace.Custom:
+                case ColorSpace.None:
+                case ColorSpace.Custom: 
                 default:
                     throw new ArgumentOutOfRangeException("this.ColorSpace",String.Format(Errors.ColorValueIsNotCurrentlySupported,this.ColorSpace.ToString()));
                     
@@ -488,6 +494,12 @@ namespace Scryber.Drawing
             if (string.IsNullOrEmpty(value))
                 return false;
 
+            if (value == TransparentName)
+            {
+                color = StandardColors.Transparent;
+                return true;
+            } 
+            
             if (value.IndexOf("(") > 0)
             {
                 string s = value.Trim().Substring(0, value.IndexOf("(")).ToUpper();

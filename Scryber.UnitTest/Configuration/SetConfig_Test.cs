@@ -388,7 +388,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             if (factories.Count == 0 || factories.FirstOrDefault(f => { return f.Name == "DataImages"; }) == null)
             {
-                var dataImg = new Options.PDFImageFactory("DataImages", new Regex("data:"), new DataBase64ImageFactory());
+                var dataImg = new ImageFactoryCustom(new Regex("data:"),"DataImages", false, new DataBase64ImageFactory());
                 factories.Add(dataImg);
             }
         }

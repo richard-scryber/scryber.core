@@ -28,6 +28,7 @@ namespace Scryber.Options
     /// <summary>
     /// Extension class for ImagingOptions to load the PDFImageFactoryList
     /// </summary>
+    [Obsolete("Dont use", true)]
     public static class ImageOptionExtension
     {
 

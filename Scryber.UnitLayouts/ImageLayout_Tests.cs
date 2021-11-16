@@ -1257,13 +1257,13 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
 
-            PDFLayoutComponentRun lrun;
+            //PDFLayoutComponentRun lrun;
 
-            lrun = GetInlineImageRunForPage(0, 0, 0, 3); //BT Tx ET Img
+            //lrun = GetInlineImageRunForPage(0, 0, 0, 3); //BT Tx ET Img
 
             //5. Explicit height @60pt within the content
-            var width = naturalWidth.PointsValue * (60.0 / naturalHeight.PointsValue);
-            var height = 60.0;
+            //var width = naturalWidth.PointsValue * (60.0 / naturalHeight.PointsValue);
+            //var height = 60.0;
 
             Assert.Inconclusive("We know this is not yet working");
 

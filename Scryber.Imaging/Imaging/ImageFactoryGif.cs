@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Scryber.Drawing;
 using Scryber.Imaging.Formatted;
 using SixLabors.ImageSharp.PixelFormats;
@@ -12,13 +13,19 @@ namespace Scryber.Imaging
 {
     public class ImageFactoryGif : ImageFactoryBase, IPDFImageDataFactory
     {
+        private static readonly Regex GifMatch = new Regex("\\.(gif)?\\s*$", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly string GifName = "Gif Image factory";
+        private static readonly bool GifShouldCache = true;
+        
         public ImageFactoryGif()
+            :this(GifMatch, GifName, GifShouldCache)
         {
+
         }
 
-        public override bool ShouldCache
+        protected ImageFactoryGif(Regex match, string name, bool shouldCache)
+            : base(match, name, shouldCache)
         {
-            get { return true; }
         }
 
 
@@ -45,9 +52,6 @@ namespace Scryber.Imaging
 
             return data;
         }
-
-
-
-
     }
+    
 }

@@ -50,7 +50,6 @@
     <Folder Include="Content\PDFX\" />
     <Folder Include="Content\HTML\Fragments\" />
     <Folder Include="Content\SVG\" />
-    <Folder Include="Secure\" />
     <Folder Include="Imaging\" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +63,8 @@
     <None Remove="Content\HTML\Images\AllFormats\" />
     <None Remove="Content\HTML\Images\AllFormats\**" />
     <None Remove="Content\HTML\Samples\**" />
+    <None Remove="Secure\**" />
+    <None Remove="Content\HTML\Images\groupLZW.tiff" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />
@@ -121,9 +122,11 @@
   <ItemGroup>
     <Compile Remove="Content\HTML\Images\AllFormats\**" />
     <Compile Remove="Content\HTML\Samples\**" />
+    <Compile Remove="Secure\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Content\HTML\Images\AllFormats\**" />
     <EmbeddedResource Remove="Content\HTML\Samples\**" />
+    <EmbeddedResource Remove="Secure\**" />
   </ItemGroup>
 </Project>

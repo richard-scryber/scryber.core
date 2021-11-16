@@ -6,11 +6,14 @@ using Scryber.PDF.Native;
 
 namespace Scryber.Imaging.Formatted
 {
-    public class PDFImageSharpBgr24Data : PDFImageSharpData<Bgr24>
+    /// <summary>
+    /// ImageData for the 24 bit RGB image
+    /// </summary>
+    public class PDFImageSharpRGB24Data : PDFImageSharpData<Rgb24>
     {
 
 
-        public PDFImageSharpBgr24Data(Image img, string source)
+        public PDFImageSharpRGB24Data(Image img, string source)
             : base(img, source)
         {
         }
@@ -19,7 +22,7 @@ namespace Scryber.Imaging.Formatted
         protected override long DoRenderImageData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             var config = SixLabors.ImageSharp.Configuration.Default;
-            var ops = new Bgr24().CreatePixelOperations();
+            var ops = new Rgb24().CreatePixelOperations();
 
             int width = this.PixelWidth;
             long total = 0;
@@ -29,7 +32,7 @@ namespace Scryber.Imaging.Formatted
 
             for (int r = 0; r < this.PixelHeight; r++)
             {
-                ReadOnlySpan<Bgr24> span = this.PixelImage.GetPixelRowSpan(r);
+                ReadOnlySpan<Rgb24> span = this.PixelImage.GetPixelRowSpan(r);
                 ops.ToRgb24Bytes(config, span, buffer, width);
                 writer.WriteRaw(buffer, 0, buffer.Length);
                 total += buffer.Length;

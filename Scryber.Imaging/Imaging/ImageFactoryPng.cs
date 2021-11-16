@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Scryber.Drawing;
 using Scryber.Imaging.Formatted;
 using SixLabors.ImageSharp.PixelFormats;
@@ -12,13 +13,19 @@ namespace Scryber.Imaging
 {
     public class ImageFactoryPng : ImageFactoryBase, IPDFImageDataFactory
     {
+        private static readonly Regex PngMatch = new Regex("\\.(png)?\\s*$", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly string PngName = "Png Image factory";
+        private static readonly bool PngShouldCache = true;
+        
         public ImageFactoryPng()
+            :this(PngMatch, PngName, PngShouldCache)
         {
+
         }
 
-        public override bool ShouldCache
+        protected ImageFactoryPng(Regex match, string name, bool shouldCache)
+            : base(match, name, shouldCache)
         {
-            get { return true; }
         }
 
 
@@ -61,7 +68,8 @@ namespace Scryber.Imaging
                                                            " was out of range : " + meta.BitDepth.ToString());
                 }
                 
-                var alpha = meta.HasTransparency;
+                var alpha = meta.HasTransparency || (meta.ColorType.HasValue && meta.ColorType == PngColorType.RgbWithAlpha);
+                
                 
                 data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, path, depth, alpha, colorSpace);
                 

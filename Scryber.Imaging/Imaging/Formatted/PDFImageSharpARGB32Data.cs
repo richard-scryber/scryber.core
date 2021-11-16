@@ -11,7 +11,7 @@ namespace Scryber.Imaging.Formatted
 
 
         public PDFImageSharpARGB32Data(Image img, string source)
-            : base(img, source, GetAlphaFlagForInfo(img.PixelType))
+            : base(img, source)
         {
         }
 

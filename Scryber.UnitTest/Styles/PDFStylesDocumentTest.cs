@@ -242,7 +242,8 @@ namespace Scryber.Core.UnitTests.Styles
         [TestCategory("Styles")]
         public void MergeIntoTest()
         {
-            string classname = ".sea";
+            string styleName = "sea";
+            string classname = "." + styleName;
             StylesDocument target = new StylesDocument();
 
             // same class, same type = applied
@@ -280,7 +281,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Style actual = new Style();
             Label lbl = new Label() {ElementName = "label"};
-            lbl.StyleClass = classname;
+            lbl.StyleClass = styleName;
             target.MergeInto(actual, lbl, ComponentState.Normal);
             actual.Flatten();
 

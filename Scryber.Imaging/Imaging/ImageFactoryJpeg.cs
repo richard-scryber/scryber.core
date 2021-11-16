@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using Scryber.Drawing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -9,14 +10,19 @@ namespace Scryber.Imaging
     public class ImageFactoryJpeg : ImageFactoryBase, IPDFImageDataFactory
     {
 
+        private static readonly Regex JpegMatch = new Regex("\\.(jpg|jpeg)?\\s*$", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly string JpegName = "Jpeg Image factory";
+        private static readonly bool JpegShouldCache = true;
+        
         public ImageFactoryJpeg()
+        :this(JpegMatch, JpegName, JpegShouldCache)
         {
 
         }
 
-        public override bool ShouldCache
+        protected ImageFactoryJpeg(Regex match, string name, bool shouldCache)
+            : base(match, name, shouldCache)
         {
-            get { return true; }
         }
 
         protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)

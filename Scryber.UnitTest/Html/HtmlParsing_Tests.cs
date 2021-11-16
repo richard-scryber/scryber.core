@@ -114,7 +114,7 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
 
                         var two = doc.SharedResources[1];
-                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        Assert.IsInstanceOfType(two, typeof(PDFImageXObject));
                     }
 
                 }

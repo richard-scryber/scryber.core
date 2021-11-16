@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using Scryber.Drawing;
+using Scryber.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -40,9 +41,8 @@ namespace Scryber.Imaging
 
         protected virtual ImageData GetImageData(string name, Image img)
         {
-            var type = img.GetType();
-            var factory = ImageFactoryBase.GetImageFactory(type, true);
-            var imgData = factory(img, name);
+            var imgData = ImageFactoryBase.GetImageDataForImage(img, name);
+            imgData.SetSourceImageFormat(ImageFormat.Bitmap, imgData.BitsPerColor, imgData.HasAlpha, ColorSpace.RGB);
             return imgData;
         }
 

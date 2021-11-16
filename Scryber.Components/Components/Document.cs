@@ -26,6 +26,7 @@ using Scryber.Styles;
 using Scryber.PDF.Resources;
 
 using Scryber.Drawing;
+using Scryber.Imaging;
 using Scryber.Data;
 using Scryber.Generation;
 
@@ -112,7 +113,7 @@ namespace Scryber.Components
             this._incrementids = new Dictionary<ObjectType, int>();
 
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
-            this.ImageFactories = config.ImagingOptions.GetFactories();
+            this.ImageFactories = config.ImagingOptions.GetConfiguredFactories();
             this._startTime = DateTime.Now;
             this._requests = new RemoteFileRequestSet(this);
         }
@@ -238,7 +239,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the collection of image data factories for this document
         /// </summary>
-        public PDFImageFactoryList ImageFactories { get; private set; }
+        public ImageFactoryList ImageFactories { get; private set; }
 
         #endregion
 
@@ -2287,7 +2288,6 @@ namespace Scryber.Components
             try
             {
                 object cached;
-                IPDFImageDataFactory factory;
 
                 if (string.IsNullOrEmpty(src))
                     throw new ArgumentNullException("path");
@@ -2305,7 +2305,7 @@ namespace Scryber.Components
                     data = (ImageData) cached;
                     key = GetIncrementID(ObjectTypes.ImageXObject);
                 }
-                else if (this.ImageFactories.TryGetMatch(src, out factory))
+                else if (this.ImageFactories.TryGetMatch(src, out var factory))
                 {
                     data = LoadImageDataFromFactory(owner, factory, src);
                     key = GetIncrementID(ObjectTypes.ImageXObject);
@@ -2382,7 +2382,7 @@ namespace Scryber.Components
 
                     if (null != data)
                     {
-                        DateTime expires = this.GetImageCacheExpires();
+                        var expires = this.GetImageCacheExpires();
                         this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), path, data, expires);
                     }
                 }

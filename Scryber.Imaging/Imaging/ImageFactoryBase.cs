@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using Scryber.Drawing;
@@ -14,18 +15,30 @@ namespace Scryber.Imaging
 {
     public abstract class ImageFactoryBase : IPDFImageDataFactory
     {
-        public ImageFactoryBase()
+        public bool ShouldCache { get; }
+
+        public Regex Match { get; }
+        
+        public string Name { get; }
+        
+        public ImageFactoryBase(Regex match, string name, bool shouldCache)
         {
+            this.Match = match ?? throw new ArgumentNullException(nameof(match));
+            this.Name = name;
+            this.ShouldCache = shouldCache;
         }
 
-        public abstract bool ShouldCache { get; }
-
-        public virtual ImageData LoadImageData(IDocument document, IComponent owner, string path)
+        public bool IsMatch(string forPath)
+        {
+            return this.Match.IsMatch(forPath);
+        }
+        
+        public ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
             return this.DoLoadImageDataAsync(document, owner, path).Result;
         }
 
-        public virtual async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
+        public async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             return await this.DoLoadImageDataAsync(document, owner, path);
         }
@@ -108,88 +121,7 @@ namespace Scryber.Imaging
         /// <returns></returns>
         protected abstract ImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner, string path);
 
-        public delegate ImageData FactoryCreateInstance(SixLabors.ImageSharp.Image baseImage, string source);
-
-        private static Dictionary<Type, FactoryCreateInstance> _factories;
-        private static readonly object _lock;
-
-        public static void RegisterImageFactory(Type forType, FactoryCreateInstance factory)
-        {
-            if (null == forType)
-                throw new ArgumentNullException(nameof(forType));
-
-            if (null == factory)
-                throw new ArgumentNullException(nameof(factory));
-
-            lock (_lock)
-            {
-                _factories[forType] = factory;
-            }
-        }
-
-        public static FactoryCreateInstance GetImageFactory(Type forType, bool throwIfNotFound = false)
-        {
-            if(null == forType)
-                throw new ArgumentNullException(nameof(forType));
-
-            FactoryCreateInstance method = null;
-            lock (_lock)
-            {
-                if(!_factories.TryGetValue(forType, out method))
-                {
-                    if (throwIfNotFound)
-                        throw new PDFImageFormatException("The image factory for type " + forType.FullName + " could not be found");
-                }
-            }
-
-            return method;
-        }
-
         
-        static ImageFactoryBase()
-        {
-            _lock = new object();
-
-            lock (_lock)
-            {
-                //SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.AddImageFormat(SixLabors.ImageSharp.Formats);
-                _factories = new Dictionary<Type, FactoryCreateInstance>();
-                _factories.Add(typeof(Image<A8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Argb32>), (img, src) => 
-                {
-                    return new PDFImageSharpARGB32Data(img, src);
-                });
-                _factories.Add(typeof(Image<Bgr24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Bgr565>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Bgra32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Bgra4444>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Bgra5551>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Byte4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<L16>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<L8>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<La16>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<La32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Rg32>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Rgb24>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Rgb48>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Rgba1010102>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Rgba32>), (img, src) =>
-                {
-                    return new PDFImageSharpRGBA32Data(img, src);
-                });
-                _factories.Add(typeof(Image<Rgba64>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<RgbaVector>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Short2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<Short4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<HalfSingle>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<HalfVector2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<HalfVector4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<NormalizedByte2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<NormalizedByte4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<NormalizedShort2>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-                _factories.Add(typeof(Image<NormalizedShort4>), (img, src) => { throw new PDFImageFormatException("Format not implemented"); });
-            }
-        }
 
 
         protected virtual PDFImageSharpData GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
@@ -197,12 +129,32 @@ namespace Scryber.Imaging
             if (null == baseImage)
                 throw new ArgumentNullException(nameof(baseImage));
 
-            var type = baseImage.GetType();
-
-            var method = GetImageFactory(type, true);
-
-            var data = method(baseImage, source) as PDFImageSharpData;
+            var data = GetImageDataForImage(baseImage, source);
             data.SetSourceImageFormat(format, bitdepth, hasAlpha, colorSpace);
+            return data;
+        }
+
+        public static PDFImageSharpData GetImageDataForImage(Image image, string source)
+        {
+            PDFImageSharpData data;
+            
+            switch (image)
+            {
+                case Image<Argb32> argb32:
+                    data = new PDFImageSharpARGB32Data(argb32, source);
+                    break;
+                case Image<Rgba32> rgba32:
+                    data = new PDFImageSharpRGBA32Data(rgba32, source);
+                    break;
+                case Image<Rgb24> rgb24:
+                    data = new PDFImageSharpRGB24Data(rgb24, source);
+                    break;
+                case Image<Bgr24> bgr24:
+                    data = new PDFImageSharpBgr24Data(bgr24, source);
+                    break;
+                default:
+                    throw new NotSupportedException("The image type " + image.GetType().Name + " is not supported");
+            }
 
             return data;
         }

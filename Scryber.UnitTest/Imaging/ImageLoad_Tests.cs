@@ -5,7 +5,6 @@ using Scryber.PDF.Layout;
 using Scryber.PDF;
 using System.Collections.Generic;
 using io = System.IO;
-using System.IO;
 using Scryber.Drawing;
 using Scryber.Imaging;
 using Scryber.PDF.Resources;
@@ -42,7 +41,7 @@ namespace Scryber.Core.UnitTests.Imaging
             path = io.Path.GetFullPath(path);
 
             if (!io.File.Exists(path))
-                throw new FileNotFoundException(path);
+                throw new io.FileNotFoundException(path);
 
             var data = factory.LoadImageData(doc, page, path);
             
@@ -61,11 +60,7 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.IsFalse(data.HasFilter);
             Assert.IsNull(data.Filters);
             Assert.IsFalse(data.IsPrecompressedData);
-
             Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
-            var imgSharp = (PDFImageSharpData) data;
-            Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
-
         }
         
         [TestMethod()]
@@ -78,21 +73,21 @@ namespace Scryber.Core.UnitTests.Imaging
             path = io.Path.GetFullPath(path);
             
             if (!io.File.Exists(path))
-                throw new FileNotFoundException(path);
+                throw new io.FileNotFoundException(path);
 
             var data = factory.LoadImageData(doc, page, path);
             
             Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
-            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
-            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
-            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.png image");
-            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.png image");
-            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.png image");
-            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.png image");
-            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.png image");
-            Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.png image");
-            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.png image");
-            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.jpg image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.jpg image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.jpg image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.jpg image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.jpg image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.jpg image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.jpg image");
+            Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.jpg image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.jpg image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.jpg image");
             Assert.AreEqual(data.Type, ObjectTypes.ImageData);
             
             //We should have the JCTDecode filter for jpeg images
@@ -116,14 +111,15 @@ namespace Scryber.Core.UnitTests.Imaging
             var page = new Page();
             doc.Pages.Add(page);
 
+            doc.ImageFactories.Clear();
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            doc.ImageFactories.Add(new Options.PDFImageFactory("PNG", new System.Text.RegularExpressions.Regex(".*\\.png", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
+            doc.ImageFactories.Add(factory);
 
             var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages, "Group.png");
             path = io.Path.GetFullPath(path);
 
             if (!io.File.Exists(path))
-                throw new FileNotFoundException(path);
+                throw new io.FileNotFoundException(path);
 
             Image img = new Image();
             img.Source = path;
@@ -166,6 +162,43 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
             Assert.AreEqual(data.Type, ObjectTypes.ImageData);
         }
+        
+        [TestMethod()]
+        public void LoadTiffFromFile()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryTiff();
+            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "groupBasic.tiff");
+            path = io.Path.GetFullPath(path);
+            
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+
+            var data = factory.LoadImageData(doc, page, path);
+            
+            Assert.IsNotNull(data, "The returned image data was null in the Group.tiff image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.tiff image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.tiff image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.tiff image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.tiff image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.tiff image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.tiff image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.tiff image");
+            Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.tiff image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.tiff image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.tiff image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            
+            Assert.IsFalse(data.IsPrecompressedData);
+            Assert.IsFalse(data.HasFilter);
+            Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
+            var imgSharp = (PDFImageSharpData) data;
+            Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
+
+        }
+        
+       
 
         /// <summary>
         /// This image does not compress with zip, and the algorithm returns null.
@@ -180,7 +213,10 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             doc.AppendTraceLog = true;
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            doc.ImageFactories.Add(new Options.PDFImageFactory("PNG", new System.Text.RegularExpressions.Regex(".*\\.png", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
+            
+            //Take everything out and add the PNG factory
+            doc.ImageFactories.Clear();
+            doc.ImageFactories.Add(factory);
 
             var pg = new Page() {Padding = 20.0, BorderColor = StandardColors.Black, BorderWidth = 1};
             doc.Pages.Add(pg);
@@ -262,7 +298,9 @@ namespace Scryber.Core.UnitTests.Imaging
             page.FontSize = 12;
 
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            doc.ImageFactories.Add(new Options.PDFImageFactory("PNG", new System.Text.RegularExpressions.Regex(".*\\.png", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
+            //Take everything out and add the png factory
+            doc.ImageFactories.Clear();
+            doc.ImageFactories.Add(factory);
 
             List<string> ids = new List<string>();
 
@@ -360,8 +398,11 @@ namespace Scryber.Core.UnitTests.Imaging
             doc.Pages.Add(page);
             page.Padding = new Thickness(20);
             page.FontSize = 12;
+            
             var factory = new Scryber.Imaging.ImageFactoryTiff();
-            doc.ImageFactories.Add(new Options.PDFImageFactory("TIFF", new System.Text.RegularExpressions.Regex(".*\\.tiff", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
+            //Take everything out and add the tiff factory
+            doc.ImageFactories.Clear();
+            doc.ImageFactories.Add(factory);
 
             List<string> ids = new List<string>();
 
@@ -418,16 +459,15 @@ namespace Scryber.Core.UnitTests.Imaging
         {
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/GlobalQuantizationTest.gif",
             "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_1x4.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_4x1.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/cheers.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/giphy.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_4x1.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/cheers.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/giphy.gif",
             //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-height.gif",
             //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-size.gif",
             //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-width.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/kumin.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/large_comment.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/leo.gif",
-
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/kumin.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/large_comment.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/leo.gif",
         };
 
 
@@ -445,7 +485,9 @@ namespace Scryber.Core.UnitTests.Imaging
             page.FontSize = 12;
 
             var factory = new Scryber.Imaging.ImageFactoryGif();
-            doc.ImageFactories.Add(new Options.PDFImageFactory("GIF", new System.Text.RegularExpressions.Regex(".*\\.gif", System.Text.RegularExpressions.RegexOptions.IgnoreCase), factory));
+            //Take everything out and add the png factory
+            doc.ImageFactories.Clear();
+            doc.ImageFactories.Add(factory);
 
             List<string> ids = new List<string>();
 
@@ -459,7 +501,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 img.BorderStyle = LineType.Solid;
                 img.MaximumWidth = 100;
                 img.MaximumHeight = 200;
-
+                img.BackgroundColor = StandardColors.Gray;
                 page.Contents.Add(img);
 
                 Span label = new Span();

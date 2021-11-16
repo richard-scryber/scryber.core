@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -97,6 +98,7 @@ namespace Scryber.Core.UnitTests.Binding
                 doc.InitializeAndLoad(OutputFormat.PDF);
                 doc.DataBind(OutputFormat.PDF);
                 
+                //Makes sure the image data is bound to the element
                 Assert.IsNotNull(img.Data);
                 Assert.AreEqual(data, img.Data);
 
@@ -119,12 +121,12 @@ namespace Scryber.Core.UnitTests.Binding
                 
             using (var fs = new System.IO.FileStream(path + "Toroid24.jpg", FileMode.Open))
             {
-                data1 = imgReader.ReadStream(path, fs, false);
+                data1 = imgReader.ReadStream(path + "Toroid24.jpg", fs, false);
             }
             
             using (var fs = new System.IO.FileStream(path + "group.png", FileMode.Open))
             {
-                data2 = imgReader.ReadStream(path, fs, false);
+                data2 = imgReader.ReadStream(path + "group.png", fs, false);
             }
             
             var model = new
@@ -180,8 +182,28 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsNotNull(found2.Data);
             Assert.AreEqual(data2, found2.Data);
             
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            var rsrc1 = doc.SharedResources[0] as PDFImageXObject;
+            var rsrc2 = doc.SharedResources[1] as PDFImageXObject;
+
+            Assert.IsNotNull(rsrc1, "First resource image was null");
+            Assert.IsTrue(rsrc1.Registered, "First image was not registered");
+            Assert.AreEqual(data1.SourcePath, rsrc1.ImageData.SourcePath, "First Image, Paths did not match");
+            Assert.IsTrue(rsrc1.ImageData.SourcePath.EndsWith("Toroid24.jpg"), "First image source path did not end with Toroid24.jpg");
+            Assert.AreEqual(data1.PixelWidth, rsrc1.ImageData.PixelWidth, "First Image, Sizes did not match");
+            
+            Assert.IsNotNull(rsrc2, "Second resource image was null");
+            Assert.IsTrue(rsrc2.Registered, "Second image was not registered");
+            Assert.AreEqual(data2.SourcePath, rsrc2.ImageData.SourcePath, "Second Image, Paths did not match");
+            Assert.IsTrue(rsrc2.ImageData.SourcePath.EndsWith("group.png"), "Second image source path did not end with group.png");
+            Assert.AreEqual(data2.PixelWidth, rsrc2.ImageData.PixelWidth, "Second Image, Sizes did not match");
         }
 
+        /// <summary>
+        /// Checks the layout to ensure it has a Component layout and the images are registered with the layout.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
             var context = (PDFLayoutContext)(args.Context);

@@ -33,5 +33,19 @@ namespace Scryber.Options
 
         public string FactoryAssembly { get; set; }
 
+        private object _factory;
+        
+        public object GetInstance()
+        {
+            if (null == _factory)
+            {
+                // Don't care that this is not thread safe, as it may be used twice or more and still assigned.
+                var instance = Utilities.TypeHelper.GetInstance<object>(this.FactoryType, this.FactoryAssembly, true);
+                _factory = instance;
+            }
+
+            return _factory;
+        }
+
     }
 }
