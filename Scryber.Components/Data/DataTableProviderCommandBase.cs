@@ -25,7 +25,7 @@ namespace Scryber.Data
         /// </summary>
         [PDFAttribute("element-name")]
         [PDFDesignable("Element Name", Category = "Data",Priority = 3, Type ="String", Validate = "/^[a-z][a-z0-9]+$/i")]
-        public string ElementName
+        public string DataElementName
         {
             get { return _elename; }
             set { _elename = value; }
@@ -268,8 +268,8 @@ namespace Scryber.Data
         /// <returns></returns>
         public virtual string GetDataTableName(DataSet ds)
         {
-            if (!string.IsNullOrEmpty(this.ElementName))
-                return this.ElementName;
+            if (!string.IsNullOrEmpty(this.DataElementName))
+                return this.DataElementName;
             if (!string.IsNullOrEmpty(this.ID))
                 return this.ID;
             else

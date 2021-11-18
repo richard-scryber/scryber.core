@@ -174,11 +174,25 @@ namespace Scryber.Styles
                 else
                 {
                     var source = GetSupportedSource(this.Source);
-                    if (context.ShouldLogVerbose)
-                        context.TraceLog.Add(TraceLevel.Verbose, FontLogCategory,
-                            "Initiating the remote request for font " + name + " from source " + source.Source);
-                    
-                    doc.RequestResource(source.Type.ToString(), source.Source, ResolveFontRequest, context.Document, context);
+                    if (null == source)
+                    {
+                        if (context.Conformance == ParserConformanceMode.Strict)
+                            throw new NotSupportedException("The source " + this.Source + " is not supported");
+                        else
+                        {
+                            context.TraceLog.Add(TraceLevel.Error, FontLogCategory, "The source '" + this.Source.ToString() + " is not supported");
+                            
+                        }
+                    }
+                    else
+                    {
+                        if (context.ShouldLogVerbose)
+                            context.TraceLog.Add(TraceLevel.Verbose, FontLogCategory,
+                                "Initiating the remote request for font " + name + " from source " + source.Source);
+
+                        doc.RequestResource(source.Type.ToString(), source.Source, ResolveFontRequest, context.Document,
+                            context);
+                    }
                 }
             }
             else
@@ -266,6 +280,15 @@ namespace Scryber.Styles
                     return source;
                 else if (source.Format == FontSourceFormat.OpenType)
                     return source;
+                else if (null == source.Next && source.Format == FontSourceFormat.Default)
+                {
+                    if (source.Source.EndsWith(".ttf")) // url(.....ttf)
+                    {
+                        return new FontSource(source.Type, source.Source, FontSourceFormat.TrueType);
+                    }
+                    else
+                        return null;
+                }
                 else
                     source = source.Next;
             }

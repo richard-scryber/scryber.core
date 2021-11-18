@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Native;
 using SixLabors.ImageSharp;
 
 namespace Scryber.Imaging.Formatted
@@ -32,6 +33,12 @@ namespace Scryber.Imaging.Formatted
         public override bool IsPrecompressedData
         {
             get { return true; }
+        }
+
+        public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
+        {
+            //We override any defalte filters on the request to render
+            return base.Render(name, this.Filters, context, writer);
         }
 
         protected override long DoRenderImageData(IStreamFilter[] filters, ContextBase context, PDFWriter writer)

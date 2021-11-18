@@ -70,44 +70,12 @@ namespace Scryber.PDF
                 }
                 string name = this.Component.UniqueID + "_" + index.ToString();
                 writer.WriteDictionaryStringEntry("NM", name);
+                
 
-                //Draw the border
-                StyleValue<LineType> lstyle;
-
-                /* if (this.AnnotationStyle != null && this.AnnotationStyle.TryGetValue(StyleKeys.BorderStyleKey, out lstyle) && lstyle != null && lstyle.Value != LineType.None)
-                {
-                    PDFUnit corner = this.AnnotationStyle.GetValue(StyleKeys.BorderCornerRadiusKey, (PDFUnit)0);
-                    PDFUnit width = this.AnnotationStyle.GetValue(StyleKeys.BorderWidthKey, (PDFUnit)1);
-                    PDFColor c = this.AnnotationStyle.GetValue(StyleKeys.BorderColorKey, PDFColors.Transparent);
-
-                    if (c != null && width > 0)
-                    {
-                        writer.BeginDictionaryEntry("Border");
-                        writer.WriteArrayRealEntries(corner.PointsValue, corner.PointsValue, width.PointsValue);
-                        writer.EndDictionaryEntry();
-
-                        writer.BeginDictionaryEntry("C");
-                        if (c.ColorSpace == ColorSpace.G)
-                            writer.WriteArrayRealEntries(c.Gray.Value);
-                        else if (c.ColorSpace == ColorSpace.RGB)
-                            writer.WriteArrayRealEntries(c.Red.Value, c.Green.Value, c.Blue.Value);
-                        else if (context.Conformance == ParserConformanceMode.Strict)
-                            RecordAndRaise.ArgumentOutOfRange("c", Errors.ColorValueIsNotCurrentlySupported, c.ColorSpace);
-                        else
-                            context.TraceLog.Add(TraceLevel.Error, "Link Annotation", string.Format(Errors.ColorValueIsNotCurrentlySupported, c.ColorSpace));
-
-                        writer.EndDictionaryEntry();
-                    }
-
-                }
-                else
-                {   */
-
-                    writer.BeginDictionaryEntry("Border");
-                    //writer.WriteArrayRealEntries(1.0, 1.0, 1.0);
-                    writer.WriteArrayRealEntries(0.0, 0.0, 0.0);
-                    writer.EndDictionaryEntry();
-                //}
+                writer.BeginDictionaryEntry("Border");
+                writer.WriteArrayRealEntries(0.0, 0.0, 0.0);
+                writer.EndDictionaryEntry();
+                
 
                 if (null != this.Action)
                 {

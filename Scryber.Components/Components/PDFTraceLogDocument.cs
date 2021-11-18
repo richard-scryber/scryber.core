@@ -86,7 +86,7 @@ namespace Scryber.Components
 
         private void InitContent(InitContext context)
         {
-            Section logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData, OwnerResources = this.OwnerResources };
+            Section logsect = new PDFTraceLogSection() { GenerationData = this.GenerationData, OwnerResources = this.OwnerResources, ElementName = "section"};
             this.Pages.Add(logsect);
 
             return;

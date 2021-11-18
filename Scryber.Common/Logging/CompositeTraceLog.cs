@@ -26,7 +26,7 @@ namespace Scryber.Logging
 
 
     /// <summary>
-    /// A PDFTraceLog implementation that sends the same message to multiple child logs
+    /// A TraceLog implementation that sends the same message to multiple child logs
     /// </summary>
     public class CompositeTraceLog : TraceLog
     {

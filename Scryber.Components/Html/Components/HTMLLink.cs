@@ -259,11 +259,6 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected override void OnDataBound(DataContext context)
-        {
-            base.OnDataBound(context);
-            
-        }
 
         protected override void OnPreLayout(LayoutContext context)
         {

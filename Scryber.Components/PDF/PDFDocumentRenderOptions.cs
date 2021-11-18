@@ -109,9 +109,15 @@ namespace Scryber.PDF
         [PDFAttribute("font-substitute")]
         public bool UseFontSubstitution
         {
-            get;set;
+            get;
+            set;
         }
 
+        public ParserConformanceMode ConformanceMode
+        {
+            get;
+            set;
+        }
         
         [PDFElement("")]
         public Scryber.PDF.PDFWriterFactory WriterFactory
@@ -177,6 +183,7 @@ namespace Scryber.PDF
             this.OuptputCompliance = output.Compliance.ToString();
             this.StringOutput = output.StringType;
             this.ImageCacheDurationMinutes = imging.ImageCacheDuration;
+            this.ConformanceMode = ParserConformanceMode.Lax;
             this.AllowMissingImages = imging.AllowMissingImages;
             //this.PooledStreams = true;
             this.WriterFactory = null;

@@ -36,47 +36,14 @@ namespace Scryber.PDF.Layout
         private static readonly Unit DefaultListItemAlley = 10;
         public static readonly Unit DefaultNumberWidth = Const.DefaultListNumberInset;
         public const HorizontalAlignment DefaultListItemAlignment = HorizontalAlignment.Right;
-
-        #region ivars
-
-        private ListBase _list;
-        private string _grpname;
-
-        #endregion
-
-
-        #region protected PDFList List {get;}
-
+        
         /// <summary>
         /// Gets the list this engin is laying out
         /// </summary>
-        protected ListBase List
-        {
-            get { return _list; }
-        }
-
-        #endregion
-
-        public Unit ItemNumberWidth
-        {
-            get; set;
-        }
-
-        public Unit ItemAlleyWidth
-        {
-            get; set;
-        }
-
-        public HorizontalAlignment ItemAlignment
-        {
-            get; set;
-        }
-
-        public string GroupName
-        {
-            get { return this._grpname; }
-            protected set { this._grpname = value; }
-        }
+        protected ListBase List { get; }
+        
+        
+        protected string GroupName { get; set; }
 
 
         //
@@ -88,7 +55,7 @@ namespace Scryber.PDF.Layout
         public LayoutEngineList2(ListBase list, IPDFLayoutEngine parent)
             : base(list, parent)
         {
-            _list = list;
+            List = list;
         }
 
         #endregion
@@ -104,14 +71,20 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected override void DoLayoutComponent()
         {
-            if (this.Context.ShouldLogDebug)
-                this.Context.TraceLog.Begin(TraceLevel.Debug, ListEngineLogCategory, string.Format("Starting the layout of the list {0}", this.List.ID));
+            if (this.Context.ShouldLogVerbose)
+                this.Context.TraceLog.Begin(TraceLevel.Verbose, ListEngineLogCategory,
+                    $"Starting the layout of the list {this.List.ID}");
 
             this.OpenListNumbering();
 
             base.DoLayoutComponent();
             
             this.CloseListNumbering();
+            
+            if (this.Context.ShouldLogVerbose)
+                this.Context.TraceLog.End(TraceLevel.Verbose, ListEngineLogCategory,
+                    $"Completed the layout of the list {this.List.ID}");
+
         }
 
         #endregion
@@ -153,146 +126,11 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
-
-        protected override void DoLayoutAChild(IComponent comp, Style full)
-        {
-            if(comp is ListItem)
-            {
-                //PDFUnit inset = full.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
-                
-                
-
-                //var li = BuildAListNumberComponent(comp as ListItem, full);
-
-                //if (li != null)
-                //{
-                //    PDFUnit left = li.NumberWidth;
-                //    left += DefaultListItemAlley;
-                //    full.SetValue(StyleKeys.MarginsLeftKey, left);
-                //}
-
-            }
-            base.DoLayoutAChild(comp, full);
-        }
-
-
-
-        #region private PDFComponent BuildAListNumberComponent(PDFListItem item, PDFStyle itemstyle ....)
-
-        /// <summary>
-        /// Based on the current numbering creates and returns the appropriate ListItemNumberComponent along with a few other appropriate bits.
-        /// </summary>
-        /// <param name="item">The list item to build the Number component for</param>
-        /// <param name="itemstyle">The full style of this list item</param>
-        /// <param name="halign">The alignment as set, can be updated to explict item alignment</param>
-        /// <param name="type">The current type of numbering</param>
-        /// <param name="itemWidth">If an explicit width has been set then this is returned (otherwise -1)</param>
-        /// <param name="text">If this item has explict text (e.g Definiton list) then this is returned, otherwise empty</param>
-        /// <returns>The correct PDFListItemLabel for the item</returns>
-        private ListItemLabel BuildAListNumberComponent(ListItem item, Style itemstyle)
-        {
-            ListNumbering numbers = this.Component.Document.ListNumbering;
-            PDFListNumberGroup group = numbers.CurrentGroup;
-
-            var type = numbers.CurrentGroup.Style;
-
-            var itemWidth = itemstyle.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
-            var text = itemstyle.GetValue(StyleKeys.ListLabelKey, string.Empty);
-            var halign = itemstyle.GetValue(StyleKeys.ListAlignmentKey, DefaultListItemAlignment);
-
-            ListItemLabel label;
-
-            if (type == ListNumberingGroupStyle.None)
-                label = null;
-            else
-            {
-                if (type == ListNumberingGroupStyle.Labels)
-                {
-                    PDFListDefinitionItemLabel defn = new PDFListDefinitionItemLabel();
-                    defn.Text = text;
-                    label = defn;
-                }
-                else if (type == ListNumberingGroupStyle.Bullet)
-                {
-                    label = new PDFListBulletItemLabel();
-                }
-                else
-                {
-                    label = new ListItemLabel();
-                }
-
-                label.StyleClass = item.StyleClass;
-                label.Alignment = halign;
-                label.ListType = type;
-                label.Group = group;
-                label.NumberWidth = itemWidth;
-
-            }
-            return label;
-        }
-
-
-        #endregion
-
+        
         //
         // inner classes
         //
 
-        #region private class ListNumberEntry
-
-        /// <summary>
-        /// Encapsulates the details about a single list entry
-        /// </summary>
-        private class ListNumberEntry
-        {
-            /// <summary>
-            /// The component to use for the numbering region
-            /// </summary>
-            public Component NumberComponent;
-
-            /// <summary>
-            /// The layout width of the number region
-            /// </summary>
-            public Unit NumberWidth;
-
-            /// <summary>
-            /// The list item this entry holds the details for
-            /// </summary>
-            public ListItem ListItem;
-
-            /// <summary>
-            /// The list item full style
-            /// </summary>
-            public Style FullStyle;
-
-            /// <summary>
-            /// The list item applied style
-            /// </summary>
-            public Style AppliedStyle;
-
-            /// <summary>
-            /// The index of the item in the list
-            /// </summary>
-            public int NumberIndex;
-
-            /// <summary>
-            /// The numbering group style (UppercaseRoman, Decimal, Bullet etc).
-            /// </summary>
-            public ListNumberingGroupStyle NumberGroupStyle;
-
-            /// <summary>
-            /// The alignment of the number component in its region
-            /// </summary>
-            public HorizontalAlignment NumberAlignment;
-
-            /// <summary>
-            /// The actual text associated with the number.
-            /// </summary>
-            public string NumberText;
-        }
-
-        #endregion
 
     }
 }

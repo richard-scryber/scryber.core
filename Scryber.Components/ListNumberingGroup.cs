@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -550,9 +551,9 @@ namespace Scryber
         /// <param name="name"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        public new bool TryGetValue(string name, out PDFListNumberingStack item)
+        public bool TryGetValue(string name, out PDFListNumberingStack item)
         {
-            if (this.Count == 0)
+            if (null == this.Dictionary)
             {
                 item = null;
                 return false;

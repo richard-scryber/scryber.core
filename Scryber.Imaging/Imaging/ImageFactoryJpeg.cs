@@ -59,6 +59,9 @@ namespace Scryber.Imaging
 
         private MemoryStream ExtractImageDataFromStream(Stream stream)
         {
+            if (stream is MemoryStream)
+                return (MemoryStream) stream;
+            
             var ms = new MemoryStream();
             stream.CopyTo(ms);
             return ms;

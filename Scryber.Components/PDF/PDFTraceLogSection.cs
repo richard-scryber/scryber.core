@@ -37,7 +37,7 @@ namespace Scryber.PDF
         }
         private void InitAllContent()
         {
-            Head1 title = new Head1() { Text = "Trace Output"};
+            Head1 title = new Head1() { Text = "Trace Output", ElementName = "h1"};
             this.Contents.Add(title);
 
             AddDocumentOverview();
@@ -54,10 +54,10 @@ namespace Scryber.PDF
 
         private void AddDocumentOverview()
         {
-            Head3 head = new Head3() { Text = "Document Overview" };
+            Head3 head = new Head3() { Text = "Document Overview", ElementName = "h3" };
             this.Contents.Add(head);
 
-            TableGrid tbl = new TableGrid();
+            TableGrid tbl = new TableGrid() { ElementName = "table"};
             this.Contents.Add(tbl);
 
             if (null != this.GenerationData.DocumentInfo &&
@@ -78,14 +78,14 @@ namespace Scryber.PDF
 
         private void AddOverviewRow(TableGrid tbl, string name, string value)
         {
-            TableRow row = new TableRow();
+            TableRow row = new TableRow() {ElementName = "tr"};
             tbl.Rows.Add(row);
 
-            TableCell cell = new TableHeaderCell() { Width = 100 };
+            TableCell cell = new TableHeaderCell() { Width = 100, ElementName = "td"};
             cell.Contents.Add(new TextLiteral(name));
             row.Cells.Add(cell);
 
-            cell = new TableCell();
+            cell = new TableCell() {ElementName = "td"};
             if (string.IsNullOrEmpty(value) == false)
                 cell.Contents.Add(new TextLiteral(value));
             row.Cells.Add(cell);
@@ -95,10 +95,10 @@ namespace Scryber.PDF
 
         private void AddResources(PDFResourceCollection resources)
         {
-            Head3 head = new Head3() { Text = "Document Resources" };
+            Head3 head = new Head3() { Text = "Document Resources", ElementName = "h3"};
             this.Contents.Add(head);
 
-            TableGrid tbl = new TableGrid();
+            TableGrid tbl = new TableGrid() {ElementName = "table"};
             this.Contents.Add(tbl);
 
             if(resources.Count == 0)
@@ -111,8 +111,8 @@ namespace Scryber.PDF
             }
             else
             {
-                TableRow row = new TableRow();
-                TableCell cell = new TableCell();
+                TableRow row = new TableRow() {ElementName = "tr"};
+                TableCell cell = new TableCell() {ElementName = "td"};
                 cell.CellColumnSpan = 2;
                 cell.Contents.Add(new TextLiteral("This document contains " + resources.Count.ToString() + " resources"));
                 row.Cells.Add(cell);
@@ -132,8 +132,8 @@ namespace Scryber.PDF
 
         private void AddFontResource(TableGrid tbl, PDFFontResource fnt)
         {
-            TableRow row = new TableRow();
-            TableCell cell = new TableCell();
+            TableRow row = new TableRow() {ElementName = "tr"};
+            TableCell cell = new TableCell() {ElementName = "td"};
             cell.Width = 100;
             if (fnt.Definition.IsStandard)
                 cell.Contents.Add(new TextLiteral("Standard Font"));
@@ -144,7 +144,7 @@ namespace Scryber.PDF
 
             row.Cells.Add(cell);
 
-            cell = new TableCell();
+            cell = new TableCell() {ElementName = "td"};
             var bold = new BoldSpan();
             bold.Contents.Add(new TextLiteral(fnt.Definition.Family + ", weight : " + fnt.Definition.Weight + ", style : " + (fnt.Definition.Italic ? "Italic" : "Regular")));
             cell.Contents.Add(bold);
@@ -160,13 +160,13 @@ namespace Scryber.PDF
 
         private void AddXObjectResource(TableGrid tbl, PDFImageXObject img)
         {
-            TableRow row = new TableRow();
-            TableCell cell = new TableCell();
+            TableRow row = new TableRow() {ElementName = "tr"};
+            TableCell cell = new TableCell() {ElementName = "td"};
             cell.Width = 100;
             cell.Contents.Add(new TextLiteral("Image"));
             row.Cells.Add(cell);
 
-            cell = new TableCell();
+            cell = new TableCell() {ElementName = "td"};
             var bold = new BoldSpan();
             
             if (img.ImageData != null)
@@ -195,26 +195,26 @@ namespace Scryber.PDF
 
         private void AddPerformance(PerformanceMonitor perfdata)
         {
-            Head3 head = new Head3() { Text = "Performance Metrics"};
+            Head3 head = new Head3() { Text = "Performance Metrics", ElementName = "h3"};
             this.Contents.Add(head);
 
-            TableGrid tbl = new TableGrid();
+            TableGrid tbl = new TableGrid() {ElementName = "table"};
             this.Contents.Add(tbl);
 
-            TableHeaderRow top = new TableHeaderRow();
+            TableHeaderRow top = new TableHeaderRow() {ElementName = "tr", StyleClass = "head"};
             tbl.Rows.Add(top);
 
-            TableCell cell = new TableHeaderCell();
+            TableCell cell = new TableHeaderCell() {ElementName = "td", StyleClass = "head"};
             cell.Contents.Add(new TextLiteral("Entry"));
             top.Cells.Add(cell);
 
 
-            cell = new TableHeaderCell() { StyleClass = "number", Width = 100 };
+            cell = new TableHeaderCell() { ElementName = "td", StyleClass = "number", Width = 100 };
             
             cell.Contents.Add(new TextLiteral("Duration (ms)"));
             top.Cells.Add(cell);
 
-            cell = new TableHeaderCell() { StyleClass = "number", Width = 60 };
+            cell = new TableHeaderCell() { ElementName = "td", StyleClass = "number", Width = 60 };
             cell.Contents.Add(new TextLiteral("Count"));
             top.Cells.Add(cell);
 
@@ -227,18 +227,18 @@ namespace Scryber.PDF
 
         private void AddPerformanceEntry(TableGrid grid, PerformanceMonitorEntry entry)
         {
-            TableRow row = new TableRow();
+            TableRow row = new TableRow(){ ElementName = "tr",};
             grid.Rows.Add(row);
 
-            TableCell cell = new TableCell() { DataStyleIdentifier = "PerfCategoryKey" };
+            TableCell cell = new TableCell() { ElementName = "td", DataStyleIdentifier = "PerfCategoryKey" };
             cell.Contents.Add(new TextLiteral(entry.MonitorKey));
             row.Cells.Add(cell);
 
-            cell = new TableCell() { StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
+            cell = new TableCell() {  ElementName = "td",StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
             cell.Contents.Add(new TextLiteral(entry.MonitorElapsed.TotalMilliseconds.ToString("#,##0.00")));
             row.Cells.Add(cell);
 
-            cell = new TableCell() { StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
+            cell = new TableCell() {  ElementName = "td",StyleClass = "number", DataStyleIdentifier = "PerfCategoryEntryRight" };
             cell.Contents.Add(new TextLiteral(entry.MonitorCount.ToString()));
             row.Cells.Add(cell);
 
@@ -253,81 +253,81 @@ namespace Scryber.PDF
 
         private void AddPerformanceMeasurement(TableGrid grid, PerformanceMonitorMeasurement measure)
         {
-            TableRow row = new TableRow() { StyleClass = "Debug" };
+            TableRow row = new TableRow() {  ElementName = "tr",StyleClass = "Debug" };
             grid.Rows.Add(row);
 
 
-            TableCell cell = new TableCell() { DataStyleIdentifier = "PerfCategoryMeasure"};
+            TableCell cell = new TableCell() {  ElementName = "td",DataStyleIdentifier = "PerfCategoryMeasure"};
             cell.Contents.Add(new TextLiteral(measure.Key));
             row.Cells.Add(cell);
 
-            cell = new TableCell(){ DataStyleIdentifier = "PerfCategoryEntryRight"};
+            cell = new TableCell(){  ElementName = "td",DataStyleIdentifier = "PerfCategoryEntryRight"};
             cell.Contents.Add(new TextLiteral(measure.Elapsed.TotalMilliseconds.ToString("#,##0.00")));
             row.Cells.Add(cell);
 
-            cell = new TableCell() { DataStyleIdentifier = "PerfCategoryEntryRight" };
+            cell = new TableCell() {  ElementName = "td",DataStyleIdentifier = "PerfCategoryEntryRight" };
             row.Cells.Add(cell);
         }
 
-        private void AddTraceLog(Logging.PDFCollectorTraceLog log)
+        private void AddTraceLog(Logging.CollectorTraceLog log)
         {
-            Head3 head = new Head3() { Text = "Document Log" };
+            Head3 head = new Head3() { Text = "Document Log", ElementName = "h3"};
             this.Contents.Add(head);
 
-            TableGrid tbl = new TableGrid() { StyleClass = "log-grid" };
+            TableGrid tbl = new TableGrid() { StyleClass = "log-grid", ElementName = "table"};
             this.Contents.Add(tbl);
 
-            TableHeaderRow top = new TableHeaderRow();
+            TableHeaderRow top = new TableHeaderRow(){ ElementName = "tr"};
             tbl.Rows.Add(top);
 
-            TableCell cell = new TableHeaderCell() { Width = 60 };
+            TableCell cell = new TableHeaderCell() {  ElementName = "td", StyleClass = "head",Width = 60 };
             cell.Contents.Add(new TextLiteral("Time (ms)"));
             top.Cells.Add(cell);
 
-            cell = new TableHeaderCell() { Width = 60 };
+            cell = new TableHeaderCell() {  ElementName = "td", StyleClass = "head",Width = 60 };
             cell.Contents.Add(new TextLiteral("Level"));
             top.Cells.Add(cell);
 
-            cell = new TableHeaderCell() { Width = 100};
+            cell = new TableHeaderCell() {  ElementName = "td", StyleClass = "head",Width = 100};
             cell.Contents.Add(new TextLiteral("Category"));
             top.Cells.Add(cell);
 
-            cell = new TableHeaderCell();
+            cell = new TableHeaderCell(){  ElementName = "td", StyleClass = "head"};
             cell.Contents.Add(new TextLiteral("Message"));
             top.Cells.Add(cell);
 
-            foreach (Logging.PDFCollectorTraceLogEntry entry in log)
+            foreach (Logging.CollectorTraceLogEntry entry in log)
             {
                 this.AddLogEntry(tbl, entry);
             }
         }
 
-        private void AddLogEntry(TableGrid tbl, Logging.PDFCollectorTraceLogEntry entry)
+        private void AddLogEntry(TableGrid tbl, Logging.CollectorTraceLogEntry entry)
         {
             
             string rowidentifier = entry.Level.ToString();
             string cellidentifier = "cell_" + rowidentifier;
             string cellnumidentifier = cellidentifier + "_number";
-            TableRow row = new TableRow() { DataStyleIdentifier = rowidentifier, StyleClass = rowidentifier };
+            TableRow row = new TableRow() { ElementName = "tr",DataStyleIdentifier = rowidentifier, StyleClass = rowidentifier };
             tbl.Rows.Add(row);
 
-            TableCell cell = new TableCell() { StyleClass = "number" };
+            TableCell cell = new TableCell() { ElementName = "td",StyleClass = "number" };
             cell.DataStyleIdentifier = cellnumidentifier;
             cell.Contents.Add(new TextLiteral(entry.TimeStamp.TotalMilliseconds.ToString("#000.0000")));
             row.Cells.Add(cell);
 
-            cell = new TableCell();
+            cell = new TableCell(){ElementName = "td"};
             cell.DataStyleIdentifier = cellidentifier;
             cell.Contents.Add(new TextLiteral(entry.Level.ToString()));
             row.Cells.Add(cell);
 
-            cell = new TableCell();
+            cell = new TableCell(){ElementName = "td"};
             cell.DataStyleIdentifier = cellidentifier;
             if (!string.IsNullOrEmpty(entry.Category))
                 cell.Contents.Add(new TextLiteral(entry.Category));
             row.Cells.Add(cell);
 
-            cell = new TableCell();
+            cell = new TableCell() {ElementName = "td"};
             cell.DataStyleIdentifier = cellidentifier;
             if (!string.IsNullOrEmpty(entry.Message))
                 cell.Contents.Add(new TextLiteral(entry.Message));

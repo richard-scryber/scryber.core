@@ -33,9 +33,7 @@ namespace Scryber.Html.Components
         public HTMLHeadBase BasePath
         {
             get { return _base; }
-            set { _base = value;
-                this.UpdateDocumentBase();
-            }
+            set { _base = value; }
         }
 
         [PDFArray(typeof(Component))]
@@ -46,25 +44,35 @@ namespace Scryber.Html.Components
             set { base.InnerContent = value; }
         }
 
+        private bool _infoRegistered = false;
+
+        /// <summary>
+        /// Flag that indicates if the head has previously registered the contained information
+        /// </summary>
+        protected bool HasRegisteredInfo
+        {
+            get { return _infoRegistered; }
+            set { _infoRegistered = value; }
+        }
+        
         protected internal override void RegisterParent(Component parent)
         {
+            var prev = this.Parent;
+            
             base.RegisterParent(parent);
-            UpdateDocumentInfo(parent);
+            //If we have changed our parent and we have already registered content, then we should re-apply
+            if (parent != prev && this.HasRegisteredInfo)
+                UpdateDocumentInfo(parent);
         }
 
+        
         protected override void OnDataBound(DataContext context)
         {
             this.UpdateDocumentInfo(this.Parent);
             base.OnDataBound(context);
         }
 
-        private void UpdateDocumentBase()
-        {
-            if(this.Parent is Document)
-            {
-                string path = string.Empty;
-            }
-        }
+        
 
         private void UpdateDocumentInfo(Component parent)
         {
@@ -72,7 +80,8 @@ namespace Scryber.Html.Components
             {
 
                 var doc = parent as Document;
-
+                this.HasRegisteredInfo = true;
+                
                 bool logVerbose = doc.TraceLog.ShouldLog(TraceLevel.Verbose);
 
                 if (doc.TraceLog.ShouldLog(TraceLevel.Message))
@@ -259,12 +268,6 @@ namespace Scryber.Html.Components
 
         }
 
-        protected override void OnPreLayout(LayoutContext context)
-        {
-            base.OnPreLayout(context);
-            this.UpdateDocumentInfo(this.Document);
-
-        }
 
         public HTMLHead() : this(ObjectTypes.NoOp)
         {

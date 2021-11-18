@@ -810,14 +810,21 @@ namespace Scryber.Components
 
         #region public bool AppendTraceLog {get;set;}
 
+        private bool _appendTraceLog = false;
+        
         /// <summary>
         /// Gets or sets the append trace log flag, that indicates if the entire log output should be 
         /// appended to the document after is has been generated
         /// </summary>
         public bool AppendTraceLog
         {
-            get;
-            set;
+            get => _appendTraceLog;
+            set
+            {
+                _appendTraceLog = value;
+                if(value)
+                    this.EnsureCollectorLog();
+            }
         }
 
         #endregion
@@ -825,7 +832,7 @@ namespace Scryber.Components
         #region Scryber.PDFTraceLog TraceLog {get;set;}
 
         private TraceLog _log;
-        private Scryber.Logging.PDFCollectorTraceLog _collector;
+        private Scryber.Logging.CollectorTraceLog _collector;
 
         /// <summary>
         /// Gets or sets the log  for this document.
@@ -844,7 +851,7 @@ namespace Scryber.Components
                 if (null == value)
                     _collector = null;
                 else
-                    _collector = _log.GetLogWithName(TraceLog.ScryberAppendTraceLogName) as Scryber.Logging.PDFCollectorTraceLog;
+                    _collector = _log.GetLogWithName(TraceLog.ScryberAppendTraceLogName) as Scryber.Logging.CollectorTraceLog;
             }
         }
 
@@ -868,12 +875,43 @@ namespace Scryber.Components
 
             if (this.AppendTraceLog)
             {
-                _collector = new Logging.PDFCollectorTraceLog(log.RecordLevel, TraceLog.ScryberAppendTraceLogName, true);
-                Scryber.Logging.CompositeTraceLog composite = new Logging.CompositeTraceLog(new TraceLog[] { log, _collector }, "");
-                log = composite;
-
+                _collector = new Logging.CollectorTraceLog(log.RecordLevel, TraceLog.ScryberAppendTraceLogName, true);
+                
+                if (log is DoNothingTraceLog)
+                    log = _collector;
+                else
+                {
+                    Scryber.Logging.CompositeTraceLog composite =
+                        new Logging.CompositeTraceLog(new TraceLog[] {log, _collector}, "");
+                    log = composite;
+                }
             }
             return log;
+        }
+
+        protected void EnsureCollectorLog()
+        {
+            var currentLog = this.TraceLog;
+            if (null == currentLog)
+            {
+                this.TraceLog = new Logging.CollectorTraceLog(TraceRecordLevel.Messages,
+                    TraceLog.ScryberAppendTraceLogName, true);
+            }
+            else if (currentLog is DoNothingTraceLog)
+            {
+                this.TraceLog = new Logging.CollectorTraceLog(currentLog.RecordLevel,
+                    TraceLog.ScryberAppendTraceLogName, true);
+            }
+            else
+            {
+                var collector = currentLog.GetLogWithName(TraceLog.ScryberAppendTraceLogName);
+                if (null == collector)
+                {
+                    collector = new Logging.CollectorTraceLog(currentLog.RecordLevel,
+                        TraceLog.ScryberAppendTraceLogName, true);
+                    this.TraceLog = new Logging.CompositeTraceLog(new TraceLog[] {currentLog, collector}, "");
+                }
+            }
         }
 
         #endregion
@@ -936,8 +974,10 @@ namespace Scryber.Components
         /// </summary>
         public ParserConformanceMode ConformanceMode
         {
-            get { return _confmode; }
-            set { _confmode = value; }
+            get
+            {
+                return this.RenderOptions.ConformanceMode; }
+            set { this.RenderOptions.ConformanceMode = value; }
         }
 
         /// <summary>
@@ -2080,7 +2120,7 @@ namespace Scryber.Components
             data.TraceLevel = context.TraceLog.RecordLevel;
             data.DocumentInfo = this.Info;
             data.DocumentViewerPrefs = this.ViewPreferences;
-            data.TraceLog = this.TraceLog.GetLogWithName(TraceLog.ScryberAppendTraceLogName) as Scryber.Logging.PDFCollectorTraceLog;
+            data.TraceLog = this.TraceLog.GetLogWithName(TraceLog.ScryberAppendTraceLogName) as Scryber.Logging.CollectorTraceLog;
             data.Namespaces = this.NamespaceDeclarations;
             data.PerformanceMetrics = this.PerformanceMonitor;
             return data;
@@ -2276,6 +2316,7 @@ namespace Scryber.Components
         /// <summary>
         /// Loads a file name or url from a source and returns the correct ImageXObject encapsulating the image data
         /// </summary>
+        /// <param name="owner">The component that is requesting the resource (as source value may be releative to where the component was loaded from</param>
         /// <param name="src">The full path or absolute location of the image data file, or inline image data</param>
         /// <returns></returns>
         public PDFImageXObject LoadImageData(IComponent owner, string src)
@@ -2287,26 +2328,28 @@ namespace Scryber.Components
                 compress = ((IOptimizeComponent)owner).Compress;
             try
             {
-                object cached;
-
                 if (string.IsNullOrEmpty(src))
-                    throw new ArgumentNullException("path");
+                    throw new ArgumentNullException(nameof(src));
 
                 src = RemoveReturns(src);
                 src = owner.MapPath(src);
 
-                var exists = this.SharedResources.GetResource(PDFImageXObject.XObjectResourceType, src) as PDFImageXObject;
-                
-                if (null != exists)
+                if (this.SharedResources.GetResource(PDFResource.XObjectResourceType, src) is PDFImageXObject exists)
                     return exists;
                 
-                else if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out cached))
+                if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out var cached))
                 {
+                    if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        this.TraceLog.Add(TraceLevel.Verbose, "Document","Cache matched for the image source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
+                    
                     data = (ImageData) cached;
                     key = GetIncrementID(ObjectTypes.ImageXObject);
                 }
                 else if (this.ImageFactories.TryGetMatch(src, out var factory))
                 {
+                    if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        this.TraceLog.Add(TraceLevel.Verbose, "Document","Factory '" + factory.Name +  "' found for image with source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
+
                     data = LoadImageDataFromFactory(owner, factory, src);
                     key = GetIncrementID(ObjectTypes.ImageXObject);
                 }
@@ -2371,50 +2414,17 @@ namespace Scryber.Components
 
         private ImageData LoadImageDataFromFactory(IComponent owner, IPDFImageDataFactory factory, string path)
         {
-            ImageData data;
+            ImageData data = factory.LoadImageData(this, owner, path);
 
-            if (factory.ShouldCache)
+            if (null != data && factory.ShouldCache)
             {
-                object cached;
-                if (!this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), path, out cached))
-                {
-                    data = factory.LoadImageData(this, owner, path);
-
-                    if (null != data)
-                    {
-                        var expires = this.GetImageCacheExpires();
-                        this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), path, data, expires);
-                    }
-                }
-                else
-                    data = (ImageData)cached;
+                var expires = this.GetImageCacheExpires();
+                this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), path, data, expires);
             }
-            else
-                data = factory.LoadImageData(this, owner, path);
-
+            
             return data;
         }
 
-        public ImageData GetNotFoundLogo(string path)
-        {
-            return null;
-
-            //if (null == this.Info)
-            //    this.Info = new PDFDocumentInfo();
-            //if (null == this.Info.Extras)
-            //    this.Info.Extras = new PDFDocumentInfoExtraCollection();
-
-            //string value = this.Info.Extras["Missing Images"];
-            //if (string.IsNullOrEmpty(value))
-            //    value =  path.Replace("\\","\\\\");
-            //else
-            //    value += ";" + path.Replace("\\", "\\\\");
-                
-            //this.Info.Extras["Missing Images"] = value;
-
-            //System.Drawing.Bitmap bmp = Properties.Resources.scryber_NotFoundLogo;
-            //return PDFImageData.LoadImageFromBitmap(path, bmp, false);
-        }
 
         private DateTime GetImageCacheExpires()
         {
@@ -2438,8 +2448,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public override string MapPath(string path)
         {
-            bool isfile;
-            return this.MapPath(path, out isfile);
+            return this.MapPath(path, out var isfile);
         }
 
         
@@ -2507,7 +2516,7 @@ namespace Scryber.Components
             IComponent parsed = null;
             try
             {
-                parsed = Document.Parse(path, this.Resolver ?? new PDFReferenceChecker(string.Empty).Resolver);
+                parsed = Document.Parse(path, this.Resolver ?? new ReferenceChecker(string.Empty).Resolver);
             }
             catch (System.IO.FileNotFoundException ex)
             {
@@ -2557,14 +2566,14 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public static IPDFComponent Parse(string fullpath) + 11 overloads
+        #region public static IComponent Parse(string fullpath) + 11 overloads
 
         public static IComponent Parse(string fullpath)
         {
             using (System.IO.Stream stream = new System.IO.FileStream(fullpath,System.IO.FileMode.Open,System.IO.FileAccess.Read))
             {
                 
-                PDFReferenceChecker checker = new PDFReferenceChecker(fullpath);
+                ReferenceChecker checker = new ReferenceChecker(fullpath);
 
                 IComponent comp = Parse(fullpath, stream, ParseSourceType.LocalFile, checker.Resolver);
 
@@ -2577,7 +2586,7 @@ namespace Scryber.Components
 
         public static IComponent Parse(System.IO.Stream stream, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
             IComponent comp = Parse(string.Empty, stream, type, checker.Resolver);
 
             return comp;
@@ -2585,7 +2594,7 @@ namespace Scryber.Components
 
         public static IComponent Parse(System.IO.TextReader reader, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
             IComponent comp = Parse(string.Empty, reader, type, checker.Resolver);
 
             return comp;
@@ -2593,7 +2602,7 @@ namespace Scryber.Components
 
         public static IComponent Parse(System.Xml.XmlReader reader, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
             IComponent comp = Parse(string.Empty, reader, type, checker.Resolver);
 
             return comp;
@@ -2740,7 +2749,7 @@ namespace Scryber.Components
             PDFReferenceResolver resolver = this.Resolver;
             if (null == resolver)
             {
-                PDFReferenceChecker checker = new PDFReferenceChecker(referencepath);
+                ReferenceChecker checker = new ReferenceChecker(referencepath);
                 resolver = checker.Resolver;
             }
 
@@ -2759,7 +2768,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region protected virtual PDFGeneratorSettings CreateGeneratorSettings(PDFReferenceResolver resolver)
+        #region protected virtual ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver)
 
         /// <summary>
         /// Creates the generator settings required to parse the XML files
@@ -2833,7 +2842,7 @@ namespace Scryber.Components
 
         public static Document ParseDocument(System.IO.Stream stream, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
             IComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
 
             if (!(parsed is Document))
@@ -2846,7 +2855,7 @@ namespace Scryber.Components
 
         public static Document ParseDocument(System.IO.TextReader reader, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(string.Empty);
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
             IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
@@ -2859,7 +2868,7 @@ namespace Scryber.Components
 
         public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            ReferenceChecker checker = new ReferenceChecker(path);
             IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
@@ -2872,7 +2881,7 @@ namespace Scryber.Components
 
         public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            ReferenceChecker checker = new ReferenceChecker(path);
             IComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
 
             if (!(parsed is Document))
@@ -2885,7 +2894,7 @@ namespace Scryber.Components
 
         public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type)
         {
-            PDFReferenceChecker checker = new PDFReferenceChecker(path);
+            ReferenceChecker checker = new ReferenceChecker(path);
             IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
@@ -2899,10 +2908,10 @@ namespace Scryber.Components
         #endregion
 
         //
-        // IPDFRemoteComponent
+        // IRemoteComponent
         //
 
-        #region IPDFRemoteComponent Members
+        #region IRemoteComponent Members
 
         void Scryber.IRemoteComponent.RegisterNamespaceDeclaration(string prefix, string ns)
         {
@@ -2955,32 +2964,32 @@ namespace Scryber.Components
         // inner classes
         //
 
-        #region private class PDFReferenceChecker
+        #region private class ReferenceChecker
 
         /// <summary>
         /// Tracks the references to paths and resolves relative paths in each file to be parsed.
         /// </summary>
-        private class PDFReferenceChecker
+        private class ReferenceChecker
         {
-            private string _rootpath;
+            private string _rootPath;
             private Stack<string> _route;
             private PDFReferenceResolver _resolver;
             private bool _hasroot;
             
             
-            public PDFReferenceChecker(string fullpath)
+            public ReferenceChecker(string fullPath)
             {
-                _hasroot = !string.IsNullOrEmpty(fullpath);
+                _hasroot = !string.IsNullOrEmpty(fullPath);
 
-                _rootpath = fullpath;
+                _rootPath = fullPath;
                 _route = new Stack<string>();
 
                 if (_hasroot)
                 {
-                    _route.Push(NormalizePath(fullpath));
+                    _route.Push(NormalizePath(fullPath));
                 }
 
-                _resolver = new PDFReferenceResolver(this.Resolve);
+                _resolver = this.Resolve;
             }
 
             

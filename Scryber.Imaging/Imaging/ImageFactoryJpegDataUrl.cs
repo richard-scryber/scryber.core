@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Scryber.Drawing;
+using Scryber.OpenType;
 using SixLabors.ImageSharp;
 
 namespace Scryber.Imaging
@@ -11,26 +13,25 @@ namespace Scryber.Imaging
     /// <summary>
     /// Handles Gif images from a data url e.g. data:image/gif;base64,.....
     /// </summary>
-    public class ImageFactoryGifDataUrl : ImageFactoryGif
+    public class ImageFactoryJpegDataUrl : ImageFactoryJpeg
     {
-        private static readonly Regex GifDataMatch = new Regex("^\\s*data:image/gif;", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
-        private const string GifDataName = "Gif inline data image factory";
-        private const bool GifDataShouldCache = false;
+        private static readonly Regex JpegDataMatch = new Regex("^\\s*data:image/jpeg;", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+        private const string JpegDataName = "Jpeg inline data image factory";
+        private const bool JpegDataShouldCache = false;
 
-        private const string DataImagePrefix = "data:image/gif;base64,";
         
-        public ImageFactoryGifDataUrl() : this(GifDataMatch, GifDataName, GifDataShouldCache)
+        public ImageFactoryJpegDataUrl() : this(JpegDataMatch, JpegDataName, JpegDataShouldCache)
         {}
         
         
-        public ImageFactoryGifDataUrl(Regex match, string name, bool shouldCache)
+        public ImageFactoryJpegDataUrl(Regex match, string name, bool shouldCache)
             : base(match, name, shouldCache)
         {}
 
 
         protected override Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
-            var bin = Utilities.DataUrlHelper.ExtractBase64Data(path, "image/gif");
+            var bin = Utilities.DataUrlHelper.ExtractBase64Data(path, "image/jpeg");
             
             using (var ms = new MemoryStream(bin))
             {

@@ -40,7 +40,7 @@ namespace Scryber.PDF
 
         public string TemplatePath { get; set; }
 
-        public Scryber.Logging.PDFCollectorTraceLog TraceLog { get; set; }
+        public Scryber.Logging.CollectorTraceLog TraceLog { get; set; }
 
         public Scryber.Data.PDFXmlNamespaceCollection Namespaces { get; set; }
 

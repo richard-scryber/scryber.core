@@ -30,10 +30,10 @@ namespace Scryber.Logging
     /// </summary>
     #region public class PDFCollectorTraceLog : PDFTraceLog, IEnumerable<PDFCollectorTraceLogEntry>
 
-    public class PDFCollectorTraceLog : TraceLog, IEnumerable<PDFCollectorTraceLogEntry>
+    public class CollectorTraceLog : TraceLog, IEnumerable<CollectorTraceLogEntry>
     {
 
-        private List<PDFCollectorTraceLogEntry> _entries;
+        private List<CollectorTraceLogEntry> _entries;
         private bool _collecting;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Scryber.Logging
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public PDFCollectorTraceLogEntry this[int index]
+        public CollectorTraceLogEntry this[int index]
         {
             get { return _entries[index]; }
         }
@@ -58,10 +58,10 @@ namespace Scryber.Logging
         /// Creates a new instance
         /// </summary>
         /// <param name="recordlevel"></param>
-        public PDFCollectorTraceLog(TraceRecordLevel recordlevel, string name, bool autostart)
+        public CollectorTraceLog(TraceRecordLevel recordlevel, string name, bool autostart)
             : base(recordlevel, name)
         {
-            this._entries = new List<PDFCollectorTraceLogEntry>();
+            this._entries = new List<CollectorTraceLogEntry>();
             this._collecting = autostart;
         }
 
@@ -77,7 +77,7 @@ namespace Scryber.Logging
         protected internal override void Record(string inset, TraceLevel level, TimeSpan timestamp, string category, string message, Exception ex)
         {
             if(this._collecting)
-                this._entries.Add(new PDFCollectorTraceLogEntry(inset, level, timestamp, category, message, ex));
+                this._entries.Add(new CollectorTraceLogEntry(inset, level, timestamp, category, message, ex));
         }
 
         public void StopCollecting()
@@ -102,7 +102,7 @@ namespace Scryber.Logging
         /// Returns a new enumerator that can loop over each of the entries in this collector
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<PDFCollectorTraceLogEntry> GetEnumerator()
+        public IEnumerator<CollectorTraceLogEntry> GetEnumerator()
         {
             return _entries.GetEnumerator();
         }
@@ -121,79 +121,47 @@ namespace Scryber.Logging
 
 
     /// <summary>
-    /// A single log entry that is created by the PDFCollectorTraceLog, and holds all the information about a single log entry.
+    /// A single log entry that is created by the CollectorTraceLog, and holds all the information about a single log entry.
     /// </summary>
-    #region public class PDFCollectorTraceLogEntry
+    #region public class CollectorTraceLogEntry
 
-    public class PDFCollectorTraceLogEntry
+    public class CollectorTraceLogEntry
     {
-
-        #region ivars
-
-        private string _inset;
-        private TraceLevel _level;
-        private TimeSpan _stamp;
-        private string _cat;
-        private string _msg;
-        private Exception _ex;
-
-        #endregion
 
         /// <summary>
         /// Gets the inset string (depth)
         /// </summary>
-        public string Inset
-        {
-            get { return _inset; }
-        }
+        public string Inset { get; }
 
         /// <summary>
         /// Gets the trace level of this entry
         /// </summary>
-        public TraceLevel Level
-        {
-            get { return _level; }
-        }
+        public TraceLevel Level { get; }
 
         /// <summary>
         /// Gets the timestamp of this entry
         /// </summary>
-        public TimeSpan TimeStamp
-        {
-            get { return _stamp; }
-        }
+        public TimeSpan TimeStamp { get; }
 
         /// <summary>
         /// Gets the Category for this entry
         /// </summary>
-        public string Category
-        {
-            get { return _cat; }
-        }
+        public string Category { get; }
 
         /// <summary>
         /// Gets the message for this entry
         /// </summary>
-        public string Message
-        {
-            get { return _msg; }
-        }
+        public string Message { get; }
 
         /// <summary>
         /// Gets any exception associated with this entry
         /// </summary>
-        public Exception Exception
-        {
-            get { return _ex; }
-        }
+        public Exception Exception { get; }
 
         /// <summary>
         /// Returns true if this entry has a non-null exception associated with it.
         /// </summary>
-        public bool HasException
-        {
-            get { return null != _ex; }
-        }
+        public bool HasException => null != Exception;
 
         /// <summary>
         /// Creates a new fully initialized collector log entry.
@@ -204,14 +172,14 @@ namespace Scryber.Logging
         /// <param name="category"></param>
         /// <param name="message"></param>
         /// <param name="ex"></param>
-        public PDFCollectorTraceLogEntry(string inset, TraceLevel level, TimeSpan timestamp, string category, string message, Exception ex)
+        public CollectorTraceLogEntry(string inset, TraceLevel level, TimeSpan timestamp, string category, string message, Exception ex)
         {
-            this._inset = inset;
-            this._level = level;
-            this._stamp = timestamp;
-            this._cat = category;
-            this._msg = message;
-            this._ex = ex;
+            this.Inset = inset;
+            this.Level = level;
+            this.TimeStamp = timestamp;
+            this.Category = category;
+            this.Message = message;
+            this.Exception = ex;
         }
 
         
@@ -223,23 +191,24 @@ namespace Scryber.Logging
     /// <summary>
     /// Implements the IPDFTraceLogFactory to have an empty constructor and rapidly create instances of the PDFCollectorTraceLog
     /// </summary>
-    #region public class PDFCollectorTraceLogFactory : IPDFTraceLogFactory
+    #region public class CollectorTraceLogFactory : IPDFTraceLogFactory
 
-    public class PDFCollectorTraceLogFactory : IPDFTraceLogFactory
+    public class CollectorTraceLogFactory : IPDFTraceLogFactory
     {
 
-        public PDFCollectorTraceLogFactory()
+        public CollectorTraceLogFactory()
         {
         }
 
         /// <summary>
-        /// Creates a new instance of the PDFCollectorTraceLog and returns it.
+        /// Creates a new instance of the CollectorTraceLog and returns it.
         /// </summary>
-        /// <param name="level"></param>
+        /// <param name="level">The standard recording level of the collector log to create</param>
+        /// <param name="name">The internal name of the trace log to create</param>
         /// <returns></returns>
         public TraceLog CreateLog(TraceRecordLevel level, string name)
         {
-            return new PDFCollectorTraceLog(level, name, true);
+            return new CollectorTraceLog(level, name, true);
         }
     }
 

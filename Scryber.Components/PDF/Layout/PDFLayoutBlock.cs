@@ -1051,7 +1051,7 @@ namespace Scryber.PDF.Layout
             Style prevStyle = context.FullStyle;
             Size prevSize = context.Space;
             Point prevLoc = context.Offset;
-            PDFObjectRef xobj = null;
+            //PDFObjectRef xobj = null;
 
             try
             {

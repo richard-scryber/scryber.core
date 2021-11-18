@@ -107,9 +107,10 @@ namespace Scryber.Imaging
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected virtual async Task<Stream> LoadDataFromFileAsync(string path)
+        protected virtual Task<Stream> LoadDataFromFileAsync(string path)
         {
-            return new System.IO.FileStream(path, FileMode.Open, FileAccess.Read);
+            Stream stream = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read);
+            return Task.FromResult(stream);
         }
         
         /// <summary>

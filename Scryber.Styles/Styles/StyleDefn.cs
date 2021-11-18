@@ -272,6 +272,11 @@ namespace Scryber.Styles
             if(null == this._match)
             {
                 this._fromApplied = true;
+                
+#pragma warning disable CS0618
+                
+                //Whilst obsolete we can still use the applied values if we don't have a matcher
+                
                 if (string.IsNullOrEmpty(this.AppliedID) && string.IsNullOrEmpty(this.AppliedClass)
                     && (null == this.AppliedType))
                     return new StyleCatchAllMatcher();
@@ -281,7 +286,9 @@ namespace Scryber.Styles
                                                   AppliedType = this.AppliedType, 
                                                   AppliedState = this.AppliedState, 
                                                   Placement = StylePlacement.Any };
-
+                
+#pragma warning restore CS0618
+                
                 this._match = new StyleMatcher(stack);
             }
             return this._match;

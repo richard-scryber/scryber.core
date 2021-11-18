@@ -89,9 +89,8 @@ namespace Scryber.Logging
         }
     }
 
-    public class PDFDiagnoticsTraceLogFactory : IPDFTraceLogFactory
+    public class DiagnoticsTraceLogFactory : IPDFTraceLogFactory
     {
-
         public TraceLog CreateLog(TraceRecordLevel level, string name)
         {
             return new DiagnosticsTraceLog(level, name);

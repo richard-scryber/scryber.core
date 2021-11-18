@@ -1858,9 +1858,9 @@ namespace Scryber.Generation
         {
             if (this.Settings.TraceLog != null && this.Settings.TraceLog.GetLogWithName(TraceLog.ScryberAppendTraceLogName) == null)
             {
-                Scryber.Logging.PDFCollectorTraceLogFactory factory = new Logging.PDFCollectorTraceLogFactory();
+                Scryber.Logging.CollectorTraceLogFactory factory = new Logging.CollectorTraceLogFactory();
 
-                Scryber.Logging.PDFCollectorTraceLog coll = (Scryber.Logging.PDFCollectorTraceLog)factory.CreateLog(this.Settings.TraceLog.RecordLevel, TraceLog.ScryberAppendTraceLogName);
+                Scryber.Logging.CollectorTraceLog coll = (Scryber.Logging.CollectorTraceLog)factory.CreateLog(this.Settings.TraceLog.RecordLevel, TraceLog.ScryberAppendTraceLogName);
                 if (null == this.Settings.TraceLog)
                     this.Settings.TraceLog = coll;
                 else

@@ -90,8 +90,7 @@ namespace Scryber.PDF.Layout
         }
 
         
-        private PDFName _OutPutName;
-
+        
         /// <summary>
         /// If set then this xObject will be rendered to the current stream with a /name Do operation.
         /// </summary>

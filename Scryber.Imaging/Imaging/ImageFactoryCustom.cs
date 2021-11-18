@@ -18,9 +18,10 @@ namespace Scryber.Imaging
             this.CustomFactory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
-        protected override async Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
+        protected override Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
-            return this.CustomFactory.LoadImageData(document, owner, path);
+            var data = this.CustomFactory.LoadImageData(document, owner, path);
+            return Task.FromResult(data);
         }
 
         
