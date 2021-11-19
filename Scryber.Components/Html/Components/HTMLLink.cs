@@ -228,14 +228,15 @@ namespace Scryber.Html.Components
             }
         }
 
+        public bool IsContentAdded { get; protected set; } = false;
+
+        public bool IsContentBound { get; protected set; } = false;
+
         public HTMLLink()
             : base((ObjectType)"htmL")
         {
             
         }
-
-        private bool _contentAdded = false;
-        private bool _contentBound = false;
 
         protected override void OnLoaded(LoadContext context)
         {
@@ -252,10 +253,17 @@ namespace Scryber.Html.Components
 
             if (this.IsContentLoaded)
             {
-                this.InnerContent.AddContent(this.Document, context);
-                this.InnerContent.DataBind(context);
-                _contentAdded = true;
-                _contentBound = true;
+                if (this.IsContentAdded == false)
+                {
+                    this.InnerContent.AddContent(this.Document, context);
+                    IsContentAdded = true;
+                }
+
+                if (this.IsContentBound == false)
+                {
+                    this.InnerContent.DataBind(context);
+                    IsContentBound = true;
+                }
             }
         }
 
@@ -264,12 +272,15 @@ namespace Scryber.Html.Components
         {
             base.OnPreLayout(context);
 
-            DoLoadReference(context);
+            if (this.IsContentLoaded == false)
+                DoLoadReference(context);
 
-            if (this.IsContentLoaded && !_contentAdded)
+            if (this.IsContentLoaded && !IsContentAdded)
             {
                 this.InnerContent.AddContent(this.Document, context);
-                _contentAdded = true;
+                IsContentAdded = true;
+                
+                context.TraceLog.Add(TraceLevel.Warning, "HTML Link", "The content was added at pre-layout for link '" + this.ID + ", this will not be data bound");
             }
         }
 
@@ -279,8 +290,8 @@ namespace Scryber.Html.Components
             {
                 this._content.ClearContent(this.Document);
                 this._content = null;
-                this._contentAdded = false;
-                this._contentBound = false;
+                this.IsContentAdded = false;
+                this.IsContentBound = false;
             }
         }
 
@@ -291,7 +302,7 @@ namespace Scryber.Html.Components
             if (String.IsNullOrEmpty(this.Href))
             {
                 if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                    context.TraceLog.Add(TraceLevel.Verbose, "HTML", "No href value on the html link tag " + this.UniqueID);
+                    context.TraceLog.Add(TraceLevel.Verbose, "HTML Link", "No href value on the html link tag " + this.UniqueID);
                 return;
             }
 
@@ -309,7 +320,7 @@ namespace Scryber.Html.Components
             if (this.ShouldAddContent(context.Format, context, out type) == false)
             {
                 if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                    context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Link " + this.UniqueID + " is not a stylesheet or include, or print reference (@rel), so ignoring");
+                    context.TraceLog.Add(TraceLevel.Verbose, "HTML Link", "Link " + this.UniqueID + " is not a stylesheet or include, or print reference (@rel), so ignoring");
                 return;
             }
 
@@ -319,7 +330,7 @@ namespace Scryber.Html.Components
             var path = this.MapPath(this.Href, out isFile);
 
             if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                context.TraceLog.Add(TraceLevel.Verbose, "HTML", "href for link " + this.UniqueID + " mapped to path '" + path + "'");
+                context.TraceLog.Add(TraceLevel.Verbose, "HTML Link", "href for link " + this.UniqueID + " mapped to path '" + path + "'");
 
             //Using the new remote reference loader
 
@@ -332,7 +343,7 @@ namespace Scryber.Html.Components
                     using (var measure = context.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, args.FilePath))
                     {
                         if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                            context.TraceLog.Add(TraceLevel.Message, "HTML", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
+                            context.TraceLog.Add(TraceLevel.Message, "HTML Link", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
 
                         
                         string str;
@@ -347,10 +358,10 @@ namespace Scryber.Html.Components
                         this.ParseLoadedContent(type, str, args.FilePath, context);
 
                         if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                            context.TraceLog.Add(TraceLevel.Message, "HTML", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
+                            context.TraceLog.Add(TraceLevel.Message, "HTML Link", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
 
                         else if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                            context.TraceLog.Add(TraceLevel.Message, "HTML", "Loaded remote href file " + path + " for link " + this.UniqueID);
+                            context.TraceLog.Add(TraceLevel.Message, "HTML Link", "Loaded remote href file " + path + " for link " + this.UniqueID);
 
                         this._request = null;
                     }
@@ -385,7 +396,7 @@ namespace Scryber.Html.Components
                     if (context.Conformance == ParserConformanceMode.Strict)
                         throw new System.IO.FileLoadException("The link with href " + this.Href + " could not be loaded from path '" + path + "' as it does not have a known rel type - stylesheet or include");
                     else
-                        context.TraceLog.Add(TraceLevel.Error, "HTML", "The link with href " + this.Href + " could not be loaded from path '" + path + "'  as it does not have a known rel type - stylesheet or include");
+                        context.TraceLog.Add(TraceLevel.Error, "HTML Link", "The link with href " + this.Href + " could not be loaded from path '" + path + "'  as it does not have a known rel type - stylesheet or include");
 
                     break;
             }
@@ -424,7 +435,7 @@ namespace Scryber.Html.Components
                 content = string.Empty;
                 if (context.Conformance == ParserConformanceMode.Lax)
                 {
-                    context.TraceLog.Add(TraceLevel.Error, "HTML", "Could not load link href the response from '" + path + "'", ex);
+                    context.TraceLog.Add(TraceLevel.Error, "HTML Link", "Could not load link href the response from '" + path + "'", ex);
                 }
                 else
                     throw;
@@ -466,7 +477,7 @@ namespace Scryber.Html.Components
                 content = string.Empty;
                 if (context.Conformance == ParserConformanceMode.Lax)
                 {
-                    context.TraceLog.Add(TraceLevel.Error, "HTML", "Could not load link href the response from '" + path + "'", ex);
+                    context.TraceLog.Add(TraceLevel.Error, "HTML Link", "Could not load link href the response from '" + path + "'", ex);
                 }
                 else
                     throw;
@@ -482,7 +493,7 @@ namespace Scryber.Html.Components
             var collection = new StyleCollection();
 
             if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                context.TraceLog.Add(TraceLevel.Verbose, "HTML", "Parsing the css selectors from string for link " + this.UniqueID);
+                context.TraceLog.Add(TraceLevel.Verbose, "HTML Link", "Parsing the css selectors from string for link " + this.UniqueID);
 
             this.ParseCssStyles(collection, content, context);
             
@@ -504,7 +515,7 @@ namespace Scryber.Html.Components
             {
                 if (context.Conformance == ParserConformanceMode.Lax)
                 {
-                    context.TraceLog.Add(TraceLevel.Error, "HTML", "The 'rel'ationship attribute is required on a html 'link' tag.");
+                    context.TraceLog.Add(TraceLevel.Error, "HTML Link", "The 'rel'ationship attribute is required on a html 'link' tag.");
                     return false;
                 }
                 else

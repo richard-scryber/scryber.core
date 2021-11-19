@@ -156,7 +156,7 @@ namespace Scryber.Html.Components
 
         protected virtual void AddStylesToDocument()
         {
-            if (this.Visible)
+            if (this.Visible && null != this.Styles)
             {
                 StyleGroup grp = new StyleGroup();
                 foreach (var style in this.Styles)

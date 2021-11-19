@@ -21,11 +21,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
+using Scryber.Caching;
+using Scryber.Options;
 using Scryber.PDF.Native;
 using Scryber.PDF;
 
 namespace Scryber.Drawing
 {
+    [PDFParsableValue]
     public abstract class ImageData : ITypedObject
     {
 
@@ -302,5 +305,9 @@ namespace Scryber.Drawing
         public abstract void ResetFilterCache();
 
 
+        public static ImageData Parse(string value)
+        {
+            throw new NotImplementedException("Not currently implemented, but may add support");
+        }
     }
 }

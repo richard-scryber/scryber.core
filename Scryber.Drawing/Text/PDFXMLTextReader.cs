@@ -164,9 +164,8 @@ namespace Scryber.Text
             {
                 return this.InnerReader.Read();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine("Cannot read");
                 throw;
             }
         }

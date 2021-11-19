@@ -372,7 +372,7 @@ namespace Scryber.Components
             get
             {
                 if (null == _items)
-                    _items = new ItemCollection(this);
+                    _items = this.CreateItems();
                 return _items;
             }
         }
@@ -2869,7 +2869,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(path);
-            IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent parsed = Parse(path, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -2882,7 +2882,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(path);
-            IComponent parsed = Parse(string.Empty, stream, type, checker.Resolver);
+            IComponent parsed = Parse(path, stream, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
@@ -2895,7 +2895,7 @@ namespace Scryber.Components
         public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(path);
-            IComponent parsed = Parse(string.Empty, reader, type, checker.Resolver);
+            IComponent parsed = Parse(path, reader, type, checker.Resolver);
 
             if (!(parsed is Document))
                 throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
