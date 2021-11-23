@@ -82,7 +82,11 @@ namespace Scryber.Html.Components
             get { return this.Outline.Title; }
             set { this.Outline.Title = value; }
         }
+        
+        [PDFAttribute("class")]
+        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
+        
         [PDFParserIgnore()]
         public override PageList Pages { get { return base.Pages; } }
 

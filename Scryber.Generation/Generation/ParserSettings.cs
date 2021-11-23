@@ -235,9 +235,16 @@ namespace Scryber.Generation
                 //Conformance Mode
 
                 string mode = GetProcessingValue(ParserConformanceMode, value);
-                if (!string.IsNullOrEmpty(mode) && Enum.IsDefined(typeof(ParserConformanceMode), mode))
+                if (!string.IsNullOrEmpty(mode))
                 {
-                    this.ConformanceMode = (ParserConformanceMode)Enum.Parse(typeof(ParserConformanceMode), mode);
+                    if (string.Equals("strict", mode, StringComparison.OrdinalIgnoreCase))
+                        this.ConformanceMode = Scryber.ParserConformanceMode.Strict;
+                    else if (string.Equals("lax", mode, StringComparison.OrdinalIgnoreCase))
+                        this.ConformanceMode = Scryber.ParserConformanceMode.Lax;
+                    else
+                        throw new PDFParserException("The parser conformance mode could not be understood :" + mode +
+                                                     ", allowed values are 'strict' or 'lax' (case insensitive)");
+                    
                 }
 
                 //Parser Logging

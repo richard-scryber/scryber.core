@@ -31,7 +31,7 @@ namespace Scryber.Generation
     {
         private static readonly string[] TextElements = new string[] { "BR" };
 
-        protected const string PDFXProcessingInstructionsName = "scryber";
+        protected const string ScryberProcessingInstructionsName = "scryber";
         protected string ParserLogCategory = "Xml Parser";
         public const string InheritsAttributeName = "inherits";
         public const string CodeBehindAttributeName = "code-file";
@@ -268,7 +268,7 @@ namespace Scryber.Generation
                 if (reader.NodeType == XmlNodeType.ProcessingInstruction)
                 {
                     string name = reader.Name;
-                    if (name == PDFXProcessingInstructionsName)
+                    if (name == ScryberProcessingInstructionsName)
                         this.ParseProcessingInstructions(reader);
                 }
                 if (reader.NodeType == XmlNodeType.Element)

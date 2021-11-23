@@ -55,15 +55,12 @@ namespace Scryber.Html.Components
 
         [PDFElement("")]
         [PDFArray(typeof(Component))]
-        public override ComponentList Contents
-        {
-            get { return base.Contents; }
-        }
+        public override ComponentList Contents => base.Contents;
 
-        
-        
+        protected HTMLHeadFootContainer(): this((ObjectType)"htHF")
+        {}
 
-        public HTMLHeadFootContainer() : base((ObjectType)"httf")
+        protected HTMLHeadFootContainer(ObjectType type) : base(type)
         {
             
         }

@@ -108,6 +108,16 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        /// <summary>
+        /// Allows definition of whether a header cell is a header for a column, row, or group of columns or rows. Has no effect on output
+        /// </summary>
+        [PDFAttribute("scope")]
+        public string HeaderScope
+        {
+            get;
+            set;
+        }
+
         public HTMLTableHeaderCell()
             : base()
         {

@@ -57,7 +57,14 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("data-li-align")]
         public override HorizontalAlignment NumberAlignment { get => base.NumberAlignment; set => base.NumberAlignment = value; }
-
+        
+        [PDFAttribute("data-li-style")]
+        public override ListNumberingGroupStyle NumberingStyle
+        {
+            get => base.NumberingStyle;
+            set => base.NumberingStyle = value;
+        }
+        
         [PDFAttribute("title")]
         public override string OutlineTitle
         {

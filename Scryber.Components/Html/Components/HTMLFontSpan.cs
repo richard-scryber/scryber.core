@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -17,6 +19,28 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
+
+        
+        [PDFAttribute("color")]
+        public override Color FillColor
+        {
+            get => base.FillColor;
+            set => base.FillColor = value;
+        }
+
+        [PDFAttribute("face")]
+        public override FontSelector FontFamily
+        {
+            get => base.FontFamily;
+            set => base.FontFamily = value;
+        }
+
+        [PDFAttribute("size")]
+        public override Unit FontSize
+        {
+            get => base.FontSize;
+            set => base.FontSize = value;
+        }
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
