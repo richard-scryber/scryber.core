@@ -5,6 +5,8 @@ using Scryber.Components;
 
 namespace Scryber.Html.Components
 {
+    //TODO: make this a lazy load with content dynamically parsed
+    
     [PDFParsableComponent("iframeContent")]
     [PDFRemoteParsableComponent("iframe", SourceAttribute = "src")]
     public class HTMLiFrame : Div

@@ -2592,6 +2592,19 @@ namespace Scryber.Components
             return comp;
         }
 
+        public static IComponent Parse(string path, System.IO.Stream stream)
+        {
+            return Parse(path, stream, ParseSourceType.Other);
+        }
+
+        public static IComponent Parse(string path, System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            var comp = Parse(path, stream, type, checker.Resolver);
+
+            return comp;
+        }
+
         public static IComponent Parse(System.IO.TextReader reader, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(string.Empty);

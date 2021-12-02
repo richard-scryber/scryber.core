@@ -6,28 +6,48 @@ namespace Scryber.Html.Components
     {
         [PDFTemplate()]
         [PDFElement()]
-        public ITemplate TemplateContent
+        public override ITemplate Template
         {
             get { return base.Template; }
             set { base.Template =value; }
         }
 
         [PDFAttribute("data-bind", BindingOnly = true)]
-        public object DataBindValue
+        public override object Value
         {
-            get { return base.Value; }
-            set { base.Value = value; }
+            get => base.Value;
+            set => base.Value = value;
         }
 
-        [PDFAttribute("data-show", BindingOnly = true)]
-        public bool DataShowValue
+        [PDFAttribute("data-bind-start")]
+        public override int StartIndex
         {
-            get { return base.Visible; }
-            set { base.Visible = value; }
+            get => base.StartIndex;
+            set => base.StartIndex = value;
         }
+        
+        [PDFAttribute("data-bind-step")]
+        public override int Step
+        {
+            get => base.Step;
+            set => base.Step = value;
+        }
+
+        [PDFAttribute("data-bind-max")]
+        public override int MaxCount
+        {
+            get => base.MaxCount;
+            set => base.MaxCount = value;
+        }
+        
+        
 
         [PDFAttribute("data-cache-styles")]
-        public override bool CacheStyles { get => base.CacheStyles; set => base.CacheStyles = value; }
+        public override bool CacheStyles
+        {
+            get => base.CacheStyles; 
+            set => base.CacheStyles = value;
+        }
 
         [PDFAttribute("data-content")]
         public string DataContent

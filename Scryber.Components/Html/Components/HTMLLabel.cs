@@ -50,6 +50,13 @@ namespace Scryber.Html.Components
             get; set;
         }
 
+        [PDFAttribute("for")]
+        public string ForComponent
+        {
+            get;
+            set;
+        }
+
         public HTMLLabel()
         {
         }

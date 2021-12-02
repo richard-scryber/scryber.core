@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Drawing;
 using Scryber.Html.Components;
 using Scryber.PDF;
+using Scryber.PDF.Secure;
 
 
 namespace Scryber.Core.UnitTests.Html
@@ -35,6 +36,28 @@ namespace Scryber.Core.UnitTests.Html
             {
                 _testContextInstance = value;
             }
+        }
+        
+        #endregion
+        
+        #region public string GetLocalProjectPath()
+        
+        /// <summary>
+        /// Returns the full path to the Scryber.UnitTest project folder, making sure it exists first
+        /// </summary>
+        /// <returns>The full path</returns>
+        public string GetLocalProjectPath()
+        {
+            var dir = new DirectoryInfo(TestContext.TestRunDirectory);
+            while (dir.Name != "Scryber.Core")
+            {
+                dir = dir.Parent;
+                Assert.IsNotNull(dir);
+            }
+
+            dir = new DirectoryInfo(System.IO.Path.Combine(dir.FullName, "Scryber.UnitTest"));
+            Assert.IsTrue(dir.Exists, "The Unit Test project folder could not be found");
+            return dir.FullName + System.IO.Path.DirectorySeparatorChar;
         }
         
         #endregion
@@ -762,13 +785,240 @@ namespace Scryber.Core.UnitTests.Html
         #endregion
         
         #region template, iframe, embed and link
+
+        [TestMethod]
+        public void ComponentTemplates_Test()
+        {
+            //template
+            
+            var html = @"<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <template id='template1' data-bind='{{model}}' data-bind-start='1' data-bind-step='2' data-bind-max='10' >
+        <div title='{{.title}}' >{{.title}}</div>
+    </template>
+</body>
+</html>";
+            
+            using var sr = new System.IO.StringReader(html);
+            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            using var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf");
+
+            Assert.AreEqual(1, doc.Pages.Count);
+            var pg = doc.Pages[0];
+            Assert.IsInstanceOfType(pg, typeof(Section));
+            var section = (Section) pg;
+            Assert.AreEqual(1, section.Contents.Count);
+
+            var template = section.Contents[0] as HTMLTemplate;
+            Assert.IsNotNull(template);
+            Assert.IsNotNull(template.Template);
+            Assert.IsInstanceOfType(template.Template, typeof(Scryber.Data.ParsableTemplateGenerator));
+            
+            //Check the template content
+            var gen = (Data.ParsableTemplateGenerator)template.Template;
+            Assert.IsNotNull(gen.XmlContent);
+            Assert.AreEqual("<div title=\"{{.title}}\" xmlns=\"http://www.w3.org/1999/xhtml\">{{.title}}</div>", gen.XmlContent.Trim(), "Template content was not the expected value");
+
+            Assert.AreEqual(1, template.StartIndex, "Template start index was not 1");
+            Assert.AreEqual(2, template.Step, "Template step was not 2");
+            Assert.AreEqual(10, template.MaxCount, "Template max count was not 10");
+            Assert.IsNull(template.Value, "The bound value was not null");
+
+            doc.Params["model"] = new[]
+            {
+                new {title = "First"},
+                new {title = "Second"}
+            };
+
+            doc.SaveAsPDF(stream);
+            
+            //After binding these should be set
+            Assert.IsNotNull(template.Value);
+            Assert.AreEqual(doc.Params["model"], template.Value);
+            
+            //section now contains the template instance and the original template
+            Assert.AreEqual(2, section.Contents.Count);
+            var instance = section.Contents[0] as Data.TemplateInstance;
+            Assert.IsNotNull(instance);
+            Assert.AreEqual(1, instance.Content.Count);
+            
+            //div is in the template instance content
+            var div = instance.Content[0] as HTMLDiv;
+            Assert.IsNotNull(div);
+            Assert.AreEqual("Second",div.Outline.Title); //div has the title set
+        }
+        
+        // iframe
+
+        [TestMethod]
+        public void ComponentIFrames_Test()
+        {
+            var path = GetLocalProjectPath();
+            path = System.IO.Path.Combine(path, "Content", "HTML", "Fragments", "FramingFragment.html");
+            Assert.IsTrue(File.Exists(path),"Could not find the frame source path");
+            
+            var html = @"<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <div id='spacer' ></div>
+    <iframe id='frame1' src='" + path + @"' ></iframe>
+</body>
+</html>";
+            
+            using var sr = new System.IO.StringReader(html);
+            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            using var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf");
+
+            Assert.AreEqual(1, doc.Pages.Count);
+            var pg = doc.Pages[0];
+            Assert.IsInstanceOfType(pg, typeof(Section));
+            var section = (Section) pg;
+            Assert.AreEqual(2, section.Contents.Count);
+
+            var iframe = section.Contents[1] as Div;
+            Assert.IsNotNull(iframe, "The frame content was null");
+            Assert.AreEqual("frame1", iframe.ID);
+            
+        }
         
         
+        //embed
+        
+        [TestMethod]
+        public void ComponentEmbeds_Test()
+        {
+            var path = GetLocalProjectPath();
+            path = System.IO.Path.Combine(path, "Content", "HTML", "Fragments", "FramingFragment.html");
+            Assert.IsTrue(File.Exists(path),"Could not find the embed source path");
+            
+            var html = @"<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <div id='spacer' ></div>
+    <embed id='embed1' src='" + path + @"' ></embed>
+</body>
+</html>";
+            
+            using var sr = new System.IO.StringReader(html);
+            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            using var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf");
+
+            Assert.AreEqual(1, doc.Pages.Count);
+            var pg = doc.Pages[0];
+            Assert.IsInstanceOfType(pg, typeof(Section));
+            var section = (Section) pg;
+            Assert.AreEqual(2, section.Contents.Count);
+
+            var embed = section.Contents[1] as Div;
+            Assert.IsNotNull(embed, "The embed content was null");
+            Assert.AreEqual("embed1", embed.ID);
+            Assert.IsNotNull(embed.Contents);
+            Assert.AreEqual(2, embed.Contents.Count);
+            Assert.IsInstanceOfType(embed.Contents[0], typeof(Scryber.Components.Paragraph));
+        }
         
         #endregion
 
-        #region label num, page, time, if
+        #region label num, page, time, var
 
+        [TestMethod]
+        public void ComponentValues_Test()
+        {
+            var html = @"<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <div id='wrapper' >
+        <label id='label1' class='label num' for='num1' title='Label' >Label 1</label>
+        <num   id='num1'   style='padding:10pt;' class='num' value='10.0' data-format='C' /><br/>
+        <num   id='num2'   data-format='£#0.00' >11.0</num><br/>
+        <page  id='pg1'    style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
+        <page  id='pg2'    for='label1' property='total' /><br/>
+        <time  id='time1'  style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
+        <time  id='time2'  datetime='2021-11-14 12:04:59' />
+        <time  id='time3'  >2021-11-24 14:59:59.002</time>
+    </div>
+</body>
+</html>";
+            
+            using var sr = new System.IO.StringReader(html);
+            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            using var stream = DocStreams.GetOutputStream("ComponentValues.pdf");
+            doc.SaveAsPDF(stream);
+
+            var section = doc.Pages[0] as Section;
+            Assert.IsNotNull(section);
+
+            var wrapper = section.Contents[0] as Div;
+            Assert.IsNotNull(wrapper, "Wrapper div not found");
+            Assert.AreEqual(11, wrapper.Contents.Count, "Wrapper content count does not match");
+            var lbl = wrapper.Contents[0] as HTMLLabel;
+            Assert.IsNotNull(lbl, "Label not found");
+            Assert.AreEqual("label1", lbl.ID, "Label ids did not match");
+            Assert.AreEqual(1, lbl.Contents.Count);
+            Assert.AreEqual("Label 1",(lbl.Contents[0] as TextLiteral).Text,  "Label text did not match");
+            Assert.AreEqual("num1", lbl.ForComponent);
+
+            //<num   id='num1'   style='padding:10pt;' class='num' value='10.0' data-format='C' />
+            var num1 = wrapper.Contents[1] as HTMLNumber;
+            Assert.IsNotNull(num1, "First number not found");
+            Assert.AreEqual(10, num1.Value, "The first number text did not match");
+            Assert.AreEqual("num1", num1.ID, "First number ids did not match");
+            Assert.AreEqual("num", num1.StyleClass, "First number classes did not match");
+            Assert.AreEqual(10.0, num1.Style.Padding.All, "First number padding did not match");
+            Assert.AreEqual("C", num1.NumberFormat, "Number formats did not match");
+
+            //<num id='num2' data-format='£#0.00' >11.0</num>
+            var num2 = wrapper.Contents[3] as HTMLNumber;
+
+            Assert.IsNotNull(num2, "Second number not found");
+            Assert.AreEqual("11.0", num2.Text, "Second number text was not 11.0");
+            Assert.AreEqual(11.0, num2.Value, "Second number value was not 11"); // value is set from text when reader is created
+            Assert.AreEqual("£#0.00", num2.NumberFormat, "Second number format was not correct");
+            
+            
+            //<page  id='pg1'    style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
+            var pg1 = wrapper.Contents[5] as HTMLPageNumber;
+            Assert.IsNotNull(pg1,"The first page number was not found");
+            Assert.AreEqual("pg1", pg1.ID, "First page numbers did not match");
+            Assert.AreEqual(10.0, pg1.Style.Padding.All.PointsValue, "The fist page number padding did not match");
+            Assert.AreEqual("pageClass", pg1.StyleClass, "The first page number class did not match");
+            Assert.AreEqual("Page Title", pg1.OutlineTitle, "The first page number outline title did not match");
+            Assert.AreEqual(1, pg1.TotalPageCountHint, "The first page number hint was not correct");
+            
+            
+            //<page  id='pg2'    for='label1' property='total' />
+            var pg2 = wrapper.Contents[6] as HTMLPageNumber;
+            Assert.IsNotNull(pg2);
+            Assert.AreEqual("pg2", pg2.ID, "Second page ID was not correct");
+            Assert.AreEqual("label1", pg2.ForComponent, "The second page for component id was not correct");
+            Assert.AreEqual("total", pg2.Property, "The second page property was not correct");
+            
+            //<time  id='time1'  style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
+            var time1 = wrapper.Contents[8] as HTMLTime;
+            Assert.IsNotNull(time1,"First time was not found");
+            Assert.AreEqual("time1", time1.ID, "First time id was not correct");
+            Assert.AreEqual(10.0, time1.Style.Padding.All.PointsValue, "First time padding was not correct");
+            Assert.AreEqual("timeClass", time1.StyleClass, "First time style class was not correct");
+            Assert.AreEqual("Current Time", time1.Outline.Title, "First time outline was not correct");
+            Assert.AreEqual("D", time1.DateFormat, "First time date format was not correct");
+            
+            //<time  id='time2'  datetime='2021-11-14 12:04:59' />
+            var time2 = wrapper.Contents[9] as HTMLTime;
+            Assert.IsNotNull(time2, "Second time was not found");
+            Assert.AreEqual("time2", time2.ID, "Second time id was not correct");
+            Assert.AreEqual("2021-11-14 12:04:59", time2.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                "Second datetime value was not correct");
+            
+            
+            //<time  id='time3'  >2021-11-24 14:59:59.002</time>
+            var time3 = wrapper.Contents[10] as HTMLTime;
+            Assert.IsNotNull(time3, "Third time was not found");
+            Assert.AreEqual("time3", time3.ID, "Third time id was not correct");
+            Assert.AreEqual("2021-11-24 14:59:59", time3.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                "Third datetime value was not correct");
+            
+        }
         
 
         #endregion

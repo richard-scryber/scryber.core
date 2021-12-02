@@ -591,7 +591,7 @@ namespace Scryber.Generation
                 ParserPropertyDefinition attr;
                 ParserEventDefinition evt;
                 IPDFBindingExpressionFactory factory;
-                if (IsSpecialAttribute(reader, isremotecomponent))
+                if (IsSpecialAttribute(reader, isremotecomponent, cdef))
                 {
                     if ((reader.Name.ToLower() == "xmlns" || reader.Name.ToLower().StartsWith("xmlns:")))
                         this.RegisterNamespaceDeclaration(reader);
@@ -1371,7 +1371,7 @@ namespace Scryber.Generation
         /// <param name="reader"></param>
         /// <param name="isremotecomponent"></param>
         /// <returns></returns>
-        private bool IsSpecialAttribute(XmlReader reader, bool isremotecomponent)
+        private bool IsSpecialAttribute(XmlReader reader, bool isremotecomponent, ParserClassDefinition cdef)
         {
             if (reader.Depth == 1)
             {
@@ -1386,6 +1386,8 @@ namespace Scryber.Generation
             else if (isremotecomponent && (reader.LocalName.ToLower() == FilePathAttributeName))
                 return true;
             else if (isremotecomponent && (reader.LocalName.ToLower() == SelectAttributeName))
+                return true;
+            else if (isremotecomponent && reader.LocalName.ToLower() == cdef.RemoteSourceAttribute)
                 return true;
             else if (reader.NamespaceURI == XmlSchemaNamespace) //is an attribute in the XML namespace
                 return true;

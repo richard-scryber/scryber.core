@@ -137,17 +137,16 @@ namespace Scryber.PDF.Graphics
 
 
         /// <summary>
-        /// All the character widths used
+        /// All the character glyph widths used to the Widths collection
         /// </summary>
         /// <param name="chars"></param>
-        /// <param name="frsrc"></param>
-        private void RegisterStringUse(string chars, int startIndex, int endIndex)
+        /// <param name="startIndex"></param>
+        /// <param name="count"></param>
+        private void RegisterStringUse(string chars, int startIndex, int count)
         {
-            //TODO: Confirm this is required, as we are also doing it during the render process.
-
             PDFFontResource frsrc = this.CurrentFontResource;
             if (frsrc.Widths != null) 
-                frsrc.Widths.RegisterGlyphs(chars, startIndex, endIndex);
+                frsrc.Widths.RegisterGlyphs(chars, startIndex, count);
         }
 
         /// <summary>

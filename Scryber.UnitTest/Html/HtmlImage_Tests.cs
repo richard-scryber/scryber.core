@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual(img.Source, path, "Image source was expected to be " + path);
+                        Assert.AreEqual(img.Source.ToLower(), path.ToLower(), "Image source was expected to be " + path);
                         AssertPngImage(img, true, true);
                     }
 
@@ -254,7 +254,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual( project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual( (project + path).ToLower(), img.Source.ToLower(), "Image source was expected to be " + path);
                         AssertPngImage(img, true, true);
                     }
 
@@ -372,7 +372,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual( project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual( (project + path).ToLower(), img.Source.ToLower(), "Image source was expected to be " + path);
                         AssertPngImage(img, true, true);
                     }
 

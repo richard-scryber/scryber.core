@@ -71,7 +71,7 @@ namespace Scryber.Data
         /// Gets the root bound value to loop over.
         /// </summary>
         [PDFAttribute("value", BindingOnly = true)]
-        public object Value
+        public virtual object Value
         {
             get;
             set;

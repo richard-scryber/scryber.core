@@ -1648,6 +1648,9 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.IsNotNull(doc);
             Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+            
+            using (var stream = DocStreams.GetOutputStream("HelloWorldLinq.pdf"))
+                doc.SaveAsPDF(stream);
 
             Assert.AreEqual("Hello World", doc.Info.Title);
         }
@@ -1670,7 +1673,10 @@ namespace Scryber.Core.UnitTests.Html
 
                 Assert.IsNotNull(doc);
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
-
+                
+                using (var stream = DocStreams.GetOutputStream("HelloWorldString.pdf"))
+                    doc.SaveAsPDF(stream);
+                
                 Assert.AreEqual("Hello World", doc.Info.Title);
             }
         }
@@ -1718,6 +1724,10 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.IsNotNull(comp);
                 Assert.IsInstanceOfType(comp, typeof(HTMLDocument));
                 var doc = comp as HTMLDocument;
+                
+                using (var stream = DocStreams.GetOutputStream("HelloWorldStringWithResolver.pdf"))
+                    doc.SaveAsPDF(stream);
+                
                 Assert.AreEqual("Hello World", doc.Info.Title);
 
             }
