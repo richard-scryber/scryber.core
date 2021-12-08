@@ -54,10 +54,6 @@ namespace Scryber.Svg.Components
             return style;
         }
 
-        protected override void OnPreLayout(LayoutContext context)
-        {
-            base.OnPreLayout(context);
-        }
 
         #region IPDFViewPortComponent Members
 

@@ -29,7 +29,10 @@ namespace Scryber.PDF.Graphics
     public partial class PDFGraphics : IDisposable
     {
 
-        protected static readonly double CircularityFactor = 0.55;
+        /// <summary>
+        /// Defines the approximate factor for a circle handles using a bezier curve in a calculation
+        /// </summary>
+        public static readonly double CircularityFactor = 0.55;
 
         #region public DrawingOrigin Origin {get;set;}
 

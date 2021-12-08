@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Xml;
 using System.Net.Http;
@@ -1212,6 +1213,9 @@ namespace Scryber.Components
 
         #region public PDFResourceCollection SharedResources {get;} + protected virtual PDFResourceCollection CreateResourceCollection()
 
+        /// <summary>
+        /// Internal reference to the resources in this document
+        /// </summary>
         private PDFResourceCollection _resx;
 
         /// <summary>
@@ -1227,6 +1231,10 @@ namespace Scryber.Components
             }
         }
 
+        /// <summary>
+        /// Called from the SharedResources property if the collection is not currently initialized
+        /// </summary>
+        /// <returns>A new instance of a PDFResourceCollection</returns>
         protected virtual PDFResourceCollection CreateResourceCollection()
         {
             PDFResourceCollection resxcol = new PDFResourceCollection(this);
@@ -1235,13 +1243,15 @@ namespace Scryber.Components
 
         #endregion
 
-        #region GetImageResource(string fullpath, bool create)
+        #region GetImageResource(string fullpath, Component owner bool create)
 
         /// <summary>
-        /// 
+        /// Retrieves an image resource from this document, if it exists in the documents shared resources.
+        /// If it does not and create is true, then the image will attempt to be loaded from any cache or ImageFactory
         /// </summary>
-        /// <param name="fullpath"></param>
-        /// <param name="create"></param>
+        /// <param name="fullpath">The fully resolvable path to the image, that cache providers can use to uniquely identify it, and factories use to load it.</param>
+        /// <param name="owner" >The component that will own the resource</param>
+        /// <param name="create">Flag for identifying if the resource should be loaded if it does not currently exist in the document.</param>
         /// <returns></returns>
         public PDFImageXObject GetImageResource(string fullpath, Component owner, bool create)
         {
@@ -1256,11 +1266,12 @@ namespace Scryber.Components
         #region public PDFFontResource GetFontResource(PDFFont font)
 
         /// <summary>
-        /// Retrieves a PDFFontResource for the specified font, based upon it's full name
+        /// Retrieves a PDFFontResource for the specified font, using this documents FontMatcher
         /// </summary>
         /// <param name="font">The font to get the resource for</param>
+        /// <param name="throwOnNotFound">If true (default) and the font is not found, then a null reference exception will be thrown, otherwise null will be returned</param>
         /// <param name="create">true if the PDFFontResource should be created if it is not already listed</param>
-        /// <returns>A PDFFontResource that will be included in the document (or null if it is not loaded and should not be created)</returns>
+        /// <returns>A PDFFontResource that can be included in the document (or null if it is not loaded and should not be created)</returns>
         public virtual PDFFontResource GetFontResource(Font font, bool create, bool throwOnNotFound = true)
         {
             var found = this.FontMatcher.GetFont(font, create);
@@ -1281,28 +1292,49 @@ namespace Scryber.Components
 
         #region public virtual PDFResource GetResource(string resourceType, PDFComponent owner, string resourceKey, bool create)
 
+        /// <summary>
+        /// Explicit interface implementation that calls the GetResource Document method
+        /// </summary>
+        /// <param name="type">The type of resource to retrieve or optionally create <see cref="Scryber.PDF.Resources.PDFResource.FontDefnResourceType"/>
+        /// and <see cref="Scryber.PDF.Resources.PDFResource.XObjectResourceType"/>
+        /// for well known resource key types for fonts and ImageXObjects respectively</param>
+        /// <param name="key">The resource key, Font.FullName or Image.SourcePath for example, as the fully identifiable resource key for these types.</param>
+        /// <param name="create">If the create flag is true then the resource will attempt to be loaded automatically</param>
+        /// <returns>A shared document resource. If created, then it will automatically be added to the documents shared resource collection</returns>
         ISharedResource IDocument.GetResource(string type, string key, bool create)
         {
             return this.GetResource(type, key, create);
         }
 
         /// <summary>
-        /// Implements the IPDFDocument.GetResource interface and supports the extraction and creation of document specific resources.
+        /// Implements the return and optional creation of document specific resources such as images and fonts, that can be used in documents.
         /// </summary>
-        /// <param name="resourceType">The Type of resource to get - XObject, Font</param>
-        /// <param name="resourceKey">The resource specific key name (Fonts is full name, images is the full path or resource key)</param>
+        /// <param name="resourceType">The Type of resource to get - retrieve or optionally create <see cref="Scryber.PDF.Resources.PDFResource.FontDefnResourceType"/>
+        /// and <see cref="Scryber.PDF.Resources.PDFResource.XObjectResourceType"/>
+        /// for well known resource key types for fonts and ImageXObjects respectively</param>
+        /// <param name="resourceKey">The resource specific key name , Font.FullName or Image.SourcePath for example, as the fully identifiable resource key for these types.</param>
+        /// <param name="owner">The required owner of the resource to be loaded</param>
         /// <param name="create">Specify true to attempt the loading of the resource if it is not currently in the collection</param>
-        /// <returns>The loaded resource if any</returns>
+        /// <returns>The loaded resource if any. If created, then it will automatically be added to the documents shared resource collection</returns>
         public virtual PDFResource GetResource(string resourceType, Component owner, string resourceKey, bool create)
         {
             PDFResource found = this.SharedResources.GetResource(resourceType, resourceKey);
             if (null == found && create)
             {
-                found = this.CreateAndAddResource(resourceType, owner, resourceKey);
+                found = this.CreateAndAddResource(resourceType, resourceKey, owner);
             }
             return found;
         }
 
+        /// <summary>
+        /// Implements the return and optional creation of document specific resources such as images and fonts, that can be used in documents.
+        /// </summary>
+        /// <param name="resourceType">The Type of resource to get - retrieve or optionally create <see cref="Scryber.PDF.Resources.PDFResource.FontDefnResourceType"/>
+        /// and <see cref="Scryber.PDF.Resources.PDFResource.XObjectResourceType"/>
+        /// for well known resource key types for fonts and ImageXObjects respectively</param>
+        /// <param name="resourceKey">The resource specific key name , Font.FullName or Image.SourcePath for example, as the fully identifiable resource key for these types.</param>
+        /// <param name="create">Specify true to attempt the loading of the resource if it is not currently in the collection</param>
+        /// <returns>The loaded resource if any. If created, then it will automatically be added to the documents shared resource collection</returns>
         public virtual PDFResource GetResource(string resourceType, string resourceKey, bool create)
         {
             return this.GetResource(resourceType, this, resourceKey, create);
@@ -1315,16 +1347,18 @@ namespace Scryber.Components
         /// <summary>
         /// Creates a new PDFResource of the required type based on the specified key and adds it to the SharedResource collection
         /// </summary>
-        /// <param name="resourceType">The type of resource to create (image XObject or Font)</param>
-        /// <param name="resourceKey"></param>
+        /// <param name="resourceType">The type of resource to create <see cref="Scryber.PDF.Resources.PDFResource.FontDefnResourceType"/>
+        /// and <see cref="Scryber.PDF.Resources.PDFResource.XObjectResourceType"/>
+        /// for well known resource key types for fonts and ImageXObjects respectively</param>
+        /// <param name="resourceKey">The resource specific key name , Font.FullName or Image.SourcePath for example, as the fully identifiable resource key for these types.</param>
+        /// <param name="owner">The required owner of the resource to be loaded</param>
         /// <returns>A new PDFResoure sub class instance</returns>
-        protected virtual PDFResource CreateAndAddResource(string resourceType, Component owner, string resourceKey)
+        protected virtual PDFResource CreateAndAddResource(string resourceType, string resourceKey, Component owner)
         {
             PDFResource created;
             if (resourceType == PDFResource.FontDefnResourceType)
             {
                 created = CreateFontResource(resourceKey, owner);
-
             }
             else if (resourceType == PDFResource.XObjectResourceType)
             {
@@ -1340,6 +1374,12 @@ namespace Scryber.Components
 
         #region private PDFImageXObject CreateImageResource(string src)
 
+        /// <summary>
+        /// Creates a new image resource by loading from the factories base on the source and owner, and if not null then adds it to the documents shared resources
+        /// </summary>
+        /// <param name="src">The source to load the image for</param>
+        /// <param name="owner">The owner of the image resource</param>
+        /// <returns>The loaded image if successful or null</returns>
         private PDFImageXObject CreateImageResource(string src, Component owner)
         {
             using (this.PerformanceMonitor.Record(PerformanceMonitorType.Image_Load, src))
@@ -1362,8 +1402,16 @@ namespace Scryber.Components
         {
             using (this.PerformanceMonitor.Record(PerformanceMonitorType.Font_Load, fullname))
             {
-                FontDefinition defn = FontFactory.GetFontDefinition(fullname);
-                return RegisterFontResource(fullname, owner, defn);
+                //var match = this.FontMatcher.GetFont(fullname, true);
+                var defn = FontFactory.GetFontDefinition(fullname);
+                if (null != defn)
+                {
+                    return RegisterFontResource(fullname, owner, defn);
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -1480,7 +1528,7 @@ namespace Scryber.Components
         #endregion
 
         //
-        // document processing
+        // Save as ...
         //
 
 
@@ -1489,10 +1537,10 @@ namespace Scryber.Components
 
         /// <summary>
         /// Performs a complete initialization, load and then render the document to the path. 
-        /// If a document exists at hte specified path, then an IOException will be raised.
-        /// Uses the Autobind property to stipulate if data binding should also take place
+        /// If a document exists at the specified path, then an IOException will be raised.
         /// </summary>
         /// <param name="path">The path to the file to write to</param>
+        /// <remarks>Uses the Autobind property of the document to stipulate if data binding should also take place</remarks>
         public void SaveAsPDF(string path)
         {
             this.SaveAsPDF(path, System.IO.FileMode.CreateNew);
@@ -1519,7 +1567,7 @@ namespace Scryber.Components
         {
             using (System.IO.Stream stream = this.DoOpenFileStream(path, mode))
             {
-                this.SaveAs(stream, bind, OutputFormat.PDF);
+                this.DoSaveAs(stream, bind, OutputFormat.PDF);
             }
         }
 
@@ -1527,18 +1575,18 @@ namespace Scryber.Components
 
 
         /// <summary>
-        /// Performs a complete initialization, load and then renders the document to the output stream.
-        /// Uses the Autobind property to stipulate if data binding should also take place
+        /// Performs a complete initialization, load and then render of the document as a PDF to the output stream
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="stream">The stream to write the document to</param>
+        /// <remarks>Uses the Autobind property to stipulate if data binding should also take place</remarks>
         public void SaveAsPDF(System.IO.Stream stream)
         {
-            this.SaveAs(stream, this.AutoBind, OutputFormat.PDF);
+            this.DoSaveAs(stream, this.AutoBind, OutputFormat.PDF);
         }
 
         public void SaveAsPDF(System.IO.Stream stream, bool bind)
         {
-            this.SaveAs(stream, bind, OutputFormat.PDF);
+            this.DoSaveAs(stream, bind, OutputFormat.PDF);
         }
 
         /// <summary>
@@ -1546,7 +1594,8 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="bind"></param>
-        public virtual void SaveAs(System.IO.Stream stream, bool bind, OutputFormat format)
+        /// <param name="format">The output format of the document. The base implementation only supports the OutputFormat.PDF format, inheritors can provide their own implementation</param>
+        protected virtual void DoSaveAs(System.IO.Stream stream, bool bind, OutputFormat format)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
@@ -1558,7 +1607,6 @@ namespace Scryber.Components
 
             if (format == OutputFormat.PDF)
                 this.RenderToPDF(stream);
-
             else
                 throw new NotSupportedException("The output format '" + format + "' is not supported");
         }
@@ -1566,11 +1614,14 @@ namespace Scryber.Components
 
         #endregion
 
+        //
+        // initialization and loading methods
+        //
 
         #region public void InitializeAndLoad()
 
         /// <summary>
-        /// Performs any initializing and loading, but does not render the document
+        /// Performs any initializing and loading, but does not bind or render the document
         /// </summary>
         public void InitializeAndLoad(OutputFormat format)
         {
@@ -1578,42 +1629,71 @@ namespace Scryber.Components
             PerformanceMonitor perfmon = this.PerformanceMonitor;
             ItemCollection items = this.Params;
 
-            InitContext icontext = CreateInitContext(log, perfmon, items, format);
+            var initContext = CreateInitContext(log, perfmon, items, format);
 
             log.Begin(TraceLevel.Message, "Document", "Beginning Document Initialize");
             perfmon.Begin(PerformanceMonitorType.Document_Init_Stage);
 
-            this.Init(icontext);
+            this.Init(initContext);
 
             perfmon.End(PerformanceMonitorType.Document_Init_Stage);
+            
             log.End(TraceLevel.Message, "Document", "Completed Document Initialize");
             this.GenerationStage = DocumentGenerationStage.Initialized;
 
-            LoadContext loadcontext = CreateLoadContext(log, perfmon, items, format);
+            LoadContext loadContext = CreateLoadContext(log, perfmon, items, format);
 
             log.Begin(TraceLevel.Message, "Document", "Beginning Document Load");
             perfmon.Begin(PerformanceMonitorType.Document_Load_Stage);
 
-            this.Load(loadcontext);
+            this.Load(loadContext);
 
             perfmon.End(PerformanceMonitorType.Document_Load_Stage);
             log.End(TraceLevel.Message, "Document", "Completed Document Load");
+            
             this.GenerationStage = DocumentGenerationStage.Loaded;
         }
 
 
+        /// <summary>
+        /// Create a new Initialization context with the required items collection, performance monitor, parameter items collection and output format
+        /// </summary>
+        /// <param name="log">The current execution trace log</param>
+        /// <param name="perfmon">The current execution performance monitor</param>
+        /// <param name="items">The current execution items collection</param>
+        /// <param name="format">The current output format</param>
+        /// <returns>A new instance of the InitContext</returns>
         protected virtual InitContext CreateInitContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items, OutputFormat format)
         {
-            InitContext icontext = new InitContext(items, log, perfmon, this, format);
-            this.PopulateContextBase(icontext);
-            return icontext;
+            var context = new InitContext(
+                items ?? throw  new ArgumentNullException(nameof(items))
+                , log ?? throw  new ArgumentNullException(nameof(log))
+                , perfmon ?? throw new ArgumentNullException(nameof(perfmon))
+                , this
+                , format ?? throw new ArgumentNullException(nameof(format)));
+            
+            this.PopulateContextBase(context);
+            return context;
         }
 
+        /// <summary>
+        /// Create a new Load context with the required items collection, performance monitor, parameter items collection and output format
+        /// </summary>
+        /// <param name="log">The current execution trace log</param>
+        /// <param name="perfmon">The current execution performance monitor</param>
+        /// <param name="items">The current execution items collection</param>
+        /// <param name="format">The current output format</param>
+        /// <returns>A new instance of the LoadContext</returns>
         protected virtual LoadContext CreateLoadContext(TraceLog log, PerformanceMonitor perfmon, ItemCollection items, OutputFormat format)
         {
-            LoadContext loadcontext = new LoadContext(items, log, perfmon, this, format);
-            this.PopulateContextBase(loadcontext);
-            return loadcontext;
+            var context = new LoadContext(
+                items ?? throw  new ArgumentNullException(nameof(items))
+                , log ?? throw  new ArgumentNullException(nameof(log))
+                , perfmon ?? throw  new ArgumentNullException(nameof(perfmon))
+                , this
+                , format ?? throw  new ArgumentNullException(nameof(format)));
+            this.PopulateContextBase(context);
+            return context;
         }
 
 
@@ -1622,9 +1702,11 @@ namespace Scryber.Components
         #region protected override void DoInit(PDFInitContext context)
 
         /// <summary>
-        /// Overrides the base implementation to check the document initialization stage
+        /// Overrides the base implementation to check the document initialization stage and initialize any inner contents such as Styles, Parameters, additions and data sources
+        /// along with calling the base implementation to initialize the inner contents of the document.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">The current init context</param>
+        /// <exception cref="PDFException">Thrown if this document has previously been initialized (GenerationState is not None)</exception>
         protected override void DoInit(InitContext context)
         {
             if (this.GenerationStage != DocumentGenerationStage.None)
@@ -1650,6 +1732,11 @@ namespace Scryber.Components
 
         #region protected virtual void DoInitStyles(PDFInitContext context)
 
+        /// <summary>
+        /// Invokes the initialization of all styles in this document that support it (implement the IComponent interface).
+        /// </summary>
+        /// <param name="context">The current init context</param>
+        /// <exception cref="PDFException">Raised if there is an error during the initialization process</exception>
         protected virtual void DoInitStyles(InitContext context)
         {
             if (this.Styles != null && this.Styles.Count > 0)
@@ -1658,11 +1745,15 @@ namespace Scryber.Components
                 {
                     try
                     {
-                        if (context.ShouldLogDebug)
-                            context.TraceLog.Add(TraceLevel.Debug, "PDF Document", "Initializing the style '" + style.ToString() + "'");
-
                         if (style is IComponent)
+                        {
+                            if (context.ShouldLogDebug)
+                                context.TraceLog.Add(TraceLevel.Debug, "PDF Document", "Initializing the style '" + style.ToString() + "'");
+                            
                             (style as IComponent).Init(context);
+                        }
+                        else if (context.ShouldLogDebug)
+                            context.TraceLog.Add(TraceLevel.Debug, "PDF Document", "The style '" + style.ToString() + "' does not implement IComponent, so cannot be initialized");
                     }
                     catch (PDFException)
                     {
@@ -1670,7 +1761,7 @@ namespace Scryber.Components
                     }
                     catch (Exception ex)
                     {
-                        string msg = string.Format("Could not init the data to the style '{0}' : {1}", style, ex.Message);
+                        string msg = $"Could not init the data to the style '{style}' : {ex.Message}";
                         throw new PDFException(msg, ex);
                     }
                 }
@@ -1682,9 +1773,12 @@ namespace Scryber.Components
         #region protected override void DoLoad(PDFLoadContext context)
 
         /// <summary>
-        /// Overrides the base implementation to check the document generation stage.
+        /// Overrides the base implementation to check the document generation stage and invoke the loading any children.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">The current load context</param>
+        /// <exception cref="PDFException">If this document has not been initialized, or already loaded an error will be raised</exception>
+        /// <remarks>If executing this outside of the standard document lifecycle then the M<see cref="InitializeAndLoad"/> method offers an easier route.
+        /// It is also the ideal place where inheritors can override this method if they add any contents or collections that also need loading.</remarks>
         protected override void DoLoad(LoadContext context)
         {
             if (this.GenerationStage < DocumentGenerationStage.Initialized)
@@ -1710,6 +1804,11 @@ namespace Scryber.Components
 
         #region protected virtual void DoLoadStyles(PDFDataContext context)
 
+        /// <summary>
+        /// Invokes the loading of all styles in this document that support it (implement the IComponent interface).
+        /// </summary>
+        /// <param name="context">The current load context</param>
+        /// <exception cref="PDFException">Raised if there is an error during the loading process</exception>
         protected virtual void DoLoadStyles(LoadContext context)
         {
             if (this.Styles != null && this.Styles.Count > 0)
@@ -1738,18 +1837,29 @@ namespace Scryber.Components
         }
 
         #endregion
-
-        #region public void DataBind()
+        
+        //
+        // Data binding methods
+        //
+        
+        #region public void DataBind(OutputFormat format)
 
         /// <summary>
-        /// Data binds the entire document
+        /// Main entry method for an entire document to be data bound.
+        /// This will make sure any expressions bound on values and attributes are bound too.
         /// </summary>
+        /// <param name="format">The ultimate output format of the document. This will be passed to the binding context, and if null an exception wil be thrown</param>
+        /// <remarks>The data-binding stage is a key stage within the document creation process. It should occur once a document has been initialized and loaded</remarks>
         public void DataBind(OutputFormat format)
         {
             TraceLog log = this.TraceLog;
             PerformanceMonitor perfmon = this.PerformanceMonitor;
             ItemCollection items = this.Params;
 
+            if (null == format)
+                throw new ArgumentNullException(nameof(format),
+                    @"The format was null for binding, use one of the static OutputFormat types, or one of your own.");
+            
             DataContext context = this.CreateDataContext(log, perfmon, items, format);
 
             context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document Databind");
@@ -1781,8 +1891,9 @@ namespace Scryber.Components
         /// <summary>
         /// Overrides the default implementation, calling the base method within it
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="includeChildren"></param>
+        /// <param name="context">The current data context</param>
+        /// <param name="includeChildren">Flag for marking the children to be bound (including any styles, additions, info and data sources</param>
+        /// <remarks>If include children, then this method will also bind any inner content and styles.</remarks>
         protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             if (this.GenerationStage < DocumentGenerationStage.Loaded)
@@ -1820,6 +1931,11 @@ namespace Scryber.Components
 
         #region protected virtual void DoBindStyles(PDFDataContext context)
 
+        /// <summary>
+        /// Databinds all the styles in this document, inheritors can override the default functionality to add their own bindings
+        /// </summary>
+        /// <param name="context">The current databind context</param>
+        /// <exception cref="PDFDataException">Thrown if there is an error raised during the binding of the styles</exception>
         protected virtual void DoBindStyles(DataContext context)
         {
             if (this.Styles != null && this.Styles.Count > 0)
@@ -1851,18 +1967,20 @@ namespace Scryber.Components
         #region public virtual IXmlNamespaceResolver CreateNamespaceResolver(PDFXmlNamespaceCollection namespaceDeclarations, XmlNameTable nameTable)
 
         /// <summary>
-        /// Retruns a new namespace manager for the namespaces name table
+        /// Returns a new namespace manager for the namespaces name table
         /// </summary>
-        /// <param name="nameTable"></param>
-        /// <returns></returns>
+        /// <param name="namespaceDeclarations">The explicit namespaces with prefixes to add to the resolver</param>
+        /// <param name="nameTable">The original xml document nametable</param>
+        /// <returns>A new IXmlNamespaceResolver ( an instance of the XmlNamespaceManager)</returns>
         public virtual IXmlNamespaceResolver CreateNamespaceResolver(PDFXmlNamespaceCollection namespaceDeclarations, XmlNameTable nameTable)
         {
             XmlNamespaceManager mgr = new XmlNamespaceManager(nameTable);
+            
             foreach (XmlNamespaceDeclaration dec in namespaceDeclarations)
             {
                 if (string.IsNullOrEmpty(dec.Prefix))
-                    throw new ArgumentNullException("prefix", string.Format(Errors.CannotDeclareNamespaceWithoutPrefix, dec.NamespaceURI));
-
+                    throw new NullReferenceException(string.Format(Errors.CannotDeclareNamespaceWithoutPrefix, dec.NamespaceURI));
+                
                 mgr.AddNamespace(dec.Prefix, dec.NamespaceURI);
             }
             return mgr;
@@ -1971,11 +2089,11 @@ namespace Scryber.Components
         #region RenderToPDF(string path, System.IO.FileMode mode) + 2 Overloads
 
 
-        public virtual void RenderToPDF(System.IO.Stream tostream)
+        public virtual void RenderToPDF(System.IO.Stream toStream)
         {
-            PDFRenderContext context = this.DoCreateRenderContext();
+            PDFRenderContext context = this.CreateRenderContext();
 
-            using (PDFWriter writer = this.DoCreateRenderWriter(tostream, context))
+            using (PDFWriter writer = this.DoCreateRenderWriter(toStream, context))
             {
                 this.RenderToPDF(context, writer);
             }
@@ -2032,7 +2150,7 @@ namespace Scryber.Components
         #region protected virtual void DoOutputAndAppendToPDF(PDFLayoutDocument doc, PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
-        /// Wraps the OutputToPDF in a separate stream then builds an ammended 
+        /// Wraps the OutputToPDF in a separate stream then builds an amended 
         /// document with the trace log after the original content
         /// </summary>
         /// <param name="doc"></param>
@@ -2242,7 +2360,7 @@ namespace Scryber.Components
         /// Creates the render context for this document. Inheritors can override this method to provide custom implementation
         /// </summary>
         /// <returns>A newly constructed render context for the operation</returns>
-        protected virtual PDFRenderContext DoCreateRenderContext()
+        protected virtual PDFRenderContext CreateRenderContext()
         {
             TraceLog log = this.TraceLog;
             PerformanceMonitor perfmon = this.PerformanceMonitor;
@@ -2256,9 +2374,7 @@ namespace Scryber.Components
         }
 
         #endregion
-
         
-
         #region private void PopulateContextBase(PDFContextBase context)
 
         /// <summary>

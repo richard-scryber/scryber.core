@@ -1,4 +1,5 @@
 ﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
 <html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
 <head>
     <meta charset="utf-8" />
@@ -64,7 +65,12 @@
               0-7.538-3.375-7.538-7.539c0-4.163,3.375-7.538,7.538-7.538c4.162,0,
               7.538,3.375,7.538,7.538C17.538,14.957,14.162,18.332,10,18.332z M10.386,
               9.26c0.002-0.018,0.011-0.034,0.011-0.053V5.24c0-0.219-0.177-0.396-0.396-0.396c-0.22,
-              0-0.397,0.177-0.397,0.396v3.967c0,0.019,0.008,0.035,0.011,0.053c-0.689,0.173-1.201,0.792-1.201,1.534c0,0.324,0.098,0.625,0.264,0.875c-0.079,0.014-0.155,0.043-0.216,0.104l-2.244,2.244c-0.155,0.154-0.155,0.406,0,0.561s0.406,0.154,0.561,0l2.244-2.242c0.061-0.062,0.091-0.139,0.104-0.217c0.251,0.166,0.551,0.264,0.875,0.264c0.876,0,1.587-0.711,1.587-1.587C11.587,10.052,11.075,9.433,10.386,9.26z M10,11.586c-0.438,0-0.793-0.354-0.793-0.792c0-0.438,0.355-0.792,0.793-0.792c0.438,0,0.793,0.355,0.793,0.792C10.793,11.232,10.438,11.586,10,11.586z"></path>
+              0-0.397,0.177-0.397,0.396v3.967c0,0.019,0.008,0.035,0.011,0.053c-0.689,0.173-1.201,
+              0.792-1.201,1.534c0,0.324,0.098,0.625,0.264,0.875c-0.079,0.014-0.155,0.043-0.216,
+              0.104l-2.244,2.244c-0.155,0.154-0.155,0.406,0,0.561s0.406,0.154,0.561,0l2.244-2.242c0.061-0.062,
+              0.091-0.139,0.104-0.217c0.251,0.166,0.551,0.264,0.875,0.264c0.876,0,1.587-0.711,1.587-1.587C11.587,
+              10.052,11.075,9.433,10.386,9.26z M10,11.586c-0.438,0-0.793-0.354-0.793-0.792c0-0.438,0.355-0.792,
+              0.793-0.792c0.438,0,0.793,0.355,0.793,0.792C10.793,11.232,10.438,11.586,10,11.586z"></path>
     </svg>
     <p title="Irregular Shapes" >This is above the svg canvas</p>
     <svg xmlns="http://www.w3.org/2000/svg" width="200pt" height="200pt" class="canvas">
@@ -95,7 +101,7 @@
     <p title="Positioned Smileys">This has a view box traslation and scale</p>
     <!-- taken from the mozzila aspect ratio tests -->
     <!-- https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio -->
-
+    
     <svg xmlns="http://www.w3.org/2000/svg">
         <defs>
             <path id="smiley" fill="yellow" stroke="black" stroke-width="8pt" stroke-linecap="round" stroke-linejoin="round"
@@ -146,7 +152,7 @@
         </svg>
 
         <svg x="225" y="0" width="25pt" height="55pt" style="background-color:#FF5555;" viewBox="0 0 100 100"
-             preserveAspectRatio="xMidYMin meet">
+             preserveAspectRatio="xMidYMax meet">
             <use href="#smiley" />
         </svg>
 
@@ -199,7 +205,7 @@
         <a href="http://www.google.co.uk">
             <circle cx="50" cy="40" r="35" />
             <text x="25" y="90">
-                &lt;circle&gt;
+                Circle
             </text>
         </a>
     </svg>

@@ -123,7 +123,7 @@ namespace Scryber.PDF
                     if (rsrc.ResourceType == PDFResource.FontDefnResourceType)
                         this.AddFontResource(tbl, rsrc as PDFFontResource);
                     else if (rsrc.ResourceType == PDFFontResource.XObjectResourceType)
-                        this.AddXObjectResource(tbl, rsrc as PDFImageXObject);
+                        this.AddXObjectResource(tbl, rsrc);
                     else
                         this.AddOtherResource(tbl, rsrc);
                 }
@@ -158,30 +158,50 @@ namespace Scryber.PDF
             tbl.Rows.Add(row);
         }
 
-        private void AddXObjectResource(TableGrid tbl, PDFImageXObject img)
+        private void AddXObjectResource(TableGrid tbl, PDFResource rsrc)
         {
             TableRow row = new TableRow() {ElementName = "tr"};
             TableCell cell = new TableCell() {ElementName = "td"};
             cell.Width = 100;
-            cell.Contents.Add(new TextLiteral("Image"));
+            
+            string type;
+            
+            if (rsrc is PDFImageXObject)
+                type = "Image";
+            else if (rsrc is PDFLayoutXObjectResource)
+                type = "XObject";
+            else
+                type = "Other";
+
+            
+                
+            cell.Contents.Add(new TextLiteral(type));
             row.Cells.Add(cell);
 
             cell = new TableCell() {ElementName = "td"};
             var bold = new BoldSpan();
-            
-            if (img.ImageData != null)
+            if (rsrc is PDFImageXObject img)
             {
-                bold.Contents.Add(new TextLiteral(img.ImageData.SourcePath));
-                cell.Contents.Add(bold);
-                cell.Contents.Add(new LineBreak());
-                var str = img.ImageData.PixelWidth + " by " + img.ImageData.PixelHeight + " pixels, ";
-                cell.Contents.Add(new TextLiteral(str));
+                if (img.ImageData != null)
+                {
+                    bold.Contents.Add(new TextLiteral(img.ImageData.SourcePath));
+                    cell.Contents.Add(bold);
+                    cell.Contents.Add(new LineBreak());
+                    var str = img.ImageData.PixelWidth + " by " + img.ImageData.PixelHeight + " pixels, ";
+                    cell.Contents.Add(new TextLiteral(str));
+                }
+                else
+                {
+                    bold.Contents.Add(new TextLiteral(img.Source));
+                    cell.Contents.Add(bold);
+                }
             }
-            else
+            else if (rsrc is PDFLayoutXObjectResource xobj)
             {
-                bold.Contents.Add(new TextLiteral(img.Source));
+                bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Layout.Owner.ID));
                 cell.Contents.Add(bold);
             }
+
             row.Cells.Add(cell);
             tbl.Rows.Add(row);
         }

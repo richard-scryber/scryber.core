@@ -26,6 +26,7 @@ using Scryber.Expressive.Functions;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Exceptions;
 using Scryber.Expressive;
+using Scryber.PDF.Secure;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -1578,6 +1579,18 @@ namespace Scryber.Core.UnitTests.Html
                 doc.Params["title"] = "Hello World";
                 using (var stream = DocStreams.GetOutputStream("ProtectedHtml.pdf"))
                 {
+                    doc.PreRender += delegate(object sender, RenderEventArgs args)
+                    {
+                        var provider = doc.RenderOptions.PasswordProvider;
+                        var perms = doc.RenderOptions.Permissions;
+                        var writer = doc.RenderOptions.WriterFactory;
+                        Assert.IsNotNull(provider, "Password provider was null");
+                        Assert.IsTrue(perms.HasRestrictions);
+                        Assert.IsTrue(perms.AllowFormFilling);
+                        Assert.IsFalse(perms.AllowCopying);
+                        Assert.IsInstanceOfType(writer, typeof(PDFSecureWrite14Factory));
+                    };
+                    
                     doc.SaveAsPDF(stream);
                 }
 

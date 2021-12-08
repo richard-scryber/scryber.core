@@ -575,10 +575,7 @@ namespace Scryber.PDF.Layout
             //get the current style and aply it to the style stack
             Style style = this.FullStyle;
             context.StyleStack.Push(style);
-
-            PageSize pagesize = this.PageOwner.GetPageSize(style);
-            //PDFPageNumbering num = this.GetNumbering(style);
-            //this.Document.RegisterPageNumbering(context.PageIndex, this, num);
+            
             PDFObjectRef last = writer.LastObjectReference();
             PDFObjectRef pg;
 

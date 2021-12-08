@@ -44,13 +44,7 @@ namespace Scryber.PDF.Layout
         {
         }
 
-        protected override void DoLayoutComponent()
-        {
-            base.DoLayoutComponent();
-
-            
-        }
-
+        
         protected override void DoLayoutChildren()
         {
             PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
@@ -69,13 +63,13 @@ namespace Scryber.PDF.Layout
                 this.CloseCurrentLine();
 
                 canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(ObjectTypes.CanvasXObject);
-                var rsrc = new PDFCanvasResource(this.Component as Canvas, canvas, position.ViewPort.Value);
+                var rsrc = new PDFLayoutXObjectResource(PDFResource.XObjectResourceType, ((Canvas)Component).UniqueID, canvas);
                 var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
 
                 var size = new Size(canvas.Width, canvas.Height);
                 canvas.Matrix = CalculateMatrix(size, position.ViewPort.Value, ratio);
-                canvas.ClipRect = new Rect(position.X.HasValue ? position.X.Value : Unit.Zero,
-                                              position.Y.HasValue ? position.Y.Value : Unit.Zero,
+                canvas.ClipRect = new Rect(position.X ?? Unit.Zero,
+                                              position.Y ?? Unit.Zero,
                                               canvas.Width, canvas.Height);
                 this.Context.DocumentLayout.CurrentPage.PageOwner.Register(rsrc);
                 this.Context.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
@@ -218,35 +212,6 @@ namespace Scryber.PDF.Layout
 
             if (!this.Line.IsClosed)
                 this.Line.Region.CloseCurrentItem();
-        }
-
-        /// <summary>
-        /// Wrapper resource class for the XObject layout block
-        /// </summary>
-        private class PDFCanvasResource : PDFResource
-        {
-            private PDFLayoutXObject _layout;
-            private Canvas _component;
-
-            public PDFCanvasResource(Canvas component, PDFLayoutXObject layout, Rect viewPort)
-                : base(ObjectTypes.CanvasXObject)
-            {
-                this._layout = layout;
-                this._component = component;
-                this.Name = layout.OutPutName;
-            }
-
-            
-
-            public override string ResourceType { get { return PDFResource.XObjectResourceType; } }
-
-            public override string ResourceKey { get { return this._component.UniqueID; } }
-
-            protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
-            {
-                //The XObject should have been rendered as part of the page content.
-                return _layout.RenderReference;
-            }
         }
     }
 

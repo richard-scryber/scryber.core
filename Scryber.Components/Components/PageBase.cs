@@ -497,21 +497,7 @@ namespace Scryber.Components
 
         #endregion
 
-        #region protected virtual PDFPageSize GetPageSize(PDFStyle appliedstyle)
-
-        /// <summary>
-        /// Loads the Applied page size from the style and returns the PDFPageSizeInstance
-        /// </summary>
-        /// <param name="appliedstyle">The current Applied style</param>
-        /// <returns>A new PDFPageSize instance</returns>
-        public virtual PageSize GetPageSize(Style style)
-        {
-            PageSize pagesize = style.CreatePageSize();
-
-            return pagesize;
-        }
-
-        #endregion
+        
 
         #region public virtual int GetPageIndex(PDFVisualComponent ele)
 
@@ -532,7 +518,7 @@ namespace Scryber.Components
         public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
         {
             Style full = styles.GetFullStyle(this);
-            PageSize size = this.GetPageSize(full);
+            PageSize size = full.CreatePageSize();
             return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, size.Size, context);
         }
 
@@ -672,13 +658,6 @@ namespace Scryber.Components
         string IResourceContainer.Register(ISharedResource rsrc)
         {
             return this.Register((PDFResource)rsrc).Value;
-        }
-
-        public PDFName RegisterFont(Scryber.Drawing.Font font)
-        {            
-            PDFFontResource defn = this.Document.GetFontResource(font, true);
-            defn.RegisterUse(this.Resources, this);
-            return defn.Name;
         }
 
         public PDFName Register(PDFResource reference)

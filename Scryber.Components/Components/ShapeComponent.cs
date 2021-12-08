@@ -28,7 +28,7 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Components
 {
-    public abstract class ShapeComponent : VisualComponent, IGraphicPathComponent
+    public abstract class ShapeComponent : VisualComponent, IGraphicPathComponent, IPDFRenderComponent
     {
 
         public ShapeComponent(ObjectType type) : base(type) { }

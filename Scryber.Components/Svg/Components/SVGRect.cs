@@ -58,19 +58,48 @@ namespace Scryber.Svg.Components
         public override Unit Y { get => base.Y; set => base.Y = value; }
 
         [PDFAttribute("rx")]
-        public Unit CornerRadiusX { get { return this.Style.Border.CornerRadius; } set { this.Style.Border.CornerRadius = value; } }
+        public Unit CornerRadiusX
+        {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.ShapeCornerRadiusXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.ShapeCornerRadiusXKey, value);
+            }
+        }
 
         [PDFAttribute("ry")]
-        public Unit CornerRadiusY { get { return this.Style.Border.CornerRadius; } set { this.Style.Border.CornerRadius = value; } }
+        public Unit CornerRadiusY
+        {
+            get
+            {
+                if (this.Style.TryGetValue(StyleKeys.ShapeCornerRadiusYKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set => this.Style.SetValue(StyleKeys.ShapeCornerRadiusYKey, value);
+        }
 
         // stroke
 
         [PDFAttribute("stroke")]
-        public override Color StrokeColor { get => base.StrokeColor; set => base.StrokeColor = value; }
+        public override Color StrokeColor
+        {
+            get => base.StrokeColor; 
+            set => base.StrokeColor = value;
+        }
 
         [PDFAttribute("stroke-width")]
         public override Unit StrokeWidth { get => base.StrokeWidth; set => base.StrokeWidth = value; }
 
+        
         [PDFAttribute("stroke-linecap")]
         public LineCaps StrokeLineCap
         {
@@ -100,15 +129,85 @@ namespace Scryber.Svg.Components
 
         protected override void BuildPath(GraphicsPath path, Point[] points, Style style, bool end)
         {
-            if (this.CornerRadiusX != Unit.Zero)
-                this.BuildRoundRectPath(path, points, style);
+            if (this.Style.IsValueDefined(StyleKeys.ShapeCornerRadiusXKey))
+                this.BuildRoundRectPath(path, points, style, end);
+            else if (this.Style.IsValueDefined(StyleKeys.ShapeCornerRadiusYKey))
+                this.BuildRoundRectPath(path, points, style, end);
             else
                 base.BuildPath(path, points, style, end);
         }
 
-        private void BuildRoundRectPath(GraphicsPath path, Point[] points, Style style)
+        private void BuildRoundRectPath(GraphicsPath path, Point[] points, Unit xRadius, Unit yRadius, Style style,
+            bool end)
         {
-            throw new NotImplementedException("Round rectangle points are not currently supported");
+            if(path.HasCurrentPath == false)
+                path.BeginPath();
+
+            Unit xHandleOffset = xRadius * PDF.Graphics.PDFGraphics.CircularityFactor;
+            Unit yHandleOffset = yRadius * PDF.Graphics.PDFGraphics.CircularityFactor;
+
+            if (points.Length != 4)
+                throw new ArgumentOutOfRangeException(nameof(points),"The number of points for a rect must always be 4");
+
+            //top left, top right, bottom right, bottom left
+            var tl = points[0];
+            var tr = points[1];
+            var br = points[2];
+            var bl = points[3];
+            path.MoveTo(new Point(tl.X + xRadius, tl.Y));
+            
+            path.LineTo(new Point(tr.X - xRadius, tr.Y));
+            
+            var hStart = new Point((tr.X - xRadius) + xHandleOffset, tr.Y);
+            var hEnd = new Point(tr.X, (tr.Y + yRadius) - yHandleOffset);
+            path.CubicCurveTo(new Point(tr.X, tr.Y + yRadius), hStart, hEnd );
+            
+            path.LineTo(new Point(br.X, br.Y - yRadius));
+
+            hStart = new Point(br.X, (br.Y - yRadius) + yHandleOffset);
+            hEnd = new Point((br.X - xRadius) + xHandleOffset, br.Y);
+            path.CubicCurveTo(new Point(br.X - xRadius, br.Y), hStart, hEnd);
+            
+            path.LineTo(new Point(bl.X + xRadius, bl.Y));
+
+            hStart = new Point((bl.X + xRadius) - xHandleOffset, bl.Y);
+            hEnd = new Point(bl.X, (bl.Y - yRadius) + yHandleOffset);
+            path.CubicCurveTo(new Point(bl.X, bl.Y - yRadius), hStart, hEnd);
+            
+            path.LineTo(new Point(tl.X, tl.Y + yRadius));
+
+            hStart = new Point(tl.X, (tl.Y + yRadius) - yHandleOffset);
+            hEnd = new Point((tl.X + xRadius) - xHandleOffset, tl.Y);
+            path.CubicCurveTo(new Point(tl.X + xRadius, tl.Y), hStart, hEnd);
+            
+            if(end)
+                path.EndPath();
+        }
+
+        private void BuildRoundRectPath(GraphicsPath path, Point[] points, Style style, bool end)
+        {
+            Unit xRadius = 0;
+            Unit yRadius = 0;
+            
+            StyleValue<Unit> found;
+            
+            if (style.TryGetValue(StyleKeys.ShapeCornerRadiusXKey, out found))
+                xRadius = found.Value(style);
+
+            if (style.TryGetValue(StyleKeys.ShapeCornerRadiusYKey, out found))
+                yRadius = found.Value(style);
+            else
+                yRadius = xRadius;
+
+            if (xRadius.IsEmpty && yRadius.IsEmpty)
+            {
+                //values are zero, so just build a rect
+                BuildPath(path, points, style, end);
+            }
+            else
+            {
+                BuildRoundRectPath(path, points, xRadius, yRadius, style, end);
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Scryber.Drawing
 
         public PDFTransformationMatrix()
         {
-            _matrix = new Scryber.Drawing.Matrix2D();
+            _matrix = Scryber.Drawing.Matrix2D.Identity;
             _matrix.Reset();
         }
 
@@ -194,8 +194,7 @@ namespace Scryber.Drawing
 
         public static PDFTransformationMatrix Identity()
         {
-            
-            return new PDFTransformationMatrix(0, 0, 0, 1, 1);
+            return new PDFTransformationMatrix();
         }
         //
         // graphics adapters

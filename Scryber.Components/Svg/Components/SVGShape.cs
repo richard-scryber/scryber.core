@@ -8,7 +8,7 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Svg.Components
 {
-    public abstract class SVGShape : SVGBase, IGraphicPathComponent
+    public abstract class SVGShape : SVGBase, IGraphicPathComponent, IPDFRenderComponent
     {
 
 

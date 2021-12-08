@@ -255,6 +255,11 @@ namespace Scryber.Styles
         public static readonly StyleKey<bool> ShapeClosedKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"clos", ShapeItemKey);
         public static readonly StyleKey<double> ShapeRotationKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"rotn", ShapeItemKey);
 
+        public static readonly StyleKey<Unit> ShapeCornerRadiusXKey =
+            StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType) "radX", ShapeItemKey);
+        public static readonly StyleKey<Unit> ShapeCornerRadiusYKey =
+            StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType) "radY", ShapeItemKey);
+
         //Table
         public static readonly StyleKey TableItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleTable, NOT_INHERITED);
         public static readonly StyleKey<int> TableCellColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cols", TableItemKey);
