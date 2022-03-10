@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using Scryber.Resources;
 
 namespace Scryber
@@ -285,10 +283,10 @@ namespace Scryber
             return GetStandardFontDefinition(font.FamilyName, font.GetDrawingStyle());
         }
 
-        public static PDFFontDefinition GetStandardFontDefinition(string name, FontStyle style)
+        public static PDFFontDefinition GetStandardFontDefinition(string name, SkiaSharp.SKFontStyle style)
         {
-            bool italic = (style & FontStyle.Italic) > 0;
-            bool bold = (style & FontStyle.Bold) > 0;
+            bool italic = style == SkiaSharp.SKFontStyle.Italic;
+            bool bold = style == SkiaSharp.SKFontStyle.Bold;
             name = TranslateGenericName(name);
 
             foreach (PDFFontDefinition defn in _stds)

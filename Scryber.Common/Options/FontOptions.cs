@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Scryber.Options
+﻿namespace Scryber.Options
 {
     public class FontOptions
     {
@@ -30,17 +28,12 @@ namespace Scryber.Options
         }
     }
 
-
-
     public class FontRegistrationOption
     {
         public string Family { get; set; }
 
-        public System.Drawing.FontStyle Style { get; set; }
+        public string Style { get; set; }
 
         public string File { get; set; }
     }
-
-
-
 }

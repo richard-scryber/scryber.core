@@ -1,8 +1,6 @@
-﻿using System;
-using System.Drawing;
-using System.Net.Sockets;
-using Scryber.Drawing;
+﻿using Scryber.Drawing;
 using Scryber.Resources;
+using SkiaSharp;
 
 namespace Scryber.Styles
 {
@@ -183,16 +181,16 @@ namespace Scryber.Styles
             return "@font-face";
         }
 
-        
-
-        
         private bool TryGetFont(IPDFDocument doc, PDFContextBase context, out PDFFontDefinition definition)
         {
-            System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
+            var style = SKFontStyle.Normal;
+
             if (this.FontBold)
-                style |= System.Drawing.FontStyle.Bold;
+                style = SKFontStyle.Bold;
             if (this.FontItalic)
-                style |= System.Drawing.FontStyle.Italic;
+                style = SKFontStyle.Italic;
+            if (this.FontItalic && this.FontBold)
+                style = SKFontStyle.BoldItalic;
 
             string name = this.FontFamily.FamilyName;
 
@@ -200,7 +198,5 @@ namespace Scryber.Styles
             
             return null != definition;
         }
-        
-
     }
 }

@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
-//using System.Drawing;
 using System.Drawing.Text;
 using Scryber.Resources;
 using Scryber.Configuration;
@@ -54,7 +53,7 @@ namespace Scryber.Drawing
         private abstract class FontReference
         {
             internal string FamilyName { get; private set; }
-            internal System.Drawing.FontStyle Style { get; private set; }
+            internal SkiaSharp.SKFontStyle Style { get; private set; }
             internal string FilePath { get; private set; }
             internal byte[] FileData { get; private set; }
             internal int FileHeadOffset { get; private set; }
@@ -67,7 +66,7 @@ namespace Scryber.Drawing
 
             internal object LoadLock { get; private set; }
             
-            internal FontReference(string name, System.Drawing.FontStyle style, string path, int fileHeadOffset)
+            internal FontReference(string name, SkiaSharp.SKFontStyle style, string path, int fileHeadOffset)
             {
                 //this.SystemFamily = family;
                 this.FamilyName = name;
@@ -77,7 +76,7 @@ namespace Scryber.Drawing
                 this.LoadLock = new object();
             }
 
-            internal FontReference(string name, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal FontReference(string name, SkiaSharp.SKFontStyle style, byte[] data, int fileHeadOffset)
             {
                 //this.SystemFamily = family;
                 this.FamilyName = name;
@@ -100,12 +99,12 @@ namespace Scryber.Drawing
         {
             internal LinkedFontReference Next { get; set; }
 
-            internal LinkedFontReference(string familyname, System.Drawing.FontStyle style, string path, int fileHeadOffset)
+            internal LinkedFontReference(string familyname, SkiaSharp.SKFontStyle style, string path, int fileHeadOffset)
                 : base(familyname, style, path, fileHeadOffset)
             {
             }
 
-            internal LinkedFontReference(string familyname, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal LinkedFontReference(string familyname, SkiaSharp.SKFontStyle style, byte[] data, int fileHeadOffset)
                 : base(familyname, style, data, fileHeadOffset)
             {
             }
@@ -118,7 +117,7 @@ namespace Scryber.Drawing
                     this.Next.Append(reference);
             }
 
-            internal LinkedFontReference GetStyle(System.Drawing.FontStyle style)
+            internal LinkedFontReference GetStyle(SkiaSharp.SKFontStyle style)
             {
                 if (style == this.Style)
                     return this;
@@ -166,7 +165,7 @@ namespace Scryber.Drawing
                 get { return _first; }
             }
 
-            internal FontReference this[System.Drawing.FontStyle style]
+            internal FontReference this[SkiaSharp.SKFontStyle style]
             {
                 get
                 {
@@ -182,7 +181,7 @@ namespace Scryber.Drawing
                 this.FamilyName = name;
             }
 
-            internal FontReference Add(System.Drawing.FontStyle style, string filepath, int fileHeadOffset)
+            internal FontReference Add(SkiaSharp.SKFontStyle style, string filepath, int fileHeadOffset)
             {
 
                 LinkedFontReference fontref = new LinkedFontReference(this.FamilyName, style, filepath, fileHeadOffset);
@@ -194,7 +193,7 @@ namespace Scryber.Drawing
                 return fontref;
             }
 
-            internal FontReference Add(System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal FontReference Add(SkiaSharp.SKFontStyle style, byte[] data, int fileHeadOffset)
             {
                 LinkedFontReference fontref = new LinkedFontReference(this.FamilyName, style, data, fileHeadOffset);
                 if (null == _first)
@@ -205,7 +204,7 @@ namespace Scryber.Drawing
                 return fontref;
             }
 
-            internal bool TryGetFont(System.Drawing.FontStyle style, out FontReference font)
+            internal bool TryGetFont(SkiaSharp.SKFontStyle style, out FontReference font)
             {
                 var found = _first;
                 while(null != found)
@@ -258,7 +257,7 @@ namespace Scryber.Drawing
                 }
             }
 
-            internal FontReference this[string family, System.Drawing.FontStyle style]
+            internal FontReference this[string family, SkiaSharp.SKFontStyle style]
             {
                 get
                 {
@@ -292,7 +291,7 @@ namespace Scryber.Drawing
                 }
             }
 
-            internal virtual FontReference AddFontFile(string family, System.Drawing.FontStyle style, string path, int fileHeadOffset)
+            internal virtual FontReference AddFontFile(string family, SkiaSharp.SKFontStyle style, string path, int fileHeadOffset)
             {
                 FamilyReference fam;
                 if (_families.TryGetValue(family, out fam) == false)
@@ -303,7 +302,7 @@ namespace Scryber.Drawing
                 return fam.Add(style, path, fileHeadOffset);
             }
 
-            internal FontReference AddFontResource(string family, System.Drawing.FontStyle style, byte[] data, int fileHeadOffset)
+            internal FontReference AddFontResource(string family, SkiaSharp.SKFontStyle style, byte[] data, int fileHeadOffset)
             {
                 FamilyReference fam;
                 if (_families.TryGetValue(family, out fam) == false)
@@ -324,7 +323,7 @@ namespace Scryber.Drawing
                 return _families.TryGetValue(name, out reference);
             }
 
-            internal bool TryGetFont(string name, System.Drawing.FontStyle style, out FontReference reference)
+            internal bool TryGetFont(string name, SkiaSharp.SKFontStyle style, out FontReference reference)
             {
                 reference = null;
                 FamilyReference family;
@@ -420,7 +419,7 @@ namespace Scryber.Drawing
         #endregion
 
         /*
-        #region public static Font GetSystemFont(string family, System.Drawing.FontStyle style, float size)
+        #region public static Font GetSystemFont(string family, SkiaSharp.SKFontStyle style, float size)
 
         /// <summary>
         /// Gets a System.Drawing.Font based upon the family, style and size.
@@ -429,7 +428,7 @@ namespace Scryber.Drawing
         /// <param name="style">The style of the font</param>
         /// <param name="size">The size of the font</param>
         /// <returns>A new System.Drawing.Font</returns>
-        public static Font GetSystemFont(string family, System.Drawing.FontStyle style, float size)
+        public static Font GetSystemFont(string family, SkiaSharp.SKFontStyle style, float size)
         {
             //Make sure we are initialized and OK
             AssertInitialized();
@@ -448,8 +447,8 @@ namespace Scryber.Drawing
                 fref = _genericfamilies[family, style];
 
 #if FALLBACKTOREGULAR
-            if (null == fref && style != System.Drawing.FontStyle.Regular)
-                return GetSystemFont(family, System.Drawing.FontStyle.Regular, size);
+            if (null == fref && style != SkiaSharp.SKFontStyle.Normal)
+                return GetSystemFont(family, SkiaSharp.SKFontStyle.Normal, size);
 #endif
             if (null == fref)
             {
@@ -492,7 +491,7 @@ namespace Scryber.Drawing
             //Make sure we are initialized and OK
             AssertInitialized();
 
-            System.Drawing.FontStyle fs = font.GetDrawingStyle();
+            SkiaSharp.SKFontStyle fs = font.GetDrawingStyle();
             PDFFontSelector selector = font.Selector;
             while (null != selector)
             {
@@ -510,14 +509,14 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static bool IsFontDefined(string family, System.Drawing.FontStyle style)
+        #region public static bool IsFontDefined(string family, SkiaSharp.SKFontStyle style)
         /// <summary>
         /// Returns true if the available fonts contain one with the specified family and style
         /// </summary>
         /// <param name="family">The name of the font family (case insensitive)</param>
         /// <param name="style">GThe required stlye of the font</param>
         /// <returns>True if available, or false</returns>
-        public static bool IsFontDefined(string family, System.Drawing.FontStyle style)
+        public static bool IsFontDefined(string family, SkiaSharp.SKFontStyle style)
         {
             //Make sure we are initialized and OK
             AssertInitialized();
@@ -539,8 +538,8 @@ namespace Scryber.Drawing
                 fref = _genericfamilies[family, style];
 
 #if FALLBACKTOREGULAR
-            if (null == fref && style != System.Drawing.FontStyle.Regular && !PDFFont.IsStandardFontFamily(family))
-                return IsFontDefined(family, System.Drawing.FontStyle.Regular);
+            if (null == fref && style != SkiaSharp.SKFontStyle.Normal && !PDFFont.IsStandardFontFamily(family))
+                return IsFontDefined(family, SkiaSharp.SKFontStyle.Normal);
 #endif
 
             if (null == fref)
@@ -600,17 +599,21 @@ namespace Scryber.Drawing
         public static PDFFontDefinition GetFontDefinition(string fullname)
         {
             int pos = fullname.IndexOf(",");
-            System.Drawing.FontStyle fontstyle = System.Drawing.FontStyle.Regular;
+            SkiaSharp.SKFontStyle fontstyle = SkiaSharp.SKFontStyle.Normal;
             string family;
             if (pos > 0)
             {
                 family = fullname.Substring(0, pos).Trim();
                 string style = fullname.Substring(pos);
                 if (style.IndexOf("bold", StringComparison.OrdinalIgnoreCase) > -1)
-                    fontstyle = fontstyle | System.Drawing.FontStyle.Bold;
+                    fontstyle = SkiaSharp.SKFontStyle.Bold;
 
                 if (style.IndexOf("italic", StringComparison.OrdinalIgnoreCase) > -1)
-                    fontstyle = fontstyle | System.Drawing.FontStyle.Italic;
+                    fontstyle = SkiaSharp.SKFontStyle.Italic;
+
+                if (style.IndexOf("bold", StringComparison.OrdinalIgnoreCase) > -1 && 
+                    style.IndexOf("italic", StringComparison.OrdinalIgnoreCase) > -1)
+                    fontstyle = SkiaSharp.SKFontStyle.BoldItalic;
             }
             else
                 family = fullname.Trim();
@@ -621,7 +624,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style, bool throwNotFound = true)
+        #region public static PDFFontDefinition GetFontDefinition(string family, SkiaSharp.SKFontStyle style, bool throwNotFound = true)
 
         /// <summary>
         /// Gets the PDFFontDefinition for the specified famil and style
@@ -631,7 +634,7 @@ namespace Scryber.Drawing
         /// <param name="throwNotFound">If true (default) then if the font cannot be found an exception will be raised.
         /// If not, then null will be returned.</param>
         /// <returns></returns>
-        public static PDFFontDefinition GetFontDefinition(string family, System.Drawing.FontStyle style, bool throwNotFound = true)
+        public static PDFFontDefinition GetFontDefinition(string family, SkiaSharp.SKFontStyle style, bool throwNotFound = true)
         {
             //Make sure we are initialized and OK
             AssertInitialized();
@@ -657,8 +660,8 @@ namespace Scryber.Drawing
             if (null == fref)
             {
 
-                if (usesubstitute && style != System.Drawing.FontStyle.Regular && !PDFFont.IsStandardFontFamily(family))
-                    return GetFontDefinition(family, System.Drawing.FontStyle.Regular, throwNotFound);
+                if (usesubstitute && style != SkiaSharp.SKFontStyle.Normal && !PDFFont.IsStandardFontFamily(family))
+                    return GetFontDefinition(family, SkiaSharp.SKFontStyle.Normal, throwNotFound);
 
                 //We dont have the explicit font so if we should substitue then 
                 //try to find the family and return that otherwise use courier.
@@ -982,7 +985,8 @@ namespace Scryber.Drawing
                 foreach (var map in known)
                 {
                     string family = map.Family;
-                    System.Drawing.FontStyle style = map.Style;
+
+                    SkiaSharp.SKFontStyle style = SKFontStyleMapping(map.Style);
 
                    
                     if (!string.IsNullOrEmpty(map.File))
@@ -1049,6 +1053,18 @@ namespace Scryber.Drawing
 
         #endregion
 
+        private static SkiaSharp.SKFontStyle SKFontStyleMapping(string styleName)
+        {
+            if (styleName == "Bold")
+                return SkiaSharp.SKFontStyle.Bold;
+            else if (styleName == "Italic")
+                return SkiaSharp.SKFontStyle.Italic;
+            else if (styleName == "BoldItalic")
+                return SkiaSharp.SKFontStyle.BoldItalic;
+
+            return SkiaSharp.SKFontStyle.Normal;
+        }
+
         #region private static FamilyReferenceBag LoadStaticFamilies()
 
         const int HelveticaSpaceWidthFU = 569;
@@ -1070,26 +1086,26 @@ namespace Scryber.Drawing
                 TTFFile file;
                 //Courier
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNew.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Courier", SkiaSharp.SKFontStyle.Normal, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fcour", "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFU, file); ;
 
 
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNewBold.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Courier", SkiaSharp.SKFontStyle.Bold, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBo", "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFU, file);
 
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNewBoldItalic.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Courier", SkiaSharp.SKFontStyle.BoldItalic, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourBoOb", "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFU, file);
 
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Courier.CourierNewItalic.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Courier", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Courier", SkiaSharp.SKFontStyle.Italic, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FcourOb", "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFU, file);
 
@@ -1097,22 +1113,22 @@ namespace Scryber.Drawing
                 //Helvetica
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.Helvetica.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Helvetica", SkiaSharp.SKFontStyle.Normal, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Fhel", "Helvetica", "Helvetica", false, false, HelveticaSpaceWidthFU, file);
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.HelveticaBold.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Helvetica", SkiaSharp.SKFontStyle.Bold, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelBl", "Helvetica-Bold", "Helvetica", true, false, HelveticaSpaceWidthFU, file);
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.HelveticaBoldOblique.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Helvetica", SkiaSharp.SKFontStyle.BoldItalic, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelObBl", "Helvetica-BoldOblique", "Helvetica", true, true, HelveticaSpaceWidthFU, file);
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Helvetica.HelveticaOblique.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Helvetica", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Helvetica", SkiaSharp.SKFontStyle.Italic, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FhelOb", "Helvetica-Oblique", "Helvetica", false, true, HelveticaSpaceWidthFU, file);
 
@@ -1120,7 +1136,7 @@ namespace Scryber.Drawing
                 //Symbol
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Symbol.Symbol.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Symbol", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Symbol", SkiaSharp.SKFontStyle.Normal, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fsym", "Symbol", SymbolSpaceWidthFU, file);
 
@@ -1128,22 +1144,22 @@ namespace Scryber.Drawing
                 //Times
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRoman.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Times", SkiaSharp.SKFontStyle.Normal, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("Ftimes", "Times-Roman", "Times", false, false, TimesSpaceWidthFU, file);
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRomanBold.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Times", SkiaSharp.SKFontStyle.Bold, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBo", "Times-Bold", "Times", true, false, TimesSpaceWidthFU, file);
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRomanBoldItalic.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Times", SkiaSharp.SKFontStyle.BoldItalic, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesBoIt", "Times-BoldItalic", "Times", true, true, TimesSpaceWidthFU, file);
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Times.timesNewRomanItalic.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Times", System.Drawing.FontStyle.Italic, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Times", SkiaSharp.SKFontStyle.Italic, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdType1WinAnsi("FtimesIt", "Times-Italic", "Times", false, true, TimesSpaceWidthFU, file);
 
@@ -1152,7 +1168,7 @@ namespace Scryber.Drawing
                 //Zapf
 
                 bin = GetFontBinary(assm, "Scryber.Text._FontResources.Zaph.ZapfDingbats.ttf", out ttrRef);
-                fRef = bag.AddFontResource("Zapf Dingbats", System.Drawing.FontStyle.Regular, bin, ttrRef.HeadOffset);
+                fRef = bag.AddFontResource("Zapf Dingbats", SkiaSharp.SKFontStyle.Normal, bin, ttrRef.HeadOffset);
                 file = new TTFFile(bin, ttrRef.HeadOffset);
                 fRef.Definition = PDFFontDefinition.InitStdSymbolType1WinAnsi("Fzapf", "ZapfDingbats", ZaphSpaceWidthFU, file);
                 fRef.Definition.Family = "Zapf Dingbats";
@@ -1263,28 +1279,28 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region private static System.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs)
+        #region private static SkiaSharp.SKFontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs)
 
         /// <summary>
         /// Converts a OpenType.FontSelection to a Drawing.FontStyle
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        private static System.Drawing.FontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs, Scryber.OpenType.SubTables.WeightClass wc)
+        private static SkiaSharp.SKFontStyle GetFontStyle(Scryber.OpenType.SubTables.FontSelection fs, Scryber.OpenType.SubTables.WeightClass wc)
         {
-            System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
+            SkiaSharp.SKFontStyle style = SkiaSharp.SKFontStyle.Normal;
 
             if ((fs & Scryber.OpenType.SubTables.FontSelection.Italic) > 0)
-                style |= System.Drawing.FontStyle.Italic;
-            if ((fs & Scryber.OpenType.SubTables.FontSelection.Underscore) > 0)
-                style |= System.Drawing.FontStyle.Underline;
-            if ((fs & Scryber.OpenType.SubTables.FontSelection.Strikeout) > 0)
-                style |= System.Drawing.FontStyle.Strikeout;
+                style = SkiaSharp.SKFontStyle.Italic;
+            //if ((fs & Scryber.OpenType.SubTables.FontSelection.Underscore) > 0)
+            //    style = SkiaSharp.SKFontStyle.Underline;
+            //if ((fs & Scryber.OpenType.SubTables.FontSelection.Strikeout) > 0)
+            //    style = SkiaSharp.SKFontStyle.Strikeout;
             if ((fs & Scryber.OpenType.SubTables.FontSelection.Bold) > 0)
-                style |= System.Drawing.FontStyle.Bold;
+                style = SkiaSharp.SKFontStyle.Bold;
 
             if (wc == OpenType.SubTables.WeightClass.Bold)
-                style |= System.Drawing.FontStyle.Bold;
+                style = SkiaSharp.SKFontStyle.Bold;
 
             return style;
         }
@@ -1295,7 +1311,7 @@ namespace Scryber.Drawing
         // PDFFontSource ensure methods
         //
 
-        public static bool TryEnsureFont(IPDFComponent mapper, PDFContextBase context, PDFFontSource source, string familyName, System.Drawing.FontStyle style, out PDFFontDefinition definition)
+        public static bool TryEnsureFont(IPDFComponent mapper, PDFContextBase context, PDFFontSource source, string familyName, SkiaSharp.SKFontStyle style, out PDFFontDefinition definition)
         {
             AssertInitialized();
 
@@ -1369,7 +1385,7 @@ namespace Scryber.Drawing
             return found;
         }
 
-        private static bool TryLoadRemoteDefinition(PDFContextBase context, string url, string family, System.Drawing.FontStyle style, out PDFFontDefinition definition)
+        private static bool TryLoadRemoteDefinition(PDFContextBase context, string url, string family, SkiaSharp.SKFontStyle style, out PDFFontDefinition definition)
         {
             bool tried = true;
             definition = null;
