@@ -16,6 +16,8 @@ using Scryber.Expressive.Operators;
 using System.Threading.Tasks;
 using System.Xml;
 using Scryber.Html;
+using System.Threading;
+using System.Globalization;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -271,6 +273,8 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void AllExpressions_Test()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             var model = new
             {
                 number = 20.7,
@@ -866,6 +870,8 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindCalcAllFunctions()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             var model = new
             {
                 number = 20.7,

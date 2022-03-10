@@ -151,7 +151,6 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(3, font.Register.Length, "There are not 3 registered fonts");
 
             var family = "Segoe UI";
-            var style = System.Drawing.FontStyle.Regular;
             var fileStem = "Mocks/Fonts/";
             var fileExt = ".ttf";
             var fileName = "segoeui";
@@ -159,23 +158,21 @@ namespace Scryber.Core.UnitTests.Configuration
             //Segoe UI Regular
             var option = font.Register[0]; 
             Assert.AreEqual(family, option.Family);
-            Assert.AreEqual(style, option.Style);
+            Assert.IsNull(option.Style);
             Assert.AreEqual(fileStem + fileName + fileExt, option.File);
 
             // Segoe UI Bold
             option = font.Register[1]; 
-            style = System.Drawing.FontStyle.Bold;
 
             Assert.AreEqual(family, option.Family);
-            Assert.AreEqual(style, option.Style);
+            Assert.AreEqual("Bold", option.Style);
             Assert.AreEqual(fileStem + fileName + "b" + fileExt, option.File);
 
             // Segoe UI Bold
             option = font.Register[2];
-            style = System.Drawing.FontStyle.Italic;
 
             Assert.AreEqual(family, option.Family);
-            Assert.AreEqual(style, option.Style);
+            Assert.AreEqual("Italic", option.Style);
             Assert.AreEqual(fileStem + fileName + "i" + fileExt, option.File);
 
             ConfigClassCleanup();

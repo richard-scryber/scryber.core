@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Native;
-using System.Drawing;
 using Scryber.Drawing;
 using Scryber.Components;
 using Scryber.Layout;

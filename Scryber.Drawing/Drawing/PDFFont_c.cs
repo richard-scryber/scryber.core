@@ -16,11 +16,7 @@
  * 
  */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using Scryber.Configuration;
 using System.ComponentModel;
 using Scryber.Resources;
 
@@ -388,24 +384,28 @@ namespace Scryber.Drawing
             //int line = sys.FontFamily.GetLineSpacing(style);
         }
 
-        public System.Drawing.FontStyle GetDrawingStyle()
+        public SkiaSharp.SKFontStyle GetDrawingStyle()
         {
             return GetDrawingStyle(this.FontStyle);
         }
 
         /// <summary>
-        /// Converts the PDFX.FontStyle to a System.Drawing.FontStyle
+        /// Converts the PDFX.FontStyle to a SkiaSharp.SKFontStyle
         /// </summary>
         /// <param name="fontStyle">The PDFX.FontStyle</param>
-        /// <returns>A comparable System.Drawing.FontStyle</returns>
-        public static System.Drawing.FontStyle GetDrawingStyle(FontStyle fontStyle)
+        /// <returns>A comparable SkiaSharp.SKFontStyle</returns>
+        public static SkiaSharp.SKFontStyle GetDrawingStyle(FontStyle fontStyle)
         {
-            System.Drawing.FontStyle fs = System.Drawing.FontStyle.Regular;
+            SkiaSharp.SKFontStyle fs = SkiaSharp.SKFontStyle.Normal;
+
             if ((fontStyle & FontStyle.Bold) > 0)
-                fs |= System.Drawing.FontStyle.Bold;
+                fs = SkiaSharp.SKFontStyle.Bold;
 
             if ((fontStyle & FontStyle.Italic) > 0)
-                fs |= System.Drawing.FontStyle.Italic;
+                fs = SkiaSharp.SKFontStyle.Italic;
+
+            if ((fontStyle & FontStyle.Bold) > 0 && (fontStyle & FontStyle.Italic) > 0)
+                fs = SkiaSharp.SKFontStyle.BoldItalic;
 
             return fs;
         }

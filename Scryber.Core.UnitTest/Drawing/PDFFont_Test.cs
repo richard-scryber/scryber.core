@@ -304,14 +304,14 @@ namespace Scryber.Core.UnitTests.Drawing
             PDFUnit size = 12;
             PDFFont target = new PDFFont(family, size);
 
-            
-            System.Drawing.FontStyle actual;
-            actual = target.GetDrawingStyle();
-            Assert.AreEqual(System.Drawing.FontStyle.Regular, actual);
 
-            target.FontStyle = FontStyle.Italic | FontStyle.Bold;
+            SkiaSharp.SKFontStyle actual;
             actual = target.GetDrawingStyle();
-            Assert.AreEqual(System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic, actual);
+            Assert.AreEqual(SkiaSharp.SKFontStyle.Normal, actual);
+
+            target.FontStyle = FontStyle.BoldItalic;
+            actual = target.GetDrawingStyle();
+            Assert.AreEqual(SkiaSharp.SKFontStyle.BoldItalic, actual);
 
         }
 
@@ -323,8 +323,8 @@ namespace Scryber.Core.UnitTests.Drawing
         public void GetDrawingStyle_Test1()
         {
             FontStyle fontStyle = FontStyle.Bold;
-            System.Drawing.FontStyle expected = System.Drawing.FontStyle.Bold;
-            System.Drawing.FontStyle actual;
+            SkiaSharp.SKFontStyle expected = SkiaSharp.SKFontStyle.Bold;
+            SkiaSharp.SKFontStyle actual;
             actual = PDFFont.GetDrawingStyle(fontStyle);
             Assert.AreEqual(expected, actual);
         }
