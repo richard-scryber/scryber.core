@@ -163,7 +163,11 @@ namespace Scryber
                     this.AddVerboseLog("Fulfilling the request for " + request.FilePath + " as it is not completed");
                 try
                 {
-                    if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
+                    if (request.ResourceType == "Base64")
+                    {
+                        this.FullfillDataRequest(request);
+                    }
+                    else if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
                     {
                         this.FullfillUriRequest(request);
                     }
@@ -253,7 +257,33 @@ namespace Scryber
                 return success;
             }
         }
+        
+        // TODO: documentation
+        protected virtual bool FullfillDataRequest(RemoteFileRequest dataRequest)
+        {
+            if(this.LogDebug)
+                this.AddDebugLog("SYNC fulfilling the request for the DATA '" + dataRequest.FilePath + "' as this is not an async execution");
 
+            var bytes = Convert.FromBase64String(dataRequest.FilePath.Split(',')[1]);
+            using (var stream = new MemoryStream(bytes))
+            {
+                if(this.LogDebug)
+                    this.AddDebugLog( "Stream received from data '" + dataRequest.FilePath + "' and starting the callback");
+
+                var success = dataRequest.Callback(this._owner, dataRequest, stream);
+                
+                if(this.LogDebug)
+                    this.AddDebugLog( "Callback done for data '" + dataRequest.FilePath + "' and reported " + (success ? "SUCCESS" : "FAIL"));
+
+                dataRequest.CompleteRequest(dataRequest.Result, success);
+
+                if(this.LogDebug)
+                    this.AddDebugLog( "Completed the request for data '" + dataRequest.FilePath + "' with result" + (dataRequest.Result == null ? "NO RESULT SET" : dataRequest.Result.ToString()));
+
+                return success;
+            }
+        }
+        
         /// <summary>
         /// Gets an HttpClient, either from a registered service, or creating one for the lifespan of this instance.
         /// </summary>

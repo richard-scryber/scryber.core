@@ -234,6 +234,7 @@ namespace Scryber.Drawing
 
     public enum FontSourceType
     {
+        Base64,
         Local,
         Url
     }
