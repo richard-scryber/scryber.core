@@ -373,7 +373,7 @@ namespace Scryber.Styles
         #endregion
 
         //
-        // impementation
+        // implementation
         //
 
         #region public bool IsValueDefined(StyleKey key)
@@ -386,7 +386,7 @@ namespace Scryber.Styles
         public bool IsValueDefined(StyleKey key)
         {
             if (null == key)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             else if (key.Inherited)
                 return (null != this._inherited && this._inherited.ContainsKey(key));
             else
@@ -417,20 +417,20 @@ namespace Scryber.Styles
         /// <summary>
         /// Adds the value to this style
         /// </summary>
-        /// <param name="basevalue"></param>
-        internal void AddValue(StyleValueBase basevalue)
+        /// <param name="baseValue"></param>
+        internal void AddValue(StyleValueBase baseValue)
         {
             BeginStyleChange();
 
-            if (null == basevalue)
-                throw new ArgumentNullException("basevalue");
-            else if (null == basevalue.Key)
-                throw new ArgumentNullException("basevalue.Key");
+            if (null == baseValue)
+                throw new ArgumentNullException(nameof(baseValue));
+            else if (null == baseValue.Key)
+                throw new ArgumentNullException(nameof(baseValue.Key));
 
-            else if (basevalue.Key.Inherited)
-                this.InheritedValues.Add(basevalue.Key, basevalue);
+            else if (baseValue.Key.Inherited)
+                this.InheritedValues.Add(baseValue.Key, baseValue);
             else
-                this.DirectValues.Add(basevalue.Key, basevalue);
+                this.DirectValues.Add(baseValue.Key, baseValue);
         }
 
         #endregion

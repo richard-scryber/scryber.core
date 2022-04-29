@@ -83,7 +83,7 @@ namespace Scryber.Drawing
         
         public void Rotate(double angleRads)
         {
-            this *= CreateRotaion(angleRads);
+            this *= CreateRotation(angleRads);
         }
 
         public void Reset()
@@ -199,7 +199,7 @@ namespace Scryber.Drawing
         }
 
 
-        private static Matrix2D CreateRotaion(double angleRads)
+        private static Matrix2D CreateRotation(double angleRads)
         {
             return CreateRotation(angleRads, 0.0, 0.0);
         }

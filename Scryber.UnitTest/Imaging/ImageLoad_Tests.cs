@@ -208,7 +208,7 @@ namespace Scryber.Core.UnitTests.Imaging
         public void ZeroCompressionImage()
         {
             var imgPath =
-                "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-16-alpha.png";
+                "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/rgb-16-alpha.png";
 
             var doc = new Document();
             doc.AppendTraceLog = true;
@@ -250,37 +250,37 @@ namespace Scryber.Core.UnitTests.Imaging
 
         string[] allPng = new string[]
         {
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p01.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p02.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p04.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/basn3p08.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/bpp1.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/chunklength1.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/chunklength2.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/colors-saturation-lightness.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-1-trns.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-16-tRNS-interlaced.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-16.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-2-tRNS.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-4-tRNS.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p01.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p02.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p04.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p08.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/bpp1.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/chunklength1.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/chunklength2.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/colors-saturation-lightness.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-1-trns.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-16-tRNS-interlaced.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-16.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-2-tRNS.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-4-tRNS.png",
             
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-8-tRNS.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-alpha-16.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray-alpha-8.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/gray_4bpp.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/icon.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-8-tRNS.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-alpha-16.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray-alpha-8.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/gray_4bpp.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/icon.png",
             
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/indexed.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/interlaced.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-16-alpha.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-48bpp-interlaced.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-48bpp.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/indexed.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/interlaced.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/rgb-16-alpha.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/rgb-48bpp-interlaced.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/rgb-48bpp.png",
             
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/rgb-8-tRNS.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/vim16x16_1.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/vim16x16_2.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/palette-8bpp.png",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Png/filter4.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/rgb-8-tRNS.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/vim16x16_1.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/vim16x16_2.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/palette-8bpp.png",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/filter4.png",
 
         };
 
@@ -355,33 +355,33 @@ namespace Scryber.Core.UnitTests.Imaging
 
         string[] allTiff = new string[]
         {
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/rgb_deflate.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-minisblack-16_lsb.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/grayscale_deflate_multistrip.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/rgb_palette.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-palette-02.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-palette-04.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-02.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-08.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-10.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-12.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-14.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-16.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/rgb_deflate.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-minisblack-16_lsb.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/grayscale_deflate_multistrip.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/rgb_palette.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-palette-02.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-palette-04.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-02.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-08.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-10.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-12.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-14.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-16.tiff",
 
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-16_lsb_zip_predictor.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-16_msb_zip_predictor.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-24.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-24_lsb.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-32.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-rgb-contig-32_lsb.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-16_lsb_zip_predictor.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-16_msb_zip_predictor.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-24.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-24_lsb.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-32.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-rgb-contig-32_lsb.tiff",
 
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h1v1.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h2v1.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h2v2.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h4v4.tiff",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/flower-ycbcr-planar-08_h1v1.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h1v1.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h2v1.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h2v2.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-ycbcr-contig-08_h4v4.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/flower-ycbcr-planar-08_h1v1.tiff",
 
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Tiff/little_endian.tiff",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Tiff/little_endian.tiff",
 
         };
 
@@ -457,17 +457,17 @@ namespace Scryber.Core.UnitTests.Imaging
 
         string[] allGif = new string[]
         {
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/GlobalQuantizationTest.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_1x4.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/base_4x1.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/cheers.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/giphy.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-height.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-size.gif",
-            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/image-zero-width.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/kumin.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/large_comment.gif",
-            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/master/tests/Images/Input/Gif/leo.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/GlobalQuantizationTest.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/base_1x4.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/base_4x1.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/cheers.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/giphy.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/image-zero-height.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/image-zero-size.gif",
+            //"https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/image-zero-width.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/kumin.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/large_comment.gif",
+            "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Gif/leo.gif",
         };
 
 

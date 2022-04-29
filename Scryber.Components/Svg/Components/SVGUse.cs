@@ -13,8 +13,10 @@ namespace Scryber.Svg.Components
         #region public string HRef {get;set;}
 
         private string _href;
-        private bool _parsed = false;
-
+        
+        /// <summary>
+        /// Gets or sets the 
+        /// </summary>
         [PDFAttribute("href")]
         public string HRef
         {
@@ -105,14 +107,7 @@ namespace Scryber.Svg.Components
         /// <summary>
         /// Gets the flag to identify if the X position has been set for this Page Component
         /// </summary>
-        public virtual bool HasX
-        {
-            get
-            {
-                StyleValue<Unit> x;
-                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionXKey, out x);
-            }
-        }
+        public virtual bool HasX => this.HasStyle && this._style.IsValueDefined(StyleKeys.PositionXKey);
 
         #endregion
 
@@ -148,7 +143,7 @@ namespace Scryber.Svg.Components
             get
             {
                 StyleValue<Unit> x;
-                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionYKey, out x);
+                return this.HasStyle && this._style.IsValueDefined(StyleKeys.PositionYKey);
             }
         }
 
@@ -187,8 +182,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<Unit> width;
-                return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeWidthKey, out width);
+                return this.HasStyle && this._style.IsValueDefined(StyleKeys.SizeWidthKey);
             }
         }
 
@@ -225,8 +219,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<Unit> height;
-                return this.HasStyle && this._style.TryGetValue(StyleKeys.SizeHeightKey, out height);
+                return this.HasStyle && this._style.IsValueDefined(StyleKeys.SizeHeightKey);
             }
         }
 

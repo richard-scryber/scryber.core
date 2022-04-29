@@ -44,21 +44,6 @@ namespace Scryber.PDF.Layout
             available -= (leftOffset + rightInset);
 
             return available;
-
-            Unit newAvail = available;
-            if (this.IsAffectingWidth(yoffset, height))
-            {
-                inset = this.FloatWidth + this.FloatInset;
-                newAvail = available - inset;
-            }
-
-            if (null != this.Prev)
-            {
-                var prevAvail = this.Prev.ApplyWidthInset(available, yoffset, height);
-                newAvail = Unit.Min(newAvail, prevAvail);
-            }
-
-            return newAvail;
         }
 
         /// <summary>

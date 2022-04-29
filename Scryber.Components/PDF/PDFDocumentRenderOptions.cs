@@ -58,13 +58,7 @@ namespace Scryber.PDF
             set;
         }
 
-        [PDFAttribute("image-compression")]
-        public ImageCompressionType ImageCompression
-        {
-            get;
-            set;
-        }
-
+        
         /// <summary>
         /// Gets or sets the PDF output compliance for the final document - Not currently supported.
         /// </summary>

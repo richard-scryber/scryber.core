@@ -1,6 +1,6 @@
-========================================
-1.4. Scryber packages and the libraries
-========================================
+=============================================
+1.4. Scryber packages and the libraries - TD
+=============================================
 
 It is not nescessary to know the structure of the scryber code, or how it processes a document into a PDF.
 But it helps in understanding what is going on under the hood, and also understanding the logs.

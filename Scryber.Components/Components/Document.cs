@@ -2439,9 +2439,7 @@ namespace Scryber.Components
         {
             ImageData data;
             string key = src;
-            bool compress = false;
-            if (owner is IOptimizeComponent)
-                compress = ((IOptimizeComponent)owner).Compress;
+
             try
             {
                 if (string.IsNullOrEmpty(src))

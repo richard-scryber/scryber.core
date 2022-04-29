@@ -62,7 +62,7 @@ namespace Scryber.Core.UnitTests.Html
                     Assert.AreEqual(3, section.Contents.Count);
                     Assert.IsInstanceOfType(section.Contents[0], typeof(HTMLParagraph));
                     Assert.IsInstanceOfType(section.Contents[2], typeof(HTMLParagraph));
-
+ 
                     var canvas = section.Contents[1] as Canvas;
                     Assert.IsNotNull(canvas);
                     Assert.AreEqual(300, canvas.Style.Size.Width.PointsValue, "The width of the canvas was not set");

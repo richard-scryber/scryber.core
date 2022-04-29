@@ -60,7 +60,7 @@ namespace Scryber.Data
                         name = this.ImageKey;
                     
                     Scryber.Imaging.ImageReader reader = Scryber.Imaging.ImageReader.Create();
-                    ImageData data = reader.ReadData(name, this.Data.Raw, this.Compress);
+                    ImageData data = reader.ReadData(name, this.Data.Raw, compress : false);
                     
                     _xobj = PDFImageXObject.Load(data, this.Document.RenderOptions.Compression, name);
                     this.Document.SharedResources.Add(_xobj);

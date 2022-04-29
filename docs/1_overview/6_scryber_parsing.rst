@@ -5,8 +5,6 @@
 When you parse the contents of an file, or a stream or a reader, Scryber builds a full object model of the content plus any referenced content.
 As the parser is based around XML it is important that all content is valid - it does not like unclosed tags or elements.
 
-.. figure:: ../images/samples_overviewEmbed.png
-    :alt: Embedded content
 
 1.6.1. Content namespaces
 --------------------------
@@ -128,7 +126,7 @@ The simplest is to load directly from a file
     //using Scryber.components
 
     string filepath = GetPathToFile();
-    var doc = Document.Parse(filepath);
+    var doc = Document.ParseDocument(filepath);
 
 This reads the file from the stream and will resolve any references to relative content (images, stylesheets, etc) based on the *filepath*.
 
@@ -141,21 +139,22 @@ An enumeration value for ParseSourceType must be provided, and an optional path 
 .. code:: csharp
 
     //from a stream with no references
-    using(var content = GetMyDocumentContent())
+    using(var stream = GetMyDocumentContent())
     {
-        doc = Document.ParseDocument(content, PaseSourceType.DynamicContent);
+        doc = Document.ParseDocument(stream, PaseSourceType.DynamicContent);
     }
 
 If the stream will contain relative path references to other content such as stylesheets or embedded content then a path should be provided.
-If no path is provided then content will be looked for relative to the current executing assembly. 
+If no path is provided then content will be looked for relative to any basePath specified in the source stream. 
+If no base path is provided then content will be looked for relative to the current executing assembly. 
 
 .. code:: csharp
 
     //from a stream where references are known to be stored
     var path = "C:/MyFiles/BasePath";
-    using(var content = GetMyDocumentContent())
+    using(var stream = GetMyDocumentContent())
     {
-        doc = Document.ParseDocument(content, path, PaseSourceType.DynamicContent);
+        doc = Document.ParseDocument(stream, path, PaseSourceType.DynamicContent);
     }
 
 The options for the content can be any of the following.
@@ -237,7 +236,8 @@ Or from a string itself
         }
     }
     
-All 3 methods create exactly the same document.
+All 3 methods create exactly the same document. 
+It also allows for building dynamic documents at runtime - but there are other ways :see::7_parameters_and_expressions
 
 1.6.4. Building in code
 ------------------------
@@ -297,10 +297,11 @@ This can either be a relative or an absolute path to the content to be included.
     <embed src='./fragments/tsandcs.html' />
 
 
-The content will be loaded by the parser syncronously rather than at load time, which is the case for css stylesheets and images.
+The content will be loaded by the parser syncronously rather than later at load time, which is the case for css stylesheets and images.
 This is to ensure there is a full file content to be parsed.
 
 The embedded content should be a fragment of valid xhtml / xml rather than a full html file.
+The namespaces are required in the embessed file, as well.
 
 .. code:: html
 

@@ -88,8 +88,6 @@ Check out :doc:`1_overview/2_mvc_controller_full` for a full MVC example with st
 Or :doc:`1_overview/1_gui_controller_full` for a full gui application example (with styles and binding)
 
 
-
-
 Easy, and intuitive structure
 ------------------------------
 

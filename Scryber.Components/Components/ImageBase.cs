@@ -29,7 +29,7 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Components
 {
-    public abstract class ImageBase : VisualComponent, IPDFImageComponent, IOptimizeComponent, IPDFRenderComponent
+    public abstract class ImageBase : VisualComponent, IPDFImageComponent, IPDFRenderComponent
     {
 
         private PDFImageXObject _xobj = null;
@@ -43,21 +43,6 @@ namespace Scryber.Components
             protected set { _xobj = value; }
         }
 
-        private bool _compress = false;
-        private bool _hasExplicitCompress = false;
-
-        [PDFAttribute("compress")]
-        public virtual bool Compress
-        {
-            get { return _compress; }
-            set
-            {
-                _compress = value;
-                _hasExplicitCompress = true;
-            }
-        }
-
-        
 
         [PDFAttribute("min-scale")]
         public virtual double MinimumScaleReduction
@@ -82,13 +67,7 @@ namespace Scryber.Components
             this.MinimumScaleReduction = config.ImagingOptions.MinimumScaleReduction;
             this.AllowMissingImages = config.ImagingOptions.AllowMissingImages;
         }
-
-        protected override void DoInit(InitContext context)
-        {
-            if (!this._hasExplicitCompress)
-                this._compress = this.Document != null && this.Document.RenderOptions != null ? this.Document.RenderOptions.ImageCompression == ImageCompressionType.WebOptimize : false;
-            base.DoInit(context);
-        }
+        
 
 
         /// <summary>
