@@ -70,7 +70,7 @@ namespace Scryber.PDF
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _windows1252 = new PDFEncoding(System.Text.Encoding.GetEncoding("windows-1252"), null);
 #else
-            _windows1252 = null;
+            _windows1252 = new PDFEncoding(System.Text.Encoding.GetEncoding("windows-1252"), null);
 #endif
             _unicodeBE = new PDFEncoding(System.Text.Encoding.GetEncoding("UTF-16BE"), null);
             _macroman = new PDFEncoding(System.Text.Encoding.Default, null);
