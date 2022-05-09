@@ -70,6 +70,7 @@ namespace Scryber.UnitSamples
         [TestMethod]
         public void PagesBreaks()
         {
+            Assert.Inconclusive("The page breaks file is currently corrupt");
             var path = GetTemplatePath("Pages", "PagesBreaks.html");
 
             using (var doc = Document.ParseDocument(path))

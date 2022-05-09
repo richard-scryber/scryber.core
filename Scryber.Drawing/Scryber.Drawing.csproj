@@ -17,9 +17,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Scryber.Core.OpenType" Version="6.0.0-alpha.2" />
@@ -60,6 +57,7 @@
     <None Remove="Svg\" />
     <None Remove="PDF\Graphics\" />
     <None Remove="Drawing\Imaging\**" />
+    <None Remove="Scryber.Common" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Text\_FontResources\Helvetica\Helvetica.ttf" />
@@ -77,5 +75,8 @@
     <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanBoldItalic.ttf" />
     <EmbeddedResource Include="Text\_FontResources\Times\timesNewRomanItalic.ttf" />
     <EmbeddedResource Remove="Drawing\Imaging\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
   </ItemGroup>
 </Project>

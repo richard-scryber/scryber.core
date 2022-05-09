@@ -810,6 +810,7 @@ namespace Scryber.PDF.Resources
             //Make sure we are initialized and OK
             AssertInitialized();
 
+
             var config = ServiceProvider.GetService<IScryberConfigurationService>();
             bool usesystem = config.FontOptions.UseSystemFonts;
             bool usesubstitute = config.FontOptions.FontSubstitution;

@@ -45,7 +45,9 @@ namespace Scryber.UnitLayouts
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines " +
+                "in the page with a default line height so that we can check the leading of default lines " +
+                "as they flow down the page"));
 
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -58,17 +60,41 @@ namespace Scryber.UnitLayouts
 
 
             var em = 24.0;  //Point size of font
+            var rsrc = doc.SharedResources[0] as PDFFontResource;
 
-            //default sans-sefif is set up as follows
-            var space = em * (0.2); //line spacing; 4.8pt
-            var desc = em * 0.25;  // descender height 6pt
-            var asc  = em * 0.75;  // ascender height 18pt
+            Assert.IsNotNull(rsrc, "The font resource should be the one and only shared resource");
+            Assert.IsNotNull(rsrc.Definition, "The font definition should not be null");
 
-            for(var i = 0; i < 4; i++)
+            var metrics = rsrc.Definition.GetFontMetrics(em);
+            double space, desc, asc;
+
+            if (null == metrics)
             {
-                var line = region.Contents[i] as PDFLayoutLine;
+
+                //default sans-serif is set up as follows
+                space = em * (0.2); //line spacing; 4.8pt
+                desc = em * 0.25;  // descender height 6pt
+                asc = em * 0.75;  // ascender height 18pt
+            }
+            else
+            {
+                space = metrics.TotalLineHeight - em;
+                desc = metrics.Descent;
+                asc = metrics.Ascent;
+
+            }
+
+            var line = region.Contents[0] as PDFLayoutLine;
+            AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line 0 was not the correct height");
+            AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
+
+            //Check the heights of the continuation lines
+
+            for (var i = 1; i < 4; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
                 AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " was not the correct height");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+
             }
         }
 
@@ -88,8 +114,11 @@ namespace Scryber.UnitLayouts
             pg.FontFamily = new FontSelector("Optima");
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
 
-
+            var font = Scryber.Drawing.FontFactory.GetFontDefinition("Optima", FontStyle.Regular, FontWeights.Regular);
+            Assert.IsNotNull(font, "This test will fail as the Optima font is not present, or could not be loaded from the System fonts");
+               
             doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
             SaveAsPDF(doc, "Text_SingleLiteralOptima");
 
@@ -98,11 +127,12 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(1, doc.SharedResources.Count);
             var fontrsrc = doc.SharedResources[0] as PDFFontResource;
-            Assert.IsNotNull(fontrsrc);
+            Assert.IsNotNull(fontrsrc, "The first and only resource in the document should be a font resource");
 
             var defn = fontrsrc.Definition;
-            Assert.IsNotNull(defn);
-            Assert.AreEqual("Optima", defn.Family);
+            Assert.IsNotNull(defn, "The font does not have a definition");
+            Assert.AreEqual("Optima", defn.Family, "The Optima font was not loaded by the document");
+            
 
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
@@ -112,16 +142,21 @@ namespace Scryber.UnitLayouts
 
             //optima is 1000 FUnit em size and we use the font metrics
 
-            var space = metrics.TotalLineHeight; //line spacing; 4.8pt
-            var desc = metrics.Descent;  // descender height 6pt
-            var asc = metrics.Ascent;  // ascender height 18pt
-            
+            var space = metrics.TotalLineHeight - em; // total - font size
+            var desc = metrics.Descent;  // descender height 
+            var asc = metrics.Ascent;  // ascender height
 
-            for (var i = 0; i < 4; i++)
+            var line = region.Contents[0] as PDFLayoutLine;
+            AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line 0 was not the correct height");
+            AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
+
+            //Check the heights of the continuation lines
+
+            for (var i = 1; i < 4; i++)
             {
-                var line = region.Contents[i] as PDFLayoutLine;
+                line = region.Contents[i] as PDFLayoutLine;
                 AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " was not the correct height");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+
             }
 
 

@@ -875,7 +875,7 @@ namespace Scryber.Drawing
             ITypefaceInfo[] all = reader.ReadAllTypefaces(dir, null, true, true);
             foreach (var typefaceInfo in all)
             {
-                if (null != typefaceInfo && !string.IsNullOrEmpty(typefaceInfo.ErrorMessage))
+                if (null != typefaceInfo && string.IsNullOrEmpty(typefaceInfo.ErrorMessage))
                     into.AddTypefaceFonts(typefaceInfo);
             }
         }

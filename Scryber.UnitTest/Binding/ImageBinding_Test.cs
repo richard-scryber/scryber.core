@@ -64,10 +64,10 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                var path = this.TestContext.TestDir;
+                var path = this.TestContext.TestRunDirectory;
 
 
-                path = System.IO.Path.Combine(path, "../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
+                path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
 
                 path = System.IO.Path.GetFullPath(path);
 
@@ -108,17 +108,28 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod()]
         public void ImageDataParameterBinding()
         {
-            var path = this.TestContext.TestDir;
+            var path = this.TestContext.TestRunDirectory;
 
-            path = System.IO.Path.Combine(path, "../../Scryber.UnitTest/Content/HTML/Images/"); ;
+            path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images"); ;
 
             path = System.IO.Path.GetFullPath(path);
-            if (!path.EndsWith("/"))
-                path += "/";
+
+            if (!System.IO.Directory.Exists(path))
+            {
+                path = System.IO.Path.Combine(this.TestContext.TestDir, "../../Content/HTML/Images");
+                path = System.IO.Path.GetFullPath(path);
+
+                if (!System.IO.Directory.Exists(path))
+                    throw new System.IO.FileNotFoundException("Could not load the test image directory at path " + path);
+            }
+
 
             var imgReader = Scryber.Imaging.ImageReader.Create();
             ImageData data1, data2;
-                
+
+            if (!path.EndsWith(System.IO.Path.DirectorySeparatorChar))
+                path += System.IO.Path.DirectorySeparatorChar;
+
             using (var fs = new System.IO.FileStream(path + "Toroid24.jpg", FileMode.Open))
             {
                 data1 = imgReader.ReadStream(path + "Toroid24.jpg", fs, false);

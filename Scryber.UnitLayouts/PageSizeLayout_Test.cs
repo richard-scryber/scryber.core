@@ -218,7 +218,7 @@ namespace Scryber.UnitLayouts
             foreach (var name in names)
             {
 
-                var paper = Enum.Parse<PaperSize>(name);
+                var paper = (PaperSize)Enum.Parse(typeof(PaperSize), name);
 
                 Section section = new Section();
 
@@ -253,7 +253,7 @@ namespace Scryber.UnitLayouts
 
             for(var i = 0; i < names.Length; i++)
             {
-                var paper = Enum.Parse<PaperSize>(names[i]);
+                var paper = (PaperSize)Enum.Parse(typeof(PaperSize), names[i]);
                 Size size;
                 if (paper == PaperSize.Custom)
                     size = new Size(400, 300);
@@ -281,7 +281,7 @@ namespace Scryber.UnitLayouts
             foreach (var name in names)
             {
 
-                var paper = Enum.Parse<PaperSize>(name);
+                var paper = (PaperSize)Enum.Parse(typeof(PaperSize), name);
 
                 Section section = new Section();
 
@@ -317,7 +317,7 @@ namespace Scryber.UnitLayouts
 
             for (var i = 0; i < names.Length; i++)
             {
-                var paper = Enum.Parse<PaperSize>(names[i]);
+                var paper = (PaperSize)Enum.Parse(typeof(PaperSize),names[i]);
                 Size size;
                 if (paper == PaperSize.Custom)
                     size = new Size(400, 300);
