@@ -69,8 +69,11 @@ namespace Scryber.PDF
 #if !NETSTANDARD2_0
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _windows1252 = new PDFEncoding(System.Text.Encoding.GetEncoding("windows-1252"), null);
+
+            if(null == _windows1252)
+                _windows1252 = new PDFEncoding(System.Text.Encoding.ASCII, null);
 #else
-            _windows1252 = null;
+            _windows1252 = new PDFEncoding(System.Text.Encoding.ASCII, null);
 #endif
             _unicodeBE = new PDFEncoding(System.Text.Encoding.GetEncoding("UTF-16BE"), null);
             _macroman = new PDFEncoding(System.Text.Encoding.Default, null);
@@ -111,6 +114,8 @@ namespace Scryber.PDF
                     enc = MacRomanEncoding;
                     break;
                 case FontEncoding.WinAnsiEncoding:
+                    if (null == WinAnsiEncoding)
+                        throw new Exception("The windows Ansi encoding is not supported on this platform");
                     enc = WinAnsiEncoding;
                     break;
                 case FontEncoding.PDFDocEncoding:

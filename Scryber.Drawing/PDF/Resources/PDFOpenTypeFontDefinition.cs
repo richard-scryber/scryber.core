@@ -230,7 +230,7 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         protected virtual IFontMetrics GetFontMetrics(TypeMeasureOptions options)
         {
-            if (null == this.FontMetrics || options.FontUnits != FontUnitType.UseFontPreference)
+            if (null == this.FontMetrics)
                 this.FontMetrics = this.OpenTypeFont.GetMetrics(options);
             return this.FontMetrics;
         }

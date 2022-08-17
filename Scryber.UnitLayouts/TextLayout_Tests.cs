@@ -66,34 +66,18 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(rsrc.Definition, "The font definition should not be null");
 
             var metrics = rsrc.Definition.GetFontMetrics(em);
-            double space, desc, asc;
-
-            if (null == metrics)
-            {
-
-                //default sans-serif is set up as follows
-                space = em * (0.2); //line spacing; 4.8pt
-                desc = em * 0.25;  // descender height 6pt
-                asc = em * 0.75;  // ascender height 18pt
-            }
-            else
-            {
-                space = metrics.TotalLineHeight - em;
-                desc = metrics.Descent;
-                asc = metrics.Ascent;
-
-            }
+            
 
             var line = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line 0 was not the correct height");
-            AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
+            AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line 0 was not the correct height");
+            AssertAreApproxEqual(metrics.BaseLineOffset, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
 
             //Check the heights of the continuation lines
 
             for (var i = 1; i < 4; i++)
             {
                 line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " was not the correct height");
+                AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line " + i + " was not the correct height");
 
             }
         }
@@ -138,24 +122,19 @@ namespace Scryber.UnitLayouts
 
 
             var em = 24.0;  //Point size of font
-            var metrics = defn.GetFontMetrics(24.0);
-
-            //optima is 1000 FUnit em size and we use the font metrics
-
-            var space = metrics.TotalLineHeight - em; // total - font size
-            var desc = metrics.Descent;  // descender height 
-            var asc = metrics.Ascent;  // ascender height
-
+            var metrics = defn.GetFontMetrics(em);
+            
+            
             var line = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line 0 was not the correct height");
-            AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
+            AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line 0 was not the correct height");
+            AssertAreApproxEqual(metrics.BaseLineOffset, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
 
             //Check the heights of the continuation lines
 
             for (var i = 1; i < 4; i++)
             {
                 line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " was not the correct height");
+                AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line " + i + " was not the correct height");
 
             }
 

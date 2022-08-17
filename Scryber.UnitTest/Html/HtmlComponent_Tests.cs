@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using ICSharpCode.SharpZipLib;
+//using ICSharpCode.SharpZipLib;
 using Scryber.Components;
 using Scryber.PDF.Resources;
 

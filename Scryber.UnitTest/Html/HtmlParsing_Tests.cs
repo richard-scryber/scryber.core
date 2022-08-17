@@ -115,7 +115,7 @@ namespace Scryber.Core.UnitTests.Html
             padding:20pt;
             font-size:medium;
             margin:0pt;
-            font-family: 'Segoe UI';
+            font-family: 'Segoe UI', sans-serif;
         }
 
         h1{
@@ -1187,6 +1187,101 @@ namespace Scryber.Core.UnitTests.Html
             var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
             var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
             Assert.IsNotNull(rsrc1);
+
+            var fftwo = inline.Styles[1] as StyleFontFace;
+            Assert.IsNotNull(fftwo);
+            Assert.AreEqual("'Open Sans'", fftwo.FontFamily.ToString(), "Inline @fontface was not 'Open Sans'");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, fftwo.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(300, fftwo.FontWeight, "Inline @fontface was not light");
+            Assert.IsNotNull(fftwo.Source, "No source was set");
+
+            name = Font.GetFullName(fftwo.FontFamily.FamilyName, fftwo.FontWeight, fftwo.FontStyle);
+            rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1, "The open sans font was not found");
+        }
+
+        [TestMethod()]
+        public async Task FontFaceAsync()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFace.html");
+
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+            using var stream = DocStreams.GetOutputStream("FontFaceAsync.pdf");
+            await doc.SaveAsPDFAsync(stream);
+
+            //Check the remote style link for Fraunces
+
+            var remote = doc.Styles[0] as StyleGroup;
+
+            Assert.IsNotNull(remote);
+            Assert.AreEqual(4, remote.Styles.Count, "4 fonts were NOT loaded from the remote source");
+
+            bool[] checks = new bool[4];
+            //Should be Italic 400 and 700 + Regular 400 and 700
+            for (var i = 0; i < 4; i++)
+            {
+                var one = remote.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
+
+                if (one.FontStyle == Scryber.Drawing.FontStyle.Regular)
+                {
+                    if (one.FontWeight == 400)
+                        checks[0] = true;
+                    else if (one.FontWeight == 700)
+                        checks[1] = true;
+                }
+                else if (one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                {
+                    if (one.FontWeight == 400)
+                        checks[2] = true;
+                    else if (one.FontWeight == 700)
+                        checks[3] = true;
+                }
+            }
+
+            Assert.IsTrue(checks[0], "No regular 400 weight");
+            Assert.IsTrue(checks[1], "No regular 700 weight");
+            Assert.IsTrue(checks[2], "No italic 400 weight");
+            Assert.IsTrue(checks[3], "No italic 700 weight");
+
+            //Check the local style groups for 2 fontface and 2 styles
+
+            var inline = doc.Styles[1] as StyleGroup;
+
+            Assert.IsNotNull(inline);
+            Assert.AreEqual(4, inline.Styles.Count, "4 styles were not defined locally");
+
+            var ffone = inline.Styles[0] as StyleFontFace;
+            Assert.IsNotNull(ffone);
+            Assert.AreEqual("Roboto", ffone.FontFamily.ToString(), "Inline @fontface was not Roboto");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, ffone.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(900, ffone.FontWeight, "Inline @fontface was not black");
+            Assert.IsNotNull(ffone.Source, "No source was set");
+
+            var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
+            var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1);
+
+            var fftwo = inline.Styles[1] as StyleFontFace;
+            Assert.IsNotNull(fftwo);
+            Assert.AreEqual("'Open Sans'", fftwo.FontFamily.ToString(), "Inline @fontface was not 'Open Sans'");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, fftwo.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(300, fftwo.FontWeight, "Inline @fontface was not light");
+            Assert.IsNotNull(fftwo.Source, "No source was set");
+
+            name = Font.GetFullName(fftwo.FontFamily.FamilyName, fftwo.FontWeight, fftwo.FontStyle);
+            rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1, "The open sans font was not found");
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using Scryber.Logging;
 
 namespace Scryber.Configuration
 {
@@ -42,7 +43,7 @@ namespace Scryber.Configuration
                 {
                     object value = this[TraceLevelKey];
                     if (null == value || !(value is TraceRecordLevel))
-                        _knownTraceLevel = PDFTraceLog.DefaultTraceRecordLevel;
+                        _knownTraceLevel = TraceLog.DefaultTraceRecordLevel;
                     else
                         _knownTraceLevel = (TraceRecordLevel)value;
                 }
@@ -74,15 +75,15 @@ namespace Scryber.Configuration
         }
 
 
-        public PDFTraceLog GetLog()
+        public TraceLog GetLog()
         {
             TraceRecordLevel level = this.TraceLevel;
             return this.GetLog(level);
         }
 
-        public PDFTraceLog GetLog(TraceRecordLevel level)
+        public TraceLog GetLog(TraceRecordLevel level)
         {
-            List<PDFTraceLog> all = new List<PDFTraceLog>();
+            List<TraceLog> all = new List<TraceLog>();
             foreach (TracingLogElement ele in this.LogEntries)
             {
                 if (ele.Enabled)

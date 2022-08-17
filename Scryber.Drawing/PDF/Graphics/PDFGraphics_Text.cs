@@ -107,6 +107,20 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
+        
+        /// <summary>
+        /// Gets the metrics associated with the current graphics font
+        /// </summary>
+        /// <returns></returns>
+        public FontMetrics GetCurrentFontMetrics()
+        {
+            if (null == this.CurrentFont || null == this.CurrentFontResource)
+                return null;
+            else
+                return this.CurrentFontResource.Definition.GetFontMetrics(this.CurrentFont.Size);
+
+        }
+
         #region protected SetCurrentFont(PDFFont font)
 
         public void SetCurrentFont(Drawing.Font font)

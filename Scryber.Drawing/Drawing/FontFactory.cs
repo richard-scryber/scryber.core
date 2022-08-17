@@ -105,9 +105,6 @@ namespace Scryber.Drawing
 
             public void Add(LinkedFontReference font)
             {
-                if (font.FamilyName != this.FamilyName)
-                    throw new InvalidOperationException("The family names do not match");
-
                 if (font.Style == this.Style)
                 {
                     this.AddToWeights(font);
@@ -400,13 +397,14 @@ namespace Scryber.Drawing
                 return info.FontCount;
             }
 
-            public FontReference AddFont(ITypefaceInfo info, IFontInfo font)
+            public FontReference AddFont(ITypefaceInfo info, IFontInfo font, string familyName = null)
             {
                 FamilyReference family;
-                if (!_families.TryGetValue(font.FamilyName, out family))
+
+                if (!_families.TryGetValue(familyName ?? font.FamilyName, out family))
                 {
-                    family = new FamilyReference(font.FamilyName);
-                    _families.Add(family.FamilyName, family);
+                    family = new FamilyReference(familyName ?? font.FamilyName);
+                    _families.Add(familyName ?? family.FamilyName, family);
                 }
                 var reference = family.Add(font, info);
                 return reference;
@@ -683,22 +681,22 @@ namespace Scryber.Drawing
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNew.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("Fcour",
+                    bag.AddFont(found, found.Fonts[0], "Courier").Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("Fcour",
                         "Courier", "Courier", "Courier New", false, false, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNewBold.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourBo",
+                    bag.AddFont(found, found.Fonts[0], "Courier").Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourBo",
                         "Courier-Bold", "Courier", "Courier New", true, false, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNewBoldItalic.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourBoOb",
+                    bag.AddFont(found, found.Fonts[0], "Courier").Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourBoOb",
                         "Courier-BoldOblique", "Courier", "Courier New", true, true, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
 
                 if (TryReadFontBinary(reader, assm, "Scryber.Text._FontResources.Courier.CourierNewItalic.ttf",
                     out found))
-                    bag.AddFont(found, found.Fonts[0]).Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourOb",
+                    bag.AddFont(found, found.Fonts[0], "Courier").Definition = PDFOpenTypeFontDefinition.InitStdType1WinAnsi("FcourOb",
                         "Courier-Oblique", "Courier", "Courier New", false, true, CourierSpaceWidthFu, found.Fonts[0] as IOpenTypeFont);
                 
                 // Helvetica
@@ -960,12 +958,12 @@ namespace Scryber.Drawing
             FontReference fref;
             
             fref = _custom[family, style, weight];
-            
-            if (null == fref)
-                fref = _system[family, style, weight];
-            
+
             if (null == fref)
                 fref = _static[family, style, weight];
+
+            if (null == fref)
+                fref = _system[family, style, weight];
             
             if (null == fref)
                 fref = _generic[family, style, weight];

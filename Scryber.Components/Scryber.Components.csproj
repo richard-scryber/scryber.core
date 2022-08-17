@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
@@ -94,6 +94,7 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <EmbeddedResource Remove="Properties\Resources.resx" />
     <Compile Remove="Properties\Resources.Designer.cs" />
     <Compile Remove="Data\SqlProviderCommand.cs" />
+    <None Remove="Scryber.Styles" />
   </ItemGroup>
 
   <ItemGroup>
@@ -137,5 +138,10 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <Folder Include="PDF\" />
     <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Scryber.Styles">
+      <HintPath>bin\Debug\netstandard2.0\Scryber.Styles.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

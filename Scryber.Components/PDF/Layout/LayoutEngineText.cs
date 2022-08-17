@@ -360,6 +360,7 @@ namespace Scryber.PDF.Layout
             this.CurrentLine = line;
 
             this.Context.Graphics.SetCurrentFont(this.TextRenderOptions.Font);
+            var metrics = this.Context.Graphics.GetCurrentFontMetrics();
 
             Unit inset = Unit.Zero;
             if (line.IsEmpty == false)

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Configuration;
+using Scryber.Logging;
 namespace Scryber.Configuration
 {
     /// <summary>
@@ -92,7 +93,7 @@ namespace Scryber.Configuration
         /// <param name="level"></param>
         /// <returns>The configured log. If no log is configured, then a new PDFTraceLog that does nothing will be returned</returns>
         [Obsolete("Use the configuration service", true)]
-        public static PDFTraceLog GetLog()
+        public static TraceLog GetLog()
         {
             return TracingConfigSection.GetLog();
         }
@@ -107,7 +108,7 @@ namespace Scryber.Configuration
         /// <param name="level"></param>
         /// <returns>The configured log. If no log is configured, then a new PDFTraceLog that does nothing will be returned</returns>
         [Obsolete("Use the configuration service", true)]
-        public static PDFTraceLog GetLog(TraceRecordLevel level)
+        public static TraceLog GetLog(TraceRecordLevel level)
         {
             TracingConfigurationSection section = TracingConfigSection;
             if (null == section)

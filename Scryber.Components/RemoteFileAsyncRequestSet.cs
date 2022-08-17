@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Scryber.Components;
@@ -106,11 +107,18 @@ namespace Scryber
                 this.AddDebugLog( "ASYNCRONOUSLY fulfilling the request for the URL '" + urlRequest.FilePath + "'");
 
             var client = this.GetHttpClient();
+            var message = new HttpRequestMessage(HttpMethod.Get, urlRequest.FilePath);
+            message.Headers.Add("user-agent", "-/-");
 
-            using (var stream = await client.GetStreamAsync(urlRequest.FilePath))
+            using (var response = await client.SendAsync(message))
             {
                 if(this.LogDebug)
                     this.AddDebugLog("Stream received from url '" + urlRequest.FilePath + "' and starting the callback");
+
+                if (!response.IsSuccessStatusCode)
+                    throw new HttpRequestException("Could not complete the request for " + urlRequest.FilePath);
+
+                var stream = await response.Content.ReadAsStreamAsync();
 
                 var success = urlRequest.Callback(this.Owner, urlRequest, stream);
                 
