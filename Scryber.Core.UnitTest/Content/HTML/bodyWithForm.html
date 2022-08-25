@@ -1,0 +1,48 @@
+<?scryber append-log='true' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+                xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Scott Avery' />
+    
+    <title>This is a body with a form</title>
+    <style type="text/css" >
+        .grey{
+            background-color: #333;
+            color: #EEE;
+            font-size:12pt;
+        }
+
+        .even{
+            background-color: #666;
+        }
+
+        p{
+            margin-top:0px;
+        }
+
+        div.pg-break-after {
+            page-break-after: always;
+        }
+
+        
+        .large{
+            font-size: calc(var(--font-size) * 2);
+        }
+        
+        
+    </style>
+</head>
+
+<body class="grey" title="Outer">
+    <div>
+        This div should include a form
+        <form id="myform">
+            This is a paragraph
+        </form>
+    </div>
+</body>
+</html>

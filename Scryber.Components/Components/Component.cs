@@ -1086,7 +1086,7 @@ namespace Scryber.Components
 
         protected virtual void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
-
+            //TODO
         }
 
 

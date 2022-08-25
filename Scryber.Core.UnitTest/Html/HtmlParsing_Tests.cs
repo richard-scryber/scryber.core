@@ -1101,7 +1101,46 @@ namespace Scryber.Core.UnitTests.Html
                 }
                 
             }
+        }
 
+        [TestMethod()]
+        public void BodyWithForm()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithForm.html");
+
+            var document = new Document();
+            var pg = new Page();
+            var div = new Div();
+            var form = new Form();
+
+            div.BackgroundColor = PDFColor.Parse("#F1F1F1");
+            div.Contents.Add(new TextLiteral("Hello world"));
+            div.Contents.Add(form);
+            pg.Contents.Add(div);
+            document.Pages.Add(pg);
+
+
+            using (var stream = DocStreams.GetOutputStream("BodyWithForm.pdf"))
+            {
+                //doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                document.SaveAsPDF(stream);
+            }
+
+            //using (var doc = Document.ParseDocument(path))
+            //{
+            //    using (var stream = DocStreams.GetOutputStream("BodyWithForm.pdf"))
+            //    {
+            //        doc.LayoutComplete += SimpleDocumentParsing_Layout;
+            //        doc.SaveAsPDF(stream);
+            //    }
+
+            //    var pg = doc.Pages[0] as Section;
+            //    var form = doc.FindAComponentById("myform");
+
+            //    Assert.IsNotNull(form);
+            //    Assert.IsNotNull(pg);
+            //}
         }
 
 
