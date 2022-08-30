@@ -47,15 +47,15 @@ namespace Scryber.Components
         protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
             base.DoRegisterArtefacts(context, set, fullstyle);
-            
-            //object entry = context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.AcrobatForms, new PDFAcrobatFormEntry(this.ID));
-            //this.FormEntry = (PDFAcrobatFormEntry)entry;
+
+            object entry = context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.AcrobatForms, new PDFAcrobatFormEntry(this.ID));
+            this.FormEntry = (PDFAcrobatFormEntry)entry;
         }
 
         protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
         {
-            //artefacts.Document.CloseArtefactEntry(PDFArtefactTypes.AcrobatForms, this.FormEntry);
-            //base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
+            artefacts.Document.CloseArtefactEntry(PDFArtefactTypes.AcrobatForms, this.FormEntry);
+            base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
         }
     }
 }
