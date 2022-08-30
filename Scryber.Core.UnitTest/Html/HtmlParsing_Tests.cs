@@ -1104,43 +1104,99 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
-        public void BodyWithForm()
+        public void SimpleTextInputForm()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithForm.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FormWithTextbox.html");
 
-            var document = new Document();
-            var pg = new Page();
-            var div = new Div();
-            var form = new Form();
-
-            div.BackgroundColor = PDFColor.Parse("#F1F1F1");
-            div.Contents.Add(new TextLiteral("Hello world"));
-            div.Contents.Add(form);
-            pg.Contents.Add(div);
-            document.Pages.Add(pg);
-
-
-            using (var stream = DocStreams.GetOutputStream("BodyWithForm.pdf"))
+            using (var doc = Document.ParseDocument(path))
             {
-                //doc.LayoutComplete += SimpleDocumentParsing_Layout;
-                document.SaveAsPDF(stream);
+                using (var stream = DocStreams.GetOutputStream("SimpleTextInputForm.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var pg = doc.Pages[0] as Section;
+                var form = doc.FindAComponentById("myform") as Form;
+                var field = form.Contents[0] as FormInputField;
+
+                Assert.IsNotNull(form);
+                Assert.IsNotNull(pg);
+                Assert.AreEqual(FormInputFieldType.Text, field.FieldType);
             }
+        }
 
-            //using (var doc = Document.ParseDocument(path))
-            //{
-            //    using (var stream = DocStreams.GetOutputStream("BodyWithForm.pdf"))
-            //    {
-            //        doc.LayoutComplete += SimpleDocumentParsing_Layout;
-            //        doc.SaveAsPDF(stream);
-            //    }
+        [TestMethod()]
+        public void SimpleRadioButtonForm()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FormWithRadioButton.html");
 
-            //    var pg = doc.Pages[0] as Section;
-            //    var form = doc.FindAComponentById("myform");
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("SimpleRadioButtonForm.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
 
-            //    Assert.IsNotNull(form);
-            //    Assert.IsNotNull(pg);
-            //}
+                var pg = doc.Pages[0] as Section;
+                var form = doc.FindAComponentById("myform") as Form;
+                var field = form.Contents[0] as FormInputField;
+
+                Assert.IsNotNull(form);
+                Assert.IsNotNull(pg);
+                Assert.AreEqual(FormInputFieldType.Choice, field.FieldType);
+            }
+        }
+
+        [TestMethod()]
+        public void SimpleButtonForm()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FormWithButton.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("SimpleButtonForm.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var pg = doc.Pages[0] as Section;
+                var form = doc.FindAComponentById("myform") as Form;
+                var field = form.Contents[0] as FormInputField;
+
+                Assert.IsNotNull(form);
+                Assert.IsNotNull(pg);
+                Assert.AreEqual(FormInputFieldType.Button, field.FieldType);
+            }
+        }
+
+        [TestMethod()]
+        public void SimpleSignatureForm()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FormWithSignature.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = DocStreams.GetOutputStream("SimpleSignatureForm.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var pg = doc.Pages[0] as Section;
+                var form = doc.FindAComponentById("myform") as Form;
+                var field = form.Contents[0] as FormInputField;
+
+                Assert.IsNotNull(form);
+                Assert.IsNotNull(pg);
+                Assert.AreEqual(FormInputFieldType.Signature, field.FieldType);
+            }
         }
 
 

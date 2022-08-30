@@ -102,9 +102,23 @@ namespace Scryber
 
         public object Register(IArtefactEntry catalogobject)
         {
-            PDFAcrobatFormFieldWidget field = (PDFAcrobatFormFieldWidget)catalogobject;
-            this.Fields.Add(field);
-            return field;
+            if (catalogobject is PDFAcrobatFormEntry)
+            {
+                PDFAcrobatFormEntry form = (PDFAcrobatFormEntry)catalogobject;
+                Current = form;
+                return form;
+            }
+
+            if (catalogobject is PDFAcrobatFormFieldWidget)
+            {
+                PDFAcrobatFormFieldWidget field = (PDFAcrobatFormFieldWidget)catalogobject;
+                this.Fields.Add(field);
+                return field;
+            }
+            else
+            {
+                throw new ArgumentException(nameof(catalogobject) + " is invalid");
+            }
         }
     }
 }

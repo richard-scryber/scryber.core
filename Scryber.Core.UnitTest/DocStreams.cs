@@ -32,7 +32,7 @@ namespace Scryber.Core.UnitTests
             return new System.IO.FileStream(output, System.IO.FileMode.Create);
 #else
             var ms = new System.IO.MemoryStream();
-            return ms;
+            return ms;-
 #endif
 
         }
