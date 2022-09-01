@@ -79,6 +79,11 @@ namespace Scryber.Components
         {
         }
 
+        protected override void OnDataBound(DataContext context)
+        {
+            base.OnDataBound(context);
+            this.InitImageXObject(context, this.GetAppliedStyle());
+        }
 
         protected override PDFImageXObject InitImageXObject(ContextBase context, Style style)
         {

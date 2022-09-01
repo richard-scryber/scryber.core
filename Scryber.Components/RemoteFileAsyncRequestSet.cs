@@ -108,7 +108,11 @@ namespace Scryber
 
             var client = this.GetHttpClient();
             var message = new HttpRequestMessage(HttpMethod.Get, urlRequest.FilePath);
-            message.Headers.Add("user-agent", "-/-");
+            //message.Headers.Add("user-agent", "-/-");
+            //message.Headers.Add("Access-Control-Allow-Origin", "*");
+            //message.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+            //message.Headers.Add("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+            //message.Headers.Add("Access-Control-Allow-Credentials", "true");
 
             using (var response = await client.SendAsync(message))
             {
@@ -125,7 +129,7 @@ namespace Scryber
                 if(this.LogDebug)
                     this.AddDebugLog("Callback done for url '" + urlRequest.FilePath + "' and reported " + (success ? "SUCCESS" : "FAIL"));
 
-                urlRequest.CompleteRequest(urlRequest, success);
+                //urlRequest.CompleteRequest(urlRequest, success);
                 
                 if(this.LogDebug)
                     this.AddDebugLog( "Completed the request for url '" + urlRequest.FilePath + "' with result of type " + (urlRequest.Result == null ? "[NO RESULT SET]" : urlRequest.Result.GetType().ToString()));

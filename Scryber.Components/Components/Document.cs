@@ -2535,7 +2535,7 @@ namespace Scryber.Components
                 var expires = this.GetImageCacheExpires();
                 this.CacheProvider.AddToCache(ObjectTypes.ImageData.ToString(), path, data, expires);
             }
-            
+
             return data;
         }
 

@@ -7,13 +7,15 @@ using SixLabors.ImageSharp;
 
 namespace Scryber.Imaging.Formatted
 {
-    public class PDFImageJpegData : PDFImageSharpData
+    public class PDFImageJpegData : PDFImageDataBase
     {
         private const ColorSpace JpegColorSpace = ColorSpace.RGB;
         private const int JpegBitsPerColor = 8;
         private const int JpegColorsPerSample = 24;
         
         private byte[] CompressedData { get; }
+
+        
         
         public PDFImageJpegData(Image image, string source, byte[] compressedData)
             : base(image, source)

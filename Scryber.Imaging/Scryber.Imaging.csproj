@@ -19,6 +19,8 @@
     <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.dll" />
     <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.pdb" />
     <None Remove="ImageSharp\netcoreapp3.1\SixLabors.ImageSharp.xml" />
+    <None Remove="System.Runtime.InteropServices.RuntimeInformation" />
+    <None Remove="System.Drawing.Common" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Imaging\" />
@@ -35,5 +37,8 @@
     <Reference Include="SixLabors.ImageSharp, Version=0.0.1.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13">
       <HintPath>ImageSharp\Net5.0\SixLabors.ImageSharp.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
 </Project>

@@ -43,13 +43,20 @@ namespace Scryber.Imaging
             return await this.DoLoadImageDataAsync(document, owner, path);
         }
 
+        private static readonly System.Runtime.InteropServices.OSPlatform _wasm;
         protected virtual async Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             Stream stream = null;
             ImageData data = null;
             try
             {
-                if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
+                if(document is IResourceRequester resourceRequester)
+                {
+                    data = GetProxyImageData(document, resourceRequester, owner, path);
+
+                    
+                }
+                else if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
                 {
                     stream = await LoadDataFromUriAsync(path);
                 }
@@ -58,7 +65,8 @@ namespace Scryber.Imaging
                     stream = await LoadDataFromFileAsync(path);
                 }
 
-                data = DoDecodeImageData(stream, document, owner, path);
+                if (stream != null)
+                    data = DoDecodeImageData(stream, document, owner, path);
 
             }
             catch (Exception ex)
@@ -71,6 +79,29 @@ namespace Scryber.Imaging
 
             return data;
 
+        }
+
+        protected virtual ImageData GetProxyImageData(IDocument document, IResourceRequester requester, IComponent owner, string path)
+        {
+            var callback = new RemoteRequestCallback((comp, request, asyncStream) =>
+            {
+                object asyncData = null;
+                Exception error = null;
+                try
+                {
+                    asyncData = this.DoDecodeImageData(asyncStream, document, comp, path);
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                    asyncData = null;
+                }
+                request.CompleteRequest(asyncData, asyncData != null, error);
+                return request.IsSuccessful;
+            });
+            var req = requester.RequestResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, path, callback, owner, this);
+
+            return new ImageDataProxy(req, path);
         }
 
         protected virtual async Task<Stream> LoadDataFromUriAsync(string path)
@@ -125,7 +156,7 @@ namespace Scryber.Imaging
         
 
 
-        protected virtual PDFImageSharpData GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
+        protected virtual PDFImageDataBase GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
         {
             if (null == baseImage)
                 throw new ArgumentNullException(nameof(baseImage));
@@ -135,9 +166,9 @@ namespace Scryber.Imaging
             return data;
         }
 
-        public static PDFImageSharpData GetImageDataForImage(Image image, string source)
+        public static PDFImageDataBase GetImageDataForImage(Image image, string source)
         {
-            PDFImageSharpData data;
+            PDFImageDataBase data;
             
             switch (image)
             {

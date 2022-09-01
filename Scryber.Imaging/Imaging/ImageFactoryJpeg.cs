@@ -32,7 +32,10 @@ namespace Scryber.Imaging
             //For JPEG we want the original compressed image data
             var binary = ExtractImageDataFromStream(stream);
             binary.Position = 0;
-            
+
+            //var bmp = System.Drawing.Bitmap.FromStream(binary) as System.Drawing.Bitmap;
+            //return GetImageDataForBitmap(bmp, path, binary.ToArray());
+
             var img = Image.Load(config, binary, out var format);
 
             ImageData data = null;
@@ -50,6 +53,8 @@ namespace Scryber.Imaging
 
             return data;
         }
+
+        
 
         protected ImageData GetImageDataForImage(Image baseImage, string source, byte[] jpegdata)
         {

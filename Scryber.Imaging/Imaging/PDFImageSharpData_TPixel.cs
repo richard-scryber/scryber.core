@@ -11,7 +11,7 @@ namespace Scryber.Imaging
     /// Generic base class for all of the ImageSharp image types
     /// </summary>
     /// <typeparam name="T">The </typeparam>
-    public abstract class PDFImageSharpData<T> : PDFImageSharpData where T : unmanaged, IPixel<T>
+    public abstract class PDFImageSharpData<T> : PDFImageDataBase where T : unmanaged, IPixel<T>
     {
 
         public Image<T> PixelImage { get; protected set; }

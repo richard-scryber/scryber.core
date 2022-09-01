@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Scryber.Imaging
 {
-    public abstract class PDFImageSharpData : ImageData
+    public abstract class PDFImageDataBase : ImageData
     {
         
 
@@ -24,9 +24,15 @@ namespace Scryber.Imaging
         public long AlphaDataLength { get; protected set; }
         
         
-        public PDFImageSharpData(SixLabors.ImageSharp.Image img, string source)
+        public PDFImageDataBase(SixLabors.ImageSharp.Image img, string source)
             : base(source, img.Width, img.Height)
         {
+        }
+
+        public PDFImageDataBase(string source, int width, int height)
+            : base(source, width, height)
+        {
+
         }
         
         protected virtual void InitPixelData(bool hasAlpha, ColorSpace color, int bitsPerColor, int colorsPerSample, double horizResolution, double vertResolution, PixelResolutionUnit resolutionUnits)
