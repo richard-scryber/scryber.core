@@ -120,6 +120,42 @@ namespace Scryber
     /// <param name="request">The details of the request, including any result if completed</param>
     /// <param name="response">The response that was returned from a remote request if initiated</param>
     public delegate bool RemoteRequestCallback(IComponent raiser, IRemoteRequest request, System.IO.Stream response);
-    
+
+
+    /// <summary>
+    /// Event arguments for the RequestCompleted event delegate
+    /// </summary>
+    public class RequestCompletedEventArgs : EventArgs
+    {
+        public IComponent Raiser{
+            get;
+            private set;
+        }
+
+        public IRemoteRequest Request{
+            get;
+            private set;
+        }
+
+        public object Result{
+            get;
+            private set;
+        }
+
+        public RequestCompletedEventArgs(IComponent raiser, IRemoteRequest request, object result)
+        {
+            this.Raiser = raiser;
+            this.Request = request;
+            this.Result = result;
+        }
+
+    }
+
+    /// <summary>
+    /// Event delegate that is raised once the processing of a remote request is complete
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public delegate void RequestCompletedEventHandler(object sender, RequestCompletedEventArgs args);
 
 }

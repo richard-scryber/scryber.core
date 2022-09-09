@@ -85,9 +85,13 @@ namespace Scryber.Styles
         {
             foreach (StyleBase item in this)
             {
-                if (item is IComponent)
+                if (item is IComponent comp)
                 {
-                    ((IComponent)item).Parent = parent;
+                    comp.Parent = parent;
+                }
+                else if(item is INamingContainer naming)
+                {
+                    naming.Owner = parent;
                 }
             }
         }
@@ -150,8 +154,13 @@ namespace Scryber.Styles
 
             if (HasOwner)
             {
-                if (null != item && item is IComponent)
-                    ((IComponent)item).Parent = this.Owner;
+                if (null != item)
+                {
+                    if (item is IComponent comp)
+                        comp.Parent = this.Owner;
+                    else if (item is INamingContainer naming)
+                        naming.Owner = this.Owner;
+                }
             }
         }
 
@@ -161,8 +170,13 @@ namespace Scryber.Styles
 
             if (HasOwner)
             {
-                if (null != item && item is IComponent)
-                    ((IComponent)item).Parent = this.Owner;
+                if (null != item)
+                {
+                    if (item is IComponent comp)
+                        comp.Parent = this.Owner;
+                    else if (item is INamingContainer naming)
+                        naming.Owner = this.Owner;
+                }
             }
         }
 
@@ -190,10 +204,12 @@ namespace Scryber.Styles
 
             base.RemoveItem(index);
 
-            if (null != removed && removed is IComponent)
+            if (null != removed)
             {
-                IComponent comp = removed as IComponent;
-                comp.Parent = null;
+                if (removed is IComponent comp)
+                    comp.Parent = this.Owner;
+                else if (removed is INamingContainer naming)
+                    naming.Owner = this.Owner;
             }
         }
 

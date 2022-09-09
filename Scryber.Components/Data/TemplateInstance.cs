@@ -48,6 +48,14 @@ namespace Scryber.Data
             }
             
         }
+
+        // INamingContianer interface
+
+        IComponent INamingContainer.Owner
+        {
+            get { return this.Parent; }
+            set { this.Parent = (Component)value; }
+        }
     }
 
     [PDFParsableComponent("TemplateBlockInstance")]
@@ -68,6 +76,14 @@ namespace Scryber.Data
                 return base.Contents;
             }
 
+        }
+
+        // INamingContianer interface
+
+        IComponent INamingContainer.Owner
+        {
+            get { return this.Parent; }
+            set { this.Parent = (Component)value; }
         }
 
         protected override Style GetBaseStyle()

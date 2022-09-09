@@ -23,8 +23,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Drawing;
 using Scryber;
+using Scryber.PDF.Resources;
 using System.ComponentModel;
 using Scryber.PDF.Graphics;
+using System.Xml.Linq;
+using System.IO;
 
 namespace Scryber.Styles
 {
@@ -343,6 +346,10 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+        
+
+        
 
         #region public virtual PDFBrush CreateBrush()
 

@@ -60,15 +60,40 @@ namespace Scryber.Imaging
 		{
 			this._request = request ?? throw new ArgumentNullException(nameof(request));
 			this._innerImage = null;
+			this._request.Completed += this.RequestCompleted;
 			this.VerticalResolution = 72;
 			this.HorizontalResolution = 72;
 			this.HasAlpha = false;
 		}
 
+        private void RequestCompleted(object sender, RequestCompletedEventArgs args)
+        {
+			if (ReferenceEquals(args.Request, this._request))
+				this.EnsureFulfilled();
+			else
+				throw new PDFException("The reference should match the raised request");
+        }
+
+        public override string ToString()
+        {
+            return "Image Proxy for : " + base.ToString();
+        }
+
         public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
 			this.EnsureFulfilled();
-			return _innerImage.Render(name, filters, context, writer);
+
+			if (null == _innerImage)
+				return null;
+			else
+				return _innerImage.Render(name, filters, context, writer);
+        }
+
+        public override Size GetSize()
+        {
+			this.EnsureFulfilled();
+
+            return base.GetSize();
         }
 
         public override void ResetFilterCache()
@@ -92,13 +117,20 @@ namespace Scryber.Imaging
 
 					return true;
 				}
-				else if (_request.Error != null)
-					throw _request.Error;
 				else
-					throw new Scryber.PDFException("The image data could not be loaded for '" + _request.FilePath + "'");
+				{
+					this._innerImage = GetMissingImage();
+				}
 			}
 			else
-				throw new InvalidOperationException("Cannot perform the operation on the image data until it has completed loading");
+				this._innerImage = GetMissingImage();
+
+			return false;
+		}
+
+		protected ImageData GetMissingImage()
+		{
+			return null;
 		}
 
 		protected virtual void SetPixelData(ImageData inner)

@@ -283,7 +283,7 @@ namespace Scryber.Drawing
         /// Gets the natural size of the image in page units
         /// </summary>
         /// <returns></returns>
-        public Size GetSize()
+        public virtual Size GetSize()
         {
             double hres = (double)this.HorizontalResolution;
             if (hres < 1.0)

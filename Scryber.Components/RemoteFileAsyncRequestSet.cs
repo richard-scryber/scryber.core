@@ -39,7 +39,7 @@ namespace Scryber
                     if (item.IsCompleted == false)
                     {
 
-                        var success = await FullfillRequestAsync(item, true);
+                        var success = await FullfillRequestAsync(item, this.Owner.ConformanceMode == ParserConformanceMode.Strict);
                         if (success)
                         {
                             if(this.LogVerbose)
@@ -66,7 +66,7 @@ namespace Scryber
         }
 
 
-        public async Task<bool> FullfillRequestAsync(RemoteFileRequest request, bool raiseErrors = true)
+        public async Task<bool> FullfillRequestAsync(RemoteFileRequest request, bool raiseErrors)
         {
             
             if (!request.IsCompleted)
@@ -88,10 +88,20 @@ namespace Scryber
                 }
 
                 if (request.IsCompleted == false)
-                    throw new InvalidOperationException("Could not complete the request for a remote file");
+                {
+                    if (raiseErrors)
+                        throw new InvalidOperationException("Could not complete the request for a remote file", request.Error);
+                    else
+                        this.Log.Add(TraceLevel.Error, RemoteRequestCategory, "Could not complete the remote request for " + (request.FilePath ?? "Unknown File"));
+                }
 
-                else if (request.IsSuccessful == false && raiseErrors)
-                    throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completed");
+                else if (request.IsSuccessful == false)
+                {
+                    if (raiseErrors)
+                        throw new InvalidOperationException("The request for the '" + (request.FilePath ?? "Unknown File") + "' could not be completed", request.Error);
+                    else
+                        this.Log.Add(TraceLevel.Error, RemoteRequestCategory, "Remote request for " + (request.FilePath ?? "Unknown File") + " failed with message '" + (request.Error.Message ?? "") + "'");
+                }
             }
             return request.IsCompleted;
         }
@@ -120,7 +130,7 @@ namespace Scryber
                     this.AddDebugLog("Stream received from url '" + urlRequest.FilePath + "' and starting the callback");
 
                 if (!response.IsSuccessStatusCode)
-                    throw new HttpRequestException("Could not complete the request for " + urlRequest.FilePath);
+                    throw new HttpRequestException("Response for " + urlRequest.FilePath + " returned a status code of " + ((int)response.StatusCode).ToString() + " " + (response.ReasonPhrase ?? "Unknown Error"));
 
                 var stream = await response.Content.ReadAsStreamAsync();
 

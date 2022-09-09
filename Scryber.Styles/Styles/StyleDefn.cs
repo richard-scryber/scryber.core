@@ -127,6 +127,21 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public IComponent Parent {get;set;}
+
+        private IComponent _owner;
+
+        /// <summary>
+        /// Gets or sets the owning component for this style definition - could be a remote style link, or a style group collection
+        /// </summary>
+        public IComponent Owner
+        {
+            get { return _owner; }
+            set { _owner = value; }
+        }
+
+        #endregion
+
         #region public PDFStyleMatcher Match {get; set;}
 
         private StyleMatcher _match;
@@ -291,11 +306,20 @@ namespace Scryber.Styles
                 
                 this._match = new StyleMatcher(stack);
             }
+            
             return this._match;
         }
 
         #endregion
 
+        public override string MapPath(string path)
+        {
+            if (null != this.Owner)
+                return this.Owner.MapPath(path);
+            else
+                throw new Exception("The style defn " + this.ToString() + " does not have an owner");
+                //return base.MapPath(path);
+        }
 
         //
         // object overrides

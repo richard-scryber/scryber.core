@@ -32,7 +32,7 @@ namespace Scryber.PDF.Resources
         #region public static string XObjectResourceType {get;}
 
         /// <summary>
-        /// Gets the name of the XObject resource type.
+        /// Gets the name of the XObject (including image) resource type.
         /// </summary>
         public static string XObjectResourceType
         {

@@ -14,6 +14,17 @@ namespace Scryber
     public class RemoteFileRequest : IRemoteRequest
     {
 
+        public event RequestCompletedEventHandler Completed;
+
+        protected virtual void OnCompleted(IComponent owner, object result)
+        {
+            if(null != this.Completed)
+            {
+                RequestCompletedEventArgs args = new RequestCompletedEventArgs(owner, this, result);
+                Completed(this, args);
+            }
+        }
+
         public string ResourceType { get; private set; } 
         
         public string FilePath { get; private set; }
@@ -50,7 +61,11 @@ namespace Scryber
             this.IsCompleted = true;
             this.IsSuccessful = success;
             this.Error = error;
+
+            this.OnCompleted(this.Owner, this.Result);
         }
+
+
     }
 
     public class RemoteFileRequestList : List<RemoteFileRequest>

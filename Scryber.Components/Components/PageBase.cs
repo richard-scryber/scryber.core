@@ -115,6 +115,14 @@ namespace Scryber.Components
 
         #endregion
 
+        // INamingContianer interface
+
+        IComponent INamingContainer.Owner
+        {
+            get { return this.Parent; }
+            set { this.Parent = (Component)value; }
+        }
+
         //
         // style properties
         //

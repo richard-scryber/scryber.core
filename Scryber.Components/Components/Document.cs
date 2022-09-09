@@ -235,14 +235,6 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public PDFImageFactoryList ImageFactories { get; private set; }
-
-        /// <summary>
-        /// Gets the collection of image data factories for this document
-        /// </summary>
-        public ImageFactoryList ImageFactories { get; private set; }
-
-        #endregion
 
         //
         // Document level attributes
@@ -692,6 +684,15 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public PDFImageFactoryList ImageFactories { get; private set; }
+
+        /// <summary>
+        /// Gets the collection of image data factories for this document
+        /// </summary>
+        public ImageFactoryList ImageFactories { get; private set; }
+
+        #endregion
+
         //
         // file requests
         //
@@ -782,7 +783,7 @@ namespace Scryber.Components
                 if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
                     this.TraceLog.Add(TraceLevel.Verbose,"Document", "Fulfilling the result for '" + request.FilePath + "' immediately as we are not asyncronous.");
 
-                this.RemoteRequests.FullfillRequest(request);
+                this.RemoteRequests.FullfillRequest(request, this.ConformanceMode == ParserConformanceMode.Strict);
             }
 
             if (null != this.CacheProvider && request.CacheDuration > TimeSpan.Zero)
@@ -1341,6 +1342,7 @@ namespace Scryber.Components
         }
 
         #endregion
+
 
         #region protected virtual PDFResource CreateAndAddResource(string resourceType, string resourceKey)
 
@@ -2411,14 +2413,14 @@ namespace Scryber.Components
 
         #region protected virtual IStreamFilter[] GetStreamFilters()
 
+        private static IStreamFilter[] _empty = new IStreamFilter[] { };
         /// <summary>
         /// Loads and returns the default stream filters
         /// </summary>
         /// <returns></returns>
         protected virtual IStreamFilter[] GetStreamFilters()
         {
-            List<IStreamFilter> all = new List<IStreamFilter>();
-            return all.ToArray();
+            return _empty;
         }
 
         #endregion

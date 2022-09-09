@@ -34,10 +34,13 @@ namespace Scryber.Html.Components
 
             public HTMLLinkType LinkType { get; private set; }
 
-            public LinkContentBase(HTMLLinkType type, string source)
+            public HTMLLink ForLink { get; private set; }
+
+            public LinkContentBase(HTMLLinkType type, string source, HTMLLink forLink)
             {
                 this.LinkType = type;
                 this.LoadedSource = source;
+                this.ForLink = forLink;
             }
 
             public virtual void ClearContent(Component component)
@@ -74,7 +77,7 @@ namespace Scryber.Html.Components
             private ITemplate _gen = null;
             private int _index;
             
-            public LinkContentHtml(ITemplate gen, string path) : base(HTMLLinkType.Html, path)
+            public LinkContentHtml(ITemplate gen, string path, HTMLLink forLink) : base(HTMLLinkType.Html, path, forLink)
             {
                 this._gen = gen;
                 this._index = 0;
@@ -103,7 +106,7 @@ namespace Scryber.Html.Components
             private StyleGroup _parsedGroup = null;
             private StyleCollection _parsed;
 
-            public LinkContentCSS(StyleCollection styles, string path) : base(HTMLLinkType.CSS, path)
+            public LinkContentCSS(StyleCollection styles, string path, HTMLLink forLink) : base(HTMLLinkType.CSS, path, forLink)
             {
                 _parsed = styles;
             }
@@ -125,6 +128,8 @@ namespace Scryber.Html.Components
                 if(null == _parsedGroup)
                 {
                     _parsedGroup = new StyleGroup();
+                    _parsedGroup.Owner = this.ForLink;
+
                     foreach (var style in this._parsed)
                     {
                         _parsedGroup.Styles.Add(style);
@@ -379,7 +384,7 @@ namespace Scryber.Html.Components
             {
                 case (HTMLLinkType.CSS):
                     StyleCollection col = this.CreateInnerStyles(content, context);
-                    this._content = new LinkContentCSS(col, path);
+                    this._content = new LinkContentCSS(col, path, this);
                     break;
                 case (HTMLLinkType.Html):
 
@@ -389,7 +394,7 @@ namespace Scryber.Html.Components
                         ns.Add(map.Prefix, map.NamespaceURI);
                     }
                     Scryber.Data.ParsableTemplateGenerator gen = new Data.ParsableTemplateGenerator(content, ns);
-                    this._content = new LinkContentHtml(gen, path);
+                    this._content = new LinkContentHtml(gen, path, this);
                     break;
 
                 default:

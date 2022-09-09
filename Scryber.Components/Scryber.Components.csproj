@@ -139,9 +139,4 @@ This framework is built entirely in .NET5 and is released under the LGPL licence
     <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Scryber.Styles">
-      <HintPath>bin\Debug\netstandard2.0\Scryber.Styles.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

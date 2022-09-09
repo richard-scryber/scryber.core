@@ -23,7 +23,7 @@ using System.Text;
 namespace Scryber.Styles
 {
     /// <summary>
-    /// Class is not currently used within the framework - intention to group styles by application with inner styles for components
+    /// To group styles by application with inner styles for components
     /// </summary>
     [PDFParsableComponent("StyleGroup")]
     public class StyleGroup : StyleBase, IEnumerable<StyleBase>
@@ -57,6 +57,21 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets or sets the owner of this group
+        /// </summary>
+        public IComponent Owner
+        {
+            get
+            {
+                return this.InnerItems.Owner;
+            }
+            set
+            {
+                this.InnerItems.Owner = value;
+            }
+        }
 
         #region protected PDFStyleCollection InnerItems
 

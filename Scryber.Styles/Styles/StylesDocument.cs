@@ -266,7 +266,7 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public virtual string MapPath(string path)
+        public override string MapPath(string path)
         {
             bool isFile;
             if (!string.IsNullOrEmpty(this.LoadedSource))
@@ -281,6 +281,7 @@ namespace Scryber.Styles
 
         public virtual string MapPath(string source, out bool isfile)
         {
+            
             var service = ServiceProvider.GetService<IPathMappingService>();
 
             if (!string.IsNullOrEmpty(this.LoadedSource))

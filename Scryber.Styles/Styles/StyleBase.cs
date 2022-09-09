@@ -26,6 +26,7 @@ using Scryber;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
 using Scryber.PDF;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Styles
 {
@@ -355,12 +356,14 @@ namespace Scryber.Styles
         #endregion
 
 
-        //TODO: Improve the implementation so that Items do not have to retain event fields
-
+        
         #region protected virtual void DoDataBind(PDFDataContext context, bool includechildren)
 
         protected virtual void DoDataBind(DataContext context, bool includechildren)
         {
+            if (this.IsValueDefined(StyleKeys.BgImgSrcKey))
+                this.EnsureBackgroundImage(context, this.GetValue(StyleKeys.BgImgSrcKey, ""));
+
             if (includechildren && this.StyleItems.Count > 0)
             {
                 foreach (StyleItemBase item in this.StyleItems)
@@ -370,7 +373,38 @@ namespace Scryber.Styles
             }
         }
 
+        protected virtual void EnsureBackgroundImage(DataContext context, string source)
+        {
+            if(IsGradientImageSrc(source, out var desc))
+            {
+                return;
+            }
+
+            IResourceRequester requester = context.Document as IResourceRequester;
+            if(null == requester)
+            {
+                context.TraceLog.Add(TraceLevel.Warning, "Styles", "Cannot pre-load background images as the document does not support resource requests");
+                return;
+            }
+
+            var mapped = this.MapPath(source);
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Mapping path for '" + source + "' to '" + mapped + "'");
+
+
+            //We just make sure the image is loaded
+            var existing = context.Document.GetResource(PDFResource.XObjectResourceType, mapped, true);
+
+            if (context.ShouldLogMessage)
+                context.TraceLog.Add(TraceLevel.Message, "Styles", "Background image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
+        }
+
         #endregion
+
+        public virtual string MapPath(string path)
+        {
+            return path;
+        }
 
         //
         // implementation

@@ -161,7 +161,7 @@ namespace Scryber.Styles
         protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
-
+            
             if (context.Document is IResourceRequester doc && null != this.Source && null != this.FontFamily)
             {
                 FontDefinition definition;
@@ -169,6 +169,9 @@ namespace Scryber.Styles
                 
                 if (this.TryGetFont(doc, context, out definition))
                 {
+                    if (context.ShouldLogVerbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, FontLogCategory, "Existing font resource found for " + this.FontFamily.FamilyName + ", " + this.FontStyle + " " + this.FontWeight + ". No remote request required");
+
                     context.Document.EnsureResource(PDFResource.FontDefnResourceType, name, definition);
                 }
                 else
@@ -186,8 +189,8 @@ namespace Scryber.Styles
                     }
                     else
                     {
-                        if (context.ShouldLogVerbose)
-                            context.TraceLog.Add(TraceLevel.Verbose, FontLogCategory,
+                        if (context.ShouldLogMessage)
+                            context.TraceLog.Add(TraceLevel.Message, FontLogCategory,
                                 "Initiating the remote request for font " + name + " from source " + source.Source);
 
                         doc.RequestResource(source.Type.ToString(), source.Source, ResolveFontRequest, context.Document,

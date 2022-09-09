@@ -133,7 +133,7 @@ namespace Scryber
                 {
                     if (!req.IsCompleted)
                     {
-                        this.FullfillRequest(req);
+                        this.FullfillRequest(req, this._owner.ConformanceMode == ParserConformanceMode.Strict);
                         
                         if (req.IsCompleted)
                         {
@@ -155,7 +155,7 @@ namespace Scryber
         }
 
 
-        public void FullfillRequest(RemoteFileRequest request, bool raiseErrors = true)
+        public void FullfillRequest(RemoteFileRequest request, bool raiseErrors)
         {
             if (!request.IsCompleted)
             {
@@ -179,12 +179,17 @@ namespace Scryber
                 
                 if(this.LogVerbose)
                     this.AddVerboseLog("Ended the request for " + request.FilePath + " with a completed status of " + request.IsCompleted + " and a successful status of " + request.IsSuccessful);
-                
+
                 if (request.IsCompleted == false)
                     throw new InvalidOperationException("Could not complete the request for a remote file");
 
-                else if (request.IsSuccessful == false && raiseErrors)
-                    throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completed");
+                else if (request.IsSuccessful == false)
+                {
+                    if (raiseErrors)
+                        throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completed");
+                    else
+                        this._owner.TraceLog.Add(TraceLevel.Error, RemoteRequestCategory, "Could not load the remote request for " + request.FilePath, request.Error);
+                }
             }
             else if (raiseErrors && request.IsSuccessful == false && request.Error != null)
             {

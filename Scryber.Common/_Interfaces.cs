@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Scryber.Logging;
 
 namespace Scryber
@@ -241,6 +242,7 @@ namespace Scryber
     /// </summary>
     public interface INamingContainer
     {
+        IComponent Owner { get; set; }
     }
 
     #endregion
@@ -323,8 +325,8 @@ namespace Scryber
         /// shared resources, and if not, then it is added and a resource reference returned.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="key"></param>
-        /// <param name="resource"></param>
+        /// <param name="key">The indentifying key for the resource that can be used to retrieve again</param>
+        /// <param name="resource">This is the actual resource itself</param>
         /// <returns></returns>
         ISharedResource EnsureResource(string type, string key, object resource);
 
@@ -443,6 +445,8 @@ namespace Scryber
 
     public interface IRemoteRequest
     {
+        event RequestCompletedEventHandler Completed;
+
         string ResourceType { get; }
         
         string FilePath { get; }  
@@ -473,7 +477,6 @@ namespace Scryber
         IRemoteRequest RequestResource(string type, string path, RemoteRequestCallback callback, IComponent owner, object arguments);
     }
 
-    
 
     #region public interface IDataSource
 

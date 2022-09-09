@@ -200,6 +200,11 @@ namespace Scryber.Html.Components
 
         }
 
+        public override string MapPath(string source, out bool isfile)
+        {
+            return base.MapPath(source, out isfile);
+        }
+
 
     }
 }
