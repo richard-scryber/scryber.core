@@ -202,7 +202,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //removing the time should not set the owner.
             col.Remove(styleDoc);
-            Assert.IsNull(styleDoc.Parent);
+            Assert.IsNull(styleDoc.Parent, "The parent was not cleared from the document on removal");
 
             //multiple hierarchy
             StylesDocument inner = new StylesDocument();

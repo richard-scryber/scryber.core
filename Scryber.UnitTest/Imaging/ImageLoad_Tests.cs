@@ -60,7 +60,7 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.IsFalse(data.HasFilter);
             Assert.IsNull(data.Filters);
             Assert.IsFalse(data.IsPrecompressedData);
-            Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
+            Assert.IsInstanceOfType(data, typeof(PDFImageDataBase), "Was expecting a type of IPDFImageSharpData");
         }
         
         [TestMethod()]
@@ -97,8 +97,8 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(1, data.Filters.Length);
             Assert.AreEqual("DCTDecode" , data.Filters[0].FilterName);
 
-            Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
-            var imgSharp = (PDFImageSharpData) data;
+            Assert.IsInstanceOfType(data, typeof(PDFImageDataBase), "Was expecting a type of IPDFImageSharpData");
+            var imgSharp = (PDFImageDataBase) data;
             Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
 
         }
@@ -192,8 +192,8 @@ namespace Scryber.Core.UnitTests.Imaging
             
             Assert.IsFalse(data.IsPrecompressedData);
             Assert.IsFalse(data.HasFilter);
-            Assert.IsInstanceOfType(data, typeof(PDFImageSharpData), "Was expecting a type of IPDFImageSharpData");
-            var imgSharp = (PDFImageSharpData) data;
+            Assert.IsInstanceOfType(data, typeof(PDFImageDataBase), "Was expecting a type of IPDFImageSharpData");
+            var imgSharp = (PDFImageDataBase) data;
             Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
 
         }
@@ -232,7 +232,7 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(1, doc.SharedResources.Count);
             var resource = doc.SharedResources[0] as PDFImageXObject;
             Assert.IsNotNull(resource);
-            var data = resource.ImageData as Scryber.Imaging.PDFImageSharpData;
+            var data = resource.ImageData as Scryber.Imaging.PDFImageDataBase;
             Assert.IsNotNull(data);
             var expectedRGB = 256 * 256 * 3;
             var expectedAlpha = 256 * 256;

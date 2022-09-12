@@ -5,14 +5,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>5.1.0.2-beta</PackageVersion>
+    <PackageVersion>6.0.0.2-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.1.0.2-beta
+    <PackageReleaseNotes>
+6.0.0.2-beta
+
+Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
+
+5.1.0.2-beta
 
 A major update that now fully supports expressions in attributes, css var and clac along with text, using the handlebars notation - {{...}}
 This includes support for simple mathematical expressions from the document variables as welll as functions such as 'concat', 'if(value, 'true', 'false')' or 'index() + model.property'
@@ -58,11 +63,11 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 5;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The scryber pdf engine for dotnet 5 - Beautiful documents from templates made easy.
+    <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
 
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
-This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+This framework is built entirely in .NET6 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
     <Version>1.0.1-alpha</Version>

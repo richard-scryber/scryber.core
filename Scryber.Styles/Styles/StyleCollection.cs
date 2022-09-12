@@ -207,9 +207,9 @@ namespace Scryber.Styles
             if (null != removed)
             {
                 if (removed is IComponent comp)
-                    comp.Parent = this.Owner;
+                    comp.Parent = null;
                 else if (removed is INamingContainer naming)
-                    naming.Owner = this.Owner;
+                    naming.Owner = null;
             }
         }
 

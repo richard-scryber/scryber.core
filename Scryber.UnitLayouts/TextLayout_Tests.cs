@@ -88,6 +88,10 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void ASingleLiteralInOptima()
         {
+            var fontFamily = "Copperplate";
+            var fontWeight = FontWeights.Bold;
+            var fontStyle = FontStyle.Regular;
+
             var doc = new Document();
             var pg = new Page();
 
@@ -95,10 +99,14 @@ namespace Scryber.UnitLayouts
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.FontFamily = new FontSelector("Optima");
+
+            pg.FontFamily = new FontSelector(fontFamily);
+            pg.FontWeight = fontWeight;
+            pg.FontStyle = fontStyle;
+
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
 
-            var font = Scryber.Drawing.FontFactory.GetFontDefinition("Optima", FontStyle.Regular, FontWeights.Regular);
+            var font = Scryber.Drawing.FontFactory.GetFontDefinition(fontFamily, fontStyle, fontWeight);
             Assert.IsNotNull(font, "This test will fail as the Optima font is not present, or could not be loaded from the System fonts");
                
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -115,7 +123,7 @@ namespace Scryber.UnitLayouts
 
             var defn = fontrsrc.Definition;
             Assert.IsNotNull(defn, "The font does not have a definition");
-            Assert.AreEqual("Optima", defn.Family, "The Optima font was not loaded by the document");
+            Assert.AreEqual(fontFamily, defn.Family, "The '" + fontFamily + " font was not loaded by the document");
             
 
             var region = layout.AllPages[0].ContentBlock.Columns[0];

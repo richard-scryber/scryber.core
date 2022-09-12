@@ -33,14 +33,22 @@ namespace Scryber.Imaging
             return this.Match.IsMatch(forPath);
         }
         
-        public ImageData LoadImageData(IDocument document, IComponent owner, string path)
+        public virtual ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
-            return this.DoLoadImageDataAsync(document, owner, path).Result;
+            var data = this.DoLoadImageDataAsync(document, owner, path).Result;
+            return data;
         }
 
-        public async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
+        public virtual async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
-            return await this.DoLoadImageDataAsync(document, owner, path);
+            if (document is IResourceRequester resourceRequester)
+            {
+                return GetProxyImageData(document, resourceRequester, owner, path);
+            }
+            else
+            {
+                return await this.DoLoadImageDataAsync(document, owner, path);
+            }
         }
 
         private static readonly System.Runtime.InteropServices.OSPlatform _wasm;
@@ -50,13 +58,7 @@ namespace Scryber.Imaging
             ImageData data = null;
             try
             {
-                if(document is IResourceRequester resourceRequester)
-                {
-                    data = GetProxyImageData(document, resourceRequester, owner, path);
-
-                    
-                }
-                else if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
+                if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
                 {
                     stream = await LoadDataFromUriAsync(path);
                 }
