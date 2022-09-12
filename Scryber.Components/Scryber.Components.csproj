@@ -120,7 +120,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
