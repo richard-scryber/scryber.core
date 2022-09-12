@@ -40,10 +40,10 @@ namespace Scryber.PDF.Resources
         /// Defines the preferred encodings in their preference order
         /// </summary>
         private static readonly CMapEncoding[] PreferredCharacterEncodings = {
-            OpenType.SubTables.CMapEncoding.WindowsUnicode,
-            OpenType.SubTables.CMapEncoding.UnicodeDefault,
             OpenType.SubTables.CMapEncoding.Unicode_20,
-            OpenType.SubTables.CMapEncoding.MacRoman
+            OpenType.SubTables.CMapEncoding.MacRoman,
+            OpenType.SubTables.CMapEncoding.UnicodeDefault,
+            OpenType.SubTables.CMapEncoding.WindowsUnicode
         };
         
         //
@@ -455,7 +455,9 @@ namespace Scryber.PDF.Resources
             if (widths is PDFCompositeFontWidths)
             {
                 if (context.ShouldLogDebug)
-                    context.TraceLog.Add(TraceLevel.Debug, "Font Definition", "Rendering the Unicode CID map stream");
+                    context.TraceLog.Add(TraceLevel.Debug, "Font Definition", "Rendering the CID map stream with encoding " + this.Widths.Encoding.ToString());
+                else //Temporary to check
+                    context.TraceLog.Add(TraceLevel.Message, "Font Definition", "Rendering the CID map stream with encoding " + this.Widths.Encoding.ToString());
 
                 PDFCompositeFontWidths comp = (PDFCompositeFontWidths)widths;
 
