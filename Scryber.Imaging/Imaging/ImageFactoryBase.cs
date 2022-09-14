@@ -35,8 +35,15 @@ namespace Scryber.Imaging
         
         public virtual ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
-            var data = this.DoLoadImageDataAsync(document, owner, path).Result;
-            return data;
+            if (document is IResourceRequester resourceRequester)
+            {
+                return GetProxyImageData(document, resourceRequester, owner, path);
+            }
+            else
+            {
+                var data = this.DoLoadImageDataAsync(document, owner, path).Result;
+                return data;
+            }
         }
 
         public virtual async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)

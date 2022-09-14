@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.2-beta</PackageVersion>
+    <PackageVersion>6.0.0.4-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
@@ -13,9 +13,10 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
-6.0.0.2-beta
+6.0.0.4-beta
 
 Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
+Some TTC and TTF font files do not render glyfs correctly, but working for many fonts.
 
 5.1.0.2-beta
 
@@ -100,6 +101,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Compile Remove="Properties\Resources.Designer.cs" />
     <Compile Remove="Data\SqlProviderCommand.cs" />
     <None Remove="Scryber.Styles" />
+    <None Remove="Teronis.MSBuild.Packaging.ProjectBuildInPackage" />
   </ItemGroup>
 
   <ItemGroup>
@@ -113,15 +115,20 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Resources\scryber_NotFoundLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
-    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
-    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
-    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" />
-    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
+    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -132,7 +139,10 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
   </ItemGroup>
     
   <ItemGroup>
-    <None Include="readme.txt" pack="true">
+    <None Include="readme.txt" Pack="true">
+      <IncludeInPackage>true</IncludeInPackage>
+    </None>
+    <None Include="LICENSE.md" Pack="true" PackagePath="">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
   </ItemGroup>

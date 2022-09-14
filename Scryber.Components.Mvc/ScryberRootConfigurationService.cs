@@ -121,10 +121,10 @@ namespace Scryber.Components.Mvc
         // methods
         //
 
-        private T GetOptions<T>(string path)
+        private T GetOptions<T>(string path) where T : new()
         {
             var section = _config.GetSection(path);
-            var value = section.Get<T>();
+            var value = new T();
             return value;
         }
 
@@ -143,7 +143,7 @@ namespace Scryber.Components.Mvc
                 IConfiguration config;
                 if (this.TryGetConfiguration(out config))
                 {
-                    object value = config.GetValue(ofType, ScryberOptions.ScryberSectionStub + name);
+                    object value = config.GetSection(ScryberOptions.ScryberSectionStub + name);
                     return value;
                 }
                 else
