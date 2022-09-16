@@ -186,8 +186,11 @@ namespace Scryber.Core.UnitTests.Configuration
             try
             {
                 Document doc;
+                
                 using (var reader = new System.IO.StringReader(pdfx))
                     doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                doc.AppendTraceLog = true;
 
                 using (var stream = DocStreams.GetOutputStream("MissingImagesDisAllowed.pdf"))
                     doc.SaveAsPDF(stream);

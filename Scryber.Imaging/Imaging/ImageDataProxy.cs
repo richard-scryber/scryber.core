@@ -43,6 +43,17 @@ namespace Scryber.Imaging
 			}
 		}
 
+		public bool IsSuccessful
+		{
+			get
+			{
+				if (this._request.IsCompleted)
+					return this._request.IsSuccessful;
+				else
+					return false;
+			}
+		}
+
 
         public override bool IsPrecompressedData
 		{
@@ -60,10 +71,29 @@ namespace Scryber.Imaging
 		{
 			this._request = request ?? throw new ArgumentNullException(nameof(request));
 			this._innerImage = null;
-			this._request.Completed += this.RequestCompleted;
+			//this._request.Completed += this.RequestCompleted;
 			this.VerticalResolution = 72;
 			this.HorizontalResolution = 72;
 			this.HasAlpha = false;
+
+			if (this._request.IsCompleted)
+			{
+
+				this.RequestCompleted(this, new RequestCompletedEventArgs(request.Owner, request, request.Result));
+
+				//We have got this far and the request still has an error.
+				if(this._request.IsSuccessful == false && this._request.Error != null)
+				{
+                    var service = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+					if(null != service && !service.ImagingOptions.AllowMissingImages)
+					{
+						throw new Scryber.PDFMissingImageException("The image for " + request.FilePath + " could not be loaded", this._request.Error);
+					}
+                }
+			}
+			else
+				this._request.Completed += this.RequestCompleted;
+
 		}
 
         private void RequestCompleted(object sender, RequestCompletedEventArgs args)

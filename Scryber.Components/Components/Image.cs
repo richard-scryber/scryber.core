@@ -144,5 +144,18 @@ namespace Scryber.Components
         }
 
 
+        protected override void OnPreRender(RenderContext context)
+        {
+            base.OnPreRender(context);
+            if (null == this.XObject)
+            {
+                //Do nothing as we should be hidden or an error raised earlier. We are just trying for the proxies
+            }
+            else if(this.XObject.ImageData is Scryber.Imaging.ImageDataProxy proxy)
+            {
+                if (proxy.IsSuccessful == false && this.AllowMissingImages == false)
+                    throw new PDFMissingImageException("The image data for " + this.ID + " was not resolved and missing images are not allowed");
+            }
+        }
     }
 }

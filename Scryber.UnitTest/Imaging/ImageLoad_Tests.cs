@@ -44,7 +44,8 @@ namespace Scryber.Core.UnitTests.Imaging
                 throw new io.FileNotFoundException(path);
 
             var data = factory.LoadImageData(doc, page, path);
-            
+            doc.RemoteRequests.EnsureRequestsFullfilled();
+
             Assert.IsNotNull(data, "The returned image data was null in the Group.png image");
             Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
             Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
@@ -60,7 +61,7 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.IsFalse(data.HasFilter);
             Assert.IsNull(data.Filters);
             Assert.IsFalse(data.IsPrecompressedData);
-            Assert.IsInstanceOfType(data, typeof(PDFImageDataBase), "Was expecting a type of IPDFImageSharpData");
+            
         }
         
         [TestMethod()]
@@ -76,6 +77,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 throw new io.FileNotFoundException(path);
 
             var data = factory.LoadImageData(doc, page, path);
+            doc.RemoteRequests.EnsureRequestsFullfilled();
             
             Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
             Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.jpg image");
@@ -89,17 +91,17 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.jpg image");
             Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.jpg image");
             Assert.AreEqual(data.Type, ObjectTypes.ImageData);
-            
+            Assert.IsFalse(data.HasAlpha);
+
             //We should have the JCTDecode filter for jpeg images
             Assert.IsTrue(data.IsPrecompressedData);
             Assert.IsTrue(data.HasFilter);
             Assert.IsNotNull(data.Filters);
             Assert.AreEqual(1, data.Filters.Length);
             Assert.AreEqual("DCTDecode" , data.Filters[0].FilterName);
+            
 
-            Assert.IsInstanceOfType(data, typeof(PDFImageDataBase), "Was expecting a type of IPDFImageSharpData");
-            var imgSharp = (PDFImageDataBase) data;
-            Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
+            
 
         }
 
@@ -134,6 +136,7 @@ namespace Scryber.Core.UnitTests.Imaging
             
 
             doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+            doc.AppendTraceLog = true;
 
             using (var stream = DocStreams.GetOutputStream("NewImagingTest_Group.pdf"))
             {
@@ -176,7 +179,8 @@ namespace Scryber.Core.UnitTests.Imaging
                 throw new io.FileNotFoundException(path);
 
             var data = factory.LoadImageData(doc, page, path);
-            
+            doc.RemoteRequests.EnsureRequestsFullfilled();
+
             Assert.IsNotNull(data, "The returned image data was null in the Group.tiff image");
             Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.tiff image");
             Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.tiff image");
@@ -189,13 +193,11 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.tiff image");
             Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.tiff image");
             Assert.AreEqual(data.Type, ObjectTypes.ImageData);
-            
+            Assert.IsFalse(data.HasAlpha, "The image should not have an alpha channel");
+
             Assert.IsFalse(data.IsPrecompressedData);
             Assert.IsFalse(data.HasFilter);
-            Assert.IsInstanceOfType(data, typeof(PDFImageDataBase), "Was expecting a type of IPDFImageSharpData");
-            var imgSharp = (PDFImageDataBase) data;
-            Assert.IsFalse(imgSharp.HasAlpha,"The image should not have an alpha channel");
-
+            
         }
         
        
@@ -232,14 +234,10 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(1, doc.SharedResources.Count);
             var resource = doc.SharedResources[0] as PDFImageXObject;
             Assert.IsNotNull(resource);
-            var data = resource.ImageData as Scryber.Imaging.PDFImageDataBase;
+            var data = resource.ImageData as ImageData;
             Assert.IsNotNull(data);
-            var expectedRGB = 256 * 256 * 3;
-            var expectedAlpha = 256 * 256;
-            Assert.AreEqual(data.ImageDataLength, data.ImageOutputLength, "The image data and output lengths were not the same");
-            Assert.AreEqual(expectedRGB, data.ImageOutputLength, "The image data should be " + expectedRGB + " output length");
-            Assert.AreEqual(expectedAlpha, data.AlphaDataLength, "The image alpha should be " + expectedAlpha + " data length");
-
+            
+            
         }
 
 

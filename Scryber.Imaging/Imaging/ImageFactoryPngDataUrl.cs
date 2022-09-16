@@ -26,6 +26,18 @@ namespace Scryber.Imaging
             : base(match, name, shouldCache)
         {}
 
+        //As we run syncronously from the data in the url - we do not need the proxy or resouce requestors
+        
+        public override ImageData LoadImageData(IDocument document, IComponent owner, string path)
+        {
+            return this.DoLoadImageDataAsync(document, owner, path).Result;
+        }
+
+        public override Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
+        {
+            return this.DoLoadImageDataAsync(document, owner, path);
+        }
+
 
         protected override Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {

@@ -117,7 +117,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void ImagePngLocalAbsoluteSource_Test()
         {
-            var path = GetLocalImagePath("group.png");
+            var path = GetLocalImagePath("Group.png");
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
     <img src='" + path + @"' alt='Group' />
@@ -154,7 +154,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void ImageJpegLocalAbsoluteSource_Test()
         {
-            var path = GetLocalImagePath("group.jpg");
+            var path = GetLocalImagePath("Group.jpg");
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
     <img src='" + path + @"' alt='Group' />
@@ -231,7 +231,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImagePngLocalRelativeSource_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "Content/HTML/Images/group.png";
+            var path = "Content/HTML/Images/Group.png";
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
     <img src='" + path + @"' alt='Group' />
@@ -269,7 +269,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImageJpegLocalRelativeSource_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "Content/HTML/Images/group.jpg";
+            var path = "Content/HTML/Images/Group.jpg";
             
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
@@ -346,7 +346,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImagePngLocalBaseSource_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "Content/HTML/Images/group.png";
+            var path = "Content/HTML/Images/Group.png";
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <base href='" + project + @"' />
@@ -388,7 +388,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImageJpegLocalBaseSource_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "Content/HTML/Images/group.jpg";
+            var path = "Content/HTML/Images/Group.jpg";
             
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>

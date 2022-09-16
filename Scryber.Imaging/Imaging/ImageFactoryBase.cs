@@ -94,19 +94,25 @@ namespace Scryber.Imaging
         {
             var callback = new RemoteRequestCallback((comp, request, asyncStream) =>
             {
-                object asyncData = null;
-                Exception error = null;
-                try
+                if (null == asyncStream && request.IsCompleted)
+                    //no stream to decode - will happen if there is a cache hit for the image
+                    return request.IsSuccessful;
+                else
                 {
-                    asyncData = this.DoDecodeImageData(asyncStream, document, comp, path);
+                    object asyncData = null;
+                    Exception error = null;
+                    try
+                    {
+                        asyncData = this.DoDecodeImageData(asyncStream, document, comp, path);
+                    }
+                    catch (Exception ex)
+                    {
+                        error = ex;
+                        asyncData = null;
+                    }
+                    request.CompleteRequest(asyncData, asyncData != null, error);
+                    return request.IsSuccessful;
                 }
-                catch (Exception ex)
-                {
-                    error = ex;
-                    asyncData = null;
-                }
-                request.CompleteRequest(asyncData, asyncData != null, error);
-                return request.IsSuccessful;
             });
             var req = requester.RequestResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, path, callback, owner, this);
 

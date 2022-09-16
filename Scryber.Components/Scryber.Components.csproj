@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.4-beta</PackageVersion>
+    <PackageVersion>6.0.0.5-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
@@ -13,7 +13,7 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
-6.0.0.4-beta
+6.0.0.5-beta
 
 Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
 Some TTC and TTF font files do not render glyfs correctly, but working for many fonts.
@@ -62,7 +62,7 @@ Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
     <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 5;</PackageTags>
+    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 6;</PackageTags>
     <Title>Scryber</Title>
     <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
 
