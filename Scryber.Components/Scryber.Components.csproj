@@ -115,10 +115,6 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Resources\scryber_NotFoundLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" PrivateAssets="all" />
   </ItemGroup>
