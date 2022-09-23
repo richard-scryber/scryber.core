@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.6-beta</PackageVersion>
+    <PackageVersion>6.0.0.8-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
@@ -13,7 +13,7 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
-6.0.0.6-beta
+6.0.0.8-beta
 
 Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions
 
@@ -84,6 +84,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -119,17 +120,35 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Resources\scryber_NotFoundLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" />
+    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" >
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Styles.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" >
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Expressive.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all" >
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Imaging.dll</IncludeAssets>
+        <IncludeAssets>SixLabors.ImageSharp.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" >
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Common.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" >
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Drawing.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Generation.dll</IncludeAssets>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -143,7 +162,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Include="readme.txt" Pack="true">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
-    <None Include="LICENSE.md" Pack="true" PackagePath="">
+    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)" >
       <IncludeInPackage>true</IncludeInPackage>
     </None>
   </ItemGroup>
@@ -155,4 +174,10 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
   </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
+    </ItemGroup>
+  </Target>
 </Project>

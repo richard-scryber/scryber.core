@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Scryber.Core</id>
+    <version>6.0.0.7-beta</version>
+    <title>Scryber</title>
+    <authors>richard@scryber.co.uk</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>ScyberLogo2_alpha_small.png</icon>
+    <projectUrl>https://github.com/richard-scryber/scryber.core</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</iconUrl>
+    <description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
+
+Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+
+This framework is built entirely in .NET6 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</description>
+    <releaseNotes>6.0.0.7-beta
+
+Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions
+
+6.0.0.5-beta
+
+Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
+Some TTC and TTF font files do not render glyfs correctly, but working for many fonts.
+
+5.1.0.2-beta
+
+A major update that now fully supports expressions in attributes, css var and clac along with text, using the handlebars notation - {{...}}
+This includes support for simple mathematical expressions from the document variables as welll as functions such as 'concat', 'if(value, 'true', 'false')' or 'index() + model.property'
+
+5.0.7
+
+Adding support for the float left and right within blocks along with css linear and radial gradients
+
+5.0.6.3
+
+Fixes an issue with some TTF fonts on Windows (specifically azure) to look for the best character mapping table, and multi-span text not flowing well due to some changes to try and get float working.
+
+5.0.6
+
+The April release is a bit of a catch up and fix with updates for:
+
+Supporting parsed JSON objects in binding - along with std types and dynamic objects.
+margin:value is applied to all margins even if explicit left, right etc. has been previously applied.
+Conformance is now carried through to templates, so errors are not indavertantly raised inside the template.
+Missing background images will not raise an error.
+Support for data images (src='data:image/..') within content - thanks Dan Rusu!
+Images are not duplicated within the output for the same source.
+
+
+5.0.5
+
+Multiple enhancements including
+
+Embed and iFrame support.
+Binding speed improvements for longer documents.
+Support for border-left, border-right, etc
+Support for encryption and restrictions
+Support for base href in template files.
+Classes and styles on templates are supported.
+Added em, strong, strike, del, ins elements
+Html column width and break inside
+CSS and HTML Logging
+Fixed application of multiple styles with the same word inside
+Allow missing images on the document is now supported.
+Contain fill style for background images.
+
+See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</releaseNotes>
+    <copyright>Richard Hewitson 2022</copyright>
+    <tags>Scryber PDF dotnet core HTML, HTML2PDF dotnet 6</tags>
+    <repository type="Git" url="https://github.com/richard-scryber/scryber.core" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
+        <dependency id="System.Resources.Extensions" version="5.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
+        <dependency id="System.Resources.Extensions" version="5.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <contentFiles>
+      <files include="any/net6.0/readme.txt" buildAction="None" />
+      <files include="any/netstandard2.0/readme.txt" buildAction="None" />
+    </contentFiles>
+  </metadata>
+  <files>
+      <file src="Scryber.Components\bin\Release\netstandard2.0\Scryber.*.dll" target="lib\netstandard2.0" />
+      <file src="Scryber.Components\bin\Release\net6.0\Scryber.*.dll" target="lib\net6.0" />
+      <file src="Scryber.Components\readme.txt" target="content" />
+      <file src="Scryber.Components\LICENSE.md" target="" />
+      <file src="ScyberLogo2_alpha_small.png" target="" />
+  </files>
+</package>

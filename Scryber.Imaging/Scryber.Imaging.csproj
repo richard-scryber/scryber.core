@@ -35,7 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SixLabors.ImageSharp, Version=0.0.1.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13">
-      <HintPath>ImageSharp\Net5.0\SixLabors.ImageSharp.dll</HintPath>
+      <HintPath>ImageSharp\NetStandard2.0\SixLabors.ImageSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

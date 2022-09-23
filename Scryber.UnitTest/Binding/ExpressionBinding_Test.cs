@@ -1170,12 +1170,14 @@ namespace Scryber.Core.UnitTests.Binding
                                 <h2>Expression binding with JElement</h2>
                                 <table id='myTable' style='width:100%;font-size:10pt' >
                                     <tr><td>Single Expression</td><td>value</td><td>{{value}}</td></tr>
+                                    <tr><td>Single Expression with function</td><td>concat('This is a ', value)</td><td>{{concat('This is a ', value)}}</td></tr>
                                     <tr><td>Deep Expression</td><td>object.value</td><td>{{object.value}}</td></tr>
                                     <tr><td>Array Expression</td><td>arrray[0]</td><td>{{array[0]}}</td></tr>
                                     <tr><td>Deep Array Expression</td><td>deeparray[1].value</td><td>{{deeparray[1].value}}</td></tr>
                                     <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
                                     <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
-                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>";
+                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
+                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>";
 
             src += @" </table>
                   </body>
@@ -1216,22 +1218,28 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual("Single", literal.Text, "The JElement single value failed");
 
                 literal = table.Rows[1].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("DeepValue", literal.Text, "The JElement deep value failed");
+                Assert.AreEqual("This is a Single", literal.Text, "The JElement function with value failed");
 
                 literal = table.Rows[2].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("first item", literal.Text, "The JElement array value failed");
+                Assert.AreEqual("DeepValue", literal.Text, "The JElement deep value failed");
 
                 literal = table.Rows[3].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("2", literal.Text, "The JElement array value failed");
+                Assert.AreEqual("first item", literal.Text, "The JElement array value failed");
 
                 literal = table.Rows[4].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("Deep deep down", literal.Text, "The JElement array value failed");
+                Assert.AreEqual("2", literal.Text, "The JElement array value failed");
 
                 literal = table.Rows[5].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("-11", literal.Text, "The JElement calculation failed");
+                Assert.AreEqual("Deep deep down", literal.Text, "The JElement array value failed");
 
                 literal = table.Rows[6].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("-11", literal.Text, "The JElement calculation failed");
+
+                literal = table.Rows[7].Cells[2].Contents[0] as TextLiteral;
                 Assert.AreEqual("nothing", literal.Text, "The JElement non-existant property failed");
+
+                literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Number Two", literal.Text, "The JElement non-existant property failed");
             }
 
 
@@ -1256,12 +1264,14 @@ namespace Scryber.Core.UnitTests.Binding
                                 <h2>Expression binding with Newtonsoft</h2>
                                 <table id='myTable' style='width:100%;font-size:10pt' >
                                     <tr><td>Single Expression</td><td>value</td><td>{{value}}</td></tr>
+                                    <tr><td>Single Expression with function</td><td>concat('This is a ', value)</td><td>{{concat('This is a ', value)}}</td></tr>
                                     <tr><td>Deep Expression</td><td>object.value</td><td>{{object.value}}</td></tr>
                                     <tr><td>Array Expression</td><td>arrray[0]</td><td>{{array[0]}}</td></tr>
                                     <tr><td>Deep Array Expression</td><td>deeparray[1].value</td><td>{{deeparray[1].value}}</td></tr>
                                     <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
                                     <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
-                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>";
+                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
+                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>";
 
             src += @" </table>
                   </body>
@@ -1285,6 +1295,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
             {
+                
                 foreach (var prop in parsed)
                 {
                     doc.Params.Add(prop.Key, prop.Value);
@@ -1303,22 +1314,28 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual("Single", literal.Text, "The Newtonsoft.JObject single value failed");
 
                 literal = table.Rows[1].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("DeepValue", literal.Text, "The Newtonsoft.JObject deep value failed");
+                Assert.AreEqual("This is a Single", literal.Text, "The Newtonsoft.JObject function with value failed");
 
                 literal = table.Rows[2].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("first item", literal.Text, "The Newtonsoft.JObject array value failed");
+                Assert.AreEqual("DeepValue", literal.Text, "The Newtonsoft.JObject deep value failed");
 
                 literal = table.Rows[3].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("2", literal.Text, "The Newtonsoft.JObject array value failed");
+                Assert.AreEqual("first item", literal.Text, "The Newtonsoft.JObject array value failed");
 
                 literal = table.Rows[4].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("Deep deep down", literal.Text, "The Newtonsoft.JObject array value failed");
+                Assert.AreEqual("2", literal.Text, "The Newtonsoft.JObject array value failed");
 
                 literal = table.Rows[5].Cells[2].Contents[0] as TextLiteral;
-                Assert.AreEqual("-11", literal.Text, "The Newtonsoft.JObject calculation failed");
+                Assert.AreEqual("Deep deep down", literal.Text, "The Newtonsoft.JObject array value failed");
 
                 literal = table.Rows[6].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("-11", literal.Text, "The Newtonsoft.JObject calculation failed");
+
+                literal = table.Rows[7].Cells[2].Contents[0] as TextLiteral;
                 Assert.AreEqual("nothing", literal.Text, "The Newtonsoft.JObject non-existant property failed");
+
+                literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Number Two", literal.Text, "The Newtonsoft.JObject non-existant property failed");
             }
 
 

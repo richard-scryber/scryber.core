@@ -55,6 +55,10 @@ namespace Scryber.Expressive.Functions.String
                 {
                     sb.Append(value);
                 }
+                else if(value is Newtonsoft.Json.Linq.JToken token)
+                {
+                    sb.Append(token.ToString());
+                }
                 else if(value is IEnumerable enumerate)
                 {
                     Evaluate(sb, enumerate, variables, context);
