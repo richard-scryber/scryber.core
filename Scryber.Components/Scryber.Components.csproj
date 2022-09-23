@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.5-beta</PackageVersion>
+    <PackageVersion>6.0.0.6-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
@@ -13,6 +13,10 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.0.6-beta
+
+Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions
+
 6.0.0.5-beta
 
 Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
@@ -117,6 +121,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

@@ -26,6 +26,8 @@
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.0-rc.1.22426.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +67,8 @@
     <None Remove="Content\HTML\Samples\**" />
     <None Remove="Secure\**" />
     <None Remove="Content\HTML\Images\groupLZW.tiff" />
+    <None Remove="System.Text.Json" />
+    <None Remove="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

@@ -1152,5 +1152,177 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+        [TestMethod]
+        public void ExpressionsWithJElement()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression JElement</title>
+                                <style>
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with JElement</h2>
+                                <table id='myTable' style='width:100%;font-size:10pt' >
+                                    <tr><td>Single Expression</td><td>value</td><td>{{value}}</td></tr>
+                                    <tr><td>Deep Expression</td><td>object.value</td><td>{{object.value}}</td></tr>
+                                    <tr><td>Array Expression</td><td>arrray[0]</td><td>{{array[0]}}</td></tr>
+                                    <tr><td>Deep Array Expression</td><td>deeparray[1].value</td><td>{{deeparray[1].value}}</td></tr>
+                                    <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
+                                    <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
+                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>";
+
+            src += @" </table>
+                  </body>
+                </html>";
+
+            var json = @"{
+                       'value':'Single',
+                       'object': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_WithJElement.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var table = doc.FindAComponentById("myTable") as TableGrid;
+                Assert.IsNotNull(table, "Could not find the table to loop over");
+
+
+                var literal = table.Rows[0].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Single", literal.Text, "The JElement single value failed");
+
+                literal = table.Rows[1].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("DeepValue", literal.Text, "The JElement deep value failed");
+
+                literal = table.Rows[2].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("first item", literal.Text, "The JElement array value failed");
+
+                literal = table.Rows[3].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("2", literal.Text, "The JElement array value failed");
+
+                literal = table.Rows[4].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Deep deep down", literal.Text, "The JElement array value failed");
+
+                literal = table.Rows[5].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("-11", literal.Text, "The JElement calculation failed");
+
+                literal = table.Rows[6].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("nothing", literal.Text, "The JElement non-existant property failed");
+            }
+
+
+        }
+
+
+        [TestMethod]
+        public void ExpressionsWithNewtonsoft()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression Newtonsoft</title>
+                                <style>
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with Newtonsoft</h2>
+                                <table id='myTable' style='width:100%;font-size:10pt' >
+                                    <tr><td>Single Expression</td><td>value</td><td>{{value}}</td></tr>
+                                    <tr><td>Deep Expression</td><td>object.value</td><td>{{object.value}}</td></tr>
+                                    <tr><td>Array Expression</td><td>arrray[0]</td><td>{{array[0]}}</td></tr>
+                                    <tr><td>Deep Array Expression</td><td>deeparray[1].value</td><td>{{deeparray[1].value}}</td></tr>
+                                    <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
+                                    <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
+                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>";
+
+            src += @" </table>
+                  </body>
+                </html>";
+
+            var json = @"{
+                       'value':'Single',
+                       'object': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }".Replace('\'', '"'); //just easier with the @string
+
+            //Parse as a Linq.JObject
+            var parsed = Newtonsoft.Json.JsonConvert.DeserializeObject(json) as Newtonsoft.Json.Linq.JObject;
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed)
+                {
+                    doc.Params.Add(prop.Key, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_WithNewtonsoft.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var table = doc.FindAComponentById("myTable") as TableGrid;
+                Assert.IsNotNull(table, "Could not find the table to loop over");
+
+
+                var literal = table.Rows[0].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Single", literal.Text, "The Newtonsoft.JObject single value failed");
+
+                literal = table.Rows[1].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("DeepValue", literal.Text, "The Newtonsoft.JObject deep value failed");
+
+                literal = table.Rows[2].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("first item", literal.Text, "The Newtonsoft.JObject array value failed");
+
+                literal = table.Rows[3].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("2", literal.Text, "The Newtonsoft.JObject array value failed");
+
+                literal = table.Rows[4].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Deep deep down", literal.Text, "The Newtonsoft.JObject array value failed");
+
+                literal = table.Rows[5].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("-11", literal.Text, "The Newtonsoft.JObject calculation failed");
+
+                literal = table.Rows[6].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("nothing", literal.Text, "The Newtonsoft.JObject non-existant property failed");
+            }
+
+
+        }
+
     }
 }

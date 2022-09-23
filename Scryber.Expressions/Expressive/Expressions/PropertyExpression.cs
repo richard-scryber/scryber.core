@@ -6,6 +6,12 @@ using System.ComponentModel;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
+#if NET6_0_OR_GREATER
+
+using System.Text.Json;
+
+#endif
+
 namespace Scryber.Expressive.Expressions
 {
     public class PropertyExpression : BinaryExpressionBase
@@ -65,20 +71,84 @@ namespace Scryber.Expressive.Expressions
                 throw new ArgumentNullException(nameof(parent));
             }
 
-            var type = parent.GetType();
+            //Do the JSON object checks first
 
-            PropertyInfo pi = null;
-            FieldInfo fi = null;
-
-            if (this.TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
+            if (parent is Newtonsoft.Json.Linq.JObject jobject)
             {
-                return pi.GetValue(parent, null);
+                if (jobject.ContainsKey(name) == false)
+                    return null;
+
+                var result = jobject.GetValue(name);
+                object value;
+                switch (result.Type)
+                {
+                    case Newtonsoft.Json.Linq.JTokenType.Array:
+                    case Newtonsoft.Json.Linq.JTokenType.Object:
+                        value = result;
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.Null:
+                    case Newtonsoft.Json.Linq.JTokenType.None:
+                        value = null;
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.Integer:
+                    case Newtonsoft.Json.Linq.JTokenType.Float:
+                        value = ((double)result);
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.Boolean:
+                        value = ((bool)result);
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.String:
+                    case Newtonsoft.Json.Linq.JTokenType.Uri:
+                        value = ((string)result);
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.Guid:
+                        value = ((Guid)result);
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.Date:
+                        value = ((DateTime)result);
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.Bytes:
+                        value = ((byte[])result);
+                        break;
+                    case Newtonsoft.Json.Linq.JTokenType.TimeSpan:
+                        value = ((TimeSpan)result);
+                        break;
+                    default:
+                        value = result.ToString(Newtonsoft.Json.Formatting.None);
+                        break;
+                }
+                return value;
             }
 
-            else if (this.TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
+#if NET6_0_OR_GREATER
+
+            //New to .net 6
+            else if (parent is JsonElement jelement)
             {
-                return fi.GetValue(parent);
+
+                JsonElement result;
+                if (!jelement.TryGetProperty(name, out result))
+                    return null;
+
+                switch (result.ValueKind)
+                {
+                    case JsonValueKind.Array:
+                    case JsonValueKind.Object:
+                        return result;
+                    case JsonValueKind.Null:
+                        return null;
+                    case JsonValueKind.False:
+                    case JsonValueKind.True:
+                        return result.GetBoolean();
+                    case JsonValueKind.Number:
+                        return result.GetDouble();
+                    default:
+                        return result.GetString();
+                }
             }
+
+#endif
+            //check for dynamic type
             else if (parent is System.Dynamic.ExpandoObject)
             {
                 object found;
@@ -92,23 +162,46 @@ namespace Scryber.Expressive.Expressions
                     return null; //As we are dynamic, let's be generous and not throw an error.
                 }
             }
-            else if (parent is ICustomTypeDescriptor)
+            else
             {
-                var properties = (parent as ICustomTypeDescriptor).GetProperties();
-                var prop = properties.Find(name, Context.IsCaseInsensitiveParsingEnabled);
+                //standard .net object reflection
+                var type = parent.GetType();
 
-                if (null != prop)
+                PropertyInfo pi = null;
+                FieldInfo fi = null;
+
+                if (this.TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
                 {
-                    return prop.GetValue(parent);
+                    return pi.GetValue(parent, null);
                 }
+
+                else if (this.TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
+                {
+                    return fi.GetValue(parent);
+                }
+
+                else if (parent is ICustomTypeDescriptor)
+                {
+                    var properties = (parent as ICustomTypeDescriptor).GetProperties();
+                    var prop = properties.Find(name, Context.IsCaseInsensitiveParsingEnabled);
+
+                    if (null != prop)
+                    {
+                        return prop.GetValue(parent);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
                 else
                 {
                     return null;
+                    // being kind and just not returning a value
+                    //throw new InvalidOperationException("Could not extract the property '" + name + "' from the object, as it is not a supported type for property access");
                 }
-            }
-            else
-            {
-                return null;
+
             }
         }
 

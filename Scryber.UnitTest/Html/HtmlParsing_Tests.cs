@@ -235,7 +235,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RemoteCssFileLoading()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
@@ -274,7 +274,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RemoteCssFileLoadingAsync()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
             var src = @"<?scryber append-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
@@ -1718,12 +1718,12 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BasePath()
         {
-            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.png";
+            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/Toroid24.png";
 
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
-                                <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/' />
+                                <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/' />
                                 <link rel='stylesheet' href='CSS/Include.css' media='print' />
                               </head>
                             <body class='grey' style='margin:20px;' >
@@ -1739,7 +1739,7 @@ namespace Scryber.Core.UnitTests.Html
                 doc.RenderOptions.AllowMissingImages = false; //Will error if the image is not found
                 
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
-                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/", doc.LoadedSource, "Loaded Source is not correct");
+                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/", doc.LoadedSource, "Loaded Source is not correct");
                 
                 using (var stream = DocStreams.GetOutputStream("DynamicBasePath.pdf"))
                 {
