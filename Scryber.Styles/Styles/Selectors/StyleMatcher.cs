@@ -66,14 +66,14 @@ namespace Scryber.Styles.Selectors
 
         #endregion
 
-        
+
 
         // parsing
 
         #region public static StyleMatcher Parse(string selector)
 
-        private static string[] _commaSplitter = new string[] {", "};
-        private static char[] _whitespaceSplitter = new char[] {' '};
+        private static char[] _commaSplitter =  new char[] { ',' };
+        private static char[] _whitespaceSplitter = new char[] { ' ' };
         
         public static StyleMatcher Parse(string selector)
         {
@@ -95,15 +95,16 @@ namespace Scryber.Styles.Selectors
 
             StringBuilder buffer = new StringBuilder();
 
-            var each = selector.Split(_commaSplitter, StringSplitOptions.RemoveEmptyEntries);
             
-            if (each.Length > 1)
+            
+            if (selector.IndexOf(_commaSplitter[0]) >= 0)
             {
+                var each = selector.Split(_commaSplitter);
                 StyleMatcher root = null;
 
                 foreach (var one in each)
                 {
-                    var all = one.Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
+                    var all = one.Trim().Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
 
                     StylePlacement placement = StylePlacement.Any;
                     var parsed = ParseSelectorList(all, all.Length - 1, placement, buffer);

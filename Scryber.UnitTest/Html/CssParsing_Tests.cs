@@ -1194,6 +1194,81 @@ body.grey div.reverse{
             
         }
 
+        [TestMethod]
+        public void ParseCSSWithMultipleSelectors()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Repeating calc in template</title>
+                        <style>
+
+                            div,p
+                            {
+                               padding: 10px;
+                               background-color: blue;
+                            }
+
+                            p.green div, div.red > div{font-style: italic;}
+
+                            p.green div,.other{
+                                color: green;
+                            }
+
+                            #nanid  ,  div.red > div{
+                                color: red;
+                            }
+
+                        </style>
+                    </head>
+                    <body>
+                            <div id='redTextDiv' class='red'>
+                                <div >Red Text on blue background</div>
+                            </div>
+                            <p id='greenTextPara' class='green'>
+                                <div >Green text on blue background</div>
+                            </p>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("CSSWithMultipleSelectorsTest.pdf"))
+                {
+                    doc.LayoutComplete += ParseCSSWithMultipleSelectors_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+
+        private void ParseCSSWithMultipleSelectors_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            //Make sure the variables are correctly assigned to the inline begin spans.
+            var context = (PDFLayoutContext)(args.Context);
+            var layout = context.DocumentLayout;
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+            var div = content.Columns[0].Contents[0] as PDFLayoutBlock; //Default block
+
+            Assert.AreEqual(StandardColors.Blue, div.FullStyle.Background.Color, "The background colour for '" + div.Owner.ID + "' did not match blue");
+
+            var inner = div.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(StandardColors.Red, inner.FullStyle.Fill.Color, "The fill colour did not match red");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Italic, inner.FullStyle.Font.FontFaceStyle, "The font style was no italic for '" + div.Owner.ID);
+            div = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.AreEqual(StandardColors.Blue, div.FullStyle.Background.Color, "The background colour for '" + div.Owner.ID + "' did not match blue");
+
+            inner = div.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(StandardColors.Green, inner.FullStyle.Fill.Color, "The fill colour did not match Green");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Italic, inner.FullStyle.Font.FontFaceStyle, "The font style was no italic for '" + div.Owner.ID);
+
+
+        }
+
 
         /// <summary>
         /// Returns a style that would be applied to the document, based on the passed css and any class
