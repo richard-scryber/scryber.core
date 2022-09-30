@@ -1177,7 +1177,13 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
                                     <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
                                     <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
-                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>";
+                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>
+                                    <tr><td colspan='3'>Bound Array</td></tr>
+                                    <template data-bind='{{deeparray}}'>
+                                        <tr>
+                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                        </tr>
+                                    </template>" ;
 
             src += @" </table>
                   </body>
@@ -1240,6 +1246,30 @@ namespace Scryber.Core.UnitTests.Binding
 
                 literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
                 Assert.AreEqual("Number Two", literal.Text, "The JElement non-existant property failed");
+
+                //row count is 12 - first 9 above + header row and 2 bound array rows
+                Assert.IsTrue(table.Rows.Count == 12, "Not all rows in the array were bound");
+
+                var first = table.Rows[10];
+                var second = table.Rows[11];
+
+                literal = first.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("One", literal.Text, "First bound rows value was not correct");
+
+                literal = second.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "Second bound rows value was not correct");
+
+                var num = first.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("1", num.Value.ToString(), "First bound rows value was not correct");
+
+                num = second.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("2", num.Value.ToString(), "Second bound rows value was not correct");
+
+                literal = first.Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("0. Deep deep down", literal.Text, "The calculated value on the first row was not correct");
+
+                literal = second.Cells[2].Contents[0] as TextLiteral;
+                Assert.IsTrue(string.IsNullOrEmpty(literal.Text), "The calculated value on the second row was not null or empty");
             }
 
 
@@ -1271,7 +1301,13 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
                                     <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
                                     <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
-                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>";
+                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>
+                                    <tr><td colspan='3'>Bound Array</td></tr>
+                                    <template data-bind='{{deeparray}}'>
+                                        <tr>
+                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                        </tr>
+                                    </template>";
 
             src += @" </table>
                   </body>
@@ -1336,6 +1372,30 @@ namespace Scryber.Core.UnitTests.Binding
 
                 literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
                 Assert.AreEqual("Number Two", literal.Text, "The Newtonsoft.JObject non-existant property failed");
+
+                //row count is 12 - first 9 above + header row and 2 bound array rows
+                Assert.IsTrue(table.Rows.Count == 12, "Not all rows in the array were bound");
+
+                var first = table.Rows[10];
+                var second = table.Rows[11];
+
+                literal = first.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("One", literal.Text, "First bound rows value was not correct");
+
+                literal = second.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "Second bound rows value was not correct");
+
+                var num = first.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("1", num.Value.ToString(), "First bound rows value was not correct");
+
+                num = second.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("2", num.Value.ToString(), "Second bound rows value was not correct");
+
+                literal = first.Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("0. Deep deep down", literal.Text, "The calculated value on the first row was not correct");
+
+                literal = second.Cells[2].Contents[0] as TextLiteral;
+                Assert.IsTrue(string.IsNullOrEmpty(literal.Text), "The calculated value on the second row was not null or empty");
             }
 
 

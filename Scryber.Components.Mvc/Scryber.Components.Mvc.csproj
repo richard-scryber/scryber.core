@@ -79,7 +79,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="6.0.0.8-beta" />
+    <PackageReference Include="Scryber.Core" Version="6.0.0.9-beta" />
   </ItemGroup>
       
   <ItemGroup>
@@ -93,7 +93,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)" >
+    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
   </ItemGroup>
