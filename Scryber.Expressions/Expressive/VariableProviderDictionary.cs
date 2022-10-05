@@ -10,6 +10,7 @@ namespace Scryber.Expressive
     public class VariableProviderDictionary : IDictionary<string, object>
     {
         private readonly IVariableProvider variableProvider;
+        private object _currentData = null;
 
         public VariableProviderDictionary(IVariableProvider variableProvider)
         {
@@ -18,7 +19,13 @@ namespace Scryber.Expressive
 
         public bool TryGetValue(string key, out object value)
         {
-            return this.variableProvider.TryGetValue(key, out value);
+            if (key == Expressions.CurrentDataExpression.CurrentDataVariableName && null != _currentData)
+            {
+                value = _currentData;
+                return true;
+            }
+            else
+                return this.variableProvider.TryGetValue(key, out value);
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => ThrowNotSupported<IEnumerator<KeyValuePair<string, object>>>();
@@ -45,9 +52,24 @@ namespace Scryber.Expressive
 
         public object this[string key]
         {
-            get => ThrowNotSupported<object>();
-            // ReSharper disable once ValueParameterNotUsed
-            set => ThrowNotSupported<object>();
+            get
+            {
+                object value;
+                if (key == Expressions.CurrentDataExpression.CurrentDataVariableName && null != this._currentData)
+                    return _currentData;
+
+                else if (this.variableProvider.TryGetValue(key, out value))
+                    return value;
+                else
+                    return null;
+            }
+            set
+            {
+                if (key == Scryber.Expressive.Expressions.CurrentDataExpression.CurrentDataVariableName)
+                    this._currentData = value;
+                else
+                    throw new NotSupportedException("Variables cannot be written to during execution of an expression");
+            }
         }
 
         public ICollection<string> Keys => ThrowNotSupported<ICollection<string>>();

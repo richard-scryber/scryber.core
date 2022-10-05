@@ -896,7 +896,7 @@ namespace Scryber.Core.UnitTests.Binding
                     {
                         new {name = "First Item", index = 0},
                         new {name = "Second Item", index = 1},
-                        new {name = "Third Item", index = 2},
+                        new {name = "Last Item", index = 2},
                     }
             };
 
@@ -1036,12 +1036,25 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Aggregate and Statistical Functions", name = "Count", function = "count(12, 13, 14)", result = "3"},
                 new {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
                 new {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
+                new {grp = "Aggregate and Statistical Functions", name = "SumOf", function = "sumOf(model.items, .index)", result = (0 + 1 + 2).ToString()},
                 new {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
+                new {grp = "Aggregate and Statistical Functions", name = "MaxOf", function = "MaxOf(model.items, .index)", result = "2"},
                 new {grp = "Aggregate and Statistical Functions", name = "Min", function = "Min(model.array,13,14)", result = "10"},
+                new {grp = "Aggregate and Statistical Functions", name = "MinOf", function = "MinOf(model.items, .index)", result = "0"},
                 new {grp = "Aggregate and Statistical Functions", name = "Average", function = "Average(model.array,13,1)", result = "9.4"},
+                new {grp = "Aggregate and Statistical Functions", name = "AverageOf", function = "AverageOf(model.items, .index)", result = "1"},
+                new {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
                 new {grp = "Aggregate and Statistical Functions", name = "Mean", function = "Mean(model.array,13,1)", result = "9.4"},
                 new {grp = "Aggregate and Statistical Functions", name = "Mode", function = "Mode(model.array,13,1)", result = "10"},
                 new {grp = "Aggregate and Statistical Functions", name = "Median", function = "Median(model.array,13,1)", result = "11"},
+
+                //Coalescing function
+                new {grp = "Coalescing Functions", name = "Join Each", function = "join(',',each(15,model.array,20), 30)", result = "15,10,11,12,20,30"},
+                new {grp = "Coalescing Functions", name = "Max Each", function = "Max(8, each(model.array))", result = "12"},
+                new {grp = "Coalescing Functions", name = "Join EachOf", function = "join(',', 8, eachof(model.items, .index))", result = "8,0,1,2"},
+                new {grp = "Coalescing Functions", name = "Sum EachOf", function = "sum(1, eachof(model.items, .index))", result = "4"},
+                new {grp = "Coalescing Functions", name = "Join EachOf SortBy", function = "join(',',eachOf(sortBy(model.items, .name, 'desc'), .index))", result = "1,2,0"}, //Second, Last, First
+                new {grp = "Coalescing Functions", name = "Join EachOf SelectWhere", function = "join(',',eachOf(selectWhere(model.items, .index > 0),.name))", result = "Second Item,Last Item"},
 
 
                 new {grp = "String Functions", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
@@ -1178,12 +1191,13 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
                                     <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
                                     <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>
+                                    <tr><td>Function With Coalesce</td><td>(join(',', eachOf(selectWhere(deeparray, .value > 1),.name)))</td><td>{{join(',', eachOf(selectWhere(deeparray, .value > 1),.name))}}</td></tr>
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
                                             <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
                                         </tr>
-                                    </template>" ;
+                                    </template>";
 
             src += @" </table>
                   </body>
@@ -1247,11 +1261,14 @@ namespace Scryber.Core.UnitTests.Binding
                 literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
                 Assert.AreEqual("Number Two", literal.Text, "The JElement non-existant property failed");
 
-                //row count is 12 - first 9 above + header row and 2 bound array rows
-                Assert.IsTrue(table.Rows.Count == 12, "Not all rows in the array were bound");
+                literal = table.Rows[9].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "The coalescing function did not match");
 
-                var first = table.Rows[10];
-                var second = table.Rows[11];
+                //row count is 12 - first 10 above + header row and 2 bound array rows
+                Assert.IsTrue(table.Rows.Count == 13, "Not all rows in the array were bound");
+
+                var first = table.Rows[11];
+                var second = table.Rows[12];
 
                 literal = first.Cells[0].Contents[0] as TextLiteral;
                 Assert.AreEqual("One", literal.Text, "First bound rows value was not correct");

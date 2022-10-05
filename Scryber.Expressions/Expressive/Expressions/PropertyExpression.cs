@@ -79,45 +79,7 @@ namespace Scryber.Expressive.Expressions
                     return null;
 
                 var result = jobject.GetValue(name);
-                object value;
-                switch (result.Type)
-                {
-                    case Newtonsoft.Json.Linq.JTokenType.Array:
-                    case Newtonsoft.Json.Linq.JTokenType.Object:
-                        value = result;
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.Null:
-                    case Newtonsoft.Json.Linq.JTokenType.None:
-                        value = null;
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.Integer:
-                    case Newtonsoft.Json.Linq.JTokenType.Float:
-                        value = ((double)result);
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.Boolean:
-                        value = ((bool)result);
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.String:
-                    case Newtonsoft.Json.Linq.JTokenType.Uri:
-                        value = ((string)result);
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.Guid:
-                        value = ((Guid)result);
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.Date:
-                        value = ((DateTime)result);
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.Bytes:
-                        value = ((byte[])result);
-                        break;
-                    case Newtonsoft.Json.Linq.JTokenType.TimeSpan:
-                        value = ((TimeSpan)result);
-                        break;
-                    default:
-                        value = result.ToString(Newtonsoft.Json.Formatting.None);
-                        break;
-                }
-                return value;
+                return GetJTokenValue(result);
             }
 
 #if NET6_0_OR_GREATER
@@ -125,26 +87,12 @@ namespace Scryber.Expressive.Expressions
             //New to .net 6
             else if (parent is JsonElement jelement)
             {
-
                 JsonElement result;
                 if (!jelement.TryGetProperty(name, out result))
                     return null;
-
-                switch (result.ValueKind)
-                {
-                    case JsonValueKind.Array:
-                    case JsonValueKind.Object:
-                        return result;
-                    case JsonValueKind.Null:
-                        return null;
-                    case JsonValueKind.False:
-                    case JsonValueKind.True:
-                        return result.GetBoolean();
-                    case JsonValueKind.Number:
-                        return result.GetDouble();
-                    default:
-                        return result.GetString();
-                }
+                else
+                    return GetJsonElementValue(result);
+                
             }
 
 #endif
@@ -170,12 +118,12 @@ namespace Scryber.Expressive.Expressions
                 PropertyInfo pi = null;
                 FieldInfo fi = null;
 
-                if (this.TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
+                if (TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
                 {
                     return pi.GetValue(parent, null);
                 }
 
-                else if (this.TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
+                else if (TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
                 {
                     return fi.GetValue(parent);
                 }
@@ -205,9 +153,73 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
-       
+#if NET6_0_OR_GREATER
 
-        private bool TryGetProperty(Type fortype, string name, bool ignoreCase, out PropertyInfo found)
+        public static object GetJsonElementValue(JsonElement result)
+        {
+            switch (result.ValueKind)
+            {
+                case JsonValueKind.Array:
+                case JsonValueKind.Object:
+                    return result;
+                case JsonValueKind.Null:
+                    return null;
+                case JsonValueKind.False:
+                case JsonValueKind.True:
+                    return result.GetBoolean();
+                case JsonValueKind.Number:
+                    return result.GetDouble();
+                default:
+                    return result.GetString();
+            }
+        }
+
+#endif
+
+        public static object GetJTokenValue(Newtonsoft.Json.Linq.JToken result)
+        {
+            object value;
+            switch (result.Type)
+            {
+                case Newtonsoft.Json.Linq.JTokenType.Array:
+                case Newtonsoft.Json.Linq.JTokenType.Object:
+                    value = result;
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.Null:
+                case Newtonsoft.Json.Linq.JTokenType.None:
+                    value = null;
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.Integer:
+                case Newtonsoft.Json.Linq.JTokenType.Float:
+                    value = ((double)result);
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.Boolean:
+                    value = ((bool)result);
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.String:
+                case Newtonsoft.Json.Linq.JTokenType.Uri:
+                    value = ((string)result);
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.Guid:
+                    value = ((Guid)result);
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.Date:
+                    value = ((DateTime)result);
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.Bytes:
+                    value = ((byte[])result);
+                    break;
+                case Newtonsoft.Json.Linq.JTokenType.TimeSpan:
+                    value = ((TimeSpan)result);
+                    break;
+                default:
+                    value = result.ToString(Newtonsoft.Json.Formatting.None);
+                    break;
+            }
+            return value;
+        }
+
+        private static bool TryGetProperty(Type fortype, string name, bool ignoreCase, out PropertyInfo found)
         {
             found = fortype.GetProperty(name);
 
@@ -221,7 +233,7 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
-        private bool TryGetField(Type fortype, string name, bool ignoreCase, out FieldInfo found)
+        private static bool TryGetField(Type fortype, string name, bool ignoreCase, out FieldInfo found)
         {
             found = fortype.GetField(name);
             if (null == found)

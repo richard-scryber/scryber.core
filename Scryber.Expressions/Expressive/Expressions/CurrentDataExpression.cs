@@ -29,5 +29,19 @@ namespace Scryber.Expressive.Expressions
         }
 
         #endregion
+
+        public static void SetCurrentData(object value, IDictionary<string, object> variables)
+        {
+            variables[CurrentDataVariableName] = value;
+        }
+
+        public static object GetCurrentData(IDictionary<string, object> variables)
+        {
+            object value = null;
+            if (variables != null && variables.TryGetValue(CurrentDataVariableName, out value))
+                return value;
+            else
+                return null;
+        }
     }
 }

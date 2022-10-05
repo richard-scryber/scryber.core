@@ -47,21 +47,19 @@ namespace Scryber.Expressive.Functions.String
                     value = p;
                 }
 
-                if (null == value)
+                IEnumerable collection;
+
+                if(Helpers.Collections.TryIsCollection(value, out collection))
+                {
+                    foreach(var item in collection)
+                    {
+                        var s = item.ToString();
+                        sb.Append(s);
+                    }
+                }
+                else if (null == value)
                 {
                     continue;
-                }
-                else if(value is string)
-                {
-                    sb.Append(value);
-                }
-                else if(value is Newtonsoft.Json.Linq.JToken token)
-                {
-                    sb.Append(token.ToString());
-                }
-                else if(value is IEnumerable enumerate)
-                {
-                    Evaluate(sb, enumerate, variables, context);
                 }
                 else
                 {

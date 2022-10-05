@@ -10,6 +10,7 @@ using Scryber.Expressive.Functions.Logical;
 using Scryber.Expressive.Functions.Mathematical;
 using Scryber.Expressive.Functions.Relational;
 using Scryber.Expressive.Functions.Statistical;
+using Scryber.Expressive.Functions.Coalesce;
 using Scryber.Expressive.Functions.String;
 using Scryber.Expressive.Functions.CSS;
 
@@ -75,6 +76,7 @@ namespace Scryber.Binding
             _all.Add(new SinFunction());
             _all.Add(new SqrtFunction());
             _all.Add(new SumFunction());
+            _all.Add(new SumOfFunction());
             _all.Add(new TanFunction());
             _all.Add(new TruncateFunction());
             // Mathematical Constants
@@ -87,8 +89,16 @@ namespace Scryber.Binding
             // Relational
             _all.Add(new MaxFunction());
             _all.Add(new MinFunction());
+            _all.Add(new MinOfFunction());
+            _all.Add(new MaxOfFunction());
+            //coalesce
+            _all.Add(new EachFunction());
+            _all.Add(new EachOfFunction());
+            _all.Add(new SortByFunction());
+            _all.Add(new SelectWithFunction());
             // Statistical
             _all.Add(new AverageFunction());
+            _all.Add(new AverageOfFunction());
             _all.Add(new MeanFunction());
             _all.Add(new MedianFunction());
             _all.Add(new ModeFunction());
