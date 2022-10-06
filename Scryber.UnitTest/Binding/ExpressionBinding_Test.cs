@@ -1319,6 +1319,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
                                     <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
                                     <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>
+                                    <tr><td>Function With Coalesce</td><td>(join(',', eachOf(selectWhere(deeparray, .value > 1),.name)))</td><td>{{join(',', eachOf(selectWhere(deeparray, .value > 1),.name))}}</td></tr>
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
@@ -1390,11 +1391,15 @@ namespace Scryber.Core.UnitTests.Binding
                 literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
                 Assert.AreEqual("Number Two", literal.Text, "The Newtonsoft.JObject non-existant property failed");
 
-                //row count is 12 - first 9 above + header row and 2 bound array rows
-                Assert.IsTrue(table.Rows.Count == 12, "Not all rows in the array were bound");
+                literal = table.Rows[9].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "The coalescing function did not match");
 
-                var first = table.Rows[10];
-                var second = table.Rows[11];
+                //row count is 12 - first 10 above + header row and 2 bound array rows
+                Assert.IsTrue(table.Rows.Count == 13, "Not all rows in the array were bound");
+
+
+                var first = table.Rows[11];
+                var second = table.Rows[12];
 
                 literal = first.Cells[0].Contents[0] as TextLiteral;
                 Assert.AreEqual("One", literal.Text, "First bound rows value was not correct");

@@ -79,7 +79,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="6.0.0.9-beta" />
+    <PackageReference Include="Scryber.Core" Version="6.0.0.10-beta" />
   </ItemGroup>
       
   <ItemGroup>

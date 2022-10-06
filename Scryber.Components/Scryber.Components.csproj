@@ -5,8 +5,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.9-beta</PackageVersion>
-    <Authors>richard@scryber.co.uk</Authors>
+    <PackageVersion>6.0.0.10-beta</PackageVersion>
+    <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2021</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -14,9 +14,10 @@
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
 
-6.0.0.9-beta
+6.0.0.10-beta
 
 Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions and templates too.
+Along with adding SoryBy, MaxOf, EachOf, SelectWhere collection functions.
 
 6.0.0.5-beta
 

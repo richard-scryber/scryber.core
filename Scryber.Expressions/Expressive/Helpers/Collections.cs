@@ -34,6 +34,11 @@ namespace Scryber.Expressive.Helpers
 				collection = (IEnumerable)value;
 				return true;
 			}
+			else if(value is Newtonsoft.Json.Linq.JToken)
+			{
+				collection = null;
+				return false;
+			}
 			else if (value is IEnumerable enumerable)
 			{
 				collection = enumerable;
