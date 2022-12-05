@@ -421,6 +421,50 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
         }
+
+
+        /// <summary>
+        /// Loads a test image from creative suspects based on an issue raised with the
+        /// 6.0 beta 8 version of the library.
+        /// </summary>
+        [TestMethod]
+        public void CreativeSuspectsImageTest()
+        {
+
+            var path = "https://cf.creativesuspects.io/img/sad-face.png";
+            var project = "Creative Suspects test";
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <base href='" + project + @"' />
+</head>
+<body style='padding:20pt;' >
+    <img src='" + path + @"' alt='Group' />
+</body>
+</html>";
+
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("CreativeSuspectsTest.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        var img = (PDFImageXObject)one;
+
+                        
+                        Assert.AreEqual(path, img.Source, "Image source was expected to be " + path);
+                        AssertPngImage(img, true, true);
+                    }
+
+                }
+            }
+        }
         
     }
 }

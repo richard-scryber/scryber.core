@@ -1165,6 +1165,119 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindCalcsWithCulture()
+        {
+            string src = @"<!DOCTYPE html>
+                                <?scryber parser-mode='strict' ?>
+                                <html xmlns='http://www.w3.org/1999/xhtml' >
+                                    <head>
+                                        <title>Binding Numbers with culture</title>
+                                    </head>
+
+                                    <body id='mainbody' style='padding:20px' >
+                                        <h2>{{culture.id}}</h2>
+                                        <dl>
+                                            <dt id='cultP1' >Number</dt>
+                                            <dd id='numP1' ><num value='{{culture.number}}' /></dd>
+                                            <dt id='cultP1' >Currency</dt>
+                                            <dd id='numP1' ><num data-format='C' value='{{culture.number}}' /></dd>
+                                            <dt id='cultP1' >Date</dt>
+                                            <dd id='numP1' ><time data-format='D' datetime='{{culture.date}}' /></dd>
+                                            <dt id='cultP1' >Time</dt>
+                                            <dd id='numP1' ><time data-format='T' datetime='{{culture.date}}' /></dd>
+                                        </dl>
+                                    </body>
+                                </html>";
+
+            var culture = "nl-NL";
+
+            var data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            
+            var cultureNumber = "3.456,56";
+            var cultureCurrency = "€3.456,56";
+            var cutlureDate = "dinsdag 1 december 2023";
+            var cutlureTime = "22:45:59";
+
+            
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            culture = "fr-FR";
+            cultureNumber = "3.456,56";
+            cultureCurrency = "€3.456,56";
+            cutlureDate = "dinsdag 1 December 2023";
+            cutlureTime = "22:45:59";
+
+            data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            culture = "en-GB";
+            cultureNumber = "3,456.56";
+            cultureCurrency = "£3,456.56";
+            cutlureDate = "Tuesday 1 December 2023";
+            cutlureTime = "11:45:59 PM";
+
+            data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            culture = "en-US";
+            cultureNumber = "3,456.56";
+            cultureCurrency = "$3,456.56";
+            cutlureDate = "Tuesday December 1 2023";
+            cutlureTime = "11:45:59 PM";
+
+            data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+        }
+
+        private void CreateAndAssertCultured(string src, string culture, object data, string cultureId, string cultureNumber, string cultureCurrency, string cutlureDate, string cultureTime, string cultureExplicit)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(culture);
+            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+
+            using (var doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                doc.Params.Add("culture", data);
+
+                using (var stream = DocStreams.GetOutputStream("Expression_WithCulture_" + culture + ".pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
+
+        
+
         [TestMethod]
         public void ExpressionsWithJElement()
         {
