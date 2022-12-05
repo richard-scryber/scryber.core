@@ -15,7 +15,7 @@ namespace Scryber.Expressive.Helpers
 				collection = null;
 				return false;
 			}
-#if NET6_0_OR_GREATER
+#if NET6_0
 			else if (value is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
 			{
 				var all = new ArrayList(jele.GetArrayLength());
@@ -83,7 +83,7 @@ namespace Scryber.Expressive.Helpers
 						count += callback(value, variables, context);
 					}
                 }
-#if NET6_0_OR_GREATER
+#if NET6_0
 
 				else if(item is System.Text.Json.JsonElement element)
 				{
@@ -133,7 +133,7 @@ namespace Scryber.Expressive.Helpers
                     count += callback(value, variables, context);
                 }
             }
-#if NET6_0_OR_GREATER
+#if NET6_0
 
             else if (item is System.Text.Json.JsonElement element)
             {

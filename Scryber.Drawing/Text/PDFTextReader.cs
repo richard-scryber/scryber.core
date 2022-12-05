@@ -76,8 +76,13 @@ namespace Scryber.Text
             this.Dispose(false);
         }
 
+
+
         public static PDFTextReader Create(string text, TextFormat format, bool preserveWhitespace, TraceLog log)
         {
+            if (string.IsNullOrEmpty(text))
+                return Empty();
+
             switch (format)
             {
                 case TextFormat.Plain:
@@ -94,7 +99,38 @@ namespace Scryber.Text
 
             }
         }
+
+        private static readonly PDFEmptyTextReader _empty = new PDFEmptyTextReader();
+
+        public static PDFTextReader Empty()
+        {
+            return _empty;
+        }
+
+        /// <summary>
+        /// A singleton instance of an empty text reader, that is retfurned from Create when there is no string to read
+        /// </summary>
+        private class PDFEmptyTextReader : PDFTextReader
+        {
+            public override PDFTextOp Value { get { return null; } }
+
+            public override int Length { get { return 0; } }
+
+            public override bool EOF {  get { return true; } }
+
+            public override bool Read() 
+            {
+                return false;
+            }
+
+            protected override void ResetTextMarkers()
+            {
+                
+            }
+        }
     }
+
+    
 
     
 }

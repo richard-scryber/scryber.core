@@ -16,6 +16,7 @@ using Scryber.Expressive.Operators;
 using System.Threading.Tasks;
 using System.Xml;
 using Scryber.Html;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -1169,6 +1170,9 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindCalcsWithCulture()
         {
+            var origCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            var origUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
             string src = @"<!DOCTYPE html>
                                 <?scryber parser-mode='strict' ?>
                                 <html xmlns='http://www.w3.org/1999/xhtml' >
@@ -1201,9 +1205,9 @@ namespace Scryber.Core.UnitTests.Binding
             };
 
             
-            var cultureNumber = "3.456,56";
-            var cultureCurrency = "€3.456,56";
-            var cutlureDate = "dinsdag 1 december 2023";
+            var cultureNumber = "-3456,56";
+            var cultureCurrency = "€ -3.456,56";
+            var cutlureDate = "dinsdag 13 december 2022";
             var cutlureTime = "22:45:59";
 
             
@@ -1211,9 +1215,9 @@ namespace Scryber.Core.UnitTests.Binding
             CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
 
             culture = "fr-FR";
-            cultureNumber = "3.456,56";
-            cultureCurrency = "€3.456,56";
-            cutlureDate = "dinsdag 1 December 2023";
+            cultureNumber = "-3456,56";
+            cultureCurrency = "-3 456,56 €";
+            cutlureDate = "mardi 13 décembre 2022";
             cutlureTime = "22:45:59";
 
             data = new
@@ -1226,10 +1230,10 @@ namespace Scryber.Core.UnitTests.Binding
             CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
 
             culture = "en-GB";
-            cultureNumber = "3,456.56";
-            cultureCurrency = "£3,456.56";
-            cutlureDate = "Tuesday 1 December 2023";
-            cutlureTime = "11:45:59 PM";
+            cultureNumber = "-3456.56";
+            cultureCurrency = "-£3,456.56";
+            cutlureDate = "Tuesday, 13 December 2022";
+            cutlureTime = "22:45:59";
 
             data = new
             {
@@ -1240,13 +1244,12 @@ namespace Scryber.Core.UnitTests.Binding
 
             CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
 
-            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
-
+            
             culture = "en-US";
-            cultureNumber = "3,456.56";
-            cultureCurrency = "$3,456.56";
-            cutlureDate = "Tuesday December 1 2023";
-            cutlureTime = "11:45:59 PM";
+            cultureNumber = "-3456.56";
+            cultureCurrency = "-$3,456.56";
+            cutlureDate = "Tuesday, December 13, 2022";
+            cutlureTime = "10:45:59 PM";
 
             data = new
             {
@@ -1256,10 +1259,15 @@ namespace Scryber.Core.UnitTests.Binding
             };
 
             CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = origCulture;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = origUICulture;
 
         }
 
-        private void CreateAndAssertCultured(string src, string culture, object data, string cultureId, string cultureNumber, string cultureCurrency, string cutlureDate, string cultureTime, string cultureExplicit)
+        private PDFLayoutDocument _doc = null;
+
+        private void CreateAndAssertCultured(string src, string culture, object data, string cultureId, string cultureNumber, string cultureCurrency, string cultureDate, string cultureTime, string cultureExplicit)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(culture);
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Threading.Thread.CurrentThread.CurrentCulture;
@@ -1270,13 +1278,45 @@ namespace Scryber.Core.UnitTests.Binding
 
                 using (var stream = DocStreams.GetOutputStream("Expression_WithCulture_" + culture + ".pdf"))
                 {
+                    doc.LayoutComplete += CulturedDoc_LayoutComplete;
                     doc.SaveAsPDF(stream);
+
+                    Assert.IsNotNull(_doc, "The document layout was not assigned");
+                    var body = _doc.AllPages[0];
+                    var list = body.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                    Assert.IsNotNull(list, "The definition list was not found");
+
+                    
+                    var numBlock = list.Columns[0].Contents[1] as PDFLayoutBlock;
+                    AssertCultureContent(numBlock, cultureNumber, "number", culture);
+
+                    var currencyBlock = list.Columns[0].Contents[3] as PDFLayoutBlock;
+                    AssertCultureContent(currencyBlock, cultureCurrency, "currency", culture);
+
+                    var dateBlock = list.Columns[0].Contents[5] as PDFLayoutBlock;
+                    AssertCultureContent(dateBlock, cultureDate, "date", culture);
+
+                    var timeBlock = list.Columns[0].Contents[7] as PDFLayoutBlock;
+                    AssertCultureContent(timeBlock, cultureTime, "time", culture);
                 }
 
             }
         }
 
-        
+        private void AssertCultureContent(PDFLayoutBlock container, string text, string name, string culture)
+        {
+            var line = container.Columns[0].Contents[0] as PDFLayoutLine;
+            var span = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(span);
+            Assert.AreEqual(text, span.Characters, "The characters '" + span.Characters + "' did not match expected '" + text + "' for the " + name + " value in culture " + culture);
+        }
+
+        private void CulturedDoc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            _doc = args.Context.GetLayout<PDFLayoutDocument>();
+        }
+
+
 
         [TestMethod]
         public void ExpressionsWithJElement()
