@@ -24,19 +24,39 @@ namespace Scryber.Imaging.Formatted
             var config = SixLabors.ImageSharp.Configuration.Default;
             var ops = new Rgb24().CreatePixelOperations();
 
-            int width = this.PixelWidth;
             long total = 0;
-            byte[] buffer = new byte[width * 3];
 
-            Span<byte> bufferSpan = new Span<byte>(buffer);
-
-            for (int r = 0; r < this.PixelHeight; r++)
+            //New v2 ImageSharp accessor pattern
+            this.PixelImage.ProcessPixelRows(accessor =>
             {
-                ReadOnlySpan<Rgb24> span = this.PixelImage.GetPixelRowSpan(r);
-                ops.ToRgb24Bytes(config, span, buffer, width);
-                writer.WriteRaw(buffer, 0, buffer.Length);
-                total += buffer.Length;
-            }
+                int width = this.PixelWidth;
+
+                byte[] buffer = new byte[width * 3];
+
+                Span<byte> bufferSpan = new Span<byte>(buffer);
+                for (int r = 0; r < this.PixelHeight; r++)
+                {
+                    var span = accessor.GetRowSpan(r);
+                    ops.ToRgb24Bytes(config, span, bufferSpan, width);
+                    writer.WriteRaw(buffer, 0, buffer.Length);
+                    total += buffer.Length;
+                }
+
+            });
+
+            //int width = this.PixelWidth;
+            
+            //byte[] buffer = new byte[width * 3];
+
+            //Span<byte> bufferSpan = new Span<byte>(buffer);
+
+            //for (int r = 0; r < this.PixelHeight; r++)
+            //{
+            //    ReadOnlySpan<Rgb24> span = this.PixelImage.GetPixelRowSpan(r);
+            //    ops.ToRgb24Bytes(config, span, buffer, width);
+            //    writer.WriteRaw(buffer, 0, buffer.Length);
+            //    total += buffer.Length;
+            //}
 
             return total;
         }
