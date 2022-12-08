@@ -5,14 +5,18 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.10-beta</PackageVersion>
+    <PackageVersion>6.0.0.13-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
-    <Copyright>Richard Hewitson 2021</Copyright>
+    <Copyright>Richard Hewitson 2022</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.0.12-beta
+
+Changed the reference for ImageSharp to the 2.1.3 Nuget package, rather than the dll.
+Checks added for support on thread culture in dates and numbers.
 
 6.0.0.10-beta
 
@@ -67,7 +71,7 @@ Allow missing images on the document is now supported.
 Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
+    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 6;</PackageTags>
     <Title>Scryber</Title>
     <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
@@ -109,6 +113,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Compile Remove="Data\SqlProviderCommand.cs" />
     <None Remove="Scryber.Styles" />
     <None Remove="Teronis.MSBuild.Packaging.ProjectBuildInPackage" />
+    <None Remove="SixLabors.ImageSharp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -122,24 +127,24 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Resources\scryber_NotFoundLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" >
+    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj">
         <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
         <IncludeAssets>Scryber.Styles.dll</IncludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" >
+    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj">
         <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
         <IncludeAssets>Scryber.Expressive.dll</IncludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all" >
+    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all">
         <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
         <IncludeAssets>Scryber.Imaging.dll</IncludeAssets>
         <IncludeAssets>SixLabors.ImageSharp.dll</IncludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" >
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj">
         <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
         <IncludeAssets>Scryber.Common.dll</IncludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" >
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj">
         <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
         <IncludeAssets>Scryber.Drawing.dll</IncludeAssets>
     </ProjectReference>
@@ -151,6 +156,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -164,7 +170,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Include="readme.txt" Pack="true">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
-    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)" >
+    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
   </ItemGroup>
@@ -179,7 +185,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
     </ItemGroup>
   </Target>
 </Project>
