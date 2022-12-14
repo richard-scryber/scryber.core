@@ -53,6 +53,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(10, str.Length);
             Assert.AreEqual(-1, str.Offset);
             Assert.IsFalse(str.EOS);
+            Assert.AreEqual(chars, str.ToString());
 
             while (str.MoveNext())
             {
@@ -64,10 +65,79 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(10, index);
             Assert.AreEqual(10, str.Offset);
             Assert.AreEqual(true, str.EOS);
+
+            //Move Back one
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(9, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('9', str.Current);
+            Assert.AreEqual('7', str.Peek(-2));
+
+            //Move Back another
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(8, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('8', str.Current);
+            Assert.AreEqual('9', str.Peek(1));
+
+
+            //Substring
+            Assert.AreEqual(chars.Substring(5), str.Substring(5));
+            Assert.AreEqual(chars.Substring(5, 5), str.Substring(5, 5));
+            Assert.AreEqual(chars.Substring(2, 2), str.Substring(2, 2));
+
         }
 
-        
 
+        [TestMethod]
+        public void CSSStringEnumerator_Partial()
+        {
+            var chars = "___0123456789________";
+            var subchars = "0123456789";
+            int index = 3;
+            int length = 10;
+            var str = new StringEnumerator(chars, index, length);
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
+            while (str.MoveNext())
+            {
+                Assert.IsFalse(str.EOS);
+                Assert.AreEqual(index - 3, str.Offset);
+                Assert.AreEqual(chars[index], str.Current);
+                index++;
+            }
+            Assert.AreEqual(13, index);
+            Assert.AreEqual(10, str.Offset);
+            Assert.AreEqual(true, str.EOS);
+
+            //Move Back one
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(9, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('9', str.Current);
+            Assert.AreEqual('7', str.Peek(-2));
+
+            //Move Back another
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(8, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('8', str.Current);
+            Assert.AreEqual('9', str.Peek(1));
+
+
+            //Substring
+            Assert.AreEqual(subchars.Substring(5), str.Substring(5));
+            Assert.AreEqual(subchars.Substring(5, 5), str.Substring(5, 5));
+            Assert.AreEqual(subchars.Substring(2, 2), str.Substring(2, 2));
+        }
 
 
         private void SimpleDocumentParsing_Layout(object sender, LayoutEventArgs args)

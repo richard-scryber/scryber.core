@@ -118,9 +118,9 @@ namespace Scryber.Styles.Parsing
                     if (innerEnd <= next)
                         return null;
 
-                    string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+                    //string style = this._str.Substring(next + 1, innerEnd - (next + 1));
 
-                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
+                    CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, innerEnd - (next + 1)));
                     CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
 
                     while (reader.ReadNextAttributeName())
@@ -142,8 +142,8 @@ namespace Scryber.Styles.Parsing
                     if (innerEnd <= next)
                         return null;
 
-                    string style = this._str.Substring(next + 1, innerEnd - (next + 1));
-                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
+                    //string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+                    CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, innerEnd - (next + 1)));
                     CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
 
                     while (reader.ReadNextAttributeName())
@@ -166,7 +166,7 @@ namespace Scryber.Styles.Parsing
                     }
 
                     selector = this._str.Substring(start, next - start);
-                    string style = this._str.Substring(next + 1, end - (next + 1));
+                    //string style = this._str.Substring(next + 1, end - (next + 1));
 
                     
 
@@ -177,7 +177,7 @@ namespace Scryber.Styles.Parsing
                     if (this._log.ShouldLog(TraceLevel.Verbose))
                         this._log.Add(TraceLevel.Verbose, "CSS", "Found css selector " + defn.Match.ToString() + " parsing inner contents");
 
-                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
+                    CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, end - (next + 1)));
                     CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
 
                     while (reader.ReadNextAttributeName())

@@ -16,6 +16,8 @@ namespace Scryber
 
         private string _text;
         private int _offset;
+        private int _startIndex;
+        private int _length;
 
         #endregion
 
@@ -33,10 +35,10 @@ namespace Scryber
             {
                 if (_offset < 0)
                     throw new InvalidOperationException("This string enumerator has not yet moved onto the first character. Always call MoveNext atleast once before accessing any character.");
-                else if (_offset >= _text.Length)
+                else if (_offset >= _length)
                     throw new InvalidOperationException("The enumerator has moved pat the end of the string");
 
-                return _text[_offset];
+                return _text[_offset + _startIndex];
             }
         }
 
@@ -52,17 +54,17 @@ namespace Scryber
         /// <summary>
         /// End Of String - returns true if this enumerator has passed the end of the string.
         /// </summary>
-        public bool EOS { get { return _offset >= _text.Length; } }
+        public bool EOS { get { return _offset >= _length; } }
 
         /// <summary>
         /// Gets the length of the entire string this enumerator uses
         /// </summary>
-        public int Length { get { return _text.Length; } }
+        public int Length { get { return _length; } }
 
         /// <summary>
         /// Gets the entire string of this enumerator
         /// </summary>
-        public string InnerString { get { return _text; } }
+        //public string InnerString { get { return _text; } }
 
 
         //
@@ -74,9 +76,24 @@ namespace Scryber
         /// </summary>
         /// <param name="text"></param>
         public StringEnumerator(string text)
+            : this(text, 0, text.Length)
+        {
+            
+        }
+
+        public StringEnumerator(StringEnumerator baseString, int startIndex, int length)
+            : this(baseString._text, baseString._startIndex + startIndex, length)
+        {
+
+        }
+
+
+        public StringEnumerator(string text, int startIndex, int length)
         {
             _text = text;
-            _offset = -1;
+            _offset = - 1;
+            _startIndex = startIndex;
+            _length = length;
         }
 
         
@@ -92,7 +109,7 @@ namespace Scryber
         public bool MoveNext()
         {
             _offset++;
-            return _offset < _text.Length;
+            return _offset < _length;
         }
 
         /// <summary>
@@ -139,7 +156,7 @@ namespace Scryber
         /// <returns></returns>
         public char Peek(int delta)
         {
-            return this._text[this.Offset + delta];
+            return this._text[this.Offset + this._startIndex + delta];
         }
 
         /// <summary>
@@ -148,9 +165,9 @@ namespace Scryber
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>
-        public string Substring(int length)
+        public string Substring(int startIndex)
         {
-            return this._text.Substring(this._offset, length);
+            return this._text.Substring(this._startIndex + startIndex, this._length - startIndex);
         }
 
         /// <summary>
@@ -160,9 +177,15 @@ namespace Scryber
         /// <param name="offset"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        public string Substring(int offset, int length)
+        public string Substring(int startIndex, int length)
         {
-            return this._text.Substring(offset, length);
+            return this._text.Substring(_startIndex + startIndex, length);
+        }
+
+
+        public override string ToString()
+        {
+            return this._text.Substring(this._startIndex, this._length);
         }
 
 
@@ -170,7 +193,7 @@ namespace Scryber
         {
             for (int i = 0; i < pattern.Length; i++)
             {
-                if (_text[_offset + i] != pattern[i])
+                if (_text[_offset + _startIndex + i] != pattern[i])
                     return false;
             }
             return true;
