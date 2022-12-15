@@ -55,6 +55,16 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsFalse(str.EOS);
             Assert.AreEqual(chars, str.ToString());
 
+            Assert.IsTrue(str.MoveNext());
+            Assert.IsTrue(str.Matches("0123"));
+            Assert.IsFalse(str.Matches("34567"));
+            str.Reset();
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(chars, str.ToString());
+
             while (str.MoveNext())
             {
                 Assert.IsFalse(str.EOS);
@@ -82,6 +92,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual('8', str.Current);
             Assert.AreEqual('9', str.Peek(1));
 
+            Assert.IsTrue(str.Matches("89"));
 
             //Substring
             Assert.AreEqual(chars.Substring(5), str.Substring(5));
@@ -99,6 +110,17 @@ namespace Scryber.Core.UnitTests.Html
             int index = 3;
             int length = 10;
             var str = new StringEnumerator(chars, index, length);
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
+            Assert.IsTrue(str.MoveNext());
+            Assert.IsTrue(str.Matches("0123"));
+            Assert.IsFalse(str.Matches("34567"));
+
+            str.Reset();
 
             Assert.AreEqual(10, str.Length);
             Assert.AreEqual(-1, str.Offset);
@@ -132,6 +154,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual('8', str.Current);
             Assert.AreEqual('9', str.Peek(1));
 
+            Assert.IsTrue(str.Matches("89"));
 
             //Substring
             Assert.AreEqual(subchars.Substring(5), str.Substring(5));
@@ -161,6 +184,17 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsFalse(str.EOS);
             Assert.AreEqual(subchars, str.ToString());
 
+            Assert.IsTrue(str.MoveNext());
+            Assert.IsTrue(str.Matches("0123"));
+            Assert.IsFalse(str.Matches("34567"));
+
+            str.Reset();
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
             while (str.MoveNext())
             {
                 Assert.IsFalse(str.EOS);
@@ -188,6 +222,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual('8', str.Current);
             Assert.AreEqual('9', str.Peek(1));
 
+            Assert.IsTrue(str.Matches("89"));
 
             //Substring
             Assert.AreEqual(subchars.Substring(5), str.Substring(5));
