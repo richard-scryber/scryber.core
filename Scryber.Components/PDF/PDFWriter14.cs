@@ -877,27 +877,27 @@ namespace Scryber.PDF
         /// Writes a double value to the current stream
         /// </summary>
         /// <param name="value"></param>
-        public override void WriteReal(double value)
+        public override void WriteReal(double value, string format = "F")
         {
-            CurrentStream.Write(value.ToString("F",System.Globalization.CultureInfo.InvariantCulture));
+            CurrentStream.Write(value.ToString(format,System.Globalization.CultureInfo.InvariantCulture));
         }
 
         /// <summary>
         /// Writes a decimal value to the current stream
         /// </summary>
         /// <param name="value"></param>
-        public override void WriteReal(decimal value)
+        public override void WriteReal(decimal value, string format = "F")
         {
-            CurrentStream.Write(value.ToString("F", System.Globalization.CultureInfo.InvariantCulture));
+            CurrentStream.Write(value.ToString(format, System.Globalization.CultureInfo.InvariantCulture));
         }
 
         /// <summary>
         /// Writes a real value to the current stream
         /// </summary>
         /// <param name="value"></param>
-        public override void WriteReal(float value)
+        public override void WriteReal(float value, string format = "F")
         {
-            CurrentStream.Write(value.ToString("F", System.Globalization.CultureInfo.InvariantCulture));
+            CurrentStream.Write(value.ToString(format, System.Globalization.CultureInfo.InvariantCulture));
         }
 
         #endregion

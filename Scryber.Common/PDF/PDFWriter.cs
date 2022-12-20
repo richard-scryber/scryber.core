@@ -1315,48 +1315,48 @@ namespace Scryber.PDF
         /// Writes a real value to the curent stream
         /// </summary>
         /// <param name="value">The real value to write</param>
-        public abstract void WriteReal(double value);
+        public abstract void WriteReal(double value, string format = "F");
 
         /// <summary>
         /// Writes a real value to the curent stream
         /// </summary>
         /// <param name="value">The real value to write</param>
-        public abstract void WriteReal(float value);
+        public abstract void WriteReal(float value, string format = "F");
 
         /// <summary>
         /// Writes a real value to the curent stream
         /// </summary>
         /// <param name="value">The real value to write</param>
-        public abstract void WriteReal(decimal value);
+        public abstract void WriteReal(decimal value, string format = "F");
 
         /// <summary>
         /// Writes a space then the real value to the curent stream
         /// </summary>
         /// <param name="value">The real value to write</param>
-        public void WriteRealS(double value)
+        public void WriteRealS(double value, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
         }
 
         /// <summary>
         /// Writes a space then the real value to the curent stream
         /// </summary>
         /// <param name="value">The real value to write</param>
-        public void WriteRealS(float value)
+        public void WriteRealS(float value, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
         }
 
         /// <summary>
         /// Writes a space then the real value to the curent stream
         /// </summary>
         /// <param name="value">The real value to write</param>
-        public void WriteRealS(decimal value)
+        public void WriteRealS(decimal value, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
         }
 
         /// <summary>
@@ -1364,12 +1364,12 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="value">The first real value to write</param>
         /// <param name="value2">The second real value to write</param>
-        public void WriteRealS(double value, double value2)
+        public void WriteRealS(double value, double value2, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
             this.WriteSpace();
-            this.WriteReal(value2);
+            this.WriteReal(value2, format);
         }
 
         /// <summary>
@@ -1377,12 +1377,12 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="value">The first real value to write</param>
         /// <param name="value2">The second real value to write</param>
-        public void WriteRealS(float value, float value2)
+        public void WriteRealS(float value, float value2, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
             this.WriteSpace();
-            this.WriteReal(value2);
+            this.WriteReal(value2, format);
         }
 
         /// <summary>
@@ -1390,12 +1390,12 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="value">The first real value to write</param>
         /// <param name="value2">The second real value to write</param>
-        public void WriteRealS(decimal value, decimal value2)
+        public void WriteRealS(decimal value, decimal value2, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
             this.WriteSpace();
-            this.WriteReal(value2);
+            this.WriteReal(value2, format);
         }
 
         /// <summary>
@@ -1404,14 +1404,14 @@ namespace Scryber.PDF
         /// <param name="value">The first real value to write</param>
         /// <param name="value2">The second real value to write</param>
         /// <param name="value3">The third real value to write</param>
-        public void WriteRealS(double value, double value2, double value3)
+        public void WriteRealS(double value, double value2, double value3, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
             this.WriteSpace();
-            this.WriteReal(value2);
+            this.WriteReal(value2, format);
             this.WriteSpace();
-            this.WriteReal(value3);
+            this.WriteReal(value3, format);
         }
 
         /// <summary>
@@ -1420,14 +1420,14 @@ namespace Scryber.PDF
         /// <param name="value">The first real value to write</param>
         /// <param name="value2">The second real value to write</param>
         /// <param name="value3">The third real value to write</param>
-        public void WriteRealS(float value, float value2, float value3)
+        public void WriteRealS(float value, float value2, float value3, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
             this.WriteSpace();
-            this.WriteReal(value2);
+            this.WriteReal(value2, format);
             this.WriteSpace();
-            this.WriteReal(value3);
+            this.WriteReal(value3, format);
         }
 
         /// <summary>
@@ -1436,14 +1436,14 @@ namespace Scryber.PDF
         /// <param name="value">The first real value to write</param>
         /// <param name="value2">The second real value to write</param>
         /// <param name="value3">The third real value to write</param>
-        public void WriteRealS(decimal value, decimal value2, decimal value3)
+        public void WriteRealS(decimal value, decimal value2, decimal value3, string format = "F")
         {
             this.WriteSpace();
-            this.WriteReal(value);
+            this.WriteReal(value, format);
             this.WriteSpace();
-            this.WriteReal(value2);
+            this.WriteReal(value2, format);
             this.WriteSpace();
-            this.WriteReal(value3);
+            this.WriteReal(value3, format);
         }
 
         #endregion

@@ -70,9 +70,9 @@ namespace Scryber.Drawing
             this = CreateScaling(x, y) * this;
         }
 
-        public void Shear(double x, double y)
+        public void Skew(double x, double y)
         {
-            this *= CreateSkewRadians(x, y);
+            this *= CreateSkew(x, y);
         }
 
         public void RotateDegrees(double angleDegrees)
@@ -139,7 +139,12 @@ namespace Scryber.Drawing
         {
             return this * other;
         }
-        
+
+        public override string ToString()
+        {
+            return $"[{Math.Round(_m11, 4)}, {Math.Round(_m12, 4)}, {Math.Round(_m21, 4)}, {Math.Round(_m22, 4)},{Math.Round(_dx, 4)},{Math.Round(_dy, 4)}]";
+        }
+
         //operator methods
         public static Matrix2D operator *(Matrix2D one, Matrix2D two)
         {
@@ -165,14 +170,16 @@ namespace Scryber.Drawing
 
             Matrix2D result = new Matrix2D(
 
-                (one._m11 * two._m11) + (one._m12 * two._m21),
-                (one._m11 * two._m12) + (one._m12 * two._m22),
+                (one._m11 * two._m11) + (one._m21 * two._m12),
+                (one._m12 * two._m11) + (one._m22 * two._m12),
 
-                (one._m21 * two._m11) + (one._m22 * two._m21),
-                (one._m21 * two._m12) + (one._m22 * two._m22),
+                (one._m11 * two._m21) + (one._m21 * two._m22),
+                (one._m12 * two._m21) + (one._m22 * two._m22),
 
-                one._dx * two._m11 + one._dy * two._m21 + two._dx,
-                one._dx * two._m12 + one._dy * two._m22 + two._dy);
+                (one._m11 * two._dx) + (one._m21 * two._dy) + one._dx,
+                (one._m12 * two._dx) + (one._m22 * two._dy) + one._dy);
+                //one._dx * two._m11 + one._dy * two._m21 + two._dx,
+                //one._dx * two._m12 + one._dy * two._m22 + two._dy);
 
             return result;
         }
@@ -188,11 +195,11 @@ namespace Scryber.Drawing
             return result;
         }
 
-        private static Matrix2D CreateSkewRadians(double skewX, double skewY)
+        private static Matrix2D CreateSkew(double skewX, double skewY)
         {
             var result = new Matrix2D(
-                1.0, Math.Tan(skewY),
-                Math.Tan(skewX), 1.0,
+                1.0, skewY,
+                skewX, 1.0,
                 0, 0, 
                 MatrixTypes.IsUnknown);
             return result;
@@ -207,9 +214,9 @@ namespace Scryber.Drawing
         {
             double sin = Math.Sin(angleRads);
             double cos = Math.Cos(angleRads);
-            
-            double dx    = (centreX * (1.0 - cos)) + (centreY * sin);
-            double dy    = (centreY * (1.0 - cos)) - (centreX * sin);
+
+            double dx  = (centreX * (1.0 - cos)) + (centreY * sin);
+            double dy  = (centreY * (1.0 - cos)) - (centreX * sin);
 
             var result = new Matrix2D(
                 cos, sin,

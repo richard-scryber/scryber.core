@@ -686,8 +686,8 @@ namespace Scryber.PDF.Layout
             if (null == positioned)
                 throw new ArgumentNullException("positioned");
 
-            if (pos.PositionMode == PositionMode.Inline || pos.PositionMode == PositionMode.Absolute)
-                throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absoulute");
+            if (pos.PositionMode == PositionMode.Inline)
+                throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absolute");
 
             //Get the block that sits in the positioned region
             if (positioned.Contents == null || positioned.Contents.Count != 1)
@@ -712,6 +712,8 @@ namespace Scryber.PDF.Layout
                     return;
                 }
             }
+
+            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.TransformMatrix.ToString() + " to the bounds for block " + relBlock.ToString());
 
             //We need to adjust the size of the positioned region so it contains the transformed black as much as possible.
 

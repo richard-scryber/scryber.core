@@ -320,7 +320,7 @@ namespace Scryber.PDF.Graphics
             {
                 for (int i = 0; i < Matrix2DTransformationLength; i++)
                 {
-                    this.Writer.WriteRealS(all[i]);
+                    this.Writer.WriteRealS(all[i], "F5");
                 }
 
                 this.Writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix);
@@ -330,7 +330,7 @@ namespace Scryber.PDF.Graphics
             {
                 for (int i = 0; i < Matrix2DTransformationLength; i++)
                 {
-                    this.Writer.WriteRealS(all[i]);
+                    this.Writer.WriteRealS(all[i], "F5");
                 }
 
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtTransformMatrix);
@@ -509,7 +509,12 @@ namespace Scryber.PDF.Graphics
         /// <param name="height">The height</param>
         protected virtual void RenderRectangle(Unit x, Unit y, Unit width, Unit height)
         {
-            this.Writer.WriteOpCodeS(PDFOpCode.GraphRect, x.RealValue, this.ContainerSize.Height.RealValue - y.RealValue - height.RealValue, width.RealValue, height.RealValue);
+            var x1 = GetXPosition(x.RealValue);
+            var y1 = GetYPosition(y.RealValue);
+            var w1 = GetXOffset(width.RealValue);
+            var h1 = GetYOffset(height.RealValue);
+            
+            this.Writer.WriteOpCodeS(PDFOpCode.GraphRect, x1, y1, w1, h1);
         }
 
         #endregion
@@ -534,36 +539,91 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
+        #region Translation Offsets
+
+        //Stores a stack of explicit offsets and the current values.
+
+        private Stack<Point> _translationOffsets;
+        private PDFReal _currentTranslationXOffset = PDFReal.Zero;
+        private PDFReal _currentTranslationYOffset = PDFReal.Zero;
+
+        public PDFReal TranslationXOffset
+        {
+            get
+            {
+                return _currentTranslationXOffset;
+            }
+        }
+
+        public PDFReal TranslationYOffset
+        {
+            get
+            {
+                return _currentTranslationYOffset;
+            }
+        }
+
+        public void SaveTranslationOffset(PDFReal x, PDFReal y)
+        {
+            if (null == _translationOffsets)
+                _translationOffsets = new Stack<Point>();
+            else
+            {
+                x += _currentTranslationXOffset;
+                y += _currentTranslationYOffset;
+            }
+            _translationOffsets.Push(new Point(x.Value, y.Value));
+            _currentTranslationXOffset = x;
+            _currentTranslationYOffset = y;
+        }
+
+        public void RestoreTranslationOffset()
+        {
+            if (_translationOffsets != null && _translationOffsets.Count > 0)
+            {
+                var prev = _translationOffsets.Pop();
+                _currentTranslationXOffset = prev.X.RealValue;
+                _currentTranslationYOffset = prev.Y.RealValue;
+            }
+            else
+            {
+                _currentTranslationXOffset = PDFReal.Zero;
+                _currentTranslationYOffset = PDFReal.Zero;
+            }
+        }
+
+        #endregion
+
         #region public PDFReal GetXPosition(PDFUnit x) + 4 Overloads
 
         public PDFReal GetXPosition(Unit ux)
         {
-            return ux.RealValue;
+            return ux.RealValue - TranslationXOffset;
         }
 
         public PDFReal GetXPosition(Unit ux, Unit width)
         {
-            return ux.RealValue;
+            return ux.RealValue - TranslationXOffset;
         }
 
         public PDFReal GetXPosition(Unit ux, PDFReal width)
         {
-            return ux.RealValue;
+            return ux.RealValue - TranslationXOffset;
         }
 
         public PDFReal GetXPosition(PDFReal x, PDFReal width)
         {
-            return x;
+            return x - TranslationXOffset;
         }
 
         public PDFReal GetXPosition(PDFReal x)
         {
-            return x;
+            return x - TranslationXOffset;
         }
 
         public PDFReal GetXPosition(double d)
         {
-            return (PDFReal)d;
+            return ((PDFReal)d) - TranslationXOffset;
         }
 
         #endregion
@@ -572,22 +632,22 @@ namespace Scryber.PDF.Graphics
 
         public PDFReal GetYPosition(Unit uy)
         {
-            return this.ContainerSize.Height.RealValue - uy.RealValue;
+            return (this.ContainerSize.Height.RealValue - TranslationYOffset) - uy.RealValue;
         }
 
         public PDFReal GetYPosition(Unit uy, PDFReal height)
         {
-            return this.ContainerSize.Height.RealValue - uy.RealValue - height;
+            return (this.ContainerSize.Height.RealValue - TranslationYOffset) - uy.RealValue - height;
         }
 
         public PDFReal GetYPosition(PDFReal y)
         {
-            return this.ContainerSize.Height.RealValue - y;
+            return (this.ContainerSize.Height.RealValue - TranslationYOffset) - y;
         }
 
         public PDFReal GetYPosition(PDFReal y, PDFReal height)
         {
-            return this.ContainerSize.Height.RealValue - y - height;
+            return (this.ContainerSize.Height.RealValue - TranslationYOffset) - y - height;
         }
 
         #endregion
@@ -596,26 +656,26 @@ namespace Scryber.PDF.Graphics
 
         public PDFReal GetYOffset(Unit uy)
         {
-            return PDFReal.Zero - uy.RealValue;
+            return 0 - (uy.RealValue); // TranslationYOffset - uy.RealValue;
         }
 
         public PDFReal GetYOffset(PDFReal y)
         {
-            return PDFReal.Zero - y;
+            return 0.0 - y; // TranslationYOffset - y;
         }
 
         #endregion
 
         #region public PDFReal GetXOffset() + 1 overloads
 
-        public PDFReal GetXOffset(Unit uy)
+        public PDFReal GetXOffset(Unit ux)
         {
-            return uy.RealValue;
+            return ux.RealValue; // - TranslationXOffset;
         }
 
-        public PDFReal GetXOffset(PDFReal y)
+        public PDFReal GetXOffset(PDFReal x)
         {
-            return y;
+            return x; // - TranslationXOffset;
         }
 
         #endregion

@@ -183,6 +183,8 @@ namespace Scryber.Html
         public const string StrokeLineCap = "stroke-linecap";
         public const string StrokeLineJoin = "stroke-linejoin";
 
+        public const string Transform = "transform";
+
     }
 
     /// <summary>

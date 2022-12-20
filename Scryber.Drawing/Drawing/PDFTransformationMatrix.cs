@@ -77,6 +77,12 @@ namespace Scryber.Drawing
             _matrix.Rotate(angle);
         }
 
+        public void SetRotationDeg(float degrees)
+        {
+            var angle = (Math.PI / 180.0) * degrees;
+            _matrix.Rotate(angle);
+        }
+
         public void SetScale(float scaleX, float scaleY)
         {
             _matrix.Scale(scaleX, scaleY);
@@ -84,7 +90,7 @@ namespace Scryber.Drawing
 
         public void SetSkew(float skewX, float skewY)
         {
-            _matrix.Shear(skewX, skewY);
+            _matrix.Skew(skewX, skewY);
         }
 
         public Rect TransformBounds(Rect bounds, TransformationOrigin origin)
@@ -196,6 +202,7 @@ namespace Scryber.Drawing
         {
             return new PDFTransformationMatrix();
         }
+
         //
         // graphics adapters
         //
@@ -223,6 +230,23 @@ namespace Scryber.Drawing
         object ICloneable.Clone()
         {
             return this.Clone();
+        }
+
+        //
+        // object overrides
+        //
+
+        public override bool Equals(object obj)
+        {
+            if (obj is PDFTransformationMatrix matrix2)
+                return Matrix2D.Equals(this._matrix, matrix2._matrix);
+            else
+                return base.Equals(obj);
+        }
+
+        public override string ToString()
+        {
+            return "Matrix : " + this._matrix.ToString();
         }
     }
 }
