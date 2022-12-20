@@ -279,15 +279,15 @@ namespace Scryber.Core.UnitTests.Html
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
-    <div style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
+    <div id='plain' style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: absolute; border: solid 2px red;' >
+    <div id='rotate10' style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
+    <div id='rotate20' style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
@@ -311,6 +311,7 @@ namespace Scryber.Core.UnitTests.Html
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
+    <p>After the transformed content of the page</p>
 </body>
 </html>";
 

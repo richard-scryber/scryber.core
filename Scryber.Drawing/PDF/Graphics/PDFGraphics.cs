@@ -581,9 +581,18 @@ namespace Scryber.PDF.Graphics
         {
             if (_translationOffsets != null && _translationOffsets.Count > 0)
             {
-                var prev = _translationOffsets.Pop();
-                _currentTranslationXOffset = prev.X.RealValue;
-                _currentTranslationYOffset = prev.Y.RealValue;
+                _translationOffsets.Pop();
+                if (_translationOffsets.Count > 0)
+                {
+                    var prev = _translationOffsets.Peek();
+                    _currentTranslationXOffset = prev.X.RealValue;
+                    _currentTranslationYOffset = prev.Y.RealValue;
+                }
+                else
+                {
+                    _currentTranslationXOffset = PDFReal.Zero;
+                    _currentTranslationYOffset = PDFReal.Zero;
+                }
             }
             else
             {
