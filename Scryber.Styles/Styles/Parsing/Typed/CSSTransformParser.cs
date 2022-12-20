@@ -60,7 +60,7 @@ namespace Scryber.Styles.Parsing.Typed
 
             if(float.TryParse(str, out angle))
             {
-                angle = (float)((Math.PI / 180.0) * angle);
+                angle = -((float)((Math.PI / 180.0) * angle));
                 return true;
             }
             else

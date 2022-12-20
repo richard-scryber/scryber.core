@@ -279,14 +279,38 @@ namespace Scryber.Core.UnitTests.Html
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >Content of the div</div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-10deg); position: absolute; border: solid 4px blue;' >Content of the div <div style='top: 70pt;height:30pt; background-color:blue'></div> </div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-20deg); position: absolute; border: solid 2px red;' >Content of the div <div style='height:30pt; background-color:blue'></div> </div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-30deg); position: absolute; border: solid 2px red;' >Content of the div<div style='height:30pt; background-color:blue'></div> </div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-40deg); position: absolute; border: solid 2px red;' >Content of the div<div style='height:30pt; background-color:blue'></div> </div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-50deg); position: absolute; border: solid 2px red;' >Content of the div<div style='height:30pt; background-color:blue'></div> </div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-60deg); position: absolute; border: solid 2px red;' >Content of the div<div style='height:30pt; background-color:blue'></div> </div>
-    <div style='width: 100pt; left: 0pt; top: 0pt; background-color:#ddd; height:200pt; transform: rotate(-70deg); position: absolute; border: solid 2px red;' >Content of the div<div style='height:30pt; background-color:blue'></div> </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(30deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(40deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(50deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(60deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(70deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
 </body>
 </html>";
 
