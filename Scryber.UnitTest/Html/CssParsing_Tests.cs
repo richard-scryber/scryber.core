@@ -726,6 +726,8 @@ body.grey div.reverse{
 
         }
 
+
+
         [TestMethod()]
         public void ParseGoogleFontLink()
         {
@@ -766,6 +768,45 @@ body.grey div.reverse{
 
 
             }
+
+        }
+
+        [TestMethod()]
+        public void ParseTransformations()
+        {
+
+            var src = @".rotate {
+                          transform : rotate(10deg);
+                        }
+                        .skew {
+                          transform:skew(25deg, 25deg);
+                        }
+                        .translate {
+                          transform:   translate(10pt, 15pt);
+                        }
+";
+
+            var parser = new CSSStyleParser(src, null);
+            StyleFontFace first = null;
+
+            foreach (var item in parser)
+            {
+                if (null != first)
+                    throw new InvalidOperationException("There has been more than one parsed style");
+
+                if (!(item is StyleFontFace))
+                    throw new InvalidCastException("The item is not a font face");
+
+                first = item as StyleFontFace;
+            }
+
+            Assert.IsNotNull(first, "No font face was parsed");
+
+            var fsrc = first.GetValue(StyleKeys.FontFaceSrcKey, null);
+
+            Assert.AreEqual("https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf", fsrc.Source, "Source does not match");
+            Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
+
 
         }
 

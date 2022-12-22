@@ -15,7 +15,7 @@ namespace Scryber.Core.UnitTests.Styles
     public class PDFTransformStyleTest
     {
 
-#if USETRANSFORM
+
 
         private TestContext testContextInstance;
 
@@ -35,67 +35,237 @@ namespace Scryber.Core.UnitTests.Styles
             }
         }
 
-#region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-#endregion
 
 
         /// <summary>
         ///A test for PDFTransformStyle Constructor
         ///</summary>
         [TestMethod()]
-        public void PDFTransformStyleConstructorTest()
+        public void TransformStyleConstructorTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle();
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            TransformStyle target = new TransformStyle();
+            Assert.IsNull(target.Operations);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Rotate));
+            Assert.IsTrue(TransformOperation.IsNotSet(target.ScaleX));
+            Assert.IsTrue(TransformOperation.IsNotSet(target.ScaleY));
+            Assert.IsTrue(TransformOperation.IsNotSet(target.SkewX));
+            Assert.IsTrue(TransformOperation.IsNotSet(target.SkewY));
+            Assert.IsTrue(TransformOperation.IsNotSet(target.TranslateX));
+            Assert.IsTrue(TransformOperation.IsNotSet(target.TranslateY));
+
+            Assert.IsFalse(TransformOperation.IsSet(target.Rotate));
+            Assert.IsFalse(TransformOperation.IsSet(target.ScaleX));
+            Assert.IsFalse(TransformOperation.IsSet(target.ScaleY));
+            Assert.IsFalse(TransformOperation.IsSet(target.SkewX));
+            Assert.IsFalse(TransformOperation.IsSet(target.SkewY));
+            Assert.IsFalse(TransformOperation.IsSet(target.TranslateX));
+            Assert.IsFalse(TransformOperation.IsSet(target.TranslateY));
+        }
+
+
+        /// <summary>
+        ///A test for Operations
+        ///</summary>
+        [TestMethod()]
+        public void OperationsTest()
+        {
+            TransformStyle target = new TransformStyle();
+            var expected = new TransformOperation(TransformType.Translate, 20.1F, 30.3F);
+            
+            target.Operations = expected;
+            var actual = target.Operations;
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.Type, TransformType.Translate);
+            Assert.AreEqual(actual.Value1, 20.1F);
+            Assert.AreEqual(actual.Value2, 30.3F);
+        }
+
+        /// <summary>
+        ///A test for Operations
+        ///</summary>
+        [TestMethod()]
+        public void OperationsNextTest()
+        {
+            TransformStyle target = new TransformStyle();
+            var expected = new TransformOperation(TransformType.Translate, 20.1F, 30.3F);
+            var next = new TransformOperation(TransformType.Scale, 2.0F, 1.0F);
+            expected.Next = next;
+
+            target.Operations = expected;
+            var actual = target.Operations;
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.Type, TransformType.Translate);
+            Assert.AreEqual(actual.Value1, 20.1F);
+            Assert.AreEqual(actual.Value2, 30.3F);
+
+            actual = actual.Next;
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.Type, TransformType.Scale);
+            Assert.AreEqual(actual.Value1, 2.0F);
+            Assert.AreEqual(actual.Value2, 1.0F);
+        }
+
+        /// <summary>
+        ///A test for Operations
+        ///</summary>
+        [TestMethod()]
+        public void OperationsTryGetTest()
+        {
+            TransformStyle target = new TransformStyle();
+            var expected = new TransformOperation(TransformType.Translate, 20.1F, 30.3F);
+            var next = new TransformOperation(TransformType.Scale, 2.0F, 1.0F);
+            expected.Next = next;
+
+            target.Operations = expected;
+            TransformOperation actual;
+
+            Assert.IsTrue(target.Operations.TryGetType(TransformType.Translate, out actual));
+
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.Type, TransformType.Translate);
+            Assert.AreEqual(actual.Value1, 20.1F);
+            Assert.AreEqual(actual.Value2, 30.3F);
+            
+            
+            Assert.IsTrue(target.Operations.TryGetType(TransformType.Scale, out actual));
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.Type, TransformType.Scale);
+            Assert.AreEqual(actual.Value1, 2.0F);
+            Assert.AreEqual(actual.Value2, 1.0F);
+
+            Assert.IsFalse(target.Operations.TryGetType(TransformType.Rotate, out actual));
+            Assert.IsNull(actual);
+        }
+
+
+        /// <summary>
+        ///A test for Operations
+        ///</summary>
+        [TestMethod()]
+        public void OperationsRemoveTest()
+        {
+            TransformStyle target = new TransformStyle();
+            var expected = new TransformOperation(TransformType.Translate, 20.1F, 30.3F);
+            var next = new TransformOperation(TransformType.Scale, 2.0F, 1.0F);
+            expected.Next = next;
+
+            target.Operations = expected;
+            TransformOperation actual = TransformOperation.Remove(TransformType.Translate, expected);
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.Type, TransformType.Scale);
+            Assert.AreEqual(actual.Value1, 2.0F);
+            Assert.AreEqual(actual.Value2, 1.0F);
+
+            Assert.IsFalse(actual.TryGetType(TransformType.Translate, out actual));
+            Assert.IsNull(actual);
+        }
+
+
+
+
+        /// <summary>
+        ///A test for OffsetH
+        ///</summary>
+        [TestMethod()]
+        public void TranslateXTest()
+        {
+            TransformStyle target = new TransformStyle(); 
+            float expected = 10.1F;
+            float actual;
+            target.TranslateX = expected;
+            actual = target.TranslateX;
+            Assert.AreEqual(expected, actual);
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Translate, target.Operations.Type);
+            Assert.AreEqual(10.1F, target.Operations.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value2));
+            Assert.IsNull(target.Operations.Next);
+        }
+
+        /// <summary>
+        ///A test for OffsetV
+        ///</summary>
+        [TestMethod()]
+        public void TranslateYTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float expected = 20.1F;
+            float actual;
+            target.TranslateY = expected;
+            actual = target.TranslateY;
+            Assert.AreEqual(expected, actual);
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Translate, target.Operations.Type);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value1));
+            Assert.AreEqual(20.1F, target.Operations.Value2);
+            Assert.IsNull(target.Operations.Next);
         }
 
         /// <summary>
         ///A test for RemoveOffsetH
         ///</summary>
         [TestMethod()]
-        public void RemoveOffsetHTest()
+        public void RemoveTranslateXTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveOffsetH();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+            TransformStyle target = new TransformStyle();
+            float expected = 20.1F;
+            float actual;
+            target.TranslateX = expected;
+            actual = target.TranslateX;
+            Assert.AreEqual(expected, actual);
+
+            target.RemoveTranslateX();
+            Assert.IsTrue(TransformOperation.IsNotSet(target.TranslateX));
+            Assert.IsNull(target.Operations);
+
         }
 
         /// <summary>
         ///A test for RemoveOffsetV
         ///</summary>
         [TestMethod()]
-        public void RemoveOffsetVTest()
+        public void RemoveTranslateYTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveOffsetV();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+            TransformStyle target = new TransformStyle();
+            float expected = 10.1F;
+            float actual;
+            target.TranslateY = expected;
+            actual = target.TranslateY;
+            Assert.AreEqual(expected, actual);
+
+            target.RemoveTranslateY();
+            Assert.IsTrue(TransformOperation.IsNotSet(target.TranslateY));
+            Assert.IsNull(target.Operations);
+        }
+
+
+        /// <summary>
+        ///A test for Rotate
+        ///</summary>
+        [TestMethod()]
+        public void RotateTest()
+        {
+            TransformStyle target = new TransformStyle(); 
+            float expected = 20.2F;
+            float actual;
+            target.Rotate = expected;
+            actual = target.Rotate;
+            Assert.AreEqual(expected, actual);
+
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Rotate, target.Operations.Type);
+            Assert.AreEqual(20.2F, target.Operations.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value2));
+            Assert.IsNull(target.Operations.Next);
         }
 
         /// <summary>
@@ -104,98 +274,17 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void RemoveRotateTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveRotate();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for RemoveScaleX
-        ///</summary>
-        [TestMethod()]
-        public void RemoveScaleXTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveScaleX();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for RemoveScaleY
-        ///</summary>
-        [TestMethod()]
-        public void RemoveScaleYTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveScaleY();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for RemoveSkewX
-        ///</summary>
-        [TestMethod()]
-        public void RemoveSkewXTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveSkewX();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for RemoveSkewY
-        ///</summary>
-        [TestMethod()]
-        public void RemoveSkewYTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            target.RemoveSkewY();
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for OffsetH
-        ///</summary>
-        [TestMethod()]
-        public void OffsetHTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 0F; // TODO: Initialize to an appropriate value
-            float actual;
-            target.OffsetH = expected;
-            actual = target.OffsetH;
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-        /// <summary>
-        ///A test for OffsetV
-        ///</summary>
-        [TestMethod()]
-        public void OffsetVTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 0F; // TODO: Initialize to an appropriate value
-            float actual;
-            target.OffsetV = expected;
-            actual = target.OffsetV;
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-        /// <summary>
-        ///A test for Rotate
-        ///</summary>
-        [TestMethod()]
-        public void RotateTest()
-        {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 20F; // TODO: Initialize to an appropriate value
+            TransformStyle target = new TransformStyle();
+            float expected = 20.2F;
             float actual;
             target.Rotate = expected;
             actual = target.Rotate;
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+
+            target.RemoveRotate();
+
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Rotate));
+            Assert.IsNull(target.Operations);
         }
 
         /// <summary>
@@ -204,14 +293,20 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void ScaleXTest()
         {
-            
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 20F; // TODO: Initialize to an appropriate value
+
+            TransformStyle target = new TransformStyle();
+            float expected = 25.1F;
             float actual;
             target.ScaleX = expected;
             actual = target.ScaleX;
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Scale, target.Operations.Type);
+            Assert.AreEqual(25.1F, target.Operations.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value2));
+            Assert.IsNull(target.Operations.Next);
         }
 
         /// <summary>
@@ -220,13 +315,57 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void ScaleYTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 0F; // TODO: Initialize to an appropriate value
+            TransformStyle target = new TransformStyle();
+            float expected = 30.1F;
             float actual;
             target.ScaleY = expected;
             actual = target.ScaleY;
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Scale, target.Operations.Type);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value1));
+            Assert.AreEqual(30.1F, target.Operations.Value2);
+            Assert.IsNull(target.Operations.Next);
+        }
+
+        /// <summary>
+        ///A test for RemoveScaleX
+        ///</summary>
+        [TestMethod()]
+        public void RemoveScaleXTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float expected = 20.2F;
+            float actual;
+            target.ScaleX = expected;
+            actual = target.ScaleX;
+            Assert.AreEqual(expected, actual);
+
+            target.RemoveScaleX();
+
+            Assert.IsTrue(TransformOperation.IsNotSet(target.ScaleX));
+            Assert.IsNull(target.Operations);
+        }
+
+        /// <summary>
+        ///A test for RemoveScaleY
+        ///</summary>
+        [TestMethod()]
+        public void RemoveScaleYTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float expected = 20.2F;
+            float actual;
+            target.ScaleY = expected;
+            actual = target.ScaleY;
+            Assert.AreEqual(expected, actual);
+
+            target.RemoveScaleY();
+
+            Assert.IsTrue(TransformOperation.IsNotSet(target.ScaleY));
+            Assert.IsNull(target.Operations);
         }
 
         /// <summary>
@@ -235,13 +374,19 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void SkewXTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 0F; // TODO: Initialize to an appropriate value
+            TransformStyle target = new TransformStyle();
+            float expected = 35.1F;
             float actual;
             target.SkewX = expected;
             actual = target.SkewX;
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Skew, target.Operations.Type);
+            Assert.AreEqual(35.1F, target.Operations.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value2));
+            Assert.IsNull(target.Operations.Next);
         }
 
         /// <summary>
@@ -250,15 +395,58 @@ namespace Scryber.Core.UnitTests.Styles
         [TestMethod()]
         public void SkewYTest()
         {
-            PDFTransformStyle target = new PDFTransformStyle(); // TODO: Initialize to an appropriate value
-            float expected = 0F; // TODO: Initialize to an appropriate value
+            TransformStyle target = new TransformStyle();
+            float expected = 40.1F;
             float actual;
             target.SkewY = expected;
             actual = target.SkewY;
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+
+            //Check that the operations are stored correctly
+            Assert.IsNotNull(target.Operations);
+            Assert.AreEqual(TransformType.Skew, target.Operations.Type);
+            Assert.IsTrue(TransformOperation.IsNotSet(target.Operations.Value1));
+            Assert.AreEqual(40.1F, target.Operations.Value2);
+            Assert.IsNull(target.Operations.Next);
         }
-#endif
+
+        /// <summary>
+        ///A test for RemoveSkewX
+        ///</summary>
+        [TestMethod()]
+        public void RemoveSkewXTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float expected = 20.2F;
+            float actual;
+            target.SkewX = expected;
+            actual = target.SkewX;
+            Assert.AreEqual(expected, actual);
+
+            target.RemoveSkewX();
+
+            Assert.IsTrue(TransformOperation.IsNotSet(target.SkewX));
+            Assert.IsNull(target.Operations);
+        }
+
+        /// <summary>
+        ///A test for RemoveSkewY
+        ///</summary>
+        [TestMethod()]
+        public void RemoveSkewYTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float expected = 20.2F;
+            float actual;
+            target.SkewY = expected;
+            actual = target.SkewY;
+            Assert.AreEqual(expected, actual);
+
+            target.RemoveSkewY();
+
+            Assert.IsTrue(TransformOperation.IsNotSet(target.SkewY));
+            Assert.IsNull(target.Operations);
+        }
 
     }
 

@@ -140,4 +140,15 @@ namespace Scryber
         String,
         Component
     }
+
+
+    public enum TransformType
+    {
+        Translate,
+        Rotate,
+        Scale,
+        Skew,
+    }
+
+    
 }

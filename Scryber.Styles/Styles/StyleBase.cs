@@ -1044,43 +1044,12 @@ namespace Scryber.Styles
             // transformations
 
             PDFTransformationMatrix transform = null;
+            
 
-            if (this.IsValueDefined(StyleKeys.TransformXOffsetKey) || this.IsValueDefined(StyleKeys.TransformYOffsetKey))
+            if (this.IsValueDefined(StyleKeys.TransformOperationKey))
             {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-                transform.SetTranslation(this.GetValue(StyleKeys.TransformXOffsetKey, 0.0F), this.GetValue(StyleKeys.TransformYOffsetKey, 0.0F));
-
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
-            }
-
-            if (this.IsValueDefined(StyleKeys.TransformRotateKey))
-            {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-                transform.SetRotation(this.GetValue(StyleKeys.TransformRotateKey, 0.0F));
-
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
-            }
-
-            if (this.IsValueDefined(StyleKeys.TransformXScaleKey) || this.IsValueDefined(StyleKeys.TransformYScaleKey))
-            {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-                transform.SetScale(this.GetValue(StyleKeys.TransformXScaleKey, 0.0F), this.GetValue(StyleKeys.TransformYScaleKey, 0.0F));
-
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
-            }
-
-            if (this.IsValueDefined(StyleKeys.TransformXSkewKey) || this.IsValueDefined(StyleKeys.TransformYSkewKey))
-            {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-
-                transform.SetSkew(this.GetValue(StyleKeys.TransformXSkewKey, 0.0F), this.GetValue(StyleKeys.TransformYSkewKey, 0.0F));
+                TransformOperation op = this.GetValue(StyleKeys.TransformOperationKey, null);
+                transform = op.GetMatrix(MatrixOrder.Append);
 
                 if (options.PositionMode != PositionMode.Absolute)
                     options.PositionMode = PositionMode.Relative;

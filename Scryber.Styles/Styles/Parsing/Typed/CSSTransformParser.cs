@@ -18,16 +18,16 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 string value = reader.CurrentTextValue;
 
-                float parsed;
+                TransformOperation parsed;
                 if(IsExpression(value))
                 {
                     //Attach to both the Width and the FullWidth flag
-                    result = AttachExpressionBindingHandler(onStyle, StyleKeys.TransformRotateKey, value, DoConvertTransformRotate);
+                    result = AttachExpressionBindingHandler(onStyle, StyleKeys.TransformOperationKey, value, DoConvertTransform);
                     //result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
                 }
-                else if (DoConvertTransformRotate(onStyle, value, out parsed))
+                else if (DoConvertTransform(onStyle, value, out parsed))
                 {
-                    onStyle.SetValue(StyleKeys.TransformRotateKey, parsed);
+                    onStyle.SetValue(StyleKeys.TransformOperationKey, parsed);
                     result = true;
                 }
                 
@@ -35,11 +35,15 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertTransformRotate(StyleBase style, object value, out float angle)
+        protected bool DoConvertTransform(StyleBase style, object value, out TransformOperation operation)
         {
+            TransformType type;
+            float value1 = TransformOperation.NotSetValue();
+            float value2 = TransformOperation.NotSetValue();
+
             if(null == value)
             {
-                angle = 0;
+                operation = null;
                 return false;
             }
 
@@ -49,22 +53,41 @@ namespace Scryber.Styles.Parsing.Typed
                 var end = str.IndexOf(")", 7);
                 if(end <= 8)
                 {
-                    angle = 0;
+                    operation = null;
                     return false;
                 }
                 str = str.Substring(7, end - 7).Trim();
+                type = TransformType.Rotate;
+            }
+            else if (str.StartsWith("skew("))
+            {
+                throw new NotSupportedException("Skew not currently supported");
+            }
+            else if (str.StartsWith("scale("))
+            {
+                throw new NotSupportedException("Scale not currently supported");
+            }
+            else if (str.StartsWith("translate("))
+            {
+                throw new NotSupportedException("Translate not currently supported");
+            }
+            else
+            {
+                throw new NotSupportedException("The transform operation " + str + " is not known or not currently supported");
             }
 
             if (str.EndsWith("deg"))
                 str = str.Substring(0, str.Length - 3);
 
-            if(float.TryParse(str, out angle))
+            if(float.TryParse(str, out value1))
             {
-                angle = -((float)((Math.PI / 180.0) * angle));
+                value1 = -((float)((Math.PI / 180.0) * value1));
+                operation = new TransformOperation(type, value1, value2);
                 return true;
             }
             else
             {
+                operation = null;
                 return false;
             }
         }

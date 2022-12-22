@@ -282,13 +282,14 @@ namespace Scryber.Styles
 
         //Transform
         public static readonly StyleKey TransformItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleTransform, NOT_INHERITED);
-        public static readonly StyleKey<float> TransformRotateKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"rote", TransformItemKey);
-        public static readonly StyleKey<float> TransformXScaleKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xscl", TransformItemKey);
-        public static readonly StyleKey<float> TransformXSkewKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xskw", TransformItemKey);
-        public static readonly StyleKey<float> TransformXOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xoff", TransformItemKey);
-        public static readonly StyleKey<float> TransformYScaleKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yscl", TransformItemKey);
-        public static readonly StyleKey<float> TransformYSkewKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yskw", TransformItemKey);
-        public static readonly StyleKey<float> TransformYOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yoff", TransformItemKey);
+        public static readonly StyleKey<TransformOperation> TransformOperationKey = StyleKey.InternalCreateStyleValueKey<TransformOperation>((ObjectType)"trop", TransformItemKey);
+        //public static readonly StyleKey<float> TransformRotateKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"rote", TransformItemKey);
+        //public static readonly StyleKey<float> TransformXScaleKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xscl", TransformItemKey);
+        //public static readonly StyleKey<float> TransformXSkewKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xskw", TransformItemKey);
+        //public static readonly StyleKey<float> TransformXOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"xoff", TransformItemKey);
+        //public static readonly StyleKey<float> TransformYScaleKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yscl", TransformItemKey);
+        //public static readonly StyleKey<float> TransformYSkewKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yskw", TransformItemKey);
+        //public static readonly StyleKey<float> TransformYOffsetKey = StyleKey.InternalCreateStyleValueKey<float>((ObjectType)"yoff", TransformItemKey);
         public static readonly StyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((ObjectType)"orig", TransformItemKey);
 
         //FontFace
