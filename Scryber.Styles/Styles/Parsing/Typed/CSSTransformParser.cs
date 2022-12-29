@@ -13,83 +13,193 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            bool result = false;
-            if (reader.ReadNextValue())
+            bool result = true;
+            TransformOperation full = null;
+            bool bound = false;
+
+            while (reader.ReadNextValue())
             {
                 string value = reader.CurrentTextValue;
 
                 TransformOperation parsed;
-                if(IsExpression(value))
+                if (IsExpression(value))
                 {
-                    //Attach to both the Width and the FullWidth flag
-                    result = AttachExpressionBindingHandler(onStyle, StyleKeys.TransformOperationKey, value, DoConvertTransform);
-                    //result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
+                    if (null != full)
+                        throw new ArgumentOutOfRangeException("Cannot bind individual transforms within multiple operations. Consider using a concat expression to build the string");
+
+                    result &= AttachExpressionBindingHandler(onStyle, StyleKeys.TransformOperationKey, value, DoConvertTransform);
+                    bound = true;
                 }
                 else if (DoConvertTransform(onStyle, value, out parsed))
                 {
-                    onStyle.SetValue(StyleKeys.TransformOperationKey, parsed);
-                    result = true;
+                    if(bound)
+                        throw new ArgumentOutOfRangeException("Cannot bind individual transforms within multiple operations. Consider using a concat expression to build the string");
+
+                    if (null == full)
+                        full = parsed;
+                    else
+                        full.Append(parsed);
+
+
+                    result &= true;
                 }
-                
+                else
+                    result = false;
             }
-            return result;
+
+            if (null != full)
+            {
+                onStyle.SetValue(StyleKeys.TransformOperationKey, full);
+                return result;
+            }
+            else
+            {
+                return false;
+            }
         }
+
+        
+
 
         protected bool DoConvertTransform(StyleBase style, object value, out TransformOperation operation)
         {
             TransformType type;
+            operation = null;
+            TransformOperation first = null;
             float value1 = TransformOperation.NotSetValue();
             float value2 = TransformOperation.NotSetValue();
 
-            if(null == value)
+            int valueCount;
+            int opLength;
+            bool useDegrees = false;
+            bool negative1 = false;
+            bool negative2 = false;
+
+            if (null == value)
             {
                 operation = null;
                 return false;
             }
 
             var str = value.ToString().Trim();
-            if(str.StartsWith("rotate("))
+
+            if (str.StartsWith("rotate("))
             {
-                var end = str.IndexOf(")", 7);
-                if(end <= 8)
-                {
-                    operation = null;
-                    return false;
-                }
-                str = str.Substring(7, end - 7).Trim();
+                opLength = 7;
                 type = TransformType.Rotate;
+                useDegrees = true;
+                negative1 = true;
+                valueCount = 1;
             }
             else if (str.StartsWith("skew("))
             {
-                throw new NotSupportedException("Skew not currently supported");
+                opLength = 5;
+                type = TransformType.Skew;
+                useDegrees = true;
+                valueCount = 2;
             }
             else if (str.StartsWith("scale("))
             {
-                throw new NotSupportedException("Scale not currently supported");
+                opLength = 6;
+                type = TransformType.Scale;
+                useDegrees = false;
+                valueCount = 2;
             }
             else if (str.StartsWith("translate("))
             {
-                throw new NotSupportedException("Translate not currently supported");
+                opLength = 10;
+                type = TransformType.Translate;
+                useDegrees = false;
+                negative2 = true;
+                valueCount = 2;
             }
             else
             {
                 throw new NotSupportedException("The transform operation " + str + " is not known or not currently supported");
             }
 
-            if (str.EndsWith("deg"))
-                str = str.Substring(0, str.Length - 3);
+            var end = str.IndexOf(")", opLength);
 
-            if(float.TryParse(str, out value1))
+            if (end <= opLength + 1)
             {
-                value1 = -((float)((Math.PI / 180.0) * value1));
+                return false;
+            }
+
+            var values = str.Substring(opLength, end - opLength).Trim();
+            str = str.Substring(end + 1);
+
+            if (valueCount == 2)
+            {
+                var parts = values.Split(',');
+                if (parts.Length != 2)
+                {
+                    operation = null;
+                    return false;
+                }
+
+                if (useDegrees)
+                {
+                    value1 = GetDegreesValue(parts[0], negative1);
+                    value2 = GetDegreesValue(parts[1], negative2);
+                }
+                else
+                {
+                    value1 = GetUnitValue(parts[0], negative1);
+                    value2 = GetUnitValue(parts[1], negative2);
+                }
+
                 operation = new TransformOperation(type, value1, value2);
                 return true;
+
             }
             else
             {
-                operation = null;
-                return false;
+                if (useDegrees)
+                {
+                    value1 = GetDegreesValue(values, negative1);
+                }
+                else
+                {
+                    value1 = GetUnitValue(values, negative1);
+                }
+
+                operation = new TransformOperation(type, value1, TransformOperation.NotSetValue());
+                return true;
             }
+        }
+
+        private float GetDegreesValue(string deg, bool negative)
+        {
+            deg = deg.Trim();
+            if (deg.EndsWith("deg"))
+            {
+                deg = deg.Substring(0, deg.Length - 3);
+                float value;
+                if(float.TryParse(deg, out value))
+                {
+                    if (negative)
+                        return -((float)(Math.PI / 180.0) * value);
+                    else
+                        return (float)(Math.PI / 180.0) * value;
+
+                }
+            }
+
+            throw new ArgumentOutOfRangeException("Value " + deg + " could not be converted to degrees");
+        }
+
+        private float GetUnitValue(string unit, bool negative)
+        { 
+            Unit parsed;
+            if (ParseCSSUnit(unit, out parsed))
+            {
+                if (negative)
+                    return -(float)parsed.PointsValue;
+                else
+                    return (float)parsed.PointsValue;
+            }
+
+            throw new ArgumentOutOfRangeException("Value " + unit + " could not be converted to unit value");
         }
 
         protected bool DoConvertFullWidth(StyleBase style, object value, out bool fullWidth)

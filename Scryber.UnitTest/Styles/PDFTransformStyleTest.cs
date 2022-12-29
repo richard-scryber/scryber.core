@@ -448,6 +448,88 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNull(target.Operations);
         }
 
+
+        [TestMethod]
+        public void SetAndRemoveMultipleTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float skewx = 20.2F;
+            float skewy = 25.1F;
+            float rotate = 0.53F;
+            target.SkewX = skewx;
+            target.SkewY = skewy;
+            target.Rotate = rotate;
+
+            Assert.AreEqual(skewx, target.SkewX);
+            Assert.AreEqual(skewy, target.SkewY);
+            Assert.AreEqual(rotate, target.Rotate);
+
+            var op = target.Operations;
+            Assert.IsNotNull(op);
+            Assert.AreEqual(TransformType.Skew, op.Type);
+            Assert.AreEqual(skewx, op.Value1);
+            Assert.AreEqual(skewy, op.Value2);
+
+            target.RemoveSkewY();
+
+            Assert.IsTrue(TransformOperation.IsNotSet(target.SkewY));
+            Assert.AreEqual(skewx, target.SkewX);
+
+            op = target.Operations;
+            Assert.IsNotNull(op);
+            Assert.AreEqual(TransformType.Skew, op.Type);
+            Assert.AreEqual(skewx, op.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(op.Value2));
+
+            Assert.IsNotNull(op.Next);
+            op = op.Next;
+
+            Assert.IsNotNull(op);
+            Assert.AreEqual(TransformType.Rotate, op.Type);
+            Assert.AreEqual(rotate, op.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(op.Value2));
+
+            target.RemoveRotate();
+
+            op = target.Operations;
+            Assert.IsNotNull(op);
+            Assert.AreEqual(TransformType.Skew, op.Type);
+            Assert.AreEqual(skewx, op.Value1);
+            Assert.IsTrue(TransformOperation.IsNotSet(op.Value2));
+
+            Assert.IsNull(op.Next); //Rotate is removed
+        }
+
+
+        [TestMethod]
+        public void GetMatrixTest()
+        {
+            TransformStyle target = new TransformStyle();
+            float skewx = 2.1F;
+            float skewy = 2.5F;
+            float rotate = (float)((Math.PI / 180) * 90);
+
+            target.SkewX = skewx;
+            target.SkewY = skewy;
+            target.Rotate = rotate;
+
+            Assert.AreEqual(skewx, target.SkewX);
+            Assert.AreEqual(skewy, target.SkewY);
+            Assert.AreEqual(rotate, target.Rotate);
+
+            var op = target.Operations;
+            Assert.IsNotNull(op);
+
+            var matrix = op.GetMatrix(Scryber.Drawing.MatrixOrder.Append);
+            var values = matrix.Components;
+
+            Assert.AreEqual(2.1, Math.Round(values[0],1));
+            Assert.AreEqual(1, Math.Round(values[1], 1));
+            Assert.AreEqual(-1, Math.Round(values[2], 1));
+            Assert.AreEqual(-2.5, Math.Round(values[3], 1));
+            Assert.AreEqual(0, Math.Round(values[4], 1));
+            Assert.AreEqual(0, Math.Round(values[5], 1));
+        }
     }
 
 }

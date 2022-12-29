@@ -775,39 +775,80 @@ body.grey div.reverse{
         public void ParseTransformations()
         {
 
-            var src = @".rotate {
+            var src = @"
+                        .rotate {
                           transform : rotate(10deg);
                         }
+
                         .skew {
-                          transform:skew(25deg, 25deg);
+                          transform:skew(25deg, 15deg);
                         }
+
                         .translate {
                           transform:   translate(10pt, 15pt);
+                        }
+
+                        .scale {
+                          transform: scale(1, 5);
+                        }
+
+                        .multiple {
+                          transform: rotate(20deg) scale(2, 4) translate(5pt, 20pt);
                         }
 ";
 
             var parser = new CSSStyleParser(src, null);
-            StyleFontFace first = null;
+            List<StyleDefn> found = new List<StyleDefn>();
 
             foreach (var item in parser)
             {
-                if (null != first)
-                    throw new InvalidOperationException("There has been more than one parsed style");
-
-                if (!(item is StyleFontFace))
-                    throw new InvalidCastException("The item is not a font face");
-
-                first = item as StyleFontFace;
+                found.Add((StyleDefn)item);
             }
 
-            Assert.IsNotNull(first, "No font face was parsed");
+            Assert.AreEqual(5,found.Count);
 
-            var fsrc = first.GetValue(StyleKeys.FontFaceSrcKey, null);
+            var t1 = found[0].GetValue(StyleKeys.TransformOperationKey, null);
+            var t2 = found[1].GetValue(StyleKeys.TransformOperationKey, null);
+            var t3 = found[2].GetValue(StyleKeys.TransformOperationKey, null);
+            var t4 = found[3].GetValue(StyleKeys.TransformOperationKey, null);
+            var multiple = found[4].GetValue(StyleKeys.TransformOperationKey, null);
 
-            Assert.AreEqual("https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf", fsrc.Source, "Source does not match");
-            Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
+            Assert.IsNotNull(t1);
+            Assert.AreEqual(TransformType.Rotate, t1.Type);
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 10, 4), Math.Round(t1.Value1, 4));
+            Assert.IsFalse(TransformOperation.IsSet(t1.Value2));
 
+            Assert.IsNotNull(t2);
+            Assert.AreEqual(TransformType.Skew, t2.Type);
+            Assert.AreEqual(Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
+            Assert.AreEqual(Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
 
+            Assert.IsNotNull(t3);
+            Assert.AreEqual(TransformType.Translate, t3.Type);
+            Assert.AreEqual(Math.Round(10.0, 4), Math.Round(t3.Value1, 4));
+            Assert.AreEqual(-Math.Round(15.0, 4), Math.Round(t3.Value2, 4));
+
+            Assert.IsNotNull(t4);
+            Assert.AreEqual(TransformType.Scale, t4.Type);
+            Assert.AreEqual(Math.Round(1.0, 4), Math.Round(t4.Value1, 4));
+            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(t4.Value2, 4));
+
+            Assert.IsNotNull(multiple);
+            Assert.AreEqual(TransformType.Rotate, multiple.Type);
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 20, 4), Math.Round(multiple.Value1, 4));
+            Assert.IsFalse(TransformOperation.IsSet(multiple.Value2));
+            Assert.IsNotNull(multiple.Next);
+
+            multiple = multiple.Next;
+            Assert.AreEqual(TransformType.Scale, multiple.Type);
+            Assert.AreEqual(Math.Round(2.0, 4), Math.Round(multiple.Value1, 4));
+            Assert.AreEqual(Math.Round(4.0, 4), Math.Round(multiple.Value2, 4));
+            Assert.IsNotNull(multiple.Next);
+
+            multiple = multiple.Next;
+            Assert.AreEqual(TransformType.Translate, multiple.Type);
+            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(multiple.Value1, 4));
+            Assert.AreEqual(-Math.Round(20.0, 4), Math.Round(multiple.Value2, 4));
         }
 
         [TestMethod()]

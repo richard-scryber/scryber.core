@@ -1073,11 +1073,14 @@ namespace Scryber.PDF.Layout
                     Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
                     Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
                     //offsetToOriginY -= context.PageSize.Height.PointsValue;
-
+                    if (position.X.HasValue)
+                        offsetToOriginX += 0.0; // position.X.Value;
+                    if (position.Y.HasValue)
+                        offsetToOriginY += 0.0;// position.Y.Value;
                     //Defaulting to transforming around the centre of the shape.
 
                     offsetToOriginX += this.TotalBounds.Width / 2;
-                    offsetToOriginY -= this.TotalBounds.Height /2;
+                    offsetToOriginY -= this.TotalBounds.Height / 2;
 
                     float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
                     float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
@@ -1086,7 +1089,7 @@ namespace Scryber.PDF.Layout
                     //PDFTransformationMatrix offsetToOrigin = new PDFTransformationMatrix();
                     //offsetToOrigin.SetTranslation(actualOffsetX, -actualOffsetY);
 
-                    if (context.ShouldLogDebug)
+                    //if (context.ShouldLogDebug)
                         context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
 
                     //the translate back to original location post transformation
@@ -1114,7 +1117,7 @@ namespace Scryber.PDF.Layout
                         else
                             shift.SetTranslation((float)this.TransformedOffset.X.PointsValue, (float)this.TransformedOffset.Y.PointsValue);
 
-                        if (context.ShouldLogDebug)
+                        //if (context.ShouldLogDebug)
                             context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Set the shift transformation matrix to move to " + shift);
 
 
@@ -1122,15 +1125,33 @@ namespace Scryber.PDF.Layout
                         
                     }
 
-                    full.SetTranslation(actualOffsetX, actualOffsetY);
 
-                    if (context.ShouldLogDebug)
+                    PDFReal posOffsetX = 0.0F;
+                    PDFReal posOffsetY = 0.0F;
+
+                    if (position.X.HasValue)
+                    {
+                        posOffsetX = position.X.Value.RealValue;
+                        position.X = null;
+                    }
+                    if (position.Y.HasValue)
+                    {
+                        posOffsetY = position.Y.Value.RealValue;
+                        position.Y = null;
+                    }
+
+                    full.SetTranslation(actualOffsetX + ((float)posOffsetX), actualOffsetY - ((float)posOffsetY));
+
+                    //if (context.ShouldLogDebug)
                         context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Final transformation matrix to move to, transform, and move back from origin calculated to " + full);
 
                     //mark all future drawing offsets
                     context.Graphics.SaveTranslationOffset(
-                        actualOffsetX,
-                        actualOffsetY);
+                        actualOffsetX, //- posOffsetX,
+                        actualOffsetY);// + posOffsetY);
+
+                    //if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Translation offset set to " + (actualOffsetX - posOffsetX).ToString() + ", " + (actualOffsetY + posOffsetY).ToString());
 
                     //apply the actual transformation
                     context.Graphics.SetTransformationMatrix(full, true, true);
@@ -1232,7 +1253,7 @@ namespace Scryber.PDF.Layout
                 
 
                 if (context.ShouldLogDebug)
-                    context.TraceLog.End(TraceLevel.Verbose, LOG_CATEGORY, "Reset the graphics state transformation for " + this.Owner.ToString());
+                    context.TraceLog.End(TraceLevel.Warning, LOG_CATEGORY, "Reset the graphics state transformation for " + this.Owner.ToString());
             }
 
             context.Space = prevSize;

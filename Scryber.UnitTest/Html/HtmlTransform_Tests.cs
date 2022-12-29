@@ -270,7 +270,7 @@ namespace Scryber.Core.UnitTests.Html
 
 
         /// <summary>
-        /// An image in the content with a full file path
+        /// Rotating divs increasing by 10 degrees around the top left of the page
         /// </summary>
         [TestMethod]
         public void Transform_SingleRotate_Test()
@@ -328,9 +328,130 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
         }
-        
-        
-        
-        
+
+        /// <summary>
+        /// Rotating divs increasing by 10 degrees around a specific position on the page
+        /// </summary>
+        [TestMethod]
+        public void Transform_SingleRotateWithPosition_Test()
+        {
+
+            var html = @"<?scryber append-log='true' log-level='Warning' parser-log='true' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <div id='plain' style='left: 100pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div id='rotate10' style='left: 100pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <!--<div id='rotate20' style='left: 20pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='left: 20pt; top: 100pt; width: 100pt; background-color:#ddd; height:300pt; transform: rotate(30deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='left: 20pt; top: 100pt; width: 100pt; background-color:#ddd; height:300pt; transform: rotate(40deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='left: 20pt; top: 100pt; width: 100pt; background-color:#ddd; height:300pt; transform: rotate(50deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='left: 20pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(60deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='left: 20pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(70deg); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <p>After the transformed content of the page</p>-->
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    using (var stream = DocStreams.GetOutputStream("Transform_SingleRotateWithPosition.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Translating divs increasing by 10,20 points around the top left of the page
+        /// </summary>
+        [TestMethod]
+        public void Transform_SingleTranslate_Test()
+        {
+
+            var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <div id='plain' style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div id='rotate10' style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(10pt, 20pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div id='rotate20' style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(20pt, 40pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(30pt, 60pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(40pt, 80pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(50pt, 100pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(60pt, 120pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: translate(70pt, 140pt); position: absolute; border: solid 2px red;' >
+        Content of the div
+        <div style='height:30pt; background-color:blue'></div>
+    </div>
+    <p>After the transformed content of the page</p>
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    using (var stream = DocStreams.GetOutputStream("Transform_SingleTranslate.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+
+                }
+            }
+        }
+
+
+
+
     }
 }
