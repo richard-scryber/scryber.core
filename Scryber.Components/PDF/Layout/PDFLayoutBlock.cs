@@ -1089,7 +1089,7 @@ namespace Scryber.PDF.Layout
                     //PDFTransformationMatrix offsetToOrigin = new PDFTransformationMatrix();
                     //offsetToOrigin.SetTranslation(actualOffsetX, -actualOffsetY);
 
-                    //if (context.ShouldLogDebug)
+                    if (context.ShouldLogDebug)
                         context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
 
                     //the translate back to original location post transformation
@@ -1117,7 +1117,7 @@ namespace Scryber.PDF.Layout
                         else
                             shift.SetTranslation((float)this.TransformedOffset.X.PointsValue, (float)this.TransformedOffset.Y.PointsValue);
 
-                        //if (context.ShouldLogDebug)
+                        if (context.ShouldLogDebug)
                             context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Set the shift transformation matrix to move to " + shift);
 
 
@@ -1126,36 +1126,41 @@ namespace Scryber.PDF.Layout
                     }
 
 
-                    PDFReal posOffsetX = 0.0F;
-                    PDFReal posOffsetY = 0.0F;
+                    float posOffsetX = 0.0F;
+                    float posOffsetY = 0.0F;
 
                     if (position.X.HasValue)
                     {
-                        posOffsetX = position.X.Value.RealValue;
-                        position.X = null;
+                        posOffsetX = ((float)position.X.Value.PointsValue);
+                        //position.X = null;
                     }
                     if (position.Y.HasValue)
                     {
-                        posOffsetY = position.Y.Value.RealValue;
-                        position.Y = null;
+                        posOffsetY = ((float)position.Y.Value.PointsValue);
+                        //position.Y = null;
                     }
 
-                    full.SetTranslation(actualOffsetX + ((float)posOffsetX), actualOffsetY - ((float)posOffsetY));
+                    //Set the translation to the origin and the explicit position
+                    full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
 
-                    //if (context.ShouldLogDebug)
+                    if (context.ShouldLogDebug)
                         context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Final transformation matrix to move to, transform, and move back from origin calculated to " + full);
 
                     //mark all future drawing offsets
                     context.Graphics.SaveTranslationOffset(
-                        actualOffsetX, //- posOffsetX,
-                        actualOffsetY);// + posOffsetY);
+                        actualOffsetX,
+                        actualOffsetY);
 
-                    //if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Translation offset set to " + (actualOffsetX - posOffsetX).ToString() + ", " + (actualOffsetY + posOffsetY).ToString());
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
 
                     //apply the actual transformation
                     context.Graphics.SetTransformationMatrix(full, true, true);
-                    //move back to position
+                    //save state
+
+                    this.Position.TransformMatrix = full;
+                    this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
+
                     //context.Graphics.SetTransformationMatrix(offsetToActual, true, true);
                     //context.Offset = Point.Empty;
 

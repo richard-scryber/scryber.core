@@ -820,8 +820,8 @@ body.grey div.reverse{
 
             Assert.IsNotNull(t2);
             Assert.AreEqual(TransformType.Skew, t2.Type);
-            Assert.AreEqual(Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
-            Assert.AreEqual(Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
 
             Assert.IsNotNull(t3);
             Assert.AreEqual(TransformType.Translate, t3.Type);

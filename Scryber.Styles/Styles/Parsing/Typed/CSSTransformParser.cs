@@ -96,6 +96,8 @@ namespace Scryber.Styles.Parsing.Typed
                 opLength = 5;
                 type = TransformType.Skew;
                 useDegrees = true;
+                negative1 = true;
+                negative2 = true;
                 valueCount = 2;
             }
             else if (str.StartsWith("scale("))

@@ -67,7 +67,7 @@ namespace Scryber.Drawing
 
         public void Scale(double x, double y)
         {
-            this = CreateScaling(x, y) * this;
+            this *= CreateScaling(x, y);
         }
 
         public void Skew(double x, double y)
