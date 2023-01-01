@@ -88,7 +88,14 @@ namespace Scryber.Drawing
 
         public void Reset()
         {
-
+            var ident = Identity;
+            this._m11 = ident._m11;
+            this._m12 = ident._m12;
+            this._m21 = ident._m21;
+            this._m22 = ident._m22;
+            this._type = ident._type;
+            this._dx = ident._dx;
+            this._dy = ident._dy;
         }
 
         public Point[] TransformPoints(Point[] all)

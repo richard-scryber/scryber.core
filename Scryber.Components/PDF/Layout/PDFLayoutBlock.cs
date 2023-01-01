@@ -1069,6 +1069,11 @@ namespace Scryber.PDF.Layout
                         context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Setting the Graphics state transformation matrix for " + this.Owner.ToString() + " and any children to " + this.Position.TransformMatrix);
                     
                     context.Graphics.SaveGraphicsState();
+
+                    //Start with the original transformation matrix
+                    PDFTransformationMatrix full = this.Position.TransformMatrix.Clone(); // offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
+
+
                     //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
                     Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
                     Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
@@ -1077,67 +1082,32 @@ namespace Scryber.PDF.Layout
                         offsetToOriginX += 0.0; // position.X.Value;
                     if (position.Y.HasValue)
                         offsetToOriginY += 0.0;// position.Y.Value;
-                    //Defaulting to transforming around the centre of the shape.
 
+                    //Defaulting to transforming around the centre of the shape.
                     offsetToOriginX += this.TotalBounds.Width / 2;
                     offsetToOriginY -= this.TotalBounds.Height / 2;
 
                     float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
                     float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
 
-                    //the translate to origin transformation
-                    //PDFTransformationMatrix offsetToOrigin = new PDFTransformationMatrix();
-                    //offsetToOrigin.SetTranslation(actualOffsetX, -actualOffsetY);
-
+                    
                     if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
-
-                    //the translate back to original location post transformation
-                    //PDFTransformationMatrix offsetToActual = new PDFTransformationMatrix();
-                    //offsetToActual.SetTranslation(-actualOffsetX, actualOffsetY);
-
-                    //if (context.ShouldLogDebug)
-                    //    context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Transformation matrix to move back from origin calculated to " + offsetToActual);
-
-
-                    //multiply the matricies into a single set
-                    PDFTransformationMatrix full = this.Position.TransformMatrix.Clone(); // offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
+                        context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
 
                     
-
-                    if (this.HasTransformedOffset)
-                    {
-                        //If we have an offset for transform (if x and y are not set and resultant transform is < 0 in x or y)
-
-                        PDFTransformationMatrix shift = new PDFTransformationMatrix();
-                        
-                        //Use negative if our origin is TopLeft, and PDF always drawn from Bottom Left
-                        if (context.Graphics.Origin == DrawingOrigin.TopLeft)
-                            shift.SetTranslation((float)this.TransformedOffset.X.PointsValue, (float)this.TransformedOffset.Y.PointsValue);
-                        else
-                            shift.SetTranslation((float)this.TransformedOffset.X.PointsValue, (float)this.TransformedOffset.Y.PointsValue);
-
-                        if (context.ShouldLogDebug)
-                            context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Set the shift transformation matrix to move to " + shift);
-
-
-                       //context.Graphics.SetTransformationMatrix(shift, true, true);
-                        
-                    }
-
-
+                    
                     float posOffsetX = 0.0F;
                     float posOffsetY = 0.0F;
+
+                    //set any explicit position offsets
 
                     if (position.X.HasValue)
                     {
                         posOffsetX = ((float)position.X.Value.PointsValue);
-                        //position.X = null;
                     }
                     if (position.Y.HasValue)
                     {
                         posOffsetY = ((float)position.Y.Value.PointsValue);
-                        //position.Y = null;
                     }
 
                     //Set the translation to the origin and the explicit position
@@ -1146,7 +1116,9 @@ namespace Scryber.PDF.Layout
                     if (context.ShouldLogDebug)
                         context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Final transformation matrix to move to, transform, and move back from origin calculated to " + full);
 
-                    //mark all future drawing offsets
+                    //mark all future drawing offsets - as these will happen from the page origin now (bottom left)
+                    //within the centre of the container
+
                     context.Graphics.SaveTranslationOffset(
                         actualOffsetX,
                         actualOffsetY);
@@ -1158,11 +1130,10 @@ namespace Scryber.PDF.Layout
                     context.Graphics.SetTransformationMatrix(full, true, true);
                     //save state
 
+                    //Save the newly caclulated values back on the block.
                     this.Position.TransformMatrix = full;
                     this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
 
-                    //context.Graphics.SetTransformationMatrix(offsetToActual, true, true);
-                    //context.Offset = Point.Empty;
 
                 }
 
@@ -1253,6 +1224,7 @@ namespace Scryber.PDF.Layout
 
             if (position.HasTransformation)
             {
+                //We have a transformation, so restore it to the original state
                 context.Graphics.RestoreTranslationOffset();
                 context.Graphics.RestoreGraphicsState();
                 

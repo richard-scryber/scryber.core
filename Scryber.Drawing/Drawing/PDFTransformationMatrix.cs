@@ -44,7 +44,6 @@ namespace Scryber.Drawing
         public PDFTransformationMatrix()
         {
             _matrix = Scryber.Drawing.Matrix2D.Identity;
-            _matrix.Reset();
         }
 
         public PDFTransformationMatrix(float offsetX, float offsetY, float angle, float scaleX, float scaleY) 

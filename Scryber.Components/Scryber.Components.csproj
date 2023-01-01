@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.13-beta</PackageVersion>
+    <PackageVersion>6.0.0.14-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2022</Copyright>
     <License>LICENSE.md</License>
@@ -13,6 +13,10 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.0.14-beta
+
+Added support for transformations including css transform property.
+
 6.0.0.12-beta
 
 Changed the reference for ImageSharp to the 2.1.3 Nuget package, rather than the dll.
