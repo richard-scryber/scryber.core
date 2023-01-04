@@ -38,7 +38,10 @@ namespace Scryber
         public Exception Error { get; private set; }
 
         public  object Result { get; set; }
+
         public bool IsCompleted { get; private set; }
+
+        public bool IsExecuting { get; private set; }
 
         public bool IsSuccessful { get; private set; }
         
@@ -52,13 +55,24 @@ namespace Scryber
             this.Owner = owner;
             this.Arguments = args;
             this.IsCompleted = false;
+            this.IsExecuting = false;
+            this.IsSuccessful = false;
             this.CacheDuration = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
+        }
+
+        public void StartRequest()
+        {
+            if (this.IsExecuting)
+                throw new InvalidOperationException("This request is already executing");
+
+            this.IsExecuting = true;
         }
 
         public void CompleteRequest(object result, bool success, Exception error = null)
         {
             this.Result = result;
             this.IsCompleted = true;
+            this.IsExecuting = false;
             this.IsSuccessful = success;
             this.Error = error;
 

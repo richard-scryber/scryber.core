@@ -315,6 +315,211 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod()]
+        public void RemoteCssFileLoadingCustomHandlerAsync()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
+            var src = @"<?scryber append-log='true' log-level='Verbose' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <link href='" + path + @"' rel='stylesheet' />
+                            </head>
+
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content</p>
+                            </body>
+
+                        </html>";
+
+            _remotefileRequestCalled = 0;
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoadingAsyncCustomLoading.pdf"))
+                {
+                    
+                    doc.RemoteFileRegistered += Doc_RemoteFileRegistered; 
+                    doc.LayoutComplete += DocumentParsing_Layout;
+
+                    Task.Run(async () =>
+                    {
+                        await doc.SaveAsPDFAsync(stream);
+
+                    }).GetAwaiter().GetResult();
+
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+
+
+
+                Assert.IsTrue(_remotefileRequestCalled == 1, "Remote request was not run");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+
+            }
+        }
+
+        private int _remotefileRequestCalled = 0;
+
+        /// <summary>
+        /// This is outside of the main code to return the binary data for a remote file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void Doc_RemoteFileRegistered(object sender, RemoteFileRequestEventArgs args)
+        {
+
+            _remotefileRequestCalled ++;
+            //Flag as executing
+            args.Request.StartRequest();
+            var doc = args.Request.Owner.Document;
+            doc.TraceLog.Add(TraceLevel.Message, "External Code", "Starting the request for the Remote file outside of the main code");
+
+            Task.Run(async () =>
+            {
+                using var client = new System.Net.Http.HttpClient();
+
+                var data = await client.GetByteArrayAsync(args.Request.FilePath);
+
+                System.Threading.Thread.Sleep(2000);
+
+                var ms = new MemoryStream(data);
+                doc.TraceLog.Add(TraceLevel.Message, "External Code", "Request for the Remote file was completed outside of the main code (including wait)");
+
+                args.Request.Callback(args.Request.Owner, args.Request, ms);
+                args.Request.CompleteRequest(ms, true);
+
+
+            });
+            
+            
+        }
+
+        [TestMethod()]
+        public void RemoteCssFileLoadingCustomImageHandlerAsync()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
+            var imgsrc = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png"; //parameter for uniqueness
+
+            var src = @"<?scryber append-log='true' log-level='Verbose' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <link href='" + path + @"' rel='stylesheet' />
+                            </head>
+
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content with an image below</p>
+                                <img src='" + imgsrc + @"' />
+                            </body>
+
+                        </html>";
+
+            _remoteImagefileRequestCalled = 0;
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoadingAsyncCustomImageLoading.pdf"))
+                {
+                    doc.CacheProvider = new Scryber.Caching.PDFNoCachingProvider();
+                    doc.RemoteFileRegistered += Doc_RemoteFileRegisteredForImages;
+                    doc.LayoutComplete += DocumentParsing_Layout;
+
+                    Task.Run(async () =>
+                    {
+                        await doc.SaveAsPDFAsync(stream);
+
+                    }).GetAwaiter().GetResult();
+
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+
+
+
+                Assert.IsTrue(_remoteImagefileRequestCalled == 1, "Remote request was not run just once it bwas run " + _remoteImagefileRequestCalled + " times");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                Assert.AreEqual(2, doc.SharedResources.Count, "The image was not loaded");
+                var found = false;
+
+                for(var i = 0; i < doc.SharedResources.Count; i++)
+                {
+                    var rsrc = doc.SharedResources[i];
+                    if (rsrc.ResourceKey == imgsrc)
+                    {
+                        found = true;
+                        var img = rsrc as PDFImageXObject;
+                        Assert.IsNotNull(img);
+                        //Just check the image size for validation it was loaded
+                        Assert.AreEqual(640, img.ImageData.PixelWidth, "Unexpected image width for the png");
+                        Assert.AreEqual(643, img.ImageData.PixelHeight, "Unexpected image height for the png");
+                    }
+                }
+
+                Assert.IsTrue(found, "The remote image was not found");
+            }
+        }
+
+        int _remoteImagefileRequestCalled = 0;
+
+        /// <summary>
+        /// This is outside of the main code to return the binary data for a remote file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void Doc_RemoteFileRegisteredForImages(object sender, RemoteFileRequestEventArgs args)
+        {
+            if (args.Request.FilePath.EndsWith(".png"))
+            {
+                _remoteImagefileRequestCalled++;
+                //Flag as executing
+                args.Request.StartRequest();
+                var doc = args.Request.Owner.Document;
+                doc.TraceLog.Add(TraceLevel.Message, "External Code", "Starting the request for the Remote image file outside of the main code");
+
+                Task.Run(async () =>
+                {
+                    using var client = new System.Net.Http.HttpClient();
+
+                    var data = await client.GetByteArrayAsync(args.Request.FilePath);
+
+                    //System.Threading.Thread.Sleep(2000);
+
+                    var ms = new MemoryStream(data);
+                    doc.TraceLog.Add(TraceLevel.Message, "External Code", "Request for the Remote file was completed outside of the main code (including wait)");
+
+                    args.Request.Callback(args.Request.Owner, args.Request, ms);
+                    args.Request.CompleteRequest(ms, true);
+
+
+                });
+
+            }
+            else
+            {
+                //Do nothing here and it should be handled internally
+            }
+        }
+
 
         [TestMethod()]
         public void BodyAsASection()
