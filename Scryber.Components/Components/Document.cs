@@ -621,6 +621,10 @@ namespace Scryber.Components
                     _cacheprov = this.CreateCacheProvider();
                 return _cacheprov;
             }
+            set
+            {
+                _cacheprov = value;
+            }
         }
 
         /// <summary>
@@ -778,7 +782,7 @@ namespace Scryber.Components
             this.RemoteRequests.AddRequest(request);
             this.OnRemoteFileRequestRegistered(request);
 
-            if (this.RemoteRequests.ExecMode == DocumentExecMode.Immediate && request.IsCompleted == false)
+            if (this.RemoteRequests.ExecMode == DocumentExecMode.Immediate && request.IsExecuting == false && request.IsCompleted == false)
             {
                 if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
                     this.TraceLog.Add(TraceLevel.Verbose,"Document", "Fulfilling the result for '" + request.FilePath + "' immediately as we are not asyncronous.");
