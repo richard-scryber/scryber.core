@@ -148,7 +148,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        // style accessort properties
+        // style accessor properties
 
         #region public PDFBackgroundStyle Background {get;}
 

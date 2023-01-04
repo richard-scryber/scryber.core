@@ -356,6 +356,33 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region
+
+        [PDFAttribute("content")]
+        public ContentDescriptor Content
+        {
+            get
+            {
+                ContentDescriptor desc = null;
+                if (this.TryGetValue(StyleKeys.ContentTextKey, out desc))
+                    return desc;
+                else
+                    return null;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.ContentTextKey, value);
+            }
+        }
+
+        public void RemoveContent()
+        {
+            this.RemoveValue(StyleKeys.ContentTextKey);
+        }
+
+
+        #endregion
+
         //
         // .ctor
         //
@@ -368,5 +395,8 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+
+        
     }
 }

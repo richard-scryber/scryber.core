@@ -184,6 +184,7 @@ namespace Scryber.Html
         public const string StrokeLineJoin = "stroke-linejoin";
 
         public const string Transform = "transform";
+        public const string Content = "content";
 
     }
 

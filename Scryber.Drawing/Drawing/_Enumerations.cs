@@ -458,4 +458,18 @@ namespace Scryber.Drawing
         FarthestCorner
     }
 
+
+    /// <summary>
+    /// The supported types of style content values
+    /// </summary>
+    public enum ContentDescriptorType
+    {
+        Text,
+        Image,
+        Gradient,
+        Counter,
+        Attribute,
+        Quote
+    }
+
 }

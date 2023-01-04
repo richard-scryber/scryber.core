@@ -96,6 +96,10 @@ namespace Scryber.Drawing
             {
                 var colS = value.Substring(0, value.IndexOf(" ")).Trim();
                 value = value.Substring(value.IndexOf(" ")).Trim();
+
+                if (Html.CSSColors.Names2Colors.TryGetValue(colS, out var colHex))
+                    colS = colHex;
+
                 if (!Color.TryParse(colS, out colVal))
                     return false;
 
@@ -105,6 +109,12 @@ namespace Scryber.Drawing
                 if (double.TryParse(value, out distV))
                     distance = distV;
 
+                color = new GradientColor(colVal, distance, opacity);
+                return true;
+            }
+            else if(Html.CSSColors.Names2Colors.TryGetValue(value, out var colHex))
+            {
+                colVal = Color.Parse(colHex);
                 color = new GradientColor(colVal, distance, opacity);
                 return true;
             }

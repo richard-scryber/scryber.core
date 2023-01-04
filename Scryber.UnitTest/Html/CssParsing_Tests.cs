@@ -727,6 +727,57 @@ body.grey div.reverse{
         }
 
 
+        [TestMethod()]
+        public void ParseItemContentStyle()
+        {
+            var path = "Content/HTML/Images/Group.png";
+
+            var src = @".added{
+                            content: 'replacement text'
+                        }
+
+                        .img-src{
+                            content: url('" + path + @"');
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(2, all.Count);
+
+            var added = all[0];
+            var source = all[1];
+
+            //'replacement text'
+
+            StyleValue<ContentDescriptor> parsed;
+            Assert.AreEqual(1, added.ValueCount);
+            Assert.IsTrue(added.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            var value = parsed.Value(added);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual("replacement text", value.Value);
+            Assert.AreEqual(ContentDescriptorType.Text, value.Type);
+            Assert.IsNull(value.Next);
+
+            //'url(...)'
+
+            Assert.AreEqual(1, source.ValueCount);
+            Assert.IsTrue(source.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(source);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual("url('Content/HTML/Images/Group.png')", value.Value);
+            Assert.AreEqual(ContentDescriptorType.Image, value.Type);
+            Assert.IsNull(value.Next);
+        }
+
+
 
         [TestMethod()]
         public void ParseGoogleFontLink()
