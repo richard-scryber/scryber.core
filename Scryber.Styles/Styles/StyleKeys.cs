@@ -195,7 +195,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<bool> TextPositionFromBaseline = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"tbse", TextItemKey);
         public static readonly StyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((ObjectType)"vlgn", TextItemKey);
         public static readonly StyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((ObjectType)"hlgn", TextItemKey);
-        public static readonly StyleKey<ContentDescriptor> ContentTextKey = StyleKey.InternalCreateStyleValueKey<ContentDescriptor>((ObjectType)"cont", TextItemKey);
+        
 
         //List
         public static readonly StyleKey ListKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleList, NOT_INHERITED);
@@ -300,7 +300,9 @@ namespace Scryber.Styles
         public static readonly StyleKey<int> FontFaceWeightKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"fwgt", FontFaceItemKey);
         public static readonly StyleKey<Drawing.FontStyle> FontFaceStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((ObjectType)"fsyl", FontFaceItemKey);
 
-
+        //Content
+        public static readonly StyleKey ContentItemKey = StyleKey.InternalCreateStyleItemKey((ObjectType)"cont", NOT_INHERITED);
+        public static readonly StyleKey<ContentDescriptor> ContentTextKey = StyleKey.InternalCreateStyleValueKey<ContentDescriptor>((ObjectType)"ctxt", ContentItemKey);
 
     }
 }

@@ -229,10 +229,10 @@ namespace Scryber.Core.UnitTests.Styles
             var actual = "open-quote";
             var parsed = ContentDescriptor.Parse(actual);
             Assert.IsNotNull(parsed);
-            Assert.IsInstanceOfType(parsed, typeof(ContentTextDescriptor));
-            var count = parsed as ContentTextDescriptor;
-            Assert.AreEqual("“", count.Value);
-
+            Assert.IsInstanceOfType(parsed, typeof(ContentQuoteDescriptor));
+            var count = parsed as ContentQuoteDescriptor;
+            Assert.AreEqual(actual, count.Value);
+            Assert.AreEqual("“", count.Chars);
             Assert.IsNull(count.Next);
             Assert.AreEqual(ContentDescriptorType.Quote, count.Type);
 
@@ -240,10 +240,10 @@ namespace Scryber.Core.UnitTests.Styles
             actual = "close-quote";
             parsed = ContentDescriptor.Parse(actual);
             Assert.IsNotNull(parsed);
-            Assert.IsInstanceOfType(parsed, typeof(ContentTextDescriptor));
-            count = parsed as ContentTextDescriptor;
-            Assert.AreEqual("”", count.Value);
-            
+            Assert.IsInstanceOfType(parsed, typeof(ContentQuoteDescriptor));
+            count = parsed as ContentQuoteDescriptor;
+            Assert.AreEqual(actual, count.Value);
+            Assert.AreEqual("”", count.Chars);
             Assert.IsNull(count.Next);
             Assert.AreEqual(ContentDescriptorType.Quote, count.Type);
         }

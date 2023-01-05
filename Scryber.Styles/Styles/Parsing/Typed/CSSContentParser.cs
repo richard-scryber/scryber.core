@@ -38,7 +38,7 @@ namespace Scryber.Styles.Parsing.Typed
                     if (null == full)
                         full = parsed;
                     else
-                        throw new ArgumentOutOfRangeException("Only one content value is allowed");
+                        full.Append(parsed);
 
                     result = true;
                 }
@@ -48,6 +48,7 @@ namespace Scryber.Styles.Parsing.Typed
 
             if (null != full)
             {
+                onStyle.SetValue(StyleKeys.ContentTextKey, full);
                 return result;
             }
             else
@@ -56,20 +57,44 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        
 
-
-        protected bool DoConvertContent(StyleBase style, object value, out ContentDescriptor operation)
+        protected bool DoConvertFullContent(StyleBase style, object value, out ContentDescriptor descriptor)
         {
             if(null == value)
             {
-                operation = null;
+                descriptor = null;
+                return false;
+            }
+            var content = value.ToString().Trim();
+            descriptor = null;
+            bool parsed = false;
+
+            while(string.IsNullOrEmpty(content) == false)
+            {
+                var one = ContentDescriptor.Parse(content);
+                if(null != one)
+                {
+                    content = content.Substring(0, one.Value.Length).Trim();
+                    parsed = true;
+                }
+            }
+
+
+            return parsed;
+
+        }
+
+
+        protected bool DoConvertContent(StyleBase style, object value, out ContentDescriptor descriptor)
+        {
+            if(null == value)
+            {
+                descriptor = null;
                 return false;
             }
             else
             {
-                operation = ContentDescriptor.Parse(value.ToString());
-                style.SetValue(StyleKeys.ContentTextKey, operation);
+                descriptor = ContentDescriptor.Parse(value.ToString());
                 return true;
             }
         }

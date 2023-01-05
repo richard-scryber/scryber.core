@@ -22,6 +22,14 @@ namespace Scryber.Drawing
 			this.Value = value;
 		}
 
+		public void Append(ContentDescriptor next)
+		{
+			if (null == this.Next)
+				this.Next = next;
+			else
+				this.Next.Append(next);
+		}
+
 
 		public static ContentDescriptor Parse(string value)
 		{
@@ -62,11 +70,11 @@ namespace Scryber.Drawing
 			}
 			else if (value == "open-quote")
 			{
-				return new ContentTextDescriptor(ContentDescriptorType.Quote, "“");
+				return new ContentQuoteDescriptor(value, "“");
 			}
 			else if(value == "close-quote")
 			{
-				return new ContentTextDescriptor(ContentDescriptorType.Quote, "”");
+				return new ContentQuoteDescriptor(value, "”");
 			}
 			else if(value.StartsWith("\""))
 			{
@@ -163,6 +171,22 @@ namespace Scryber.Drawing
 		public ContentTextDescriptor(ContentDescriptorType type, string val)
 			: base(type, val)
 		{ }
+	}
+
+
+	public class ContentQuoteDescriptor : ContentTextDescriptor
+	{
+
+		public string Chars{
+			get;
+			private set;
+		}
+
+		public ContentQuoteDescriptor(string type, string chars)
+			: base(ContentDescriptorType.Quote, type)
+		{
+			this.Chars = chars;
+		}
 	}
 
 

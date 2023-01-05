@@ -738,6 +738,15 @@ body.grey div.reverse{
 
                         .img-src{
                             content: url('" + path + @"');
+                        }
+
+                        .quote{
+                            content: open-quote;
+                        }
+
+                        .multiple{
+                            color: red;
+                            content: 'some text' url(""" + path + @""") linear-gradient(#000 #AAA);
                         }";
 
             var parser = new CSSStyleParser(src, null);
@@ -748,10 +757,12 @@ body.grey div.reverse{
                 all.Add(item as Style);
             }
 
-            Assert.AreEqual(2, all.Count);
+            Assert.AreEqual(4, all.Count);
 
             var added = all[0];
             var source = all[1];
+            var quote = all[2];
+            var multiple = all[3];
 
             //'replacement text'
 
@@ -775,6 +786,37 @@ body.grey div.reverse{
             Assert.AreEqual("url('Content/HTML/Images/Group.png')", value.Value);
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
             Assert.IsNull(value.Next);
+
+            //quote
+            Assert.AreEqual(1, quote.ValueCount);
+            Assert.IsTrue(quote.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(quote);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual("open-quote", value.Value);
+            Assert.AreEqual(ContentDescriptorType.Quote, value.Type);
+            Assert.IsNull(value.Next);
+
+            // multiple
+            Assert.AreEqual(2, multiple.ValueCount);
+            Assert.IsTrue(multiple.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(multiple);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual("some text", value.Value);
+            Assert.AreEqual(ContentDescriptorType.Text, value.Type);
+            Assert.IsNotNull(value.Next);
+
+            value = value.Next;
+            Assert.AreEqual("url(\"Content/HTML/Images/Group.png\")", value.Value);
+            Assert.AreEqual(ContentDescriptorType.Image, value.Type);
+            Assert.IsNotNull(value.Next);
+
+            value = value.Next;
+            Assert.AreEqual("linear-gradient(#000 #AAA)", value.Value);
+            Assert.AreEqual(ContentDescriptorType.Gradient, value.Type);
+            Assert.IsNull(value.Next);
+
         }
 
 

@@ -299,7 +299,7 @@ namespace Scryber.Core.UnitTests.Styles
         }
 
         /// <summary>
-        ///A test for WrapText
+        ///A test for Content
         ///</summary>
         [TestMethod()]
         [TestCategory("Style Values")]
