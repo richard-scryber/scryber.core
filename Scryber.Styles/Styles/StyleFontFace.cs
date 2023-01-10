@@ -152,7 +152,7 @@ namespace Scryber.Styles
         // override methods
         //
 
-        public override void MergeInto(Style style, IComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component)
         {
             //Don't merge this one as any styles declared are for the font face not components.
         }

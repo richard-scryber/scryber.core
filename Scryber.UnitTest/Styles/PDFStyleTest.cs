@@ -402,10 +402,10 @@ namespace Scryber.Core.UnitTests.Styles
             
 
             Label lbl = new Label();
-            ComponentState state = ComponentState.Normal;
+            
 
             //in the base implementation these are ignored - so no difference
-            target.MergeInto(merged, lbl, state);
+            target.MergeInto(merged, lbl);
 
             //Font is inherited
             bool expected = true;

@@ -246,17 +246,34 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="forComponent"></param>
         /// <param name="state"></param>
-        public override void MergeInto(Style style, IComponent forComponent, ComponentState state)
+        public override void MergeInto(Style style, IComponent forComponent)
         {
             int priority;
 
-            if (this.IsMatchedTo(forComponent, state, out priority))
+            if (this.IsMatchedTo(forComponent, ComponentState.Normal, out priority))
             {
                 if (this.HasVariables)
                     this.MergeVariables(style);
 
                 this.MergeInto(style, priority);
-                
+            }
+            else if(this.IsMatchedTo(forComponent, ComponentState.Over, out priority))
+            {
+                var stateStyle = style.GetState(ComponentState.Over, true);
+                this.MergeInto(stateStyle, priority);
+
+            }
+            else if (this.IsMatchedTo(forComponent, ComponentState.After, out priority))
+            {
+                var stateStyle = style.GetState(ComponentState.Over, true);
+                this.MergeInto(stateStyle, priority);
+
+            }
+            else if (this.IsMatchedTo(forComponent, ComponentState.Before, out priority))
+            {
+                var stateStyle = style.GetState(ComponentState.Over, true);
+                this.MergeInto(stateStyle, priority);
+
             }
         }
 

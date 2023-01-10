@@ -243,13 +243,12 @@ namespace Scryber.Styles
         #region public virtual void MergeInto(PDFStyle style, Scryber.IPDFComponent Component, Scryber.ComponentState state)
 
         /// <summary>
-        /// Merges all the style values in this style into the provided style, based on the component and state.
+        /// Merges all the style values in this style into the provided style, based on the component.
         /// This will overwrite existing values in the provided style.
         /// </summary>
         /// <param name="style"></param>
         /// <param name="Component"></param>
-        /// <param name="state"></param>
-        public virtual void MergeInto(Style style, Scryber.IComponent Component, Scryber.ComponentState state)
+        public virtual void MergeInto(Style style, Scryber.IComponent Component)
         {
             this.MergeInto(style, 0);
         }

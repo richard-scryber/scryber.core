@@ -1164,6 +1164,15 @@ namespace Scryber.Styles
             _variables.Add(variable ?? throw new ArgumentNullException(nameof(variable)));
         }
 
+        //
+        // States
+        //
+
+        public Style GetState(ComponentState state, bool create)
+        {
+            throw new NotImplementedException("Creating state styles is not yet implemented");
+        }
+
 
         //
         // Parsing

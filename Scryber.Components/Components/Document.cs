@@ -1015,7 +1015,7 @@ namespace Scryber.Components
             if (null == baseStyle)
                 baseStyle = new Style();
 
-            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
+            this.Styles.MergeInto(baseStyle, forComponent);
 
             
 

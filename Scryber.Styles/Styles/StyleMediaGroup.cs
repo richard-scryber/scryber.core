@@ -27,10 +27,10 @@ namespace Scryber.Styles
             base.DoDataBind(context, includechildren);
         }
 
-        public override void MergeInto(Style style, IComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component)
         {
             if (null == this.Media || this.Media.IsMatchedTo(this._format))
-                base.MergeInto(style, Component, state);
+                base.MergeInto(style, Component);
         }
     }
 }

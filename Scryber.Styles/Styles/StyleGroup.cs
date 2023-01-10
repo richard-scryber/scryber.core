@@ -197,11 +197,11 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="Component"></param>
         /// <param name="state"></param>
-        public override void MergeInto(Style style, IComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component)
         {
             foreach (StyleBase def in this.InnerItems)
             {
-                def.MergeInto(style, Component, state);
+                def.MergeInto(style, Component);
             }
         }
 

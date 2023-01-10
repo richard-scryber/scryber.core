@@ -15,12 +15,12 @@ namespace Scryber.Styles
         public StylePageGroup() : base(ObjectTypes.Style)
         { }
 
-        public override void MergeInto(Style style, IComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component)
         {
             if (null == this.Matcher)
-                base.MergeInto(style, Component, state);
+                base.MergeInto(style, Component);
             else if(this.Matcher.IsMatchedTo(Component))
-                base.MergeInto(style, Component, state);
+                base.MergeInto(style, Component);
         }
     }
 }

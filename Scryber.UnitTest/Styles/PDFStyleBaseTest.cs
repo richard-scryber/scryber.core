@@ -175,9 +175,9 @@ namespace Scryber.Core.UnitTests.Styles
             Scryber.Components.Label lbl = new Components.Label();
             lbl.StyleClass = "sea";
             lbl.ID = "mylabel";
-            ComponentState state = ComponentState.Down;
+            
 
-            target.MergeInto(style, lbl, state);
+            target.MergeInto(style, lbl);
             style.Flatten(); //must flatten the style after a merge
 
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); // part of style
@@ -194,7 +194,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             lbl = new Components.Label();
             lbl.ID = "mylabel";
-            target.MergeInto(style, lbl, state);
+            target.MergeInto(style, lbl);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); 
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Yellow); 
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
@@ -208,7 +208,7 @@ namespace Scryber.Core.UnitTests.Styles
             lbl = new Components.Label();
             lbl.StyleClass = "sea";
             lbl.ID = "anotherlabel";
-            target.MergeInto(style, lbl, state);
+            target.MergeInto(style, lbl);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); 
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Yellow);
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);
@@ -219,7 +219,7 @@ namespace Scryber.Core.UnitTests.Styles
             Components.Image img = new Components.Image();
             img.StyleClass = "sea";
             img.ID = "mylabel";
-            target.MergeInto(style, img, state);
+            target.MergeInto(style, img);
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10);
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Yellow);
             Assert.AreEqual(style.Background.FillStyle, Scryber.Drawing.FillType.Pattern);

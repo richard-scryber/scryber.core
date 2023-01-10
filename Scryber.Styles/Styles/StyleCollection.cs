@@ -71,12 +71,12 @@ namespace Scryber.Styles
         }
 
 
-        public void MergeInto(Style style, IComponent forComponent, ComponentState state)
+        public void MergeInto(Style style, IComponent forComponent)
         {
             for (int i = 0; i < this.Count; i++)
             {
                 StyleBase inner = this[i];
-                inner.MergeInto(style, forComponent, state);
+                inner.MergeInto(style, forComponent);
             }
             
         }

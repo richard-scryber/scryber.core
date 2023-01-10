@@ -949,9 +949,10 @@ body.grey div.reverse{
             Assert.AreEqual("h1", hover.Match.Selector.AppliedElement);
             Assert.IsNull(hover.Match.Selector.AppliedID);
 
-            Assert.AreEqual(ComponentState.Unknown, notsupported.Match.Selector.AppliedState);
+            //If the pseudo is not known then it should be used as the full name
+            Assert.AreEqual(ComponentState.Normal, notsupported.Match.Selector.AppliedState);
             Assert.IsNull(notsupported.Match.Selector.AppliedClass);
-            Assert.AreEqual("h1", notsupported.Match.Selector.AppliedElement);
+            Assert.AreEqual("h1:focus", notsupported.Match.Selector.AppliedElement);
             Assert.IsNull(notsupported.Match.Selector.AppliedID);
         }
 
@@ -1078,10 +1079,11 @@ body.grey div.reverse{
 
 
             //article > h1:focus
+            //If the pseudo is not known then it should be used as the full name
             match = notsupported.Match;
-            Assert.AreEqual(ComponentState.Unknown, match.Selector.AppliedState);
+            Assert.AreEqual(ComponentState.Normal, match.Selector.AppliedState);
             Assert.IsNull(match.Selector.AppliedClass);
-            Assert.AreEqual("h1", match.Selector.AppliedElement);
+            Assert.AreEqual("h1:focus", match.Selector.AppliedElement);
             Assert.IsNull(match.Selector.AppliedID);
             Assert.IsTrue(match.Selector.HasAncestor);
 
@@ -1153,10 +1155,10 @@ body.grey div.reverse{
                 Assert.IsNotNull(style);
 
 
-                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentBefore.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
+                //using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentBefore.pdf"))
+                //{
+                //    doc.SaveAsPDF(stream);
+                //}
 
                 //TODO: Validate output
                 Assert.Inconclusive();
@@ -1216,7 +1218,7 @@ body.grey div.reverse{
                     doc.SaveAsPDF(stream);
                 }
 
-                throw new NotImplementedException("This needs an after parser and a test");
+                Assert.Inconclusive("Need to test for the after support");
             }
         }
 

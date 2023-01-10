@@ -218,7 +218,8 @@ namespace Scryber.Styles.Selectors
                 }
                 else
                 {
-                    if (c == ':' && currIndex > 0)
+                    //TODO: Improve this as we substring twice. Once here and once at the state parsing
+                    if (c == ':' && currIndex > 0 && IsKnownState(selector.Substring(currIndex).TrimEnd()))
                     {
                         stateIndex = currIndex;
                         statePreviousType = pt;
@@ -279,6 +280,20 @@ namespace Scryber.Styles.Selectors
             }
 
             return new StyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState };
+        }
+
+        private static bool IsKnownState(string stateValue)
+        {
+            if(!string.IsNullOrEmpty(stateValue))
+            {
+                if(string.Equals(stateValue, "::before")
+                    || string.Equals(stateValue, "::after")
+                    || string.Equals(stateValue, ":hover"))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private enum ParsingType
