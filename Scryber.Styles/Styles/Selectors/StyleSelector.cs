@@ -334,6 +334,24 @@ namespace Scryber.Styles.Selectors
                 sb.Append(this.AppliedID);
             }
 
+            if(this.AppliedState != ComponentState.Normal)
+            {
+                switch(this.AppliedState)
+                {
+                    case (ComponentState.After):
+                        sb.Append("::after");
+                        break;
+                    case (ComponentState.Before):
+                        sb.Append("::before");
+                        break;
+                    case (ComponentState.Over):
+                        sb.Append(":hover");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             if (this.Placement == StylePlacement.DirectParent)
                 sb.Append(" >");
         }

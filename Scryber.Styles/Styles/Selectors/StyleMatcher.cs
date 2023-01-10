@@ -218,10 +218,11 @@ namespace Scryber.Styles.Selectors
                 }
                 else
                 {
-                    if (c == ':')
+                    if (c == ':' && currIndex > 0)
                     {
                         stateIndex = currIndex;
                         statePreviousType = pt;
+                        break;
                     }
                     sb.Append(c);
                 }
@@ -254,6 +255,27 @@ namespace Scryber.Styles.Selectors
                 {
 
                 }
+                else
+                {
+                    var state = selector.Substring(stateIndex).TrimEnd();
+                    switch (state)
+                    {
+                        case ("::before"):
+                            appliedState = ComponentState.Before;
+                            break;
+                        case ("::after"):
+                            appliedState = ComponentState.After;
+                            break;
+                        case (":hover"):
+                            appliedState = ComponentState.Over;
+                            break;
+                        default:
+                            //Use the unknown state so it is not captured as part of the default style.
+                            appliedState = ComponentState.Unknown;
+                            break;
+                    }
+                }
+
             }
 
             return new StyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState };

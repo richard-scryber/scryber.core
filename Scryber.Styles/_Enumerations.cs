@@ -28,7 +28,10 @@ namespace Scryber
         Normal,
         Over,
         Down,
-        Root
+        Root,
+        Before,
+        After,
+        Unknown
     }
 
     public enum PaperOrientation

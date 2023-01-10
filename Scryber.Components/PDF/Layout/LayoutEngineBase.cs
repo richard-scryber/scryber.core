@@ -254,10 +254,82 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="children"></param>
         /// <returns></returns>
-        private static bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+        private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
         {
-            children = GetComponentChildren(parent);
-            return null != children && children.Count > 0;
+            StyleValue<ContentDescriptor> found;
+            if (this.FullStyle.TryGetValue(StyleKeys.ContentTextKey, out found))
+            {
+                var content = found.GetValue(this.FullStyle) as ContentDescriptor;
+                int index = 0;
+                children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                while(null != content)
+                {
+                    if(this.AddCssContentToList(parent as IStyledComponent, content, children, index))
+                        index++;
+                    
+                    content = content.Next;
+                }
+                return index > 0;
+            }
+            else
+            {
+                children = GetComponentChildren(parent);
+                return null != children && children.Count > 0;
+            }
+        }
+
+        private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
+        {
+            bool added = false;
+            TextLiteral text;
+
+            switch (content.Type)
+            {
+                case ContentDescriptorType.Text:
+                    text = new TextLiteral(content.Value);
+                    children.Add(text);
+                    added = true;
+                    break;
+
+                case ContentDescriptorType.Gradient:
+                    wrapper.Style.SetValue(StyleKeys.BgImgSrcKey, content.Value);
+                    added = true;
+                    break;
+
+                case ContentDescriptorType.Image:
+
+                    var img = new Image();
+                    img.Source = (content as ContentImageDescriptor).Source;
+                    img.PositionMode = PositionMode.Inline;
+                    children.Add(img);
+                    added = !string.IsNullOrEmpty(img.Source);
+                    break;
+
+                case ContentDescriptorType.Quote:
+                    text = new TextLiteral((content as ContentQuoteDescriptor).Chars);
+                    children.Add(text);
+                    added = true;
+                    break;
+
+                case ContentDescriptorType.Attribute:
+                    var defn = Scryber.Generation.ParserDefintionFactory.GetClassDefinition(wrapper.GetType());
+                    if(defn.Attributes.TryGetPropertyDefinition(content.Value, string.Empty, out var prop))
+                    {
+                        object val = prop.PropertyInfo.GetValue(wrapper);
+                        if(null != val)
+                        {
+                            text = new TextLiteral(val.ToString());
+                            children.Add(text);
+                            added = true;
+                        }
+                    }
+                    break;
+
+                case ContentDescriptorType.Counter:
+                default:
+                    break;
+            }
+            return added;
         }
 
         /// <summary>
@@ -1018,7 +1090,26 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
-            
+
+            //Check the style content for an image source url
+            //and if set, then apply it first.
+
+            StyleValue<ContentDescriptor> value;
+
+            if(style.TryGetValue(StyleKeys.ContentTextKey, out value))
+            {
+                ContentDescriptor current = value.Value(style);
+                string imgUrl = null;
+                while(null != current)
+                {
+                    if (current.Type == ContentDescriptorType.Image)
+                        imgUrl = (current as ContentImageDescriptor).Source;
+                }
+
+                if (!string.IsNullOrEmpty(imgUrl) && image is Image)
+                    (image as Image).Source = imgUrl;
+            }
+
             Resources.PDFImageXObject imgx = image.GetImageObject(this.Context, style);
 
             if (null == imgx)

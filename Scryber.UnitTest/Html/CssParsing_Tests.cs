@@ -17,6 +17,7 @@ using System.Diagnostics;
 using Scryber.Text;
 using Scryber.PDF.Resources;
 using System.Runtime.ExceptionServices;
+using System.IO;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -726,9 +727,11 @@ body.grey div.reverse{
 
         }
 
+        
+
 
         [TestMethod()]
-        public void ParseItemContentStyle()
+        public void ParseCSSItemContentStyle()
         {
             var path = "Content/HTML/Images/Group.png";
 
@@ -817,6 +820,404 @@ body.grey div.reverse{
             Assert.AreEqual(ContentDescriptorType.Gradient, value.Type);
             Assert.IsNull(value.Next);
 
+        }
+
+        [TestMethod]
+        public void ParseCSSWithContentApplied()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{
+                                border: solid 1px silver;
+                                margin: 20px;
+                            }
+
+                            .txt{
+                                content: linear-gradient:;
+                            }
+                            .img{
+                                content: url('https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png');
+                            }
+
+                            .multiple{
+                                content: open-quote 'More content in quotes' close-quote;
+                                font-style: italic;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' class='' >
+                            <span id='inner1' class='txt'>
+                                This will be replaced by the text in the css.
+                            </span>
+                        </div>
+                        <div id='explicit' class='' >
+                            <img class='img' />
+                            <!-- the source is set from the css -->
+                        </div>
+                        <div id='asAClass' class='multiple' >
+                            An italic quote will replace it all.
+                        </div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentApplied.pdf"))
+                {
+                    
+                    doc.SaveAsPDF(stream);
+                }
+
+                //TODO: Validate output
+                Assert.Inconclusive();
+            }
+        }
+
+        [TestMethod]
+        public void ParseCSSPseudoClasses()
+        {
+            var src = @".added::before{
+                            content: 'replacement text'
+                        }
+
+                        
+                        .quote::before{
+                            content: open-quote;
+                        }
+
+                        .quote::after{
+                            content: close-quote;
+                        }
+
+                        h1:hover{
+                            color: red;
+                        }
+
+                        /* Focus is not supported */
+
+                        h1:focus{
+                            color: red;
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(5, all.Count);
+
+            var added = all[0] as StyleDefn;
+            var quoteBefore = all[1] as StyleDefn;
+            var quoteAfter = all[2] as StyleDefn;
+            var hover = all[3] as StyleDefn;
+            var notsupported = all[4] as StyleDefn;
+
+            Assert.IsNotNull(added);
+            Assert.IsNotNull(quoteBefore);
+            Assert.IsNotNull(quoteAfter);
+            Assert.IsNotNull(hover);
+            Assert.IsNotNull(notsupported);
+
+            Assert.AreEqual(ComponentState.Before, added.Match.Selector.AppliedState);
+            Assert.AreEqual("added", added.Match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(added.Match.Selector.AppliedElement);
+            Assert.IsNull(added.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.Before, quoteBefore.Match.Selector.AppliedState);
+            Assert.AreEqual("quote", quoteBefore.Match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(quoteBefore.Match.Selector.AppliedElement);
+            Assert.IsNull(quoteBefore.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.After, quoteAfter.Match.Selector.AppliedState);
+            Assert.AreEqual("quote", quoteAfter.Match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(quoteAfter.Match.Selector.AppliedElement);
+            Assert.IsNull(quoteAfter.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.Over, hover.Match.Selector.AppliedState);
+            Assert.IsNull(hover.Match.Selector.AppliedClass);
+            Assert.AreEqual("h1", hover.Match.Selector.AppliedElement);
+            Assert.IsNull(hover.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.Unknown, notsupported.Match.Selector.AppliedState);
+            Assert.IsNull(notsupported.Match.Selector.AppliedClass);
+            Assert.AreEqual("h1", notsupported.Match.Selector.AppliedElement);
+            Assert.IsNull(notsupported.Match.Selector.AppliedID);
+        }
+
+        [TestMethod]
+        public void ParseCSSComplexPseudoClasses()
+        {
+            var src = @".added::before, .added::after{
+                            content: '!'
+                        }
+
+                        
+                        .cite .quote::before{
+                            content: open-quote;
+                        }
+
+                        .cite .quote::after{
+                            content: close-quote;
+                        }
+
+                        a:hover > i::before{
+                            color: red;
+                            content: '>>';
+                        }
+
+                        /* Focus is not supported */
+
+                        article > h1:focus{
+                            color: red;
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(5, all.Count);
+
+            var added = all[0] as StyleDefn;
+            var quoteBefore = all[1] as StyleDefn;
+            var quoteAfter = all[2] as StyleDefn;
+            var hover = all[3] as StyleDefn;
+            var notsupported = all[4] as StyleDefn;
+
+            Assert.IsNotNull(added);
+            Assert.IsNotNull(quoteBefore);
+            Assert.IsNotNull(quoteAfter);
+            Assert.IsNotNull(hover);
+            Assert.IsNotNull(notsupported);
+
+            //.added::before, .added::after
+            //These are parsed in reverse order for commas
+            var match = added.Match;
+
+            Assert.AreEqual(ComponentState.After, match.Selector.AppliedState);
+            Assert.AreEqual("added", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+
+            Assert.IsInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+            match = ((Scryber.Styles.Selectors.StyleMultipleMatcher)added.Match).Next;
+            Assert.IsNotNull(match);
+            Assert.AreEqual(ComponentState.Before, match.Selector.AppliedState);
+            Assert.AreEqual("added", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+
+
+            //.cite .quote::before
+            match = quoteBefore.Match;
+            Assert.AreEqual(ComponentState.Before, match.Selector.AppliedState);
+            Assert.AreEqual("quote", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+            
+            var ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.Any, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Normal, ancestor.AppliedState);
+            Assert.AreEqual("cite", ancestor.AppliedClass.ClassName);
+            Assert.IsNull(ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+            
+            Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+
+            //.cite .quote::after
+            match = quoteAfter.Match;
+            Assert.AreEqual(ComponentState.After, match.Selector.AppliedState);
+            Assert.AreEqual("quote", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.Any, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Normal, ancestor.AppliedState);
+            Assert.AreEqual("cite", ancestor.AppliedClass.ClassName);
+            Assert.IsNull(ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+
+            Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+
+            //a:hover > i::before
+            match = hover.Match;
+            Assert.AreEqual(ComponentState.Before, match.Selector.AppliedState);
+            Assert.IsNull(match.Selector.AppliedClass);
+            Assert.AreEqual("i", match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.DirectParent, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Over, ancestor.AppliedState);
+            Assert.IsNull(ancestor.AppliedClass);
+            Assert.AreEqual("a", ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+
+            Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+
+
+            //article > h1:focus
+            match = notsupported.Match;
+            Assert.AreEqual(ComponentState.Unknown, match.Selector.AppliedState);
+            Assert.IsNull(match.Selector.AppliedClass);
+            Assert.AreEqual("h1", match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.DirectParent, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Normal, ancestor.AppliedState);
+            Assert.IsNull(ancestor.AppliedClass);
+            Assert.AreEqual("article", ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+        }
+
+        [TestMethod]
+        public void ParseCSSWithContentBefore()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{
+                                border: solid 1px silver;
+                                margin: 20px;
+                            }
+
+                            .txt{
+                                color: red;
+                            }
+
+                            .txt::before{
+                                content: '>>';
+                                color:blue;
+                            }
+                            .img{
+                                content: url('https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png');
+                            }
+
+                            .multiple{
+                                content: open-quote 'More content in quotes' close-quote;
+                                font-style: italic;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' class='' >
+                            <span id='txt1' class='txt'>
+                                This will be replaced by the text in the css.
+                            </span>
+                        </div>
+                        <div id='explicit' class='' >
+                            <img id='img1' class='img' />
+                            <!-- the source is set from the css -->
+                        </div>
+                        <div id='asAClass' class='multiple' >
+                            An italic quote will replace it all.
+                        </div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                var txt = doc.FindAComponentById("txt1");
+                Assert.IsNotNull(txt);
+
+                var style = txt.GetAppliedStyle();
+                Assert.IsNotNull(style);
+
+
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentBefore.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                //TODO: Validate output
+                Assert.Inconclusive();
+            }
+        }
+
+        [TestMethod]
+        public void ParseCSSWithContentAfter()
+        {
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{
+                                border: solid 1px silver;
+                                margin: 20px;
+                            }
+
+                            .txt{
+                                content: linear-gradient:;
+                            }
+                            .img{
+                                content: url('https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png');
+                            }
+
+                            .multiple{
+                                content: open-quote 'More content in quotes' close-quote;
+                                font-style: italic;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' class='' >
+                            <span id='inner1' class='txt'>
+                                This will be replaced by the text in the css.
+                            </span>
+                        </div>
+                        <div id='explicit' class='' >
+                            <img class='img' />
+                            <!-- the source is set from the css -->
+                        </div>
+                        <div id='asAClass' class='multiple' >
+                            An italic quote will replace it all.
+                        </div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentAfter.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                throw new NotImplementedException("This needs an after parser and a test");
+            }
         }
 
 

@@ -362,7 +362,11 @@ namespace Scryber.Styles
         protected virtual void DoDataBind(DataContext context, bool includechildren)
         {
             if (this.IsValueDefined(StyleKeys.BgImgSrcKey))
-                this.EnsureBackgroundImage(context, this.GetValue(StyleKeys.BgImgSrcKey, ""));
+                this.EnsureCSSImage(context, this.GetValue(StyleKeys.BgImgSrcKey, ""), "background");
+            if (this.IsValueDefined(StyleKeys.FillImgSrcKey))
+                this.EnsureCSSImage(context, this.GetValue(StyleKeys.FillImgSrcKey, ""), "fill");
+            if (this.IsValueDefined(StyleKeys.ContentTextKey))
+                this.EnsureContentImage(context, this.GetValue(StyleKeys.ContentTextKey, null));
 
             if (includechildren && this.StyleItems.Count > 0)
             {
@@ -373,7 +377,18 @@ namespace Scryber.Styles
             }
         }
 
-        protected virtual void EnsureBackgroundImage(DataContext context, string source)
+        protected virtual void EnsureContentImage(DataContext context, ContentDescriptor descriptor)
+        {
+            while(null != descriptor)
+            {
+                if (descriptor.Type == ContentDescriptorType.Image)
+                    this.EnsureCSSImage(context, descriptor.Value, "content");
+
+                descriptor = descriptor.Next;
+            }
+        }
+
+        protected virtual void EnsureCSSImage(DataContext context, string source, string type)
         {
             if(IsGradientImageSrc(source, out var desc))
             {
@@ -383,7 +398,7 @@ namespace Scryber.Styles
             IResourceRequester requester = context.Document as IResourceRequester;
             if(null == requester)
             {
-                context.TraceLog.Add(TraceLevel.Warning, "Styles", "Cannot pre-load background images as the document does not support resource requests");
+                context.TraceLog.Add(TraceLevel.Warning, "Styles", "Cannot pre-load " + type + " images as the document does not support resource requests");
                 return;
             }
 
@@ -396,7 +411,7 @@ namespace Scryber.Styles
             var existing = context.Document.GetResource(PDFResource.XObjectResourceType, mapped, true);
 
             if (context.ShouldLogMessage)
-                context.TraceLog.Add(TraceLevel.Message, "Styles", "Background image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
+                context.TraceLog.Add(TraceLevel.Message, "Styles", type + " image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
         }
 
         #endregion
