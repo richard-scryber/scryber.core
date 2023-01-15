@@ -124,6 +124,7 @@ namespace Scryber.Drawing
                 return false;
 
             var typeS = value.Substring(0, open);
+            if (value.Contains("base64") && value.Contains("data:")) typeS = "base64";
 
             FontSourceType type;
             if (!Enum.TryParse<FontSourceType>(typeS, true, out type))
