@@ -18,12 +18,13 @@ using Scryber.Text;
 using Scryber.PDF.Resources;
 using System.Runtime.ExceptionServices;
 using System.IO;
+using System.Collections;
 
 namespace Scryber.Core.UnitTests.Html
 {
     [TestClass()]
     public class CssParsing_Test
-    { 
+    {
 
         private PDFLayoutContext _layoutcontext;
         private TestContext testContextInstance;
@@ -291,7 +292,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("body.grey div", two.Match.ToString());
             Assert.AreEqual(10, two.ValueCount); //All, Top, Left, Bottom and Right are all set for Margins and Padding
             // 96 pixels per inch, 72 points per inch
-            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, Unit.Zero).PointsValue); 
+            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, Unit.Zero).PointsValue);
             Assert.AreEqual(11.25, two.GetValue(StyleKeys.MarginsAllKey, Unit.Zero).PointsValue);
 
             var three = col[2] as StyleDefn;
@@ -405,7 +406,7 @@ body.grey div.reverse{
 
             //Top one should be a media query
             Assert.IsInstanceOfType(col[0], typeof(StyleMediaGroup));
-            
+
             var media = (StyleMediaGroup)col[0];
             Assert.AreEqual("screen", media.Media.Type);
             Assert.AreEqual(2, media.Styles.Count);
@@ -540,18 +541,18 @@ body.grey div.reverse{
                 using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSS.pdf"))
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
-                    
+
                     doc.SaveAsPDF(stream);
                 }
 
 
                 var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
-                
+
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
                 //This has been loaded from the remote file
                 Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
-                
+
 
             }
         }
@@ -723,11 +724,11 @@ body.grey div.reverse{
 
             Assert.AreEqual("https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf", fsrc.Source, "Source does not match");
             Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
-            
+
 
         }
 
-        
+
 
 
         [TestMethod()]
@@ -822,64 +823,6 @@ body.grey div.reverse{
 
         }
 
-        [TestMethod]
-        public void ParseCSSWithContentApplied()
-        {
-            var src = @"<!DOCTYPE HTML >
-                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
-                    <head>
-                        <title>Content Tests</title>
-                        <style type='text/css' >
-
-                            div{
-                                border: solid 1px silver;
-                                margin: 20px;
-                            }
-
-                            .txt{
-                                content: linear-gradient:;
-                            }
-                            .img{
-                                content: url('https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png');
-                            }
-
-                            .multiple{
-                                content: open-quote 'More content in quotes' close-quote;
-                                font-style: italic;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div id='default' class='' >
-                            <span id='inner1' class='txt'>
-                                This will be replaced by the text in the css.
-                            </span>
-                        </div>
-                        <div id='explicit' class='' >
-                            <img class='img' />
-                            <!-- the source is set from the css -->
-                        </div>
-                        <div id='asAClass' class='multiple' >
-                            An italic quote will replace it all.
-                        </div>
-                    </body>
-                </html>";
-
-            using (var reader = new System.IO.StringReader(src))
-            {
-                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-
-
-                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentApplied.pdf"))
-                {
-                    
-                    doc.SaveAsPDF(stream);
-                }
-
-                //TODO: Validate output
-                Assert.Inconclusive();
-            }
-        }
 
         [TestMethod]
         public void ParseCSSPseudoClasses()
@@ -1030,7 +973,7 @@ body.grey div.reverse{
             Assert.IsNull(match.Selector.AppliedElement);
             Assert.IsNull(match.Selector.AppliedID);
             Assert.IsTrue(match.Selector.HasAncestor);
-            
+
             var ancestor = match.Selector.Ancestor;
             Assert.IsNotNull(ancestor);
             Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.Any, ancestor.Placement);
@@ -1038,7 +981,7 @@ body.grey div.reverse{
             Assert.AreEqual("cite", ancestor.AppliedClass.ClassName);
             Assert.IsNull(ancestor.AppliedElement);
             Assert.IsNull(ancestor.AppliedID);
-            
+
             Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
 
             //.cite .quote::after
@@ -1096,10 +1039,15 @@ body.grey div.reverse{
             Assert.IsNull(ancestor.AppliedID);
         }
 
+
+        PDF.Layout.PDFLayoutDocument _docLayout;
+
         [TestMethod]
-        public void ParseCSSWithContentBefore()
+        public void ParseCSSWithContentApplied()
         {
-            var src = @"<!DOCTYPE HTML >
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+
+            var src = @"<?scryber append-log=true ?>
                 <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
                     <head>
                         <title>Content Tests</title>
@@ -1110,36 +1058,16 @@ body.grey div.reverse{
                                 margin: 20px;
                             }
 
-                            .txt{
-                                color: red;
-                            }
+                            .txt{ content: 'This will not be used'; height: 40pt; /* This should be used */ }
 
-                            .txt::before{
-                                content: '>>';
-                                color:blue;
-                            }
-                            .img{
-                                content: url('https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png');
-                            }
+                            .img{content: url('" + imgPath + @"'); height: 50pt;}
 
-                            .multiple{
-                                content: open-quote 'More content in quotes' close-quote;
-                                font-style: italic;
-                            }
                         </style>
                     </head>
                     <body>
-                        <div id='default' class='' >
-                            <span id='txt1' class='txt'>
-                                This will be replaced by the text in the css.
-                            </span>
-                        </div>
-                        <div id='explicit' class='' >
-                            <img id='img1' class='img' />
+                        <div id='default' class='txt' > This will not be replaced by the css.</div>
+                        <div id='explicit' class='' ><img class='img' />
                             <!-- the source is set from the css -->
-                        </div>
-                        <div id='asAClass' class='multiple' >
-                            An italic quote will replace it all.
                         </div>
                     </body>
                 </html>";
@@ -1148,26 +1076,214 @@ body.grey div.reverse{
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                var txt = doc.FindAComponentById("txt1");
-                Assert.IsNotNull(txt);
 
-                var style = txt.GetAppliedStyle();
-                Assert.IsNotNull(style);
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentApplied.pdf"))
+                {
+
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            var pg = _docLayout.AllPages[0];
+            var content = pg.ContentBlock.Columns[0];
+            Assert.AreEqual(2, content.Contents.Count);
+
+            // .txt{ content: 'This will not be used'; height: 40pt; /* This should be used */ }
+            // <div id='default' class='txt' > This will not be replaced by the css.</div>
+
+            var div = content.Contents[0] as PDFLayoutBlock;
+            var line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //'          content    '        
+            //TextBegin, Text,      TextEnd
+
+            Assert.AreEqual(3, line.Runs.Count);
+            var text = line.Runs[1] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("This will not be replaced by the css.", text.Characters);
+            //Check the height was not ignored
+            Assert.AreEqual(40, div.Position.Height.Value);
+
+            //.img{content: url('[imgPath]'); height: 50pt;}
+            //<div id='explicit' class='' ><img class='img' /></div>
+
+            div = content.Contents[1] as PDFLayoutBlock;
+            line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
 
 
-                //using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentBefore.pdf"))
-                //{
-                //    doc.SaveAsPDF(stream);
-                //}
+            var imgPointer = line.Runs[0] as PDF.Layout.PDFLayoutComponentRun;
+            Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+            Assert.AreEqual(50.0, imgPointer.Height.PointsValue);
+            Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
 
-                //TODO: Validate output
-                Assert.Inconclusive();
+            var rsrc = _docLayout.DocumentComponent.SharedResources.GetResource(PDF.Resources.PDFResource.XObjectResourceType, imgPath);
+            Assert.IsNotNull(rsrc);
+            Assert.AreEqual(rsrc, (imgPointer.Owner as Image).XObject);
+
+        }
+
+        [TestMethod]
+        public void ParseCSSWithContentBefore()
+        {
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var src = @"<?scryber append-log='false' ?>
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{ border: solid 1px silver; margin: 20px; padding-bottom: 5pt; }
+
+                            .txt{ color: red; }
+
+                            .txt::before{ content: '>>'; color:blue; }
+
+                            .empty::before { content: url('" + imgPath + @"'); width:20pt; padding-top: 5pt; }
+
+                            .quote::before{ content: open-quote; width:20pt; color: green; padding-top: 5pt; }
+
+                            .multiple::before{ content: url('" + imgPath + @"') '\40' open-quote; color: green; font-style: italic; }
+
+                            .multiple img { padding-top: 5px; display: inline; width: 20pt; }
+                           
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' >
+                            <i id='txt1' class='txt'>
+                                This will have text before, in the italic span.
+                            </i>
+                        </div>
+                        <div id='anImage' class='empty' ></div>
+                        <div id='aquote' class='quote' >A quote will be in front in green.</div>
+                        <div id='aquote' class='multiple' > An image, a character, and a quote will be infront with the image inlined.</div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentBefore.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+
+                var pg = _docLayout.AllPages[0];
+                var content = pg.ContentBlock.Columns[0];
+                Assert.AreEqual(4, content.Contents.Count);
+
+                // .txt::before { content: '>>'; color: blue; }
+                //<i id='inner1' class='txt'> This will have some content before inside the italic span.</i>
+
+                var div = content.Contents[0] as PDF.Layout.PDFLayoutBlock;
+                var line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //<i           <before      '          >>    '        span>      '          content  '         span> 
+                //InlineBegin, InlineBegin, TextBegin, Text, TextEnd, InlineEnd, TextBegin, Text    , TextEnd, InlineEnd
+
+                Assert.AreEqual(10, line.Runs.Count);
+                var text = line.Runs[3] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual(">>", text.Characters);
+
+
+                
+                text = line.Runs[7] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual(" This will have text before, in the italic span. ", text.Characters);
+
+
+                // .empty::before { content: url('imgPath'); width: 20pt; padding-top: 5pt; }
+                //  <div id='anImage' class='empty' ></div>
+
+                div = content.Contents[1] as PDF.Layout.PDFLayoutBlock;
+                line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //Images should be on their own if there is no other content in the PseudoClass
+                //<img   
+                //ComponentRun
+
+                Assert.AreEqual(1, line.Runs.Count);
+
+                var imgPointer = line.Runs[0] as PDF.Layout.PDFLayoutComponentRun;
+                Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+                Assert.AreEqual(20.0, imgPointer.Width.PointsValue);
+                Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+                var rsrc = _docLayout.DocumentComponent.SharedResources.GetResource(PDF.Resources.PDFResource.XObjectResourceType, imgPath);
+                Assert.IsNotNull(rsrc);
+                Assert.AreEqual(rsrc, (imgPointer.Owner as Image).XObject);
+
+                
+
+
+                // .quote::before{ content: open-quote; width:20pt; color: green; padding-top: 5pt; }
+                // <div id='aquote' class='quote' >A quote will be in front in green.</div>
+
+                div = content.Contents[2] as PDF.Layout.PDFLayoutBlock;
+                line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //(before span) '           “     '        (before end)    '          content   '        line    
+                //InlineBegin,   TextBegin, Text, TextEnd, InlineEnd    ,  TextBegin, Text,     TextEnd, InlineEnd
+
+                Assert.AreEqual(8, line.Runs.Count);
+
+                text = line.Runs[2] as PDF.Layout.PDFTextRunCharacter;
+
+                Assert.IsNotNull(text);
+                Assert.AreEqual("“", text.Characters);
+                Assert.AreEqual(StandardColors.Green, (line.Runs[0] as PDFLayoutInlineBegin).FullStyle.Fill.Color);
+
+                text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual("A quote will be in front in green.", text.Characters);
+
+
+                //<div id='aquote' class='multiple' > An image ... image inlined.</div>
+                //.multiple::before{ content: url('" + imgPath + @"') '\40' open-quote; color: green; font-style: italic; }
+                //.multiple img { padding-top: 5px; display: inline; width: 20pt; }
+
+                div = content.Contents[3] as PDF.Layout.PDFLayoutBlock;
+                line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //(before span) img   '           @     '        '         “     '         (before end)    '          part content  \r\n    
+                //InlineBegin,  Image  TextBegin, Text, TextEnd, TextBegin Text   TextEnd, InlineEnd    ,  TextBegin, Text,         TextNewLine
+
+                Assert.AreEqual(12, line.Runs.Count);
+                Assert.AreEqual(StandardColors.Green, (line.Runs[0] as PDFLayoutInlineBegin).FullStyle.Fill.Color);
+
+                imgPointer = line.Runs[1] as PDF.Layout.PDFLayoutComponentRun;
+                Assert.IsNotNull(imgPointer);
+                Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+                Assert.AreEqual(20.0, imgPointer.Width.PointsValue);
+                Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+
+                text = line.Runs[3] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual("@", text.Characters);
+
+
+                text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual("“", text.Characters);
+                
+                text = line.Runs[10] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual(" An image, a character, and a quote will be", text.Characters);
             }
         }
+
+
 
         [TestMethod]
         public void ParseCSSWithContentAfter()
         {
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
             var src = @"<!DOCTYPE HTML >
                 <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
                     <head>
@@ -1177,33 +1293,39 @@ body.grey div.reverse{
                             div{
                                 border: solid 1px silver;
                                 margin: 20px;
+                                padding-bottom: 5pt;
                             }
 
                             .txt{
-                                content: linear-gradient:;
-                            }
-                            .img{
-                                content: url('https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png');
+                                color: red;
                             }
 
-                            .multiple{
-                                content: open-quote 'More content in quotes' close-quote;
-                                font-style: italic;
+                            .txt::after{
+                                content: '&lt;&lt;';
+                                color:blue;
                             }
+
+
+                            .empty::after {
+                                content: url('" + imgPath + @"') 'and some text';
+                            }
+
+                            .empty img { display: inline; height:25pt; }
+
+                            .quote::after{
+                                content: close-quote;
+                                color: green;
+                            }
+
                         </style>
                     </head>
                     <body>
                         <div id='default' class='' >
-                            <span id='inner1' class='txt'>
-                                This will be replaced by the text in the css.
-                            </span>
+                            <span id='inner1' class='txt'>This will be have content after.</span>
                         </div>
-                        <div id='explicit' class='' >
-                            <img class='img' />
-                            <!-- the source is set from the css -->
-                        </div>
-                        <div id='asAClass' class='multiple' >
-                            An italic quote will replace it all.
+                        <div id='explicit' class='empty' ></div>
+                        <div id='asAClass' class='quote' >
+                            An italic quote will follow.
                         </div>
                     </body>
                 </html>";
@@ -1215,14 +1337,81 @@ body.grey div.reverse{
 
                 using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentAfter.pdf"))
                 {
+                    doc.LayoutComplete += Doc_LayoutComplete;
                     doc.SaveAsPDF(stream);
                 }
 
-                Assert.Inconclusive("Need to test for the after support");
             }
+
+            var pg = _docLayout.AllPages[0];
+            var content = pg.ContentBlock.Columns[0];
+            Assert.AreEqual(3, content.Contents.Count);
+
+            // .txt::after{ content: '&lt;&lt;'; color: blue; }
+            //<span id='inner1' class='txt'> This will be have content after.</span>
+
+            var div = content.Contents[0] as PDF.Layout.PDFLayoutBlock;
+            var line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //<span       '           content      ' <span       '           <<           ' span>      span>
+            //InlineBegin, TextBegin, Text, TextEnd, InlineBegin, TextBegin, Text, TextEnd, InlineEnd, InlineEnd
+
+            Assert.AreEqual(10, line.Runs.Count);
+            var text = line.Runs[2] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("This will be have content after.", text.Characters);
+
+            text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("<<", text.Characters);
+
+            // .empty::after { content: url('...') 'and some text'; } 
+            // .empty img { display: inline; height:25pt; }
+            // <div id='explicit' class='empty' ></div>
+
+            div = content.Contents[1] as PDF.Layout.PDFLayoutBlock;
+            line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //<span        img    '         content      '  span>    
+            //InlineBegin, Image, TextBegin, Text, TextEnd, InlineEnd
+
+            Assert.AreEqual(6, line.Runs.Count);
+
+            var imgPointer = line.Runs[1] as PDF.Layout.PDFLayoutComponentRun;
+            Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+            Assert.AreEqual(25.0, imgPointer.Height.PointsValue);
+            Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+
+            // .quote::after{ content: close-quote; color: green;}
+            // <div id='asAClass' class='quote' >An italic quote will follow.</div>
+
+            div = content.Contents[2] as PDF.Layout.PDFLayoutBlock;
+            line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //'          content      ' <span       '           "           '  span>    
+            //TextBegin, Text, TextEnd, InlineBegin, TextBegin, Text, TextEnd, InlineEnd
+
+            Assert.AreEqual(8, line.Runs.Count);
+
+            text = line.Runs[1] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("An italic quote will follow. ", text.Characters);
+
+            text = line.Runs[5] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("”", text.Characters);
+
+            
         }
 
 
+
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            this._docLayout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+        }
+
+    
 
         [TestMethod()]
         public void ParseGoogleFontLink()

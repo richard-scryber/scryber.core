@@ -114,6 +114,11 @@ namespace Scryber.Styles
                         variables = new StyleVariableSet();
                     this._styles[last].Variables.MergeInto(variables);
                 }
+
+                if (this._styles[last].HasStates)
+                {
+                    style.CopyStatesFrom(this._styles[last]);
+                }
             }
 
             style.Variables = variables;

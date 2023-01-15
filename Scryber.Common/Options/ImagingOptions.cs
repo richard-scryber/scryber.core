@@ -18,7 +18,7 @@ namespace Scryber.Options
         {
             AllowMissingImages = true;
             ImageCacheDuration = -1;
-            MinimumScaleReduction = 0.2;
+            MinimumScaleReduction = 0.002;
         }
     }
 

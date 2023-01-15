@@ -74,7 +74,7 @@ namespace Scryber.Styles.Selectors
 
         #region public ComponentState AppliedState {get;set;}
 
-        private ComponentState _state;
+        private ComponentState _state = ComponentState.Normal;
 
         /// <summary>
         /// Not currently supported
@@ -250,6 +250,11 @@ namespace Scryber.Styles.Selectors
             {
                 if ((this.AppliedType.IsInstanceOfType(component)) == false)
                     return false;
+            }
+
+            if(state != this.AppliedState)
+            {
+                return false;
             }
 
             if (this.HasAncestor)

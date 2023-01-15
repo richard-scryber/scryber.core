@@ -259,19 +259,27 @@ namespace Scryber.Styles
             }
             else if(this.IsMatchedTo(forComponent, ComponentState.Over, out priority))
             {
-                var stateStyle = style.GetState(ComponentState.Over, true);
+                var stateStyle = style.GetStyleState(ComponentState.Over, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
                 this.MergeInto(stateStyle, priority);
 
             }
             else if (this.IsMatchedTo(forComponent, ComponentState.After, out priority))
             {
-                var stateStyle = style.GetState(ComponentState.Over, true);
+                var stateStyle = style.GetStyleState(ComponentState.After, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
+
                 this.MergeInto(stateStyle, priority);
 
             }
             else if (this.IsMatchedTo(forComponent, ComponentState.Before, out priority))
             {
-                var stateStyle = style.GetState(ComponentState.Over, true);
+                var stateStyle = style.GetStyleState(ComponentState.Before, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
+
                 this.MergeInto(stateStyle, priority);
 
             }

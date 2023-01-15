@@ -381,7 +381,7 @@ namespace Scryber.Styles
             while(null != descriptor)
             {
                 if (descriptor.Type == ContentDescriptorType.Image)
-                    this.EnsureCSSImage(context, descriptor.Value, "content");
+                    this.EnsureCSSImage(context, (descriptor as ContentImageDescriptor).Source, "content");
 
                 descriptor = descriptor.Next;
             }

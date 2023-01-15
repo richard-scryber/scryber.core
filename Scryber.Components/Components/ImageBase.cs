@@ -385,13 +385,13 @@ namespace Scryber.Components
 
                     if(w < naturalSize.Width * this.MinimumScaleReduction)
                     {
+                        context.TraceLog.Add(TraceLevel.Warning, "Images", "The image '" + this.ID + "' was reduced beyond the minimum scale reduction of " + this.MinimumScaleReduction + ". Reverting to the natural size");
                         h = naturalSize.Height;
                         w = naturalSize.Width;
                     }
                 }
             }
             
-
             return new Size(w, h);
         }
 

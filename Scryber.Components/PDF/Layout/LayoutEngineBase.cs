@@ -256,27 +256,90 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
         {
-            StyleValue<ContentDescriptor> found;
-            if (this.FullStyle.TryGetValue(StyleKeys.ContentTextKey, out found))
+            children = GetComponentChildren(parent);
+
+            //Apply the ::before and ::after states as children
+            if (this.FullStyle.HasStates)
             {
-                var content = found.GetValue(this.FullStyle) as ContentDescriptor;
-                int index = 0;
-                children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
-                while(null != content)
+                Style state;
+                StyleValue<ContentDescriptor> content;
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.Before, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
                 {
-                    if(this.AddCssContentToList(parent as IStyledComponent, content, children, index))
-                        index++;
-                    
-                    content = content.Next;
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddBeforeContent(parent, children, state, content.Value(state));
                 }
-                return index > 0;
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.After, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddAfterContent(parent, children, state, content.Value(state));
+                }
+            }
+            return null != children && children.Count > 0;
+
+        }
+
+        private void AddBeforeContent(IComponent parent, ComponentList children, Style before, ContentDescriptor value)
+        {
+            Span span = new Span();
+            span.ID = parent.ID + "__before";
+            span.Style = before;
+
+            int index = 0;
+            while (null != value)
+            {
+                this.AddCssContentToList(span, value, span.Contents, index);
+
+                value = value.Next;
+                index++;
+            }
+            if (span.Contents.Count == 1 && span.Contents[0] is Image)
+            {
+                var img = span.Contents[0] as Image;
+                img.ID = parent.ID + "__before";
+                img.Style = before;
+                children.Insert(0, img);
             }
             else
-            {
-                children = GetComponentChildren(parent);
-                return null != children && children.Count > 0;
-            }
+                children.Insert(0, span);
+
+
         }
+
+        private void AddAfterContent(IComponent parent, ComponentList children, Style after, ContentDescriptor value)
+        {
+            Span span = new Span();
+            span.ID = parent.ID + "__after";
+            span.Style = after;
+
+            
+            int index = 0;
+            while (null != value)
+            {
+                this.AddCssContentToList(span, value, span.Contents, index);
+
+                value = value.Next;
+                index++;
+            }
+            if (span.Contents.Count == 1 && span.Contents[0] is Image)
+            {
+                var img = span.Contents[0] as Image;
+                img.ID = parent.ID + "__after";
+                img.Style = after;
+                children.Add(img);
+            }
+            else
+                children.Add(span);
+
+
+        }
+
+        
 
         private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
         {
@@ -297,12 +360,19 @@ namespace Scryber.PDF.Layout
                     break;
 
                 case ContentDescriptorType.Image:
-
-                    var img = new Image();
-                    img.Source = (content as ContentImageDescriptor).Source;
-                    img.PositionMode = PositionMode.Inline;
-                    children.Add(img);
-                    added = !string.IsNullOrEmpty(img.Source);
+                    if (wrapper is Image)
+                    {
+                        (wrapper as Image).Source = (content as ContentImageDescriptor).Source;
+                    }
+                    else
+                    {
+                        var img = new Image();
+                        img.Source = (content as ContentImageDescriptor).Source;
+                        img.ElementName = "img";
+                        img.PositionMode = PositionMode.Inline;
+                        children.Add(img);
+                        added = !string.IsNullOrEmpty(img.Source);
+                    }
                     break;
 
                 case ContentDescriptorType.Quote:
@@ -1104,10 +1174,14 @@ namespace Scryber.PDF.Layout
                 {
                     if (current.Type == ContentDescriptorType.Image)
                         imgUrl = (current as ContentImageDescriptor).Source;
+                    current = current.Next;
                 }
 
                 if (!string.IsNullOrEmpty(imgUrl) && image is Image)
+                {
                     (image as Image).Source = imgUrl;
+                    (image as Image).RegisterLayoutArtefacts(this.Context, style);                    
+                }
             }
 
             Resources.PDFImageXObject imgx = image.GetImageObject(this.Context, style);
