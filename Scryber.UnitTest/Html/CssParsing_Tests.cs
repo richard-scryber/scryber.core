@@ -728,6 +728,44 @@ body.grey div.reverse{
 
         }
 
+        [TestMethod]
+        public void ParseBase64FontFace()
+        {
+            //The string containing the font data is declared in a separate static class.
+
+            var base64 = Scryber.UnitTests.Html.Base64FontData.OswaldBold;
+
+            var src = @"@font-face {
+                          font-family: 'Oswald';
+                          font-style: normal;
+                          font-weight: 700;
+                          src: url('data:font/opentype; base64, " + base64 + @"') format('truetype');
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            StyleFontFace first = null;
+
+            foreach (var item in parser)
+            {
+                if (null != first)
+                    throw new InvalidOperationException("There has been more than one parsed style");
+
+                if (!(item is StyleFontFace))
+                    throw new InvalidCastException("The item is not a font face");
+
+                first = item as StyleFontFace;
+
+            }
+
+            Assert.IsNotNull(first, "No font face was parsed");
+
+            var fsrc = first.GetValue(StyleKeys.FontFaceSrcKey, null);
+
+            Assert.AreEqual(FontSourceType.Base64, fsrc.Type, "Type is invalid");
+            Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
+            Assert.IsTrue(fsrc.Source.StartsWith("data:font/opentype; base64, "), "Source incorrectly starts with " + fsrc.Source.Substring(0, 20));
+            Assert.IsTrue(fsrc.Source.EndsWith("=="), "Source incorrectly ends with " + fsrc.Source.Substring(fsrc.Source.Length - 10));
+        }
 
 
 
@@ -2222,6 +2260,10 @@ body.grey div.reverse{
 
             return doc;
         }
+
+
+
+       
 
     }
 }

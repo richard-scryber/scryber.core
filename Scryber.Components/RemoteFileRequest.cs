@@ -47,6 +47,23 @@ namespace Scryber
         
         public TimeSpan CacheDuration { get; set; }
 
+        private string _stub = null;
+
+        public string StubFilePathForLog
+        {
+            get
+            {
+                if (this.FilePath.Length > 200)
+                {
+                    if (string.IsNullOrEmpty(_stub))
+                        _stub = this.FilePath.Substring(0, 100) + "..." + this.FilePath.Substring(this.FilePath.Length - 100);
+
+                    return _stub;
+                }
+                else
+                    return this.FilePath;
+            }
+        }
         public RemoteFileRequest(string type, string path, RemoteRequestCallback callback, IComponent owner = null, object args = null)
         {
             this.ResourceType = type ?? throw new ArgumentNullException(nameof(type));
