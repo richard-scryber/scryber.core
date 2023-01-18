@@ -733,7 +733,7 @@ body.grey div.reverse{
         {
             //The string containing the font data is declared in a separate static class.
 
-            var base64 = Scryber.UnitTests.Html.Base64FontData.OswaldBold;
+            var base64 = Scryber.UnitTests.Base64FontData.OswaldBold;
 
             var src = @"@font-face {
                           font-family: 'Oswald';

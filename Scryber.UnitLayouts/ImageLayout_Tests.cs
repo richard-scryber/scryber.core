@@ -1039,6 +1039,7 @@ namespace Scryber.UnitLayouts
 
             img = new Image();
             img.Source = path;
+            img.MinimumScaleReduction = 0.2; //set the minimum scale to 20%
             img.BorderColor = StandardColors.Black;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("6. No Size, but cannot go below 20% shrink"));
@@ -1273,7 +1274,7 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
-        public void InlineSizes()
+        public void InlineImagesVariousSizes()
         {
 
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
@@ -1301,13 +1302,13 @@ namespace Scryber.UnitLayouts
             img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral(" 1. Inline at text size"));
+            pg.Contents.Add(new TextLiteral(" 1. An inline image at natural size, new line at text size that will flow onto multiple lines afterwards"));
 
             pg = new Page();
             pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
-            pg.FontSize = 80;
+            pg.FontSize = 60;
             doc.Pages.Add(pg);
 
             img = new Image();
@@ -1316,7 +1317,7 @@ namespace Scryber.UnitLayouts
             img.BorderColor = StandardColors.Black;
             img.PositionMode = PositionMode.Inline;
             pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral(" 2. Inline at text size for 80pt"));
+            pg.Contents.Add(new TextLiteral("2. Inline and text size of 60pt with overflowing content"));
 
             pg = new Page();
             pg.Margins = new Thickness(10);
@@ -1346,7 +1347,7 @@ namespace Scryber.UnitLayouts
             img.PositionMode = PositionMode.Inline;
             img.Width = 100;
             pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral(" 4. Inline with explicit width"));
+            pg.Contents.Add(new TextLiteral(" 4. Inline with explicit width with content overflowing onto multiple lines"));
 
             pg = new Page();
             pg.Margins = new Thickness(10);
@@ -1364,7 +1365,7 @@ namespace Scryber.UnitLayouts
             img.Height = 60;
             pg.Contents.Add(img);
 
-            pg.Contents.Add(new TextLiteral(" within the content of the text on following line that will be text points high"));
+            pg.Contents.Add(new TextLiteral(" within the content of the text on following line that will be text points high."));
 
 
             pg = new Page();
@@ -1385,13 +1386,13 @@ namespace Scryber.UnitLayouts
 
             pg.Contents.Add(new TextLiteral(" then a second image on another following line that will be 80 points high"));
 
-            //img = new Image();
-            //img.ID = "Image6";
-            //img.Source = path;
-            //img.BorderColor = PDFColors.Black;
-            //img.PositionMode = PositionMode.Inline;
-            //img.Height = 80;
-            //pg.Contents.Add(img);
+            img = new Image();
+            img.ID = "Image6";
+            img.Source = path;
+            img.BorderColor = StandardColors.Black;
+            img.PositionMode = PositionMode.Inline;
+            img.Height = 80;
+            pg.Contents.Add(img);
 
             pg.Contents.Add(new TextLiteral(" after the second image"));
 

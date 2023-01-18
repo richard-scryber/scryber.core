@@ -1,6 +1,9 @@
 ﻿using System;
-namespace Scryber.UnitTests.Html
+namespace Scryber.UnitTests
 {
+	/// <summary>
+	/// Just a wrapper so the base64 font data can be loaded into a template string without filling the UnitTest code.
+	/// </summary>
 	public static class Base64FontData
 	{
 

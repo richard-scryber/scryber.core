@@ -280,7 +280,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutRun last = this.LastRun();
             if (null != last && last.IsClosed == false)
                 last.Close();
-            //Return the base value
+            EnsureAllRunsOnSameLevel();
             return base.DoClose(ref msg);
         }
 
@@ -301,6 +301,50 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+
+        private void EnsureAllRunsOnSameLevel()
+        {
+            //Check the line height of the previous line and move down if needed
+            PDFTextRunNewLine prev;
+            if (PrevLineIsTextReturn(out prev))
+            {
+                if (prev.Offset.Height < this.Height)
+                    prev.Offset = new Size(prev.Offset.Width, this.Height);
+
+            }
+        }
+
+        private bool PrevLineIsTextReturn(out PDFTextRunNewLine prev)
+        {
+            if (this.LineIndex > 0)
+            {
+                var prevLine = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                if (null != prevLine)
+                {
+                    if (prevLine.Runs[prevLine.Runs.Count - 1] is PDFTextRunNewLine newLine)
+                    {
+                        prev = newLine;
+                        return true;
+                    }
+                }
+            }
+            prev = null;
+            return false;
+        }
+
+        public Unit GetLastTextHeight(Unit defaultValue)
+        {
+            var value = defaultValue;
+            if(this.Runs.Count > 0)
+            {
+                foreach (var run in this.Runs)
+                {
+                    if (run is PDFTextRunCharacter chars)
+                        value = chars.Height;
+                }
+            }
+            return value;
+        }
 
         public PDFLayoutInlineBegin AddInlineRunStart(IPDFLayoutEngine engine, IComponent component, PDFPositionOptions options, Style full)
         {

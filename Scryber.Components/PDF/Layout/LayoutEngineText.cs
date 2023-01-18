@@ -472,9 +472,11 @@ namespace Scryber.PDF.Layout
         {
             this.AssertCurrentLine();
             PDFLayoutLine line = this.CurrentLine;
-            PDFTextRunNewLine br = new PDFTextRunNewLine(false, line, this.TextRenderOptions, this.TextComponent);
             
+            PDFTextRunNewLine br = new PDFTextRunNewLine(false, line, this.TextRenderOptions, this.TextComponent);
 
+
+            
             line.AddRun(br);
 
             //The offset is from the start of the last text drawing operation 
@@ -487,13 +489,22 @@ namespace Scryber.PDF.Layout
             //br.Offset = new PDFSize(back, line.Height);
 
             //Updated
-            if (line.Height == Unit.Zero)
+            if (line.Height == Unit.Zero) //Empty line
                 line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
 
-            if (line.BaseLineOffset == 0 || this.TextRenderOptions.Leading.HasValue) //we don't have any begins or ends affecting the flow (or an explicit leading)
-                br.Offset = new Size(back, line.Height);
+            if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
+                br.Offset = new Size(back, this.TextRenderOptions.Leading.Value);
             else
-                br.Offset = new Size(back, line.Height);
+            {
+                if (line.BaseLineOffset == 0) //we don't have any begins or ends affecting the flow
+                    br.Offset = new Size(back, line.Height);
+                else
+                {
+                    var h = line.GetLastTextHeight(this.TextRenderOptions.GetLineHeight());
+                    br.Offset = new Size(back, h); // line.Height);
+                }
+            }
+
             
 
             PDFLayoutRegion reg = line.Region;
@@ -513,6 +524,8 @@ namespace Scryber.PDF.Layout
             this.CurrentLineInset = inset;
 
         }
+
+        
 
         #endregion
 

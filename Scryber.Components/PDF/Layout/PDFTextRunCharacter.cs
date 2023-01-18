@@ -101,6 +101,11 @@ namespace Scryber.PDF.Layout
             this._measuredSize.Width = width;
         }
 
+        public void SetHeight(Unit height)
+        {
+            this._measuredSize.Height = height;
+        }
+
         public override string ToString()
         {
             if (string.IsNullOrEmpty(this.Characters))

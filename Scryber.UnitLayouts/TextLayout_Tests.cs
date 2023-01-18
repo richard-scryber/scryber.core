@@ -533,8 +533,9 @@ namespace Scryber.UnitLayouts
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.FontFamily = new FontSelector("Optima");
-
+            pg.FontFamily = new FontSelector("Sans-Serif");
+            pg.FontSize = 20;
+            
             var span = new Span();
             span.Contents.Add(new TextLiteral("This is a text run that should flow over more than "));
             pg.Contents.Add(span);
@@ -565,11 +566,68 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
 
+            // line 1
+
             PDFLayoutLine first = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(24, first.Height);
+            Assert.AreEqual(9, first.Runs.Count);
+            Assert.IsInstanceOfType(first.Runs[0], typeof(PDFLayoutInlineBegin));
+            Assert.IsInstanceOfType(first.Runs[1], typeof(PDFTextRunBegin));
+
+            Assert.IsInstanceOfType(first.Runs[2], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("This is a text run that should flow over more than ", ((first.Runs[2]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[3], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(first.Runs[4], typeof(PDFLayoutInlineEnd));
+            Assert.IsInstanceOfType(first.Runs[5], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (first.Runs[5] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(first.Runs[6], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(first.Runs[7], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("two lines in", ((first.Runs[7]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[8], typeof(PDFTextRunNewLine));
+            
+
+            //Line 2
+
             PDFLayoutLine second = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.AreEqual(24, second.Height);
+            Assert.AreEqual(8, second.Runs.Count);
 
-            Assert.Inconclusive("No checking the spans");
+            Assert.IsInstanceOfType(second.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (second.Runs[0] as PDFTextRunSpacer).Width);
+            Assert.IsInstanceOfType(second.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("the page with a default line height ", ((second.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(second.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(second.Runs[3], typeof(PDFLayoutInlineEnd));
 
+
+            Assert.IsInstanceOfType(second.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(400, (second.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(second.Runs[5], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(second.Runs[6], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("so that we can check the", ((second.Runs[6]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(second.Runs[7], typeof(PDFTextRunNewLine));
+            
+            //Line 3
+
+            PDFLayoutLine third = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(third);
+            Assert.AreEqual(24, third.Height);
+            Assert.AreEqual(9, third.Runs.Count);
+
+            Assert.IsInstanceOfType(third.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (third.Runs[0] as PDFTextRunSpacer).Width);
+            Assert.IsInstanceOfType(third.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("leading ", ((third.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(third.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(third.Runs[3], typeof(PDFLayoutInlineEnd));
+
+            Assert.IsInstanceOfType(third.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(third.Runs[5], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(third.Runs[6], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("of default lines as they flow down the page", ((third.Runs[6]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(third.Runs[7], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(third.Runs[8], typeof(PDFLayoutInlineEnd));
         }
 
         [TestMethod()]
@@ -582,44 +640,111 @@ namespace Scryber.UnitLayouts
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
-            pg.FontFamily = new FontSelector("Optima");
+            pg.FontFamily = new FontSelector("Sans-Serif");
+            pg.FontSize = 20;
 
             var span = new Span();
             span.Contents.Add(new TextLiteral("This is a text run that should flow over more than "));
+            span.TextLeading = 50;
             pg.Contents.Add(span);
 
             span = new Span();
-            span.TextLeading = 30;
-            span.PositionMode = PositionMode.Block;
+            span.FontBold = true;
             span.Contents.Add(new TextLiteral("two lines in the page with a default line height "));
             pg.Contents.Add(span);
 
             span = new Span();
+            span.FontItalic = true;
             
             span.Contents.Add(new TextLiteral("so that we can check the leading "));
             pg.Contents.Add(span);
 
 
             span = new Span();
-            span.TextLeading = 20;
-            span.PositionMode = PositionMode.Block;
-            span.Contents.Add(new TextLiteral("of default lines as they flow down the page"));
+            span.FontBold = true;
+            span.FontItalic = true;
+            span.TextLeading = 30;
+            span.Contents.Add(new TextLiteral("of default lines as they flow down the page and onto new lines"));
+
+            pg.Contents.Add(span);
+
+            span = new Span();
+            span.FontItalic = true;
+            span.Contents.Add(new TextLiteral(" with more content"));
+
             pg.Contents.Add(span);
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
 
-            SaveAsPDF(doc, "Text_SingleLiteral");
+            SaveAsPDF(doc, "Text_LiteralsInBoldAndItalicWithLeading");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
 
+            // line 1
+
             PDFLayoutLine first = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(50, first.Height);
+            Assert.AreEqual(9, first.Runs.Count);
+            Assert.IsInstanceOfType(first.Runs[0], typeof(PDFLayoutInlineBegin));
+            Assert.IsInstanceOfType(first.Runs[1], typeof(PDFTextRunBegin));
+
+            Assert.IsInstanceOfType(first.Runs[2], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("This is a text run that should flow over more than ", ((first.Runs[2]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[3], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(first.Runs[4], typeof(PDFLayoutInlineEnd));
+            Assert.IsInstanceOfType(first.Runs[5], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (first.Runs[5] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(first.Runs[6], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(first.Runs[7], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("two lines in", ((first.Runs[7]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[8], typeof(PDFTextRunNewLine));
+
+
+            //Line 2
+
             PDFLayoutLine second = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.AreEqual(24, second.Height);
+            Assert.AreEqual(8, second.Runs.Count);
+
+            Assert.IsInstanceOfType(second.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (second.Runs[0] as PDFTextRunSpacer).Width);
+            Assert.IsInstanceOfType(second.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("the page with a default line height ", ((second.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(second.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(second.Runs[3], typeof(PDFLayoutInlineEnd));
 
 
-            Assert.Inconclusive("Not checking the spans");
+            Assert.IsInstanceOfType(second.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(400, (second.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(second.Runs[5], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(second.Runs[6], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("so that we can check the", ((second.Runs[6]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(second.Runs[7], typeof(PDFTextRunNewLine));
+
+            //Line 3
+
+            PDFLayoutLine third = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(third);
+            Assert.AreEqual(24, third.Height);
+            Assert.AreEqual(9, third.Runs.Count);
+
+            Assert.IsInstanceOfType(third.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (third.Runs[0] as PDFTextRunSpacer).Width);
+            Assert.IsInstanceOfType(third.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("leading ", ((third.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(third.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(third.Runs[3], typeof(PDFLayoutInlineEnd));
+
+            Assert.IsInstanceOfType(third.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(third.Runs[5], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(third.Runs[6], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("of default lines as they flow down the page", ((third.Runs[6]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(third.Runs[7], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(third.Runs[8], typeof(PDFLayoutInlineEnd));
 
         }
 
