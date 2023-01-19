@@ -728,8 +728,8 @@ namespace Scryber.UnitLayouts
 
             PDFLayoutLine third = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
             Assert.IsNotNull(third);
-            Assert.AreEqual(24, third.Height);
-            Assert.AreEqual(9, third.Runs.Count);
+            Assert.AreEqual(30, third.Height);
+            Assert.AreEqual(8, third.Runs.Count);
 
             Assert.IsInstanceOfType(third.Runs[0], typeof(PDFTextRunSpacer));
             Assert.AreEqual(0, (third.Runs[0] as PDFTextRunSpacer).Width);
@@ -740,11 +740,36 @@ namespace Scryber.UnitLayouts
 
             Assert.IsInstanceOfType(third.Runs[4], typeof(PDFLayoutInlineBegin));
             Assert.AreEqual(700, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.AreEqual(FontStyle.Italic, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
             Assert.IsInstanceOfType(third.Runs[5], typeof(PDFTextRunBegin));
             Assert.IsInstanceOfType(third.Runs[6], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("of default lines as they flow down the page", ((third.Runs[6]) as PDFTextRunCharacter).Characters);
-            Assert.IsInstanceOfType(third.Runs[7], typeof(PDFTextRunEnd));
-            Assert.IsInstanceOfType(third.Runs[8], typeof(PDFLayoutInlineEnd));
+            Assert.AreEqual("of default lines as they flow down the page and onto", ((third.Runs[6]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(third.Runs[7], typeof(PDFTextRunNewLine));
+            //Still has the explicit line height from the span, onto the next line
+            Assert.AreEqual(30, (third.Runs[7] as PDFTextRunNewLine).NewLineOffset.Height);
+
+
+            //Fourth line
+
+            PDFLayoutLine fourth = layout.AllPages[0].ContentBlock.Columns[0].Contents[3] as PDFLayoutLine;
+            Assert.AreEqual(9, fourth.Runs.Count);
+
+            Assert.IsInstanceOfType(fourth.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (fourth.Runs[0] as PDFTextRunSpacer).Width);
+            Assert.IsInstanceOfType(fourth.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("new lines", ((fourth.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(fourth.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(fourth.Runs[3], typeof(PDFLayoutInlineEnd));
+
+            Assert.IsInstanceOfType(fourth.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(400, (fourth.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.AreEqual(FontStyle.Italic, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
+            Assert.IsInstanceOfType(fourth.Runs[5], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(fourth.Runs[6], typeof(PDFTextRunCharacter));
+            Assert.AreEqual(" with more content", ((fourth.Runs[6]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(fourth.Runs[7], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(fourth.Runs[8], typeof(PDFLayoutInlineEnd));
 
         }
 

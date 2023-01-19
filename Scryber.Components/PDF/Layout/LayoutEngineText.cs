@@ -493,15 +493,15 @@ namespace Scryber.PDF.Layout
                 line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
 
             if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
-                br.Offset = new Size(back, this.TextRenderOptions.Leading.Value);
+                br.NewLineOffset = new Size(back, this.TextRenderOptions.Leading.Value);
             else
             {
                 if (line.BaseLineOffset == 0) //we don't have any begins or ends affecting the flow
-                    br.Offset = new Size(back, line.Height);
+                    br.NewLineOffset = new Size(back, line.Height);
                 else
                 {
                     var h = line.GetLastTextHeight(this.TextRenderOptions.GetLineHeight());
-                    br.Offset = new Size(back, h); // line.Height);
+                    br.NewLineOffset = new Size(back, h); // line.Height);
                 }
             }
 

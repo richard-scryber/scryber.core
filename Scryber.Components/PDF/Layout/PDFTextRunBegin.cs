@@ -501,7 +501,7 @@ namespace Scryber.PDF.Layout
                         else if (run is PDFTextRunNewLine)
                         {
                             PDFTextRunNewLine newline = (PDFTextRunNewLine)run;
-                            Size offset = newline.Offset;
+                            Size offset = newline.NewLineOffset;
                             if (null != newline.NextLineSpacer)
                             {
                                 Unit nextoffset = newline.NextLineSpacer.Width;

@@ -213,6 +213,7 @@ namespace Scryber.UnitLayouts
         {
 
             Document doc = new Document();
+            
             var names = Enum.GetNames(typeof(PaperSize));
 
             foreach (var name in names)
@@ -229,7 +230,7 @@ namespace Scryber.UnitLayouts
                     section.Height = 300;
                 }
                 section.Padding = new Thickness(10);
-                section.FontSize = 10;
+                section.FontSize = 20;
                 section.HorizontalAlignment = HorizontalAlignment.Center;
 
                 var label = new TextLiteral("Page size " + name);
@@ -293,7 +294,7 @@ namespace Scryber.UnitLayouts
                 }
                 section.PaperOrientation = PaperOrientation.Landscape;
                 section.Padding = new Thickness(10);
-                section.FontSize = 10;
+                section.FontSize = 20;
                 section.HorizontalAlignment = HorizontalAlignment.Center;
 
                 var label = new TextLiteral("Page size " + name);

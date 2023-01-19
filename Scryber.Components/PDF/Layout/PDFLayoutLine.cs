@@ -308,8 +308,8 @@ namespace Scryber.PDF.Layout
             PDFTextRunNewLine prev;
             if (PrevLineIsTextReturn(out prev))
             {
-                if (prev.Offset.Height < this.Height)
-                    prev.Offset = new Size(prev.Offset.Width, this.Height);
+                if (prev.NewLineOffset.Height < this.Height)
+                    prev.NewLineOffset = new Size(prev.NewLineOffset.Width, this.Height);
 
             }
         }
@@ -624,7 +624,7 @@ namespace Scryber.PDF.Layout
                         else if (cur is PDFTextRunNewLine)
                         {
                             PDFTextRunNewLine newLine = (cur as PDFTextRunNewLine);
-                            newLine.Offset = new Size(newLine.Offset.Width + change, newLine.Offset.Height);
+                            newLine.NewLineOffset = new Size(newLine.NewLineOffset.Width + change, newLine.NewLineOffset.Height);
                         }
                     }
 
