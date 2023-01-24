@@ -31,6 +31,8 @@ namespace Scryber.UnitLayouts
         }
 
 
+        #region public void ASingleLiteral()
+
 
         /// <summary>
         /// Checks the font and line sizing and line height in a default font at 24 points
@@ -60,6 +62,8 @@ namespace Scryber.UnitLayouts
 
 
             var em = 24.0;  //Point size of font
+            var lead = 24.0 * 1.2; //default leading
+
             var rsrc = doc.SharedResources[0] as PDFFontResource;
 
             Assert.IsNotNull(rsrc, "The font resource should be the one and only shared resource");
@@ -67,31 +71,31 @@ namespace Scryber.UnitLayouts
 
             var metrics = rsrc.Definition.GetFontMetrics(em);
 
-#if TEST_LINE_HEIGHT
-
             var line = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line 0 was not the correct height");
-            AssertAreApproxEqual(metrics.BaseLineOffset, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
+            AssertAreApproxEqual(lead, line.Height.PointsValue, "Line 0 was not the correct height");
+            
 
             //Check the heights of the continuation lines
 
             for (var i = 1; i < 4; i++)
             {
                 line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line " + i + " was not the correct height");
-
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " was not the correct height");
             }
 
-#endif
         }
+
+        #endregion
+
+        #region public void ASingleLiteralInTimes()
 
         /// <summary>
         /// Checks the font and line sizing in an explict system font at 24 point
         /// </summary>
         [TestMethod()]
-        public void ASingleLiteralInOptima()
+        public void ASingleLiteralInTimes()
         {
-            var fontFamily = "Optima";
+            var fontFamily = "Times New Roman";
             var fontWeight = FontWeights.Regular;
             var fontStyle = FontStyle.Regular;
 
@@ -110,12 +114,12 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
 
             var font = Scryber.Drawing.FontFactory.GetFontDefinition(fontFamily, fontStyle, fontWeight);
-            Assert.IsNotNull(font, "This test will fail as the Optima font is not present, or could not be loaded from the System fonts");
+            Assert.IsNotNull(font, "This test will fail as the  font is not present, or could not be loaded from the System fonts");
                
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDF(doc, "Text_SingleLiteralOptima");
+            SaveAsPDF(doc, "Text_SingleLiteralTimes");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -126,10 +130,8 @@ namespace Scryber.UnitLayouts
 
             var defn = fontrsrc.Definition;
             Assert.IsNotNull(defn, "The font does not have a definition");
-            Assert.AreEqual(fontFamily, defn.Family, "The '" + fontFamily + " font was not loaded by the document");
-
-
-#if TEST_LINE_HEIGHT
+            //Use the fallback default of Times as this will be the loaded font.
+            Assert.AreEqual("Times", defn.Family, "The '" + fontFamily + " font was not loaded by the document");
 
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
@@ -139,20 +141,24 @@ namespace Scryber.UnitLayouts
             
             
             var line = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line 0 was not the correct height");
-            AssertAreApproxEqual(metrics.BaseLineOffset, line.BaseLineOffset.PointsValue, "Line 0 was not the correct baseline offset");
+            AssertAreApproxEqual(24 * 1.2, line.Height.PointsValue, "Line 0 was not the correct height");
+
 
             //Check the heights of the continuation lines
+            Assert.AreEqual(3, region.Contents.Count, "Expected 3 lines");
 
-            for (var i = 1; i < 4; i++)
+            for (var i = 1; i < 3; i++)
             {
                 line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(metrics.TotalLineHeight, line.Height.PointsValue, "Line " + i + " was not the correct height");
+                AssertAreApproxEqual(24 * 1.2, line.Height.PointsValue, "Line " + i + " was not the correct height");
 
             }
-#endif
 
         }
+
+        #endregion
+
+        #region public void ASingleLiteralWithLeading()
 
         /// <summary>
         /// Checks the font and line sizing with an explicit line leading at 24pt
@@ -181,31 +187,24 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
-
-#if TEST_LINE_HEIGHT
-
-            var em = 24.0;  //Point size of font
-
-            //default sans-sefif is set up as follows
-            var space = leading.PointsValue - (em); // line leading - point size
-            var desc = em * 0.25;  // descender height 6pt
-            var asc = em * 0.75;  // ascender height 18pt
-            
+            Assert.AreEqual(4, region.Contents.Count, "The exected number of flowing lines was 4");
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
                 AssertAreApproxEqual(leading.PointsValue, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
             }
 
-#endif
         }
+
+        #endregion
+
+        #region public void ASingleLiteralInTimes12ptWithLeading()
 
         /// <summary>
         /// Checks the font and line sizing with an explicit line leading and font at 12pt
         /// </summary>
         [TestMethod()]
-        public void ASingleLiteralInOptima12ptWithLeading()
+        public void ASingleLiteralInTimes12ptWithLeading()
         {
             var doc = new Document();
             var pg = new Page();
@@ -218,7 +217,7 @@ namespace Scryber.UnitLayouts
             pg.OverflowAction = OverflowAction.NewPage;
             pg.TextLeading = leading;
             pg.FontSize = size;
-            pg.FontFamily = new FontSelector("Optima");
+            pg.FontFamily = new FontSelector("Serif");
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page. " +
@@ -240,31 +239,22 @@ namespace Scryber.UnitLayouts
 
             var defn = fontrsrc.Definition;
             Assert.IsNotNull(defn);
-            Assert.AreEqual("Optima", defn.Family);
+            Assert.AreEqual("Times", defn.Family);
 
-#if TEST_LINE_HEIGHT
+            Assert.AreEqual(3, region.Contents.Count, "Expected 4 lines for the textual content");
 
-            var em = size.PointsValue;  //Point size of font
-
-            //default sans-sefif is set up as follows
-            var metrics = defn.GetFontMetrics(em);
-
-            //optima is 1000 FUnit em size and we use the font metrics
-
-            var space = leading.PointsValue - em; //line spacing;
-            var desc = metrics.Descent;  // descender height
-            var asc = metrics.Ascent;  // ascender height
-
-
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < 3; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(leading.PointsValue, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+                Assert.AreEqual(leading.PointsValue, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
             }
 
-#endif
+
         }
+
+        #endregion
+
+        #region public void LiteralAfterABlock()
 
         /// <summary>
         /// Checks that the line is offset correctly after a sprevious sibling in the page
@@ -296,28 +286,37 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             PDFLayoutRegion region = layout.AllPages[0].ContentBlock.Columns[0];
 
-#if TEST_LINE_HEIGHT
+            Assert.AreEqual(5, region.Contents.Count);
+            var block = region.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            Assert.AreEqual(100, block.Height);
+
+            
+
             var em = 24.0;  //Point size of font
 
             //default sans-sefif is set up as follows
-            var space = em * 0.2; // line leading - point size
-            var desc = em * 0.25;  // descender height 6pt
-            var asc = em * 0.75;  // ascender height 18pt
+            var lead = em * 1.2; // line leading 
+            var offsetY = 100.0;
 
             //Skip the first block
             for (var i = 1; i < 5; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
-                if (i == 1)
-                    Assert.AreEqual(div.Height.PointsValue, line.OffsetY.PointsValue);
+                Assert.IsNotNull(line);
+                Assert.AreEqual(offsetY, line.OffsetY);
+                Assert.AreEqual(24.0 * 1.2, line.Height);
 
-                AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
+
+                //add the leading for the next line
+                offsetY += lead;
             }
 
-#endif
 
         }
+
+        #endregion
 
         /// <summary>
         /// Checks the font and line sizing along with offset Y for an explicit alignment at the bottom
@@ -348,32 +347,36 @@ namespace Scryber.UnitLayouts
 
 
             var em = 24.0;  //Point size of font
+            var lead = 24.0 * 1.2; //full leading
 
-#if TEST_LINE_HEIGHT
 
             //default sans-sefif is set up as follows
             var space = em * 0.2; // line leading - point size
             var desc = em * 0.25;  // descender height 6pt
             var asc = em * 0.75;  // ascender height 18pt
 
-            var total = 0.0;
+            var pgHeight = layout.AllPages[0].Size.Height - pg.Margins.Top - pg.Margins.Bottom;
+            var lineCount = 4.0;
+            var offsetY = pgHeight.PointsValue - (lineCount * lead);
+
+            //The textrunbegin holds the starting position for rendering the text from the TotalBounds
+            //This is held from the line heights
+            var initialOffsetRun = (region.Contents[0] as PDFLayoutLine).Runs[0] as PDFTextRunBegin;
+            AssertAreApproxEqual(initialOffsetRun.TotalBounds.Y.PointsValue, offsetY, "The initial text offset was not correct");
 
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+                Assert.IsNotNull(line);
 
-                total += line.Height.PointsValue;
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
+
+                offsetY += lead;
             }
 
-            var first = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(region.Height.PointsValue, total - first.OffsetY.PointsValue, "The first line was not offset to the bottom of the page");
+            
 
-#else
-            Assert.Inconclusive("Not checking line heights");
 
-#endif
         }
 
         /// <summary>
@@ -404,32 +407,37 @@ namespace Scryber.UnitLayouts
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
 
-#if TEST_LINE_HEIGHT
             var em = 24.0;  //Point size of font
+            var lead = 24.0 * 1.2; //full leading
+
 
             //default sans-sefif is set up as follows
             var space = em * 0.2; // line leading - point size
             var desc = em * 0.25;  // descender height 6pt
             var asc = em * 0.75;  // ascender height 18pt
 
-            var total = 0.0;
+            var pgHeight = layout.AllPages[0].Size.Height - pg.Margins.Top - pg.Margins.Bottom;
+            var lineCount = 4.0;
+            var all = pgHeight.PointsValue - (lineCount * lead);
+
+            //divide all the space by 2 and this should be our middle start point;
+            var half = all / 2.0;
+            var offsetY = half;
+
+            //The textrunbegin holds the starting position for rendering the text from the TotalBounds
+            //This is held from the line heights
+            var initialOffsetRun = (region.Contents[0] as PDFLayoutLine).Runs[0] as PDFTextRunBegin;
+            AssertAreApproxEqual(initialOffsetRun.TotalBounds.Y.PointsValue, offsetY, "The initial text offset was not correct");
 
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+                Assert.IsNotNull(line);
 
-                total += line.Height.PointsValue;
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
+
+                offsetY += lead;
             }
-
-            var middle = (region.Height.PointsValue - total) / 2;
-
-            var first = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(middle, first.OffsetY.PointsValue, "The first line was not offset to the middle of the page");
-#else
-            Assert.Inconclusive("Not checking line heights");
-#endif
 
         }
 
@@ -461,27 +469,146 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
-#if TEST_LINE_HEIGHT
-
             var em = 24.0;  //Point size of font
 
             //default sans-sefif is set up as follows
-            var space = em * 0.2; // line leading - point size
-            var desc = em * 0.25;  // descender height 6pt
-            var asc = em * 0.75;  // ascender height 18pt
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
 
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(em + space, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
-                AssertAreApproxEqual(space + asc, line.BaseLineOffset.PointsValue, "Line " + i + " was not the correct baseline offset");
+                Assert.AreEqual(3, line.Runs.Count);
+                var text = line.Runs[1] as PDFTextRunCharacter;
+                var twidth = text.Width;
+
+                var offset = pgContentWidth - twidth;
+
+                if(i == 0)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                }
+                else
+                {
+                    var space = line.Runs[0] as PDFTextRunSpacer;
+                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                }
+                
 
             }
 
-#endif
+        }
 
-            Assert.Inconclusive("Not checking for the line alignment positions");
+        /// <summary>
+        /// Checks the font and line sizing along with offset Y for an explicit aligmnent in the middle
+        /// </summary>
+        [TestMethod()]
+        public void LiteralWithHAlignCentre()
+        {
+            var doc = new Document();
+            var pg = new Page();
 
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.HorizontalAlignment = HorizontalAlignment.Center;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
+
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.AppendTraceLog = true;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LiteralHAlignCenter");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+            var em = 24.0;  //Point size of font
+
+            //default sans-sefif is set up as follows
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var line = region.Contents[i] as PDFLayoutLine;
+                Assert.AreEqual(3, line.Runs.Count);
+                var text = line.Runs[1] as PDFTextRunCharacter;
+                var twidth = text.Width;
+
+                var offset = (pgContentWidth - twidth) / 2.0;
+
+                if (i == 0)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                }
+                else
+                {
+                    var space = line.Runs[0] as PDFTextRunSpacer;
+                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                }
+
+
+            }
+
+        }
+
+
+        [TestMethod]
+        public void LiteralWithHAlignJustified()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.HorizontalAlignment = HorizontalAlignment.Justified;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
+
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.AppendTraceLog = false;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LiteralHAlignJustified");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+            var em = 24.0;  //Point size of font
+
+            //default sans-sefif is set up as follows
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var line = region.Contents[i] as PDFLayoutLine;
+                Assert.AreEqual(3, line.Runs.Count);
+                var text = line.Runs[1] as PDFTextRunCharacter;
+                var twidth = text.Width + text.ExtraSpace;
+
+                var offset = pgContentWidth - twidth;
+
+                if (i == 0)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    AssertAreApproxEqual(0, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    AssertAreApproxEqual(pgContentWidth.PointsValue, twidth.PointsValue, "First line width should be about the same as the page content width");
+                }
+                else
+                {
+                    var space = line.Runs[0] as PDFTextRunSpacer;
+                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                }
+
+
+            }
         }
 
         [TestMethod]
@@ -518,6 +645,7 @@ namespace Scryber.UnitLayouts
             var first = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
             var second = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
 
+            Assert.Inconclusive("Not tested");
         }
         
         
@@ -773,11 +901,14 @@ namespace Scryber.UnitLayouts
 
         }
 
-        [TestMethod]
-        public void WordAndCharSpacing()
-        {
 
+        [TestMethod]
+        public void LiteralWithExplicitWordAndCharSpacing()
+        {
+            Assert.Inconclusive("No Test");
         }
+
+
 
         private void SaveAsPDF(Document doc, string fileName)
         {

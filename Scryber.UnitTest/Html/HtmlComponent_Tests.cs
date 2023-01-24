@@ -879,7 +879,9 @@ namespace Scryber.Core.UnitTests.Html
             var iframe = section.Contents[1] as Div;
             Assert.IsNotNull(iframe, "The frame content was null");
             Assert.AreEqual("frame1", iframe.ID);
-            
+
+            Assert.AreEqual(2, iframe.Contents.Count);
+            Assert.IsInstanceOfType(iframe.Contents[0], typeof(Scryber.Components.Paragraph));
         }
         
         

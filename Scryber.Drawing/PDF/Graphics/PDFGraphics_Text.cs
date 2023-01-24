@@ -447,6 +447,14 @@ namespace Scryber.PDF.Graphics
 
             if (this.HasCustomWordSpace && chars.IndexOf(' ') > -1)
             {
+                //Getting weird spacing on justified so testing without this complexity.
+
+                string glyphs = this.CurrentFontResource.Widths.RegisterGlyphs(chars);
+                //this.CurrentFontResource.Widths.RegisterGlyphs(_stringCache, 0, _stringCache.Length);
+                this.Writer.WriteStringLiteralS(glyphs, this.CurrentFontResource.Encoding);
+                this.Writer.WriteOpCodeS(PDFOpCode.TxtPaint);
+                return;
+
                 //we have custom word spacing and there's at least one space in there space 
                 int pos = 0;
                 int nextspace = 0;

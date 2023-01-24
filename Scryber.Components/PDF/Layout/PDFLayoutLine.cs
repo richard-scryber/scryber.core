@@ -518,11 +518,13 @@ namespace Scryber.PDF.Layout
                 context.TraceLog.End(TraceLevel.Debug, "Layout Line", "Pushed all the component layouts onto the runs in the line " + this.ToString());
         }
 
-        internal bool JustifyContent(Unit total, Unit current, Unit available, bool all, List<PDFTextRunCharacter> runCache, ref PDFTextRenderOptions currOptions)
+        internal bool JustifyContent(Unit total, Unit current, Unit available, bool all, List<PDFTextRunCharacter> runCache, PDFLayoutContext context, ref PDFTextRenderOptions currOptions)
         {
             if(this.Runs.Count < 1)
-                return false; 
-            
+                return false;
+
+            bool logdebug = context.ShouldLogDebug;
+
             bool shouldJustify = all;
 
             PDFLayoutRun last = this.Runs[this.Runs.Count - 1];
@@ -562,7 +564,8 @@ namespace Scryber.PDF.Layout
                         lastchars = null;
                 }
 
-                
+                if (logdebug)
+                    context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Counted " + charCount + " characters and " + spaceCount + " spaces on line " + this.LineIndex);
 
                 // Post process to calculate the required spacing
                 // if we have some text in our line.

@@ -761,12 +761,16 @@ namespace Scryber.PDF.Layout
                         {
                             PDFLayoutLine line = item as PDFLayoutLine;
                             if (logdebug)
-                                context.TraceLog.Add(TraceLevel.Debug, PDFLayoutItem.LOG_CATEGORY, "Justifying the textual content of the line " + line.LineIndex);
+                                context.TraceLog.Add(TraceLevel.Verbose, PDFLayoutItem.LOG_CATEGORY, "Justifying the textual content of the line " + line.LineIndex);
 
-                            bool didjustify = line.JustifyContent(width, item.Width, space, false, cache, ref options);
+                            bool didjustify = line.JustifyContent(width, item.Width, space, false, cache, context, ref options);
 
                             if (!didjustify && lastwasapplied && null != options && !(options.WordSpacing.HasValue || options.CharacterSpacing.HasValue))
+                            {
                                 line.ResetJustifySpacing(options);
+                                if (logdebug)
+                                    context.TraceLog.Add(TraceLevel.Verbose, PDFLayoutItem.LOG_CATEGORY, "Justified the textual content of the line " + line.LineIndex + " with character spacing of " + options.CharacterSpacing + " and word spacing of " + options.WordSpacing);
+                            }
 
                             lastwasapplied = didjustify;
                         }
