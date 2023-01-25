@@ -331,31 +331,34 @@ namespace Scryber.PDF.Graphics
 
             if (wordSpacingOffset.HasValue)
             {
-                if (null == this.CurrentFontResource || null == this.CurrentFontResource.Definition)
-                {
-                    this.Context.TraceLog.Add(TraceLevel.Warning, "Graphics", "Could not load the current font definition to set word spacing");
-                    return;
-                }
-                else
-                {
-                    FontDefinition defn = this.CurrentFontResource.Definition;
+                this.Writer.WriteOpCodeS(PDFOpCode.TxtWordSpacing, wordSpacingOffset.Value.RealValue);
+                
+                //Removed with the use of the actual point size calculation
+                //if (null == this.CurrentFontResource || null == this.CurrentFontResource.Definition)
+                //{
+                //    this.Context.TraceLog.Add(TraceLevel.Warning, "Graphics", "Could not load the current font definition to set word spacing");
+                //    return;
+                //}
+                //else
+                //{
+                //    FontDefinition defn = this.CurrentFontResource.Definition;
 
-                    //calculate the required width of a space in PDF Text units
-                    double spaceOffsetPDFUnits = ((wordSpacingOffset.Value.PointsValue) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits) / fontSize.PointsValue;
+                //    //calculate the required width of a space in PDF Text units
+                //    double spaceOffsetPDFUnits = ((wordSpacingOffset.Value.PointsValue) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits) / fontSize.PointsValue;
 
-                    //caclulate the normal width of a space in PDF Text units
-                    double spaceWidthPDFUnits = (defn.SpaceWidthFontUnits / defn.FontUnitsPerEm) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits;
+                //    //caclulate the normal width of a space in PDF Text units
+                //    double spaceWidthPDFUnits = (defn.SpaceWidthFontUnits / defn.FontUnitsPerEm) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits;
 
-                    //calculate the actual space size (normal width + offset) in PDFTextUnits
-                    double spaceActualPDFUnits = spaceWidthPDFUnits + spaceOffsetPDFUnits;
+                //    //calculate the actual space size (normal width + offset) in PDFTextUnits
+                //    double spaceActualPDFUnits = spaceWidthPDFUnits + spaceOffsetPDFUnits;
 
-                    //calculate the factor (1 = normal size, 2 = double size, etc)
-                    double spaceFactor = spaceActualPDFUnits / spaceWidthPDFUnits;
+                //    //calculate the factor (1 = normal size, 2 = double size, etc)
+                //    double spaceFactor = spaceActualPDFUnits / spaceWidthPDFUnits;
 
-                    this.CustomWordSpace = spaceActualPDFUnits;
+                //    this.CustomWordSpace = spaceActualPDFUnits;
 
-                    this.Writer.WriteOpCodeS(PDFOpCode.TxtWordSpacing, (PDFReal)spaceFactor);
-                }
+                //    this.Writer.WriteOpCodeS(PDFOpCode.TxtWordSpacing, (PDFReal)spaceFactor);
+                //}
             }
         }
 

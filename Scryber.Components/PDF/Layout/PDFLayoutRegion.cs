@@ -757,9 +757,8 @@ namespace Scryber.PDF.Layout
 
                     if(h == HorizontalAlignment.Justified)
                     {
-                        if (item is PDFLayoutLine)
+                        if (item is PDFLayoutLine line)
                         {
-                            PDFLayoutLine line = item as PDFLayoutLine;
                             if (logdebug)
                                 context.TraceLog.Add(TraceLevel.Verbose, PDFLayoutItem.LOG_CATEGORY, "Justifying the textual content of the line " + line.LineIndex);
 

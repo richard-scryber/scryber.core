@@ -594,17 +594,29 @@ namespace Scryber.UnitLayouts
                 var twidth = text.Width + text.ExtraSpace;
 
                 var offset = pgContentWidth - twidth;
+                Assert.IsNotNull(line.LineSpacingOptions);
 
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
                     AssertAreApproxEqual(0, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
                     AssertAreApproxEqual(pgContentWidth.PointsValue, twidth.PointsValue, "First line width should be about the same as the page content width");
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
+                    Assert.IsTrue(line.LineSpacingOptions.WordSpace > 0.0);
+                    
+                }
+                else if (i == 3) //Last line is not justified
+                {
+                    Assert.AreEqual(twidth, text.Width, "Last lines should not be justified");
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.WordSpace);
                 }
                 else
                 {
                     var space = line.Runs[0] as PDFTextRunSpacer;
                     AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
+                    Assert.IsTrue(line.LineSpacingOptions.WordSpace > 0.0);
                 }
 
 

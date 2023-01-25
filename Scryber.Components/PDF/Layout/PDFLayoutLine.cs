@@ -544,15 +544,14 @@ namespace Scryber.PDF.Layout
                 {
                     PDFLayoutRun cur = this.Runs[i];
 
-                    if (cur is PDFTextRunBegin)
+                    if (cur is PDFTextRunBegin begin)
                     {
-                        currOptions = ((PDFTextRunBegin)cur).TextRenderOptions;
+                        currOptions = begin.TextRenderOptions;
                         if (!intext)
                             intext = true;
                     }
-                    else if (cur is PDFTextRunCharacter && intext)
+                    else if (cur is PDFTextRunCharacter chars && intext)
                     {
-                        PDFTextRunCharacter chars = cur as PDFTextRunCharacter;
                         if (!(currOptions.WordSpacing.HasValue || currOptions.CharacterSpacing.HasValue))
                         {
                             AddCharactersAndSpaces(chars.Characters, ref charCount, ref spaceCount);
@@ -567,6 +566,7 @@ namespace Scryber.PDF.Layout
                 if (logdebug)
                     context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Counted " + charCount + " characters and " + spaceCount + " spaces on line " + this.LineIndex);
 
+                
                 // Post process to calculate the required spacing
                 // if we have some text in our line.
 
@@ -577,12 +577,10 @@ namespace Scryber.PDF.Layout
                         lastchars.Characters = lastchars.Characters.Substring(0, lastchars.Characters.Length - 1);
                         spaceCount -= 1;
                     }
+                    int totalCharCount = charCount;
+                    int totalSpaceCount = spaceCount;
 
-                    double spaceToCharFactor = 10; // apply ten times more to spaces than characters.
-                    double full = (spaceCount * spaceToCharFactor) + charCount;
-                    this._linespacingOptions = new ExtraSpacingOptions() { CharSpace = available / full, WordSpace = (available / full) * spaceToCharFactor, Options = currOptions };
-
-
+                    //reset the running totals for widths.
                     charCount = 0;
                     spaceCount = 0;
                     Unit currWidth = 0;
@@ -591,21 +589,26 @@ namespace Scryber.PDF.Layout
                     for (int i = 0; i < this.Runs.Count; i++)
                     {
                         PDFLayoutRun cur = this.Runs[i];
-                        if (cur is PDFTextRunBegin)
+                        if (cur is PDFTextRunBegin begin)
                         {
-                            PDFTextRunBegin begin = (PDFTextRunBegin)cur;
-                            currOptions = begin.TextRenderOptions;
+                            currOptions = begin.TextRenderOptions; //Set the options to be used on this line and any following lines for this textual content
+
+                            this._linespacingOptions = MeasureLineSpaces(currOptions, totalCharCount, totalSpaceCount, total, current, available, context);
                             if (i > 0)
                             {
                                 change = (_linespacingOptions.WordSpace * spaceCount) + (_linespacingOptions.CharSpace * charCount);
                                 begin.LineInset += change;
                             }
                         }
-                        else if (cur is PDFTextRunCharacter)
+                        else if (cur is PDFTextRunCharacter chars)
                         {
+                            if (null == currOptions)
+                                throw new InvalidOperationException("Cannot justify contents of characters without having a TextBegin run beforehand, either on this line or a previous line");
+                            if (null == this._linespacingOptions)
+                                this._linespacingOptions = MeasureLineSpaces(currOptions, totalCharCount, totalSpaceCount, total, current, available, context);
+
                             if (!currOptions.WordSpacing.HasValue || !currOptions.CharacterSpacing.HasValue)
                             {
-                                PDFTextRunCharacter chars = cur as PDFTextRunCharacter;
                                 int runChars = 0;
                                 int runSpaces = 0;
                                 AddCharactersAndSpaces(chars.Characters, ref runChars, ref runSpaces);
@@ -614,9 +617,8 @@ namespace Scryber.PDF.Layout
                                 chars.ExtraSpace = (_linespacingOptions.WordSpace * runSpaces) + (_linespacingOptions.CharSpace * runChars);
                             }
                         }
-                        else if (cur is PDFLayoutComponentRun)
+                        else if (cur is PDFLayoutComponentRun comprun)
                         {
-                            PDFLayoutComponentRun comprun = (cur as PDFLayoutComponentRun);
                             if (i > 0)
                             {
                                 Rect bounds = comprun.TotalBounds;
@@ -624,9 +626,8 @@ namespace Scryber.PDF.Layout
                                 comprun.TotalBounds = bounds;
                             }
                         }
-                        else if (cur is PDFTextRunNewLine)
+                        else if (cur is PDFTextRunNewLine newLine)
                         {
-                            PDFTextRunNewLine newLine = (cur as PDFTextRunNewLine);
                             newLine.NewLineOffset = new Size(newLine.NewLineOffset.Width + change, newLine.NewLineOffset.Height);
                         }
                     }
@@ -638,6 +639,25 @@ namespace Scryber.PDF.Layout
             }
 
             return shouldJustify;
+        }
+
+        private ExtraSpacingOptions MeasureLineSpaces(PDFTextRenderOptions currOptions, int charCount, int spaceCount, Unit totalWidth, Unit currentWidth, Unit available, PDFLayoutContext context)
+        {
+            int fitted = 0;
+
+            Size spaceSize = currOptions.Font.Resource.Definition.MeasureStringWidth(" ", 0, currOptions.Font.Size.PointsValue, 2000.0, true, out fitted);
+
+            double spaceToCharFactor = 10; // apply ten times more to spaces than characters.
+            double full = (spaceCount * spaceToCharFactor) + charCount;
+
+            Unit extraSpaceSpace = available.PointsValue / spaceCount;
+            Unit newSpaceSize = spaceSize.Width + extraSpaceSpace;
+            
+            double spacesFactor = newSpaceSize.PointsValue - spaceSize.Width.PointsValue;
+
+            //var check = currentWidth.PointsValue + (spaceCount * newSpaceSize)
+
+            return new ExtraSpacingOptions() { CharSpace = 0.0, WordSpace = spacesFactor, Options = currOptions, SpaceWidth = spaceSize.Width };
         }
 
         private ExtraSpacingOptions _linespacingOptions;
@@ -652,6 +672,8 @@ namespace Scryber.PDF.Layout
         {
             public Unit WordSpace;
             public Unit CharSpace;
+            public Unit SpaceWidth;
+
             public PDFTextRenderOptions Options;
 
             public override string ToString()
