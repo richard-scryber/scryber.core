@@ -12,7 +12,7 @@ using Scryber.Drawing;
 namespace Scryber.UnitLayouts
 {
     [TestClass()]
-    public class ImageLayoutTests
+    public class ImageLayout_Tests
     {
         const string TestCategoryName = "Layout";
 
