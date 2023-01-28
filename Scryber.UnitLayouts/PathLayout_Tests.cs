@@ -1545,9 +1545,6 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(line.Width.PointsValue, graphic.Width.PointsValue + chars.Width.PointsValue + chars2.Width.PointsValue);
 
 
-
-
-
             //Fifth page - Height 100, Width 450, force new line with the text
             reg = layout.AllPages[4].ContentBlock.Columns[0];
             Assert.IsInstanceOfType(reg, typeof(PDFLayoutRegion));

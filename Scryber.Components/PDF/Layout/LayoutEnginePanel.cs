@@ -157,16 +157,18 @@ namespace Scryber.PDF.Layout
                 containerRegion.CloseCurrentItem();
 
             Unit required = Unit.Zero;
+
             if (position.Height.HasValue)
-                required = position.Height.Value;
-            //ADDED for min/max sizes.
+                required = position.Height.Value + position.Margins.Top + position.Margins.Bottom;
             else if (position.MinimumHeight.HasValue)
-                required = position.MinimumHeight.Value;
+                required = position.MinimumHeight.Value + position.Margins.Top + position.Margins.Bottom;
 
             //Do we have space
             if (containerRegion.AvailableHeight <= 0 || (containerRegion.AvailableHeight < required))
             {
-                if (this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPage) == false)
+                //If we are not being clipped (so just keep going, or we have no new region to move to)
+                //Stop the layout
+                if (this.IsLastInClippedBlock(containerRegion) == false && this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPage) == false)
                 {
                     this.Context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Cannot fit the block for component " + this.Component.UniqueID + " in the avilable height (required = '" + position.Height + "', available = '" + containerRegion.AvailableHeight + "'), and we cannot overflow to a new region. Layout of component stopped and returning.");
                     this.ContinueLayout = false;
@@ -188,6 +190,22 @@ namespace Scryber.PDF.Layout
             CurrentBlock.BlockRepeatIndex = 0;
             return containerBlock;
         }
+
+        protected bool IsLastInClippedBlock(PDFLayoutRegion container)
+        {
+            var parent = container.Parent as PDFLayoutBlock;
+
+            while (null != parent)
+            {
+                //We are on the last column and the overflow is set to clip
+                if(parent.CurrentRegion == parent.Columns[parent.Columns.Length-1] && parent.Position.OverflowAction == OverflowAction.Clip)
+                    return true;
+
+                parent = parent.GetParentBlock();
+            }
+            return false;
+        }
+
 
         protected void EnsureContentsFit()
         {

@@ -736,7 +736,7 @@ body.grey div.reverse{
             var base64 = Scryber.UnitTests.Base64FontData.OswaldBold;
 
             var src = @"@font-face {
-                          font-family: 'Oswald';
+                          font-family: Oswald;
                           font-style: normal;
                           font-weight: 700;
                           src: url('data:font/opentype; base64, " + base64 + @"') format('truetype');

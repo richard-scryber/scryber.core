@@ -319,7 +319,7 @@ namespace Scryber.PDF.Layout
             if (this.LineIndex > 0)
             {
                 var prevLine = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
-                if (null != prevLine)
+                if (null != prevLine && prevLine.Runs.Count > 0)
                 {
                     if (prevLine.Runs[prevLine.Runs.Count - 1] is PDFTextRunNewLine newLine)
                     {
