@@ -15,6 +15,7 @@ namespace Scryber.Drawing
         private FontSourceType _type;
         private string _source;
         private FontSourceFormat _format;
+        private bool _mapped = false;
 
         public FontSourceType Type
         {
@@ -35,6 +36,14 @@ namespace Scryber.Drawing
         {
             get { return _next; }
             set { _next = value; }
+        }
+
+        /// <summary>
+        /// Returns true, if this source path has been mapped (converted to a full path). Can only be set with the SetMappedSource() method.
+        /// </summary>
+        public bool Mapped
+        {
+            get { return _mapped; }
         }
 
         public FontSource()
@@ -71,6 +80,15 @@ namespace Scryber.Drawing
                 sb.Append(", ");
                 this.Next.ToString(sb);
             }
+        }
+
+        public void SetMappedSource(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentNullException(nameof(path));
+
+            this._source = path;
+            this._mapped = true;
         }
 
         public static bool TryParse(string value, out FontSource parsed)

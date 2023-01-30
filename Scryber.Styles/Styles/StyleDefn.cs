@@ -137,7 +137,9 @@ namespace Scryber.Styles
         public IComponent Owner
         {
             get { return _owner; }
-            set { _owner = value; }
+            set {
+                _owner = value;
+            }
         }
 
         #endregion

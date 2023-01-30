@@ -26,7 +26,7 @@ namespace Scryber.Styles
     /// To group styles by application with inner styles for components
     /// </summary>
     [PDFParsableComponent("StyleGroup")]
-    public class StyleGroup : StyleBase, IEnumerable<StyleBase>
+    public class StyleGroup : StyleBase, IEnumerable<StyleBase>, INamingContainer
     {
         //
         // properties

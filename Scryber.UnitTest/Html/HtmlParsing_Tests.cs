@@ -1427,6 +1427,64 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(rsrc1, "The open sans font was not found");
         }
 
+
+        [TestMethod()]
+        public void FontFaceAveryLocal()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceAvery.html");
+
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+            using var stream = DocStreams.GetOutputStream("FontFace_AveryBusiness.pdf");
+            doc.SaveAsPDF(stream);
+
+            var style = doc.Styles[0] as StyleGroup;
+            Assert.IsNotNull(style);
+
+            Assert.AreEqual(4, style.Styles.Count, "4 fonts were NOT loaded from the remote source");
+
+            
+            //Should be AveryBusiness and Open Sans for the first 2
+            for (var i = 0; i < 2; i++)
+            {
+                var one = style.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                if (i == 0)
+                {
+                    Assert.AreEqual("AveryBusiness", one.FontFamily.ToString(), "The first font was not AveryBusiness");
+                    Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, one.FontStyle);
+                    Assert.AreEqual(400, one.FontWeight);
+                }
+                else if (i == 1)
+                {
+                    Assert.AreEqual("'Open Sans'", one.FontFamily.ToString(), "The second font was not Open Sans");
+                    Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, one.FontStyle);
+                    Assert.AreEqual(300, one.FontWeight);
+                }
+            }
+
+            
+            
+            var name = Font.GetFullName("AveryBusiness", 400, Scryber.Drawing.FontStyle.Regular);
+            var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name) as PDFFontResource;
+            Assert.IsNotNull(rsrc1);
+            Assert.AreEqual("Archive", rsrc1.Definition.WindowsName); //Taken from the font file name table
+
+            
+            name = Font.GetFullName("Open Sans", 300, Scryber.Drawing.FontStyle.Regular);
+            rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name) as PDFFontResource;
+            Assert.IsNotNull(rsrc1, "The open sans font was not found");
+            Assert.AreEqual("OpenSansLight", rsrc1.Definition.WindowsName); //Taken from the font file name table
+        }
+
         [TestMethod()]
         public void FontFaceBase64()
         {

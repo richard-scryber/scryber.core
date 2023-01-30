@@ -1,4 +1,5 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+﻿<?scryber append-log=true parser-mode=lax log-level=Verbose ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
    "http://www.w3.org/TR/html4/strict.dtd">
 
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'
@@ -7,16 +8,16 @@
 <head>
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
     <title>This is a body with headers and footers</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" title="Fraunces" />
+    
     <style type="text/css" >
 
 
         /* Roboto black */
         @font-face {
-            font-family: Roboto;
+            font-family: AveryBusiness;
             font-style: normal;
-            font-weight: 900;
-            src: url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmYUtvAw.ttf) format('truetype')
+            font-weight: 400;
+            src: url(../../resources/Archive.otf) format('opentype');
         }
 
         @font-face {
@@ -26,11 +27,11 @@
         }
         
 
-    body { font-family: 'Fraunces'; }
+    body { font-family: 'Open Sans'; }
 
     .grey{
-        font: 12pt Roboto;
-        font-weight: 900;
+        font-family: AveryBusiness;
+        font-weight: 400;
         font-style: normal;
         padding: 5pt;
         color:#999;
@@ -42,17 +43,17 @@
 <body title="Outer">
 
     <header>
-        <div class="grey">This should use the gray class with Roboto Black font</div>
+        <div class="grey">This should use the gray class with AveryBusiness regular font</div>
     </header>
    
     <div>
     <!-- The rest of the content should go into the body -->
     <p>
-        Body with bound value :<b>{@:model.fragmentContent}</b>
+        Body with bound value : <b>{@:model.fragmentContent}</b>
     </p>
     <p style="font-style:italic">And this has <b>Bold</b> in an italic span</p>
    </div>
-    <div style="font-family:'Roboto'; font-weight:900; color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Roboto font</div>
+    <div style="font-family:'AveryBusiness'; font-weight:900; color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Avery Business font</div>
     <div style="font-family:'Open Sans'; font-weight: 300;color:#FF3333; background-color:#333333; font-size: small;padding:10pt; " >This is in the Open Sans Light font</div>
 </body>
 </html>
