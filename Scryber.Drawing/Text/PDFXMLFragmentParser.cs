@@ -112,11 +112,11 @@ namespace Scryber.Text
                 int endindex = text.IndexOf('>', index);
 
                 if (endindex < 0) //Make sure it is closed
-                    throw new PDFXmlFormatException("No closing brace found after oening brace - character #" + index.ToString());
+                    throw new PDFXmlFormatException("No closing brace found after opening brace - character #" + index.ToString());
 
                 int nextindex = text.IndexOf('<', index + 1); //and make sure a new element is not opened before
                 if (nextindex > 0 && endindex > nextindex)
-                    throw new PDFXmlFormatException("No closing brace found after oening brace - character #" + index.ToString());
+                    throw new PDFXmlFormatException("No closing brace found after opening brace - character #" + index.ToString());
 
                 value = text.Substring(index + 1, (endindex - index) - 1);
 
