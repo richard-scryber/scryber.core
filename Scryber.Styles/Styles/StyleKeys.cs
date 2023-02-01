@@ -146,7 +146,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> FontSizeKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"size", FontItemKey);
 
         //Overflow
-        public static readonly StyleKey OverflowItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleOverflow, INHERITED);
+        public static readonly StyleKey OverflowItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleOverflow, NOT_INHERITED);
         public static readonly StyleKey<OverflowAction> OverflowActionKey = StyleKey.InternalCreateStyleValueKey<OverflowAction>((ObjectType)"actn", OverflowItemKey);
         public static readonly StyleKey<OverflowSplit> OverflowSplitKey = StyleKey.InternalCreateStyleValueKey<OverflowSplit>((ObjectType)"splt", OverflowItemKey);
 

@@ -1001,7 +1001,177 @@ namespace Scryber.UnitLayouts
         [TestMethod]
         public void LiteralWithExplicitWordAndCharSpacing()
         {
-            Assert.Inconclusive("No Test");
+            var wide = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+                "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies.";
+            var evenwider = " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
+                "Donec nec sapien eu mi commodo porta in quis nibh. Sed quam sem, tristique vel lobortis nec, " +
+                "pulvinar id libero. Donec aliquet consectetur lorem, id hendrerit lectus feugiat a. " +
+                "Mauris fringilla nunc consequat sapien varius, in pretium nibh dignissim. Duis in erat neque. ";
+            var restorewide = "Cras dui purus, laoreet vel lacus nec, scelerisque posuere nisl. Nam sed rutrum metus. " +
+                "Ut vel vehicula lorem. Morbi rutrum leo quis nunc lobortis, venenatis posuere dolor porta.";
+
+            var normal = "After the explicit spacing that fits all on a single line.";
+            //just long enough to go across the line without spacing so we know it has reset.
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+
+            var span1 = new Span();
+            span1.TextCharacterSpacing = 3;
+            span1.TextWordSpacing = 10;
+            span1.Contents.Add(new TextLiteral(wide));
+
+            var span2 = new Span();
+            span2.TextCharacterSpacing = 5;
+            span2.TextWordSpacing = 20;
+            span2.FontWeight = 700;
+            span2.Contents.Add(new TextLiteral(evenwider));
+            span1.Contents.Add(span2);
+
+            span1.Contents.Add(new TextLiteral(restorewide));
+
+            //add the mixed span to the page.
+            pg.Contents.Add(span1);
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral(normal));
+
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LiteralWithExplicitWordAndCharSpacing");
+
+            
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+
+            var contentW = layout.AllPages[0].ContentBlock.Width;
+
+            Assert.AreEqual(27, region.Contents.Count);
+
+            //Line 0
+
+            var line = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(4, line.Runs.Count);
+            var start = line.Runs[0] as PDFLayoutInlineBegin;
+            var begin = line.Runs[1] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+
+            
+            Assert.IsNotNull(begin.TextRenderOptions);
+            Assert.IsTrue(begin.TextRenderOptions.CharacterSpacing.HasValue);
+            Assert.AreEqual(3.0, begin.TextRenderOptions.CharacterSpacing.Value.PointsValue);
+
+            Assert.IsTrue(begin.TextRenderOptions.WordSpacing.HasValue);
+            Assert.AreEqual(10.0, begin.TextRenderOptions.WordSpacing.Value.PointsValue);
+
+            //Lines 1 to 7 inc. are normal flowing lines
+
+            for (var i = 1; i < 8; i++)
+            {
+                line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < contentW);
+
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+            }
+
+            //Line 8 is a split
+
+            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[8] as PDFLayoutLine;
+            Assert.AreEqual(7, line.Runs.Count);
+            //Spacer, Chars, End, InlineBegin, TextBegin, Chars, NewLine
+
+            begin = line.Runs[4] as PDFTextRunBegin;
+            Assert.IsNotNull(begin.TextRenderOptions);
+            Assert.IsTrue(begin.TextRenderOptions.CharacterSpacing.HasValue);
+            Assert.AreEqual(5.0, begin.TextRenderOptions.CharacterSpacing.Value.PointsValue);
+
+            Assert.IsTrue(begin.TextRenderOptions.WordSpacing.HasValue);
+            Assert.AreEqual(20.0, begin.TextRenderOptions.WordSpacing.Value.PointsValue);
+
+            //Lines 9 to 20 inc. are normal flowing lines
+            for (var i = 9; i < 21; i++)
+            {
+                line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < contentW);
+
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+            }
+
+            //Line 21 is a split, and reverts back to original spacing
+
+            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[21] as PDFLayoutLine;
+            Assert.AreEqual(6, line.Runs.Count);
+            //Spacer, End, InlineEnd, TextBegin, Chars, NewLine
+
+            begin = line.Runs[3] as PDFTextRunBegin;
+            Assert.IsNotNull(begin.TextRenderOptions);
+            Assert.IsTrue(begin.TextRenderOptions.CharacterSpacing.HasValue);
+            Assert.AreEqual(3.0, begin.TextRenderOptions.CharacterSpacing.Value.PointsValue);
+
+            Assert.IsTrue(begin.TextRenderOptions.WordSpacing.HasValue);
+            Assert.AreEqual(10.0, begin.TextRenderOptions.WordSpacing.Value.PointsValue);
+
+
+            //Lines 9 to 20 inc. are normal flowing lines
+            for (var i = 22; i < 25; i++)
+            {
+                line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < contentW);
+
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+            }
+
+            //Last explicit spaced line
+
+            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[25] as PDFLayoutLine;
+            Assert.IsTrue(line.Width < contentW);
+
+            Assert.AreEqual(4, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual(line.Width, line.Runs[1].Width);
+            Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(line.Runs[3], typeof(PDFLayoutInlineEnd));
+
+
+            //Back to normal spacing
+            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[26] as PDFLayoutLine;
+            Assert.IsTrue(line.Width < contentW);
+
+            //BeginInline, BeginText, Chars, EndText, EndInline
+
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+            begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsFalse(begin.TextRenderOptions.CharacterSpacing.HasValue);
+            Assert.IsFalse(begin.TextRenderOptions.WordSpacing.HasValue);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual(line.Width, line.Runs[1].Width);
+            Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+
         }
 
 

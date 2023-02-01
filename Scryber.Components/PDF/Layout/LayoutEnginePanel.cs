@@ -255,8 +255,14 @@ namespace Scryber.PDF.Layout
 
             if (!canfitvertical && containerRegion.Contents.Count > 1)
             {
+                
                 PDFLayoutRegion prev = containerRegion;
-                if (this.MoveToNextRegion(req, ref containerRegion, ref containerBlock, out newPage))
+                if (IsLastInClippedBlock(prev))
+                {
+                    this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Cannot fit the block for '" + this.Component.UniqueID + "', but overflow of the content within the region is allowed becasue we are clipping");
+                    containerRegion.AddToSize(block);
+                }
+                else if (this.MoveToNextRegion(req, ref containerRegion, ref containerBlock, out newPage))
                 {
                     prev.Contents.Remove(block);
                     containerRegion.AddExistingItem(block);

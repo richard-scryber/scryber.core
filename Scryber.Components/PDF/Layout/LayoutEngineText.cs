@@ -676,7 +676,7 @@ namespace Scryber.PDF.Layout
 
                 if (availH < lineheight)
                 {
-                    if (this.Position.OverflowAction != OverflowAction.Clip)
+                    if (this.IsInClippedRegion() == false) //.Position.OverflowAction != OverflowAction.Clip)
                     {
                         this.DoMoveToNextRegion(lineheight);
 
@@ -749,6 +749,20 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected virtual bool IsInClippedRegion()
+        {
+            var block = this.CurrentLine.Region.GetParentBlock();
+            while (null != block)
+            {
+                if (block.Position.OverflowAction == OverflowAction.Clip
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                    return true;
+
+                block = block.GetParentBlock();
+            }
+            return false;
+        }
 
         #region private bool CanSplitOnWordsOnly()
 

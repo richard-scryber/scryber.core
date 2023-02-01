@@ -1410,10 +1410,6 @@ namespace Scryber.PDF.Layout
                             this.Context.TraceLog.End(TraceLevel.Debug, logCategory, "Current block " + current + " has another region it can flow into. Moving to this region");
 
                         this.PushBlockStackOntoNewRegion(reverseBlocks, tomove, current, currentRegion, ref region, ref block);
-                        //Because we have moved the current block onto a new page - we are back with the original region and block
-                        region = origRegion;
-                        block = origBlock;
-
                         newPage = false;
                         return true;
                     }

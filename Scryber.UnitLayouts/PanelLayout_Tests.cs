@@ -1116,7 +1116,7 @@ namespace Scryber.UnitLayouts
             Label lbl = new Label()
             {
                 Text = "This label is wide enough to go beyond the 200pt minimum width of the panel" +
-                ", so should flow onto the next line, and keep going beyond the maximum height " +
+                ", so should flow onto the next line, and keep going beyond the max height " +
                 " allowed on the panel, so will get clipped."
             };
             panel.Contents.Add(lbl); //WILL push the panel beyond its maximumn width
@@ -1140,7 +1140,7 @@ namespace Scryber.UnitLayouts
             Assert.IsTrue(PageWidth > panelBlock.Width, "Panel block should not go beyond the page width");
 
             //As we overflow but are clipped the height of the panel is EXACTLY max-height
-            Assert.IsTrue(expectedMaxHeight == panelBlock.Height, "Panel block with height '" + panelBlock.Height + " should be equal to " + expectedMaxHeight + " high");
+            Assert.AreEqual(expectedMaxHeight, panelBlock.Height.PointsValue, "Panel block with height '" + panelBlock.Height + " should be equal to " + expectedMaxHeight + " high");
 
 
         }
