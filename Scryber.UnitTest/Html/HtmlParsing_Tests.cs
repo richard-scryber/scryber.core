@@ -2019,6 +2019,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -2038,7 +2040,10 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+
+            Assert.Inconclusive();
         }
+
 
         [TestMethod()]
         public void FloatRight()
@@ -2058,6 +2063,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -2081,6 +2087,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -2100,6 +2108,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -2120,6 +2130,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -2297,7 +2309,7 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 
                 Assert.AreEqual("Hello World", doc.Info.Title);
-
+                Assert.Inconclusive();
             }
         }
 

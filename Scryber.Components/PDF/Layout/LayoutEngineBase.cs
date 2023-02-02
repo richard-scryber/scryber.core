@@ -639,7 +639,13 @@ namespace Scryber.PDF.Layout
             if (null != positioned)
             {
                 positioned.Close();
-
+                if (positioned.Contents.Count == 0 && positioned.Floats == null)
+                {
+                    if (Context.ShouldLogVerbose)
+                        Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "A positioned region was created but there is no content in the region (possible it does not fit), so removing it");
+                    positioned.ExcludeFromOutput = true;
+                    positioned.TotalBounds = Rect.Empty;
+                }
                 //If we are relative and we some transformations to apply
                 if (options != null && options.HasTransformation)
                 {

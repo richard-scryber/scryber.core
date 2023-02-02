@@ -750,12 +750,34 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of block that is clipped. This means we just continue with the layout
+        /// </summary>
+        /// <returns></returns>
         protected virtual bool IsInClippedRegion()
         {
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
                 if (block.Position.OverflowAction == OverflowAction.Clip
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                    return true;
+
+                block = block.GetParentBlock();
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of an absolute or relatively positioned block. This means we do not overflow
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInAbsoluteOrRelativeRegion()
+        {
+            var block = this.CurrentLine.Region.GetParentBlock();
+            while (null != block)
+            {
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Relative)
                     && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
                     return true;
 
@@ -963,6 +985,14 @@ namespace Scryber.PDF.Layout
             LayoutEngineBase engine = this.ParentEngine as LayoutEngineBase;
             if (null == engine)
                 throw new NullReferenceException("Parent engine was not the expected BlockLayoutEngine. A Hack that is needed for overflowing textual content");
+
+            else if (IsInAbsoluteOrRelativeRegion())
+            {
+                if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
+                    this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full inside a relative or absolute region - they do not overflow.");
+
+                this.ContinueLayout = false;
+            }
             else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
                 if (!this.StartText())
@@ -973,7 +1003,7 @@ namespace Scryber.PDF.Layout
                 if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
                     this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full and cannot move to another region.");
 
-                if(null != region && IsEmptyText(region))
+                if (null != region && IsEmptyText(region))
                 {
                     if (region.Parent == block && block.Columns.Length == 1)
                         block.ExcludeFromOutput = true;

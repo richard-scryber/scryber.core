@@ -1065,7 +1065,11 @@ namespace Scryber.Styles
                 TransformOperation op = this.GetValue(StyleKeys.TransformOperationKey, null);
                 transform = op.GetMatrix(MatrixOrder.Append);
 
-                if (options.PositionMode != PositionMode.Absolute)
+                if (transform.IsIdentity)
+                    transform = null; //identity will do nothing
+
+                //otherwise make sure we are positioned as absolute or relative.
+                else if (options.PositionMode != PositionMode.Absolute)
                     options.PositionMode = PositionMode.Relative;
             }
 

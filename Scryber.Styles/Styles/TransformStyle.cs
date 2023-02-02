@@ -464,13 +464,14 @@ namespace Scryber.Styles
         /// <returns></returns>
         public PDFTransformationMatrix GetMatrix()
         {
-            PDFTransformationMatrix current = new PDFTransformationMatrix();
+            var op = this.Operations;
+            if (null == op)
+                return PDFTransformationMatrix.Identity();
+            else
+                return op.GetMatrix(this.GetOrder());
+
             
-            //current.SetTranslation(this.OffsetH, this.OffsetV);
-            current.SetRotation(this.Rotate);
-            current.SetScale(this.ScaleX, this.ScaleY);
-            current.SetSkew(this.SkewX, this.SkewY);
-            return current;
+           
         }
 
         #endregion

@@ -69,7 +69,7 @@ namespace Scryber.UnitLayouts
 
             PDFLayoutBlock firstblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(0, firstblock.TotalBounds.Y);
-            Assert.AreEqual(PageHeight-100, firstblock.Height);
+            Assert.AreEqual(PageHeight - 100, firstblock.Height);
             Assert.AreEqual(top, firstblock.Owner);
 
 
@@ -110,7 +110,7 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.AreEqual(2,layout.AllPages.Count);
+            Assert.AreEqual(2, layout.AllPages.Count);
 
 
             //Check that the first page has the same dimensions.
@@ -118,14 +118,14 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(PageWidth, firstpage.Width);
             Assert.AreEqual(PageHeight, firstpage.Height);
-            
+
 
             //Check that the overflowed page has the same dimensions.
             PDFLayoutPage lastpage = layout.AllPages[1];
 
             Assert.AreEqual(PageWidth, lastpage.Width);
             Assert.AreEqual(PageHeight, lastpage.Height);
-            
+
             //Check that the block has overflowed to 0 y offset
             PDFLayoutBlock overflowedblock = lastpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(0, overflowedblock.TotalBounds.Y);
@@ -177,7 +177,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, firstBlock.TotalBounds.Y);
             Assert.AreEqual(PageHeight - 100, firstBlock.Height);
 
-            
+
         }
 
         [TestCategory(TestCategoryName)]
@@ -256,7 +256,7 @@ namespace Scryber.UnitLayouts
             tooverflow.Contents.Add(new TextLiteral("Forced onto on the second page due to margins"));
 
             section.Contents.Add(tooverflow);
-            
+
 
             using (var ms = DocStreams.GetOutputStream("Section_BlockOverflowWithMargins.pdf"))
             {
@@ -425,7 +425,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void SectionColumnBlockOverflowWithMargins()
         {
-            
+
 
             const int PageWidth = 200;
             const int PageHeight = 300;
@@ -444,7 +444,7 @@ namespace Scryber.UnitLayouts
             section.Contents.Add(top);
 
             //div is too ok for the remaining space on the page - but the margins push it over
-            Div tooverflow = new Div() { ID ="ToOverflow", Height = 100, Margins = new Drawing.Thickness(10), BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };
+            Div tooverflow = new Div() { ID = "ToOverflow", Height = 100, Margins = new Drawing.Thickness(10), BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };
             tooverflow.Contents.Add(new TextLiteral("Forced onto on the second column due to margins"));
 
             section.Contents.Add(tooverflow);
@@ -509,7 +509,7 @@ namespace Scryber.UnitLayouts
             top.Contents.Add(new TextLiteral("Sits on the first column"));
             section.Contents.Add(top);
 
-            
+
 
             //div is too big for the remaining space on the column - but, even though we are clipped it continues onto the next column
             Div tooverflow = new Div() { Height = 150, BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };
@@ -685,7 +685,7 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            
+
 
             Assert.AreEqual(1, layout.AllPages.Count);
 
@@ -725,7 +725,7 @@ namespace Scryber.UnitLayouts
         public void SectionNestedBlockOverflow()
         {
 
-            
+
             const int PageWidth = 200;
             const int PageHeight = 300;
 
@@ -776,7 +776,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(top, topblock.Owner);
             Assert.AreEqual(PageHeight - 100, topblock.Height);
 
-            
+
             //Check that the overflowed page has the same dimensions.
             PDFLayoutPage lastpage = layout.AllPages[1];
             Assert.AreEqual(PageWidth, lastpage.Width);
@@ -791,7 +791,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0.0, wrapperBlock2.OffsetY);
             Assert.AreEqual(1, wrapperBlock2.BlockRepeatIndex);
             Assert.AreEqual(1, wrapperBlock2.Columns[0].Contents.Count);
-            
+
 
             //Check that the block has overflowed to 0 y offset
             PDFLayoutBlock overflowedblock = wrapperBlock2.Columns[0].Contents[0] as PDFLayoutBlock;
@@ -838,7 +838,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(1, layout.AllPages.Count);
 
-            
+
             //Check that the first page has the same dimensions.
             PDFLayoutPage firstpage = layout.AllPages[0];
 
@@ -950,32 +950,41 @@ namespace Scryber.UnitLayouts
             section.FontSize = 12;
             section.Style.PageStyle.Width = PageWidth;
             section.Style.PageStyle.Height = PageHeight;
-            
+
 
             doc.Pages.Add(section);
 
-            Div wrapper = new Div() { BorderWidth = 1,
-                                      BorderColor = Drawing.StandardColors.Green,
-                                      Margins = new Drawing.Thickness(5)};
+            Div wrapper = new Div()
+            {
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Green,
+                Margins = new Drawing.Thickness(5)
+            };
             section.Contents.Add(wrapper);
 
-            Div top = new Div() { Height = PageHeight - 100,
-                                  Margins = new Drawing.Thickness(5),
-                                  BorderWidth = 2,
-                                  BorderColor = Drawing.StandardColors.Red };
+            Div top = new Div()
+            {
+                Height = PageHeight - 100,
+                Margins = new Drawing.Thickness(5),
+                BorderWidth = 2,
+                BorderColor = Drawing.StandardColors.Red
+            };
             top.Contents.Add(new TextLiteral("Sits on the first page"));
             wrapper.Contents.Add(top);
 
             //div is too ok for the remaining space on the page - but the margins push it over
-            Div tooverflow = new Div() { Height = 100,
-                                         Margins = new Drawing.Thickness(5),
-                                         BorderWidth = 3,
-                                         BorderColor = Drawing.StandardColors.Blue };
+            Div tooverflow = new Div()
+            {
+                Height = 100,
+                Margins = new Drawing.Thickness(5),
+                BorderWidth = 3,
+                BorderColor = Drawing.StandardColors.Blue
+            };
 
             tooverflow.Contents.Add(new TextLiteral("Forced onto on the second page due to margins"));
             wrapper.Contents.Add(tooverflow);
 
-            
+
 
             using (var ms = DocStreams.GetOutputStream("Section_NestedBlockOverflowWithMargins.pdf"))
             {
@@ -985,7 +994,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(2, layout.AllPages.Count);
 
-            
+
 
             //Check that the first page has the same dimensions.
             PDFLayoutPage firstpage = layout.AllPages[0];
@@ -1003,7 +1012,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PageWidth, wrapperBlock1.Width);
             Assert.AreEqual(PageHeight - 80, wrapperBlock1.Height); //margins on wrapper + margins on top block = 20
 
-            
+
 
             var firstBlock = wrapperBlock1.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(top, firstBlock.Owner);
@@ -1011,7 +1020,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PageWidth - 10, firstBlock.Width); //margins on wrapper
             Assert.AreEqual(PageHeight - 90, firstBlock.Height); //margins on top block = 10
 
-            
+
 
             //Check that the overflowed page has the same dimensions.
             PDFLayoutPage lastpage = layout.AllPages[1];
@@ -1032,7 +1041,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, overflowedblock.OffsetY);
             Assert.AreEqual(110, overflowedblock.Height); //margins on the overflowed block
             Assert.AreEqual(PageWidth - 10, overflowedblock.Width); //margins on wrapper
-            
+
         }
 
 
@@ -1185,7 +1194,7 @@ namespace Scryber.UnitLayouts
 
             section.Contents.Add(new TextLiteral("Top level Line"));
             section.Contents.Add(wrapper1);
-            
+
 
             Div wrapper2 = new Div()
             {
@@ -1243,7 +1252,7 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            
+
 
             Assert.AreEqual(2, layout.AllPages.Count);
 
@@ -1326,7 +1335,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, topBlock.Columns[0].Contents.Count); //Just the text
             Assert.AreEqual(PageHeight - 150, topBlock.Height); //Explicit height
 
-            
+
 
             // page 2 with the overflow nested within the content.
 
@@ -1335,7 +1344,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PageWidth, lastpage.Width);
             Assert.AreEqual(PageHeight, lastpage.Height);
 
-            Assert.AreEqual(2, lastpage.ContentBlock.Columns[0].Contents.Count) ;
+            Assert.AreEqual(2, lastpage.ContentBlock.Columns[0].Contents.Count);
 
             wrap1Block = lastpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             text = lastpage.ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
@@ -1482,7 +1491,7 @@ namespace Scryber.UnitLayouts
             second.Contents.Add(new TextLiteral("Moved to the second column as it does not fit"));
             wrapper.Contents.Add(second);
 
-            
+
 
             using (var ms = DocStreams.GetOutputStream("Section_NestedColumnBlockWithOverflow.pdf"))
             {
@@ -1522,7 +1531,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PageWidth / 2.0, wrapperblock.Width);
             Assert.AreEqual(1, wrapperblock.BlockRepeatIndex);
             Assert.AreEqual(wrapper, wrapperblock.Owner);
-            
+
 
             //Check that the block has overflowed to 0 y offset
             PDFLayoutBlock secondblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
@@ -1554,25 +1563,34 @@ namespace Scryber.UnitLayouts
             section.AlleyWidth = 0;
             doc.Pages.Add(section);
 
-            Div wrapper = new Div() { ID = "Wrapper",
-                                    BorderColor = Drawing.StandardColors.Green,
-                                    Margins = new Drawing.Thickness(Margins) };
+            Div wrapper = new Div()
+            {
+                ID = "Wrapper",
+                BorderColor = Drawing.StandardColors.Green,
+                Margins = new Drawing.Thickness(Margins)
+            };
             section.Contents.Add(wrapper);
 
-            Div top = new Div() { ID = "top",
-                                    Height = PageHeight - 100,
-                                    BorderWidth = 1,
-                                    BorderColor = Drawing.StandardColors.Red,
-                                    Margins = new Drawing.Thickness(Margins) };
-                                top.Contents.Add(new TextLiteral("Sits on the first column"));
+            Div top = new Div()
+            {
+                ID = "top",
+                Height = PageHeight - 100,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                Margins = new Drawing.Thickness(Margins)
+            };
+            top.Contents.Add(new TextLiteral("Sits on the first column"));
             wrapper.Contents.Add(top);
 
             //div = 100 + margins, just overflow
-            Div second = new Div() { ID = "second",
-                                    Height = 100, //would fit without margins
-                                    BorderWidth = 1,
-                                    BorderColor = Drawing.StandardColors.Blue,
-                                    Margins = new Drawing.Thickness(Margins) };
+            Div second = new Div()
+            {
+                ID = "second",
+                Height = 100, //would fit without margins
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Blue,
+                Margins = new Drawing.Thickness(Margins)
+            };
 
             second.Contents.Add(new TextLiteral("Moved to the second column as it does not fit"));
             wrapper.Contents.Add(second);
@@ -1597,7 +1615,7 @@ namespace Scryber.UnitLayouts
 
             PDFLayoutBlock wrapperblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
-            Assert.AreEqual((PageHeight - 100) + ( 4 * Margins) , wrapperblock.Height);
+            Assert.AreEqual((PageHeight - 100) + (4 * Margins), wrapperblock.Height);
             Assert.AreEqual(PageWidth / 2.0, wrapperblock.Width);
             Assert.AreEqual(0, wrapperblock.BlockRepeatIndex);
             Assert.AreEqual(wrapper, wrapperblock.Owner);
@@ -1814,7 +1832,7 @@ namespace Scryber.UnitLayouts
         }
 
 
-        
+
 
 
         /// <summary>
@@ -2036,10 +2054,35 @@ namespace Scryber.UnitLayouts
             PDFLayoutBlock thirdblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(0.0, thirdblock.TotalBounds.Y);
             Assert.AreEqual(150 + (2 * Margins), thirdblock.Height);
-            Assert.AreEqual((PageWidth / 2.0) - ( 2 * Margins), thirdblock.Width);
+            Assert.AreEqual((PageWidth / 2.0) - (2 * Margins), thirdblock.Width);
             Assert.AreEqual(0, thirdblock.BlockRepeatIndex);
             Assert.AreEqual(second, thirdblock.Owner);
 
+        }
+
+
+        /// <summary>
+        /// The section allows flows over 2 columns but a parent div has a overflow split of any, so the inner contents flow onto the next column
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionColumnBlockOverflowAnySplit()
+        {
+            var action = Scryber.Drawing.OverflowSplit.Any;
+
+            Assert.Inconclusive();
+        }
+
+        /// <summary>
+        /// The section allows flows over 2 columns but a parent div has a overflow split of Never, so moves as a block, rather than the inner contents
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionColumnBlockOverflowKeepTogether()
+        {
+            var action = Scryber.Drawing.OverflowSplit.Never;
+
+            Assert.Inconclusive();
         }
 
     }
