@@ -2060,17 +2060,235 @@ namespace Scryber.UnitLayouts
 
         }
 
+        //
+        // Overflow split
+        //
+
+
+        /// <summary>
+        /// The section allows flows over 2 pages but a parent div has a overflow split of any, so the inner contents flow onto the next column
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionBlockOverflowSplitAny()
+        {
+            var split = Scryber.Drawing.OverflowSplit.Any;
+
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            section.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should be split over two pages, with the text flowing nicely onto the new page within the div."));
+
+
+            section.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_BlockOverflowSplitAny.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+
+
+            PDFLayoutBlock firstblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, firstblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, firstblock.Height);
+            Assert.AreEqual(top, firstblock.Owner);
+
+
+
+            //Check that the block has overflowed to 0 y offset
+            PDFLayoutBlock secondblock = firstpage.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsTrue(100 > secondblock.TotalBounds.Height);
+            Assert.AreEqual(second, secondblock.Owner);
+
+            PDFLayoutPage lastPage = layout.AllPages[1];
+
+            Assert.AreEqual(PageWidth, lastPage.Width);
+            Assert.AreEqual(PageHeight, lastPage.Height);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns[0].Contents.Count);
+
+            var lastblock = lastPage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual(PageWidth, lastblock.Width);
+            Assert.AreEqual(1, lastblock.BlockRepeatIndex);
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(2, lastblock.Columns[0].Contents.Count);
+
+        }
+
+        /// <summary>
+        /// The section allows flows over 2 pages but a parent div has a overflow split of Never, so moves as a block, rather than the inner contents
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionBlockOverflowSplitNever()
+        {
+            var split = Scryber.Drawing.OverflowSplit.Never;
+
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            section.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should move as a whole, with the text flowing nicely in the div on the second page."));
+
+
+            section.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_BlockOverflowSplitNever.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[0].Contents.Count);
+
+            PDFLayoutBlock firstblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, firstblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, firstblock.Height);
+            Assert.AreEqual(top, firstblock.Owner);
+
+            PDFLayoutPage lastPage = layout.AllPages[1];
+
+            Assert.AreEqual(PageWidth, lastPage.Width);
+            Assert.AreEqual(PageHeight, lastPage.Height);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns[0].Contents.Count);
+
+            var lastblock = lastPage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual(PageWidth, lastblock.Width);
+            Assert.AreEqual(0, lastblock.BlockRepeatIndex);
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(6, lastblock.Columns[0].Contents.Count); //All the lines of text
+        }
+
 
         /// <summary>
         /// The section allows flows over 2 columns but a parent div has a overflow split of any, so the inner contents flow onto the next column
         /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void SectionColumnBlockOverflowAnySplit()
+        public void SectionColumnBlockOverflowSplitAny()
         {
-            var action = Scryber.Drawing.OverflowSplit.Any;
+            var split = Scryber.Drawing.OverflowSplit.Any;
 
-            Assert.Inconclusive();
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 12;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 0;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            section.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should be split over two pages, with the text flowing nicely onto the new page within the div."));
+
+
+            section.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_ColumnBlockOverflowSplitAny.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+
+
+            PDFLayoutBlock firstblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, firstblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, firstblock.Height);
+            Assert.AreEqual(PageWidth / 2.0, firstblock.Width);
+
+            Assert.AreEqual(top, firstblock.Owner);
+
+
+
+            //Check that the block has overflowed to 0 y offset
+            PDFLayoutBlock secondblock = firstpage.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsTrue(100 > secondblock.TotalBounds.Height);
+            Assert.AreEqual(PageWidth / 2.0, secondblock.Width);
+            Assert.AreEqual(second, secondblock.Owner);
+            
+            
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[1].Contents.Count);
+
+            var lastblock = firstpage.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual(PageWidth / 2.0, lastblock.Width);
+            Assert.AreEqual(1, lastblock.BlockRepeatIndex);
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(1, lastblock.Columns[0].Contents.Count);
+
         }
 
         /// <summary>
@@ -2078,11 +2296,459 @@ namespace Scryber.UnitLayouts
         /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void SectionColumnBlockOverflowKeepTogether()
+        public void SectionColumnBlockOverflowSplitNever()
         {
-            var action = Scryber.Drawing.OverflowSplit.Never;
+            var split = Scryber.Drawing.OverflowSplit.Never;
 
-            Assert.Inconclusive();
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 12;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 0;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            section.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should move as a whole, onto the new column, with the text flowing nicely in the div on the second page."));
+
+
+            section.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_ColumnBlockOverflowSplitNever.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[0].Contents.Count);
+            PDFLayoutBlock firstblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, firstblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, firstblock.Height);
+            Assert.AreEqual(top, firstblock.Owner);
+
+
+
+            //Check that the block has overflowed to 0 y offset on the next column
+            PDFLayoutBlock secondblock = firstpage.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsTrue(100 < secondblock.TotalBounds.Height);
+            Assert.AreEqual(second, secondblock.Owner);
+
+            
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[1].Contents.Count);
+            
+
+            
+            Assert.AreEqual(PageWidth / 2, secondblock.Width);
+            Assert.AreEqual(0, secondblock.BlockRepeatIndex);
+            Assert.AreEqual(second, secondblock.Owner);
+            Assert.AreEqual(0.0, secondblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, secondblock.OffsetY.PointsValue);
+            Assert.AreEqual(8, secondblock.Columns[0].Contents.Count);
+        }
+
+
+        //
+        // Overflow split nested
+        //
+
+
+        /// <summary>
+        /// The section allows flows over 2 pages, a nested div has a overflow split of any, so the inner
+        /// contents flow onto the next page, with the wrapper div repeating
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionBlockNestedOverflowSplitAny()
+        {
+            
+
+            var split = Scryber.Drawing.OverflowSplit.Any;
+
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+
+            Div wrapper = new Div() { Margins = new Drawing.Thickness(5), Padding = new Drawing.Thickness(5), BorderColor = Drawing.StandardColors.Aqua };
+            section.Contents.Add(wrapper);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            wrapper.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should be split over two pages, with the text flowing nicely onto the new page within the div."));
+            wrapper.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_BlockNestedOverflowSplitAny.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[0].Contents.Count);
+
+            PDFLayoutBlock wrapperblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(2, wrapperblock.Columns[0].Contents.Count);
+
+            PDFLayoutBlock topblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, topblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, topblock.Height);
+            Assert.AreEqual(PageWidth - 20, topblock.Width); // 2 * 5 margins + 2 * 5 padding
+            Assert.AreEqual(top, topblock.Owner);
+
+
+            //Check that the block is on the first page
+            PDFLayoutBlock secondblock = wrapperblock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsTrue(100 > secondblock.TotalBounds.Height);
+            Assert.AreEqual(second, secondblock.Owner);
+            Assert.AreEqual(4, secondblock.Columns[0].Contents.Count); //3 lines + zero height end line
+            Assert.AreEqual(0.0, secondblock.Columns[0].Contents[3].Height);
+
+            //and also on the last (second) page
+            PDFLayoutPage lastPage = layout.AllPages[1];
+
+            Assert.AreEqual(PageWidth, lastPage.Width);
+            Assert.AreEqual(PageHeight, lastPage.Height);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns[0].Contents.Count);
+
+            wrapperblock = lastPage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
+            Assert.AreEqual(PageWidth, wrapperblock.Width);
+            Assert.AreEqual(1, wrapperblock.BlockRepeatIndex);
+
+            var lastblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual(PageWidth - 20, lastblock.Width);
+            Assert.AreEqual(1, lastblock.BlockRepeatIndex);
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(3, lastblock.Columns[0].Contents.Count); //3 lines
+
+            Assert.AreEqual(wrapperblock.Height.PointsValue, lastblock.Height.PointsValue + 20.0);
+            //Check that we have shrunk the block to the correct height
+
+        }
+
+        /// <summary>
+        /// The section allows flows over 2 pages but a nested div has a overflow split of Never, so moves as a block,
+        /// rather than the inner contents, and the wrapper block repeats on the second page
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionBlockNestedOverflowSplitNever()
+        {
+
+            var split = Scryber.Drawing.OverflowSplit.Never;
+
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+
+            Div wrapper = new Div() { Margins = new Drawing.Thickness(5), Padding = new Drawing.Thickness(5), BorderColor = Drawing.StandardColors.Aqua };
+            section.Contents.Add(wrapper);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            wrapper.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should be split over two pages, with the text flowing nicely onto the new page within the div."));
+            wrapper.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_BlockNestedOverflowSplitNever.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[0].Contents.Count);
+
+            PDFLayoutBlock wrapperblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, wrapperblock.BlockRepeatIndex);
+
+            PDFLayoutBlock topblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, topblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, topblock.Height);
+            Assert.AreEqual(PageWidth - 20, topblock.Width); // 2 * 5 margins + 2 * 5 padding
+            Assert.AreEqual(top, topblock.Owner);
+            Assert.AreEqual(top.Height.PointsValue + 20.0, wrapperblock.Height);
+
+            
+
+            //and only on the last (second) page
+            PDFLayoutPage lastPage = layout.AllPages[1];
+
+            Assert.AreEqual(PageWidth, lastPage.Width);
+            Assert.AreEqual(PageHeight, lastPage.Height);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, lastPage.ContentBlock.Columns[0].Contents.Count);
+
+            wrapperblock = lastPage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
+            Assert.AreEqual(PageWidth, wrapperblock.Width);
+            Assert.AreEqual(1, wrapperblock.BlockRepeatIndex);
+
+            var lastblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual(PageWidth - 20, lastblock.Width);
+            Assert.AreEqual(0, lastblock.BlockRepeatIndex);
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(6, lastblock.Columns[0].Contents.Count); //all lines
+
+            Assert.AreEqual(wrapperblock.Height.PointsValue, lastblock.Height.PointsValue + 20.0);
+            //Check that we have shrunk the block to the correct height
+        }
+
+
+        /// <summary>
+        /// The section allows flows over 2 columns, a nested div has a overflow split of any, so the inner contents flow onto the next column repeating the div AND it's wrapper
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionColumnBlockNestedOverflowSplitAny()
+        {
+
+            
+
+            var split = Scryber.Drawing.OverflowSplit.Any;
+
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 12;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 0;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            Div wrapper = new Div() { Margins = new Drawing.Thickness(5), Padding = new Drawing.Thickness(5), BorderColor = Drawing.StandardColors.Aqua };
+            section.Contents.Add(wrapper);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            wrapper.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should be split over two pages, with the text flowing nicely onto the new page within the div."));
+
+
+            wrapper.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_ColumnBlockNestedOverflowSplitAny.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+            Assert.AreEqual(2, firstpage.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[0].Contents.Count);
+
+            PDFLayoutBlock wrapperblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(2, wrapperblock.Columns[0].Contents.Count);
+
+            PDFLayoutBlock topblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, topblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, topblock.Height.PointsValue);
+            Assert.AreEqual((PageWidth / 2.0) - 20, topblock.Width.PointsValue); // 2 * 5 margins + 2 * 5 padding
+            Assert.AreEqual(top, topblock.Owner);
+
+
+            //Check that the block is on the first page
+            PDFLayoutBlock secondblock = wrapperblock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsTrue(100 > secondblock.TotalBounds.Height);
+            Assert.AreEqual(second, secondblock.Owner);
+            Assert.AreEqual(6, secondblock.Columns[0].Contents.Count); //5 lines + zero height end line
+            Assert.AreEqual(0.0, secondblock.Columns[0].Contents[5].Height);
+
+            
+            
+            //Second column
+            wrapperblock = firstpage.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
+            Assert.AreEqual(PageWidth / 2.0, wrapperblock.Width.PointsValue);
+            Assert.AreEqual(1, wrapperblock.BlockRepeatIndex);
+
+            var lastblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual((PageWidth / 2) - 20, lastblock.Width.PointsValue);
+            Assert.AreEqual(1, lastblock.BlockRepeatIndex);
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(4, lastblock.Columns[0].Contents.Count); //3 lines
+
+            Assert.AreEqual(wrapperblock.Height.PointsValue, lastblock.Height.PointsValue + 20.0);
+            //Check that we have shrunk the block to the correct height
+
+        }
+
+        /// <summary>
+        /// The section allows flows over 2 columns but a nested div has a overflow split of Never, so moves as a block, rather than the inner contents,
+        /// with the wrapper div repeating on the second column
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SectionColumnBlockNestedOverflowSplitNever()
+        {
+
+            var split = Scryber.Drawing.OverflowSplit.Never;
+
+            const int PageWidth = 200;
+            const int PageHeight = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 12;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 0;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            Div wrapper = new Div() { Margins = new Drawing.Thickness(5), Padding = new Drawing.Thickness(5), BorderColor = Drawing.StandardColors.Aqua };
+            section.Contents.Add(wrapper);
+
+            Div top = new Div() { Height = PageHeight - 100, BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
+            top.Contents.Add(new TextLiteral("Sits on the first page"));
+            wrapper.Contents.Add(top);
+
+            //div is going to flow nicely onto the next page.
+            Div second = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, OverflowSplit = split };
+            second.Contents.Add(new TextLiteral("The content of the div should move as a whole, onto the new column, with the text flowing nicely in the div on the second page."));
+
+
+            wrapper.Contents.Add(second);
+
+            using (var ms = DocStreams.GetOutputStream("Section_ColumnBlockNestedOverflowSplitNever.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+
+            //Check that the first page has the same dimensions.
+            PDFLayoutPage firstpage = layout.AllPages[0];
+
+            Assert.AreEqual(PageWidth, firstpage.Width);
+            Assert.AreEqual(PageHeight, firstpage.Height);
+
+            Assert.AreEqual(1, firstpage.ContentBlock.Columns[0].Contents.Count);
+            
+
+            PDFLayoutBlock wrapperblock = firstpage.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, wrapperblock.BlockRepeatIndex);
+            Assert.AreEqual((PageWidth / 2.0), wrapperblock.Width.PointsValue);
+
+
+            PDFLayoutBlock topblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, topblock.TotalBounds.Y);
+            Assert.AreEqual(PageHeight - 100, topblock.Height.PointsValue);
+            Assert.AreEqual((PageWidth / 2.0) - 20, topblock.Width.PointsValue); // 2 * 5 margins + 2 * 5 padding
+            Assert.AreEqual(top, topblock.Owner);
+            Assert.AreEqual(wrapperblock.Height.PointsValue, topblock.Height.PointsValue + 20.0);
+
+            
+
+            //Second column
+            wrapperblock = firstpage.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(1, wrapperblock.Columns.Length);
+            Assert.AreEqual(1, wrapperblock.Columns[0].Contents.Count);
+            Assert.AreEqual(PageWidth / 2.0, wrapperblock.Width.PointsValue);
+            Assert.AreEqual(1, wrapperblock.BlockRepeatIndex);
+
+            var lastblock = wrapperblock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(lastblock);
+            Assert.AreEqual((PageWidth / 2) - 20, lastblock.Width.PointsValue);
+            Assert.AreEqual(0, lastblock.BlockRepeatIndex); //not repeat, first and only instance
+            Assert.AreEqual(second, lastblock.Owner);
+            Assert.AreEqual(0.0, lastblock.OffsetX.PointsValue);
+            Assert.AreEqual(0.0, lastblock.OffsetY.PointsValue);
+            Assert.AreEqual(11, lastblock.Columns[0].Contents.Count); //3 lines
+
+            Assert.AreEqual(wrapperblock.Height.PointsValue, lastblock.Height.PointsValue + 20.0);
+            //Check that we have shrunk the block to the correct height
         }
 
     }
