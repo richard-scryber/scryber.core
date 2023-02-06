@@ -73,6 +73,9 @@ namespace Scryber.PDF.Layout
 
                 PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions();
 
+                //fix for width - if we have an explicit width, then we should fill it.
+                if (tablepos.Width.HasValue)
+                    tablepos.FillWidth = true;
 
                 int rowcount, columncount;
                 this.BuildStyles(out rowcount, out columncount);
@@ -109,6 +112,8 @@ namespace Scryber.PDF.Layout
                 this.DoLayoutTableRows();
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Laid out the rows");
+
+                //TODO: Reassess the required widths of columns in the entire table.
 
                 this.PushConsistentCellWidths();
                 this.PushRepeatingRowHeaderHeight();
