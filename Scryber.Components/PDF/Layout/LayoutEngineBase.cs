@@ -638,7 +638,11 @@ namespace Scryber.PDF.Layout
             //close any relative or absolute region
             if (null != positioned)
             {
+                if (positioned.IsClosed) //we have overflowed and need to get the latest.
+                    positioned = this.CurrentBlock.PositionedRegions.Last();
+
                 positioned.Close();
+
                 if (positioned.Contents.Count == 0 && positioned.Floats == null)
                 {
                     if (Context.ShouldLogVerbose)
@@ -1549,7 +1553,7 @@ namespace Scryber.PDF.Layout
         /// <remarks>The base method returns false if the region is set as absolute or relative</remarks>
         protected virtual bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
         {
-            if (region.PositionMode == PositionMode.Absolute || region.PositionMode == PositionMode.Relative)
+            if (region.PositionMode == PositionMode.Absolute) // || region.PositionMode == PositionMode.Relative)
                 return false;
             else
                 return true;

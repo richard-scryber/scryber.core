@@ -118,7 +118,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the start text cursor point within the page for this text
         /// </summary>
-        protected Size StartTextCursor
+        public Size StartTextCursor
         {
             get;
             private set;

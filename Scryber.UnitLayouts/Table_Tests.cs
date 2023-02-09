@@ -497,6 +497,118 @@ namespace Scryber.UnitLayouts
 
         }
 
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SimpleTable3Row3CellsFullTableWidth1FixedCell()
+        {
+            const int PageWidth = 400;
+            const int PageHeight = 500;
+            //const int CellWidth = 50;
+            const int CellHeight = 25;
+            const int CellCount = 3;
+            const int RowCount = 3;
+            //const int TableWidth = 300;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 10;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+
+            var tbl = new TableGrid();
+
+            section.Contents.Add(tbl);
+            tbl.FullWidth = true;
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var row = new TableRow();
+                tbl.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var cell = new TableCell();
+                    cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
+
+                    //middle cell is half the width of the table
+                    if (c == 1 && r == 1)
+                    {
+                        cell.Width = PageWidth / 2.0;
+                        cell.Height = CellHeight * 2.0;
+                    }
+                    else
+                        cell.Height = CellHeight;
+
+                    row.Cells.Add(cell);
+
+                }
+
+            }
+
+            using (var ms = DocStreams.GetOutputStream("Table_3Row3CellsFullTableWidth1FixedCell.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tblBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(tblBlock);
+            Assert.AreEqual(PageWidth, tblBlock.Width);
+            Assert.AreEqual(CellHeight * (RowCount + 1), tblBlock.Height); // 2 25's and 1 fifty
+
+            Assert.AreEqual(RowCount, tblBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tblBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock);
+                Assert.AreEqual(PageWidth, rowBlock.Width);
+                if (r == 1)
+                    Assert.AreEqual(CellHeight * 2.0, rowBlock.Height);
+                else
+                    Assert.AreEqual(CellHeight, rowBlock.Height);
+
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var column = rowBlock.Columns[c];
+                    Assert.IsNotNull(column);
+
+                    Assert.AreEqual(1, column.Contents.Count);
+                    var cellBlock = column.Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(cellBlock);
+
+                    if (r == 1)
+                        Assert.AreEqual(CellHeight * 2.0, cellBlock.Height);
+                    else
+                        Assert.AreEqual(CellHeight, cellBlock.Height);
+
+                    if (c == 1)
+                        Assert.AreEqual((double)PageWidth / 2.0, cellBlock.Width);
+                    else
+                        Assert.AreEqual((double)PageWidth / 4.0, cellBlock.Width); //full width with half taken up by column 1 so 0 and 2 are a quarter
+
+                    Assert.AreEqual(1, cellBlock.Columns[0].Contents.Count);
+
+                    var line = cellBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                    Assert.AreEqual(3, line.Runs.Count);
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("Cell " + r + "." + c, (line.Runs[1] as PDFTextRunCharacter).Characters);
+
+                }
+            }
+
+        }
+
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
@@ -1321,6 +1433,140 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual((2 * CellHeight), footRow.Height);
 
             
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableMultiPage3CellsWithRepeatingHeaderAndFooter()
+        {
+            const int PageWidth = 400;
+            const int PageHeight = 500;
+            const int CellCount = 3;
+            const int RowCount = 25; //A lot of rows to force the new column
+            //const int TableWidth = 180;
+            const int CellHeight = 25;
+            const int Padding = 10;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 10;
+            section.Padding = new Drawing.Thickness(Padding);
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            //section.ColumnCount = 2;
+            //section.AlleyWidth = 40;
+
+            doc.Pages.Add(section);
+
+
+            var tbl = new TableGrid();
+
+            section.Contents.Add(tbl);
+            tbl.FullWidth = true;
+
+            var header = new TableHeaderRow();
+            tbl.Rows.Add(header);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+                var cell = new TableHeaderCell();
+
+                cell.Contents.Add(new TextLiteral("Header " + c));
+                cell.Height = CellHeight * 2.0;
+
+                header.Cells.Add(cell);
+
+            }
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var row = new TableRow();
+                tbl.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var cell = new TableCell();
+
+                    cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
+                    cell.Height = CellHeight;
+
+                    row.Cells.Add(cell);
+
+                }
+
+            }
+
+            var footer = new TableFooterRow();
+            tbl.Rows.Add(footer);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+                var cell = new TableFooterCell();
+
+                cell.Contents.Add(new TextLiteral("Footer " + c));
+                cell.Height = CellHeight * 2.0;
+
+                footer.Cells.Add(cell);
+
+            }
+
+            using (var ms = DocStreams.GetOutputStream("Table_MultiPage3CellsWithRepeatingHeaderAndFooter.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+
+            //first page
+            var tblBlock1 = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(tblBlock1);
+            Assert.AreEqual(PageWidth - (Padding * 2), tblBlock1.Width);
+
+            double colRowCount1 = Math.Floor((double)(PageHeight - (2 * CellHeight + 2 * Padding)) / CellHeight);
+            Assert.AreEqual(colRowCount1 + 1, tblBlock1.Columns[0].Contents.Count);
+            Assert.AreEqual((colRowCount1 * CellHeight) + (2 * CellHeight), tblBlock1.Height);
+
+            var headRow = tblBlock1.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(headRow.Owner, typeof(TableHeaderRow));
+
+            Assert.AreEqual((PageWidth - (Padding * 2)), headRow.Width);
+            Assert.AreEqual((2 * CellHeight), headRow.Height);
+
+
+            //second page
+            var pg2 = layout.AllPages[1];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tblBlock2 = pg2.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(tblBlock2);
+            Assert.AreEqual(PageWidth - (2 * Padding), tblBlock2.Width);
+
+            double colRowCount2 = RowCount - colRowCount1;
+
+            //With a repeating header, it is 
+
+            Assert.AreEqual(colRowCount2 + 2, tblBlock2.Columns[0].Contents.Count); //remainder + a header and footer
+            Assert.AreEqual((colRowCount2 * CellHeight) + (4 * CellHeight), tblBlock2.Height);//height is also remainder + header and footer at twice height
+
+
+            var footRow = tblBlock2.Columns[0].Contents[(int)colRowCount2 + 1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(footRow.Owner, typeof(TableFooterRow));
+
+            Assert.AreEqual((PageWidth - (Padding * 2)), footRow.Width);
+            Assert.AreEqual((2 * CellHeight), footRow.Height);
+
+
         }
 
     }

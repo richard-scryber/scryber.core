@@ -169,16 +169,22 @@ namespace Scryber.PDF.Layout
         {
             Panel panel = new Panel();
             panel.Width = label.NumberWidth;
+            panel.TextWrapping = Text.WordWrap.NoWrap;
+            panel.OverflowAction = OverflowAction.Clip;
+            panel.Padding = new Thickness(0, 2, 0, 0); // add a little padding for space.
             panel.HorizontalAlignment = label.Alignment;
             panel.PositionMode = PositionMode.Relative;
             panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
             panel.Y = 0;
-            panel.OverflowSplit = OverflowSplit.Never;
+            //panel.Height = 20;
+            //panel.OverflowSplit = OverflowSplit.Never;
             panel.ID = (item.ID ?? "no_id") + "_Num";
             
             panel.Contents.Add(label);
-
-            item.Contents.Insert(0, panel);
+            if (item.Contents.Count > 1)
+                item.Contents.Insert(1, panel);
+            else
+                item.Contents.Add(panel);
 
             return panel;
         }

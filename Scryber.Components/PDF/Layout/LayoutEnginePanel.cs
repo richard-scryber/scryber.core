@@ -149,7 +149,7 @@ namespace Scryber.PDF.Layout
 
         protected virtual PDFLayoutBlock CreateContinerBlock(PDFPositionOptions position)
         {
-            bool newPage = false;
+            bool newPageOrRegion = false;
             PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;
 
@@ -166,9 +166,20 @@ namespace Scryber.PDF.Layout
             //Do we have space
             if (containerRegion.AvailableHeight <= 0 || (containerRegion.AvailableHeight < required))
             {
-                //If we are not being clipped (so just keep going, or we have no new region to move to)
-                //Stop the layout
-                if (this.IsLastInClippedBlock(containerRegion) == false && this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPage) == false)
+                var origRegion = containerRegion;
+                var origBlock = containerBlock;
+
+                if (this.IsLastInClippedBlock(containerRegion))
+                {
+                    //We are ok to continue in a clipped block.
+                }
+                else if (this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPageOrRegion))
+                {
+                    if (this.IsJustAnEmptyPositionedRegion(origRegion, origBlock))
+                        origBlock.ExcludeFromOutput = true;
+                    //We have moved to a new region or page
+                }
+                else
                 {
                     this.Context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Cannot fit the block for component " + this.Component.UniqueID + " in the avilable height (required = '" + position.Height + "', available = '" + containerRegion.AvailableHeight + "'), and we cannot overflow to a new region. Layout of component stopped and returning.");
                     this.ContinueLayout = false;
@@ -177,18 +188,42 @@ namespace Scryber.PDF.Layout
 
             }
 
-            //Check for list style
-            //StyleValue<ListNumberingGroupStyle> listStyle;
-            //PDFLayoutBlock listItemBlock;
 
-            //if(this.FullStyle.TryGetValue(StyleKeys.ListNumberStyleKey, out listStyle) && listStyle.Value(this.FullStyle) != ListNumberingGroupStyle.None)
-            //{
-                //TODO:Support the list on other types
-            //}
+            if (newPageOrRegion && position.PositionMode == PositionMode.Relative)
+            {
 
-            CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, position.PositionMode);
-            CurrentBlock.BlockRepeatIndex = 0;
-            return containerBlock;
+                CurrentBlock = containerBlock;
+                //containerRegion = this.BeginNewRelativeRegionForChild(position, this.Component, this.FullStyle);
+                containerRegion = containerBlock.BeginNewPositionedRegion(position, this.CurrentBlock.GetLayoutPage(), this.Component, this.FullStyle, true);
+                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
+                return containerBlock;
+
+            }
+            else if (newPageOrRegion && position.FloatMode != FloatMode.None)
+            {
+                return null;
+            }
+            else
+            {
+                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
+                CurrentBlock.BlockRepeatIndex = 0;
+                return containerBlock;
+            }
+        }
+
+        private bool IsJustAnEmptyPositionedRegion(PDFLayoutRegion origRegion, PDFLayoutBlock origBlock)
+        {
+
+            if (origBlock.Columns.Length == 1 && origBlock.Columns[0].Contents.Count == 1)
+            {
+                var line = origBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                if (null != line && line.Runs.Count == 1 && line.Runs[0] is PDFLayoutPositionedRegionRun)
+                    return true;
+
+            }
+
+            return false;
         }
 
         protected bool IsLastInClippedBlock(PDFLayoutRegion container)

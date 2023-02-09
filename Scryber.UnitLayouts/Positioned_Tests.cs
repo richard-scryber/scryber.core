@@ -719,7 +719,8 @@ namespace Scryber.UnitLayouts
 
         /// <summary>
         /// The relative positioned block is positioned beyond the size of the page,
-        /// but as it is relative it increases the size of the parent block - however the parent should not be shown
+        /// but as it is relative it increases the size of the parent block.
+        /// Unusual Scenario, but the page is overflown and rendered there.
         /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
@@ -762,7 +763,7 @@ namespace Scryber.UnitLayouts
             }
 
 
-            Assert.AreEqual(1, layout.AllPages.Count);
+            Assert.AreEqual(2, layout.AllPages.Count);
             var content = layout.AllPages[0].ContentBlock;
 
             Assert.AreEqual(1, content.Columns[0].Contents.Count);
@@ -777,31 +778,61 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, firstReg.Contents.Count);
 
             var firstLine = firstReg.Contents[0] as PDFLayoutLine;
-            Assert.AreEqual(4, firstLine.Runs.Count);
-            Assert.AreEqual(25, firstLine.Height);
+            Assert.AreEqual(1, firstLine.Runs.Count);
 
             var posRun = firstLine.Runs[0] as PDFLayoutPositionedRegionRun;
+
             Assert.IsNotNull(posRun);
             Assert.AreEqual(first.PositionedRegions[0], posRun.Region);
 
             var posReg = first.PositionedRegions[0] as PDFLayoutPositionedRegion;
             Assert.IsNotNull(posReg);
 
-            Assert.AreEqual(0, posReg.TotalBounds.X);
-            Assert.AreEqual(0, posReg.TotalBounds.Y);
+            Assert.AreEqual(50, posReg.TotalBounds.X);
+            Assert.AreEqual(800, posReg.TotalBounds.Y);
             Assert.AreEqual(0, posReg.TotalBounds.Width); //Nothing in
             Assert.AreEqual(0, posReg.TotalBounds.Height); //Nothing in
 
             Assert.AreEqual(0, posReg.Contents.Count);
-            //var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+
+            //second page
+
+            content = layout.AllPages[1].ContentBlock;
+
+            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+
+            var second = content.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.AreEqual(1, second.PositionedRegions.Count);
+            Assert.AreEqual(1, second.Columns.Length);
+
+            Assert.AreEqual(content.Width, second.Width); //full width
+            Assert.AreEqual(800 + 150, second.Height); //Pushed over
+
+            var secondReg = second.Columns[0] as PDFLayoutRegion;
+            Assert.AreEqual(1, secondReg.Contents.Count);
 
 
+            var secondLine = secondReg.Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(4, secondLine.Runs.Count);
 
-            Assert.AreEqual(content.Width, first.Width); //full width
-            Assert.AreEqual(25, first.Height); //Just the line
+            posRun = secondLine.Runs[0] as PDFLayoutPositionedRegionRun;
+
+            Assert.IsNotNull(posRun);
+            Assert.AreEqual(second.PositionedRegions[0], posRun.Region);
+
+            posReg = second.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(posReg);
+
+            Assert.AreEqual(50, posReg.TotalBounds.X);
+            Assert.AreEqual(800, posReg.TotalBounds.Y);
+            Assert.AreEqual(200, posReg.TotalBounds.Width); //Nothing in
+            Assert.AreEqual(150, posReg.TotalBounds.Height); //Nothing in
+
+            Assert.AreEqual(1, posReg.Contents.Count);
 
             //posrun, textbegin, chars, textend
-            Assert.AreEqual("In normal content flow", (firstLine.Runs[2] as PDFTextRunCharacter).Characters);
+            Assert.AreEqual("In normal content flow", (secondLine.Runs[2] as PDFTextRunCharacter).Characters);
         }
 
         /// <summary>
@@ -1087,6 +1118,121 @@ namespace Scryber.UnitLayouts
 
             //posrun, textbegin, chars, textend
             Assert.AreEqual("In normal content flow", (firstLine.Runs[2] as PDFTextRunCharacter).Characters);
+        }
+
+
+        /// <summary>
+        /// The relative positioned block is positioned beyond the size of the page, without an explicit height
+        /// As it is relative it increases the size of the parent block.
+        /// However the page is not clipped so the the relative block should be on a new page with the parent block there, and height adjusted appropriately
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BlockRelativeOverflowingToNewPage()
+        {
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.TextLeading = 25;
+            section.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(section);
+
+            Div top = new Div() { Height = 800, BorderColor = Drawing.StandardColors.Aqua, ID = "top" };
+            section.Contents.Add(top);
+            top.Contents.Add("Pushes the relative content down over to the next page");
+
+            Div relative = new Div()
+            {
+                //Height = 150,
+                Width = 200,
+                X = 50,
+                Y = 100,
+                PositionMode = Drawing.PositionMode.Relative,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                ID = "relative"
+            };
+            relative.Contents.Add(new TextLiteral("Sits relative to the parent div"));
+
+
+            //div is too big for the remaining space on the page
+            Div inflow = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue, ID = "inflow" };
+            //Add the relative block to the inflow div.
+            //inflow.Contents.Add(new TextLiteral("Before the relative div."));
+
+            inflow.Contents.Add(relative);
+
+            inflow.Contents.Add(new TextLiteral("After the relative div."));
+
+            //add the div to the section
+            section.Contents.Add(inflow);
+
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_BlockRelativeOverflowingNewPage.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            //top block and inflow index 0 - that is empty and excluded
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+
+            var topBlock = content.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(800, topBlock.Height);
+
+            //There is a block where inflow was satarted but it has no content
+            //so excluded from output
+            var excluded = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(excluded);
+            Assert.AreEqual(inflow, excluded.Owner);
+            Assert.IsTrue(excluded.ExcludeFromOutput);
+
+            //move to the second page
+            content = layout.AllPages[1].ContentBlock;
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+
+            var inflowBlock = content.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(inflowBlock);
+            Assert.AreEqual(1, inflowBlock.Columns.Length);
+            Assert.AreEqual(1, inflowBlock.Columns[0].Contents.Count);
+
+            var inflowLine = inflowBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+            Assert.IsNotNull(inflowLine);
+            Assert.AreEqual(4, inflowLine.Runs.Count);
+
+            
+            var relativeRun = inflowLine.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(relativeRun);
+
+            Assert.AreEqual(1, inflowBlock.PositionedRegions.Count);
+
+            var relativeRegion = inflowBlock.PositionedRegions[0];
+            Assert.AreEqual(50.0, relativeRegion.TotalBounds.X);
+            Assert.AreEqual(100.0, relativeRegion.TotalBounds.Y);
+            Assert.AreEqual(200.0, relativeRegion.Width);
+
+            //Make sure we are pointing to the correct region
+            Assert.AreEqual(relativeRun.Region, relativeRegion);
+
+            Assert.AreEqual(1, relativeRegion.Contents.Count);
+
+            var relativeBlock = relativeRegion.Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, relativeBlock.OffsetX);
+            Assert.AreEqual(0, relativeBlock.OffsetY);
+
+            Assert.AreEqual(200, relativeBlock.Width);
+            Assert.AreEqual(50, relativeBlock.Height); //two lines of 25 leading text
+
+            //Check the rest of the inflow line
+            Assert.AreEqual("After the relative div.", (inflowLine.Runs[2] as PDFTextRunCharacter).Characters);
         }
 
     }
