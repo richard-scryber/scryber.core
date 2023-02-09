@@ -197,12 +197,6 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, olBlock.Columns.Length);
             Assert.AreEqual(ItemCount, olBlock.Columns[0].Contents.Count);
 
-            //var rowBlock = tblBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            //Assert.IsNotNull(rowBlock);
-            //Assert.AreEqual(CellWidth * CellCount, rowBlock.Width);
-            //Assert.AreEqual(CellHeight, rowBlock.Height);
-
-            //Assert.AreEqual(CellCount, rowBlock.Columns.Length);
 
             for (var i = 0; i < ItemCount; i++)
             {
@@ -2176,6 +2170,113 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
+        public void SimpleDefinitionList()
+        {
+            const int PageWidth = 400;
+            const int PageHeight = 500;
+            const int ItemCount = 5;
+
+            const double DefaultNumberWidth = 40.0;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 10;
+            section.TextLeading = 15;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            var dl = new ListDefinition();
+            
+            section.Contents.Add(dl);
+
+            for (var i = 0; i < ItemCount; i++)
+            {
+                var dt = new ListDefinitionTerm();
+
+                var dd = new ListDefinitionItem();
+                
+                dt.Contents.Add(new TextLiteral("Term " + i));
+                dt.BorderColor = Drawing.StandardColors.Blue;
+                dl.Items.Add(dt);
+
+                dd.Contents.Add(new TextLiteral("Item " + i));
+                dd.BorderColor = Drawing.StandardColors.Red;
+                dl.Items.Add(dd);
+                
+
+            }
+
+            using (var ms = DocStreams.GetOutputStream("DefinitionList_SimpleList.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var dlBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(dlBlock);
+
+            Assert.AreEqual(1, dlBlock.Columns.Length);
+            Assert.AreEqual(ItemCount * 2, dlBlock.Columns[0].Contents.Count);
+
+            for (var i = 0; i < ItemCount; i++)
+            {
+
+                var termBlock = dlBlock.Columns[0].Contents[i * 2] as PDFLayoutBlock;
+                //var column = rowBlock.Columns[i];
+                Assert.IsNotNull(termBlock);
+
+                Assert.AreEqual(1, termBlock.Columns[0].Contents.Count);
+                Assert.AreEqual(0, termBlock.PositionedRegions.Count);
+
+                var termLine = termBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                Assert.IsNotNull(termLine);
+
+                Assert.AreEqual(3, termLine.Runs.Count);
+
+                var start = termLine.Runs[0] as PDFTextRunBegin;
+                Assert.IsNotNull(start);
+
+                var chars = termLine.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(chars);
+
+                var end = termLine.Runs[2] as PDFTextRunEnd;
+                Assert.IsNotNull(end);
+
+                Assert.AreEqual(0, start.StartTextCursor.Width);
+                Assert.AreEqual("Term " + i, chars.Characters);
+
+                var defnBlock = dlBlock.Columns[0].Contents[(i * 2) + 1] as PDFLayoutBlock;
+
+                Assert.AreEqual(1, defnBlock.Columns.Length);
+                Assert.AreEqual(1, defnBlock.Columns[0].Contents.Count);
+                var defnLine = defnBlock.Columns[0].Contents[0] as PDFLayoutLine;
+                Assert.AreEqual(3, defnLine.Runs.Count);
+
+                start = defnLine.Runs[0] as PDFTextRunBegin;
+                Assert.IsNotNull(start);
+
+                chars = defnLine.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(chars);
+
+                end = defnLine.Runs[2] as PDFTextRunEnd;
+                Assert.IsNotNull(end);
+
+                Assert.AreEqual("Item " + i, chars.Characters);
+
+                //Make sure we are right aligned by default
+                Assert.AreEqual(DefaultNumberWidth, defnBlock.Position.Margins.Left);
+            }
+
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
         public void NestedOrderedListConcatenated()
         {
             const int PageWidth = 400;
@@ -2230,8 +2331,6 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            //Assert.Inconclusive();
-
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
@@ -2241,13 +2340,6 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(1, olBlock.Columns.Length);
             Assert.AreEqual(ItemCount, olBlock.Columns[0].Contents.Count);
-
-            //var rowBlock = tblBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            //Assert.IsNotNull(rowBlock);
-            //Assert.AreEqual(CellWidth * CellCount, rowBlock.Width);
-            //Assert.AreEqual(CellHeight, rowBlock.Height);
-
-            //Assert.AreEqual(CellCount, rowBlock.Columns.Length);
 
             for (var i = 0; i < ItemCount; i++)
             {

@@ -180,6 +180,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -196,7 +197,10 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+
+            Assert.Inconclusive();
         }
+
 
         [TestMethod()]
         public void MultipleImageReferences()
@@ -1212,6 +1216,8 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1270,6 +1276,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
                 
             }
+
+            Assert.Inconclusive();
 
         }
 
@@ -1340,6 +1348,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
 
         }
 
@@ -1936,6 +1946,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1953,6 +1965,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
             
         }
 
@@ -1977,6 +1990,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1998,6 +2013,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -2162,6 +2179,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
 
@@ -2465,6 +2484,8 @@ namespace Scryber.Core.UnitTests.Html
             
             using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
                 doc.SaveAsPDF(stream);
+
+            Assert.Inconclusive();
         }
 
         private class ToUpperFunction : IFunction
@@ -2513,6 +2534,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 title = "My title"
             };
+
             using (var sr = new System.IO.StringReader(src))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -2532,6 +2554,8 @@ namespace Scryber.Core.UnitTests.Html
                     Assert.AreEqual("HELLO MY TITLE", (pexpr.Contents[0] as TextLiteral).Text, "Expression text was not uppercased");
                 }
             }
+
+
         }
 
 
@@ -2667,6 +2691,8 @@ namespace Scryber.Core.UnitTests.Html
 
                 }
             }
+
+            Assert.Inconclusive();
         }
 
         private PDFLayoutDocument _layout;
@@ -2774,6 +2800,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
 
         }
 
@@ -2806,7 +2833,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
-
+            Assert.Inconclusive();
         }
         
     }
