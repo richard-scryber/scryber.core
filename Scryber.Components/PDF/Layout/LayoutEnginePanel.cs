@@ -226,20 +226,7 @@ namespace Scryber.PDF.Layout
             return false;
         }
 
-        protected bool IsLastInClippedBlock(PDFLayoutRegion container)
-        {
-            var parent = container.Parent as PDFLayoutBlock;
-
-            while (null != parent)
-            {
-                //We are on the last column and the overflow is set to clip
-                if(parent.CurrentRegion == parent.Columns[parent.Columns.Length-1] && parent.Position.OverflowAction == OverflowAction.Clip)
-                    return true;
-
-                parent = parent.GetParentBlock();
-            }
-            return false;
-        }
+        
 
 
         protected void EnsureContentsFit()

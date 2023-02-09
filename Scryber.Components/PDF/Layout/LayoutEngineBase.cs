@@ -1117,6 +1117,23 @@ namespace Scryber.PDF.Layout
                         height = txtopts.Font.Size;
                     else
                         height = 12;
+
+                    bool newPage;
+
+                    if (region.AvailableHeight < height)
+                    {
+                        if (this.IsLastInClippedBlock(region))
+                        {
+                            //We are ok, as we are clipped. Just continue
+                        }
+                        else if (!this.MoveToNextRegion(height, ref region, ref block, out newPage))
+                        {
+                            this.ContinueLayout = false;
+                            return;
+                        }
+                    }
+
+
                     PDFLayoutLine line = region.BeginNewLine();
                     line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null));
                 }
@@ -1125,6 +1142,7 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
 
 
         #region protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, PDFStyle style)
@@ -1354,6 +1372,20 @@ namespace Scryber.PDF.Layout
         // overflow methods
         //
 
+        protected bool IsLastInClippedBlock(PDFLayoutRegion container)
+        {
+            var parent = container.Parent as PDFLayoutBlock;
+
+            while (null != parent)
+            {
+                //We are on the last column and the overflow is set to clip
+                if (parent.CurrentRegion == parent.Columns[parent.Columns.Length - 1] && parent.Position.OverflowAction == OverflowAction.Clip)
+                    return true;
+
+                parent = parent.GetParentBlock();
+            }
+            return false;
+        }
 
         protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
         {
