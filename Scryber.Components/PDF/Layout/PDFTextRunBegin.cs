@@ -55,6 +55,13 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        /// <summary>
+        /// Gets the (up to) 3 rects that fully describe the calculated bounds for this text run begin to end - top line, block and end line.
+        /// </summary>
+        public Rect[] CalculatedBounds
+        {
+            get { return _caclulatedBounds; }
+        }
         
 
         #region public PDFTextRenderOptions TextRenderOptions

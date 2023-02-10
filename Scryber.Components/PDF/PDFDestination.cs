@@ -158,7 +158,7 @@ namespace Scryber.PDF
         public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             ComponentArrangement arrange;
-            arrange = this.GetFirstArrangementInTree(this.Component);
+            arrange = this.GetFirstArrangementInTree(this.Component, context);
 
             if (null == arrange)
             {
@@ -270,7 +270,7 @@ namespace Scryber.PDF
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        private ComponentArrangement GetFirstArrangementInTree(Component component)
+        private ComponentArrangement GetFirstArrangementInTree(Component component, ContextBase context)
         {
             while(null != component)
             {
@@ -278,7 +278,12 @@ namespace Scryber.PDF
                 if (null != arrange)
                     return arrange;
                 else
+                {
+                    if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                        context.TraceLog.Add(TraceLevel.Warning, "Destination", "Destination to component " + component.UniqueID + " does not have an arranged location. Moving up to the tree to the parent, to find an arranged location");
+
                     component = component.Parent;
+                }
             }
             return null;
             
