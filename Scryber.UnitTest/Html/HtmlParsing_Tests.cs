@@ -2122,12 +2122,20 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("ArticleCounters.pdf"))
                 {
+                    doc.LayoutComplete += DocumentParsing_Layout;
                     doc.SaveAsPDF(stream);
                 }
 
             }
 
-            Assert.Fail("Need to test for the counters in the content");
+
+            Assert.IsNotNull(_layoutcontext);
+            var layout = _layoutcontext.DocumentLayout;
+            Assert.IsNotNull(layout);
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            //Assert.Fail("Need to test for the counters in the content");
         }
 
         [TestMethod()]
