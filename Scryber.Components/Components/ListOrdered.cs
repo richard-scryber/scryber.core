@@ -49,7 +49,7 @@ namespace Scryber.Components
         protected override Styles.Style GetBaseStyle()
         {
             Styles.Style style = base.GetBaseStyle();
-            style.List.NumberingStyle = ListNumberingGroupStyle.Decimals;
+            style.List.NumberingStyle = Drawing.ListNumberingGroupStyle.Decimals;
             return style;
         }
 

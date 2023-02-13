@@ -186,6 +186,9 @@ namespace Scryber.Html
         public const string Transform = "transform";
         public const string Content = "content";
 
+        public const string CounterReset = "counter-reset";
+        public const string CounterIncrement = "counter-increment";
+
     }
 
     /// <summary>

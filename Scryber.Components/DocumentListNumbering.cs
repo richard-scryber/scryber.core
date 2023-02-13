@@ -127,7 +127,7 @@ namespace Scryber
                 if (!string.IsNullOrEmpty(name))
                     _listStacks.Add(newStack);
             }
-            ListNumberingGroupStyle type = initStyle.NumberingStyle;
+            Drawing.ListNumberingGroupStyle type = initStyle.NumberingStyle;
 
             //TODO: Add pre, post and concat to style
             string prefix = initStyle.NumberPrefix;

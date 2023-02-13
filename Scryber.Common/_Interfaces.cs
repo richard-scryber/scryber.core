@@ -223,6 +223,17 @@ namespace Scryber
 
     #endregion
 
+    #region public interface ICountableComponent
+
+    public interface ICountableComponent : IComponent
+    {
+        bool HasCounters { get; }
+
+        ComponentCounterSet Counters { get; }
+    }
+
+    #endregion
+
     #region public interface IOptimizeComponent 
 
     /// <summary>

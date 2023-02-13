@@ -1,5 +1,6 @@
 ﻿using System;
 using Scryber.Html;
+using Scryber.Drawing;
 
 namespace Scryber.Styles.Parsing.Typed
 {

@@ -46,7 +46,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentTextDescriptor));
             var text = parsed as ContentTextDescriptor;
-            Assert.AreEqual("This is the content", text.Value);
+            Assert.AreEqual("This is the content", text.Text);
             Assert.IsNull(text.Next);
             Assert.AreEqual(ContentDescriptorType.Text, text.Type);
 
@@ -55,7 +55,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentTextDescriptor));
             text = parsed as ContentTextDescriptor;
-            Assert.AreEqual("Single quote test", text.Value);
+            Assert.AreEqual("Single quote test", text.Text);
             Assert.IsNull(text.Next);
             Assert.AreEqual(ContentDescriptorType.Text, text.Type);
 
@@ -64,7 +64,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentTextDescriptor));
             text = parsed as ContentTextDescriptor;
-            Assert.AreEqual(char.ConvertFromUtf32(int.Parse("f6dd", System.Globalization.NumberStyles.HexNumber)).ToString(), text.Value);
+            Assert.AreEqual(char.ConvertFromUtf32(int.Parse("f6dd", System.Globalization.NumberStyles.HexNumber)).ToString(), text.Text);
             Assert.IsNull(text.Next);
             Assert.AreEqual(ContentDescriptorType.Text, text.Type);
 
@@ -78,7 +78,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentImageDescriptor));
             var img = parsed as ContentImageDescriptor;
-            Assert.AreEqual("url(pathto.image/source.png)", img.Value);
+            Assert.AreEqual("url(pathto.image/source.png)", img.Text);
             Assert.AreEqual("pathto.image/source.png", img.Source);
             Assert.IsNull(img.Next);
             Assert.AreEqual(ContentDescriptorType.Image, img.Type);
@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentImageDescriptor));
             img = parsed as ContentImageDescriptor;
-            Assert.AreEqual("url(\"second.pathto.image/source.png\")", img.Value);
+            Assert.AreEqual("url(\"second.pathto.image/source.png\")", img.Text);
             Assert.AreEqual("second.pathto.image/source.png", img.Source);
             Assert.IsNull(img.Next);
             Assert.AreEqual(ContentDescriptorType.Image, img.Type);
@@ -98,7 +98,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentImageDescriptor));
             img = parsed as ContentImageDescriptor;
-            Assert.AreEqual("url('second.pathto.image/source.png')", img.Value);
+            Assert.AreEqual("url('second.pathto.image/source.png')", img.Text);
             Assert.AreEqual("second.pathto.image/source.png", img.Source);
             Assert.IsNull(img.Next);
             Assert.AreEqual(ContentDescriptorType.Image, img.Type);
@@ -114,7 +114,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentGradientDescriptor));
             var grad = parsed as ContentGradientDescriptor;
-            Assert.AreEqual("linear-gradient(#e66465, #9198e5)", grad.Value);
+            Assert.AreEqual("linear-gradient(#e66465, #9198e5)", grad.Text);
             Assert.IsInstanceOfType(grad.Gradient, typeof(GradientLinearDescriptor));
 
             var linear = grad.Gradient as GradientLinearDescriptor;
@@ -132,7 +132,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentGradientDescriptor));
             grad = parsed as ContentGradientDescriptor;
-            Assert.AreEqual("radial-gradient(#e66465, #9198e5)", grad.Value);
+            Assert.AreEqual("radial-gradient(#e66465, #9198e5)", grad.Text);
             Assert.IsInstanceOfType(grad.Gradient, typeof(GradientRadialDescriptor));
 
             var radial = grad.Gradient as GradientRadialDescriptor;
@@ -150,7 +150,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentGradientDescriptor));
             grad = parsed as ContentGradientDescriptor;
-            Assert.AreEqual("repeating-linear-gradient(to top left, lightpink, lightpink 5px, white 5px, white 10px)", grad.Value);
+            Assert.AreEqual("repeating-linear-gradient(to top left, lightpink, lightpink 5px, white 5px, white 10px)", grad.Text);
             Assert.IsInstanceOfType(grad.Gradient, typeof(GradientLinearDescriptor));
 
             linear = grad.Gradient as GradientLinearDescriptor;
@@ -169,7 +169,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentGradientDescriptor));
             grad = parsed as ContentGradientDescriptor;
-            Assert.AreEqual("repeating-radial-gradient(powderblue, powderblue 8px, white 8px,  white 16px )", grad.Value);
+            Assert.AreEqual("repeating-radial-gradient(powderblue, powderblue 8px, white 8px,  white 16px )", grad.Text);
             Assert.IsInstanceOfType(grad.Gradient, typeof(GradientRadialDescriptor));
 
             radial = grad.Gradient as GradientRadialDescriptor;
@@ -190,7 +190,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentCounterDescriptor));
             var count = parsed as ContentCounterDescriptor;
-            Assert.AreEqual("counter(with-name)", count.Value);
+            Assert.AreEqual("counter(with-name)", count.Text);
             Assert.AreEqual("with-name", count.CounterName);
             Assert.IsNull(count.Next);
             Assert.AreEqual(ContentDescriptorType.Counter, count.Type);
@@ -201,17 +201,17 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentCounterDescriptor));
             count = parsed as ContentCounterDescriptor;
-            Assert.AreEqual("counter( with-a-name )", count.Value);
+            Assert.AreEqual("counter( with-a-name )", count.Text);
             Assert.AreEqual("with-a-name", count.CounterName);
             Assert.IsNull(count.Next);
             Assert.AreEqual(ContentDescriptorType.Counter, count.Type);
 
 
-            //Not supported
+            //Not supported format
             bool thrown = false;
             try
             {
-                actual = "counter( with-a-name, \".\", decimal-leading-zero )";
+                actual = "counter( with-a-name, \".\", decimal)";
                 parsed = ContentDescriptor.Parse(actual);
             }
             catch(ArgumentException)
@@ -219,6 +219,45 @@ namespace Scryber.Core.UnitTests.Styles
                 thrown = true;
             }
             Assert.IsTrue(thrown, "An exception was NOT thrown with a NON supported counter format");
+
+            
+        }
+
+        [TestMethod()]
+        public void ContentCountersDescriptorTest()
+        {
+
+            var actual = "counters(with-name,'.')";
+
+            var parsed = ContentDescriptor.Parse(actual);
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(ContentDescriptorType.Counters, parsed.Type);
+            Assert.IsInstanceOfType(parsed, typeof(ContentCountersDescriptor));
+
+            var count = parsed as ContentCountersDescriptor;
+            Assert.AreEqual("counters(with-name,'.')", count.Text);
+            Assert.AreEqual("with-name", count.CounterName);
+            Assert.AreEqual(".", count.Separator);
+            Assert.AreEqual(ListNumberingGroupStyle.Decimals, count.Format);
+
+            Assert.IsNull(count.Next);
+           
+
+
+            actual = "counters( with-a-name, \" -- \", upper-roman )";
+
+            parsed = ContentDescriptor.Parse(actual);
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(ContentDescriptorType.Counters, parsed.Type);
+            Assert.IsInstanceOfType(parsed, typeof(ContentCountersDescriptor));
+
+            count = parsed as ContentCountersDescriptor;
+            Assert.AreEqual("counters( with-a-name, \" -- \", upper-roman )", count.Text);
+            Assert.AreEqual("with-a-name", count.CounterName);
+            Assert.AreEqual(" -- ", count.Separator);
+            Assert.AreEqual(ListNumberingGroupStyle.UppercaseRoman, count.Format);
+
+            Assert.IsNull(count.Next);
 
             
         }
@@ -231,7 +270,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentQuoteDescriptor));
             var count = parsed as ContentQuoteDescriptor;
-            Assert.AreEqual(actual, count.Value);
+            Assert.AreEqual(actual, count.Text);
             Assert.AreEqual("“", count.Chars);
             Assert.IsNull(count.Next);
             Assert.AreEqual(ContentDescriptorType.Quote, count.Type);
@@ -242,7 +281,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsNotNull(parsed);
             Assert.IsInstanceOfType(parsed, typeof(ContentQuoteDescriptor));
             count = parsed as ContentQuoteDescriptor;
-            Assert.AreEqual(actual, count.Value);
+            Assert.AreEqual(actual, count.Text);
             Assert.AreEqual("”", count.Chars);
             Assert.IsNull(count.Next);
             Assert.AreEqual(ContentDescriptorType.Quote, count.Type);

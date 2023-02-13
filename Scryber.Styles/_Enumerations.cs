@@ -115,19 +115,7 @@ namespace Scryber
         SectionCountLabel
     }
 
-    public enum ListNumberingGroupStyle
-    {
-        None,
-        Decimals,
-        UppercaseRoman,
-        LowercaseRoman,
-        UppercaseLetters,
-        LowercaseLetters,
-        Bullet,
-        Labels
-        //[Obsolete("The labels and images are not currently supported", false)]
-        //Image
-    }
+    
 
     public enum TableRowRepeat
     {

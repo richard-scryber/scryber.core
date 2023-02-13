@@ -252,9 +252,12 @@ namespace Scryber.Styles.Selectors
                     return false;
             }
 
-            if(state != this.AppliedState)
+            //If we are only for a specific state
+            if(this.AppliedState != ComponentState.Normal)
             {
-                return false;
+                //and the state we are looking for is not us, then we don't match
+                if (state != this.AppliedState)
+                    return false;
             }
 
             if (this.HasAncestor)
@@ -269,7 +272,7 @@ namespace Scryber.Styles.Selectors
                     if (null == parent)
                         return false;
 
-                    if (this.Ancestor.IsMatchedTo(parent as IStyledComponent, state, out parentPriority))
+                    if (this.Ancestor.IsMatchedTo(parent as IStyledComponent, ComponentState.Normal, out parentPriority))
                     {
                         priority = this.Priority;
                         return true;

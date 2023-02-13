@@ -181,11 +181,13 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(literal, "The literal content could not be found, or was not of the correct type");
             Assert.AreEqual(literalContent, literal.Text, "Expected the literal content of " + id + " to be " + literalContent);
         }
-        
+
         #endregion
 
-        #region Lists and list item validation
         
+
+        #region Lists and list item validation
+
         [TestMethod]
         public void ComponentLists_Test()
         {

@@ -157,6 +157,20 @@ namespace Scryber.Drawing
         Oblique = 3
     }
 
+    public enum ListNumberingGroupStyle
+    {
+        None,
+        Decimals,
+        UppercaseRoman,
+        LowercaseRoman,
+        UppercaseLetters,
+        LowercaseLetters,
+        Bullet,
+        Labels
+        //[Obsolete("The labels and images are not currently supported", false)]
+        //Image
+    }
+
     public static class FontWeights
     {
         /// <summary>
@@ -469,6 +483,7 @@ namespace Scryber.Drawing
         Image,
         Gradient,
         Counter,
+        Counters,
         Attribute,
         Quote
     }

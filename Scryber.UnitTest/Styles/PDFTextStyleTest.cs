@@ -318,7 +318,7 @@ namespace Scryber.Core.UnitTests.Styles
             ContentDescriptor actual = new ContentTextDescriptor("This is the content");
             target.Content = expected;
             actual = target.Content;
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.AreEqual((expected as ContentTextDescriptor).Text, (actual as ContentTextDescriptor).Text);
 
             // Change Value with cast
 

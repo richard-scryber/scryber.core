@@ -45,6 +45,12 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod()]
+        public void CSSErrors()
+        {
+            Assert.Inconclusive("Add tests for invalid css content. Make sure that the other styles are actually parsed");
+        }
+
         [TestMethod]
         public void CSSStringEnumerator()
         {
@@ -728,6 +734,78 @@ body.grey div.reverse{
 
         }
 
+        [TestMethod()]
+        public void ParseCounters()
+        {
+
+            var src = @"ol {
+                          counter-reset: group;
+                        }
+                        li::before{
+                          counter-increment: group 10 other;
+                          content: counter(group) '-';
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            StyleDefn ol = null;
+            StyleDefn li = null;
+
+            foreach (var item in parser)
+            {
+                if (item is StyleDefn defn)
+                {
+                    if (defn.Match.Selector.AppliedElement == "ol")
+                        ol = defn;
+                    else if (defn.Match.Selector.AppliedElement == "li" && defn.Match.Selector.AppliedState == ComponentState.Before)
+                        li = defn;
+                }
+
+                
+            }
+
+            Assert.IsNotNull(ol, "No ordered list was parsed");
+            Assert.IsNotNull(li, "No ordered list was parsed");
+
+            ContentDescriptor content;
+
+            
+
+            Assert.AreEqual(1, ol.ValueCount);
+            Assert.IsNotNull(ol.GetValue(StyleKeys.CounterResetKey, null));
+            Assert.IsNull(ol.GetValue(StyleKeys.CounterIncrementKey, null));
+            Assert.AreEqual("group", ol.GetValue(StyleKeys.CounterResetKey, null).Name);
+
+            Assert.AreEqual(2, li.ValueCount);
+            Assert.IsNotNull(li.GetValue(StyleKeys.CounterIncrementKey, null));
+            Assert.IsNull(li.GetValue(StyleKeys.CounterResetKey, null));
+
+            //li has 2 increment items - group with 10, and then other (with default 1)
+
+            Assert.AreEqual("group", li.GetValue(StyleKeys.CounterIncrementKey, null).Name);
+            Assert.AreEqual(10, li.GetValue(StyleKeys.CounterIncrementKey, null).Value);
+            Assert.IsNotNull(li.GetValue(StyleKeys.CounterIncrementKey, null).Next);
+
+            Assert.AreEqual("other", li.GetValue(StyleKeys.CounterIncrementKey, null).Next.Name);
+            Assert.AreEqual(1, li.GetValue(StyleKeys.CounterIncrementKey, null).Next.Value);
+            Assert.IsNull(li.GetValue(StyleKeys.CounterIncrementKey, null).Next.Next);
+
+            content = li.GetValue(StyleKeys.ContentTextKey, null);
+            Assert.IsNotNull(content);
+
+            Assert.AreEqual(ContentDescriptorType.Counter, content.Type);
+            Assert.IsInstanceOfType(content, typeof(ContentCounterDescriptor));
+            Assert.AreEqual("group", (content as ContentCounterDescriptor).CounterName);
+            Assert.IsNotNull(content.Next);
+
+            content = content.Next;
+
+            Assert.AreEqual(ContentDescriptorType.Text, content.Type);
+            Assert.IsInstanceOfType(content, typeof(ContentTextDescriptor));
+            Assert.AreEqual("-", (content as ContentTextDescriptor).Text);
+            Assert.IsNull(content.Next);
+
+        }
+
         [TestMethod]
         public void ParseBase64FontFace()
         {
@@ -786,6 +864,10 @@ body.grey div.reverse{
                             content: open-quote;
                         }
 
+                        .counter{
+                            content: counter(counterName);
+                        }
+
                         .multiple{
                             color: red;
                             content: 'some text' url(""" + path + @""") linear-gradient(#000 #AAA);
@@ -799,12 +881,13 @@ body.grey div.reverse{
                 all.Add(item as Style);
             }
 
-            Assert.AreEqual(4, all.Count);
+            Assert.AreEqual(5, all.Count);
 
             var added = all[0];
             var source = all[1];
             var quote = all[2];
-            var multiple = all[3];
+            var counter = all[3];
+            var multiple = all[4];
 
             //'replacement text'
 
@@ -814,8 +897,10 @@ body.grey div.reverse{
             var value = parsed.Value(added);
 
             Assert.IsNotNull(value);
-            Assert.AreEqual("replacement text", value.Value);
             Assert.AreEqual(ContentDescriptorType.Text, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentTextDescriptor));
+            Assert.AreEqual("replacement text", (value as ContentTextDescriptor).Text);
+            
             Assert.IsNull(value.Next);
 
             //'url(...)'
@@ -825,8 +910,10 @@ body.grey div.reverse{
             value = parsed.Value(source);
 
             Assert.IsNotNull(value);
-            Assert.AreEqual("url('Content/HTML/Images/Group.png')", value.Value);
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
+            Assert.AreEqual("url('Content/HTML/Images/Group.png')", (value as ContentImageDescriptor).Text);
+            
             Assert.IsNull(value.Next);
 
             //quote
@@ -835,8 +922,21 @@ body.grey div.reverse{
             value = parsed.Value(quote);
 
             Assert.IsNotNull(value);
-            Assert.AreEqual("open-quote", value.Value);
             Assert.AreEqual(ContentDescriptorType.Quote, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentQuoteDescriptor));
+            Assert.AreEqual("open-quote", (value as ContentQuoteDescriptor).Text);
+            Assert.AreEqual("“", (value as ContentQuoteDescriptor).Chars); //Change to the open-quote char
+            Assert.IsNull(value.Next);
+
+            //counter
+            Assert.AreEqual(1, counter.ValueCount);
+            Assert.IsTrue(counter.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(counter);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ContentDescriptorType.Counter, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentCounterDescriptor));
+            Assert.AreEqual("counterName", (value as ContentCounterDescriptor).CounterName);
             Assert.IsNull(value.Next);
 
             // multiple
@@ -845,18 +945,23 @@ body.grey div.reverse{
             value = parsed.Value(multiple);
 
             Assert.IsNotNull(value);
-            Assert.AreEqual("some text", value.Value);
             Assert.AreEqual(ContentDescriptorType.Text, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentTextDescriptor));
+            Assert.AreEqual("some text", (value as ContentTextDescriptor).Text);
             Assert.IsNotNull(value.Next);
 
             value = value.Next;
-            Assert.AreEqual("url(\"Content/HTML/Images/Group.png\")", value.Value);
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
+            Assert.AreEqual("url(\"Content/HTML/Images/Group.png\")", (value as ContentImageDescriptor).Text);
+            Assert.AreEqual("Content/HTML/Images/Group.png", (value as ContentImageDescriptor).Source);
             Assert.IsNotNull(value.Next);
 
             value = value.Next;
-            Assert.AreEqual("linear-gradient(#000 #AAA)", value.Value);
             Assert.AreEqual(ContentDescriptorType.Gradient, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentGradientDescriptor));
+            Assert.AreEqual("linear-gradient(#000 #AAA)", (value as ContentGradientDescriptor).Text);
+            Assert.IsNotNull((value as ContentGradientDescriptor).Gradient);
             Assert.IsNull(value.Next);
 
         }
@@ -873,8 +978,8 @@ body.grey div.reverse{
                         .quote::before{
                             content: open-quote;
                         }
-
-                        .quote::after{
+                        /* Should be backwards compatible and support single colon */
+                        .quote:after{
                             content: close-quote;
                         }
 
@@ -1176,7 +1281,7 @@ body.grey div.reverse{
 
                             .txt{ color: red; }
 
-                            .txt::before{ content: '>>'; color:blue; }
+                            div > i.txt::before{ content: '>>'; color:blue; }
 
                             .empty::before { content: url('" + imgPath + @"'); width:20pt; padding-top: 5pt; }
 

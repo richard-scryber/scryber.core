@@ -236,6 +236,9 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.Transform, new CSSTransformParser());
             all.Add(CSSStyleItems.Content, new CSSContentParser());
 
+            all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());
+            all.Add(CSSStyleItems.CounterIncrement, new CSSCounterIncrementParser());
+
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }
     }

@@ -262,9 +262,11 @@ namespace Scryber.Styles.Selectors
                     switch (state)
                     {
                         case ("::before"):
+                        case (":before"):
                             appliedState = ComponentState.Before;
                             break;
                         case ("::after"):
+                        case (":after"):
                             appliedState = ComponentState.After;
                             break;
                         case (":hover"):
@@ -288,7 +290,9 @@ namespace Scryber.Styles.Selectors
             {
                 if(string.Equals(stateValue, "::before")
                     || string.Equals(stateValue, "::after")
-                    || string.Equals(stateValue, ":hover"))
+                    || string.Equals(stateValue, ":hover")
+                    || string.Equals(stateValue, ":before")
+                    || string.Equals(stateValue, ":after"))
                 {
                     return true;
                 }

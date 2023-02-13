@@ -130,7 +130,7 @@ namespace Scryber.PDF.Layout
         #endregion
 
         #region public bool ContinueLayout {get;set;}
-        
+
         /// <summary>
         /// Returns false if we have come to the end of the available space and cannot continue. Inheritors can set this value
         /// </summary>
@@ -197,14 +197,16 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        public virtual void Layout(PDFLayoutContext context, Style fullstyle)
+        public void Layout(PDFLayoutContext context, Style fullstyle)
         {
             this._context = context;
 
-            if(null != context.DocumentLayout && null != context.DocumentLayout.CurrentPage)
+            if (null != context.DocumentLayout && null != context.DocumentLayout.CurrentPage)
                 this._currentBlock = context.DocumentLayout.CurrentPage.CurrentBlock;
 
             this._style = fullstyle;
+
+
 
             StyleValue<PositionMode> found;
             if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value(this._style) == PositionMode.Invisible)
@@ -213,10 +215,120 @@ namespace Scryber.PDF.Layout
                     this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of component '" + this.Component.UniqueID + "' as it is invisible");
             }
             else
+            {
+                
+
+                //counter updates for visible components before
+                Style before;
+                if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.Before, out before))
+                    this.EnsureCounterUpdatesForStyle(before);
+
+                //counter updates for visible components on element
+
+                this.EnsureCounterUpdatesForStyle(fullstyle);
+
+
                 this.DoLayoutComponent();
+
+                //counter updates for visible components after
+
+                Style after;
+                if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.After, out after))
+                    this.EnsureCounterUpdatesForStyle(after);
+            }
         }
 
         #endregion
+
+
+
+        protected virtual void EnsureCounterUpdatesForStyle(Style style)
+        {
+            StyleValue<CounterStyleValue> reset;
+            StyleValue<CounterStyleValue> increment;
+
+            if (style.TryGetValue(StyleKeys.CounterResetKey, out reset))
+            {
+                var val = reset.Value(style);
+                while (null != val)
+                {
+                    this.ResetACounter(val, this.Component);
+                    val = val.Next;
+                }
+            }
+
+            if (style.TryGetValue(StyleKeys.CounterIncrementKey, out increment))
+            {
+                var val = increment.Value(style);
+                while (null != val)
+                {
+                    this.IncrementACounter(val, this.Component);
+                    val = val.Next;
+                }
+            }
+        }
+
+
+        protected bool ResetACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = true)
+        {
+            if (current.Type == ObjectTypes.OrderedList || current.Type == ObjectTypes.UnorderedList)
+            {
+                //ol and ul appear to be special cases where they always have the counter assigned on them
+                //there is no other way to traverse the hierarchy.
+
+                current.Counters.Reset(counter.Name, counter.Value);
+                return true;
+            }
+            else
+            {
+                var comp = current.Parent;
+                while (null != comp)
+                {
+                    int val;
+                    if (comp.HasCounters && comp.Counters.TryGetValue(counter.Name, out val))
+                    {
+                        comp.Counters.Reset(counter.Name, counter.Value);
+                        return true;
+                    }
+                    comp = comp.Parent; //move up the heirachy
+                }
+
+                if (resetIfNotFound)
+                {
+                    current.Counters.Reset(counter.Name, counter.Value);
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+
+
+        protected bool IncrementACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = false)
+        {
+            var comp = current;
+            while (null != comp)
+            {
+                int val;
+                if (comp.HasCounters && comp.Counters.TryGetValue(counter.Name, out val))
+                {
+                    comp.Counters.Increment(counter.Name, counter.Value);
+                    return true;
+                }
+                comp = comp.Parent; //move up the heirachy
+            }
+
+            if (resetIfNotFound)
+            {
+                current.Counters.Reset(counter.Name, 0);
+                current.Counters.Increment(counter.Name, counter.Value);
+                return true;
+            }
+            else
+                return false;
+
+        }
+
 
         //
         // abstract methods
@@ -288,6 +400,7 @@ namespace Scryber.PDF.Layout
         {
             Span span = new Span();
             span.ID = parent.ID + "__before";
+            RemoveCountersFromStateStyle(before);
             span.Style = before;
 
             int index = 0;
@@ -315,9 +428,10 @@ namespace Scryber.PDF.Layout
         {
             Span span = new Span();
             span.ID = parent.ID + "__after";
+            RemoveCountersFromStateStyle(after);
             span.Style = after;
 
-            
+
             int index = 0;
             while (null != value)
             {
@@ -339,7 +453,17 @@ namespace Scryber.PDF.Layout
 
         }
 
-        
+        /// <summary>
+        /// Becuase increments and resets for a state have been performed before we get here (so we can get the actual text for the ::before or ::after spans,
+        /// then we do not want them to be executed again.
+        /// </summary>
+        /// <param name="style"></param>
+        protected void RemoveCountersFromStateStyle(Style style)
+        {
+            style.RemoveValue(StyleKeys.CounterResetKey);
+            style.RemoveValue(StyleKeys.CounterIncrementKey);
+        }
+
 
         private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
         {
@@ -349,13 +473,15 @@ namespace Scryber.PDF.Layout
             switch (content.Type)
             {
                 case ContentDescriptorType.Text:
-                    text = new TextLiteral(content.Value);
+                    var txtContent = (ContentTextDescriptor)content;
+                    text = new TextLiteral(txtContent.Text);
                     children.Add(text);
                     added = true;
                     break;
 
                 case ContentDescriptorType.Gradient:
-                    wrapper.Style.SetValue(StyleKeys.BgImgSrcKey, content.Value);
+                    var grad = (ContentGradientDescriptor)content;
+                    wrapper.Style.SetValue(StyleKeys.BgImgSrcKey, grad.Text);
                     added = true;
                     break;
 
@@ -383,7 +509,8 @@ namespace Scryber.PDF.Layout
 
                 case ContentDescriptorType.Attribute:
                     var defn = Scryber.Generation.ParserDefintionFactory.GetClassDefinition(wrapper.GetType());
-                    if(defn.Attributes.TryGetPropertyDefinition(content.Value, string.Empty, out var prop))
+                    var attr = content as ContentAttributeDescriptor;
+                    if(defn.Attributes.TryGetPropertyDefinition(attr.Attribute, string.Empty, out var prop))
                     {
                         object val = prop.PropertyInfo.GetValue(wrapper);
                         if(null != val)
@@ -396,6 +523,25 @@ namespace Scryber.PDF.Layout
                     break;
 
                 case ContentDescriptorType.Counter:
+                    var counterDesc = content as ContentCounterDescriptor;
+                    var counterValue = counterDesc.GetContent(this.Component);
+                    if (!string.IsNullOrEmpty(counterValue))
+                    {
+                        text = new TextLiteral(counterValue);
+                        children.Add(text);
+                        added = true;
+                    }
+                    break;
+                case ContentDescriptorType.Counters:
+                    var countersDesc = content as ContentCountersDescriptor;
+                    var countersValue = countersDesc.GetContent(this.Component);
+                    if (!string.IsNullOrEmpty(countersValue))
+                    {
+                        text = new TextLiteral(countersValue);
+                        children.Add(text);
+                        added = true;
+                    }
+                    break;
                 default:
                     break;
             }

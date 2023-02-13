@@ -2108,6 +2108,28 @@ namespace Scryber.Core.UnitTests.Html
             Assert.Inconclusive();
         }
 
+
+        [TestMethod()]
+        public void ArticlesWithCountersHtml()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/ArticleCounters.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                
+                doc.Params["title"] = "Hello World";
+
+                using (var stream = DocStreams.GetOutputStream("ArticleCounters.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            Assert.Fail("Need to test for the counters in the content");
+        }
+
         [TestMethod()]
         public void RestrictedHtml()
         {
