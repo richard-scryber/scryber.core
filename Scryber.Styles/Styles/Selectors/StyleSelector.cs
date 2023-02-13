@@ -220,7 +220,15 @@ namespace Scryber.Styles.Selectors
             // return false if it's not a match
             //otherwise return true at the end.
 
-            // fastest first - ID, Element, Class, Type
+            // fastest first - state, ID, Element, Class, Type
+
+            //If we are only for a specific state
+            if (this.AppliedState != ComponentState.Normal)
+            {
+                //and the state we are looking for is not us, then we don't match
+                if (state != this.AppliedState)
+                    return false;
+            }
 
             if (string.IsNullOrEmpty(this.AppliedID) == false)
             {
@@ -252,13 +260,7 @@ namespace Scryber.Styles.Selectors
                     return false;
             }
 
-            //If we are only for a specific state
-            if(this.AppliedState != ComponentState.Normal)
-            {
-                //and the state we are looking for is not us, then we don't match
-                if (state != this.AppliedState)
-                    return false;
-            }
+            
 
             if (this.HasAncestor)
             {

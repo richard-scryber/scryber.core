@@ -17,6 +17,7 @@
  */
 
 #define REGISTER_CHARACTERS
+#define COUNTERS_AND_PSEUDOCONTENT
 
 using System;
 using System.Collections.Generic;
@@ -216,7 +217,7 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                
+#if COUNTERS_AND_PSEUDOCONTENT
 
                 //counter updates for visible components before
                 Style before;
@@ -235,10 +236,15 @@ namespace Scryber.PDF.Layout
                 Style after;
                 if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.After, out after))
                     this.EnsureCounterUpdatesForStyle(after);
+
+#else
+                this.DoLayoutComponent();
+#endif
+
             }
         }
 
-        #endregion
+#endregion
 
 
 
@@ -370,6 +376,8 @@ namespace Scryber.PDF.Layout
         {
             children = GetComponentChildren(parent);
 
+#if COUNTERS_AND_PSEUDOCONTENT
+
             //Apply the ::before and ::after states as children
             if (this.FullStyle.HasStates)
             {
@@ -392,6 +400,8 @@ namespace Scryber.PDF.Layout
                     AddAfterContent(parent, children, state, content.Value(state));
                 }
             }
+
+#endif
             return null != children && children.Count > 0;
 
         }
@@ -1737,7 +1747,7 @@ namespace Scryber.PDF.Layout
                 return true;
         }
 
-        #endregion 
+        #endregion
 
         #region protected virtual void PushBlockStackOntoNewRegion(Stack<PDFLayoutBlock> stack, PDFLayoutBlock tomove, PDFLayoutBlock current, PDFLayoutRegion currentRegion, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
 

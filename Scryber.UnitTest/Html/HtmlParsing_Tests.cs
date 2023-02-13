@@ -27,6 +27,7 @@ using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Exceptions;
 using Scryber.Expressive;
 using Scryber.PDF.Secure;
+using System.Collections;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -2134,8 +2135,135 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(layout);
 
             Assert.AreEqual(1, layout.AllPages.Count);
+            Assert.AreEqual(3, layout.AllPages[0].ContentBlock.Columns[0].Contents.Count);
 
-            //Assert.Fail("Need to test for the counters in the content");
+            var article1 = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(article1);
+            Assert.AreEqual("PrimaryArticle", article1.Owner.ID);
+
+            var article2 = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(article2);
+            Assert.AreEqual("SecondArticle", article2.Owner.ID);
+
+            var divList = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(divList);
+            Assert.AreEqual("list-counters", divList.Owner.ID);
+
+            //first article content
+
+            var headblock = article1.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "1: ", "Top h1 of first outer article");
+
+            var innerArticle = article1.Columns[0].Contents[2] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "1.1: ", "First inner h2 of first outer article");
+
+            innerArticle = article1.Columns[0].Contents[3] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "1.2: ", "Second inner h2 of first outer article");
+
+            //second article content
+
+            headblock = article2.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "2: ", "Top h1 of second outer article");
+
+            innerArticle = article2.Columns[0].Contents[2] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "2.1: ", "First inner h2 of second outer article");
+
+            innerArticle = article2.Columns[0].Contents[3] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "2.2: ", "Second inner h2 of second outer article");
+
+            //ordered list
+            var ol = divList.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            var item = ol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "1 ", "1 ");
+
+            item = ol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2 ", "2 ");
+
+            //inner ordered list
+            var iol = item.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            item = iol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.1 ", "2.1 ");
+
+            item = iol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.2 ", "2.2 ");
+
+            item = iol.Columns[0].Contents[2] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.3 ", "2.3 ");
+
+            //inner inner ordered list
+            var iiol = item.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            var inner = iiol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.1 ", "2.3.1 ");
+
+            inner = iiol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.2 ", "2.3.2 ");
+
+            //second inner inner ordered list
+            iiol = item.Columns[0].Contents[2] as PDFLayoutBlock;
+
+            inner = iiol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.1 ", "2.3.1 ");
+
+            inner = iiol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.2 ", "2.3.2 ");
+
+            inner = iiol.Columns[0].Contents[2] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.3 ", "2.3.2 ");
+
+            //back out to inner
+
+            item = iol.Columns[0].Contents[3] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.4 ", "2.4 ");
+
+            //back out to the top
+            item = ol.Columns[0].Contents[2] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "3 ", "3 ");
+
+            item = ol.Columns[0].Contents[3] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "4 ", "4 ");
+
+            //and a new list at the bottom
+            ol = divList.Columns[0].Contents[2] as PDFLayoutBlock;
+            item = ol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "1 ", "1 ");
+
+            item = ol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2 ", "2 ");
+
+        }
+
+        
+
+        private void AssertHasBeforeContent(PDFLayoutBlock itemblock, string pseudoContent, string itemName)
+        {
+            Assert.IsNotNull(itemblock, "The block for '" + itemName + "' was null");
+            Assert.IsTrue(itemblock.Columns[0].Contents.Count > 0, "The block for '" + itemName + "' has no content");
+            var line = itemblock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line, "The block for '" + itemName + "' first item was not a line");
+            //chars after inlinebegin and textbegin
+
+            var all = "";
+            for (var i = 0; i < line.Runs.Count; i++)
+            {
+                if (line.Runs[1] is PDFLayoutInlineBegin)
+                {
+                    all = "";
+                }
+                else if (line.Runs[i] is PDFTextRunCharacter chars)
+                {
+                    all += chars.Characters;
+                }
+                else if (line.Runs[i] is PDFLayoutInlineEnd)
+                    break;
+            }
+            Assert.AreEqual(pseudoContent, all, "The pseudo characters for '" + itemName + "' did not match");
         }
 
         [TestMethod()]

@@ -4,6 +4,7 @@
 <head>
     <title>Counters</title>
     <style>
+        
         body {
            counter-reset: h1Num h2Num;
            font-family: serif;
@@ -16,6 +17,10 @@
 
         ol ol {
             margin-top : 0px;
+        }
+
+        h1, h2 {
+            margin-bottom: 10px;
         }
 
         article {
@@ -53,6 +58,7 @@
             counter-increment: section; 
             content: counters(section, ".") " "; 
         }
+
         /*
         #list-counters {
             page-break-before: always;
@@ -75,7 +81,7 @@
     </article>
     <article id="SecondArticle">
         <h1>Top Level Article</h1>
-        <div>This is the main content of the top level article</div>
+        <div>This is the main content of the second level article</div>
         <article>
             <h2>Inner article</h2>
             <div>This is the content of the inner article</div>

@@ -15,6 +15,7 @@
  *  along with Scryber source code in the COPYING.txt file.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
+#define COUNTERS_AND_PSEUDOCONTENT
 
 using System;
 using System.Collections.Generic;
@@ -259,6 +260,9 @@ namespace Scryber.Styles
 
                 this.MergeInto(style, priority);
             }
+
+#if COUNTERS_AND_PSEUDOCONTENT
+
             else if(this.IsMatchedTo(forComponent, ComponentState.Over, out priority))
             {
                 var stateStyle = style.GetStyleState(ComponentState.Over, true);
@@ -285,9 +289,12 @@ namespace Scryber.Styles
                 this.MergeInto(stateStyle, priority);
 
             }
+
+#endif
+
         }
 
-        #endregion
+#endregion
 
         #region protected virtual void MergeVariables(Style style)
         
