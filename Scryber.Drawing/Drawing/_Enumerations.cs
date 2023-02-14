@@ -287,6 +287,11 @@ namespace Scryber.Drawing
         Inline,
 
         /// <summary>
+        /// A block that sits on the current line of either a fixed size, or taking the space up that it's internal contents need.
+        /// </summary>
+        InlineBlock,
+
+        /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
         /// </summary>
         Invisible

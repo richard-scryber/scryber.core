@@ -949,18 +949,28 @@ namespace Scryber.PDF.Layout
                 space = new Rect(Point.Empty, this.AvailableBounds.Size);
 
             //Calculate the available space
-            
-                if (pos.X.HasValue)
+
+            if (pos.X.HasValue)
+            {
+                if (pos.PositionMode == PositionMode.InlineBlock)
+                    pos.X = null;
+                else
                 {
                     space.X += pos.X.Value;
                     space.Width -= pos.X.Value;
                 }
+            }
 
-                if (pos.Y.HasValue)
+            if (pos.Y.HasValue)
+            {
+                if (pos.PositionMode == PositionMode.InlineBlock)
+                    pos.Y = null;
+                else
                 {
                     space.Y += pos.Y.Value;
                     space.Height -= pos.Y.Value;
                 }
+            }
             
             //if (pos.HasWidth)
             //{
@@ -979,6 +989,9 @@ namespace Scryber.PDF.Layout
 
             if (addAssociatedRun)
             {
+                if (pos.PositionMode == PositionMode.InlineBlock)
+                    beforeline.AddInlineBlockRun(created, comp);
+                else
                 beforeline.AddPositionedRun(created, comp);
             }
             return created;

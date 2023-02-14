@@ -425,6 +425,15 @@ namespace Scryber.PDF.Layout
             return run;
         }
 
+        public virtual PDFLayoutInlineBlockRun AddInlineBlockRun(PDFLayoutPositionedRegion positioned, IComponent component)
+        {
+            PDFLayoutInlineBlockRun run = new PDFLayoutInlineBlockRun(positioned, this, component, positioned.PositionOptions);
+            positioned.AssociatedRun = run;
+
+            this.Runs.Add(run);
+            return run;
+        }
+
         /// <summary>
         /// Justs adds a run
         /// </summary>
@@ -473,19 +482,19 @@ namespace Scryber.PDF.Layout
             if (logdebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Layout Line", "Pushing component layout onto runs in the line " + this.ToString());
 
-                //There is a special case where the rendering relies on the previous line height of a text block
-                //To offset the next line.
+            //There is a special case where the rendering relies on the previous line height of a text block
+            //To offset the next line.
 
-                //This works fune unless it is not TOP aligned and there is 
-                //something else increasing the height of the line.
+            //This works fune unless it is not TOP aligned and there is 
+            //something else increasing the height of the line.
 
-                //Where we apply an offset to the block so that it sits 
-                //at the bottom of the line itself.
-                //This pushes the next line down.
+            //Where we apply an offset to the block so that it sits 
+            //at the bottom of the line itself.
+            //This pushes the next line down.
 
-                //So we need the first line of a text block to be handled differently
+            //So we need the first line of a text block to be handled differently
             bool isspecial = this.IsSpecialTextAlignmentCase();
-               
+            var avail = this.Height;
 
             foreach (PDFLayoutRun run in this.Runs)
             {
@@ -500,7 +509,6 @@ namespace Scryber.PDF.Layout
                 {
 
                     Unit used = run.Height;
-                    Unit avail = this.Height;
                     Unit space = avail - used;
 
                     if (this.VAlignment == VerticalAlignment.Middle)
@@ -559,7 +567,7 @@ namespace Scryber.PDF.Layout
                             lastchars = chars;
                         }
                     }
-                    else if (cur is PDFLayoutComponentRun)
+                    else if (cur is PDFLayoutComponentRun || cur is PDFLayoutInlineBlockRun)
                         lastchars = null;
                 }
 

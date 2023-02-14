@@ -731,6 +731,14 @@ namespace Scryber.PDF.Layout
             PDFLayoutRegion positioned = null;
             PDFPositionOptions options = null;
 
+            //var pg = this.Context.DocumentLayout.GetLayoutPage();
+            //var block = null == pg ? null : pg.LastOpenBlock();
+            //var font = this.Context.Graphics.CurrentFont;
+
+            //var pageSize = null == pg ? Size.Empty : pg.Size;
+            //var blockSize = block == null ? pageSize : block.AvailableBounds.Size;
+            //var fontSize = null == font ? Font.DefaultFontSize : font.Size;
+
             //Here we can set up any required regions and then do the layout for the explicit types
             //If we have style then check if are actually relatively or absolutely positioned
             if (IsStyled(comp))
@@ -742,6 +750,9 @@ namespace Scryber.PDF.Layout
 
                 else if (options.PositionMode == PositionMode.Relative)
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
+
+                else if (options.PositionMode == PositionMode.InlineBlock)
+                    positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
 
                 else if (options.FloatMode != FloatMode.None)
                     positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
@@ -798,6 +809,9 @@ namespace Scryber.PDF.Layout
                     positioned = this.CurrentBlock.PositionedRegions.Last();
 
                 positioned.Close();
+
+                if (positioned is PDFLayoutPositionedRegion posReg && posReg.AssociatedRun != null)
+                    posReg.AssociatedRun.Close();
 
                 if (positioned.Contents.Count == 0 && positioned.Floats == null)
                 {
@@ -1091,6 +1105,14 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full);
             return abs;
+        }
+
+        protected virtual PDFLayoutRegion BeginNewInlineBlockRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
+        {
+            PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
+            PDFLayoutBlock last = page.LastOpenBlock();
+            PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full);
+            return ib;
         }
 
 
