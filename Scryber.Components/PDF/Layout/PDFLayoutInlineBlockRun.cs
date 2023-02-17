@@ -34,15 +34,24 @@ namespace Scryber.PDF.Layout
             get { return _position; }
         }
 
+        private Unit _offsetY = Unit.Zero;
+
+        public override Unit OffsetY
+        {
+            get { return this._offsetY; }
+        }
+
         public PDFLayoutInlineBlockRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner, PDFPositionOptions position)
             : base(region, line, owner)
         {
             _position = position;
         }
 
+        
+
         public override void SetOffsetY(Drawing.Unit y)
         {
-            //Do Nothing
+            this._offsetY = y;
         }
 
         public override Drawing.Unit Height
@@ -74,8 +83,12 @@ namespace Scryber.PDF.Layout
 
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
         {
-            xoffset = 0;
-            yoffset = 0;
+            xoffset = Unit.Zero;
+            if (this.OffsetY > Unit.Zero)
+                yoffset = this.Line.OffsetY + this.OffsetY;
+            else
+                yoffset = this.Line.OffsetY;
+
             this.Region.PushComponentLayout(context, pageIndex, xoffset, yoffset);
         }
 
@@ -91,7 +104,7 @@ namespace Scryber.PDF.Layout
             var line = this.Line;
             var index = line.Runs.IndexOf(this);
 
-            var x = Unit.Zero;
+            var x = context.Offset.X;
 
             for (var i = 0; i < index; i++)
             {

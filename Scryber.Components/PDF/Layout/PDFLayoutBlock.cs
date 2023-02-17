@@ -497,7 +497,7 @@ namespace Scryber.PDF.Layout
             {
                 this.Columns = new PDFLayoutRegion[columns.ColumnCount];
                 avail = new Rect(Point.Empty, avail.Size);
-                this.Columns[0] = new PDFLayoutRegion(this, this.Owner, avail, 0, position.HAlign, position.VAlign);
+                this.Columns[0] = new PDFLayoutRegion(this, this.Owner, avail, 0, position.HAlign ?? HorizontalAlignment.Left, position.VAlign ?? VerticalAlignment.Top);
             }
             else
             {
@@ -535,7 +535,7 @@ namespace Scryber.PDF.Layout
                 for (int i = 0; i < this.ColumnOptions.ColumnCount; i++)
                 {
                     Rect regionbounds = new Rect(x, y, widths[i], h);
-                    PDFLayoutRegion column = new PDFLayoutRegion(this, this.Owner, regionbounds, i, position.HAlign, position.VAlign);
+                    PDFLayoutRegion column = new PDFLayoutRegion(this, this.Owner, regionbounds, i, position.HAlign ?? HorizontalAlignment.Left, position.VAlign ?? VerticalAlignment.Top);
 
                     //Set up the linked regions
                     if (null != previous)

@@ -176,10 +176,204 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual("In normal content flow", ((second.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
         }
 
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockExplicitSize()
+        {
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.TextLeading = 40;
+            section.Padding = 10;
+            doc.Pages.Add(section);
+
+
+            section.Contents.Add(new TextLiteral("Before the inline "));
+
+
+            Div inline = new Div()
+            {
+                Height = 60,
+                Width = 100,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                TextLeading = 24,
+                BorderColor = Drawing.StandardColors.Red,
+                OverflowAction = OverflowAction.Clip
+                //Margins = new Thickness(5)
+            };
+
+            //inline.Contents.Add(new TextLiteral("In the block"));
+            section.Contents.Add(inline);
+
+            section.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+
+
+            Div block = new Div()
+            {
+                BorderColor = Drawing.StandardColors.Blue,
+                Padding = 10,
+
+            };
+            section.Contents.Add(block);
+
+            block.Contents.Add(new TextLiteral("Before the inline "));
+
+
+            inline = new Div()
+            {
+                Height = 60,
+                Width = 100,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                TextLeading = 24,
+                BorderColor = Drawing.StandardColors.Red,
+                OverflowAction = OverflowAction.Clip
+                //Margins = new Thickness(5)
+            };
+
+            //inline.Contents.Add(new TextLiteral("In the block"));
+            block.Contents.Add(inline);
+
+            block.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockExplicitSize.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive();
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+            Assert.AreEqual(1, content.PositionedRegions.Count);
+
+            var first = content.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(0, first.Height);
+            Assert.AreEqual(1, first.Runs.Count);
+            var posRun = first.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(posRun);
+
+            Assert.ReferenceEquals(posRun.Region, content.PositionedRegions[0]);
+            var posReg = content.PositionedRegions[0];
+
+            //TODO: Clean up offsetX and Y with TotalBounds.
+
+            Assert.AreEqual(50, posReg.TotalBounds.X);
+            Assert.AreEqual(100, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(150, posReg.TotalBounds.Height);
+            Assert.AreEqual(200, posReg.TotalBounds.Width);
+            Assert.AreEqual(1, posReg.Contents.Count);
+
+            var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(150, posBlock.Height);
+            Assert.AreEqual(200, posBlock.Width);
+            Assert.AreEqual(1, posBlock.Columns.Length);
+            Assert.AreEqual(2, posBlock.Columns[0].Contents.Count);
+
+            //Check the block after to make sure it is ignoring the positioned region.
+            var second = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.AreEqual(0, second.OffsetY);
+            Assert.AreEqual(25, second.Height);
+            Assert.AreEqual(1, second.Columns[0].Contents.Count); //just a line
+
+            //block region line = textbegin, chars, textend
+            Assert.AreEqual("In normal content flow", ((second.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
+        }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void InlineBlockBlockExplicitSize()
+        public void InlineBlockBlockSmallExplicitSize()
+        {
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.TextLeading = 40;
+            doc.Pages.Add(section);
+
+            var span = new Span();
+            span.Contents.Add(new TextLiteral("Before the inline "));
+            section.Contents.Add(span);
+
+            Div inline = new Div()
+            {
+                Height = 10,
+                Width = 100,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                //Margins = new Thickness(5)
+            };
+            //inline.Contents.Add(new TextLiteral("In the inline block"));
+            section.Contents.Add(inline);
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            span.FontBold = true;
+            section.Contents.Add(span);
+
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockExplicitSizeSmall.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive();
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+            Assert.AreEqual(1, content.PositionedRegions.Count);
+
+            var first = content.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(0, first.Height);
+            Assert.AreEqual(1, first.Runs.Count);
+            var posRun = first.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(posRun);
+
+            Assert.ReferenceEquals(posRun.Region, content.PositionedRegions[0]);
+            var posReg = content.PositionedRegions[0];
+
+            //TODO: Clean up offsetX and Y with TotalBounds.
+
+            Assert.AreEqual(50, posReg.TotalBounds.X);
+            Assert.AreEqual(100, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(150, posReg.TotalBounds.Height);
+            Assert.AreEqual(200, posReg.TotalBounds.Width);
+            Assert.AreEqual(1, posReg.Contents.Count);
+
+            var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(150, posBlock.Height);
+            Assert.AreEqual(200, posBlock.Width);
+            Assert.AreEqual(1, posBlock.Columns.Length);
+            Assert.AreEqual(2, posBlock.Columns[0].Contents.Count);
+
+            //Check the block after to make sure it is ignoring the positioned region.
+            var second = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.AreEqual(0, second.OffsetY);
+            Assert.AreEqual(25, second.Height);
+            Assert.AreEqual(1, second.Columns[0].Contents.Count); //just a line
+
+            //block region line = textbegin, chars, textend
+            Assert.AreEqual("In normal content flow", ((second.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockMultipleBlockExplicitSize()
         {
             Document doc = new Document();
             Section section = new Section();
@@ -187,7 +381,9 @@ namespace Scryber.UnitLayouts
             section.TextLeading = 25;
             doc.Pages.Add(section);
 
-            section.Contents.Add(new TextLiteral("Before the inline "));
+            var span = new Span();
+            span.Contents.Add(new TextLiteral("Before the inline "));
+            section.Contents.Add(span);
 
             Div inline = new Div()
             {
@@ -196,12 +392,50 @@ namespace Scryber.UnitLayouts
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
+                //Margins = new Thickness(5)
+            };
+            //inline.Contents.Add(new TextLiteral("In the inline block"));
+            section.Contents.Add(inline);
+            span = new Span();
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            span.FontBold = true;
+            section.Contents.Add(span);
+
+            inline = new Div()
+            {
+                Height = 10,
+                Width = 50,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Aqua,
                 //Margins = new Thickness(10)
             };
-            inline.Contents.Add(new TextLiteral("In the inline block"));
-            section.Contents.Add(inline);
 
-            section.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            section.Contents.Add(inline);
+            section.Contents.Clear();
+
+            span = new Span();
+            //span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line"));
+            span.Contents.Add(new TextLiteral("Inline and flowing onto a new line "));
+            span.FontSize = 24;
+            //span.TextLeading = 30;
+            section.Contents.Add(span);
+
+
+            inline = new Div()
+            {
+                Height = 60,
+                Width = 100,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Lime,
+                //Margins = new Thickness(10)
+            };
+            //section.Contents.Add(inline);
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line"));
+            section.Contents.Add(span);
 
             //div is too big for the remaining space on the page
             Div inflow = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };

@@ -46,6 +46,7 @@ namespace Scryber.PDF.Layout
 
         #region public PDFUnit Height
 
+        private Unit? _totalHeight;
         /// <summary>
         /// Gets the total height of this line. 
         /// This is normally only calculated once the line is closed.
@@ -54,6 +55,9 @@ namespace Scryber.PDF.Layout
         {
             get
             {
+                if (_totalHeight.HasValue)
+                    return _totalHeight.Value;
+
                 if (null == this._runs || this._runs.Count == 0)
                     return Unit.Zero;
                 else if (this._runs.Count == 1)
@@ -304,14 +308,119 @@ namespace Scryber.PDF.Layout
 
         private void EnsureAllRunsOnSameLevel()
         {
-            //Check the line height of the previous line and move down if needed
-            PDFTextRunNewLine prev;
-            if (PrevLineIsTextReturn(out prev))
+
+            Unit totalHeight = Unit.Zero;
+            Unit maxHeight = Unit.Zero;
+            Unit maxDescender = Unit.Zero;
+            Unit lastlineheight = Unit.Zero;
+
+            bool isComplex = false;
+
+
+            if (this.Runs.Count == 3 && (this.Runs[0] is PDFTextRunSpacer || this.Runs[0] is PDFTextRunBegin))
             {
-                if (prev.NewLineOffset.Height < this.Height)
-                    prev.NewLineOffset = new Size(prev.NewLineOffset.Width, this.Height);
+                //No Alignment needed as we are a simple text run
+            }
+            else
+            {
+                VerticalAlignment? valign = null;
+
+                for (var index = 0; index < this.Runs.Count; index++)
+                {
+                    var run = this.Runs[index];
+                    var itemH = run.Height;
+
+                    if (itemH > maxHeight)
+                        maxHeight = itemH;
+
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        maxDescender = Unit.Max(maxDescender, begin.TextRenderOptions.GetDescender());
+                    }
+                    else if (run is PDFLayoutInlineBlockRun blockRun)
+                    {
+                        //We have inline blocks to align.
+                        isComplex = true;
+
+                        if (blockRun.Position.VAlign.HasValue)
+                            valign = blockRun.Position.VAlign.Value;
+                    }
+                    else if (run is PDFLayoutComponentRun compRun)
+                    {
+                        isComplex = true;
+
+                    }
+                    else if (run is PDFLayoutXObject xobjRun)
+                    {
+                        isComplex = true;
+                        if (xobjRun.Position.VAlign.HasValue)
+                            valign = xobjRun.Position.VAlign.Value;
+                    }
+                    else if (run is PDFTextRunNewLine nl)
+                    {
+                        lastlineheight = nl.NewLineOffset.Height;
+                    }
+                    else if (run is PDFLayoutInlineBegin inlineBegin)
+                    {
+                        if (inlineBegin.InlinePosition.VAlign.HasValue)
+                            valign = inlineBegin.InlinePosition.VAlign.Value;
+                    }
+                    
+                }
+
+                
+
+                if (isComplex)
+                {
+                    totalHeight = maxHeight;
+
+                    var baselineOffset = totalHeight - maxDescender;
+                    var nextlineOffset = lastlineheight;
+
+                    foreach (var run in this.Runs)
+                    {
+                        if (run is PDFTextRunSpacer spacer) //first continuation line
+                        {
+                            //spacer.SetOffsetY(totalHeight);
+                        }
+                        else if (run is PDFTextRunBegin begin)
+                        {
+                            var h = begin.TextRenderOptions.GetLineHeight();
+                            var desc = begin.TextRenderOptions.GetDescender();
+                            var offset = h - desc;
+                            //h += 10;
+
+                            begin.SetOffsetY(baselineOffset - offset); //just move to the baseline
+                            
+                        }
+                        else if (run is PDFLayoutInlineBlockRun inline)
+                        {
+                            if (inline.Height < maxHeight)
+                                inline.SetOffsetY(maxHeight - inline.Height);
+                        }
+                    }
+
+                    //this.BaseLineOffset = baselineOffset;
+                    this._totalHeight = totalHeight;
+                }
+                switch (valign)
+                {
+                    default:
+                        break;
+                }
 
             }
+
+            //Check the line height of the previous line and move down if needed
+            //PDFTextRunNewLine prev;
+            //if (PrevLineIsTextReturn(out prev))
+            //{
+            //    if (prev.NewLineOffset.Height < this.Height)
+            //        prev.NewLineOffset = new Size(prev.NewLineOffset.Width, this.Height);
+            //
+            //}
+
+
         }
 
         private bool PrevLineIsTextReturn(out PDFTextRunNewLine prev)
@@ -408,7 +517,7 @@ namespace Scryber.PDF.Layout
             comprun.Close();
 
             //Added 13th June 2016
-            this.BaseLineOffset = Unit.Max(this.BaseLineOffset, baselineOffset);
+            //this.BaseLineOffset = Unit.Max(this.BaseLineOffset, baselineOffset);
             
             return comprun;
         }
@@ -482,6 +591,7 @@ namespace Scryber.PDF.Layout
             if (logdebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Layout Line", "Pushing component layout onto runs in the line " + this.ToString());
 
+            
             //There is a special case where the rendering relies on the previous line height of a text block
             //To offset the next line.
 
@@ -493,8 +603,10 @@ namespace Scryber.PDF.Layout
             //This pushes the next line down.
 
             //So we need the first line of a text block to be handled differently
-            bool isspecial = this.IsSpecialTextAlignmentCase();
+            bool isspecial = true; // this.IsSpecialTextAlignmentCase();
+
             var avail = this.Height;
+            
 
             foreach (PDFLayoutRun run in this.Runs)
             {
@@ -655,15 +767,12 @@ namespace Scryber.PDF.Layout
 
             Size spaceSize = currOptions.Font.Resource.Definition.MeasureStringWidth(" ", 0, currOptions.Font.Size.PointsValue, 2000.0, true, out fitted);
 
-            double spaceToCharFactor = 10; // apply ten times more to spaces than characters.
-            double full = (spaceCount * spaceToCharFactor) + charCount;
-
             Unit extraSpaceSpace = available.PointsValue / spaceCount;
             Unit newSpaceSize = spaceSize.Width + extraSpaceSpace;
             
             double spacesFactor = newSpaceSize.PointsValue - spaceSize.Width.PointsValue;
 
-            //var check = currentWidth.PointsValue + (spaceCount * newSpaceSize)
+            
 
             return new ExtraSpacingOptions() { CharSpace = 0.0, WordSpace = spacesFactor, Options = currOptions, SpaceWidth = spaceSize.Width };
         }

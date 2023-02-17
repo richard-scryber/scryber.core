@@ -180,7 +180,8 @@ namespace Scryber
         Top,
         Middle,
         Bottom,
-        Justified
+        Baseline,
+
     }
 
     public enum TextFormat

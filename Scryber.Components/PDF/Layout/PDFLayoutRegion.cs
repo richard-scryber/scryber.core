@@ -420,7 +420,7 @@ namespace Scryber.PDF.Layout
             
             Unit width = this.GetAvailableWidth();
 
-            PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, this.VAlignment, this.Contents.Count);
+            PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, VerticalAlignment.Baseline, this.Contents.Count);
             line.SetOffset(line.OffsetX, this.UsedSize.Height);
             //if (null != last)
             //    line.BaseLineOffset = last.BaseLineOffset;

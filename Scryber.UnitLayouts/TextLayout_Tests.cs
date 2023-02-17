@@ -46,7 +46,9 @@ namespace Scryber.UnitLayouts
             pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 24;
             doc.Pages.Add(pg);
+
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines " +
                 "in the page with a default line height so that we can check the leading of default lines " +
                 "as they flow down the page"));
@@ -114,7 +116,7 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
 
             var font = Scryber.Drawing.FontFactory.GetFontDefinition(fontFamily, fontStyle, fontWeight);
-            Assert.IsNotNull(font, "This test will fail as the  font is not present, or could not be loaded from the System fonts");
+            Assert.IsNotNull(font, "This test will fail if the  font is not present, or could not be loaded from the System fonts");
                
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
@@ -188,10 +190,11 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
             Assert.AreEqual(4, region.Contents.Count, "The exected number of flowing lines was 4");
+
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(leading.PointsValue, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
+                Assert.AreEqual(leading.PointsValue, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
             }
 
         }
@@ -216,6 +219,10 @@ namespace Scryber.UnitLayouts
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.TextLeading = leading;
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 40;
+            pg.Style.OverlayGrid.GridXOffset = 10;
+            pg.Style.OverlayGrid.GridYOffset = 10;
             pg.FontSize = size;
             pg.FontFamily = new FontSelector("Serif");
 
@@ -226,7 +233,7 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
-            SaveAsPDF(doc, "Text_SingleLiteralWithLeadingAt12ptOptima");
+            SaveAsPDF(doc, "Text_SingleLiteralWithLeadingAt12ptSerif");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -635,6 +642,13 @@ namespace Scryber.UnitLayouts
             pg.HorizontalAlignment = HorizontalAlignment.Justified;
             pg.FontSize = 14;
 
+            var lead = 24.0;  //Full line height
+
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = lead;
+            pg.Style.OverlayGrid.GridXOffset = pg.Margins.Left;
+            pg.Style.OverlayGrid.GridYOffset = pg.Margins.Top;
+
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow "));
             var span = new Span();
@@ -661,6 +675,97 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
+            
+
+            //default sans-sefif is set up as follows
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
+            Assert.AreEqual(3, region.Contents.Count);
+
+            for (var i = 0; i < 3; i++)
+            {
+                var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line.LineSpacingOptions);
+                
+
+                if (i == 2) //Last line is not justified
+                {
+
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.WordSpace);
+                    //The last line only has a max font size of 14pt - so should be reduced in height
+                    Assert.AreEqual(14 * 1.2, line.Height.PointsValue);
+                }
+                else
+                {
+                    Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
+                    Assert.IsTrue(line.LineSpacingOptions.WordSpace > 0.0);
+                    Assert.AreEqual(lead, line.Height);
+
+
+                    Unit w = Unit.Zero;
+                    for (var r = 0; r < line.Runs.Count; r++)
+                    {
+                        var run = line.Runs[r];
+                        w += run.Width;
+                        if (run is PDFTextRunCharacter chars)
+                            w += chars.ExtraSpace;
+                    }
+
+                    //The extra space is applied when justified but not updated on the line or region
+                    //TODO: Update widths on the line an region for the extra space when justifying text.
+                    //Be we can use the total bounds width.
+
+                    Assert.AreEqual(region.TotalBounds.Width, w);
+                }
+
+            }
+        }
+
+        [TestMethod]
+        public void MultipleSpansWithHAlignJustifiedFixedLineHeight()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.HorizontalAlignment = HorizontalAlignment.Justified;
+            pg.FontSize = 14;
+            pg.TextLeading = 40;
+            
+
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = pg.TextLeading;
+            pg.Style.OverlayGrid.GridXOffset = pg.Margins.Left;
+            pg.Style.OverlayGrid.GridYOffset = pg.Margins.Top;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow "));
+            var span = new Span();
+            span.FontSize = 20;
+            span.FontWeight = 700;
+            span.Contents.Add(new TextLiteral("over more than two lines in the page with a default "));
+            pg.Contents.Add(span);
+
+            span = new Span();
+            span.FontSize = 16;
+            span.FontStyle = FontStyle.Italic;
+            span.Contents.Add(new TextLiteral("line height so that we can check the leading of "));
+            pg.Contents.Add(span);
+
+            pg.Contents.Add(new TextLiteral("default lines as they flow down the page"));
+
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.AppendTraceLog = false;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_MultipleSpansHAlignJustifiedFixedLine");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
             var em = 24.0;  //Point size of font
 
             //default sans-sefif is set up as follows
@@ -672,6 +777,9 @@ namespace Scryber.UnitLayouts
                 var line = region.Contents[i] as PDFLayoutLine;
                 Assert.IsNotNull(line.LineSpacingOptions);
 
+                //All lines have the explicit line height, including the last one
+                Assert.AreEqual(pg.TextLeading, line.Height);
+
                 if (i == 2) //Last line is not justified
                 {
 
@@ -682,7 +790,25 @@ namespace Scryber.UnitLayouts
                 {
                     Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
                     Assert.IsTrue(line.LineSpacingOptions.WordSpace > 0.0);
+                    
+
+                    Unit w = Unit.Zero;
+                    for (var r = 0; r < line.Runs.Count; r++)
+                    {
+                        var run = line.Runs[r];
+                        w += run.Width;
+                        if (run is PDFTextRunCharacter chars)
+                            w += chars.ExtraSpace;
+                    }
+
+                    //The extra space is applied when justified but not updated on the line or region
+                    //TODO: Update widths on the line an region for the extra space when justifying text.
+                    //Be we can use the total bounds width.
+
+                    Assert.AreEqual(region.TotalBounds.Width, w);
                 }
+
+                
 
             }
         }

@@ -972,8 +972,8 @@ namespace Scryber.Styles
             StyleValue<VerticalAlignment> valign;
             if (this.TryGetValue(StyleKeys.PositionVAlignKey, out valign))
                 options.VAlign = valign.Value(this);
-            else
-                options.VAlign = Const.DefaultVerticalAlign;
+            //else
+            //   options.VAlign = Const.DefaultVerticalAlign;
 
             StyleValue<HorizontalAlignment> halign;
             StyleValue<TextDirection> direction;
