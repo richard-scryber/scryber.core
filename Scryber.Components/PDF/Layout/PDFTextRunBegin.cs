@@ -369,7 +369,7 @@ namespace Scryber.PDF.Layout
             }
 
             //TODO:Add any backgrounds and borders based on the 3 rects in the calculated bounds.
-            FontMetrics metrics = this.TextRenderOptions.Font.FontMetrics;
+            //FontMetrics metrics = this.TextRenderOptions.Font.FontMetrics;
 
             bounds.X += this.LineInset;
 

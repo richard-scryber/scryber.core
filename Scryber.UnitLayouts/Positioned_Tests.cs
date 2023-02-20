@@ -396,6 +396,7 @@ namespace Scryber.UnitLayouts
             };
             //inline.Contents.Add(new TextLiteral("In the inline block"));
             section.Contents.Add(inline);
+
             span = new Span();
             span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
             span.FontBold = true;
@@ -415,7 +416,7 @@ namespace Scryber.UnitLayouts
             section.Contents.Clear();
 
             span = new Span();
-            //span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line"));
+            span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line"));
             span.Contents.Add(new TextLiteral("Inline and flowing onto a new line "));
             span.FontSize = 24;
             //span.TextLeading = 30;
@@ -431,7 +432,7 @@ namespace Scryber.UnitLayouts
                 BorderColor = Drawing.StandardColors.Lime,
                 //Margins = new Thickness(10)
             };
-            //section.Contents.Add(inline);
+            section.Contents.Add(inline);
 
             span = new Span();
             span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line"));

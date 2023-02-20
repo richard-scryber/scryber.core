@@ -5,6 +5,7 @@ using Scryber.PDF.Layout;
 using Scryber.Drawing;
 using System.IO;
 using Scryber.PDF.Resources;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Scryber.UnitLayouts
 {
@@ -22,9 +23,8 @@ namespace Scryber.UnitLayouts
             this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
-        private void AssertAreApproxEqual(double one, double two, string message)
+        private void AssertAreApproxEqual(double one, double two, string message, int precision = 5)
         {
-            int precision = 5;
             one = Math.Round(one, precision);
             two = Math.Round(two, precision);
             Assert.AreEqual(one, two, message);
@@ -42,11 +42,13 @@ namespace Scryber.UnitLayouts
         {
             var doc = new Document();
             var pg = new Page();
+            var size = 24.0;  //Point size of font
+            var lead = size * 1.2; //default leading
 
             pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
-            pg.FontSize = 24;
+            pg.FontSize = size;
             doc.Pages.Add(pg);
 
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines " +
@@ -57,32 +59,114 @@ namespace Scryber.UnitLayouts
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
             SaveAsPDF(doc, "Text_SingleLiteral");
-            
+
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
 
-            var em = 24.0;  //Point size of font
-            var lead = 24.0 * 1.2; //default leading
+
+
+            var ascent = 18.48;
+            var halflead = (lead - size) / 2;
+            var offset = halflead + ascent;
 
             var rsrc = doc.SharedResources[0] as PDFFontResource;
 
             Assert.IsNotNull(rsrc, "The font resource should be the one and only shared resource");
             Assert.IsNotNull(rsrc.Definition, "The font definition should not be null");
 
-            var metrics = rsrc.Definition.GetFontMetrics(em);
-
             var line = region.Contents[0] as PDFLayoutLine;
-            AssertAreApproxEqual(lead, line.Height.PointsValue, "Line 0 was not the correct height");
-            
+            AssertAreApproxEqual(lead, line.Height.PointsValue, "Line 0 was not the correct height", 2);
+            AssertAreApproxEqual(offset, line.BaseLineOffset.PointsValue, "Line zero offset was not half the leading + ascender height", 2);
 
             //Check the heights of the continuation lines
+            var newLine = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+            Assert.AreEqual(lead, newLine.NewLineOffset.Height, "Expected the line offset to be the same as the leading on line zero");
 
             for (var i = 1; i < 4; i++)
             {
+
                 line = region.Contents[i] as PDFLayoutLine;
-                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " was not the correct height");
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " was not the correct height", 2);
+
+                if (i < 3)
+                {
+                    newLine = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+                    Assert.AreEqual(lead, newLine.NewLineOffset.Height, "Expected the line offset to be the same as the leading on line " + i);
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region public void ASingleLiteral()
+
+
+        /// <summary>
+        /// Checks the font and line sizing and line height in a default font at 24 points
+        /// </summary>
+        [TestMethod()]
+        public void ASingleLiteralExplicitLineHeight()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            var size = 24.0;  //Point size of font
+            var lead = 40.0; // Line height
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = size;
+            pg.TextLeading = lead;
+
+            doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines " +
+                "in the page with a default line height so that we can check the leading of default lines " +
+                "as they flow down the page"));
+
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_SingleLiteralWithLeading");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+
+
+
+            var ascent = 18.48;
+            var halflead = (lead - size) / 2;
+            var offset = halflead + ascent;
+
+            var rsrc = doc.SharedResources[0] as PDFFontResource;
+
+            Assert.IsNotNull(rsrc, "The font resource should be the one and only shared resource");
+            Assert.IsNotNull(rsrc.Definition, "The font definition should not be null");
+
+            var line = region.Contents[0] as PDFLayoutLine;
+            AssertAreApproxEqual(lead, line.Height.PointsValue, "Line 0 was not the correct height", 2);
+            AssertAreApproxEqual(offset, line.BaseLineOffset.PointsValue, "Line zero offset was not half the leading + ascender height", 2);
+
+            //Check the heights of the continuation lines
+            var newLine = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+            Assert.AreEqual(lead, newLine.NewLineOffset.Height, "Expected the line offset to be the same as the leading on line zero");
+
+            for (var i = 1; i < 4; i++)
+            {
+
+                line = region.Contents[i] as PDFLayoutLine;
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " was not the correct height", 2);
+
+                if (i < 3)
+                {
+                    newLine = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+                    Assert.AreEqual(lead, newLine.NewLineOffset.Height, "Expected the line offset to be the same as the leading on line " + i);
+                }
             }
 
         }
@@ -117,7 +201,7 @@ namespace Scryber.UnitLayouts
 
             var font = Scryber.Drawing.FontFactory.GetFontDefinition(fontFamily, fontStyle, fontWeight);
             Assert.IsNotNull(font, "This test will fail if the  font is not present, or could not be loaded from the System fonts");
-               
+
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
@@ -140,8 +224,8 @@ namespace Scryber.UnitLayouts
 
             var em = 24.0;  //Point size of font
             var metrics = defn.GetFontMetrics(em);
-            
-            
+
+
             var line = region.Contents[0] as PDFLayoutLine;
             AssertAreApproxEqual(24 * 1.2, line.Height.PointsValue, "Line 0 was not the correct height");
 
@@ -227,8 +311,8 @@ namespace Scryber.UnitLayouts
             pg.FontFamily = new FontSelector("Serif");
 
             doc.Pages.Add(pg);
-            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page. " +
-                "Repeated text that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with an explict line height so that we can check the leading of default lines as they flow down the page. " +
+                "Repeated text that should flow over more than two lines in the page with an explicit line height so that we can check the leading of lines as they flow down the page"));
 
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -298,7 +382,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(block);
             Assert.AreEqual(100, block.Height);
 
-            
+
 
             var em = 24.0;  //Point size of font
 
@@ -381,7 +465,7 @@ namespace Scryber.UnitLayouts
                 offsetY += lead;
             }
 
-            
+
 
 
         }
@@ -490,7 +574,7 @@ namespace Scryber.UnitLayouts
 
                 var offset = pgContentWidth - twidth;
 
-                if(i == 0)
+                if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
                     AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
@@ -500,7 +584,7 @@ namespace Scryber.UnitLayouts
                     var space = line.Runs[0] as PDFTextRunSpacer;
                     AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
-                
+
 
             }
 
@@ -610,7 +694,7 @@ namespace Scryber.UnitLayouts
                     AssertAreApproxEqual(pgContentWidth.PointsValue, twidth.PointsValue, "First line width should be about the same as the page content width");
                     Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
                     Assert.IsTrue(line.LineSpacingOptions.WordSpace > 0.0);
-                    
+
                 }
                 else if (i == 3) //Last line is not justified
                 {
@@ -675,7 +759,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
-            
+
 
             //default sans-sefif is set up as follows
             var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
@@ -685,7 +769,7 @@ namespace Scryber.UnitLayouts
             {
                 var line = region.Contents[i] as PDFLayoutLine;
                 Assert.IsNotNull(line.LineSpacingOptions);
-                
+
 
                 if (i == 2) //Last line is not justified
                 {
@@ -733,7 +817,7 @@ namespace Scryber.UnitLayouts
             pg.HorizontalAlignment = HorizontalAlignment.Justified;
             pg.FontSize = 14;
             pg.TextLeading = 40;
-            
+
 
             pg.Style.OverlayGrid.ShowGrid = true;
             pg.Style.OverlayGrid.GridSpacing = pg.TextLeading;
@@ -742,6 +826,7 @@ namespace Scryber.UnitLayouts
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow "));
+
             var span = new Span();
             span.FontSize = 20;
             span.FontWeight = 700;
@@ -790,7 +875,7 @@ namespace Scryber.UnitLayouts
                 {
                     Assert.AreEqual(0.0, line.LineSpacingOptions.CharSpace);
                     Assert.IsTrue(line.LineSpacingOptions.WordSpace > 0.0);
-                    
+
 
                     Unit w = Unit.Zero;
                     for (var r = 0; r < line.Runs.Count; r++)
@@ -808,16 +893,12 @@ namespace Scryber.UnitLayouts
                     Assert.AreEqual(region.TotalBounds.Width, w);
                 }
 
-                
+
 
             }
         }
 
-        [TestMethod]
-        public void ALongTextBlock()
-        {
-            var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+        string longText = "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
                 "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies." +
                 " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
@@ -826,6 +907,14 @@ namespace Scryber.UnitLayouts
                 "Mauris fringilla nunc consequat sapien varius, in pretium nibh dignissim. Duis in erat neque. " +
                 "Cras dui purus, laoreet vel lacus nec, scelerisque posuere nisl. Nam sed rutrum metus. " +
                 "Ut vel vehicula lorem. Morbi rutrum leo quis nunc lobortis, venenatis posuere dolor porta.";
+
+
+
+        [TestMethod]
+        public void ALongTextBlock()
+        {
+            var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " + longText;
+
 
             var doc = new Document();
             var pg = new Page();
@@ -869,8 +958,611 @@ namespace Scryber.UnitLayouts
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
             }
         }
-        
-        
+
+
+        /// <summary>
+        /// Tests a long string literal that flows over 2 columns. Explicit font size, default leading.
+        /// </summary>
+        [TestMethod]
+        public void ALongTextBlockMultiColumn()
+        {
+            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " + longText + longText;
+
+
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.ColumnCount = 2;
+            pg.AlleyWidth = 10;
+            pg.FontSize = 16;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral(text));
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralMultiColumn");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column
+
+            var region = content.Columns[0] as PDFLayoutRegion;
+
+
+            var colW = (content.AvailableBounds.Width - 10);
+            colW = colW / 2.0;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            var lineH = 16 * 1.2;
+            var pgH = lp.Height.PointsValue - 20.0;
+            var lineCount = Math.Floor(pgH / lineH);
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//all available plus an empty line at the end.
+
+
+            PDFLayoutLine line;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second Column
+
+            region = content.Columns[1] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.IsTrue(region.Contents.Count > 0);//all available plus an empty line at the end.
+            lineCount = region.Contents.Count;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == lineCount - 1)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+        }
+
+        /// <summary>
+        /// Tests a long string literal that flows over 2 pages. Explicit font size, default leading.
+        /// </summary>
+        [TestMethod]
+        public void ALongTextBlockMultiPage()
+        {
+            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " + longText + longText + longText + longText + longText;
+
+
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 16;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral(text));
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralMultiPage");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(1, content.Columns.Length);
+
+            //First Page
+
+
+            var region = content.Columns[0] as PDFLayoutRegion;
+
+
+            var colW = content.AvailableBounds.Width;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            var lineH = 16 * 1.2;
+            var pgH = lp.Height.PointsValue - 20.0;
+            var lineCount = Math.Floor(pgH / lineH);
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//all available plus an empty line at the end.
+
+
+            PDFLayoutLine line;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second page
+
+            lp = layout.AllPages[1];
+            content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(1, content.Columns.Length);
+            region = content.Columns[0] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.IsTrue(region.Contents.Count > 0);//all available plus an empty line at the end.
+            lineCount = region.Contents.Count;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == lineCount - 1)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+        }
+
+        /// <summary>
+        /// Tests a long string literal that flows over 2 columns and onto a second page with 1 column of content.
+        /// Explicit font size, default leading.
+        /// </summary>
+        [TestMethod]
+        public void ALongTextBlockMultiPageMultiColumn()
+        {
+            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " + longText + longText +
+                longText + longText + longText;
+
+
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.ColumnCount = 2;
+            pg.FontSize = 16;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral(text));
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralMultiPageMultiColumn");
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column
+
+            var region = content.Columns[0] as PDFLayoutRegion;
+
+
+            var colW = (content.AvailableBounds.Width - 10);
+            colW = colW / 2.0;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            var lineH = 16 * 1.2;
+            var pgH = lp.Height.PointsValue - 20.0;
+            var lineCount = Math.Floor(pgH / lineH);
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//all available plus an empty line at the end.
+
+
+            PDFLayoutLine line;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second Column
+
+            region = content.Columns[1] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//same number of lines as the first column
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+            //Second page
+
+            lp = layout.AllPages[1];
+            content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column - Page 2
+
+            region = content.Columns[0] as PDFLayoutRegion;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            lineCount = region.Contents.Count;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == lineCount - 1)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            //Second Column - Page 2 = Empty
+
+            region = content.Columns[1] as PDFLayoutRegion;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            lineCount = region.Contents.Count;
+            Assert.AreEqual(0, lineCount);
+        }
+
+        [TestMethod()]
+        public void ASingleLineBreak()
+        {
+            
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 16;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("Before the line break"));
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("After the line break"));
+
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_SingleLineBreak");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(1, content.Columns.Length);
+
+            var region = content.Columns[0];
+            Assert.AreEqual(2, region.Contents.Count);
+            var lineH = 16 * 1.2;
+            Assert.AreEqual(lineH, region.Contents[0].Height);
+            Assert.AreEqual(lineH, region.Contents[1].Height);
+        }
+
+
+
+
+
+        /// <summary>
+        /// Tests a long string literal that flows over 2 columns on 2 pages. Explicit font size, and explicit leading.
+        /// </summary>
+        [TestMethod]
+        public void ALongTextBlockMultiPageMultiColumnExplicitLeading()
+        {
+            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " + longText + longText +
+                longText + longText + longText;
+
+
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.ColumnCount = 2;
+            pg.FontSize = 16;
+            pg.TextLeading = 25;
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral(text));
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralMultiPageMultiColumnExplicitLeading");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column
+
+            var region = content.Columns[0] as PDFLayoutRegion;
+
+
+            var colW = (content.AvailableBounds.Width - 10);
+            colW = colW / 2.0;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            var lineH = 25;
+            var pgH = lp.Height.PointsValue - 20.0;
+            var lineCount = Math.Floor(pgH / lineH);
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//all available plus an empty line at the end.
+
+
+            PDFLayoutLine line;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second Column
+
+            region = content.Columns[1] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//same number of lines as the first column
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+            //Second page
+
+            lp = layout.AllPages[1];
+            content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column - Page 2 - full
+
+            region = content.Columns[0] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//same number of lines as the first column
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second Column - Page 2
+
+            region = content.Columns[1] as PDFLayoutRegion;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            lineCount = region.Contents.Count;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == lineCount - 1)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+        }
 
 
         [TestMethod()]
@@ -981,7 +1673,7 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod()]
-        public void FixedLeadingSpans()
+        public void MultipleFixedLeadingSpans()
         {
             var doc = new Document();
             var pg = new Page();
@@ -991,16 +1683,19 @@ namespace Scryber.UnitLayouts
             pg.OverflowAction = OverflowAction.NewPage;
             doc.Pages.Add(pg);
             pg.FontFamily = new FontSelector("Sans-Serif");
-            pg.FontSize = 20;
+            pg.FontSize = 15;
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 25;
+            pg.Style.OverlayGrid.GridYOffset = 10;
 
             var span = new Span();
-            span.Contents.Add(new TextLiteral("This is a text run that should flow over more than "));
+            span.Contents.Add(new TextLiteral("50pt leading text run that should flow over more than "));
             span.TextLeading = 50;
             pg.Contents.Add(span);
 
             span = new Span();
             span.FontBold = true;
-            span.Contents.Add(new TextLiteral("two lines in the page with a default line height "));
+            span.Contents.Add(new TextLiteral("two lines pushing the default line height "));
             pg.Contents.Add(span);
 
             span = new Span();
@@ -1013,22 +1708,22 @@ namespace Scryber.UnitLayouts
             span = new Span();
             span.FontBold = true;
             span.FontItalic = true;
-            span.TextLeading = 30;
-            span.Contents.Add(new TextLiteral("of default lines as they flow down the page and onto new lines"));
+            span.TextLeading = 25;
+            span.Contents.Add(new TextLiteral("of default lines and fixed leading, down the page and onto new lines"));
 
             pg.Contents.Add(span);
 
             span = new Span();
             span.FontItalic = true;
-            span.Contents.Add(new TextLiteral(" with more content"));
-
+            span.Contents.Add(new TextLiteral(" with more content back at 50pt"));
+            span.TextLeading = 50;
             pg.Contents.Add(span);
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
-            doc.AppendTraceLog = true;
+            //doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
 
-            SaveAsPDF(doc, "Text_LiteralsInBoldAndItalicWithLeading");
+            SaveAsPDF(doc, "Text_LiteralsInBoldAndItalicWithMultipleLeading");
 
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
@@ -1040,86 +1735,275 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(9, first.Runs.Count);
             Assert.IsInstanceOfType(first.Runs[0], typeof(PDFLayoutInlineBegin));
             Assert.IsInstanceOfType(first.Runs[1], typeof(PDFTextRunBegin));
+            var begin = first.Runs[1] as PDFTextRunBegin;
+            Assert.AreEqual(first.BaseLineOffset + 10, begin.StartTextCursor.Height); //margin top + offset
 
             Assert.IsInstanceOfType(first.Runs[2], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("This is a text run that should flow over more than ", ((first.Runs[2]) as PDFTextRunCharacter).Characters);
+            Assert.AreEqual("50pt leading text run that should flow over more than ", ((first.Runs[2]) as PDFTextRunCharacter).Characters);
             Assert.IsInstanceOfType(first.Runs[3], typeof(PDFTextRunEnd));
             Assert.IsInstanceOfType(first.Runs[4], typeof(PDFLayoutInlineEnd));
             Assert.IsInstanceOfType(first.Runs[5], typeof(PDFLayoutInlineBegin));
             Assert.AreEqual(700, (first.Runs[5] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
             Assert.IsInstanceOfType(first.Runs[6], typeof(PDFTextRunBegin));
-            Assert.IsInstanceOfType(first.Runs[7], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("two lines in", ((first.Runs[7]) as PDFTextRunCharacter).Characters);
-            Assert.IsInstanceOfType(first.Runs[8], typeof(PDFTextRunNewLine));
 
+            begin = first.Runs[6] as PDFTextRunBegin;
+            Assert.AreEqual(first.BaseLineOffset + 10, begin.StartTextCursor.Height); //margin top + offset
+
+            Assert.IsInstanceOfType(first.Runs[7], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("two lines pushing the default", ((first.Runs[7]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[8], typeof(PDFTextRunNewLine));
 
             //Line 2
 
             PDFLayoutLine second = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
-            Assert.AreEqual(24, second.Height);
-            Assert.AreEqual(8, second.Runs.Count);
+            Assert.AreEqual(25, second.Height);
+            
+            //Check the offset of the previous line
+            Assert.AreEqual(first.BaseLineToBottom + second.BaseLineOffset, (first.Runs[8] as PDFTextRunNewLine).NewLineOffset.Height);
 
+            Assert.AreEqual(13, second.Runs.Count);
             Assert.IsInstanceOfType(second.Runs[0], typeof(PDFTextRunSpacer));
             Assert.AreEqual(0, (second.Runs[0] as PDFTextRunSpacer).Width);
             Assert.IsInstanceOfType(second.Runs[1], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("the page with a default line height ", ((second.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.AreEqual("line height ", ((second.Runs[1]) as PDFTextRunCharacter).Characters);
             Assert.IsInstanceOfType(second.Runs[2], typeof(PDFTextRunEnd));
             Assert.IsInstanceOfType(second.Runs[3], typeof(PDFLayoutInlineEnd));
 
 
             Assert.IsInstanceOfType(second.Runs[4], typeof(PDFLayoutInlineBegin));
             Assert.AreEqual(400, (second.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+
             Assert.IsInstanceOfType(second.Runs[5], typeof(PDFTextRunBegin));
+            begin = second.Runs[5] as PDFTextRunBegin;
+            Assert.AreEqual(first.Height + 10 + second.BaseLineOffset, begin.StartTextCursor.Height); //margin top + first height + offset
+
             Assert.IsInstanceOfType(second.Runs[6], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("so that we can check the", ((second.Runs[6]) as PDFTextRunCharacter).Characters);
-            Assert.IsInstanceOfType(second.Runs[7], typeof(PDFTextRunNewLine));
+            Assert.AreEqual("so that we can check the leading ", ((second.Runs[6]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(second.Runs[7], typeof(PDFTextRunEnd));
+          
+
+            Assert.IsInstanceOfType(second.Runs[8], typeof(PDFLayoutInlineEnd));
+
+            Assert.IsInstanceOfType(second.Runs[9], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (second.Runs[9] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.AreEqual(FontStyle.Italic, (second.Runs[9] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
+
+            Assert.IsInstanceOfType(second.Runs[10], typeof(PDFTextRunBegin));
+            begin = second.Runs[10] as PDFTextRunBegin;
+            Assert.AreEqual(first.Height + 10 + second.BaseLineOffset, begin.StartTextCursor.Height); //margin top + first height + offset
+
+            Assert.IsInstanceOfType(second.Runs[11], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("of default lines and fixed leading,", ((second.Runs[11]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(second.Runs[12], typeof(PDFTextRunNewLine));
 
             //Line 3
 
             PDFLayoutLine third = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
             Assert.IsNotNull(third);
-            Assert.AreEqual(30, third.Height);
-            Assert.AreEqual(8, third.Runs.Count);
+            Assert.AreEqual(50, third.Height);
+
+            //Check the offset of the previous line to the new line
+            Assert.AreEqual(second.BaseLineToBottom + third.BaseLineOffset, (second.Runs[12] as PDFTextRunNewLine).NewLineOffset.Height);
+
+            Assert.AreEqual(9, third.Runs.Count);
 
             Assert.IsInstanceOfType(third.Runs[0], typeof(PDFTextRunSpacer));
             Assert.AreEqual(0, (third.Runs[0] as PDFTextRunSpacer).Width);
+
             Assert.IsInstanceOfType(third.Runs[1], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("leading ", ((third.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.AreEqual("down the page and onto new lines", ((third.Runs[1]) as PDFTextRunCharacter).Characters);
+
             Assert.IsInstanceOfType(third.Runs[2], typeof(PDFTextRunEnd));
             Assert.IsInstanceOfType(third.Runs[3], typeof(PDFLayoutInlineEnd));
 
             Assert.IsInstanceOfType(third.Runs[4], typeof(PDFLayoutInlineBegin));
-            Assert.AreEqual(700, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.AreEqual(400, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
             Assert.AreEqual(FontStyle.Italic, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
+
             Assert.IsInstanceOfType(third.Runs[5], typeof(PDFTextRunBegin));
+            begin = third.Runs[5] as PDFTextRunBegin;
+            Assert.AreEqual(10 + first.Height + second.Height + third.BaseLineOffset, begin.StartTextCursor.Height); //margin top + first height + second height + offset
+
             Assert.IsInstanceOfType(third.Runs[6], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("of default lines as they flow down the page and onto", ((third.Runs[6]) as PDFTextRunCharacter).Characters);
-            Assert.IsInstanceOfType(third.Runs[7], typeof(PDFTextRunNewLine));
-            //Still has the explicit line height from the span, onto the next line
-            Assert.AreEqual(30, (third.Runs[7] as PDFTextRunNewLine).NewLineOffset.Height);
+            Assert.AreEqual(" with more content back at 50pt", ((third.Runs[6]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(third.Runs[7], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(second.Runs[8], typeof(PDFLayoutInlineEnd));
+
+        }
 
 
-            //Fourth line
+        [TestMethod()]
+        public void MultipleFixedLeadingSpansOverlow()
+        {
+            Unit overflowBlockHeight = 750;
 
-            PDFLayoutLine fourth = layout.AllPages[0].ContentBlock.Columns[0].Contents[3] as PDFLayoutLine;
-            Assert.AreEqual(9, fourth.Runs.Count);
+            var doc = new Document();
+            var pg = new Section();
 
-            Assert.IsInstanceOfType(fourth.Runs[0], typeof(PDFTextRunSpacer));
-            Assert.AreEqual(0, (fourth.Runs[0] as PDFTextRunSpacer).Width);
-            Assert.IsInstanceOfType(fourth.Runs[1], typeof(PDFTextRunCharacter));
-            Assert.AreEqual("new lines", ((fourth.Runs[1]) as PDFTextRunCharacter).Characters);
-            Assert.IsInstanceOfType(fourth.Runs[2], typeof(PDFTextRunEnd));
-            Assert.IsInstanceOfType(fourth.Runs[3], typeof(PDFLayoutInlineEnd));
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+            pg.FontFamily = new FontSelector("Sans-Serif");
+            pg.FontSize = 15;
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 25;
+            pg.Style.OverlayGrid.GridYOffset = 10;
 
-            Assert.IsInstanceOfType(fourth.Runs[4], typeof(PDFLayoutInlineBegin));
-            Assert.AreEqual(400, (fourth.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
-            Assert.AreEqual(FontStyle.Italic, (third.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
-            Assert.IsInstanceOfType(fourth.Runs[5], typeof(PDFTextRunBegin));
-            Assert.IsInstanceOfType(fourth.Runs[6], typeof(PDFTextRunCharacter));
-            Assert.AreEqual(" with more content", ((fourth.Runs[6]) as PDFTextRunCharacter).Characters);
+            var div = new Div() { Height = overflowBlockHeight, BorderColor = Drawing.StandardColors.Black };
+            pg.Contents.Add(div);
 
-            Assert.IsInstanceOfType(fourth.Runs[7], typeof(PDFTextRunEnd));
-            Assert.IsInstanceOfType(fourth.Runs[8], typeof(PDFLayoutInlineEnd));
+            var span = new Span();
+            span.Contents.Add(new TextLiteral("50pt leading text run that should flow over more than "));
+            span.TextLeading = 50;
+            pg.Contents.Add(span);
+
+            span = new Span();
+            span.FontBold = true;
+            span.Contents.Add(new TextLiteral("two lines pushing the default line height which fits on the page, "));
+            pg.Contents.Add(span);
+
+            
+            span = new Span();
+            span.FontBold = true;
+            span.FontItalic = true;
+            span.TextLeading = 25;
+            span.Contents.Add(new TextLiteral("and fixed leading that doesn't fit, over the page and onto a new line"));
+
+            pg.Contents.Add(span);
+
+            span = new Span();
+            span.FontItalic = true;
+            span.Contents.Add(new TextLiteral(" with more content back at 50pt"));
+            span.TextLeading = 50;
+            pg.Contents.Add(span);
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            //doc.AppendTraceLog = true;
+            doc.LayoutComplete += Doc_LayoutComplete;
+
+            SaveAsPDF(doc, "Text_LiteralsInBoldAndItalicWithMultipleLeadingOverflowing");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+            Assert.AreEqual(3, layout.AllPages[0].ContentBlock.Columns[0].Contents.Count);
+
+            var block = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            Assert.AreEqual(overflowBlockHeight, block.Height);
+            Assert.AreEqual(layout.AllPages[0].Width - 20, block.Width);
+
+
+            // line 1
+
+            PDFLayoutLine first = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(first);
+            Assert.AreEqual(50, first.Height);
+            Assert.AreEqual(9, first.Runs.Count);
+            Assert.IsInstanceOfType(first.Runs[0], typeof(PDFLayoutInlineBegin));
+            Assert.IsInstanceOfType(first.Runs[1], typeof(PDFTextRunBegin));
+            var begin = first.Runs[1] as PDFTextRunBegin;
+            Assert.AreEqual(first.BaseLineOffset + 10 + overflowBlockHeight, begin.StartTextCursor.Height); //margin top + offset + block
+
+            Assert.IsInstanceOfType(first.Runs[2], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("50pt leading text run that should flow over more than ", ((first.Runs[2]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[3], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(first.Runs[4], typeof(PDFLayoutInlineEnd));
+            Assert.IsInstanceOfType(first.Runs[5], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (first.Runs[5] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.IsInstanceOfType(first.Runs[6], typeof(PDFTextRunBegin));
+
+            begin = first.Runs[6] as PDFTextRunBegin;
+            Assert.AreEqual(first.BaseLineOffset + 10 + overflowBlockHeight, begin.StartTextCursor.Height); //margin top + offset + block
+
+            Assert.IsInstanceOfType(first.Runs[7], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("two lines pushing the default", ((first.Runs[7]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(first.Runs[8], typeof(PDFTextRunNewLine));
+
+            //Line 2
+
+            PDFLayoutLine second = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.AreEqual(15 * 1.2, second.Height); //default height
+
+            //Check the offset of the previous line
+            Assert.AreEqual(first.BaseLineToBottom + second.BaseLineOffset, (first.Runs[8] as PDFTextRunNewLine).NewLineOffset.Height);
+
+            //We can finish this span
+
+            Assert.AreEqual(7, second.Runs.Count);
+            Assert.IsInstanceOfType(second.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (second.Runs[0] as PDFTextRunSpacer).Width);
+
+            Assert.IsInstanceOfType(second.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("line height which fits on the page, ", ((second.Runs[1]) as PDFTextRunCharacter).Characters);
+            Assert.IsInstanceOfType(second.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(second.Runs[3], typeof(PDFLayoutInlineEnd));
+
+
+            //but the next is too high so it overflows onto the next page. So it has an inline-begin, text-begin and then a text-end.
+            Assert.IsInstanceOfType(second.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(700, (second.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.AreEqual(FontStyle.Italic, (second.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
+            Assert.IsInstanceOfType(second.Runs[5], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(second.Runs[6], typeof(PDFTextRunEnd));
+
+
+            //And goes onto the second page
+            var pg2first = layout.AllPages[1].ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(pg2first);
+            Assert.AreEqual(50, pg2first.Height); //line height is from the second span on this line (not the first which is 25).
+            Assert.AreEqual(8, pg2first.Runs.Count);
+
+            Assert.IsInstanceOfType(pg2first.Runs[0], typeof(PDFTextRunBegin));
+            begin = pg2first.Runs[0] as PDFTextRunBegin;
+            Assert.AreEqual(10 + pg2first.BaseLineOffset, begin.StartTextCursor.Height); //margin top + first offset
+
+
+            Assert.IsInstanceOfType(pg2first.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("and fixed leading that doesn't fit, over the page and onto a new line", ((pg2first.Runs[1]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(pg2first.Runs[2], typeof(PDFTextRunEnd));
+
+            Assert.IsInstanceOfType(pg2first.Runs[3], typeof(PDFLayoutInlineEnd));
+
+            Assert.IsInstanceOfType(pg2first.Runs[4], typeof(PDFLayoutInlineBegin));
+            Assert.AreEqual(400, (pg2first.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontWeight);
+            Assert.AreEqual(FontStyle.Italic, (pg2first.Runs[4] as PDFLayoutInlineBegin).FullStyle.Font.FontFaceStyle);
+
+            Assert.IsInstanceOfType(pg2first.Runs[5], typeof(PDFTextRunBegin));
+            begin = pg2first.Runs[5] as PDFTextRunBegin;
+            Assert.AreEqual(10 + pg2first.BaseLineOffset, begin.StartTextCursor.Height); //margin top + offset
+
+            Assert.IsInstanceOfType(pg2first.Runs[6], typeof(PDFTextRunCharacter));
+            Assert.AreEqual(" with more", ((pg2first.Runs[6]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(pg2first.Runs[7], typeof(PDFTextRunNewLine));
+
+            //Line 2 on second page
+
+            PDFLayoutLine pg2second = layout.AllPages[1].ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(pg2second);
+            Assert.AreEqual(50, pg2second.Height);
+
+
+            //Check the offset of the previous line to the new line
+            Assert.AreEqual(pg2first.BaseLineToBottom + pg2second.BaseLineOffset, (pg2first.Runs[7] as PDFTextRunNewLine).NewLineOffset.Height);
+
+            Assert.AreEqual(4, pg2second.Runs.Count);
+
+            Assert.IsInstanceOfType(pg2second.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.AreEqual(0, (pg2second.Runs[0] as PDFTextRunSpacer).Width);
+
+            Assert.IsInstanceOfType(pg2second.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.AreEqual("content back at 50pt", ((pg2second.Runs[1]) as PDFTextRunCharacter).Characters);
+
+            Assert.IsInstanceOfType(pg2second.Runs[2], typeof(PDFTextRunEnd));
+            Assert.IsInstanceOfType(pg2second.Runs[3], typeof(PDFLayoutInlineEnd));
 
         }
 

@@ -1107,6 +1107,8 @@ namespace Scryber.UnitLayouts
 
             using (var stream = DocStreams.GetOutputStream("Images_Overlowing.pdf"))
             {
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.AppendTraceLog = true;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(stream);
             }

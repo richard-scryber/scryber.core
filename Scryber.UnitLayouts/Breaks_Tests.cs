@@ -610,6 +610,85 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
+        public void MultipleLineBreakVariousSizes()
+        {
+            int BreakCount = 19;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            doc.Pages.Add(section);
+
+            int lineIndex = 0;
+            Span span = new Span();
+            span.Contents.Add(new TextLiteral((lineIndex++) + ". Sits on the 1st line in 20pts"));
+            span.Contents.Add(new LineBreak());
+            section.Contents.Add(span);
+           
+            for (var i = 0; i < BreakCount; i++)
+            {
+                if (i % 4 == 1)
+                {
+                    span = new Span();
+                    span.FontSize = i * 2;
+                    span.Contents.Add(new TextLiteral((lineIndex++) + ".Text in " + (i * 2) + "pts on a new line"));
+                    span.Contents.Add(new LineBreak()); //should be the same as the font size
+                    span.Contents.Add(new TextLiteral((lineIndex) + ".After the break at " + (i * 2) + "pts"));
+                    section.Contents.Add(span);
+                }
+                section.Contents.Add(new LineBreak()); // should either be same as the font size, or the outer size.
+                lineIndex++;
+            }
+            section.Contents.Add(new TextLiteral("Sits on the " + (BreakCount + 1) + "th line in 20pts"));
+
+
+            using (var ms = DocStreams.GetOutputStream("Breaks_MultipleLineBreakMultipleSizes.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            //Lines: -1,  0, 1,+1, 2, 3, 4, 5,+5, 6, 7, 8, 9,+9
+            //Index: -1,  0, 1, 1, 2
+            //Sizes: 20, 20, 2, 2, 2, 20, 20, 
+
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(BreakCount + 1, content.Columns[0].Contents.Count);
+
+            var first = content.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(first);
+            Assert.AreEqual(36, first.Height);
+            Assert.AreEqual(3, first.Runs.Count);
+            var chars = first.Runs[1] as PDFTextRunCharacter;
+            Assert.AreEqual("Sits on the first line", chars.Characters);
+
+            for (int i = 1; i < BreakCount; i++)
+            {
+                var space = content.Columns[0].Contents[i] as PDFLayoutLine;
+                if (i % 4 == 0)
+                {
+                }
+                else
+                {
+                    Assert.AreEqual(1, space.Runs.Count);
+                    Assert.AreEqual(30, space.Height);
+                    Assert.IsInstanceOfType(space.Runs[0], typeof(PDFTextRunSpacer));
+                }
+            }
+            //Check the block after to make sure it is ignoring the positioned region.
+            var last = content.Columns[0].Contents[BreakCount] as PDFLayoutLine;
+            Assert.IsNotNull(last);
+            Assert.AreEqual(36, last.Height);
+            Assert.AreEqual(3, last.Runs.Count);
+            chars = last.Runs[1] as PDFTextRunCharacter;
+            Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line", chars.Characters);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
         public void NestedLineBreakMultiColumn()
         {
             int BreakCount = 19;

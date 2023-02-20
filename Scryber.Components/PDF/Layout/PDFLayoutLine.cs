@@ -204,7 +204,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public PDFUnit BaseLineOffset { get; private set; }
+        #region public PDFUnit BaseLineOffset { get; set; }
 
         /// <summary>
         /// Gets the offset from the top left of the line to the baseline of any text or component.
@@ -212,6 +212,17 @@ namespace Scryber.PDF.Layout
         public Unit BaseLineOffset { get; set; }
 
         #endregion
+
+        #region public Unit BaseLineToBottom { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value bottom leading plus the bottom descender.
+        /// to make a full LineHeight = BaseLineOffset + BaseLineToBottom.
+        /// </summary >
+        public Unit BaseLineToBottom { get; set; }
+
+        #endregion
+
 
         #region public bool IsEmpty {get;}
 
@@ -224,6 +235,7 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
 
         protected Unit? ExtraCharacterSpace { get; set; }
 
@@ -368,7 +380,7 @@ namespace Scryber.PDF.Layout
                     
                 }
 
-                
+             
 
                 if (isComplex)
                 {
@@ -402,6 +414,27 @@ namespace Scryber.PDF.Layout
 
                     //this.BaseLineOffset = baselineOffset;
                     this._totalHeight = totalHeight;
+                }
+
+                if (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunSpacer && this.LineIndex > 0) // we are are probably a soft return
+                {
+                    var prevLine = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                    if (null != prevLine)
+                    {
+                        PDFTextRunNewLine prevReturn = prevLine.Runs[prevLine.Runs.Count - 1] as PDFTextRunNewLine;
+                        if (null != prevReturn)
+                        {
+                            //we want to make sure the offset of the return is correct.
+                            
+                            var reqVOffset = this.BaseLineOffset + prevLine.BaseLineToBottom;
+                            if (reqVOffset > prevReturn.NewLineOffset.Height)
+                            {
+                                var size = prevReturn.NewLineOffset;
+                                size.Height = reqVOffset;
+                                prevReturn.NewLineOffset = size;
+                            }
+                        }
+                    }
                 }
                 switch (valign)
                 {
@@ -551,16 +584,37 @@ namespace Scryber.PDF.Layout
         {
             if (run is PDFTextRunBegin begin)
             {
-                var ascent = begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetDescender();
-                
-                if (ascent > this.BaseLineOffset || this.Runs.Count == 0)
-                    this.BaseLineOffset = ascent;
+                var ascent = begin.TextRenderOptions.GetAscent();
+                var descent = begin.TextRenderOptions.GetDescender();
+                var line = begin.TextRenderOptions.GetLineHeight();
+                var lead = line - (ascent + descent);
+                var halfLead = lead / 2;
+
+                var offset = halfLead + ascent;
+
+                if (offset > this.BaseLineOffset || this.Runs.Count == 0)
+                {
+                    this.BaseLineOffset = offset;
+                    this.BaseLineToBottom = halfLead + descent;
+                }
             }
             else if (run is PDFTextRunEnd end)
             {
-                Unit ascent = end.Start.TextRenderOptions.GetLineHeight() - end.Start.TextRenderOptions.GetDescender();
-                if (ascent > this.BaseLineOffset)
-                    this.BaseLineOffset = ascent;
+                begin = end.Start;
+
+                var ascent = begin.TextRenderOptions.GetAscent();
+                var descent = begin.TextRenderOptions.GetDescender();
+                var line = begin.TextRenderOptions.GetLineHeight();
+                var lead = line - (ascent + descent);
+                var halfLead = lead / 2;
+
+                var offset = halfLead + ascent;
+
+                if (offset > this.BaseLineOffset)
+                {
+                    this.BaseLineOffset = offset;
+                    this.BaseLineToBottom = halfLead + descent;
+                }
             }
             this.Runs.Add(run);
         }
