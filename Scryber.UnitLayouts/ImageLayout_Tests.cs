@@ -1723,7 +1723,7 @@ namespace Scryber.UnitLayouts
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.FontSize = 20;
-            pg.Contents.Add(new TextLiteral(" 6. Inline with explicit height "));
+            pg.Contents.Add(new TextLiteral("6. Inline with explicit height "));
 
             var img = new Image();
             img.ID = "Image6";
@@ -1733,7 +1733,7 @@ namespace Scryber.UnitLayouts
             img.Height = 60;
             pg.Contents.Add(img);
 
-            pg.Contents.Add(new TextLiteral(" then a second image on a following line that will be 80 points high"));
+            pg.Contents.Add(new TextLiteral(" then a second image on a following line that will be 80 points high "));
 
             img = new Image();
             img.ID = "Image6";
@@ -1817,7 +1817,7 @@ namespace Scryber.UnitLayouts
 
             txtChars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
-            Assert.AreEqual("following line that will be 80 points high", txtChars.Characters);
+            Assert.AreEqual("following line that will be 80 points high ", txtChars.Characters);
 
             txtEnd = line.Runs[2] as PDFTextRunEnd;
             Assert.AreEqual(0, txtEnd.Width);

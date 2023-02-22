@@ -398,7 +398,7 @@ namespace Scryber.UnitLayouts
             section.Contents.Add(inline);
 
             span = new Span();
-            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset "));
             span.FontBold = true;
             section.Contents.Add(span);
 
@@ -413,10 +413,10 @@ namespace Scryber.UnitLayouts
             };
 
             section.Contents.Add(inline);
-            section.Contents.Clear();
+            //section.Contents.Clear();
 
             span = new Span();
-            span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line"));
+            span.Contents.Add(new TextLiteral(" After the second inline and flowing onto a new line."));
             span.Contents.Add(new TextLiteral("Inline and flowing onto a new line "));
             span.FontSize = 24;
             //span.TextLeading = 30;
@@ -430,12 +430,12 @@ namespace Scryber.UnitLayouts
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
-                //Margins = new Thickness(10)
+                Margins = new Thickness(5)
             };
             section.Contents.Add(inline);
 
             span = new Span();
-            span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line"));
+            span.Contents.Add(new TextLiteral(" After the third inline and flowing onto a new line"));
             section.Contents.Add(span);
 
             //div is too big for the remaining space on the page
@@ -443,7 +443,7 @@ namespace Scryber.UnitLayouts
             inflow.Contents.Add(new TextLiteral("In normal content flow"));
             section.Contents.Add(inflow);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockExplicitSize.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockMultipleExplicitSize.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);

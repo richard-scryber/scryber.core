@@ -79,7 +79,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(OverflowSplit.Any, actual.OverflowSplit);
             Assert.AreEqual(Thickness.Empty(), actual.Padding);
             Assert.AreEqual(PositionMode.Block, actual.PositionMode);
-            Assert.AreEqual(VerticalAlignment.Top, actual.VAlign);
+            Assert.IsFalse(actual.VAlign.HasValue);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
             Assert.AreEqual(null, actual.Height);
             Assert.AreEqual(null, actual.Width);

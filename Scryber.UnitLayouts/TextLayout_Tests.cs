@@ -105,7 +105,7 @@ namespace Scryber.UnitLayouts
 
 
         /// <summary>
-        /// Checks the font and line sizing and line height in a default font at 24 points
+        /// Checks the font and line sizing and line height in a default font at 24 points with explicit leading
         /// </summary>
         [TestMethod()]
         public void ASingleLiteralExplicitLineHeight()
@@ -279,6 +279,85 @@ namespace Scryber.UnitLayouts
             {
                 var line = region.Contents[i] as PDFLayoutLine;
                 Assert.AreEqual(leading.PointsValue, line.Height.PointsValue, "Line " + i + " did not use the explicit leading");
+            }
+
+        }
+
+        #endregion
+
+        #region public void ASingleLiteral()
+
+
+        /// <summary>
+        /// Checks the font and line sizing and line height in a default font at 24 points
+        /// </summary>
+        [TestMethod()]
+        public void ASingleLiteralWithLineBreaks()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            var size = 24.0;  //Point size of font
+            var lead = size * 1.2; //default leading
+            var lineCount = 6;
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = size;
+            doc.Pages.Add(pg);
+
+            pg.Contents.Add(new TextLiteral(
+                "This is a text run that should run\r\n" +
+                "over multiple lines\r\n" +
+                "in the page with a explicit\r\n" +
+                "line breaks so that we can check the\r\n" +
+                "breaks of lines as they\r\n" +
+                "flow down the page"));
+
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_SingleLiteralLineBreaks");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+
+
+
+            var ascent = 18.48;
+            var halflead = (lead - size) / 2;
+            var offset = halflead + ascent;
+
+            var rsrc = doc.SharedResources[0] as PDFFontResource;
+
+            Assert.IsNotNull(rsrc, "The font resource should be the one and only shared resource");
+            Assert.IsNotNull(rsrc.Definition, "The font definition should not be null");
+
+            Assert.AreEqual(lineCount, region.Contents.Count);
+
+            var line = region.Contents[0] as PDFLayoutLine;
+
+            AssertAreApproxEqual(lead, line.Height.PointsValue, "Line 0 was not the correct height", 2);
+            AssertAreApproxEqual(offset, line.BaseLineOffset.PointsValue, "Line zero offset was not half the leading + ascender height", 2);
+
+
+            //Check the heights of the continuation lines
+            var newLine = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+            Assert.AreEqual(lead, newLine.NewLineOffset.Height, "Expected the line offset to be the same as the leading on line zero");
+
+            for (var i = 1; i < lineCount; i++)
+            {
+
+                line = region.Contents[i] as PDFLayoutLine;
+                AssertAreApproxEqual(lead, line.Height.PointsValue, "Line " + i + " was not the correct height", 2);
+
+                if (i < lineCount - 1)
+                {
+                    newLine = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+                    Assert.AreEqual(lead, newLine.NewLineOffset.Height, "Expected the line offset to be the same as the leading on line " + i);
+                }
             }
 
         }

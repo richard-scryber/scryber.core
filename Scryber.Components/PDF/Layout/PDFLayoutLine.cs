@@ -391,9 +391,15 @@ namespace Scryber.PDF.Layout
 
                     foreach (var run in this.Runs)
                     {
-                        if (run is PDFTextRunSpacer spacer) //first continuation line
+                        if (run is PDFTextRunSpacer spacer && this.Runs.IndexOf(spacer) == 0 && this.LineIndex > 0) //first continuation line
                         {
-                            //spacer.SetOffsetY(totalHeight);
+                            var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                            var newLine = prev.LastRun() as PDFTextRunNewLine;
+                            var size = newLine.NewLineOffset;
+
+                            size.Height = totalHeight;
+                            newLine.NewLineOffset = size;
+                            
                         }
                         else if (run is PDFTextRunBegin begin)
                         {
@@ -416,7 +422,7 @@ namespace Scryber.PDF.Layout
                     this._totalHeight = totalHeight;
                 }
 
-                if (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunSpacer && this.LineIndex > 0) // we are are probably a soft return
+                else if (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunSpacer && this.LineIndex > 0) // we are are probably a soft return
                 {
                     var prevLine = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
                     if (null != prevLine)

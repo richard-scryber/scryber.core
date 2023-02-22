@@ -1278,6 +1278,8 @@ namespace Scryber.PDF.Layout
         {
             if (linebreak is Component && !((Component)linebreak).Visible)
                 return;
+            const double DefaultLineLeading = 1.2;
+            const double DefaultFontSize = 16;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
@@ -1292,9 +1294,9 @@ namespace Scryber.PDF.Layout
                     else if (txtopts.Font != null && txtopts.Font.FontMetrics != null)
                         height = txtopts.Font.FontMetrics.TotalLineHeight;
                     else if (txtopts.Font != null)
-                        height = txtopts.Font.Size;
+                        height = txtopts.Font.Size * DefaultLineLeading;
                     else
-                        height = 12;
+                        height = DefaultFontSize * DefaultLineLeading;
 
                     bool newPage;
 

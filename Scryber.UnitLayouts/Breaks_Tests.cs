@@ -608,11 +608,24 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line", chars.Characters);
         }
 
+
+
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void MultipleLineBreakVariousSizes()
         {
             int BreakCount = 19;
+            double[] LineHeights = new double[] { 24,
+                2 * 1.2, 2 * 1.2,
+                24.0, 24.0, 24.0,
+                10.0 * 1.2, 10.0 * 1.2,
+                24.0, 24.0, 24.0,
+                18.0 * 1.2, 18.0 * 1.2,
+                24.0, 24.0, 24.0,
+                26.0 * 1.2, 26.0 * 1.2,
+                24.0, 24.0, 24.0,
+                34.0 * 1.2, 34.0 * 1.2,
+                24.0, 24.0};
 
             Document doc = new Document();
             Section section = new Section();
@@ -625,7 +638,7 @@ namespace Scryber.UnitLayouts
             span.Contents.Add(new LineBreak());
             section.Contents.Add(span);
            
-            for (var i = 0; i < BreakCount; i++)
+            for (var i = 1; i < BreakCount; i++)
             {
                 if (i % 4 == 1)
                 {
@@ -649,42 +662,16 @@ namespace Scryber.UnitLayouts
             }
 
             Assert.AreEqual(1, layout.AllPages.Count);
-            var content = layout.AllPages[0].ContentBlock;
+            var content = layout.AllPages[0].ContentBlock.Columns[0];
 
-            //Lines: -1,  0, 1,+1, 2, 3, 4, 5,+5, 6, 7, 8, 9,+9
-            //Index: -1,  0, 1, 1, 2
-            //Sizes: 20, 20, 2, 2, 2, 20, 20, 
-
-            Assert.AreEqual(1, content.Columns.Length);
-            Assert.AreEqual(BreakCount + 1, content.Columns[0].Contents.Count);
-
-            var first = content.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.IsNotNull(first);
-            Assert.AreEqual(36, first.Height);
-            Assert.AreEqual(3, first.Runs.Count);
-            var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first line", chars.Characters);
-
-            for (int i = 1; i < BreakCount; i++)
+            Assert.AreEqual(LineHeights.Length, content.Contents.Count);
+ 
+            for (int i = 0; i < LineHeights.Length; i++)
             {
-                var space = content.Columns[0].Contents[i] as PDFLayoutLine;
-                if (i % 4 == 0)
-                {
-                }
-                else
-                {
-                    Assert.AreEqual(1, space.Runs.Count);
-                    Assert.AreEqual(30, space.Height);
-                    Assert.IsInstanceOfType(space.Runs[0], typeof(PDFTextRunSpacer));
-                }
+                var line = content.Contents[i] as PDFLayoutLine;
+                Assert.AreEqual(LineHeights[i], line.Height, "Line Height for '" + i + "' did not match");
             }
-            //Check the block after to make sure it is ignoring the positioned region.
-            var last = content.Columns[0].Contents[BreakCount] as PDFLayoutLine;
-            Assert.IsNotNull(last);
-            Assert.AreEqual(36, last.Height);
-            Assert.AreEqual(3, last.Runs.Count);
-            chars = last.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line", chars.Characters);
+            
         }
 
         [TestCategory(TestCategoryName)]
