@@ -29,7 +29,7 @@ namespace Scryber.PDF.Layout
     {
         PDFPositionOptions _position;
 
-        public PDFPositionOptions Position
+        public PDFPositionOptions PositionOptions
         {
             get { return _position; }
         }
@@ -62,8 +62,8 @@ namespace Scryber.PDF.Layout
                 //But inline blocks shoud account for them
                 var h = this.Region.Height;
                 
-                if (this.Position != null && this.Position.Margins.IsEmpty == false)
-                    h += this.Position.Margins.Top + this.Position.Margins.Bottom;
+                if (this.PositionOptions != null && this.PositionOptions.Margins.IsEmpty == false)
+                    h += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
                 return h;
             }
         }
@@ -75,8 +75,8 @@ namespace Scryber.PDF.Layout
             get
             {
                 var w = this.Region.Width;
-                if (this.Position != null && this.Position.Margins.IsEmpty == false)
-                    w += this.Position.Margins.Left + this.Position.Margins.Right;
+                if (this.PositionOptions != null && this.PositionOptions.Margins.IsEmpty == false)
+                    w += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
                 return w;
             }
         }

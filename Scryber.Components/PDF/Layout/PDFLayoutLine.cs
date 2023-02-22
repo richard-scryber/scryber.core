@@ -345,7 +345,7 @@ namespace Scryber.PDF.Layout
                     if (itemH > maxHeight)
                         maxHeight = itemH;
 
-                    if (run is PDFTextRunBegin begin)
+                    if (run is PDFTextRunBegin begin && begin.TextRenderOptions != null)
                     {
                         maxDescender = Unit.Max(maxDescender, begin.TextRenderOptions.GetDescender());
                     }
@@ -354,19 +354,24 @@ namespace Scryber.PDF.Layout
                         //We have inline blocks to align.
                         isComplex = true;
 
-                        if (blockRun.Position.VAlign.HasValue)
-                            valign = blockRun.Position.VAlign.Value;
+                        //pick the first vertical alignment for the line.
+                        if (blockRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
+                            valign = blockRun.PositionOptions.VAlign.Value;
                     }
                     else if (run is PDFLayoutComponentRun compRun)
                     {
                         isComplex = true;
 
+                        if (compRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
+                            valign = compRun.PositionOptions.VAlign.Value;
+
                     }
                     else if (run is PDFLayoutXObject xobjRun)
                     {
                         isComplex = true;
-                        if (xobjRun.Position.VAlign.HasValue)
-                            valign = xobjRun.Position.VAlign.Value;
+
+                        if (xobjRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
+                            valign = xobjRun.PositionOptions.VAlign.Value;
                     }
                     else if (run is PDFTextRunNewLine nl)
                     {
@@ -374,8 +379,8 @@ namespace Scryber.PDF.Layout
                     }
                     else if (run is PDFLayoutInlineBegin inlineBegin)
                     {
-                        if (inlineBegin.InlinePosition.VAlign.HasValue)
-                            valign = inlineBegin.InlinePosition.VAlign.Value;
+                        if (inlineBegin.PositionOptions.VAlign.HasValue)
+                            valign = inlineBegin.PositionOptions.VAlign.Value;
                     }
                     
                 }
@@ -384,10 +389,20 @@ namespace Scryber.PDF.Layout
 
                 if (isComplex)
                 {
+                    if (!valign.HasValue) //default
+                        valign = VerticalAlignment.Baseline;
+
                     totalHeight = maxHeight;
 
                     var baselineOffset = totalHeight - maxDescender;
                     var nextlineOffset = lastlineheight;
+
+
+                    if (this.BaseLineToBottom == Unit.Zero)
+                    {
+                        //ToDo: Caclulate this now
+                    }
+                    
 
                     foreach (var run in this.Runs)
                     {

@@ -12,7 +12,7 @@ namespace Scryber.PDF.Layout
     public class PDFLayoutInlineBegin : PDFLayoutRun
     {
 
-        public PDFPositionOptions InlinePosition { get; set; }
+        public PDFPositionOptions PositionOptions { get; set; }
 
 
         public PDFLayoutInlineEnd EndMarker
@@ -42,7 +42,7 @@ namespace Scryber.PDF.Layout
         public PDFLayoutInlineBegin(PDFLayoutLine line, IComponent owner, PDFPositionOptions pos, Style fullStyle)
             : base(line, owner)
         {
-            this.InlinePosition = pos;
+            this.PositionOptions = pos;
             this.FullStyle = fullStyle;
         }
 
@@ -142,34 +142,5 @@ namespace Scryber.PDF.Layout
         }
     }
 
-    public class PDFLayoutInlineEnd : PDFLayoutRun
-    {
-
-        public PDFLayoutInlineBegin BeginMarker
-        {
-            get;
-            set;
-        }
-
-        public override Drawing.Unit Height
-        {
-            get { return 0; }
-        }
-
-        public override Drawing.Unit Width
-        {
-            get { return 0; }
-        }
-
-        public PDFLayoutInlineEnd(PDFLayoutLine line, PDFLayoutInlineBegin begin, IComponent owner, PDFPositionOptions pos)
-            : base(line, owner)
-        {
-            this.BeginMarker = begin;
-        }
-
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
-        {
-
-        }
-    }
+    
 }

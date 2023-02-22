@@ -42,7 +42,7 @@ namespace Scryber.PDF.Layout
 
         public Point Location { get; private set; }
 
-        public PDFPositionOptions Position { get { return _position; } }
+        public PDFPositionOptions PositionOptions { get { return _position; } }
 
 
         private Unit? _explicitH;
