@@ -904,18 +904,18 @@ namespace Scryber.UnitLayouts
             pg.Style.OverlayGrid.GridYOffset = pg.Margins.Top;
 
             doc.Pages.Add(pg);
-            pg.Contents.Add(new TextLiteral("This is a text run that should flow "));
+            pg.Contents.Add(new TextLiteral("This is a justified run that should flow "));
 
             var span = new Span();
             span.FontSize = 20;
             span.FontWeight = 700;
-            span.Contents.Add(new TextLiteral("over more than two lines in the page with a default "));
+            span.Contents.Add(new TextLiteral("over more than two lines in the page with a fixed "));
             pg.Contents.Add(span);
 
             span = new Span();
             span.FontSize = 16;
             span.FontStyle = FontStyle.Italic;
-            span.Contents.Add(new TextLiteral("line height so that we can check the leading of "));
+            span.Contents.Add(new TextLiteral("line height of 40pt that we can check the leading of "));
             pg.Contents.Add(span);
 
             pg.Contents.Add(new TextLiteral("default lines as they flow down the page"));

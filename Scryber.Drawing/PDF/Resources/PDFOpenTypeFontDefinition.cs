@@ -300,8 +300,8 @@ namespace Scryber.PDF.Resources
 
                 double ascent = metrics.AscenderHeightFU * scale;
                 double descent = Math.Abs(metrics.DescenderHeightFU) * scale;
-                double baseline = ascent + (metrics.LineSpaceingFU * scale);
                 double fullline = (metrics.FUnitsPerEm * 1.2) * scale;
+                double baseline = ascent + ((fullline - (ascent + descent)) / 2.0); //half lead + ascent
                 double exHeight = metrics.xAvgWidthFU * scale;
                 double zeroWidth = metrics.xAvgWidthFU * scale;
 

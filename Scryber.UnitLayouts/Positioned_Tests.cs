@@ -375,10 +375,19 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void InlineBlockMultipleBlockExplicitSize()
         {
+            const int lineHeight = 25;
+
             Document doc = new Document();
             Section section = new Section();
             section.FontSize = 20;
-            section.TextLeading = 25;
+            section.TextLeading = lineHeight;
+            section.Margins = 10;
+            section.BackgroundColor = Drawing.StandardColors.Silver;
+            //section.HorizontalAlignment = HorizontalAlignment.Justified;
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = section.TextLeading;
+            section.Style.OverlayGrid.GridXOffset = 10;
+            section.Style.OverlayGrid.GridYOffset = 10;
             doc.Pages.Add(section);
 
             var span = new Span();
@@ -387,55 +396,51 @@ namespace Scryber.UnitLayouts
 
             Div inline = new Div()
             {
-                Height = 50,
+                Height = lineHeight * 2,
                 Width = 100,
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
-                //Margins = new Thickness(5)
             };
             //inline.Contents.Add(new TextLiteral("In the inline block"));
             section.Contents.Add(inline);
 
             span = new Span();
-            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset "));
-            span.FontBold = true;
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
             section.Contents.Add(span);
 
             inline = new Div()
             {
-                Height = 10,
+                Height = lineHeight / 2,
                 Width = 50,
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Aqua,
-                //Margins = new Thickness(10)
             };
 
             section.Contents.Add(inline);
             //section.Contents.Clear();
 
             span = new Span();
-            span.Contents.Add(new TextLiteral(" After the second inline and flowing onto a new line."));
-            span.Contents.Add(new TextLiteral("Inline and flowing onto a new line "));
-            span.FontSize = 24;
-            //span.TextLeading = 30;
+            span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line."));
+            //span.Contents.Add(new TextLiteral(" Inline and flowing onto a new line "));
             section.Contents.Add(span);
+
 
 
             inline = new Div()
             {
-                Height = 60,
+                Height = (lineHeight * 3) - 10, //take off the margins.
                 Width = 100,
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
-                Margins = new Thickness(5)
+                Margins = 5
             };
             section.Contents.Add(inline);
 
             span = new Span();
-            span.Contents.Add(new TextLiteral(" After the third inline and flowing onto a new line"));
+            span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line that should continue on in the normal height for the page."));
             section.Contents.Add(span);
 
             //div is too big for the remaining space on the page
@@ -443,37 +448,51 @@ namespace Scryber.UnitLayouts
             inflow.Contents.Add(new TextLiteral("In normal content flow"));
             section.Contents.Add(inflow);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockMultipleExplicitSize.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockMultipleExplicitSizeVAlignDefault.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.Inconclusive();
+
 
             Assert.AreEqual(1, layout.AllPages.Count);
             var content = layout.AllPages[0].ContentBlock;
 
-            Assert.AreEqual(2, content.Columns[0].Contents.Count);
-            Assert.AreEqual(1, content.PositionedRegions.Count);
+            Assert.AreEqual(6, content.Columns[0].Contents.Count);
+            Assert.AreEqual(3, content.PositionedRegions.Count);
 
-            var first = content.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.AreEqual(0, first.Height);
-            Assert.AreEqual(1, first.Runs.Count);
-            var posRun = first.Runs[0] as PDFLayoutPositionedRegionRun;
-            Assert.IsNotNull(posRun);
+            //first line - 1 inline block at 2x line height
 
-            Assert.ReferenceEquals(posRun.Region, content.PositionedRegions[0]);
+            var line = content.Columns[0].Contents[0] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight * 2, line.Height);
+            Assert.AreEqual(10, line.Runs.Count);
+
+            var leftChars = line.Runs[2] as PDFTextRunCharacter;
+            var inlineRun = line.Runs[5] as PDFLayoutInlineBlockRun;
+            var rightChars = line.Runs[8] as PDFTextRunCharacter;
+            var newline = line.Runs[9] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[0]);
             var posReg = content.PositionedRegions[0];
+
 
             //TODO: Clean up offsetX and Y with TotalBounds.
 
-            Assert.AreEqual(50, posReg.TotalBounds.X);
-            Assert.AreEqual(100, posReg.TotalBounds.Y);
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
 
-            Assert.AreEqual(150, posReg.TotalBounds.Height);
-            Assert.AreEqual(200, posReg.TotalBounds.Width);
-            Assert.AreEqual(1, posReg.Contents.Count);
+            Assert.AreEqual(lineHeight * 2, posReg.TotalBounds.Height);
+            Assert.AreEqual(100, posReg.TotalBounds.Width);
+
+            Assert.Inconclusive();
+
 
             var posBlock = posReg.Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(0, posBlock.OffsetX);
@@ -493,6 +512,691 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual("In normal content flow", ((second.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
         }
 
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockMultipleBlockExplicitSizeVAlignTop()
+        {
+            const int lineHeight = 25;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.TextLeading = lineHeight;
+            section.Margins = 10;
+            section.BackgroundColor = Drawing.StandardColors.Silver;
+            //section.HorizontalAlignment = HorizontalAlignment.Justified;
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = section.TextLeading;
+            section.Style.OverlayGrid.GridXOffset = 10;
+            section.Style.OverlayGrid.GridYOffset = 10;
+            doc.Pages.Add(section);
+
+            var span = new Span();
+            span.Contents.Add(new TextLiteral("Before the inline "));
+            section.Contents.Add(span);
+
+            Div inline = new Div()
+            {
+                Height = lineHeight * 2,
+                Width = 100,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+            //inline.Contents.Add(new TextLiteral("In the inline block"));
+            section.Contents.Add(inline);
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            section.Contents.Add(span);
+
+            inline = new Div()
+            {
+                Height = lineHeight / 2,
+                Width = 50,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Aqua,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            section.Contents.Add(inline);
+            //section.Contents.Clear();
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line."));
+            //span.Contents.Add(new TextLiteral(" Inline and flowing onto a new line "));
+            section.Contents.Add(span);
+
+
+
+            inline = new Div()
+            {
+                Height = (lineHeight * 3) - 10, //take off the margins
+                Width = 100 - 10, //take off the margins
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Lime,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margins = 5
+            };
+            section.Contents.Add(inline);
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line that should continue on in the normal height for the page."));
+            section.Contents.Add(span);
+
+            //div is too big for the remaining space on the page
+            Div inflow = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };
+            inflow.Contents.Add(new TextLiteral("In normal content flow"));
+            section.Contents.Add(inflow);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockMultipleExplicitSizeVAlignTop.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            Assert.AreEqual(6, content.Columns[0].Contents.Count);
+            Assert.AreEqual(3, content.PositionedRegions.Count);
+
+            //first line - 1 inline block at 2x line height
+
+            var line = content.Columns[0].Contents[0] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight * 2, line.Height);
+            Assert.AreEqual(10, line.Runs.Count);
+            var leftBegin = line.Runs[1] as PDFTextRunBegin;
+            var leftChars = line.Runs[2] as PDFTextRunCharacter;
+            var inlineRun = line.Runs[5] as PDFLayoutInlineBlockRun;
+            var rightBegin = line.Runs[7] as PDFTextRunBegin;
+            var rightChars = line.Runs[8] as PDFTextRunCharacter;
+            var newline = line.Runs[9] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftBegin);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightBegin);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[0]);
+            var posReg = content.PositionedRegions[0];
+
+            //The positioned region is relative to the origin of the first line.
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(lineHeight * 2, posReg.TotalBounds.Height);
+            Assert.AreEqual(100, posReg.TotalBounds.Width);
+
+            //valign top baseline offset is ascender + half leading.
+            var baseline = leftBegin.TextRenderOptions.GetAscent() + (lineHeight - section.FontSize) / 2;
+
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+            //Add the margins for the start text cursor
+            Assert.AreEqual(baseline + section.Margins.Top, leftBegin.StartTextCursor.Height);
+            Assert.AreEqual(section.Margins.Left, leftBegin.StartTextCursor.Width);
+
+            var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            //The block within the positioned region should be 0,0,50, 100
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(lineHeight * 2, posBlock.Height);
+            Assert.AreEqual(100, posBlock.Width);
+
+            //Right begin text
+            Assert.AreEqual(baseline + section.Margins.Top, rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
+
+            //New line should push the cursor down and right for the inline block and first chars.
+            var offset = newline.NewLineOffset;
+            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
+            Assert.AreEqual(leftChars.Width + posReg.Width, offset.Width);
+
+            //second line - 1 small top aligned inline block with text either side
+
+            line = content.Columns[0].Contents[1] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight, line.Height);
+            Assert.AreEqual(9, line.Runs.Count);
+
+            leftBegin = null;
+            var leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = line.Runs[4] as PDFLayoutInlineBlockRun;
+            rightBegin = line.Runs[6] as PDFTextRunBegin;
+            rightChars = line.Runs[7] as PDFTextRunCharacter;
+            newline = line.Runs[8] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightBegin);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+            
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[1]);
+            posReg = content.PositionedRegions[1];
+
+            //The positioned region is relative to the origin of the first line.
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(lineHeight / 2, posReg.TotalBounds.Height);
+            Assert.AreEqual(50, posReg.TotalBounds.Width);
+
+            
+            //Same baseline offset as line 1
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+            
+            posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            //The block within the positioned region should be 0,0,50, 100
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(lineHeight / 2, posBlock.Height);
+            Assert.AreEqual(50, posBlock.Width);
+
+            //Right begin text - baseline and margins plue the previous line height ( = lineHeight * 2)
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 2), rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
+
+            //New line - single line height v offset
+            offset = newline.NewLineOffset;
+            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
+            Assert.AreEqual(lineHeight, offset.Height);
+            Assert.AreEqual(leftChars.Width + posReg.Width, offset.Width);
+
+            //third line - 1 top aligned inline block 3 * line height inc margins with text either side
+
+            line = content.Columns[0].Contents[2] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight * 3, line.Height);
+            Assert.AreEqual(9, line.Runs.Count);
+
+            leftBegin = null;
+            leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = line.Runs[4] as PDFLayoutInlineBlockRun;
+            rightBegin = line.Runs[6] as PDFTextRunBegin;
+            rightChars = line.Runs[7] as PDFTextRunCharacter;
+            newline = line.Runs[8] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightBegin);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+            //third positioned region
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[2]);
+            posReg = content.PositionedRegions[2];
+
+            //The positioned region is relative to the origin of the first line.
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            //take off the margins
+            Assert.AreEqual((lineHeight * 3) - 10, posReg.TotalBounds.Height);
+            Assert.AreEqual(100 - 10, posReg.TotalBounds.Width);
+
+
+            //Same baseline offset as line 1
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+
+            posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            //The block within the positioned region should be 0,0,75, 110
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(lineHeight* 3, posBlock.Height);
+            Assert.AreEqual(100, posBlock.Width);
+
+            //Right begin text - baseline and margins plue the previous line height ( = lineHeight * 2)
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 3), rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
+
+            //New line - single line height v offset
+            offset = newline.NewLineOffset;
+            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
+            Assert.AreEqual(lineHeight * 3, offset.Height);
+            //include the margins as well
+            Assert.AreEqual(leftChars.Width + posReg.Width + 10, offset.Width);
+
+
+            //fourth line -  is just a spacer, chars and a new line 
+
+            line = content.Columns[0].Contents[3] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight, line.Height);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            leftBegin = null;
+            leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = null;
+            rightBegin = null;
+            rightChars = null;
+            newline = line.Runs[2] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            //Assert.IsNotNull(inlineRun);
+            //Assert.IsNotNull(rightBegin);
+            //Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+
+            //Simple line from a newline offset (checked previously) so zero.
+            //TODO: zero works as it's ignored for the newline flow. But could be set to make more appropriate.
+            Assert.AreEqual(0, line.BaseLineOffset);
+
+            
+            //New line - single line height v offset and 0 width (same start point for fifth line as fourth)
+            offset = newline.NewLineOffset;
+            Assert.AreEqual(lineHeight, offset.Height);
+            Assert.AreEqual(0, offset.Width);
+
+
+            //fifth line -  is just a spacer, chars, text end and an inline end 
+
+            line = content.Columns[0].Contents[4] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight, line.Height);
+            Assert.AreEqual(4, line.Runs.Count);
+
+            leftBegin = null;
+            leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = null;
+            rightBegin = null;
+            rightChars = null;
+            newline = null;
+            var end = line.Runs[2] as PDFTextRunEnd;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(end);
+
+            //Simple line from a newline offset (checked previously) so zero.
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+
+            //check the last block is at the correct offset in the page
+
+            var lastBlock = content.Columns[0].Contents[5] as PDFLayoutBlock;
+            Assert.IsNotNull(lastBlock);
+
+            //Should be 8 lines down based on the above content.
+            Assert.AreEqual(lineHeight * 8, lastBlock.TotalBounds.Y);
+
+            Assert.AreEqual(0, lastBlock.TotalBounds.X);
+            
+            //block region line = textbegin, chars, textend
+            Assert.AreEqual("In normal content flow", ((lastBlock.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockMultipleBlockExplicitSizeVAlignMiddle()
+        {
+            const int lineHeight = 30;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 20;
+            section.TextLeading = lineHeight;
+            section.Margins = 10;
+            section.BackgroundColor = Drawing.StandardColors.Silver;
+            //section.HorizontalAlignment = HorizontalAlignment.Justified;
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = lineHeight;
+            section.Style.OverlayGrid.GridXOffset = 10;
+            section.Style.OverlayGrid.GridYOffset = 10;
+            doc.Pages.Add(section);
+
+            var span = new Span();
+            span.Contents.Add(new TextLiteral("Before the inline "));
+            section.Contents.Add(span);
+
+            Div inline = new Div()
+            {
+                Height = lineHeight * 2,
+                Width = 100,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                VerticalAlignment = VerticalAlignment.Middle
+            };
+            //inline.Contents.Add(new TextLiteral("In the inline block"));
+            section.Contents.Add(inline);
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            section.Contents.Add(span);
+
+            inline = new Div()
+            {
+                Height = lineHeight / 2,
+                Width = 50,
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Aqua,
+                VerticalAlignment = VerticalAlignment.Middle
+            };
+
+            section.Contents.Add(inline);
+            //section.Contents.Clear();
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line."));
+            //span.Contents.Add(new TextLiteral(" Inline and flowing onto a new line "));
+            section.Contents.Add(span);
+
+
+
+            inline = new Div()
+            {
+                Height = (lineHeight * 3) - 10, //take off the margins
+                Width = 100 - 10, //take off the margins
+                PositionMode = Drawing.PositionMode.InlineBlock,
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Lime,
+                VerticalAlignment = VerticalAlignment.Middle,
+                Margins = 5
+            };
+            section.Contents.Add(inline);
+
+            span = new Span();
+            span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line that should continue on in the normal height for the page."));
+            section.Contents.Add(span);
+
+            //div is too big for the remaining space on the page
+            Div inflow = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };
+            inflow.Contents.Add(new TextLiteral("In normal content flow"));
+            section.Contents.Add(inflow);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockMultipleExplicitSizeVAlignMiddle.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            Assert.AreEqual(6, content.Columns[0].Contents.Count);
+            Assert.AreEqual(3, content.PositionedRegions.Count);
+
+            //first line - 1 inline block at 2x line height
+
+            var line = content.Columns[0].Contents[0] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight * 2, line.Height);
+            Assert.AreEqual(10, line.Runs.Count);
+            var leftBegin = line.Runs[1] as PDFTextRunBegin;
+            var leftChars = line.Runs[2] as PDFTextRunCharacter;
+            var inlineRun = line.Runs[5] as PDFLayoutInlineBlockRun;
+            var rightBegin = line.Runs[7] as PDFTextRunBegin;
+            var rightChars = line.Runs[8] as PDFTextRunCharacter;
+            var newline = line.Runs[9] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftBegin);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightBegin);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[0]);
+            var posReg = content.PositionedRegions[0];
+
+            //The positioned region is relative to the origin of the first line.
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(lineHeight * 2, posReg.TotalBounds.Height);
+            Assert.AreEqual(100, posReg.TotalBounds.Width);
+
+            //valign top baseline offset is ascender + half leading.
+            var baseline = leftBegin.TextRenderOptions.GetAscent() + (lineHeight - section.FontSize) / 2;
+
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+            //Add the margins for the start text cursor
+            Assert.AreEqual(baseline + section.Margins.Top, leftBegin.StartTextCursor.Height);
+            Assert.AreEqual(section.Margins.Left, leftBegin.StartTextCursor.Width);
+
+            var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            //The block within the positioned region should be 0,0,50, 100
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(lineHeight * 2, posBlock.Height);
+            Assert.AreEqual(100, posBlock.Width);
+
+            //Right begin text
+            Assert.AreEqual(baseline + section.Margins.Top, rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
+
+            //New line should push the cursor down and right for the inline block and first chars.
+            var offset = newline.NewLineOffset;
+            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
+            Assert.AreEqual(leftChars.Width + posReg.Width, offset.Width);
+
+            //second line - 1 small top aligned inline block with text either side
+
+            line = content.Columns[0].Contents[1] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight, line.Height);
+            Assert.AreEqual(9, line.Runs.Count);
+
+            leftBegin = null;
+            var leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = line.Runs[4] as PDFLayoutInlineBlockRun;
+            rightBegin = line.Runs[6] as PDFTextRunBegin;
+            rightChars = line.Runs[7] as PDFTextRunCharacter;
+            newline = line.Runs[8] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightBegin);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[1]);
+            posReg = content.PositionedRegions[1];
+
+            //The positioned region is relative to the origin of the first line.
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(lineHeight / 2, posReg.TotalBounds.Height);
+            Assert.AreEqual(50, posReg.TotalBounds.Width);
+
+
+            //Same baseline offset as line 1
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+
+            posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            //The block within the positioned region should be 0,0,50, 100
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(lineHeight / 2, posBlock.Height);
+            Assert.AreEqual(50, posBlock.Width);
+
+            //Right begin text - baseline and margins plue the previous line height ( = lineHeight * 2)
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 2), rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
+
+            //New line - single line height v offset
+            offset = newline.NewLineOffset;
+            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
+            Assert.AreEqual(lineHeight, offset.Height);
+            Assert.AreEqual(leftChars.Width + posReg.Width, offset.Width);
+
+            //third line - 1 top aligned inline block 3 * line height inc margins with text either side
+
+            line = content.Columns[0].Contents[2] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight * 3, line.Height);
+            Assert.AreEqual(9, line.Runs.Count);
+
+            leftBegin = null;
+            leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = line.Runs[4] as PDFLayoutInlineBlockRun;
+            rightBegin = line.Runs[6] as PDFTextRunBegin;
+            rightChars = line.Runs[7] as PDFTextRunCharacter;
+            newline = line.Runs[8] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(inlineRun);
+            Assert.IsNotNull(rightBegin);
+            Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+            //third positioned region
+            Assert.ReferenceEquals(inlineRun.Region, content.PositionedRegions[2]);
+            posReg = content.PositionedRegions[2];
+
+            //The positioned region is relative to the origin of the first line.
+            Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            //take off the margins
+            Assert.AreEqual((lineHeight * 3) - 10, posReg.TotalBounds.Height);
+            Assert.AreEqual(100 - 10, posReg.TotalBounds.Width);
+
+
+            //Same baseline offset as line 1
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+
+            posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            //The block within the positioned region should be 0,0,75, 110
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(lineHeight * 3, posBlock.Height);
+            Assert.AreEqual(100, posBlock.Width);
+
+            //Right begin text - baseline and margins plue the previous line height ( = lineHeight * 2)
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 3), rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
+
+            //New line - single line height v offset
+            offset = newline.NewLineOffset;
+            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
+            Assert.AreEqual(lineHeight * 3, offset.Height);
+            //include the margins as well
+            Assert.AreEqual(leftChars.Width + posReg.Width + 10, offset.Width);
+
+
+            //fourth line -  is just a spacer, chars and a new line 
+
+            line = content.Columns[0].Contents[3] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight, line.Height);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            leftBegin = null;
+            leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = null;
+            rightBegin = null;
+            rightChars = null;
+            newline = line.Runs[2] as PDFTextRunNewLine;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            //Assert.IsNotNull(inlineRun);
+            //Assert.IsNotNull(rightBegin);
+            //Assert.IsNotNull(rightChars);
+            Assert.IsNotNull(newline);
+
+
+            //Simple line from a newline offset (checked previously) so zero.
+            //TODO: zero works as it's ignored for the newline flow. But could be set to make more appropriate.
+            Assert.AreEqual(0, line.BaseLineOffset);
+
+
+            //New line - single line height v offset and 0 width (same start point for fifth line as fourth)
+            offset = newline.NewLineOffset;
+            Assert.AreEqual(lineHeight, offset.Height);
+            Assert.AreEqual(0, offset.Width);
+
+
+            //fifth line -  is just a spacer, chars, text end and an inline end 
+
+            line = content.Columns[0].Contents[4] as PDFLayoutLine;
+
+            Assert.AreEqual(lineHeight, line.Height);
+            Assert.AreEqual(4, line.Runs.Count);
+
+            leftBegin = null;
+            leftSpacer = line.Runs[0] as PDFTextRunSpacer;
+            leftChars = line.Runs[1] as PDFTextRunCharacter;
+            inlineRun = null;
+            rightBegin = null;
+            rightChars = null;
+            newline = null;
+            var end = line.Runs[2] as PDFTextRunEnd;
+
+            Assert.IsNotNull(leftSpacer);
+            Assert.IsNotNull(leftChars);
+            Assert.IsNotNull(end);
+
+            //Simple line from a newline offset (checked previously) so zero.
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+
+            //check the last block is at the correct offset in the page
+
+            var lastBlock = content.Columns[0].Contents[5] as PDFLayoutBlock;
+            Assert.IsNotNull(lastBlock);
+
+            //Should be 8 lines down based on the above content.
+            Assert.AreEqual(lineHeight * 8, lastBlock.TotalBounds.Y);
+
+            Assert.AreEqual(0, lastBlock.TotalBounds.X);
+
+            //block region line = textbegin, chars, textend
+            Assert.AreEqual("In normal content flow", ((lastBlock.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
+        }
+
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockOverflowToNewLine()
+        {
+            Assert.Inconclusive();
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockOverflowToNewColumn()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockOverflowToNewPage()
+        {
+            Assert.Inconclusive();
+        }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]

@@ -296,6 +296,19 @@ namespace Scryber.PDF
         {
             if (null == this.Font)
                 return Unit.Zero;
+            else if (this.Leading.HasValue)
+            {
+                if (null != this.Font.FontMetrics)
+                {
+                    var ascent = this.Font.FontMetrics.Ascent;
+                    var size = ascent  + this.Font.FontMetrics.Descent;
+                    var space = this.Leading.Value - size;
+                    var halflead = space / 2.0;
+                    return halflead + ascent;
+                }
+                else
+                    return this.Font.Size * 0.75;
+            }
             else if (null != this.Font.FontMetrics)
                 return this.Font.FontMetrics.BaseLineOffset;
             else

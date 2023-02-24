@@ -100,24 +100,7 @@ namespace Scryber.PDF.Layout
 
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            Scryber.Drawing.Point oldOffset = context.Offset;
-            var line = this.Line;
-            var index = line.Runs.IndexOf(this);
-
-            var x = context.Offset.X;
-
-            for (var i = 0; i < index; i++)
-            {
-                x += line.Runs[i].Width;
-            }
-
-            var offset = context.Offset;
-            offset.X = x;
-            context.Offset = offset;
-
             Native.PDFObjectRef oref = this.Region.OutputToPDF(context, writer);
-
-            context.Offset = oldOffset;
             return oref;
         }
     }

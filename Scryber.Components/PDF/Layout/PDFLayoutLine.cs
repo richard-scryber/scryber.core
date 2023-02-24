@@ -329,13 +329,14 @@ namespace Scryber.PDF.Layout
             bool isComplex = false;
 
 
-            if (this.Runs.Count == 3 && (this.Runs[0] is PDFTextRunSpacer || this.Runs[0] is PDFTextRunBegin))
+            if (false && this.Runs.Count == 3 && (this.Runs[0] is PDFTextRunSpacer || this.Runs[0] is PDFTextRunBegin))
             {
                 //No Alignment needed as we are a simple text run
             }
             else
             {
                 VerticalAlignment? valign = null;
+                var currWidth = Unit.Zero;
 
                 for (var index = 0; index < this.Runs.Count; index++)
                 {
@@ -353,6 +354,10 @@ namespace Scryber.PDF.Layout
                     {
                         //We have inline blocks to align.
                         isComplex = true;
+
+                        var rect = blockRun.Region.TotalBounds;
+                        rect.X = currWidth;
+                        blockRun.Region.TotalBounds = rect;
 
                         //pick the first vertical alignment for the line.
                         if (blockRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
@@ -382,7 +387,7 @@ namespace Scryber.PDF.Layout
                         if (inlineBegin.PositionOptions.VAlign.HasValue)
                             valign = inlineBegin.PositionOptions.VAlign.Value;
                     }
-                    
+                    currWidth += run.Width;
                 }
 
              
@@ -395,46 +400,30 @@ namespace Scryber.PDF.Layout
                     totalHeight = maxHeight;
 
                     var baselineOffset = totalHeight - maxDescender;
-                    var nextlineOffset = lastlineheight;
+                    
 
-
-                    if (this.BaseLineToBottom == Unit.Zero)
+                    switch (valign.Value)
                     {
-                        //ToDo: Caclulate this now
+                        case VerticalAlignment.Top:
+                            AlignBlocksFromTop(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                            break;
+                        case VerticalAlignment.Middle:
+                            AlignBlocksFromMiddle(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                            break;
+                        case VerticalAlignment.Bottom:
+                            AlignBlocksFromBottom(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                            break;
+                        case VerticalAlignment.Baseline:
+                        default:
+                            AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                            break;
                     }
                     
 
-                    foreach (var run in this.Runs)
-                    {
-                        if (run is PDFTextRunSpacer spacer && this.Runs.IndexOf(spacer) == 0 && this.LineIndex > 0) //first continuation line
-                        {
-                            var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
-                            var newLine = prev.LastRun() as PDFTextRunNewLine;
-                            var size = newLine.NewLineOffset;
-
-                            size.Height = totalHeight;
-                            newLine.NewLineOffset = size;
-                            
-                        }
-                        else if (run is PDFTextRunBegin begin)
-                        {
-                            var h = begin.TextRenderOptions.GetLineHeight();
-                            var desc = begin.TextRenderOptions.GetDescender();
-                            var offset = h - desc;
-                            //h += 10;
-
-                            begin.SetOffsetY(baselineOffset - offset); //just move to the baseline
-                            
-                        }
-                        else if (run is PDFLayoutInlineBlockRun inline)
-                        {
-                            if (inline.Height < maxHeight)
-                                inline.SetOffsetY(maxHeight - inline.Height);
-                        }
-                    }
-
                     //this.BaseLineOffset = baselineOffset;
                     this._totalHeight = totalHeight;
+                    this.VAlignment = valign.Value;
+                    //this.BaseLineOffset = baselineOffset;
                 }
 
                 else if (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunSpacer && this.LineIndex > 0) // we are are probably a soft return
@@ -446,8 +435,14 @@ namespace Scryber.PDF.Layout
                         if (null != prevReturn)
                         {
                             //we want to make sure the offset of the return is correct.
-                            
-                            var reqVOffset = this.BaseLineOffset + prevLine.BaseLineToBottom;
+                            var baseline = this.BaseLineOffset;
+
+                            if (baseline == Unit.Zero)
+                                baseline = prevReturn.TextOptions.GetBaselineOffset();
+
+                            var tobottom = prevLine.BaseLineToBottom;
+
+                            var reqVOffset = baseline + tobottom;
                             if (reqVOffset > prevReturn.NewLineOffset.Height)
                             {
                                 var size = prevReturn.NewLineOffset;
@@ -475,6 +470,176 @@ namespace Scryber.PDF.Layout
             //}
 
 
+        }
+
+
+        private void AlignBlocksFromTop(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
+        {
+            //This is top
+
+            foreach (var run in this.Runs)
+            {
+                if (run is PDFTextRunSpacer spacer && this.Runs.IndexOf(spacer) == 0 && this.LineIndex > 0) //first continuation line
+                {
+                    var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                    var newLine = prev.LastRun() as PDFTextRunNewLine;
+                    var size = newLine.NewLineOffset;
+
+                    size.Height = prev.Height;
+                    newLine.NewLineOffset = size;
+
+                    //this.BaseLineOffset = newLine.TextOptions.GetBaselineOffset();
+
+                }
+                else if (run is PDFTextRunBegin begin)
+                {
+                    //Do nothing on a begin as this is the default line alignment based an leading
+                    //without any inline blocks.
+                    continue;
+                }
+                else if (run is PDFLayoutInlineBlockRun inline)
+                {
+                    //if (inline.Height < maxHeight)
+                    //    inline.SetOffsetY(maxHeight - inline.Height);
+                }
+                else if (run is PDFTextRunNewLine nl)
+                {
+                    //Need to calculate the Baseline to bottom
+
+                    //max ascent character
+                    var ascent = nl.TextOptions.GetAscent();
+                    //half the leading
+                    var halflead = (nl.TextOptions.GetLineHeight() - nl.TextOptions.Font.Size) / 2.0;
+
+                    //take half the leading and the max ascent from the total line height
+                    var offset = totalHeight - (ascent + halflead);
+
+                    //and this is the offset from the baseline to the bottom of the full line height
+                    this.BaseLineToBottom = offset;
+                }
+            }
+        }
+
+        private void AlignBlocksFromMiddle(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
+        {
+            //This is bottom
+
+            foreach (var run in this.Runs)
+            {
+                if (run is PDFTextRunSpacer spacer && this.Runs.IndexOf(spacer) == 0 && this.LineIndex > 0) //first continuation line
+                {
+                    var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                    var newLine = prev.LastRun() as PDFTextRunNewLine;
+                    var size = newLine.NewLineOffset;
+
+                    size.Height = prev.Height;
+                    newLine.NewLineOffset = size;
+
+                    //this.BaseLineOffset = newLine.TextOptions.GetBaselineOffset();
+
+                }
+                else if (run is PDFTextRunBegin begin)
+                {
+                    var halfline = begin.TextRenderOptions.GetLineHeight() / 2.0;
+                    var halfasc = begin.TextRenderOptions.GetAscent() / 2.0;
+                    begin.SetOffsetY(halfasc + halfline);
+                    var curs = begin.StartTextCursor;
+                    //Do nothing on a begin as this is the default line alignment based an leading
+                    //without any inline blocks.
+                    continue;
+                }
+                else if (run is PDFLayoutInlineBlockRun inline)
+                {
+                    //if (inline.Height < maxHeight)
+                    //    inline.SetOffsetY(maxHeight - inline.Height);
+                }
+                else if (run is PDFTextRunNewLine nl)
+                {
+                    //Need to calculate the Baseline to bottom
+
+                    //max ascent character
+                    var height = nl.TextOptions.GetLineHeight();
+                    var ascent = nl.TextOptions.GetAscent();
+                    //half the leading
+                    var halflead = (height - nl.TextOptions.Font.Size) / 2.0;
+
+                    //take half the leading and the max ascent from the total line height
+                    var offset = totalHeight - (ascent + halflead);
+
+                    //and this is the offset from the baseline to the bottom of the full line height
+                    this.BaseLineToBottom = height - offset;
+                }
+            }
+        }
+
+        private void AlignBlocksFromBaseline(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
+        {
+            //This is baseline
+
+            this._totalHeight += maxdescender;
+
+            foreach (var run in this.Runs)
+            {
+                if (run is PDFTextRunSpacer spacer && this.Runs.IndexOf(spacer) == 0 && this.LineIndex > 0) //first continuation line
+                {
+                    var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                    var newLine = prev.LastRun() as PDFTextRunNewLine;
+                    var size = newLine.NewLineOffset;
+
+                    size.Height = totalHeight;
+                    newLine.NewLineOffset = size;
+
+                }
+                else if (run is PDFTextRunBegin begin)
+                {
+                    var h = begin.TextRenderOptions.GetLineHeight();
+                    //var desc = begin.TextRenderOptions.GetDescender();
+                    var offset = h;
+                    //h += 10;
+
+                    begin.SetOffsetY(baselineOffset); //just move to the baseline
+
+                }
+                else if (run is PDFLayoutInlineBlockRun inline)
+                {
+                    if (inline.Height < maxHeight)
+                        inline.SetOffsetY(maxHeight - inline.Height);
+                }
+            }
+        }
+
+        private void AlignBlocksFromBottom(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
+        {
+            //This is bottom
+
+            foreach (var run in this.Runs)
+            {
+                if (run is PDFTextRunSpacer spacer && this.Runs.IndexOf(spacer) == 0 && this.LineIndex > 0) //first continuation line
+                {
+                    var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
+                    var newLine = prev.LastRun() as PDFTextRunNewLine;
+                    var size = newLine.NewLineOffset;
+
+                    size.Height = totalHeight;
+                    newLine.NewLineOffset = size;
+
+                }
+                else if (run is PDFTextRunBegin begin)
+                {
+                    var h = begin.TextRenderOptions.GetLineHeight();
+                    var desc = begin.TextRenderOptions.GetDescender();
+                    var offset = h - desc;
+                    //h += 10;
+
+                    begin.SetOffsetY(baselineOffset - offset); //just move to the baseline
+
+                }
+                else if (run is PDFLayoutInlineBlockRun inline)
+                {
+                    if (inline.Height < maxHeight)
+                        inline.SetOffsetY(maxHeight - inline.Height);
+                }
+            }
         }
 
         private bool PrevLineIsTextReturn(out PDFTextRunNewLine prev)
@@ -662,54 +827,16 @@ namespace Scryber.PDF.Layout
         /// <param name="context"></param>
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageindex, Unit xoffset, Unit yoffset)
         {
-            bool logdebug = context.ShouldLogDebug;
-            if (logdebug)
+            if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Layout Line", "Pushing component layout onto runs in the line " + this.ToString());
 
-            
-            //There is a special case where the rendering relies on the previous line height of a text block
-            //To offset the next line.
-
-            //This works fune unless it is not TOP aligned and there is 
-            //something else increasing the height of the line.
-
-            //Where we apply an offset to the block so that it sits 
-            //at the bottom of the line itself.
-            //This pushes the next line down.
-
-            //So we need the first line of a text block to be handled differently
-            bool isspecial = true; // this.IsSpecialTextAlignmentCase();
-
-            var avail = this.Height;
-            
 
             foreach (PDFLayoutRun run in this.Runs)
             {
-                Unit itemYOffset = yoffset;
-
-
-                if (isspecial)
-                {
-
-                }
-                else if (this.VAlignment != VerticalAlignment.Top)
-                {
-
-                    Unit used = run.Height;
-                    Unit space = avail - used;
-
-                    if (this.VAlignment == VerticalAlignment.Middle)
-                        space = space / 2;
-
-
-
-                    itemYOffset += space;
-                }
-                
-                run.PushComponentLayout(context, pageindex, xoffset, itemYOffset);
+                run.PushComponentLayout(context, pageindex, xoffset, yoffset);
             }
 
-            if (logdebug)
+            if (context.ShouldLogDebug)
                 context.TraceLog.End(TraceLevel.Debug, "Layout Line", "Pushed all the component layouts onto the runs in the line " + this.ToString());
         }
 
@@ -717,8 +844,6 @@ namespace Scryber.PDF.Layout
         {
             if(this.Runs.Count < 1)
                 return false;
-
-            bool logdebug = context.ShouldLogDebug;
 
             bool shouldJustify = all;
 
@@ -758,7 +883,7 @@ namespace Scryber.PDF.Layout
                         lastchars = null;
                 }
 
-                if (logdebug)
+                if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Counted " + charCount + " characters and " + spaceCount + " spaces on line " + this.LineIndex);
 
                 
@@ -817,9 +942,22 @@ namespace Scryber.PDF.Layout
                             if (i > 0)
                             {
                                 Rect bounds = comprun.TotalBounds;
-                                bounds.X +=(_linespacingOptions.WordSpace * spaceCount) + (_linespacingOptions.CharSpace * charCount);
+                                bounds.X += (_linespacingOptions.WordSpace * spaceCount) + (_linespacingOptions.CharSpace * charCount);
                                 comprun.TotalBounds = bounds;
                             }
+                        }
+                        else if (cur is PDFLayoutInlineBlockRun blockrun)
+                        {
+                            if (i > 0)
+                            {
+                                Rect bounds = blockrun.Region.TotalBounds;
+                                bounds.X += (_linespacingOptions.WordSpace * spaceCount) + (_linespacingOptions.CharSpace * charCount);
+                                blockrun.Region.TotalBounds = bounds;
+                            }
+                        }
+                        else if (cur is PDFLayoutXObject xobj)
+                        {
+                            
                         }
                         else if (cur is PDFTextRunNewLine newLine)
                         {
@@ -839,7 +977,6 @@ namespace Scryber.PDF.Layout
         private ExtraSpacingOptions MeasureLineSpaces(PDFTextRenderOptions currOptions, int charCount, int spaceCount, Unit totalWidth, Unit currentWidth, Unit available, PDFLayoutContext context)
         {
             int fitted = 0;
-
             Size spaceSize = currOptions.Font.Resource.Definition.MeasureStringWidth(" ", 0, currOptions.Font.Size.PointsValue, 2000.0, true, out fitted);
 
             Unit extraSpaceSpace = available.PointsValue / spaceCount;
