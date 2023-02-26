@@ -33,35 +33,7 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+        
 
 
         /// <summary>
@@ -336,21 +308,21 @@ namespace Scryber.Core.UnitTests.Drawing
             Scryber.Drawing.Point target = new Scryber.Drawing.Point(0, 0);
             bool expected = true;
             bool actual;
-            actual = target.IsEmpty;
+            actual = target.IsZero;
             Assert.AreEqual(expected, actual);
 
             target = new Scryber.Drawing.Point(10, 0);
-            actual = target.IsEmpty;
+            actual = target.IsZero;
             expected = false;
             Assert.AreEqual(expected, actual);
 
             target = new Scryber.Drawing.Point(0, 10);
-            actual = target.IsEmpty;
+            actual = target.IsZero;
             expected = false;
             Assert.AreEqual(expected, actual);
 
             target = new Scryber.Drawing.Point(-10, 10);
-            actual = target.IsEmpty;
+            actual = target.IsZero;
             expected = false;
             Assert.AreEqual(expected, actual);
         }
@@ -395,6 +367,40 @@ namespace Scryber.Core.UnitTests.Drawing
             actual = target.Y;
 
             Assert.AreEqual(expected, actual);
+        }
+
+
+        /// <summary>
+        ///A test for IsRelative
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void IsRelative_Test()
+        {
+            Point target = new Point(10, 20);
+            bool expected = false;
+            bool actual;
+
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
+            target = new Point(new Unit(20, PageUnits.ViewPortWidth), 30);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Point(40, new Unit(50, PageUnits.ViewPortWidth));
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Point(new Unit(20, PageUnits.ViewPortWidth), new Unit(30, PageUnits.ViewPortHeight));
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
         }
     }
 }

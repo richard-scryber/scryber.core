@@ -55,17 +55,6 @@ namespace Scryber.Drawing
         //Reserved 0 for empty units
         Points = 0,
         Millimeters = 1,
-        Inches = 2
-    }
-
-    /// <summary>
-    /// Available page units
-    /// </summary>
-    public enum RelativeUnits
-    {
-        //Reserved 0 for empty units
-        Points = 0,
-        Millimeters = 1,
         Inches = 2,
         Pixel = 3,
         Percent = 4,
@@ -78,6 +67,8 @@ namespace Scryber.Drawing
         ViewPortMin = 11,
         ViewPortMax = 12
     }
+
+    
 
     
 

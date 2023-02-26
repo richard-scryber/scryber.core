@@ -2232,7 +2232,7 @@ body.grey div.reverse{
 
             Assert.IsNotNull(applied.Columns.ColumnWidths, "Column widths is not set");
             Assert.IsFalse(applied.Columns.ColumnWidths.IsEmpty, "Column widths is empty");
-            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsEmpty, "Column widths explicit values is not empty");
+            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsZero, "Column widths explicit values is not empty");
             Assert.AreEqual(3, applied.Columns.ColumnWidths.Widths.Length, "Column widths is not the right length");
             Assert.AreEqual("[0.5 0 0.2]", applied.Columns.ColumnWidths.ToString(), "Column widths are not correct");
 

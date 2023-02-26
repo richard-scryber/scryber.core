@@ -199,7 +199,7 @@ namespace Scryber.Svg.Components
             else
                 yRadius = xRadius;
 
-            if (xRadius.IsEmpty && yRadius.IsEmpty)
+            if (xRadius.IsZero && yRadius.IsZero)
             {
                 //values are zero, so just build a rect
                 BuildPath(path, points, style, end);

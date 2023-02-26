@@ -41,13 +41,21 @@ namespace Scryber.Drawing
         {
             get 
             {
-                return ConvertToUnits(_val, this.Units);
+                if (this.IsRelative)
+                    return _val;
+                else
+                    return ConvertToUnits(_val, this.Units);
             }
         }
 
         public double PointsValue
         {
-            get { return _val; }
+            get
+            {
+                if(this.IsRelative)
+                    throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+                return _val;
+            }
         }
 
         
@@ -63,23 +71,51 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Gets the value of the unit in points (Native PDF Measurement) as a PDFReal value
+        /// Gets the value of the unit in points as a real value
         /// </summary>
         public PDFReal RealValue
         {
-            get { return new PDFReal(this._val); }
+            get {
+                if (this.IsRelative)
+                    throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+                return new PDFReal(this._val);
+            }
         }
 
-        
-        public bool IsEmpty
+        /// <summary>
+        /// Returns true if this Unit has a value of zero
+        /// </summary>
+        public bool IsZero
         {
             get { return this._val == 0; }
         }
 
+
+        public bool IsRelative
+        {
+            get
+            {
+                return IsRelativeUnit(this.Units);
+            }
+        }
+
+
+        //
+        // constructors
+        //
+
         public Unit(double value, PageUnits units)
         {
-            this._val = ConvertToPoints(value, units);
-            this._units = units;
+            if (IsRelativeUnit(units))
+            {
+                this._val = value;
+                this._units = units;
+            }
+            else
+            {
+                this._val = ConvertToPoints(value, units);
+                this._units = units;
+            }
         }
 
         public Unit(double pointvalue)
@@ -93,52 +129,19 @@ namespace Scryber.Drawing
         {
         }
 
-        
-
-
-        private static double ConvertToPoints(double val, PageUnits currentUnits)
-        {
-            switch (currentUnits)
-            {
-                case PageUnits.Points:
-                    return val;
-                    
-                case PageUnits.Millimeters:
-                    return val * PointsPerMM;
-                    
-                case PageUnits.Inches:
-                    return val * PointsPerInch;
-                    
-                default:
-                    throw new ArgumentOutOfRangeException("currentUnits", String.Format(Errors.UnknownPageUnits, currentUnits));
-            }
-        }
-
-        private static double ConvertToUnits(double ptVal, PageUnits toconvertto)
-        {
-            switch (toconvertto)
-            {
-                case PageUnits.Points:
-                    return ptVal;
-                    
-                case PageUnits.Millimeters:
-                    return ptVal * MMPerPoint;
-                    
-                case PageUnits.Inches:
-                    return ptVal * InchesPerPoint;
-                    
-                default:
-                    throw new ArgumentOutOfRangeException("toconvertto", String.Format(Errors.UnknownPageUnits, toconvertto));
-            }
-        }
-
         public Unit ToPoints()
         {
+            if (this.IsRelative)
+                throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+
             return new Unit(this._val, PageUnits.Points);
         }
 
         public Unit ToMillimeters()
         {
+            if (this.IsRelative)
+                throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+
             if (this._units == PageUnits.Millimeters)
                 return this;
             else
@@ -147,6 +150,9 @@ namespace Scryber.Drawing
 
         public Unit ToInches()
         {
+            if (this.IsRelative)
+                throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+
             if (this._units == PageUnits.Inches)
                 return this;
             else
@@ -154,12 +160,45 @@ namespace Scryber.Drawing
         }
 
 
+        public Unit ToAbsolute(Unit referenceUnit)
+        {
+            if (referenceUnit.IsRelative)
+                throw new InvalidOperationException("The reference Unit must be absolute to convert this to an absolute dimension");
+
+            if (this.IsZero)
+                return Unit.Zero;
+            
+            Unit result;
+
+            switch (this._units)
+            {
+                case (PageUnits.Percent):
+                case (PageUnits.ViewPortHeight):
+                case (PageUnits.ViewPortWidth):
+                case (PageUnits.ViewPortMax):
+                case (PageUnits.ViewPortMin):
+                    result = referenceUnit * (this._val / 100.0);
+                    break;
+                case (PageUnits.EMHeight):
+                case (PageUnits.EXHeight):
+                case (PageUnits.RootEMHeight):
+                case (PageUnits.ZeroWidth):
+                    result = referenceUnit * this._val;
+                    break;
+                default:
+                    result = this;
+                    break;
+            }
+            return result;
+        }
+
+
         public override int GetHashCode()
         {
             return this._val.GetHashCode();
         }
-        
-        
+
+
 
         #region override ToString()
 
@@ -181,6 +220,43 @@ namespace Scryber.Drawing
                     s = InchPostFix;
                     break;
 
+                case PageUnits.Percent:
+                    s = RelativePercentPostfix;
+                    break;
+
+                case PageUnits.EMHeight:
+                    s = RelativeEMHeightPostfix;
+                    break;
+
+                case PageUnits.EXHeight:
+                    s = RelativeExHeightPostfix;
+                    break;
+
+                case PageUnits.ZeroWidth:
+                    s = RelativeZeroWidthPostfix;
+                    break;
+
+                case PageUnits.RootEMHeight:
+                    s = RelativeRootEMHeightPostfix;
+                    break;
+
+                case PageUnits.ViewPortWidth:
+                    s = RelativeViewPortWidthPostfix;
+                    break;
+
+                case PageUnits.ViewPortHeight:
+                    s = RelativeViewPortHeightPostfix;
+                    break;
+
+                case PageUnits.ViewPortMin:
+                    s = RelativeViewPortMinPostfix;
+                    break;
+
+                case PageUnits.ViewPortMax:
+                    s = RelativeViewPortMaxPostfix;
+                    break;
+
+
                 case PageUnits.Points:
                 default:
                     s = PointPostFix;
@@ -191,11 +267,64 @@ namespace Scryber.Drawing
 
         #endregion
 
+
+        private static double ConvertToPoints(double val, PageUnits currentUnits)
+        {
+            switch (currentUnits)
+            {
+                case PageUnits.Points:
+                    return val;
+                    
+                case PageUnits.Millimeters:
+                    return val * PointsPerMM;
+                    
+                case PageUnits.Inches:
+                    return val * PointsPerInch;
+                    
+                default:
+                    throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+            }
+        }
+
+        private static double ConvertToUnits(double ptVal, PageUnits toconvertto)
+        {
+            switch (toconvertto)
+            {
+                case PageUnits.Points:
+                    return ptVal;
+                    
+                case PageUnits.Millimeters:
+                    return ptVal * MMPerPoint;
+                    
+                case PageUnits.Inches:
+                    return ptVal * InchesPerPoint;
+                    
+                default:
+                    throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
+            }
+        }
+
+        
+
         #region bool Equals(PDFUnit unit) + 1 overload
 
         public bool Equals(Unit unit)
         {
-            return DoubleApproximatelyEquals(this._val, unit._val);
+            if (this.IsRelative)
+            {
+                if (!unit.IsRelative)
+                    return false;
+                else if (this.Units != unit.Units)
+                    return false;
+                else
+                    return DoubleApproximatelyEquals(this._val, unit._val);
+            }
+            else if (unit.IsRelative)
+            {
+                return false;
+            }
+            else
+                return DoubleApproximatelyEquals(this._val, unit._val);
         }
 
 
@@ -223,6 +352,12 @@ namespace Scryber.Drawing
 
         public int CompareTo(Unit unit)
         {
+            if (this.IsRelative || unit.IsRelative)
+            {
+                if (this.Units != unit.Units)
+                    throw new InvalidOperationException("Cannot compare different relative units");
+            }
+
             return this._val.CompareTo(unit._val);
         }
 
@@ -258,6 +393,12 @@ namespace Scryber.Drawing
 
         public static int Compare(Unit one, Unit two)
         {
+            if (one.IsRelative || two.IsRelative)
+            {
+                if (one.Units != two.Units)
+                    throw new InvalidOperationException("Cannot compare different relative units");
+            }
+
             return one._val.CompareTo(two._val);
         }
 
@@ -268,7 +409,15 @@ namespace Scryber.Drawing
 
         public static Unit operator +(Unit left, Unit right)
         {
-            return new Unit(left._val + right._val);
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units != right.Units)
+                    throw new InvalidOperationException("Cannot calculate different relative units");
+            }
+
+            var newUnit = new Unit(left._val + right._val);
+            newUnit._units = left.Units;
+            return newUnit;
         }
 
         public static Unit Add(Unit left, Unit right)
@@ -282,8 +431,15 @@ namespace Scryber.Drawing
 
         public static Unit operator -(Unit left, Unit right)
         {
-            return new Unit(left._val - right._val);
-            
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units != right.Units)
+                    throw new InvalidOperationException("Cannot calculate different relative units");
+            }
+
+            var newUnit = new Unit(left._val - right._val);
+            newUnit._units = left.Units;
+            return newUnit;
         }
 
         public static Unit Subtract(Unit left, Unit right)
@@ -347,22 +503,34 @@ namespace Scryber.Drawing
 
         public static bool operator ==(Unit left, Unit right)
         {
-            return left._val == right._val;
+            if (left.IsRelative || right.IsRelative)
+                return left.Equals(right);
+            else
+                return left._val == right._val;
         }
 
         public static bool Equals(Unit left, Unit right)
         {
-            return left._val == right._val;
+            if (left.IsRelative || right.IsRelative)
+                return left.Equals(right);
+            else
+                return left._val == right._val;
         }
 
         public static bool operator !=(Unit left, Unit right)
         {
-            return left._val != right._val;
+            if (left.IsRelative || right.IsRelative)
+                return !left.Equals(right);
+            else
+                return left._val != right._val;
         }
 
         public static bool NotEquals(Unit left, Unit right)
         {
-            return left._val != right._val;
+            if (left.IsRelative || right.IsRelative)
+                return !left.Equals(right);
+            else
+                return left._val != right._val;
         }
 
         #endregion
@@ -371,22 +539,54 @@ namespace Scryber.Drawing
 
         public static bool operator >(Unit left, Unit right)
         {
-            return left._val > right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val > right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val > right._val;
         }
 
         public static bool operator <(Unit left, Unit right)
         {
-            return left._val < right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val < right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val < right._val;
         }
 
         public static bool GreaterThan(Unit left, Unit right)
         {
-            return left._val > right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val > right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val > right._val;
         }
 
         public static bool LessThan(Unit left, Unit right)
         {
-            return left._val < right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val < right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val < right._val;
         }
 
         #endregion
@@ -395,22 +595,54 @@ namespace Scryber.Drawing
 
         public static bool operator <=(Unit left, Unit right)
         {
-            return left._val <= right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val <= right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val <= right._val;
         }
 
         public static bool operator >=(Unit left, Unit right)
         {
-            return left._val >= right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val >= right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val >= right._val;
         }
 
         public static bool GreaterThanEqual(Unit left, Unit right)
         {
-            return left._val >= right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val >= right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val >= right._val;
         }
 
         public static bool LessThanEqual(Unit left, Unit right)
         {
-            return left._val <= right._val;
+            if (left.IsRelative || right.IsRelative)
+            {
+                if (left.Units == right.Units)
+                    return left._val <= right._val;
+                else
+                    throw new InvalidOperationException("The Units must be absolute or the same, to be compared to another dimension");
+            }
+            else
+                return left._val <= right._val;
         }
 
         #endregion
@@ -434,6 +666,12 @@ namespace Scryber.Drawing
 
         public static Unit Convert(Unit unit, PageUnits tounits)
         {
+            if (unit.IsRelative)
+            {
+                if (unit.Units != tounits)
+                    throw new InvalidOperationException("Cannot convert relative units. Use the ToAbsolute method to fix the size before conversion");
+            }
+
             Unit newunit = new Unit(unit._val);
             newunit._units = tounits;
             return newunit;
@@ -445,6 +683,12 @@ namespace Scryber.Drawing
 
         public static Unit Max(Unit a, Unit b)
         {
+            if (a.IsRelative || b.IsRelative)
+            {
+                if (a.Units != b.Units)
+                    throw new InvalidOperationException("Cannot compare different relative units");
+            }
+
             if (a._val > b._val)
                 return a;
             else
@@ -453,6 +697,12 @@ namespace Scryber.Drawing
 
         public static Unit Min(Unit a, Unit b)
         {
+            if (a.IsRelative || b.IsRelative)
+            {
+                if (a.Units != b.Units)
+                    throw new InvalidOperationException("Cannot compare different relative units");
+            }
+
             if (a._val < b._val)
                 return a;
             else
@@ -501,7 +751,7 @@ namespace Scryber.Drawing
             return new Unit(val, unit);
         }
 
-        private static bool IsRelativeValue(string value, out double val, out PageUnits unit)
+        private static bool IsRelativeFontSizeValue(string value, out double val, out PageUnits unit)
         {
             bool parsed;
             switch (value)
@@ -558,20 +808,51 @@ namespace Scryber.Drawing
         private static PageUnits GetUnit(ref int offset, string value, ref double number)
         {
             string end = value.Substring(offset).Trim().ToLower();
-            if (end == MillimeterPostFix)
-                return PageUnits.Millimeters;
-            else if (end == InchPostFix)
-                return PageUnits.Inches;
-            else if (end == ExplicitPointPostFix)
-                return PageUnits.Points;
-            else if (end == ExplicitPixelPostFix)
+            switch (end)
             {
-                number = number * (72.0 / 96.0);
-                return PageUnits.Points;
-            }
-            else
-                throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
+                case (MillimeterPostFix):
+                    return PageUnits.Millimeters;
 
+                case (InchPostFix):
+                    return PageUnits.Inches;
+
+                case (ExplicitPointPostFix):
+                    return PageUnits.Points;
+
+                case (ExplicitPixelPostFix):
+                    number = number * (72.0 / 96.0);
+                    return PageUnits.Points;
+
+                case (RelativePercentPostfix):
+                    return PageUnits.Percent;
+
+                case (RelativeEMHeightPostfix):
+                    return PageUnits.EMHeight;
+
+                case (RelativeExHeightPostfix):
+                    return PageUnits.EXHeight;
+
+                case (RelativeZeroWidthPostfix):
+                    return PageUnits.ZeroWidth;
+
+                case (RelativeRootEMHeightPostfix):
+                    return PageUnits.RootEMHeight;
+
+                case (RelativeViewPortWidthPostfix):
+                    return PageUnits.ViewPortWidth;
+
+                case (RelativeViewPortHeightPostfix):
+                    return PageUnits.ViewPortHeight;
+
+                case (RelativeViewPortMinPostfix):
+                    return PageUnits.ViewPortMin;
+
+                case (RelativeViewPortMaxPostfix):
+                    return PageUnits.ViewPortMax;
+                default:
+                    throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt..)"), "value");
+
+            }
         }
 
         private static double GetNumber(ref int offset, string value)
@@ -582,7 +863,9 @@ namespace Scryber.Drawing
             {
                 if (end == start && value[end] == '-')
                     end++;
-                if (char.IsDigit(value, end) || char.IsPunctuation(value,end))
+                if (value[end] == '%')
+                    break;
+                else if (char.IsDigit(value, end) || char.IsPunctuation(value,end))
                     end++;
                 else
                     break;
@@ -604,13 +887,42 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region IsRelativeUnit(Unit) + 1 overload
+
+        /// <summary>
+        /// Returns true if the unit has a PageUnit dimension that is defined as relative to other graphic content
+        /// </summary>
+        /// <param name="unit">The unit to check</param>
+        /// <returns>True if the units dimension is relative</returns>
+        public static bool IsRelativeUnit(Unit unit)
+        {
+            if (unit.Units >= RelativeStart)
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Returns true if the PageUnit dimension is defined as relative to other graphic content
+        /// </summary>
+        /// <param name="unit">The PageUnit to check</param>
+        /// <returns>True if the dimension is relative</returns>
+        public static bool IsRelativeUnit(PageUnits units)
+        {
+            if (units >= RelativeStart)
+                return true;
+            else
+                return false;
+        }
+
+        #endregion
 
         //
         // factory methods
         //
 
         #region public static PDFUnit Pt(double value)
-        
+
         /// <summary>
         /// Creates a new PDFUnit with the specified value in Points
         /// </summary>
@@ -696,6 +1008,20 @@ namespace Scryber.Drawing
         public const string ExplicitPointPostFix = "pt";
         public const string ExplicitPixelPostFix = "px";
         public const string PointPostFix = "pt";
+
+
+        public const PageUnits RelativeStart = PageUnits.Percent;
+
+        public const string RelativePercentPostfix = "%";
+        public const string RelativeEMHeightPostfix = "em";
+        public const string RelativeExHeightPostfix = "ex";
+        public const string RelativeZeroWidthPostfix = "ch";
+        public const string RelativeRootEMHeightPostfix = "rem";
+        public const string RelativeViewPortWidthPostfix = "vw";
+        public const string RelativeViewPortHeightPostfix = "vh";
+        public const string RelativeViewPortMinPostfix = "vmin";
+        public const string RelativeViewPortMaxPostfix = "vmax";
+
 
 
     }

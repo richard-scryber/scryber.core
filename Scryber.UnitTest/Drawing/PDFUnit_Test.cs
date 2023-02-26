@@ -1,7 +1,6 @@
 ﻿using Scryber.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Scryber;
 using System.CodeDom;
 using Scryber.PDF.Native;
 
@@ -17,6 +16,7 @@ namespace Scryber.Core.UnitTests.Drawing
     public class PDFUnit_Test
     {
 
+        private const string TestCategory = "Drawing Structures";
 
         private TestContext testContextInstance;
 
@@ -36,35 +36,7 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+        
 
         //
         // constructors
@@ -77,7 +49,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for PDFUnit Constructor
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void PDFUnitConstructor_Test()
         {
             int pointvalue = 0;
@@ -92,7 +64,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for PDFUnit Constructor
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void PDFUnitConstructor_Test1()
         {
             double pointvalue = 0; 
@@ -107,7 +79,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for PDFUnit Constructor
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void PDFUnitConstructor_Test2()
         {
             double value = 0F; 
@@ -120,7 +92,7 @@ namespace Scryber.Core.UnitTests.Drawing
         }
 
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void PDFUnitContrsuctor_Test3()
         {
             double mm = 25.4;
@@ -145,7 +117,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Units
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Units_Test()
         {
             Unit target = new Unit(72);
@@ -175,7 +147,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Value
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Value_Test()
         {
             Unit target = new Unit(72);
@@ -209,18 +181,18 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for IsEmpty
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void IsEmpty_Test()
         {
             Unit target = new Unit();
             bool actual;
             bool expected = true;
-            actual = target.IsEmpty;
+            actual = target.IsZero;
             Assert.AreEqual(expected, actual, "parameterless constructor did not return an Empty Unit value");
 
             target = new Unit(1.0, PageUnits.Inches);
             expected = false;
-            actual = target.IsEmpty;
+            actual = target.IsZero;
             Assert.AreEqual(expected, actual, "A valid unit returned true for being empty");
 
         }
@@ -233,7 +205,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for PointsValue
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void PointsValue_Test()
         {
             Unit target = new Unit(1.0,PageUnits.Inches);
@@ -257,7 +229,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for RealValue
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void RealValue_Test()
         {
             Unit target = new Unit(1.0, PageUnits.Inches);
@@ -284,7 +256,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Add where the units match
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Add_Test()
         {
             Unit left = new Unit(10, PageUnits.Millimeters);
@@ -326,7 +298,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Add where the units do not match
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Add_Test2()
         {
             Unit left = new Unit(25.4, PageUnits.Millimeters); //1 inch
@@ -376,7 +348,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Add where the units match
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Subtract_Test()
         {
             Unit left = new Unit(20, PageUnits.Millimeters);
@@ -419,7 +391,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Add where the units do not match
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Subtract_Test2()
         {
             Unit left = new Unit(50.8, PageUnits.Millimeters); //1 inch
@@ -469,7 +441,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Divide and the divide operator on PDFUnits and double operands
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void DivideDouble_Test()
         {
             Unit left = new Unit(10,PageUnits.Inches);
@@ -519,7 +491,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Divide and the divide operator on PDFUnits and double operands
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void DivideInt_Test()
         {
             Unit left = new Unit(10, PageUnits.Inches);
@@ -572,7 +544,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Multiply and the multiply operator for doubles
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void MultiplyDouble_Test()
         {
             Unit left = new Unit(10, PageUnits.Inches);
@@ -623,7 +595,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Multiply and the multiply operator
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void MultiplyInt_Test()
         {
             Unit left = new Unit(10, PageUnits.Inches);
@@ -680,7 +652,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Compare
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Compare_Test()
         {
             Unit one = new Unit(72, PageUnits.Points);
@@ -743,7 +715,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for CompareTo(object)
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void CompareTo_Test()
         {
             Unit target = new Unit(72, PageUnits.Points);
@@ -806,7 +778,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for CompareTo Unit to Unit
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void CompareTo_Test1()
         {
             Unit target = new Unit(72, PageUnits.Points);
@@ -872,7 +844,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Equals
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void EqualStatic_Test()
         {
             Unit left = new Unit(72,PageUnits.Points); 
@@ -902,7 +874,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Equals
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void EqualToObject_Test1()
         {
             Unit target = new Unit(72,PageUnits.Points);
@@ -925,7 +897,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Equals
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void EqualToUnit_Test2()
         {
             Unit target = new Unit(72, PageUnits.Points);
@@ -951,7 +923,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for NotEquals
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void NotEquals_Test()
         {
             Unit left = new Unit(72,PageUnits.Points); 
@@ -986,7 +958,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for GreaterThan
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void GreaterThan_Test()
         {
             Unit left = new Unit(144, PageUnits.Points);
@@ -1030,7 +1002,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for GreaterThanEqual
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void GreaterThanEqual_Test()
         {
             Unit left = new Unit(144, PageUnits.Points);
@@ -1078,7 +1050,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for LessThan
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void LessThan_Test()
         {
             Unit left = new Unit(72, PageUnits.Points);
@@ -1121,7 +1093,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for LessThanEqual
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void LessThanEqual_Test()
         {
             Unit left = new Unit(72, PageUnits.Points);
@@ -1168,7 +1140,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Max
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Max_Test()
         {
             Unit a = new Unit(72, PageUnits.Points);
@@ -1184,7 +1156,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Min
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Min_Test()
         {
             Unit a = new Unit(72, PageUnits.Points);
@@ -1208,13 +1180,13 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Parse
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Parse_Test()
         {
             Parse("10pt", new Unit(10,PageUnits.Points));
             Parse("20.543pt", new Unit(20.543, PageUnits.Points));
             Parse("000123.456", new Unit(123.456));
-            Parse("1.5in", new Unit(1.5, PageUnits.Inches));
+            Parse("-1.5in", new Unit(-1.5, PageUnits.Inches));
             Parse("234567890123.12345mm", new Unit(234567890123.12345, PageUnits.Millimeters));
 
             try
@@ -1246,7 +1218,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for TryParse
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void TryParse_Test()
         {
             TryParse("10pt", true, new Unit(10, PageUnits.Points));
@@ -1282,7 +1254,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Convert
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Convert_Test()
         {
             Unit expected = new Unit(1, PageUnits.Inches);
@@ -1332,7 +1304,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for ToInches
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void ToInches_Test()
         {
             Unit target = new Unit(72,PageUnits.Points); 
@@ -1348,7 +1320,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for ToMillimeters
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void ToMillimeters_Test()
         {
             Unit target = new Unit(72, PageUnits.Points);
@@ -1363,7 +1335,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for ToPoints
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void ToPoints_Test()
         {
             Unit target = new Unit(1, PageUnits.Inches);
@@ -1382,7 +1354,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for ToString
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void ToString_Test()
         {
             ConfirmString("0pt", true, new Unit(0, PageUnits.Points));
@@ -1412,7 +1384,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for GetHashCode
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void GetHashCode_Test()
         {
             Unit target = new Unit(72, PageUnits.Points);
@@ -1436,7 +1408,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for op_Implicit
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void op_ImplicitFromDouble_Test()
         {
             double value = 100; 
@@ -1453,7 +1425,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for op_Implicit
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void op_ImplicitFromInt_Test()
         {
             int value = 100;
@@ -1475,7 +1447,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Empty
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Empty_Test()
         {
             Unit actual;
@@ -1497,7 +1469,7 @@ namespace Scryber.Core.UnitTests.Drawing
         ///A test for Zero
         ///</summary>
         [TestMethod()]
-        [TestCategory("Drawing Structures")]
+        [TestCategory(TestCategory)]
         public void Zero_Test()
         {
             Unit actual;

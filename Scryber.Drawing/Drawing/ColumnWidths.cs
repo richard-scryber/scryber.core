@@ -36,7 +36,7 @@ namespace Scryber.Drawing
             get
             {
                 if (null == _widths || _widths.Length == 0)
-                    return this._explicit.IsEmpty;
+                    return this._explicit.IsZero;
                 else
                     return false;
             }
@@ -46,7 +46,7 @@ namespace Scryber.Drawing
         {
             get
             {
-                return !this._explicit.IsEmpty;
+                return !this._explicit.IsZero;
             }
         }
 

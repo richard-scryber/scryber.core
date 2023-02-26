@@ -194,7 +194,7 @@ namespace Scryber.PDF.Layout
         {
             get
             {
-                return _transformBounds.IsEmpty == false;
+                return _transformBounds.IsZero == false;
             }
         }
 

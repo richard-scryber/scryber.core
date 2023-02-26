@@ -88,11 +88,28 @@ namespace Scryber.Drawing
             }
         }
 
+        /// <summary>
+        /// Returns true if and only if all the units are zero
+        /// </summary>
         public bool IsEmpty
         {
             get
             {
-                return this.Equals(Rect.Empty);
+                if (this._x.Value == 0.0 && this._y.Value == 0.0 && this._w == 0.0 && this._h == 0.0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if one or more of the units in this rect are relative units.
+        /// </summary>
+        public bool IsRelative
+        {
+            get
+            {
+                return this._x.IsRelative || this._y.IsRelative || this._w.IsRelative || this._h.IsRelative;
             }
         }
 
