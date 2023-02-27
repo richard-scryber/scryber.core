@@ -734,7 +734,8 @@ namespace Scryber.PDF.Layout
             var font = this.FullStyle.CreateTextOptions();
             var fontSize = new Size(font.GetLineHeight(), font.GetZeroCharWidth());
 
-            return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, containerSize, fontSize, Font.DefaultFontSize);
+            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, containerSize, fontSize, Font.DefaultFontSize);
+            return full;
         }
 
 

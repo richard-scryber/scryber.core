@@ -216,7 +216,7 @@ namespace Scryber.PDF.Layout
             var fontSize = new Size(metrics.TotalLineHeight, metrics.ZeroWidth);
             var pageSize = PageSize.A4.Size;
 
-            return this.StyleStack.GetFullStyle(forComponent, pageSize, pageSize, fontSize, fontSize.Height);
+            return this.StyleStack.GetFullStyleForPage(forComponent, fontSize, fontSize.Height);
         }
     }
 }

@@ -159,6 +159,32 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public override Unit Width {get;set;}
+
+        /// <summary>
+        /// Overrides the default to set the pagestyle width 
+        /// </summary>
+        public override Unit Width
+        {
+            get => base.Style.PageStyle.Width;
+            set => base.Style.PageStyle.Width = value;
+        }
+
+        #endregion
+
+        #region public override Unit Height {get;set;}
+
+        /// <summary>
+        /// Overrides the default to set the pagestyle Height 
+        /// </summary>
+        public override Unit Height
+        {
+            get => base.Style.PageStyle.Height;
+            set => base.Style.PageStyle.Height = value;
+        }
+
+        #endregion
+
         #region public int PageNumberStartIndex {get;set;}
 
         [PDFAttribute("page-number-start-index", Const.PDFStylesNamespace)]
