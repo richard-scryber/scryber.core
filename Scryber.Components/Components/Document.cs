@@ -1038,7 +1038,7 @@ namespace Scryber.Components
             
             //Get the applied style and then merge it into the base style
             Style applied = this.GetAppliedStyle(this, style);
-            applied.Flatten();
+            
 
             return applied;
         }

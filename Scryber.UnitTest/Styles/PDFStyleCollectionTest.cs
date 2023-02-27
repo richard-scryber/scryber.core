@@ -115,13 +115,11 @@ namespace Scryber.Core.UnitTests.Styles
 
             Style style = new Style();
             target.MergeInto(style, lbl);
-            style.Flatten();
             Assert.IsFalse(style.HasValues);//no style class on the label
 
             lbl.StyleClass = "sea";
             style = new Style();
             target.MergeInto(style, lbl);
-            style.Flatten();
 
             Assert.AreEqual(StandardColors.Red, style.Border.Color); //from defn as higher priority
             Assert.AreEqual((Unit)10, style.Border.Width); // from defn (defn2 has no width)

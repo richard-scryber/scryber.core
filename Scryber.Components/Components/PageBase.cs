@@ -523,12 +523,12 @@ namespace Scryber.Components
 
         #region public override PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles)
 
-        public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
-        {
-            Style full = styles.GetFullStyle(this);
-            PageSize size = full.CreatePageSize();
-            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, size.Size, context);
-        }
+        //public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
+        //{
+        //    Style full = styles.GetFullStyle(this);
+        //    PageSize size = full.CreatePageSize();
+        //    return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, size.Size, context);
+        //}
 
         #endregion
 

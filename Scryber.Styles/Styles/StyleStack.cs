@@ -22,6 +22,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber;
+using Scryber.Drawing;
+
 
 namespace Scryber.Styles
 {
@@ -74,9 +76,10 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="Component"></param>
         /// <returns></returns>
-        public Style GetFullStyle(IComponent Component)
+        public Style GetFullStyle(IComponent Component, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Style style = BuildFullStyle(Component);
+            style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
             return style;
         }
 
@@ -122,7 +125,7 @@ namespace Scryber.Styles
             }
 
             style.Variables = variables;
-            style = style.Flatten();
+            
 
             return style;
         }

@@ -179,10 +179,8 @@ namespace Scryber.PDF.Layout
                 this.StyleStack.Push(style);
 
 
-            Style full = this.Context.StyleStack.GetFullStyle(pg);
+            Style full = this.BuildFullStyle(pg);
 
-
-            
             LayoutPageWithStyle(pg, full);
 
 
@@ -211,6 +209,14 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        protected override Style BuildFullStyle(Component forComponent)
+        {
+            FontDefinition font = FontFactory.GetFontDefinition(Font.DefaultFontFamily, Drawing.FontStyle.Regular, FontWeights.Regular);
+            var metrics = font.GetFontMetrics(Font.DefaultFontSize);
+            var fontSize = new Size(metrics.TotalLineHeight, metrics.ZeroWidth);
+            var pageSize = PageSize.A4.Size;
 
+            return this.StyleStack.GetFullStyle(forComponent, pageSize, pageSize, fontSize, fontSize.Height);
+        }
     }
 }

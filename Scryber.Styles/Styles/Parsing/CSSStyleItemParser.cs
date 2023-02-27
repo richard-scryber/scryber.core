@@ -201,10 +201,16 @@ namespace Scryber.Styles.Parsing
             double factor;
             double parsed;
             int unitLength;
+
             if (EndsWithRelativeUnit(part))
             {
-                unit = Unit.Zero;
-                return false;
+                if (Unit.TryParse(part, out unit))
+                    return true;
+                else
+                {
+                    unit = Unit.Zero;
+                    return false;
+                }
             }
             else if (EndsWithAbsoluteUnit(part, out unitLength, out factor))
             {

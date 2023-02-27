@@ -292,20 +292,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public virtual PDFStyle Flatten()
-
-        /// <summary>
-        /// Returns a flat version of the PDFStyle. (In this case it is the same instance).
-        /// </summary>
-        /// <returns></returns>
-        public virtual Style Flatten()
-        {
-            //Does nothing in the new implementation
-            //As we are always flat.
-            return (Style)this;
-        }
-
-        #endregion
+        
 
         #region public void Clear()
 

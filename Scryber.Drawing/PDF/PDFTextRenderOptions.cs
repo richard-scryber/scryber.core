@@ -292,6 +292,15 @@ namespace Scryber.PDF
 
         #endregion
 
+
+        public Unit GetZeroCharWidth()
+        {
+            if (null != this.Font.FontMetrics)
+                return this.Font.FontMetrics.ZeroWidth;
+            else
+                return this.Font.Size * 0.5;
+        }
+
         public Unit GetBaselineOffset()
         {
             if (null == this.Font)

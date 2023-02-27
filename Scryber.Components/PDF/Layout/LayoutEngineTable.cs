@@ -556,7 +556,8 @@ namespace Scryber.PDF.Layout
                     rowapplied = row.GetAppliedStyle();
 
                     this.StyleStack.Push(rowapplied);
-                    rowfull = this.StyleStack.GetFullStyle(row);
+
+                    rowfull = this.BuildRowFullStyle(row);
 
                     if (!string.IsNullOrEmpty(row.DataStyleIdentifier))
                         this.Context.DocumentLayout.SetStyleWithIdentifier(row.DataStyleIdentifier, rowapplied, rowfull);
@@ -603,7 +604,8 @@ namespace Scryber.PDF.Layout
 
                         cellapplied = cell.GetAppliedStyle();
                         this.StyleStack.Push(cellapplied);
-                        cellfull = this.StyleStack.GetFullStyle(cell);
+
+                        cellfull = this.BuildCellFullStyle(cell, row, rowfull);
 
                         if (!string.IsNullOrEmpty(cell.DataStyleIdentifier))
                             Context.DocumentLayout.SetStyleWithIdentifier(cell.DataStyleIdentifier, cellapplied, cellfull);
@@ -685,6 +687,16 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected virtual Style BuildRowFullStyle(TableRow row)
+        {
+            return this.BuildFullStyle(row);
+        }
+
+        protected virtual Style BuildCellFullStyle(TableCell cell, TableRow inrow, Style rowStyle)
+        {
+            return this.BuildFullStyle(cell);
+        }
 
         #region private void CalculateTableSpace()
 

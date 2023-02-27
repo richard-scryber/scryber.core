@@ -178,7 +178,6 @@ namespace Scryber.Core.UnitTests.Styles
             
 
             target.MergeInto(style, lbl);
-            style.Flatten(); //must flatten the style after a merge
 
             Assert.AreEqual(style.Padding.All, (Scryber.Drawing.Unit)10); // part of style
             Assert.AreEqual(style.Background.Color, Scryber.Drawing.StandardColors.Aqua); // should have been replaced by targets color

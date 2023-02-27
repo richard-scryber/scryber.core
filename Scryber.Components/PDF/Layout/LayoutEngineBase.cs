@@ -646,7 +646,7 @@ namespace Scryber.PDF.Layout
                     if (null != applied)
                         this.StyleStack.Push(applied);
 
-                    full = this.StyleStack.GetFullStyle(comp);
+                    full = this.BuildFullStyle(comp);
 
                     Context.PerformanceMonitor.End(PerformanceMonitorType.Style_Build);
                 }
@@ -717,6 +717,26 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected virtual Style BuildFullStyle(Component forComponent)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+            var pgSize = page.Size;
+            var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
+            Size containerSize;
+            if (null != container)
+                containerSize = container.AvailableBounds.Size;
+            else if (null != page.CurrentBlock)
+                containerSize = page.CurrentBlock.AvailableBounds.Size;
+            else
+                containerSize = page.Size;
+
+            var font = this.FullStyle.CreateTextOptions();
+            var fontSize = new Size(font.GetLineHeight(), font.GetZeroCharWidth());
+
+            return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, containerSize, fontSize, Font.DefaultFontSize);
+        }
+
 
         #region protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
 

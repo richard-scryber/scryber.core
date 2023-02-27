@@ -141,7 +141,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(two);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl);
+            Style actual = target.GetFullStyle(lbl, Size.Empty, Size.Empty, Size.Empty, Unit.Zero);
 
             Assert.AreEqual("Symbol", actual.Font.FontFamily.FamilyName); //inherited from root
             Assert.AreEqual((Unit)48, actual.Font.FontSize); //inherited from one
