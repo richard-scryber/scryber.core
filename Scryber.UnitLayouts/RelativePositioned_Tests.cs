@@ -400,6 +400,207 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedHeight, block.Height, "Heights did not match");
         }
 
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TextEMHeightRelativeToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Width = 600;
+            section.Height = 800;
+            section.FontSize = 20;
+            doc.Pages.Add(section);
+
+            section.Contents.Add(new TextLiteral("Normal Size Text"));
+            Div relative = new Div()
+            {
+                FontSize = new Unit(0.5, PageUnits.EMHeight),
+                BorderWidth = 0.1,
+                BorderColor = Drawing.StandardColors.Red
+            };
+
+            relative.Contents.Add(new TextLiteral("Half em-height text"));
+            section.Contents.Add(relative);
+
+            section.Contents.Add(new TextLiteral("Back to normal Size Text"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativeTextSize_HalfEMHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var before = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            var inner = block.Columns[0].Contents[0] as PDFLayoutLine;
+
+            var after = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
+
+            Assert.IsNotNull(before);
+            Assert.IsNotNull(block);
+            Assert.IsNotNull(after);
+
+            Unit expectedouterFont = 20;
+            Unit expectedInnerFont = 20 / 2.0;
+
+
+            var start = before.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(start);
+            Assert.AreEqual(expectedouterFont, start.TextRenderOptions.Font.Size);
+
+            start = inner.Runs[0] as PDFTextRunBegin;
+            Assert.AreEqual(expectedInnerFont, start.TextRenderOptions.Font.Size);
+
+            start = after.Runs[0] as PDFTextRunBegin;
+            Assert.AreEqual(expectedouterFont, start.TextRenderOptions.Font.Size);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TextEXHeightRelativeToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Width = 600;
+            section.Height = 800;
+            section.FontSize = 20;
+            doc.Pages.Add(section);
+
+            section.Contents.Add(new TextLiteral("Normal Size Text"));
+            Div relative = new Div()
+            {
+                FontSize = new Unit(1, PageUnits.EXHeight),
+                BorderWidth = 0.1,
+                BorderColor = Drawing.StandardColors.Red
+            };
+
+            relative.Contents.Add(new TextLiteral("Ex-height text"));
+            section.Contents.Add(relative);
+
+            section.Contents.Add(new TextLiteral("Back to normal Size Text"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativeTextSize_OneEXHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var before = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            var inner = block.Columns[0].Contents[0] as PDFLayoutLine;
+
+            var after = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
+
+            Assert.IsNotNull(before);
+            Assert.IsNotNull(block);
+            Assert.IsNotNull(after);
+
+            Unit expectedouterFont = 20;
+
+            var start = before.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(start);
+            Assert.AreEqual(expectedouterFont, start.TextRenderOptions.Font.Size);
+
+            var metrics = start.TextRenderOptions.Font.FontMetrics;
+            
+            Unit expectedInnerFont = metrics.ExHeight;
+            start = inner.Runs[0] as PDFTextRunBegin;
+            Assert.AreEqual(expectedInnerFont, start.TextRenderOptions.Font.Size);
+
+            start = after.Runs[0] as PDFTextRunBegin;
+            Assert.AreEqual(expectedouterFont, start.TextRenderOptions.Font.Size);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TextZeroHeightRelativeToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Width = 600;
+            section.Height = 800;
+            section.FontSize = 20;
+            doc.Pages.Add(section);
+
+            section.Contents.Add(new TextLiteral("Normal Size Text"));
+            Div relative = new Div()
+            {
+                FontSize = new Unit(1, PageUnits.ZeroWidth),
+                TextFirstLineIndent = new Unit(1, PageUnits.ZeroWidth),
+                BorderWidth = 0.1,
+                BorderColor = Drawing.StandardColors.Red
+            };
+
+            relative.Contents.Add(new TextLiteral("Ex-height text"));
+            section.Contents.Add(relative);
+
+            section.Contents.Add(new TextLiteral("Back to normal Size Text"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativeTextSize_ZeroWidthWithInset.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var before = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            var inner = block.Columns[0].Contents[0] as PDFLayoutLine;
+
+            var after = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutLine;
+
+            Assert.IsNotNull(before);
+            Assert.IsNotNull(block);
+            Assert.IsNotNull(after);
+
+            Unit expectedouterFont = 20;
+
+            var start = before.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(start);
+            Assert.AreEqual(expectedouterFont, start.TextRenderOptions.Font.Size);
+
+            var metrics = start.TextRenderOptions.Font.FontMetrics;
+
+            Unit expectedInnerFont = metrics.ZeroWidth;
+            Unit firstLineIndent = metrics.ZeroWidth;
+
+            var spacer = inner.Runs[0] as PDFTextRunSpacer;
+            start = inner.Runs[1] as PDFTextRunBegin;
+
+            Assert.AreEqual(firstLineIndent, spacer.Width);
+            Assert.AreEqual(expectedInnerFont, start.TextRenderOptions.Font.Size);
+            
+
+            //Back up to outer font
+            start = after.Runs[0] as PDFTextRunBegin;
+            Assert.AreEqual(expectedouterFont, start.TextRenderOptions.Font.Size);
+        }
+
+
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void BlockPercentRelativeToPageMargins()
@@ -602,5 +803,189 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedX, relativeBlock.TotalBounds.X, "X Value did not match on inner");
             Assert.AreEqual(expectedY, relativeBlock.TotalBounds.Y, "Y Value did not match on inner");
         }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentPercentToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+            Unit[] CellWidths = new Unit[] {
+                new Unit(20, PageUnits.Percent),
+                new Unit(30, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+            
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_TableToPage.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(580, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(580, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = 580 * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentFixedWidthToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            Unit tableWidth = 500;
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = tableWidth;
+            grid.FontSize = new Unit(70, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FixedWidthTable.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+
     }
 }

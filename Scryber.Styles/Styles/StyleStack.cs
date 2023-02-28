@@ -122,7 +122,7 @@ namespace Scryber.Styles
                     fontHeight = fontHeight.ToAbsolute(rootFontSize);
             }
 
-            var fontSize = new Size(fontHeight, fontHeight * 0.5);
+            var fontSize = new Size(fontHeight * 0.5, fontHeight);
 
             style = style.Flatten(pgSize, pgSize, fontSize, rootFontSize);
             return style;

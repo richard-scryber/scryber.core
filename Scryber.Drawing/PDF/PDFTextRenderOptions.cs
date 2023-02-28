@@ -274,6 +274,14 @@ namespace Scryber.PDF
 
         #endregion
 
+        public Unit GetSize()
+        {
+            if (null != this.Font)
+                return this.Font.Size;
+            else
+                return Font.DefaultFontSize;
+        }
+
         #region public PDFUnit GetLineHeight()
 
         /// <summary>
