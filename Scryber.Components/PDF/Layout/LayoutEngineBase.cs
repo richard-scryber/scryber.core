@@ -725,9 +725,9 @@ namespace Scryber.PDF.Layout
             var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
             Size containerSize;
             if (null != container)
-                containerSize = container.AvailableBounds.Size;
+                containerSize = container.CurrentRegion.TotalBounds.Size;
             else if (null != page.CurrentBlock)
-                containerSize = page.CurrentBlock.AvailableBounds.Size;
+                containerSize = page.CurrentBlock.CurrentRegion.TotalBounds.Size;
             else
                 containerSize = page.Size;
 
