@@ -1156,6 +1156,24 @@ namespace Scryber.Components
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the floating mode of this component, left, right or none (default).
+        /// </summary>
+        public FloatMode FloatMode
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionFloat, FloatMode.None);
+                else
+                    return FloatMode.None;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionFloat, value);
+            }
+        }
+
         #region public bool FillWidth
 
         /// <summary>

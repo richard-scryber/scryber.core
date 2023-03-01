@@ -98,6 +98,316 @@ namespace Scryber.Core.UnitTests.Drawing
         #endregion
 
         //
+        // static factory methods
+        //
+
+        #region Percent factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_PercentTest()
+        {
+            double value = 25;
+
+            Unit target = Unit.Percent(value);
+
+            Assert.AreEqual(25.0, target.Value);
+            Assert.AreEqual(PageUnits.Percent, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("25%", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and % units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_PercentTest2()
+        {
+            int value = 26;
+
+            Unit target = Unit.Percent(value);
+
+            Assert.AreEqual(26.0, target.Value);
+            Assert.AreEqual(PageUnits.Percent, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("26%", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and % units {0}", target);
+        }
+
+        #endregion
+
+        #region EXHeight factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_EXHeightTest()
+        {
+            double value = 27;
+
+            Unit target = Unit.Ex(value);
+
+            Assert.AreEqual(27.0, target.Value);
+            Assert.AreEqual(PageUnits.EXHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("27ex", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and ex units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_EXHightTest2()
+        {
+            int value = 28;
+
+            Unit target = Unit.Ex(value);
+
+            Assert.AreEqual(28.0, target.Value);
+            Assert.AreEqual(PageUnits.EXHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("28ex", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and ex units {0}", target);
+        }
+
+        #endregion
+
+        #region EMHeight factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_EMHeightTest()
+        {
+            double value = 29;
+
+            Unit target = Unit.Em(value);
+
+            Assert.AreEqual(29.0, target.Value);
+            Assert.AreEqual(PageUnits.EMHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("29em", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and em units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_EMHightTest2()
+        {
+            int value = 30;
+
+            Unit target = Unit.Em(value);
+
+            Assert.AreEqual(30.0, target.Value);
+            Assert.AreEqual(PageUnits.EMHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("30em", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and em units {0}", target);
+        }
+
+        #endregion
+
+        #region RootEMHeight factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_RootEMHeightTest()
+        {
+            double value = 31;
+
+            Unit target = Unit.RootEm(value);
+
+            Assert.AreEqual(31.0, target.Value);
+            Assert.AreEqual(PageUnits.RootEMHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("31rem", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and root em units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_RootEMHightTest2()
+        {
+            int value = 32;
+
+            Unit target = Unit.RootEm(value);
+
+            Assert.AreEqual(32.0, target.Value);
+            Assert.AreEqual(PageUnits.RootEMHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("32rem", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and root em units {0}", target);
+        }
+
+        #endregion
+
+        #region ZeroCharWidth factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ZeroCharWidthTest()
+        {
+            double value = 33;
+
+            Unit target = Unit.Ch(value);
+
+            Assert.AreEqual(33.0, target.Value);
+            Assert.AreEqual(PageUnits.ZeroWidth, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("33ch", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and 0 char units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ZeroCharWidthTest2()
+        {
+            int value = 34;
+
+            Unit target = Unit.Ch(value);
+
+            Assert.AreEqual(34.0, target.Value);
+            Assert.AreEqual(PageUnits.ZeroWidth, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("34ch", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and 0 char units {0}", target);
+        }
+
+        #endregion
+
+        #region Viewport Width factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortWidthTest()
+        {
+            double value = 35;
+
+            Unit target = Unit.Vw(value);
+
+            Assert.AreEqual(35.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortWidth, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("35vw", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and viewport width units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortWidthTest2()
+        {
+            int value = 36;
+
+            Unit target = Unit.Vw(value);
+
+            Assert.AreEqual(36.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortWidth, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("36vw", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and viewport width units {0}", target);
+        }
+
+        #endregion
+
+        #region Viewport Height factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortHeightTest()
+        {
+            double value = 37;
+
+            Unit target = Unit.Vh(value);
+
+            Assert.AreEqual(37.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("37vh", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and viewport height units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortHeightTest2()
+        {
+            int value = 38;
+
+            Unit target = Unit.Vh(value);
+
+            Assert.AreEqual(38.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortHeight, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("38vh", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and viewport height units {0}", target);
+        }
+
+        #endregion
+
+        #region Viewport Min factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortMinTest()
+        {
+            double value = 39;
+
+            Unit target = Unit.Vmin(value);
+
+            Assert.AreEqual(39.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortMin, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("39vmin", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and viewport min units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortMinTest2()
+        {
+            int value = 40;
+
+            Unit target = Unit.Vmin(value);
+
+            Assert.AreEqual(40.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortMin, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("40vmin", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and viewport min units {0}", target);
+        }
+
+        #endregion
+
+        #region Viewport Min factory
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortMaxTest()
+        {
+            double value = 41;
+
+            Unit target = Unit.Vmax(value);
+
+            Assert.AreEqual(41.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortMax, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("41vmax", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with double value and viewport max units {0}", target);
+        }
+
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void PDFUnitFactory_ViewPortMaxTest2()
+        {
+            int value = 42;
+
+            Unit target = Unit.Vmax(value);
+
+            Assert.AreEqual(42.0, target.Value);
+            Assert.AreEqual(PageUnits.ViewPortMax, target.Units);
+            Assert.IsTrue(target.IsRelative);
+            Assert.AreEqual("42vmax", target.ToString());
+            TestContext.WriteLine("Created new PDFUnit with int value and viewport max units {0}", target);
+        }
+
+        #endregion
+
+        //
         // instance properties
         //
 

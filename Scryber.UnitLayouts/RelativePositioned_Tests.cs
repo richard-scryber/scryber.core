@@ -950,6 +950,83 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match");
         }
 
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BlockPercentRelativeFloatToContainer()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 30;
+            section.Padding = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = 10;
+
+            doc.Pages.Add(section);
+
+            Div wrapper = new Div()
+            {
+                //Margins = 10,
+                //Padding = 10,
+                BorderWidth = 1,
+                BorderColor = StandardColors.Blue
+            };
+
+            section.Contents.Add(wrapper);
+
+            //wrapper.Contents.Add("This is a long text run that should be before the floating div.");
+
+            Div floating = new Div()
+            {
+                Height = Unit.Pt(100),
+                Width = Unit.Pt(100),
+                BorderWidth = 1,
+                BackgroundColor = Drawing.StandardColors.Red,
+                VerticalAlignment = VerticalAlignment.Middle,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                FloatMode = FloatMode.Left,
+                FontSize = Unit.Em(0.8),
+                Padding = 5,
+                Margins = 10
+            };
+            wrapper.Contents.Add(floating);
+
+            floating.Contents.Add(new TextLiteral("40% width and 10% height floating in the margins"));
+
+            wrapper.Contents.Add("This is a long text run that should flow nicely around the 40% width, and 20% height floating div on the page");
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FloatWithContainer.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            var wrapperBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(580, wrapperBlock.Width); //page - margins
+
+            Assert.AreEqual(1, wrapperBlock.Columns.Length);
+            Assert.AreEqual(1, wrapperBlock.Columns[0].Contents.Count);
+
+            var relativeBlock = wrapperBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(relativeBlock);
+
+            Unit expectedWidth = (580 - 40) / 2.0;
+            Unit expectedHeight = (800 - 60) / 4.0;
+            Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match");
+            Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match");
+        }
+
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void BlockPercentRelativeToSizedContainer()
@@ -1593,6 +1670,7 @@ namespace Scryber.UnitLayouts
                 var li = new ListItem();
                 li.Contents.Add(new TextLiteral("Item " + i));
                 li.BorderColor = StandardColors.Green;
+                li.Width = new Unit(50, PageUnits.Percent);
                 ol.Items.Add(li);
 
             }
@@ -1616,10 +1694,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, olBlock.Columns.Length);
             Assert.AreEqual(ItemCount, olBlock.Columns[0].Contents.Count);
 
-            //var rowBlock = tblBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            //Assert.IsNotNull(rowBlock);
-            //Assert.AreEqual(CellWidth * CellCount, rowBlock.Width);
-            //Assert.AreEqual(CellHeight, rowBlock.Height);
+            
 
             Assert.AreEqual(600 * 0.5, olBlock.Width);
 
@@ -1635,6 +1710,11 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual(1, itemBlock.Columns[0].Contents.Count);
                 Assert.AreEqual(1, itemBlock.PositionedRegions[0].Contents.Count);
+
+                //the block has a width of the 50% of the ol + the margins for the label and gutter
+                //and the label is 10% of the page width
+                Assert.AreEqual((600 * 0.1) + 10, itemBlock.Position.Margins.Left);
+                Assert.AreEqual(olBlock.Width * 0.5 + itemBlock.Position.Margins.Left, itemBlock.Width);
                 
 
                 var numBlock = itemBlock.PositionedRegions[0].Contents[0] as PDFLayoutBlock;

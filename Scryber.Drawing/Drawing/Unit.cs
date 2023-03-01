@@ -994,6 +994,222 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public static PDFUnit Percent(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified percentage value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Percent(double value)
+        {
+            return new Unit(value, PageUnits.Percent);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified percentage value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Percent(int value)
+        {
+            return new Unit(value, PageUnits.Percent);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Ex(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified lowercase ex height value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Ex(double value)
+        {
+            return new Unit(value, PageUnits.EXHeight);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified lowercase ex height value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Ex(int value)
+        {
+            return new Unit(value, PageUnits.EXHeight);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Em(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified uppercase em height value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Em(double value)
+        {
+            return new Unit(value, PageUnits.EMHeight);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified uppercase em height value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Em(int value)
+        {
+            return new Unit(value, PageUnits.EMHeight);
+        }
+
+        #endregion
+
+        #region public static PDFUnit RootEm(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified uppercase em height value based on the default font size
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit RootEm(double value)
+        {
+            return new Unit(value, PageUnits.RootEMHeight);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified uppercase em height value based on the default font size
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit RootEm(int value)
+        {
+            return new Unit(value, PageUnits.RootEMHeight);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Ch(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified zero char width value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Ch(double value)
+        {
+            return new Unit(value, PageUnits.ZeroWidth);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified zero char value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Ch(int value)
+        {
+            return new Unit(value, PageUnits.ZeroWidth);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Vh(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified viewport height value (page height
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vh(double value)
+        {
+            return new Unit(value, PageUnits.ViewPortHeight);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified viewport height value (page height)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vh(int value)
+        {
+            return new Unit(value, PageUnits.ViewPortHeight);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Vh(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified viewport width value (page width)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vw(double value)
+        {
+            return new Unit(value, PageUnits.ViewPortWidth);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit for the specified viewport width value (page width)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vw(int value)
+        {
+            return new Unit(value, PageUnits.ViewPortWidth);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Vmin(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified smallest viewport value (page width or height)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vmin(double value)
+        {
+            return new Unit(value, PageUnits.ViewPortMin);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit for the specified smallest viewport value (page width or height)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vmin(int value)
+        {
+            return new Unit(value, PageUnits.ViewPortMin);
+        }
+
+        #endregion
+
+        #region public static PDFUnit Vmax(double value)
+
+        /// <summary>
+        /// Creates a new relative PDFUnit with the specified largest viewport value (page width or height)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vmax(double value)
+        {
+            return new Unit(value, PageUnits.ViewPortMax);
+        }
+
+        /// <summary>
+        /// Creates a new relative PDFUnit for the specified largest viewport value (page width or height)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Unit Vmax(int value)
+        {
+            return new Unit(value, PageUnits.ViewPortMax);
+        }
+
+        #endregion
+
         //
         // conversion constants
         //

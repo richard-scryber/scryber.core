@@ -933,7 +933,7 @@ namespace Scryber.PDF.Layout
         /// <param name="comp"></param>
         /// <param name="full"></param>
         /// <returns></returns>
-        public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IComponent comp, Style full, bool addAssociatedRun = true)
+        public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IComponent comp, Style full, bool isfloating, bool addAssociatedRun = true)
         {
             PDFLayoutRegion before = this.CurrentRegion;
             PDFLayoutLine beforeline = before.CurrentItem as PDFLayoutLine;
@@ -979,7 +979,8 @@ namespace Scryber.PDF.Layout
 
             if (addAssociatedRun)
             {
-                beforeline.AddPositionedRun(created, comp);
+                var run = beforeline.AddPositionedRun(created, comp);
+                run.IsFloating = isfloating;
             }
             return created;
         }

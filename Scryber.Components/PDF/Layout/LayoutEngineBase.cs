@@ -913,9 +913,9 @@ namespace Scryber.PDF.Layout
                 else if(pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
-                    bounds.X += pos.Margins.Left;
-                    bounds.Y += pos.Margins.Top;
-
+                    //bounds.X += pos.Margins.Left;
+                    //bounds.Y += pos.Margins.Top;
+                    bounds.Height = height;
                     positioned.TotalBounds = bounds;
                 }
             }
@@ -938,12 +938,13 @@ namespace Scryber.PDF.Layout
                 else if (pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
-                    bounds.X += pos.Margins.Left;
-                    bounds.Y += pos.Margins.Top;
+                    //bounds.X += pos.Margins.Left;
+                    //bounds.Y += pos.Margins.Top;
+                    bounds.Height = height;
                 }
             }
             positioned.TotalBounds = bounds;
-
+            positioned.HAlignment = HorizontalAlignment.Left;
             container.CurrentRegion.AddFloatingInset(pos.FloatMode, floatWidth, floatInset, offset, height);
             
         }
@@ -1102,7 +1103,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            PDFLayoutRegion rel = last.BeginNewPositionedRegion(pos, page, comp, full);
+            PDFLayoutRegion rel = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
             return rel;
         }
 
@@ -1110,7 +1111,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full);
+            PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
             return abs;
         }
 
@@ -1144,7 +1145,8 @@ namespace Scryber.PDF.Layout
                 }
             }
             pos.Y = offsetY;
-            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full);
+            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
+            
             return floating;
         }
 
