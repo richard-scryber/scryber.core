@@ -11,8 +11,11 @@ using Scryber.Drawing;
 
 namespace Scryber.UnitLayouts
 {
+    /// <summary>
+    /// Tests the positioning with relative units (e.g 50% or 4em)
+    /// </summary>
     [TestClass()]
-    public class RelativePositioned_Tests
+    public class PositionedRelativeUnit_Tests
     {
         const string TestCategoryName = "Layout";
 
