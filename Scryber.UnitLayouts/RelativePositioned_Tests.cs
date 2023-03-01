@@ -961,7 +961,7 @@ namespace Scryber.UnitLayouts
             section.Style.PageStyle.Width = 600;
             section.Style.PageStyle.Height = 800;
             section.FontSize = 20;
-            //section.TextLeading = 30;
+            section.TextLeading = 30;
             section.Padding = 10;
             section.BackgroundColor = StandardColors.Aqua;
             section.Style.OverlayGrid.ShowGrid = true;
@@ -972,25 +972,24 @@ namespace Scryber.UnitLayouts
             Div wrapper = new Div()
             {
                 //Margins = 10,
-                //Padding = 10,
+                Padding = 10,
                 BorderWidth = 1,
                 BorderColor = StandardColors.Blue
             };
 
             section.Contents.Add(wrapper);
 
-            //wrapper.Contents.Add("This is a long text run that should be before the floating div.");
+            wrapper.Contents.Add("This is a long text run that should be before the floating div.");
 
             Div floating = new Div()
             {
-                Height = Unit.Pt(100),
-                Width = Unit.Pt(100),
+                Height = Unit.Percent(8),
+                Width = Unit.Percent(50),
                 BorderWidth = 1,
                 BackgroundColor = Drawing.StandardColors.Red,
-                VerticalAlignment = VerticalAlignment.Middle,
-                HorizontalAlignment = HorizontalAlignment.Center,
                 FloatMode = FloatMode.Left,
                 FontSize = Unit.Em(0.8),
+                TextLeading = Unit.Pt(20),
                 Padding = 5,
                 Margins = 10
             };
@@ -998,7 +997,7 @@ namespace Scryber.UnitLayouts
 
             floating.Contents.Add(new TextLiteral("40% width and 10% height floating in the margins"));
 
-            wrapper.Contents.Add("This is a long text run that should flow nicely around the 40% width, and 20% height floating div on the page");
+            wrapper.Contents.Add("This is a long text run that should flow nicely around the 50% width, and 8% height floating div on the page");
 
 
             using (var ms = DocStreams.GetOutputStream("RelativePositioned_FloatWithContainer.pdf"))
@@ -1014,17 +1013,39 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
             var wrapperBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(580, wrapperBlock.Width); //page - margins
-
+            
             Assert.AreEqual(1, wrapperBlock.Columns.Length);
-            Assert.AreEqual(1, wrapperBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(5, wrapperBlock.Columns[0].Contents.Count); //5 lines of text
+            var region = wrapperBlock.Columns[0];
 
-            var relativeBlock = wrapperBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(relativeBlock);
+            Assert.AreEqual(1, region.Floats.Count);
+            var floatAdd = region.Floats;
 
-            Unit expectedWidth = (580 - 40) / 2.0;
-            Unit expectedHeight = (800 - 60) / 4.0;
-            Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match");
-            Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match");
+            Assert.AreEqual(0, floatAdd.FloatInset);
+            Assert.AreEqual(30, floatAdd.YOffset);
+
+            Unit width = 560 * 0.5; //padding and margins in the page and wrapper removed, 50% of that
+            Assert.AreEqual(width + 20, floatAdd.FloatWidth); //add the margins here
+            Unit height = 760 * 0.08; //padding and margins in the page and wrapper removed, 10% of that
+            Assert.AreEqual(height + 20, floatAdd.FloatHeight); //add the margins here
+
+            Assert.AreEqual(1, wrapperBlock.PositionedRegions.Count);
+            region = wrapperBlock.PositionedRegions[0];
+
+            Assert.AreEqual(width, region.Width); //without the margins
+            Assert.AreEqual(height, region.Height); //without the margins
+
+            Assert.AreEqual(30, region.TotalBounds.Y); //After the first line
+            Assert.AreEqual(0, region.TotalBounds.X);
+            Assert.AreEqual(1, region.Contents.Count);
+
+            var floatBlock = region.Contents[0];
+            Assert.IsNotNull(floatBlock);
+
+            //TODO: Check this against a normal positioned and standard region - does the width normally extend beyond the width of the region
+            Assert.AreEqual(width + 20, floatBlock.Width); //Actual width of the block includes the margins???
+            Assert.AreEqual(height + 20, floatBlock.Height); //Actual Height includes the margins - OK
+
         }
 
         [TestCategory(TestCategoryName)]
@@ -1037,7 +1058,7 @@ namespace Scryber.UnitLayouts
             section.Style.PageStyle.Width = 600;
             section.Style.PageStyle.Height = 800;
             section.FontSize = 20;
-            section.TextLeading = 25;
+            section.TextLeading = 30;
             //section.Padding = 10;
             section.BackgroundColor = StandardColors.Silver;
             section.VerticalAlignment = VerticalAlignment.Middle;

@@ -312,18 +312,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public PDFFloatAddition Floats {get;set;}
-
-        /// <summary>
-        /// Gets or sets the linked list of any floating additions to the block.
-        /// </summary>
-        public PDFFloatAddition Floats
-        {
-            get;
-            set;
-        }
-
-        #endregion
+        
 
         #region public int BlockRepeatIndex { get; set; }
 

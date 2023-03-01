@@ -932,8 +932,8 @@ namespace Scryber.PDF.Layout
                 {
                     //HACK: The width of the image is being used explicitly for in positioning, so need to
                     //adjust back to the right size.
-                    if (pos.Width.HasValue && rightAlign)
-                        bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
+                    //if (pos.Width.HasValue && rightAlign)
+                    //    bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
                 }
                 else if (pos.Margins.IsEmpty == false)
                 {

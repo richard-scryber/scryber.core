@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
 
