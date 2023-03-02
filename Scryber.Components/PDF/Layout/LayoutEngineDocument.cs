@@ -211,12 +211,19 @@ namespace Scryber.PDF.Layout
 
         protected override Style BuildFullStyle(Component forComponent)
         {
-            FontDefinition font = FontFactory.GetFontDefinition(Font.DefaultFontFamily, Drawing.FontStyle.Regular, FontWeights.Regular);
-            var metrics = font.GetFontMetrics(Font.DefaultFontSize);
-            var fontSize = new Size(metrics.TotalLineHeight, metrics.ZeroWidth);
-            var pageSize = PageSize.A4.Size;
+            var full = this.FullStyle;
+            var pg = this.FullStyle.CreatePageSize();
+            var pos = this.FullStyle.CreatePostionOptions();
+            var txt = this.FullStyle.CreateTextOptions();
+            var fs = new Size(txt.GetZeroCharWidth(), txt.GetSize());
 
-            return this.StyleStack.GetFullStyleForPage(forComponent, fontSize, fontSize.Height);
+            return this.StyleStack.GetFullStyle(forComponent, pg.Size, pg.Size.Subtract(pos.Margins), fs, Font.DefaultFontSize);
+
+            //FontDefinition font = FontFactory.GetFontDefinition(Font.DefaultFontFamily, Drawing.FontStyle.Regular, FontWeights.Regular);
+            //var metrics = font.GetFontMetrics(Font.DefaultFontSize);
+            //var fontSize = new Size(metrics.TotalLineHeight, metrics.ZeroWidth);
+            //var pageSize = PageSize.A4.Size;
+            //return this.StyleStack.GetFullStyleForPage(forComponent, fontSize, fontSize.Height);
         }
     }
 }

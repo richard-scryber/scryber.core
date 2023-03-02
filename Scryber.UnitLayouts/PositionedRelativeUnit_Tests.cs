@@ -8,6 +8,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 
 namespace Scryber.UnitLayouts
 {
@@ -1793,6 +1794,91 @@ namespace Scryber.UnitLayouts
             }
 
         }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void HtmlParsingTest()
+        {
+
+            var src = @"<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <meta charset='utf-8' />
+    <title>Relative Unit Test</title>
+
+    <style >
+        body {
+            background-color:#CCC;
+            padding:20pt;
+            font-size:1.2rem; /* 120 percent of the root size  */
+            margin:5vw; /* 5 percent of the view width */
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        h1{
+            font-size:2em;  /* double body size */
+            font-weight:normal;
+            height: 20vh;  /* 20% of the view height */
+            background-color: gray;
+        }
+
+    </style>
+</head>
+<body>
+    <div style='height: 40vh; background-color: silver; padding: 1em;' >Above the heading
+        <h1>This is my first heading</h1>
+        <div>And this is the content below the heading that should flow across multiple lines within the page and flow nicely along those lines.</div>
+    </div>
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("RelativeHTML_ParsingAndOutputTest.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.IsNotNull(this.layout);
+                Assert.AreEqual(1, this.layout.AllPages.Count);
+
+                var pg = this.layout.AllPages[0];
+                Assert.IsNotNull(pg);
+
+                var rootEm = Font.DefaultFontSize;
+                Unit f = rootEm * 1.2; //font size is 1.2 root em height
+                var content = pg.ContentBlock;
+                Assert.AreEqual(16 * 1.2, content.FullStyle.Font.FontSize);
+
+                Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+                Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+                
+
+                var div = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                var pgSize = pg.Size;
+                
+
+                var h = pgSize.Height * 0.4; //40vh
+                
+
+                Assert.AreEqual(h, div.Height);
+                Assert.AreEqual(f, div.Position.Padding.Top);
+                Assert.AreEqual(f, div.Position.Padding.Left);
+                Assert.AreEqual(f, div.Position.Padding.Bottom);
+                Assert.AreEqual(f, div.Position.Padding.Right);
+                Assert.AreEqual(1, div.Columns.Length);
+                Assert.AreEqual(3, div.Columns[0].Contents.Count);
+
+            }
+        }
+
+        
 
     }
 }

@@ -1255,6 +1255,70 @@ namespace Scryber.Core.UnitTests.Html
 
         }
 
+        private class CodeTemplate : ITemplate
+        {
+            public string Content{
+                get;
+                private set;
+            }
+
+            public CodeTemplate(string content)
+            {
+                this.Content = content;
+            }
+
+            public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
+            {
+                using (StringReader reader = new StringReader(this.Content))
+                    return new[] { Document.Parse(reader, ParseSourceType.DynamicContent) };
+            }
+        }
+
+
+        [TestMethod()]
+        public void HtmlPlaceholderFragments()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/BodyWithPlaceholder.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var model = new
+                {
+                    HtmlContent = "<p id='p1'><span style='color: rgb(255,0,0);'>Lorem ipsum dolor sit amet, consectetur</span></p>"
+                    + "<p id='p2'><br/></p>"
+                    + "<p id='p3' ><span style='color: rgb(0,0 255);' ><span class='ql-cursor'></span>Vivamus sed tincidunt nisi.Vivamus elementum,</span></p>",
+                };
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("BodyWithPlaceholder.pdf"))
+                {
+                    doc.LayoutComplete += DocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+
+                var ph = doc.FindAComponentById("aPlaceholder") as PlaceHolder;
+                Assert.IsNotNull(ph);
+
+                Assert.AreEqual(1, ph.Contents.Count);
+                Assert.IsInstanceOfType(ph.Contents[0], typeof(Scryber.Data.TemplateInstance));
+
+                var instance = ph.Contents[0] as Scryber.Data.TemplateInstance;
+                Assert.AreEqual(3, instance.Content.Count);
+
+                var p = instance.FindAComponentById("p1");
+                Assert.IsNotNull(p);
+                p = instance.FindAComponentById("p2");
+                Assert.IsNotNull(p);
+                p = instance.FindAComponentById("p3");
+                Assert.IsNotNull(p);
+                
+            }
+
+        }
+
         [TestMethod()]
         public void HtmlLinksLocalAndRemote()
         {

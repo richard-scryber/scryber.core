@@ -259,7 +259,7 @@ namespace Scryber.Components
 
             if (this.ID.Equals(id))
                 return this;
-            else if (this.FindAComponentById(this.InnerContent, Name, out found))
+            else if (this.FindAComponentById(this.InnerContent, id, out found))
                 return found;
             else
                 return null;
