@@ -315,12 +315,24 @@ namespace Scryber
 
     #endregion
 
+    #region public interface IDocumentPageContainer
+
+    /// <summary>
+    /// Interface that all containers of document pages should support so the pages they contain can be extracted
+    /// </summary>
+    public interface IDocumentPageContainer
+    {
+        IDocumentPage[] AllPages { get; }
+    }
+
+    #endregion
+
     #region public interface IDocument : ILoadableComponent
 
     /// <summary>
     /// Top Level document interface - supports resourses and componentID's
     /// </summary>
-    public interface IDocument : ILoadableComponent
+    public interface IDocument : ILoadableComponent, IDocumentPageContainer
     {
 
         /// <summary>
@@ -357,6 +369,7 @@ namespace Scryber
         /// Gets the trace log associated with the current execution
         /// </summary>
         TraceLog TraceLog { get; }
+
 
     }
 
@@ -488,6 +501,20 @@ namespace Scryber
         IRemoteRequest RequestResource(string type, string path, RemoteRequestCallback callback, IComponent owner, object arguments);
     }
 
+
+    #region public interface IDocumentPage
+
+    /// <summary>
+    /// Interface that all document pages should support so they can be contained in the IDocument interface
+    /// </summary>
+    public interface IDocumentPage : IResourceContainer, IComponent
+    {
+        
+    }
+
+    #endregion
+
+    
 
     #region public interface IDataSource
 

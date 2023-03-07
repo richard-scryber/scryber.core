@@ -1417,7 +1417,7 @@ body.grey div.reverse{
                 
                 text = line.Runs[10] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual(" An image, a character, and a quote will be", text.Characters);
+                Assert.AreEqual(" An image, a character, and a quote will be infront with the image inlined.", text.Characters);
             }
         }
 

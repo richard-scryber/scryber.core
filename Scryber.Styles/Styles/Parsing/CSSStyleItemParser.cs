@@ -201,6 +201,9 @@ namespace Scryber.Styles.Parsing
             double factor;
             double parsed;
             int unitLength;
+            part = part.ToLower();
+
+            //TODO: THis is really covered now with the Unit.TryParse and can be simplified
 
             if (EndsWithRelativeUnit(part))
             {
@@ -237,23 +240,25 @@ namespace Scryber.Styles.Parsing
 
         protected static bool EndsWithRelativeUnit(string part)
         {
-            if (part.EndsWith("%", StringComparison.OrdinalIgnoreCase))
+            if (part.EndsWith("%"))
                 return true;
-            else if (part.EndsWith("ex", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("ex"))
                 return true;
-            else if (part.EndsWith("ch", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("ch"))
                 return true;
-            else if (part.EndsWith("rem", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("em"))
                 return true;
-            else if (part.EndsWith("vw", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("rem"))
                 return true;
-            else if (part.EndsWith("vh", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("vw"))
                 return true;
-            else if (part.EndsWith("vmin", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("vh"))
                 return true;
-            else if (part.EndsWith("vmax", StringComparison.OrdinalIgnoreCase))
+            else if (part.EndsWith("vmin"))
                 return true;
-            
+            else if (part.EndsWith("vmax"))
+                return true;
+
             else
                 return false;
         }
@@ -262,39 +267,34 @@ namespace Scryber.Styles.Parsing
         public static bool EndsWithAbsoluteUnit(string part, out int unitlength, out double pointsFactor)
         {
             unitlength = 2;
-            if (part.EndsWith("pt", StringComparison.OrdinalIgnoreCase))
+            if (part.EndsWith("pt"))
             {
                 pointsFactor = 1.0;
                 return true;
             }
-            if (part.EndsWith("px", StringComparison.OrdinalIgnoreCase))
+            if (part.EndsWith("px"))
             {
                 pointsFactor = Pixel2Point;
                 return true;
             }
-            if (part.EndsWith("pc", StringComparison.OrdinalIgnoreCase)) //pica
+            if (part.EndsWith("pc")) //pica
             {
                 pointsFactor = Pica2Point;
                 return true;
             }
-            if (part.EndsWith("in", StringComparison.OrdinalIgnoreCase))
+            if (part.EndsWith("in"))
             {
                 pointsFactor = Inch2Point;
                 return true;
             }
-            if (part.EndsWith("cm", StringComparison.OrdinalIgnoreCase))
+            if (part.EndsWith("cm"))
             {
                 pointsFactor = Centimeter2Point;
                 return true;
             }
-            if (part.EndsWith("mm", StringComparison.OrdinalIgnoreCase))
+            if (part.EndsWith("mm"))
             {
                 pointsFactor = Millimetre2Point;
-                return true;
-            }
-            if (part.EndsWith("em", StringComparison.OrdinalIgnoreCase))
-            {
-                pointsFactor = EmToPoint;
                 return true;
             }
             unitlength = 0;

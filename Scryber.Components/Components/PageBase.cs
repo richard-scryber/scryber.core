@@ -29,7 +29,7 @@ using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
-    public abstract class PageBase : VisualComponent, IStyledComponent, IResourceContainer, IPDFViewPortComponent,
+    public abstract class PageBase : VisualComponent, IStyledComponent, IDocumentPage, IPDFViewPortComponent,
                                                   IRemoteComponent, IControlledComponent, INamingContainer, ITopAndTailedComponent
     {
 

@@ -79,54 +79,24 @@ namespace Scryber.Styles
         public Style GetFullStyle(IComponent Component, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Style style = BuildFullStyle(Component);
-            
             style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
             return style;
         }
 
-        /// <summary>
-        /// Creates a new style for a page, and populates based on the current stack
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="defaultPageSize"></param>
-        /// <param name="rootFontSize"></param>
-        /// <returns></returns>
-        /// <remarks>This should be used for pages rather than GetFullStyle()
-        /// as it calculates the page size and font size based on the applied style, rather than from the parent</remarks>
-        public Style GetFullStyleForPage(IComponent page, Size defaultPageSize, Unit rootFontSize)
+
+        public Style GetFullStyleForPage(IDocumentPage page, Size defaultPageSize, Size fontSize, Unit rootFont)
         {
             Style style = BuildFullStyle(page);
 
-            var pgSize = defaultPageSize;
-            var fontHeight = rootFontSize;
+            Size newPageSize = defaultPageSize;
+            newPageSize.Width = style.GetValue(StyleKeys.PageWidthKey, defaultPageSize.Width);
+            newPageSize.Height = style.GetValue(StyleKeys.PageHeightKey, defaultPageSize.Height);
 
-            StyleValue<Unit> found;
+            style = style.Flatten(newPageSize, newPageSize, fontSize, rootFont);
 
-            if (style.TryGetValue(StyleKeys.PageWidthKey, out found))
-            {
-                pgSize.Width = found.Value(style);
-            }
-            if (style.TryGetValue(StyleKeys.PageHeightKey, out found))
-            {
-                pgSize.Height = found.Value(style);
-            }
-
-            if (pgSize.IsRelative)
-                throw new NotSupportedException("Page sizes cannot be relative values");
-
-            if (style.TryGetValue(StyleKeys.FontSizeKey, out found))
-            {
-                fontHeight = found.Value(style);
-
-                if (fontHeight.IsRelative)
-                    fontHeight = fontHeight.ToAbsolute(rootFontSize);
-            }
-
-            var fontSize = new Size(fontHeight * 0.5, fontHeight);
-
-            style = style.Flatten(pgSize, pgSize, fontSize, rootFontSize);
             return style;
         }
+        
 
         private Style BuildFullStyle(IComponent Component)
         {

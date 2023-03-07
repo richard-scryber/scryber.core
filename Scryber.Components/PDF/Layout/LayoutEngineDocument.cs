@@ -217,13 +217,14 @@ namespace Scryber.PDF.Layout
             var txt = this.FullStyle.CreateTextOptions();
             var fs = new Size(txt.GetZeroCharWidth(), txt.GetSize());
 
-            return this.StyleStack.GetFullStyle(forComponent, pg.Size, pg.Size.Subtract(pos.Margins), fs, Font.DefaultFontSize);
+            var docPage = forComponent as IDocumentPage;
 
-            //FontDefinition font = FontFactory.GetFontDefinition(Font.DefaultFontFamily, Drawing.FontStyle.Regular, FontWeights.Regular);
-            //var metrics = font.GetFontMetrics(Font.DefaultFontSize);
-            //var fontSize = new Size(metrics.TotalLineHeight, metrics.ZeroWidth);
-            //var pageSize = PageSize.A4.Size;
-            //return this.StyleStack.GetFullStyleForPage(forComponent, fontSize, fontSize.Height);
+            if (forComponent is IDocumentPage documentPage)
+                return this.StyleStack.GetFullStyleForPage(documentPage, pg.Size, fs, Font.DefaultFontSize);                
+            else
+                return this.StyleStack.GetFullStyle(forComponent, pg.Size, pg.Size.Subtract(pos.Margins), fs, Font.DefaultFontSize);
+
+            
         }
     }
 }

@@ -165,7 +165,7 @@ namespace Scryber.Styles
                                                                 , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
 
         public static readonly StyleKey<Unit> PaddingAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", PaddingItemKey
-                                                                , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenPaddingAllThicknessPositionValue));
 
         // Margins
 
@@ -184,7 +184,7 @@ namespace Scryber.Styles
                                                                 , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
 
         public static readonly StyleKey<Unit> MarginsAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", MarginsItemKey
-                                                                , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenMarginAllThicknessPositionValue));
 
         // Clip
 

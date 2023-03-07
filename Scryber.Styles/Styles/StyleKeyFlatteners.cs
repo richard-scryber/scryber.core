@@ -8,6 +8,20 @@ namespace Scryber.Styles
 	/// </summary>
 	public static class StyleKeyFlatteners
 	{
+
+        public static void FlattenRelativeNotAllowedValue(Style style, StyleKey<Unit> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        {
+            StyleValue<Unit> value;
+            if (style.TryGetValue(key, out value))
+            {
+                Unit dim = value.Value(style);
+                if (dim.IsRelative)
+                {
+                    throw new InvalidOperationException("Relative units are not allowed on the style property '" + key.ToString() + "'. The value '" + dim + "' cannot be used");
+                }
+            }
+        }
+
         /// <summary>
         /// Flattens a style key with preference given to the horizontal container on percent
         /// </summary>
@@ -26,13 +40,13 @@ namespace Scryber.Styles
                 Unit result;
                 if (dim.IsRelative)
                 {
-                    result = FlattentHorizontalUnit(dim, pageSize, containerSize, fontSize, rootFontSize);
+                    result = FlattenHorizontalUnit(dim, pageSize, containerSize, fontSize, rootFontSize);
                     value.SetValue(result);
                 }
             }
         }
 
-        private static Unit FlattentHorizontalUnit(Unit dim, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        private static Unit FlattenHorizontalUnit(Unit dim, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Unit result;
             switch (dim.Units)
@@ -143,6 +157,44 @@ namespace Scryber.Styles
         }
 
 
+        public static void FlattenPaddingAllThicknessPositionValue(Style style, StyleKey<Unit> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontHeight)
+        {
+            //As it is padding if we are using a percent then the top and bottom use the vertical, and left and right
+            //use the horizontal.
+            if (key != StyleKeys.PaddingAllKey)
+                throw new InvalidOperationException("The expected key is Padding all, for this method");
+            StyleValue<Unit> all;
+            if (style.TryGetValue(key, out all))
+            {
+                Unit dim = all.Value(style);
+                if (dim.IsRelative)
+                {
+                    Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight);
+                    all.SetValue(vert);
+
+                }
+            }
+            
+        }
+
+        public static void FlattenMarginAllThicknessPositionValue(Style style, StyleKey<Unit> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontHeight)
+        {
+            if (key != StyleKeys.MarginsAllKey)
+                throw new InvalidOperationException("The expected key is Padding all, for this method");
+
+            StyleValue<Unit> all;
+            if (style.TryGetValue(key, out all))
+            {
+                Unit dim = all.Value(style);
+                if (dim.IsRelative)
+                {
+                    Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight);
+                    all.SetValue(vert);
+
+                }
+            }
+        }
+
         /// <summary>
         /// Flattens a style key with preference given to the horizontal container on percent
         /// </summary>
@@ -230,9 +282,9 @@ namespace Scryber.Styles
                 if (dim.IsRelative)
                 {
                     Rect flat = new Rect();
-                    flat.X = FlattentHorizontalUnit(dim.X, pageSize, containerSize, fontSize, rootFontSize);
+                    flat.X = FlattenHorizontalUnit(dim.X, pageSize, containerSize, fontSize, rootFontSize);
                     flat.Y = FlattenVerticalUnit(dim.Y, pageSize, containerSize, fontSize, rootFontSize);
-                    flat.Width = FlattentHorizontalUnit(dim.Width, pageSize, containerSize, fontSize, rootFontSize);
+                    flat.Width = FlattenHorizontalUnit(dim.Width, pageSize, containerSize, fontSize, rootFontSize);
                     flat.Height = FlattenVerticalUnit(dim.Height, pageSize, containerSize, fontSize, rootFontSize);
 
                     value.SetValue(flat);

@@ -175,9 +175,18 @@ namespace Scryber.PDF.Layout
             if (null == this._textOptions)
                 this._textOptions = this._full.CreateTextOptions();
 
+            var pos = this._full.CreatePostionOptions();
+
             var fontSize = new Size(this._textOptions.GetLineHeight(), this._textOptions.GetZeroCharWidth());
 
-            return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, pgSize, fontSize, Font.DefaultFontSize);
+            if (forComponent is IDocumentPage docPg)
+            {
+                return this.Context.StyleStack.GetFullStyleForPage(docPg, pgSize, fontSize, Font.DefaultFontSize);
+            }
+            else
+            {
+                return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, pgSize.Subtract(pos.Margins), fontSize, Font.DefaultFontSize);
+            }
         }
 
         protected virtual void PushGroupFooter(PageBase topage, bool first)

@@ -518,6 +518,44 @@ namespace Scryber.Components
             }
         }
 
+
+        internal static readonly IDocumentPage[] NoPagesArray = new IDocumentPage[] { };
+
+        /// <summary>
+        /// Gets all of the components that implement the IDocummentPage interface within the document. (Including any nested document pages)
+        /// </summary>
+        IDocumentPage[] IDocumentPageContainer.AllPages
+        {
+            get
+            {
+                if (this.InnerContent.Count == 0)
+                    return NoPagesArray;
+                else
+                {
+                    List<IDocumentPage> all = new List<IDocumentPage>(this.InnerContent.Count);
+                    this.DoExtractDocumentPages(all, this.InnerContent);
+                    return all.ToArray();
+                }
+            }
+        }
+
+        protected virtual void DoExtractDocumentPages(List<IDocumentPage> all, ComponentList contents)
+        {
+            for (var i = 0; i < contents.Count; i++)
+            {
+                var pb = contents[i];
+                if (pb is IDocumentPageContainer container)
+                    all.AddRange(container.AllPages);
+                else if (pb is IDocumentPage docPg)
+                    all.Add(docPg);
+                else if (pb is IInvisibleContainer invisible)
+                {
+                    var inner = invisible.Content;
+                    this.DoExtractDocumentPages(all, inner);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates and returns a new page list wrapping on the inner content. Inheritors can override.
         /// </summary>

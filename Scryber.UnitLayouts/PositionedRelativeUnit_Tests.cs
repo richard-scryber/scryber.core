@@ -792,13 +792,13 @@ namespace Scryber.UnitLayouts
             Document doc = new Document();
             Page section = new Page();
             section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
+            section.Style.PageStyle.Height = 900;
             section.FontSize = 20;
             section.TextLeading = 25;
-            section.Margins = new Thickness(new Unit(10, PageUnits.Percent));
+            section.Margins = new Thickness(Unit.Percent(10), Unit.Percent(10), Unit.Percent(10), Unit.Percent(10)); // 10% all vertical
             section.BorderWidth = 1;
             section.Style.OverlayGrid.ShowGrid = true;
-            section.Style.OverlayGrid.GridSpacing = 60;
+            section.Style.OverlayGrid.GridSpacing = 30;
             doc.Pages.Add(section);
 
             Div relative = new Div()
@@ -826,11 +826,23 @@ namespace Scryber.UnitLayouts
             var block = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(block);
 
-            Unit expectedWidth = (600.0)  -  ((600.0 / 10.0) * 2.0); //page width - 10% margins either side
-            Unit expectedHeight = ((800.0) - ((800.0 / 10.0) * 2.0)) / 2.0; //50% of (page height - 10% margins)
+            var pgContent = pg.Size;
             
-            Assert.AreEqual(expectedWidth.PointsValue, block.Width.PointsValue, "Widths did not match");
-            Assert.AreEqual(expectedHeight.PointsValue, block.Height.PointsValue, "Heights did not match");
+
+
+            Assert.AreEqual(pgContent.Width, pg.ContentBlock.Width);
+            Assert.AreEqual(pgContent.Height, pg.ContentBlock.Height);
+
+            pgContent.Width -= (pgContent.Width * 0.1) * 2; //2 page width margins
+            pgContent.Height -= (pgContent.Height * 0.1) * 2; //2 page height margins
+
+            Unit expectedWidth = pgContent.Width;
+            Unit expectedHeight = pgContent.Height / 2.0; //50% of (page height - 10% margins)
+
+            
+
+            Assert.AreEqual(expectedWidth.PointsValue, Math.Floor(block.Width.PointsValue), "Widths did not match");
+            Assert.AreEqual(expectedHeight.PointsValue, Math.Round(block.Height.PointsValue,0), "Heights did not match");
         }
 
         [TestCategory(TestCategoryName)]
@@ -1800,7 +1812,8 @@ namespace Scryber.UnitLayouts
         public void HtmlParsingTest()
         {
 
-            var src = @"<!DOCTYPE html>
+            var src = @"<?scryber append-log='true' log-level='Verbose' parser-log='true' ?>
+<!DOCTYPE html>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <meta charset='utf-8' />
@@ -1818,16 +1831,16 @@ namespace Scryber.UnitLayouts
         h1{
             font-size:2em;  /* double body size */
             font-weight:normal;
-            height: 20vh;  /* 20% of the view height */
+            height: 20vmax;  /* 20% of the max view dimension */
             background-color: gray;
         }
 
     </style>
 </head>
 <body>
-    <div style='height: 40vh; background-color: silver; padding: 1em;' >Above the heading
-        <h1>This is my first heading</h1>
-        <div>And this is the content below the heading that should flow across multiple lines within the page and flow nicely along those lines.</div>
+    <div id='wrapper' style='height: 40vh; background-color: silver; padding: 1em;' >Above the heading
+        <h1 id='heading' >This is my first heading</h1>
+        <div id='inner' >And this is the content below the heading that should flow across multiple lines within the page and flow nicely along those lines.</div>
     </div>
 </body>
 </html>";
@@ -1851,29 +1864,60 @@ namespace Scryber.UnitLayouts
                 var pg = this.layout.AllPages[0];
                 Assert.IsNotNull(pg);
 
-                var rootEm = Font.DefaultFontSize;
-                Unit f = rootEm * 1.2; //font size is 1.2 root em height
+                var margin = pg.Size.Width * 0.05; // 5vw
+                Assert.AreEqual(margin, pg.PositionOptions.Margins.Left);
+                Assert.AreEqual(margin, pg.PositionOptions.Margins.Top);
+                Assert.AreEqual(margin, pg.PositionOptions.Margins.Bottom);
+                Assert.AreEqual(margin, pg.PositionOptions.Margins.Right);
+
+
+                var rootEm = Font.DefaultFontSize; //16
+                Unit fbody = rootEm * 1.2; // 1.2em
                 var content = pg.ContentBlock;
-                Assert.AreEqual(16 * 1.2, content.FullStyle.Font.FontSize);
+                Assert.AreEqual(fbody, content.FullStyle.Font.FontSize);
 
                 Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
                 Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
                 
 
-                var div = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-                var pgSize = pg.Size;
-                
+                var wrapper = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
 
-                var h = pgSize.Height * 0.4; //40vh
-                
+                var h = pg.Size.Height * 0.4; //40vh
+                Assert.AreEqual(h, wrapper.Height);
 
-                Assert.AreEqual(h, div.Height);
-                Assert.AreEqual(f, div.Position.Padding.Top);
-                Assert.AreEqual(f, div.Position.Padding.Left);
-                Assert.AreEqual(f, div.Position.Padding.Bottom);
-                Assert.AreEqual(f, div.Position.Padding.Right);
-                Assert.AreEqual(1, div.Columns.Length);
-                Assert.AreEqual(3, div.Columns[0].Contents.Count);
+                var pad = fbody; //padding = 1em
+
+                Assert.AreEqual(pad, wrapper.Position.Padding.Left);
+                Assert.AreEqual(pad, wrapper.Position.Padding.Top);
+                Assert.AreEqual(pad, wrapper.Position.Padding.Bottom);
+                Assert.AreEqual(pad, wrapper.Position.Padding.Right);
+
+                Assert.AreEqual(1, wrapper.Columns.Length);
+                Assert.AreEqual(3, wrapper.Columns[0].Contents.Count);
+
+                var literalLine = wrapper.Columns[0].Contents[0] as PDFLayoutLine;
+                var heading = wrapper.Columns[0].Contents[1] as PDFLayoutBlock; //After the text
+                var inner = wrapper.Columns[0].Contents[2] as PDFLayoutBlock;
+
+
+                var start = literalLine.Runs[0] as PDFTextRunBegin;
+                Assert.AreEqual(fbody, start.TextRenderOptions.GetSize());
+
+                var fhead = fbody * 2; //2em of the 1.2em body size
+                var headHeight = pg.Size.Height * 0.2; //20vmax;
+
+                Assert.AreEqual(headHeight, heading.Height);
+                literalLine = heading.Columns[0].Contents[0] as PDFLayoutLine;
+                start = literalLine.Runs[0] as PDFTextRunBegin;
+
+                Assert.AreEqual(fhead, start.TextRenderOptions.GetSize());
+
+                //Should revert back to normal within the inner div.
+                literalLine = inner.Columns[0].Contents[0] as PDFLayoutLine;
+                start = literalLine.Runs[0] as PDFTextRunBegin;
+
+                Assert.AreEqual(fbody, start.TextRenderOptions.GetSize());
+
 
             }
         }
