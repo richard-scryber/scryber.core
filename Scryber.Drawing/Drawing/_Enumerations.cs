@@ -55,17 +55,6 @@ namespace Scryber.Drawing
         //Reserved 0 for empty units
         Points = 0,
         Millimeters = 1,
-        Inches = 2
-    }
-
-    /// <summary>
-    /// Available page units
-    /// </summary>
-    public enum RelativeUnits
-    {
-        //Reserved 0 for empty units
-        Points = 0,
-        Millimeters = 1,
         Inches = 2,
         Pixel = 3,
         Percent = 4,
@@ -78,6 +67,8 @@ namespace Scryber.Drawing
         ViewPortMin = 11,
         ViewPortMax = 12
     }
+
+    
 
     
 
@@ -157,6 +148,20 @@ namespace Scryber.Drawing
         Oblique = 3
     }
 
+    public enum ListNumberingGroupStyle
+    {
+        None,
+        Decimals,
+        UppercaseRoman,
+        LowercaseRoman,
+        UppercaseLetters,
+        LowercaseLetters,
+        Bullet,
+        Labels
+        //[Obsolete("The labels and images are not currently supported", false)]
+        //Image
+    }
+
     public static class FontWeights
     {
         /// <summary>
@@ -234,6 +239,7 @@ namespace Scryber.Drawing
 
     public enum FontSourceType
     {
+        Base64,
         Local,
         Url
     }
@@ -456,6 +462,21 @@ namespace Scryber.Drawing
         FarthestSide,
         ClosestCorner,
         FarthestCorner
+    }
+
+
+    /// <summary>
+    /// The supported types of style content values
+    /// </summary>
+    public enum ContentDescriptorType
+    {
+        Text,
+        Image,
+        Gradient,
+        Counter,
+        Counters,
+        Attribute,
+        Quote
     }
 
 }

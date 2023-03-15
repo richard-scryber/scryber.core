@@ -22,6 +22,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber;
+using Scryber.Drawing;
+
 
 namespace Scryber.Styles
 {
@@ -74,11 +76,27 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="Component"></param>
         /// <returns></returns>
-        public Style GetFullStyle(IComponent Component)
+        public Style GetFullStyle(IComponent Component, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Style style = BuildFullStyle(Component);
+            style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
             return style;
         }
+
+
+        public Style GetFullStyleForPage(IDocumentPage page, Size defaultPageSize, Size fontSize, Unit rootFont)
+        {
+            Style style = BuildFullStyle(page);
+
+            Size newPageSize = defaultPageSize;
+            newPageSize.Width = style.GetValue(StyleKeys.PageWidthKey, defaultPageSize.Width);
+            newPageSize.Height = style.GetValue(StyleKeys.PageHeightKey, defaultPageSize.Height);
+
+            style = style.Flatten(newPageSize, newPageSize, fontSize, rootFont);
+
+            return style;
+        }
+        
 
         private Style BuildFullStyle(IComponent Component)
         {
@@ -114,10 +132,15 @@ namespace Scryber.Styles
                         variables = new StyleVariableSet();
                     this._styles[last].Variables.MergeInto(variables);
                 }
+
+                if (this._styles[last].HasStates)
+                {
+                    style.CopyStatesFrom(this._styles[last]);
+                }
             }
 
             style.Variables = variables;
-            style = style.Flatten();
+            
 
             return style;
         }

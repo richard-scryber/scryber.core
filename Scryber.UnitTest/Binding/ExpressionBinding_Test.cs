@@ -895,9 +895,9 @@ namespace Scryber.Core.UnitTests.Binding
                 padding = "20pt",
                 items = new[]
                     {
-                        new {name = "First Item", index = 0},
-                        new {name = "Second Item", index = 1},
-                        new {name = "Last Item", index = 2},
+                        new {name = "First Item", index = 0, group = "none"},
+                        new {name = "Second Item", index = 1, group = "one"},
+                        new {name = "Last Item", index = 2, group = "one" }
                     }
             };
 
@@ -1117,7 +1117,7 @@ namespace Scryber.Core.UnitTests.Binding
                 grpindex++;
             }
 
-            src += @"           </table>
+            src += @"         </table>
                             </body>
                         </html>";
 

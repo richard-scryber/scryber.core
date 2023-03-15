@@ -43,9 +43,21 @@ namespace Scryber.Drawing
             set { this._x = value; }
         }
 
-        public bool IsEmpty
+        public bool IsZero
         {
-            get { return this.X.IsEmpty && this.Y.IsEmpty; }
+            get { return this.X.IsZero && this.Y.IsZero; }
+        }
+
+        /// <summary>
+        /// Returns true if one or more of the units in this point are relative units.
+        /// </summary>
+        public bool IsRelative
+        {
+            get
+            {
+                return this._x.IsRelative
+                    || this._y.IsRelative;
+            }
         }
 
         public Point(double x, double y)

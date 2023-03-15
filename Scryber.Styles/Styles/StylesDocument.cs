@@ -302,9 +302,9 @@ namespace Scryber.Styles
         /// <param name="style">The style to populate with items</param>
         /// <param name="Component">The component the styles should be associated with.</param>
         /// <param name="state">The state of the component - not used</param>
-        public override void MergeInto(Scryber.Styles.Style style, IComponent Component, ComponentState state)
+        public override void MergeInto(Scryber.Styles.Style style, IComponent Component)
         {
-            this.Styles.MergeInto(style, Component, state);
+            this.Styles.MergeInto(style, Component);
         }
 
         ///// <summary>

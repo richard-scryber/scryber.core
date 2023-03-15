@@ -274,7 +274,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the set of artefact collections
         /// </summary>
-        protected PDFArtefactCollectionSet Artefacts
+        public PDFArtefactCollectionSet Artefacts
         {
             get
             {

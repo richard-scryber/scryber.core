@@ -9,7 +9,7 @@ using Scryber.PDF.Resources;
 namespace Scryber.Styles
 {
     [PDFParsableComponent("FontFace")]
-    public class StyleFontFace : Style
+    public class StyleFontFace : Style, INamingContainer
     {
 
         private const string FontLogCategory = "Style Font Face";
@@ -148,11 +148,39 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public IComponent Parent {get;set;}
+
+        private IComponent _owner;
+
+        /// <summary>
+        /// Gets or sets the owning component for this style definition - could be a remote style link, or a style group collection
+        /// </summary>
+        public IComponent Owner
+        {
+            get { return _owner; }
+            set
+            {
+                _owner = value;
+            }
+        }
+
+        #endregion
+
+
         //
         // override methods
         //
 
-        public override void MergeInto(Style style, IComponent Component, ComponentState state)
+        public override string MapPath(string path)
+        {
+            if (null != this.Owner)
+                return this.Owner.MapPath(path);
+            else
+                throw new Exception("The style defn " + this.ToString() + " does not have an owner");
+            //return base.MapPath(path);
+        }
+
+        public override void MergeInto(Style style, IComponent Component)
         {
             //Don't merge this one as any styles declared are for the font face not components.
         }
@@ -161,7 +189,9 @@ namespace Scryber.Styles
         protected override void DoDataBind(DataContext context, bool includechildren)
         {
             base.DoDataBind(context, includechildren);
-            
+
+            //TODO: Validate if this is a remote request 
+
             if (context.Document is IResourceRequester doc && null != this.Source && null != this.FontFamily)
             {
                 FontDefinition definition;
@@ -176,6 +206,7 @@ namespace Scryber.Styles
                 }
                 else
                 {
+                    
                     var source = GetSupportedSource(this.Source);
                     if (null == source)
                     {
@@ -189,6 +220,8 @@ namespace Scryber.Styles
                     }
                     else
                     {
+                        this.EnsureSourceMapped(source, context);
+                        
                         if (context.ShouldLogMessage)
                             context.TraceLog.Add(TraceLevel.Message, FontLogCategory,
                                 "Initiating the remote request for font " + name + " from source " + source.Source);
@@ -200,6 +233,23 @@ namespace Scryber.Styles
             }
             else
                 context.TraceLog.Add(TraceLevel.Warning, FontLogCategory, "No font-family or src was specified for the @font-face rule.");
+        }
+
+        protected void EnsureSourceMapped(FontSource source, ContextBase context)
+        {
+            if (null != source)
+            {
+                if (!string.IsNullOrEmpty(source.Source))
+                {
+                    var mapped = this.MapPath(source.Source);
+                    if (context.ShouldLogVerbose)
+                        context.TraceLog.Add(TraceLevel.Verbose, "Font Source", "Mapped font source from '" + (source.Source ?? "NULL") + "' to full path '" + (mapped ?? "NULL") + "'");
+
+                    source.SetMappedSource(mapped);
+                }
+                EnsureSourceMapped(source.Next, context);
+            }
+            
         }
 
         private bool ResolveFontRequest(IComponent owner, IRemoteRequest request, Stream response)

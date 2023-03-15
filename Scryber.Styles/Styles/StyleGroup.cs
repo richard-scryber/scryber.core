@@ -26,7 +26,7 @@ namespace Scryber.Styles
     /// To group styles by application with inner styles for components
     /// </summary>
     [PDFParsableComponent("StyleGroup")]
-    public class StyleGroup : StyleBase, IEnumerable<StyleBase>
+    public class StyleGroup : StyleBase, IEnumerable<StyleBase>, INamingContainer
     {
         //
         // properties
@@ -197,11 +197,11 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="Component"></param>
         /// <param name="state"></param>
-        public override void MergeInto(Style style, IComponent Component, ComponentState state)
+        public override void MergeInto(Style style, IComponent Component)
         {
             foreach (StyleBase def in this.InnerItems)
             {
-                def.MergeInto(style, Component, state);
+                def.MergeInto(style, Component);
             }
         }
 

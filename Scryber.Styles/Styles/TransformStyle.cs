@@ -45,22 +45,42 @@ namespace Scryber.Styles
         {
             get
             {
-                float f;
-                if (this.TryGetValue(StyleKeys.TransformXScaleKey, out f))
-                    return f;
+                var op = this.Operations;
+                TransformOperation scale;
+
+                if (null != op && op.TryGetType(TransformType.Scale, out scale))
+                    return scale.Value1;
                 else
-                    return 1.0F;
+                    return TransformOperation.NotSetValue();
 
             }
             set
             {
-                this.SetValue(StyleKeys.TransformXScaleKey, value);
+                var op = this.Operations;
+                TransformOperation scale;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Scale, value, TransformOperation.NotSetValue());
+                else if (op.TryGetType(TransformType.Scale, out scale))
+                    scale.Value1 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Scale, value, TransformOperation.NotSetValue()));
+
             }
         }
 
         public void RemoveScaleX()
         {
-            this.RemoveValue(StyleKeys.TransformXScaleKey);
+            var op = this.Operations;
+            TransformOperation scale;
+
+            if (op.TryGetType(TransformType.Scale, out scale))
+            {
+                scale.Value1 = TransformOperation.NotSetValue();
+
+                if (TransformOperation.IsNotSet(scale.Value2))
+                    this.Operations = TransformOperation.Remove(TransformType.Scale, op);
+            }
         }
 
         #endregion
@@ -72,22 +92,42 @@ namespace Scryber.Styles
         {
             get
             {
-                float f;
-                if (this.TryGetValue(StyleKeys.TransformYScaleKey, out f))
-                    return f;
+                var op = this.Operations;
+                TransformOperation scale;
+
+                if (null != op && op.TryGetType(TransformType.Scale, out scale))
+                    return scale.Value2;
                 else
-                    return 1.0F;
+                    return TransformOperation.NotSetValue();
 
             }
             set
             {
-                this.SetValue(StyleKeys.TransformYScaleKey, value);
+                var op = this.Operations;
+                TransformOperation scale;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Scale, TransformOperation.NotSetValue(), value);
+                else if (op.TryGetType(TransformType.Scale, out scale))
+                    scale.Value2 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Scale, TransformOperation.NotSetValue(), value));
+
             }
         }
 
         public void RemoveScaleY()
         {
-            this.RemoveValue(StyleKeys.TransformYScaleKey);
+            var op = this.Operations;
+            TransformOperation scale;
+
+            if (op.TryGetType(TransformType.Scale, out scale))
+            {
+                scale.Value2 = TransformOperation.NotSetValue();
+
+                if (TransformOperation.IsNotSet(scale.Value1))
+                    this.Operations = TransformOperation.Remove(TransformType.Scale, op);
+            }
         }
 
         #endregion
@@ -99,49 +139,86 @@ namespace Scryber.Styles
         {
             get
             {
-                float f;
-                if (this.TryGetValue(StyleKeys.TransformRotateKey, out f))
-                    return f;
+                var op = this.Operations;
+                TransformOperation rot;
+
+                if (null != op && op.TryGetType(TransformType.Rotate, out rot))
+                    return rot.Value1;
                 else
-                    return 0.0F;
+                    return TransformOperation.NotSetValue();
 
             }
             set
             {
-                this.SetValue(StyleKeys.TransformRotateKey, value);
+                var op = this.Operations;
+                TransformOperation rot;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Rotate, value, TransformOperation.NotSetValue());
+                else if (op.TryGetType(TransformType.Rotate, out rot))
+                    rot.Value1 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Rotate, value, TransformOperation.NotSetValue()));
+
             }
         }
 
         public void RemoveRotate()
         {
-            this.RemoveValue(StyleKeys.TransformRotateKey);
+            var op = this.Operations;   
+            TransformOperation scale;
+
+            if (op.TryGetType(TransformType.Rotate, out scale))
+            {
+                this.Operations = TransformOperation.Remove(TransformType.Rotate, op);
+            }
         }
 
 #endregion
 
-        #region public float SkewX {get;set;} + RemoveSkewX()
+ #region public float SkewX {get;set;} + RemoveSkewX()
 
         [PDFAttribute("skew-x")]
         public float SkewX
         {
             get
             {
-                float f;
-                if (this.TryGetValue(StyleKeys.TransformXSkewKey, out f))
-                    return f;
+                var op = this.Operations;
+                TransformOperation skew;
+
+                if (null != op && op.TryGetType(TransformType.Skew, out skew))
+                    return skew.Value1;
                 else
-                    return 0.0F;
+                    return TransformOperation.NotSetValue();
 
             }
             set
             {
-                this.SetValue(StyleKeys.TransformXSkewKey, value);
+                var op = this.Operations;
+                TransformOperation skew;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Skew, value, TransformOperation.NotSetValue());
+                else if (op.TryGetType(TransformType.Skew, out skew))
+                    skew.Value1 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Skew, value, TransformOperation.NotSetValue()));
+
             }
         }
 
         public void RemoveSkewX()
         {
-            this.RemoveValue(StyleKeys.TransformXSkewKey);
+            var op = this.Operations;
+            TransformOperation skew;
+
+            if (op.TryGetType(TransformType.Skew, out skew))
+            {
+                skew.Value1 = TransformOperation.NotSetValue();
+
+                if (TransformOperation.IsNotSet(skew.Value2))
+                    this.Operations = TransformOperation.Remove(TransformType.Skew, op);
+            }
         }
 
 #endregion
@@ -153,83 +230,147 @@ namespace Scryber.Styles
         {
             get
             {
-                float f;
-                if (this.TryGetValue(StyleKeys.TransformYSkewKey, out f))
-                    return f;
+                var op = this.Operations;
+                TransformOperation skew;
+
+                if (null != op && op.TryGetType(TransformType.Skew, out skew))
+                    return skew.Value2;
                 else
-                    return 0.0F;
+                    return TransformOperation.NotSetValue();
 
             }
             set
             {
-                this.SetValue(StyleKeys.TransformYSkewKey, value);
+                var op = this.Operations;
+                TransformOperation skew;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Skew, TransformOperation.NotSetValue(), value);
+                else if (op.TryGetType(TransformType.Skew, out skew))
+                    skew.Value2 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Skew, TransformOperation.NotSetValue(), value));
+                    
             }
         }
 
         public void RemoveSkewY()
         {
-            this.RemoveValue(StyleKeys.TransformYSkewKey);
-        }
+            var op = this.Operations;
+            TransformOperation skew;
 
-#endregion
-
-        /* OffsetX, Y and the origin are not supported 
-         * 
-        
-        #region public float OffsetH {get;set;} + RemoveOffsetH()
-
-        [PDFAttribute("offset-h")]
-        public float OffsetH
-        {
-            get
+            if (op.TryGetType(TransformType.Skew, out skew))
             {
-                float f;
-                if (this.TryGetValue(PDFStyleKeys.TransformXOffsetKey, out f))
-                    return f;
-                else
-                    return 0.0F;
+                skew.Value2 = TransformOperation.NotSetValue();
 
+                if (TransformOperation.IsNotSet(skew.Value1))
+                    this.Operations = TransformOperation.Remove(TransformType.Skew, op);
             }
-            set
-            {
-                this.SetValue(PDFStyleKeys.TransformXOffsetKey, value);
-            }
-        }
-
-        public void RemoveOffsetH()
-        {
-            this.RemoveValue(PDFStyleKeys.TransformXOffsetKey);
-        }
-
-#endregion
-
-        #region public float OffsetV {get;set;} + RemoveOffsetV()
-
-        [PDFAttribute("offset-v")]
-        public float OffsetV
-        {
-            get
-            {
-                float f;
-                if (this.TryGetValue(PDFStyleKeys.TransformYOffsetKey, out f))
-                    return f;
-                else
-                    return 0.0F;
-
-            }
-            set
-            {
-                this.SetValue(PDFStyleKeys.TransformYOffsetKey, value);
-            }
-        }
-
-        public void RemoveOffsetV()
-        {
-            this.RemoveValue(PDFStyleKeys.TransformYOffsetKey);
+            
         }
 
         #endregion
 
+        
+
+        #region public float TranslateX {get;set;} + RemoveTranslateX()
+
+        [PDFAttribute("translate-x")]
+        public float TranslateX
+        {
+            get
+            {
+                var op = this.Operations;
+                TransformOperation translate;
+
+                if (null != op && op.TryGetType(TransformType.Translate, out translate))
+                    return translate.Value1;
+                else
+                    return TransformOperation.NotSetValue();
+
+            }
+            set
+            {
+                var op = this.Operations;
+                TransformOperation translate;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Translate, value, TransformOperation.NotSetValue());
+                else if (op.TryGetType(TransformType.Translate, out translate))
+                    translate.Value1 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Translate, value, TransformOperation.NotSetValue()));
+
+            }
+        }
+
+        public void RemoveTranslateX()
+        {
+            var op = this.Operations;
+            TransformOperation trans;
+
+            if (op.TryGetType(TransformType.Translate, out trans))
+            {
+                trans.Value1 = TransformOperation.NotSetValue();
+
+                if (TransformOperation.IsNotSet(trans.Value2))
+                    this.Operations = TransformOperation.Remove(TransformType.Translate, op);
+            }
+        }
+
+        #endregion
+
+        #region public float TranslateY {get;set;} + RemoveTranslateY()
+
+
+        [PDFAttribute("translate-y")]
+        public float TranslateY
+        {
+            get
+            {
+                var op = this.Operations;
+                TransformOperation translate;
+
+                if (null != op && op.TryGetType(TransformType.Translate, out translate))
+                    return translate.Value2;
+                else
+                    return TransformOperation.NotSetValue();
+
+            }
+            set
+            {
+                var op = this.Operations;
+                TransformOperation translate;
+
+                if (null == op)
+                    this.Operations = new TransformOperation(TransformType.Translate, TransformOperation.NotSetValue(), value);
+                else if (op.TryGetType(TransformType.Translate, out translate))
+                    translate.Value2 = value;
+                else
+                    op.Append(new TransformOperation(TransformType.Translate, TransformOperation.NotSetValue(), value));
+
+            }
+        }
+
+        public void RemoveTranslateY()
+        {
+            var op = this.Operations;
+            TransformOperation translate;
+
+            if (op.TryGetType(TransformType.Translate, out translate))
+            {
+                translate.Value2 = TransformOperation.NotSetValue();
+
+                if (TransformOperation.IsNotSet(translate.Value1))
+                    this.Operations = TransformOperation.Remove(TransformType.Translate, op);
+            }
+        }
+
+        #endregion
+
+        /* Not currently supported
+         * 
+         * 
         #region public TransformationOrigin TransformationOrigin {get;set;} + RemoveOrigin()
 
         [PDFAttribute("origin")]
@@ -252,8 +393,27 @@ namespace Scryber.Styles
 
         #endregion
 
-        */
 
+        *
+        */
+        
+
+
+        public TransformOperation Operations
+        {
+            get
+            {
+                TransformOperation operation = null;
+                if (this.TryGetValue(StyleKeys.TransformOperationKey, out operation))
+                    return operation;
+                else
+                    return null;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
 
         #region public bool IsIdentity {get;}
 
@@ -304,13 +464,14 @@ namespace Scryber.Styles
         /// <returns></returns>
         public PDFTransformationMatrix GetMatrix()
         {
-            PDFTransformationMatrix current = new PDFTransformationMatrix();
+            var op = this.Operations;
+            if (null == op)
+                return PDFTransformationMatrix.Identity();
+            else
+                return op.GetMatrix(this.GetOrder());
+
             
-            //current.SetTranslation(this.OffsetH, this.OffsetV);
-            current.SetRotation(this.Rotate);
-            current.SetScale(this.ScaleX, this.ScaleY);
-            current.SetSkew(this.SkewX, this.SkewY);
-            return current;
+           
         }
 
         #endregion

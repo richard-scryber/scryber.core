@@ -35,7 +35,7 @@ namespace Scryber.Components
     /// <summary>
     /// Base class for all complex pdf Components
     /// </summary>
-    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent
+    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent
     {
         // static event keys for the PDFEventList
 
@@ -851,6 +851,33 @@ namespace Scryber.Components
 
         #endregion
 
+
+        #region public ComponentCounterSet Counters {get;}
+
+        public ComponentCounterSet _counters;
+
+        public ComponentCounterSet Counters
+        {
+            get
+            {
+                if (null == _counters)
+                    _counters = DoCreateCounters();
+                return _counters;
+            }
+        }
+
+        public bool HasCounters
+        {
+            get { return null != _counters && _counters.Count > 0; }
+        }
+
+
+        protected virtual ComponentCounterSet DoCreateCounters()
+        {
+            return new ComponentCounterSet(this);
+        }
+
+        #endregion
 
         //
         //constructors

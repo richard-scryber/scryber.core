@@ -218,10 +218,12 @@ namespace Scryber.Styles.Selectors
                 }
                 else
                 {
-                    if (c == ':')
+                    //TODO: Improve this as we substring twice. Once here and once at the state parsing
+                    if (c == ':' && currIndex > 0 && IsKnownState(selector.Substring(currIndex).TrimEnd()))
                     {
                         stateIndex = currIndex;
                         statePreviousType = pt;
+                        break;
                     }
                     sb.Append(c);
                 }
@@ -254,9 +256,48 @@ namespace Scryber.Styles.Selectors
                 {
 
                 }
+                else
+                {
+                    var state = selector.Substring(stateIndex).TrimEnd();
+                    switch (state)
+                    {
+                        case ("::before"):
+                        case (":before"):
+                            appliedState = ComponentState.Before;
+                            break;
+                        case ("::after"):
+                        case (":after"):
+                            appliedState = ComponentState.After;
+                            break;
+                        case (":hover"):
+                            appliedState = ComponentState.Over;
+                            break;
+                        default:
+                            //Use the unknown state so it is not captured as part of the default style.
+                            appliedState = ComponentState.Unknown;
+                            break;
+                    }
+                }
+
             }
 
             return new StyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState };
+        }
+
+        private static bool IsKnownState(string stateValue)
+        {
+            if(!string.IsNullOrEmpty(stateValue))
+            {
+                if(string.Equals(stateValue, "::before")
+                    || string.Equals(stateValue, "::after")
+                    || string.Equals(stateValue, ":hover")
+                    || string.Equals(stateValue, ":before")
+                    || string.Equals(stateValue, ":after"))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private enum ParsingType

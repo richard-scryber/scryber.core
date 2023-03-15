@@ -230,36 +230,7 @@ namespace Scryber.Core.UnitTests.Styles
 
         }
 
-        /// <summary>
-        ///A test for Flatten
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Styles")]
-        public void FlattenTest()
-        {
-            Style target = new Style();
-
-            //Add a background color and style
-            BackgroundStyle bg = new BackgroundStyle();
-            target.Background.Color = StandardColors.Aqua;
-            target.Background.FillStyle = Scryber.Drawing.FillType.Pattern;
-            //target.Background.AddItem(bg);
-
-            //Add a font
-            Scryber.Styles.FontStyle fs = new Scryber.Styles.FontStyle();
-            target.Font.FontBold = true;
-            target.Font.FontFamily = (FontSelector)"Bauhaus 92";
-            //target.AddItem(fs);
-
-            //Flattening process will remove the duplicates from the bottom up.
-            Style actual = target.Flatten();
-            Assert.AreEqual(StandardColors.Aqua, actual.Background.Color);
-            Assert.AreEqual(Scryber.Drawing.FillType.Pattern, actual.Background.FillStyle);
-            Assert.AreEqual(true, actual.Font.FontBold);
-            Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.FontFamily);
-
-            
-        }
+        
 
         /// <summary>
         ///A test for GetStyleItem
@@ -402,10 +373,10 @@ namespace Scryber.Core.UnitTests.Styles
             
 
             Label lbl = new Label();
-            ComponentState state = ComponentState.Normal;
+            
 
             //in the base implementation these are ignored - so no difference
-            target.MergeInto(merged, lbl, state);
+            target.MergeInto(merged, lbl);
 
             //Font is inherited
             bool expected = true;

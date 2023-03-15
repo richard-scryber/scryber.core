@@ -90,6 +90,19 @@ namespace Scryber.PDF
         // public methods
         //
 
+        public bool TryGetTree(string name, out PDFCategorisedNameTree tree)
+        {
+            if (this._dictionary.Count == 0)
+            {
+                tree = null;
+                return false;
+            }
+            else
+            {
+                return this._dictionary.TryGetValue(name, out tree);
+            }
+        }
+
         #region object IArtefactCollection.Register(IArtefactEntry entry)
 
         /// <summary>

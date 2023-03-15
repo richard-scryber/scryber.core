@@ -112,7 +112,7 @@ namespace Scryber
             this.Requests.Add(request ?? throw new ArgumentNullException(nameof(request)));
             
             if(this.LogVerbose)
-                this.AddVerboseLog("Adding the request for url '" + request.FilePath + "' to the current request set, to be fulfilled");
+                this.AddVerboseLog("Adding the request for url '" + request.StubFilePathForLog + "' to the current request set, to be fulfilled");
 
             return true;
         }
@@ -140,11 +140,11 @@ namespace Scryber
                             if (req.IsSuccessful)
                                 count++;
                             else
-                                this.Log.Add(TraceLevel.Warning, RemoteRequestCategory, "The request for " + req.FilePath + " completed, but was NOT marked as successful");
+                                this.Log.Add(TraceLevel.Warning, RemoteRequestCategory, "The request for " + req.StubFilePathForLog + " completed, but was NOT marked as successful");
                         }
                     }
                     else if(this.LogVerbose)
-                        this.AddVerboseLog("The request for " + req.FilePath + " was already completed. No need to fulfill explicitly");
+                        this.AddVerboseLog("The request for " + req.StubFilePathForLog + " was already completed. No need to fulfill explicitly");
                         
                     
                 }
@@ -160,10 +160,14 @@ namespace Scryber
             if (!request.IsCompleted)
             {
                 if(this.LogVerbose)
-                    this.AddVerboseLog("Fulfilling the request for " + request.FilePath + " as it is not completed");
+                    this.AddVerboseLog("Fulfilling the request for " + request.StubFilePathForLog + " as it is not completed");
                 try
                 {
-                    if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
+                    if (request.ResourceType == "Base64")
+                    {
+                        this.FullfillDataRequest(request);
+                    }
+                    else if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
                     {
                         this.FullfillUriRequest(request);
                     }
@@ -178,7 +182,7 @@ namespace Scryber
                 }
                 
                 if(this.LogVerbose)
-                    this.AddVerboseLog("Ended the request for " + request.FilePath + " with a completed status of " + request.IsCompleted + " and a successful status of " + request.IsSuccessful);
+                    this.AddVerboseLog("Ended the request for " + request.StubFilePathForLog + " with a completed status of " + request.IsCompleted + " and a successful status of " + request.IsSuccessful);
 
                 if (request.IsCompleted == false)
                     throw new InvalidOperationException("Could not complete the request for a remote file");
@@ -188,7 +192,7 @@ namespace Scryber
                     if (raiseErrors)
                         throw request.Error ?? new InvalidOperationException("The request for the '" + request.FilePath + "' could not be completed");
                     else
-                        this._owner.TraceLog.Add(TraceLevel.Error, RemoteRequestCategory, "Could not load the remote request for " + request.FilePath, request.Error);
+                        this._owner.TraceLog.Add(TraceLevel.Error, RemoteRequestCategory, "Could not load the remote request for " + request.StubFilePathForLog, request.Error);
                 }
             }
             else if (raiseErrors && request.IsSuccessful == false && request.Error != null)
@@ -209,22 +213,22 @@ namespace Scryber
             var client = this.GetHttpClient();
 
             if(this.LogDebug)
-                this.AddDebugLog( "SYNC fulfilling the request for the URL '" + urlRequest.FilePath + "' as this is not an async execution");
+                this.AddDebugLog( "SYNC fulfilling the request for the URL '" + urlRequest.StubFilePathForLog + "' as this is not an async execution");
             
             using (var stream = client.GetStreamAsync(urlRequest.FilePath).Result)
             {
                 if(this.LogDebug)
-                    this.AddDebugLog("Stream received from url '" + urlRequest.FilePath + "' and starting the callback");
+                    this.AddDebugLog("Stream received from url '" + urlRequest.StubFilePathForLog + "' and starting the callback");
 
                 var success = urlRequest.Callback(this._owner, urlRequest, stream);
                 
                 if(this.LogDebug)
-                    this.AddDebugLog("Callback done for url '" + urlRequest.FilePath + "' and reported " + (success ? "SUCCESS" : "FAIL"));
+                    this.AddDebugLog("Callback done for url '" + urlRequest.StubFilePathForLog + "' and reported " + (success ? "SUCCESS" : "FAIL"));
 
                 urlRequest.CompleteRequest(urlRequest.Result, success);
 
                 if(this.LogDebug)
-                    this.AddDebugLog( "Completed the request for url '" + urlRequest.FilePath + "' with result" + (urlRequest.Result == null ? "NO RESULT SET" : urlRequest.Result.ToString()));
+                    this.AddDebugLog( "Completed the request for url '" + urlRequest.StubFilePathForLog + "' with result" + (urlRequest.Result == null ? "NO RESULT SET" : urlRequest.Result.ToString()));
 
                 return success;
             }
@@ -238,27 +242,53 @@ namespace Scryber
         protected virtual bool FullfillFileRequest(RemoteFileRequest fileRequest)
         {
             if(this.LogDebug)
-                this.AddDebugLog("SYNC fulfilling the request for the FILE '" + fileRequest.FilePath + "' as this is not an async execution");
+                this.AddDebugLog("SYNC fulfilling the request for the FILE '" + fileRequest.StubFilePathForLog + "' as this is not an async execution");
 
             using (var stream = File.OpenRead(fileRequest.FilePath))
             {
                 if(this.LogDebug)
-                    this.AddDebugLog( "Stream received from file '" + fileRequest.FilePath + "' and starting the callback");
+                    this.AddDebugLog( "Stream received from file '" + fileRequest.StubFilePathForLog + "' and starting the callback");
 
                 var success = fileRequest.Callback(this._owner, fileRequest, stream);
                 
                 if(this.LogDebug)
-                    this.AddDebugLog( "Callback done for file '" + fileRequest.FilePath + "' and reported " + (success ? "SUCCESS" : "FAIL"));
+                    this.AddDebugLog( "Callback done for file '" + fileRequest.StubFilePathForLog + "' and reported " + (success ? "SUCCESS" : "FAIL"));
 
                 fileRequest.CompleteRequest(fileRequest.Result, success);
 
                 if(this.LogDebug)
-                    this.AddDebugLog( "Completed the request for file '" + fileRequest.FilePath + "' with result" + (fileRequest.Result == null ? "NO RESULT SET" : fileRequest.Result.ToString()));
+                    this.AddDebugLog( "Completed the request for file '" + fileRequest.StubFilePathForLog + "' with result" + (fileRequest.Result == null ? "NO RESULT SET" : fileRequest.Result.ToString()));
 
                 return success;
             }
         }
+        
+        // TODO: documentation
+        protected virtual bool FullfillDataRequest(RemoteFileRequest dataRequest)
+        {
+            if(this.LogDebug)
+                this.AddDebugLog("SYNC fulfilling the request for the DATA '" + dataRequest.StubFilePathForLog + "' as this is not an async execution");
 
+            var bytes = Convert.FromBase64String(dataRequest.FilePath.Split(',')[1]);
+            using (var stream = new MemoryStream(bytes))
+            {
+                if(this.LogDebug)
+                    this.AddDebugLog( "Stream received from data '" + dataRequest.StubFilePathForLog + "' and starting the callback");
+
+                var success = dataRequest.Callback(this._owner, dataRequest, stream);
+                
+                if(this.LogDebug)
+                    this.AddDebugLog( "Callback done for data '" + dataRequest.StubFilePathForLog + "' and reported " + (success ? "SUCCESS" : "FAIL"));
+
+                dataRequest.CompleteRequest(dataRequest.Result, success);
+
+                if(this.LogDebug)
+                    this.AddDebugLog( "Completed the request for data '" + dataRequest.StubFilePathForLog + "' with result" + (dataRequest.Result == null ? "NO RESULT SET" : dataRequest.Result.ToString()));
+
+                return success;
+            }
+        }
+        
         /// <summary>
         /// Gets an HttpClient, either from a registered service, or creating one for the lifespan of this instance.
         /// </summary>

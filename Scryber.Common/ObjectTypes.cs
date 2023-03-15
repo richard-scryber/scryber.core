@@ -32,7 +32,7 @@ namespace Scryber
 
         public static readonly ObjectType Number = (ObjectType)"NUM ";
         public static readonly ObjectType Array = (ObjectType)"ARRY";
-        public static readonly ObjectType String = (ObjectType)"STR ";
+        public static readonly ObjectType String = (ObjectType)"STR_";
         public static readonly ObjectType Dictionary = (ObjectType)"DICT";
         public static readonly ObjectType Object = (ObjectType)"OBJ ";
         public static readonly ObjectType ObjectRef = (ObjectType)"OREF";
@@ -62,7 +62,7 @@ namespace Scryber
 
         //Components
 
-        public static readonly ObjectType Document = (ObjectType)"doc ";
+        public static readonly ObjectType Document = (ObjectType)"doc_";
         public static readonly ObjectType Text = (ObjectType)"text";
         public static readonly ObjectType Label = (ObjectType)"labl";
         public static readonly ObjectType Field = (ObjectType)"fild";
@@ -99,7 +99,7 @@ namespace Scryber
         public static readonly ObjectType Canvas = (ObjectType)"canv";
         public static readonly ObjectType Panel = (ObjectType)"panl";
         public static readonly ObjectType Span = (ObjectType)"span";
-        public static readonly ObjectType Div = (ObjectType)"div ";
+        public static readonly ObjectType Div = (ObjectType)"div_";
         public static readonly ObjectType BlockQuote = (ObjectType)"bkqu";
         public static readonly ObjectType Paragraph = (ObjectType)"para";
         public static readonly ObjectType Layer = (ObjectType)"layr";

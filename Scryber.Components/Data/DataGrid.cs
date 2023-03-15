@@ -316,7 +316,7 @@ namespace Scryber.Data
                 parentData = context.DataStack.Current;
 
             Style applied = this.GetAppliedStyle();
-            applied = applied.Flatten();
+            
             
             IEnumerator enumerator = this.GetDataEnumerator(origData);
             if (this.AutoBindContent != DataAutoBindContent.None)

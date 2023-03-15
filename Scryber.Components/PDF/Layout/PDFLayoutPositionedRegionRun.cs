@@ -36,6 +36,11 @@ namespace Scryber.PDF.Layout
             private set;
         }
 
+        public bool IsFloating
+        {
+            get; set;
+        }
+
         public PDFLayoutPositionedRegionRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner)
             : base(line, owner)
         {

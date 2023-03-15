@@ -72,7 +72,7 @@ namespace Scryber.Html.Components
             {
                 if (null == _applied)
                     _applied = this.GetAppliedStyle();
-                _applied.MergeInto(baseStyle, forComponent, ComponentState.Normal);
+                _applied.MergeInto(baseStyle, forComponent);
             }
             return base.GetAppliedStyle(forComponent, baseStyle);
         }

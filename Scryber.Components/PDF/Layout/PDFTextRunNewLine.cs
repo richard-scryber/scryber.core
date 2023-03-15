@@ -32,7 +32,7 @@ namespace Scryber.PDF.Layout
         #region public override Drawing.PDFUnit Height {get;}
 
         /// <summary>
-        /// Gets the height of the text 
+        /// Gets the height of the NewLine run - Always Zero.
         /// </summary>
         public override Drawing.Unit Height
         {
@@ -44,7 +44,7 @@ namespace Scryber.PDF.Layout
         #region public override Drawing.PDFUnit Width {get;}
 
         /// <summary>
-        /// Gets the width of the NewLine run
+        /// Gets the width of the NewLine run - Always Zero
         /// </summary>
         public override Drawing.Unit Width
         {
@@ -58,9 +58,10 @@ namespace Scryber.PDF.Layout
         private Size _offest;
 
         /// <summary>
-        /// Gets or sets the offset of the line this TextRun is an end to
+        /// Gets or sets the offset of the line this TextRun is an end to,
+        /// to the next running line - e.g. Back 681pt, Down 24pt.
         /// </summary>
-        public Size Offset
+        public Size NewLineOffset
         {
             get { return _offest; }
             set { _offest = value; }
@@ -71,7 +72,7 @@ namespace Scryber.PDF.Layout
         #region public PDFTextRunSpacer NextLineSpacer {get;}
 
         /// <summary>
-        /// Gets or sets the spacer at the front of the next line.
+        /// Gets or sets the reference to spacer at the front of the next line.
         /// </summary>
         public PDFTextRunSpacer NextLineSpacer
         {
@@ -132,7 +133,7 @@ namespace Scryber.PDF.Layout
         {
             if (NextLineSpacer != null)
             {
-                Size offset = this.Offset;
+                Size offset = this.NewLineOffset;
                 offset.Width += xoffset;
 
                 PDFLayoutLine nextline = this.NextLineSpacer.Line;
@@ -145,7 +146,7 @@ namespace Scryber.PDF.Layout
                 //    offset.Height = nextline.Height - difdescender;
                 //}
 
-                this.Offset = offset;
+                this.NewLineOffset = offset;
             }
             base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
         }
@@ -158,7 +159,7 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            Size offset = this.Offset;
+            Size offset = this.NewLineOffset;
             
             if (null != this.NextLineSpacer)
             {

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 using Scryber.Logging;
 
 namespace Scryber.Styles.Parsing
@@ -94,6 +95,7 @@ namespace Scryber.Styles.Parsing
 
                 if (this.IsMediaQuery(ref selector))
                 {
+
                     if (this._log.ShouldLog(TraceLevel.Verbose))
                         this._log.Add(TraceLevel.Verbose, "CSS", "Found media query at rule for " + selector + " parsing inner contents");
 
@@ -103,8 +105,11 @@ namespace Scryber.Styles.Parsing
                     if (innerEnd <= next)
                         return null;
 
-                    this.ParseInnerStyles(media, next + 1, innerEnd - (next + 1));
-                    parsed = media;
+                    if (this.TryParseInnerStyles(match.ToString(), media, next + 1, innerEnd - (next + 1)))
+                        parsed = media;
+                    else
+                        parsed = new StyleMediaGroup(); //add an empty one
+
                     this._str.Offset = innerEnd;
                 }
                 else if(this.IsPageQuery(ref selector))
@@ -112,24 +117,16 @@ namespace Scryber.Styles.Parsing
                     if (this._log.ShouldLog(TraceLevel.Verbose))
                         this._log.Add(TraceLevel.Verbose, "CSS", "Found page at rule for " + selector + " parsing inner contents");
 
-                    var match = Selectors.PageMatcher.Parse(selector);
-                    StylePageGroup pg = new StylePageGroup(match);
                     var innerEnd = MoveToNextStyleEnd();
                     if (innerEnd <= next)
                         return null;
 
-                    string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+                    StylePageGroup pg;
+                    if (TryReadPageQuery(selector, next, innerEnd, out pg))
+                        parsed = pg;
+                    else
+                        parsed = new StylePageGroup();
 
-                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
-                    CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
-
-                    while (reader.ReadNextAttributeName())
-                    {
-                        parser.SetStyleValue(pg, reader, this.Context);
-                    }
-
-
-                    parsed = pg;
                     this._str.Offset = innerEnd;
                 }
                 else if(this.IsFontFace(ref selector))
@@ -137,23 +134,16 @@ namespace Scryber.Styles.Parsing
                     if (this._log.ShouldLog(TraceLevel.Verbose))
                         this._log.Add(TraceLevel.Verbose, "CSS", "Found font-face at rule for " + selector + " parsing inner contents");
 
-                    StyleFontFace ff = new StyleFontFace();
                     var innerEnd = MoveToNextStyleEnd();
                     if (innerEnd <= next)
                         return null;
 
-                    string style = this._str.Substring(next + 1, innerEnd - (next + 1));
-                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
-                    CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
+                    StyleFontFace ff;
+                    if (TryReadFontFace(selector, next, innerEnd, out ff))
+                        parsed = ff;
+                    else
+                        parsed = new StyleFontFace();
 
-                    while (reader.ReadNextAttributeName())
-                    {
-                        if (!parser.SetStyleValue(ff, reader, this.Context))
-                            reader.SkipToNextAttribute();
-                    }
-
-
-                    parsed = ff;
                     this._str.Offset = innerEnd;
                 }
                 else
@@ -166,27 +156,15 @@ namespace Scryber.Styles.Parsing
                     }
 
                     selector = this._str.Substring(start, next - start);
-                    string style = this._str.Substring(next + 1, end - (next + 1));
+                    //string style = this._str.Substring(next + 1, end - (next + 1));
 
-                    
 
-                    StyleDefn defn = new StyleDefn();
 
-                    defn.Match = selector;
-
-                    if (this._log.ShouldLog(TraceLevel.Verbose))
-                        this._log.Add(TraceLevel.Verbose, "CSS", "Found css selector " + defn.Match.ToString() + " parsing inner contents");
-
-                    CSSStyleItemReader reader = new CSSStyleItemReader(style);
-                    CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
-
-                    while (reader.ReadNextAttributeName())
-                    {
-                        parser.SetStyleValue(defn, reader, this.Context);
-                    }
-
-                    //success, so we can return
-                    parsed = defn;
+                    StyleDefn defn;
+                    if (this.TryReadStyleDefinition(selector, next, end, out defn))
+                        parsed = defn;
+                    else
+                        parsed = new StyleDefn(selector); //just create an empty one
                     this._str.Offset = end;
                 }
 
@@ -204,6 +182,10 @@ namespace Scryber.Styles.Parsing
             
             return parsed;
         }
+
+        
+
+
 
         private bool IsMediaQuery(ref string selector)
         {
@@ -292,6 +274,99 @@ namespace Scryber.Styles.Parsing
             return -1;
         }
 
+        private bool TryReadFontFace(string selector, int next, int innerEnd, out StyleFontFace ff)
+        {
+            bool success = false;
+
+            try
+            {
+                ff = this.ReadFontFace(next, innerEnd);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                this._log.Add(TraceLevel.Error, "CSS", "Could not parse the inner styles for '" + selector + "' as an error occurred : " + ex.Message, ex);
+                ff = null;
+                success = false;
+            }
+
+            return success;
+        }
+
+
+        private StyleFontFace ReadFontFace(int next, int innerEnd)
+        {
+            StyleFontFace ff = new StyleFontFace();
+
+
+            //string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+            CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, innerEnd - (next + 1)));
+            CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
+
+            while (reader.ReadNextAttributeName())
+            {
+                if (!parser.SetStyleValue(ff, reader, this.Context))
+                    reader.SkipToNextAttribute();
+            }
+
+            return ff;
+        }
+
+        private bool TryReadPageQuery(string selector, int next, int innerEnd, out StylePageGroup group)
+        {
+            bool success = false;
+
+            try
+            {
+                group = this.ReadPageQuery(selector, next, innerEnd);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                this._log.Add(TraceLevel.Error, "CSS", "Could not parse the inner styles for '" + selector + "' as an error occurred : " + ex.Message, ex);
+                group = null;
+                success = false;
+            }
+
+            return success;
+        }
+
+        private StylePageGroup ReadPageQuery(string selector, int next, int innerEnd)
+        {
+            var match = Selectors.PageMatcher.Parse(selector);
+            StylePageGroup pg = new StylePageGroup(match);
+
+
+            //string style = this._str.Substring(next + 1, innerEnd - (next + 1));
+
+            CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, innerEnd - (next + 1)));
+            CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
+
+            while (reader.ReadNextAttributeName())
+            {
+                parser.SetStyleValue(pg, reader, this.Context);
+            }
+
+            return pg;
+        }
+
+        private bool TryParseInnerStyles(string name, StyleGroup group, int grpStart, int grpLen)
+        {
+            bool success = false;
+            try
+            {
+                this.ParseInnerStyles(group, grpStart, grpLen);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                this._log.Add(TraceLevel.Error, "CSS", "Could not parse the inner styles for '" + name + "' as an error occurred : " + ex.Message, ex);
+                success = false;
+            }
+
+            return success;
+        }
+
         private void ParseInnerStyles(StyleGroup group, int grpStart, int grpLen)
         {
             var content = _str.Substring(grpStart, grpLen);
@@ -309,6 +384,44 @@ namespace Scryber.Styles.Parsing
                     group.Styles.Add(this.Current);
             }
             _str = prev;
+        }
+
+        private bool TryReadStyleDefinition(string selector, int next, int end, out StyleDefn defn)
+        {
+            bool success = false;
+            try
+            {
+                defn = ReadStyleDefinition(selector, next, end);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                this._log.Add(TraceLevel.Error, "CSS", "Could not parse the style definition for '" + selector + "' as an error occurred : " + ex.Message, ex);
+
+                defn = null;
+                success = false;
+            }
+            return success;
+        }
+
+        private StyleDefn ReadStyleDefinition(string selector, int next, int end)
+        {
+            StyleDefn defn = new StyleDefn();
+
+            defn.Match = selector;
+
+            if (this._log.ShouldLog(TraceLevel.Verbose))
+                this._log.Add(TraceLevel.Verbose, "CSS", "Found css selector " + defn.Match.ToString() + " parsing inner contents");
+
+            CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, end - (next + 1)));
+            CSSStyleItemAllParser parser = new CSSStyleItemAllParser();
+
+            while (reader.ReadNextAttributeName())
+            {
+                parser.SetStyleValue(defn, reader, this.Context);
+            }
+
+            return defn;
         }
     }
 

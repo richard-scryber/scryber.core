@@ -30,7 +30,7 @@ namespace Scryber.PDF
     public class PDFCategorisedNameTree
     {
         /// <summary>
-        /// The maximum number of entires in each leaf list before being broken into multiple lists with an over arching branch list
+        /// NOT CURRENTLY USED - The maximum number of entires in each leaf list before being broken into multiple lists with an over arching branch list
         /// </summary>
         private const int TreeBreakPoint = 1000;
 
@@ -51,7 +51,10 @@ namespace Scryber.PDF
             private set;
         }
 
-
+        public IArtefactEntry this[string name]
+        {
+            get { return this.InnerEntries[name]; }
+        }
 
 
 

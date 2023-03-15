@@ -1156,6 +1156,24 @@ namespace Scryber.Components
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the floating mode of this component, left, right or none (default).
+        /// </summary>
+        public FloatMode FloatMode
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionFloat, FloatMode.None);
+                else
+                    return FloatMode.None;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionFloat, value);
+            }
+        }
+
         #region public bool FillWidth
 
         /// <summary>
@@ -1588,6 +1606,43 @@ namespace Scryber.Components
 
         #endregion
 
+
+        #region public TransformOperation TransformOperation {get;set;}
+
+        /// <summary>
+        /// Gets or sets the transform operation. NOTE setting will prepend the value onto the chain of any existing values. Set to null or use RemoveTransformOperation() to clear completely.
+        /// </summary>
+        public TransformOperation TransformOperation
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.TransformOperationKey, null);
+                else
+                    return null;
+            }
+            set
+            {
+                if (null == value)
+                    this.Style.RemoveValue(StyleKeys.TransformOperationKey);
+                else
+                {
+                    var prev = this.Style.GetValue(StyleKeys.TransformOperationKey, null);
+                    value.Append(prev);
+                    this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+                }
+                    
+            }
+        }
+
+
+        public void RemoveTransformOperation()
+        {
+            if (this.HasStyle)
+                this.Style.RemoveValue(StyleKeys.TransformOperationKey);
+        }
+
+        #endregion
 
         //
         // data attributes

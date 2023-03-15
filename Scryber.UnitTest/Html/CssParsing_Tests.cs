@@ -17,12 +17,14 @@ using System.Diagnostics;
 using Scryber.Text;
 using Scryber.PDF.Resources;
 using System.Runtime.ExceptionServices;
+using System.IO;
+using System.Collections;
 
 namespace Scryber.Core.UnitTests.Html
 {
     [TestClass()]
     public class CssParsing_Test
-    { 
+    {
 
         private PDFLayoutContext _layoutcontext;
         private TestContext testContextInstance;
@@ -43,6 +45,12 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod()]
+        public void CSSErrors()
+        {
+            Assert.Inconclusive("Add tests for invalid css content. Make sure that the other styles are actually parsed");
+        }
+
         [TestMethod]
         public void CSSStringEnumerator()
         {
@@ -53,6 +61,17 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(10, str.Length);
             Assert.AreEqual(-1, str.Offset);
             Assert.IsFalse(str.EOS);
+            Assert.AreEqual(chars, str.ToString());
+
+            Assert.IsTrue(str.MoveNext());
+            Assert.IsTrue(str.Matches("0123"));
+            Assert.IsFalse(str.Matches("34567"));
+            str.Reset();
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(chars, str.ToString());
 
             while (str.MoveNext())
             {
@@ -64,10 +83,160 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(10, index);
             Assert.AreEqual(10, str.Offset);
             Assert.AreEqual(true, str.EOS);
+
+            //Move Back one
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(9, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('9', str.Current);
+            Assert.AreEqual('7', str.Peek(-2));
+
+            //Move Back another
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(8, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('8', str.Current);
+            Assert.AreEqual('9', str.Peek(1));
+
+            Assert.IsTrue(str.Matches("89"));
+
+            //Substring
+            Assert.AreEqual(chars.Substring(5), str.Substring(5));
+            Assert.AreEqual(chars.Substring(5, 5), str.Substring(5, 5));
+            Assert.AreEqual(chars.Substring(2, 2), str.Substring(2, 2));
+
         }
 
-        
 
+        [TestMethod]
+        public void CSSStringEnumerator_Partial()
+        {
+            var chars = "___0123456789________";
+            var subchars = "0123456789";
+            int index = 3;
+            int length = 10;
+            var str = new StringEnumerator(chars, index, length);
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
+            Assert.IsTrue(str.MoveNext());
+            Assert.IsTrue(str.Matches("0123"));
+            Assert.IsFalse(str.Matches("34567"));
+
+            str.Reset();
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
+            while (str.MoveNext())
+            {
+                Assert.IsFalse(str.EOS);
+                Assert.AreEqual(index - 3, str.Offset);
+                Assert.AreEqual(chars[index], str.Current);
+                index++;
+            }
+            Assert.AreEqual(13, index);
+            Assert.AreEqual(10, str.Offset);
+            Assert.AreEqual(true, str.EOS);
+
+            //Move Back one
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(9, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('9', str.Current);
+            Assert.AreEqual('7', str.Peek(-2));
+
+            //Move Back another
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(8, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('8', str.Current);
+            Assert.AreEqual('9', str.Peek(1));
+
+            Assert.IsTrue(str.Matches("89"));
+
+            //Substring
+            Assert.AreEqual(subchars.Substring(5), str.Substring(5));
+            Assert.AreEqual(subchars.Substring(5, 5), str.Substring(5, 5));
+            Assert.AreEqual(subchars.Substring(2, 2), str.Substring(2, 2));
+        }
+
+        [TestMethod]
+        public void CSSStringEnumerator_SubEnumerator()
+        {
+            var chars = "___0123456789________";
+            var subchars = "0123456789";
+            int index = 3;
+            int length = 10;
+
+            var str_long = new StringEnumerator(chars);
+            Assert.AreEqual(chars.Length, str_long.Length);
+            Assert.AreEqual(-1, str_long.Offset);
+            Assert.IsFalse(str_long.EOS);
+            Assert.AreEqual(chars, str_long.ToString());
+
+            //Create a new enumerator from the base, with new index and length
+            var str = new StringEnumerator(str_long, index, length);
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
+            Assert.IsTrue(str.MoveNext());
+            Assert.IsTrue(str.Matches("0123"));
+            Assert.IsFalse(str.Matches("34567"));
+
+            str.Reset();
+
+            Assert.AreEqual(10, str.Length);
+            Assert.AreEqual(-1, str.Offset);
+            Assert.IsFalse(str.EOS);
+            Assert.AreEqual(subchars, str.ToString());
+
+            while (str.MoveNext())
+            {
+                Assert.IsFalse(str.EOS);
+                Assert.AreEqual(index - 3, str.Offset);
+                Assert.AreEqual(chars[index], str.Current);
+                index++;
+            }
+            Assert.AreEqual(13, index);
+            Assert.AreEqual(10, str.Offset);
+            Assert.AreEqual(true, str.EOS);
+
+            //Move Back one
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(9, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('9', str.Current);
+            Assert.AreEqual('7', str.Peek(-2));
+
+            //Move Back another
+
+            Assert.IsTrue(str.MovePrev());
+            Assert.AreEqual(8, str.Offset);
+            Assert.AreEqual(false, str.EOS);
+            Assert.AreEqual('8', str.Current);
+            Assert.AreEqual('9', str.Peek(1));
+
+            Assert.IsTrue(str.Matches("89"));
+
+            //Substring
+            Assert.AreEqual(subchars.Substring(5), str.Substring(5));
+            Assert.AreEqual(subchars.Substring(5, 5), str.Substring(5, 5));
+            Assert.AreEqual(subchars.Substring(2, 2), str.Substring(2, 2));
+        }
 
 
         private void SimpleDocumentParsing_Layout(object sender, LayoutEventArgs args)
@@ -129,7 +298,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("body.grey div", two.Match.ToString());
             Assert.AreEqual(10, two.ValueCount); //All, Top, Left, Bottom and Right are all set for Margins and Padding
             // 96 pixels per inch, 72 points per inch
-            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, Unit.Zero).PointsValue); 
+            Assert.AreEqual(7.5, two.GetValue(StyleKeys.PaddingAllKey, Unit.Zero).PointsValue);
             Assert.AreEqual(11.25, two.GetValue(StyleKeys.MarginsAllKey, Unit.Zero).PointsValue);
 
             var three = col[2] as StyleDefn;
@@ -243,7 +412,7 @@ body.grey div.reverse{
 
             //Top one should be a media query
             Assert.IsInstanceOfType(col[0], typeof(StyleMediaGroup));
-            
+
             var media = (StyleMediaGroup)col[0];
             Assert.AreEqual("screen", media.Media.Type);
             Assert.AreEqual(2, media.Styles.Count);
@@ -378,18 +547,18 @@ body.grey div.reverse{
                 using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSS.pdf"))
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
-                    
+
                     doc.SaveAsPDF(stream);
                 }
 
 
                 var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
-                
+
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
                 //This has been loaded from the remote file
                 Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
-                
+
 
             }
         }
@@ -561,9 +730,831 @@ body.grey div.reverse{
 
             Assert.AreEqual("https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf", fsrc.Source, "Source does not match");
             Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
-            
+
 
         }
+
+        [TestMethod()]
+        public void ParseCounters()
+        {
+
+            var src = @"ol {
+                          counter-reset: group;
+                        }
+                        li::before{
+                          counter-increment: group 10 other;
+                          content: counter(group) '-';
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            StyleDefn ol = null;
+            StyleDefn li = null;
+
+            foreach (var item in parser)
+            {
+                if (item is StyleDefn defn)
+                {
+                    if (defn.Match.Selector.AppliedElement == "ol")
+                        ol = defn;
+                    else if (defn.Match.Selector.AppliedElement == "li" && defn.Match.Selector.AppliedState == ComponentState.Before)
+                        li = defn;
+                }
+
+                
+            }
+
+            Assert.IsNotNull(ol, "No ordered list was parsed");
+            Assert.IsNotNull(li, "No ordered list was parsed");
+
+            ContentDescriptor content;
+
+            
+
+            Assert.AreEqual(1, ol.ValueCount);
+            Assert.IsNotNull(ol.GetValue(StyleKeys.CounterResetKey, null));
+            Assert.IsNull(ol.GetValue(StyleKeys.CounterIncrementKey, null));
+            Assert.AreEqual("group", ol.GetValue(StyleKeys.CounterResetKey, null).Name);
+
+            Assert.AreEqual(2, li.ValueCount);
+            Assert.IsNotNull(li.GetValue(StyleKeys.CounterIncrementKey, null));
+            Assert.IsNull(li.GetValue(StyleKeys.CounterResetKey, null));
+
+            //li has 2 increment items - group with 10, and then other (with default 1)
+
+            Assert.AreEqual("group", li.GetValue(StyleKeys.CounterIncrementKey, null).Name);
+            Assert.AreEqual(10, li.GetValue(StyleKeys.CounterIncrementKey, null).Value);
+            Assert.IsNotNull(li.GetValue(StyleKeys.CounterIncrementKey, null).Next);
+
+            Assert.AreEqual("other", li.GetValue(StyleKeys.CounterIncrementKey, null).Next.Name);
+            Assert.AreEqual(1, li.GetValue(StyleKeys.CounterIncrementKey, null).Next.Value);
+            Assert.IsNull(li.GetValue(StyleKeys.CounterIncrementKey, null).Next.Next);
+
+            content = li.GetValue(StyleKeys.ContentTextKey, null);
+            Assert.IsNotNull(content);
+
+            Assert.AreEqual(ContentDescriptorType.Counter, content.Type);
+            Assert.IsInstanceOfType(content, typeof(ContentCounterDescriptor));
+            Assert.AreEqual("group", (content as ContentCounterDescriptor).CounterName);
+            Assert.IsNotNull(content.Next);
+
+            content = content.Next;
+
+            Assert.AreEqual(ContentDescriptorType.Text, content.Type);
+            Assert.IsInstanceOfType(content, typeof(ContentTextDescriptor));
+            Assert.AreEqual("-", (content as ContentTextDescriptor).Text);
+            Assert.IsNull(content.Next);
+
+        }
+
+        [TestMethod]
+        public void ParseBase64FontFace()
+        {
+            //The string containing the font data is declared in a separate static class.
+
+            var base64 = Scryber.UnitTests.Base64FontData.OswaldBold;
+
+            var src = @"@font-face {
+                          font-family: Oswald;
+                          font-style: normal;
+                          font-weight: 700;
+                          src: url('data:font/opentype; base64, " + base64 + @"') format('truetype');
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            StyleFontFace first = null;
+
+            foreach (var item in parser)
+            {
+                if (null != first)
+                    throw new InvalidOperationException("There has been more than one parsed style");
+
+                if (!(item is StyleFontFace))
+                    throw new InvalidCastException("The item is not a font face");
+
+                first = item as StyleFontFace;
+
+            }
+
+            Assert.IsNotNull(first, "No font face was parsed");
+
+            var fsrc = first.GetValue(StyleKeys.FontFaceSrcKey, null);
+
+            Assert.AreEqual(FontSourceType.Base64, fsrc.Type, "Type is invalid");
+            Assert.AreEqual(FontSourceFormat.TrueType, fsrc.Format, "Format is invalid");
+            Assert.IsTrue(fsrc.Source.StartsWith("data:font/opentype; base64, "), "Source incorrectly starts with " + fsrc.Source.Substring(0, 20));
+            Assert.IsTrue(fsrc.Source.EndsWith("=="), "Source incorrectly ends with " + fsrc.Source.Substring(fsrc.Source.Length - 10));
+        }
+
+
+
+        [TestMethod()]
+        public void ParseCSSItemContentStyle()
+        {
+            var path = "Content/HTML/Images/Group.png";
+
+            var src = @".added{
+                            content: 'replacement text'
+                        }
+
+                        .img-src{
+                            content: url('" + path + @"');
+                        }
+
+                        .quote{
+                            content: open-quote;
+                        }
+
+                        .counter{
+                            content: counter(counterName);
+                        }
+
+                        .multiple{
+                            color: red;
+                            content: 'some text' url(""" + path + @""") linear-gradient(#000 #AAA);
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(5, all.Count);
+
+            var added = all[0];
+            var source = all[1];
+            var quote = all[2];
+            var counter = all[3];
+            var multiple = all[4];
+
+            //'replacement text'
+
+            StyleValue<ContentDescriptor> parsed;
+            Assert.AreEqual(1, added.ValueCount);
+            Assert.IsTrue(added.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            var value = parsed.Value(added);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ContentDescriptorType.Text, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentTextDescriptor));
+            Assert.AreEqual("replacement text", (value as ContentTextDescriptor).Text);
+            
+            Assert.IsNull(value.Next);
+
+            //'url(...)'
+
+            Assert.AreEqual(1, source.ValueCount);
+            Assert.IsTrue(source.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(source);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ContentDescriptorType.Image, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
+            Assert.AreEqual("url('Content/HTML/Images/Group.png')", (value as ContentImageDescriptor).Text);
+            
+            Assert.IsNull(value.Next);
+
+            //quote
+            Assert.AreEqual(1, quote.ValueCount);
+            Assert.IsTrue(quote.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(quote);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ContentDescriptorType.Quote, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentQuoteDescriptor));
+            Assert.AreEqual("open-quote", (value as ContentQuoteDescriptor).Text);
+            Assert.AreEqual("“", (value as ContentQuoteDescriptor).Chars); //Change to the open-quote char
+            Assert.IsNull(value.Next);
+
+            //counter
+            Assert.AreEqual(1, counter.ValueCount);
+            Assert.IsTrue(counter.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(counter);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ContentDescriptorType.Counter, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentCounterDescriptor));
+            Assert.AreEqual("counterName", (value as ContentCounterDescriptor).CounterName);
+            Assert.IsNull(value.Next);
+
+            // multiple
+            Assert.AreEqual(2, multiple.ValueCount);
+            Assert.IsTrue(multiple.TryGetValue(StyleKeys.ContentTextKey, out parsed));
+            value = parsed.Value(multiple);
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ContentDescriptorType.Text, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentTextDescriptor));
+            Assert.AreEqual("some text", (value as ContentTextDescriptor).Text);
+            Assert.IsNotNull(value.Next);
+
+            value = value.Next;
+            Assert.AreEqual(ContentDescriptorType.Image, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
+            Assert.AreEqual("url(\"Content/HTML/Images/Group.png\")", (value as ContentImageDescriptor).Text);
+            Assert.AreEqual("Content/HTML/Images/Group.png", (value as ContentImageDescriptor).Source);
+            Assert.IsNotNull(value.Next);
+
+            value = value.Next;
+            Assert.AreEqual(ContentDescriptorType.Gradient, value.Type);
+            Assert.IsInstanceOfType(value, typeof(ContentGradientDescriptor));
+            Assert.AreEqual("linear-gradient(#000 #AAA)", (value as ContentGradientDescriptor).Text);
+            Assert.IsNotNull((value as ContentGradientDescriptor).Gradient);
+            Assert.IsNull(value.Next);
+
+        }
+
+
+        [TestMethod]
+        public void ParseCSSPseudoClasses()
+        {
+            var src = @".added::before{
+                            content: 'replacement text'
+                        }
+
+                        
+                        .quote::before{
+                            content: open-quote;
+                        }
+                        /* Should be backwards compatible and support single colon */
+                        .quote:after{
+                            content: close-quote;
+                        }
+
+                        h1:hover{
+                            color: red;
+                        }
+
+                        /* Focus is not supported */
+
+                        h1:focus{
+                            color: red;
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(5, all.Count);
+
+            var added = all[0] as StyleDefn;
+            var quoteBefore = all[1] as StyleDefn;
+            var quoteAfter = all[2] as StyleDefn;
+            var hover = all[3] as StyleDefn;
+            var notsupported = all[4] as StyleDefn;
+
+            Assert.IsNotNull(added);
+            Assert.IsNotNull(quoteBefore);
+            Assert.IsNotNull(quoteAfter);
+            Assert.IsNotNull(hover);
+            Assert.IsNotNull(notsupported);
+
+            Assert.AreEqual(ComponentState.Before, added.Match.Selector.AppliedState);
+            Assert.AreEqual("added", added.Match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(added.Match.Selector.AppliedElement);
+            Assert.IsNull(added.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.Before, quoteBefore.Match.Selector.AppliedState);
+            Assert.AreEqual("quote", quoteBefore.Match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(quoteBefore.Match.Selector.AppliedElement);
+            Assert.IsNull(quoteBefore.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.After, quoteAfter.Match.Selector.AppliedState);
+            Assert.AreEqual("quote", quoteAfter.Match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(quoteAfter.Match.Selector.AppliedElement);
+            Assert.IsNull(quoteAfter.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.Over, hover.Match.Selector.AppliedState);
+            Assert.IsNull(hover.Match.Selector.AppliedClass);
+            Assert.AreEqual("h1", hover.Match.Selector.AppliedElement);
+            Assert.IsNull(hover.Match.Selector.AppliedID);
+
+            //If the pseudo is not known then it should be used as the full name
+            Assert.AreEqual(ComponentState.Normal, notsupported.Match.Selector.AppliedState);
+            Assert.IsNull(notsupported.Match.Selector.AppliedClass);
+            Assert.AreEqual("h1:focus", notsupported.Match.Selector.AppliedElement);
+            Assert.IsNull(notsupported.Match.Selector.AppliedID);
+        }
+
+        [TestMethod]
+        public void ParseCSSComplexPseudoClasses()
+        {
+            var src = @".added::before, .added::after{
+                            content: '!'
+                        }
+
+                        
+                        .cite .quote::before{
+                            content: open-quote;
+                        }
+
+                        .cite .quote::after{
+                            content: close-quote;
+                        }
+
+                        a:hover > i::before{
+                            color: red;
+                            content: '>>';
+                        }
+
+                        /* Focus is not supported */
+
+                        article > h1:focus{
+                            color: red;
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(5, all.Count);
+
+            var added = all[0] as StyleDefn;
+            var quoteBefore = all[1] as StyleDefn;
+            var quoteAfter = all[2] as StyleDefn;
+            var hover = all[3] as StyleDefn;
+            var notsupported = all[4] as StyleDefn;
+
+            Assert.IsNotNull(added);
+            Assert.IsNotNull(quoteBefore);
+            Assert.IsNotNull(quoteAfter);
+            Assert.IsNotNull(hover);
+            Assert.IsNotNull(notsupported);
+
+            //.added::before, .added::after
+            //These are parsed in reverse order for commas
+            var match = added.Match;
+
+            Assert.AreEqual(ComponentState.After, match.Selector.AppliedState);
+            Assert.AreEqual("added", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+
+            Assert.IsInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+            match = ((Scryber.Styles.Selectors.StyleMultipleMatcher)added.Match).Next;
+            Assert.IsNotNull(match);
+            Assert.AreEqual(ComponentState.Before, match.Selector.AppliedState);
+            Assert.AreEqual("added", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+
+
+            //.cite .quote::before
+            match = quoteBefore.Match;
+            Assert.AreEqual(ComponentState.Before, match.Selector.AppliedState);
+            Assert.AreEqual("quote", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            var ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.Any, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Normal, ancestor.AppliedState);
+            Assert.AreEqual("cite", ancestor.AppliedClass.ClassName);
+            Assert.IsNull(ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+
+            Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+
+            //.cite .quote::after
+            match = quoteAfter.Match;
+            Assert.AreEqual(ComponentState.After, match.Selector.AppliedState);
+            Assert.AreEqual("quote", match.Selector.AppliedClass.ClassName);
+            Assert.IsNull(match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.Any, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Normal, ancestor.AppliedState);
+            Assert.AreEqual("cite", ancestor.AppliedClass.ClassName);
+            Assert.IsNull(ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+
+            Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+
+            //a:hover > i::before
+            match = hover.Match;
+            Assert.AreEqual(ComponentState.Before, match.Selector.AppliedState);
+            Assert.IsNull(match.Selector.AppliedClass);
+            Assert.AreEqual("i", match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.DirectParent, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Over, ancestor.AppliedState);
+            Assert.IsNull(ancestor.AppliedClass);
+            Assert.AreEqual("a", ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+
+            Assert.IsNotInstanceOfType(match, typeof(Scryber.Styles.Selectors.StyleMultipleMatcher));
+
+
+            //article > h1:focus
+            //If the pseudo is not known then it should be used as the full name
+            match = notsupported.Match;
+            Assert.AreEqual(ComponentState.Normal, match.Selector.AppliedState);
+            Assert.IsNull(match.Selector.AppliedClass);
+            Assert.AreEqual("h1:focus", match.Selector.AppliedElement);
+            Assert.IsNull(match.Selector.AppliedID);
+            Assert.IsTrue(match.Selector.HasAncestor);
+
+            ancestor = match.Selector.Ancestor;
+            Assert.IsNotNull(ancestor);
+            Assert.AreEqual(Scryber.Styles.Selectors.StylePlacement.DirectParent, ancestor.Placement);
+            Assert.AreEqual(ComponentState.Normal, ancestor.AppliedState);
+            Assert.IsNull(ancestor.AppliedClass);
+            Assert.AreEqual("article", ancestor.AppliedElement);
+            Assert.IsNull(ancestor.AppliedID);
+        }
+
+
+        PDF.Layout.PDFLayoutDocument _docLayout;
+
+        [TestMethod]
+        public void ParseCSSWithContentApplied()
+        {
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+
+            var src = @"<?scryber append-log=true ?>
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{
+                                border: solid 1px silver;
+                                margin: 20px;
+                            }
+
+                            .txt{ content: 'This will not be used'; height: 40pt; /* This should be used */ }
+
+                            .img{content: url('" + imgPath + @"'); height: 50pt;}
+
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' class='txt' > This will not be replaced by the css.</div>
+                        <div id='explicit' class='' ><img class='img' />
+                            <!-- the source is set from the css -->
+                        </div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentApplied.pdf"))
+                {
+
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            var pg = _docLayout.AllPages[0];
+            var content = pg.ContentBlock.Columns[0];
+            Assert.AreEqual(2, content.Contents.Count);
+
+            // .txt{ content: 'This will not be used'; height: 40pt; /* This should be used */ }
+            // <div id='default' class='txt' > This will not be replaced by the css.</div>
+
+            var div = content.Contents[0] as PDFLayoutBlock;
+            var line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //'          content    '        
+            //TextBegin, Text,      TextEnd
+
+            Assert.AreEqual(3, line.Runs.Count);
+            var text = line.Runs[1] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("This will not be replaced by the css.", text.Characters);
+            //Check the height was not ignored
+            Assert.AreEqual(40, div.Position.Height.Value);
+
+            //.img{content: url('[imgPath]'); height: 50pt;}
+            //<div id='explicit' class='' ><img class='img' /></div>
+
+            div = content.Contents[1] as PDFLayoutBlock;
+            line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+
+            var imgPointer = line.Runs[0] as PDF.Layout.PDFLayoutComponentRun;
+            Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+            Assert.AreEqual(50.0, imgPointer.Height.PointsValue);
+            Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+
+            var rsrc = _docLayout.DocumentComponent.SharedResources.GetResource(PDF.Resources.PDFResource.XObjectResourceType, imgPath);
+            Assert.IsNotNull(rsrc);
+            Assert.AreEqual(rsrc, (imgPointer.Owner as Image).XObject);
+
+        }
+
+        [TestMethod]
+        public void ParseCSSWithContentBefore()
+        {
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var src = @"<?scryber append-log='false' ?>
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{ border: solid 1px silver; margin: 20px; padding-bottom: 5pt; }
+
+                            .txt{ color: red; }
+
+                            div > i.txt::before{ content: '>>'; color:blue; }
+
+                            .empty::before { content: url('" + imgPath + @"'); width:20pt; padding-top: 5pt; }
+
+                            .quote::before{ content: open-quote; width:20pt; color: green; padding-top: 5pt; }
+
+                            .multiple::before{ content: url('" + imgPath + @"') '\40' open-quote; color: green; font-style: italic; }
+
+                            .multiple img { padding-top: 5px; display: inline; width: 20pt; }
+                           
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' >
+                            <i id='txt1' class='txt'>
+                                This will have text before, in the italic span.
+                            </i>
+                        </div>
+                        <div id='anImage' class='empty' ></div>
+                        <div id='aquote' class='quote' >A quote will be in front in green.</div>
+                        <div id='aquote' class='multiple' > An image, a character, and a quote will be infront with the image inlined.</div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentBefore.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+
+                var pg = _docLayout.AllPages[0];
+                var content = pg.ContentBlock.Columns[0];
+                Assert.AreEqual(4, content.Contents.Count);
+
+                // .txt::before { content: '>>'; color: blue; }
+                //<i id='inner1' class='txt'> This will have some content before inside the italic span.</i>
+
+                var div = content.Contents[0] as PDF.Layout.PDFLayoutBlock;
+                var line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //<i           <before      '          >>    '        span>      '          content  '         span> 
+                //InlineBegin, InlineBegin, TextBegin, Text, TextEnd, InlineEnd, TextBegin, Text    , TextEnd, InlineEnd
+
+                Assert.AreEqual(10, line.Runs.Count);
+                var text = line.Runs[3] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual(">>", text.Characters);
+
+
+                
+                text = line.Runs[7] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual(" This will have text before, in the italic span. ", text.Characters);
+
+
+                // .empty::before { content: url('imgPath'); width: 20pt; padding-top: 5pt; }
+                //  <div id='anImage' class='empty' ></div>
+
+                div = content.Contents[1] as PDF.Layout.PDFLayoutBlock;
+                line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //Images should be on their own if there is no other content in the PseudoClass
+                //<img   
+                //ComponentRun
+
+                Assert.AreEqual(1, line.Runs.Count);
+
+                var imgPointer = line.Runs[0] as PDF.Layout.PDFLayoutComponentRun;
+                Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+                Assert.AreEqual(20.0, imgPointer.Width.PointsValue);
+                Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+                var rsrc = _docLayout.DocumentComponent.SharedResources.GetResource(PDF.Resources.PDFResource.XObjectResourceType, imgPath);
+                Assert.IsNotNull(rsrc);
+                Assert.AreEqual(rsrc, (imgPointer.Owner as Image).XObject);
+
+                
+
+
+                // .quote::before{ content: open-quote; width:20pt; color: green; padding-top: 5pt; }
+                // <div id='aquote' class='quote' >A quote will be in front in green.</div>
+
+                div = content.Contents[2] as PDF.Layout.PDFLayoutBlock;
+                line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //(before span) '           “     '        (before end)    '          content   '        line    
+                //InlineBegin,   TextBegin, Text, TextEnd, InlineEnd    ,  TextBegin, Text,     TextEnd, InlineEnd
+
+                Assert.AreEqual(8, line.Runs.Count);
+
+                text = line.Runs[2] as PDF.Layout.PDFTextRunCharacter;
+
+                Assert.IsNotNull(text);
+                Assert.AreEqual("“", text.Characters);
+                Assert.AreEqual(StandardColors.Green, (line.Runs[0] as PDFLayoutInlineBegin).FullStyle.Fill.Color);
+
+                text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual("A quote will be in front in green.", text.Characters);
+
+
+                //<div id='aquote' class='multiple' > An image ... image inlined.</div>
+                //.multiple::before{ content: url('" + imgPath + @"') '\40' open-quote; color: green; font-style: italic; }
+                //.multiple img { padding-top: 5px; display: inline; width: 20pt; }
+
+                div = content.Contents[3] as PDF.Layout.PDFLayoutBlock;
+                line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+                //(before span) img   '           @     '        '         “     '         (before end)    '          part content  \r\n    
+                //InlineBegin,  Image  TextBegin, Text, TextEnd, TextBegin Text   TextEnd, InlineEnd    ,  TextBegin, Text,         TextNewLine
+
+                Assert.AreEqual(12, line.Runs.Count);
+                Assert.AreEqual(StandardColors.Green, (line.Runs[0] as PDFLayoutInlineBegin).FullStyle.Fill.Color);
+
+                imgPointer = line.Runs[1] as PDF.Layout.PDFLayoutComponentRun;
+                Assert.IsNotNull(imgPointer);
+                Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+                Assert.AreEqual(20.0, imgPointer.Width.PointsValue);
+                Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+
+                text = line.Runs[3] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual("@", text.Characters);
+
+
+                text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual("“", text.Characters);
+                
+                text = line.Runs[10] as PDF.Layout.PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                Assert.AreEqual(" An image, a character, and a quote will be infront with the image inlined.", text.Characters);
+            }
+        }
+
+
+
+        [TestMethod]
+        public void ParseCSSWithContentAfter()
+        {
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var src = @"<!DOCTYPE HTML >
+                <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
+                    <head>
+                        <title>Content Tests</title>
+                        <style type='text/css' >
+
+                            div{
+                                border: solid 1px silver;
+                                margin: 20px;
+                                padding-bottom: 5pt;
+                            }
+
+                            .txt{
+                                color: red;
+                            }
+
+                            .txt::after{
+                                content: '&lt;&lt;';
+                                color:blue;
+                            }
+
+
+                            .empty::after {
+                                content: url('" + imgPath + @"') 'and some text';
+                            }
+
+                            .empty img { display: inline; height:25pt; }
+
+                            .quote::after{
+                                content: close-quote;
+                                color: green;
+                            }
+
+                        </style>
+                    </head>
+                    <body>
+                        <div id='default' class='' >
+                            <span id='inner1' class='txt'>This will be have content after.</span>
+                        </div>
+                        <div id='explicit' class='empty' ></div>
+                        <div id='asAClass' class='quote' >
+                            An italic quote will follow.
+                        </div>
+                    </body>
+                </html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+
+                using (var stream = DocStreams.GetOutputStream("ParseCSSWithContentAfter.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+            var pg = _docLayout.AllPages[0];
+            var content = pg.ContentBlock.Columns[0];
+            Assert.AreEqual(3, content.Contents.Count);
+
+            // .txt::after{ content: '&lt;&lt;'; color: blue; }
+            //<span id='inner1' class='txt'> This will be have content after.</span>
+
+            var div = content.Contents[0] as PDF.Layout.PDFLayoutBlock;
+            var line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //<span       '           content      ' <span       '           <<           ' span>      span>
+            //InlineBegin, TextBegin, Text, TextEnd, InlineBegin, TextBegin, Text, TextEnd, InlineEnd, InlineEnd
+
+            Assert.AreEqual(10, line.Runs.Count);
+            var text = line.Runs[2] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("This will be have content after.", text.Characters);
+
+            text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("<<", text.Characters);
+
+            // .empty::after { content: url('...') 'and some text'; } 
+            // .empty img { display: inline; height:25pt; }
+            // <div id='explicit' class='empty' ></div>
+
+            div = content.Contents[1] as PDF.Layout.PDFLayoutBlock;
+            line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //<span        img    '         content      '  span>    
+            //InlineBegin, Image, TextBegin, Text, TextEnd, InlineEnd
+
+            Assert.AreEqual(6, line.Runs.Count);
+
+            var imgPointer = line.Runs[1] as PDF.Layout.PDFLayoutComponentRun;
+            Assert.IsInstanceOfType(imgPointer.Owner, typeof(Image));
+            Assert.AreEqual(25.0, imgPointer.Height.PointsValue);
+            Assert.AreEqual(imgPath, (imgPointer.Owner as Image).Source);
+
+            // .quote::after{ content: close-quote; color: green;}
+            // <div id='asAClass' class='quote' >An italic quote will follow.</div>
+
+            div = content.Contents[2] as PDF.Layout.PDFLayoutBlock;
+            line = div.Columns[0].Contents[0] as PDF.Layout.PDFLayoutLine;
+
+            //'          content      ' <span       '           "           '  span>    
+            //TextBegin, Text, TextEnd, InlineBegin, TextBegin, Text, TextEnd, InlineEnd
+
+            Assert.AreEqual(8, line.Runs.Count);
+
+            text = line.Runs[1] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("An italic quote will follow. ", text.Characters);
+
+            text = line.Runs[5] as PDF.Layout.PDFTextRunCharacter;
+            Assert.IsNotNull(text);
+            Assert.AreEqual("”", text.Characters);
+
+            
+        }
+
+
+
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            this._docLayout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+        }
+
+    
 
         [TestMethod()]
         public void ParseGoogleFontLink()
@@ -606,6 +1597,86 @@ body.grey div.reverse{
 
             }
 
+        }
+
+        [TestMethod()]
+        public void ParseTransformations()
+        {
+
+            var src = @"
+                        .rotate {
+                          transform : rotate(10deg);
+                        }
+
+                        .skew {
+                          transform:skew(25deg, 15deg);
+                        }
+
+                        .translate {
+                          transform:   translate(10pt, 15pt);
+                        }
+
+                        .scale {
+                          transform: scale(1, 5);
+                        }
+
+                        .multiple {
+                          transform: rotate(20deg) scale(2, 4) translate(5pt, 20pt);
+                        }
+";
+
+            var parser = new CSSStyleParser(src, null);
+            List<StyleDefn> found = new List<StyleDefn>();
+
+            foreach (var item in parser)
+            {
+                found.Add((StyleDefn)item);
+            }
+
+            Assert.AreEqual(5,found.Count);
+
+            var t1 = found[0].GetValue(StyleKeys.TransformOperationKey, null);
+            var t2 = found[1].GetValue(StyleKeys.TransformOperationKey, null);
+            var t3 = found[2].GetValue(StyleKeys.TransformOperationKey, null);
+            var t4 = found[3].GetValue(StyleKeys.TransformOperationKey, null);
+            var multiple = found[4].GetValue(StyleKeys.TransformOperationKey, null);
+
+            Assert.IsNotNull(t1);
+            Assert.AreEqual(TransformType.Rotate, t1.Type);
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 10, 4), Math.Round(t1.Value1, 4));
+            Assert.IsFalse(TransformOperation.IsSet(t1.Value2));
+
+            Assert.IsNotNull(t2);
+            Assert.AreEqual(TransformType.Skew, t2.Type);
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
+
+            Assert.IsNotNull(t3);
+            Assert.AreEqual(TransformType.Translate, t3.Type);
+            Assert.AreEqual(Math.Round(10.0, 4), Math.Round(t3.Value1, 4));
+            Assert.AreEqual(-Math.Round(15.0, 4), Math.Round(t3.Value2, 4));
+
+            Assert.IsNotNull(t4);
+            Assert.AreEqual(TransformType.Scale, t4.Type);
+            Assert.AreEqual(Math.Round(1.0, 4), Math.Round(t4.Value1, 4));
+            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(t4.Value2, 4));
+
+            Assert.IsNotNull(multiple);
+            Assert.AreEqual(TransformType.Rotate, multiple.Type);
+            Assert.AreEqual(-Math.Round((Math.PI / 180) * 20, 4), Math.Round(multiple.Value1, 4));
+            Assert.IsFalse(TransformOperation.IsSet(multiple.Value2));
+            Assert.IsNotNull(multiple.Next);
+
+            multiple = multiple.Next;
+            Assert.AreEqual(TransformType.Scale, multiple.Type);
+            Assert.AreEqual(Math.Round(2.0, 4), Math.Round(multiple.Value1, 4));
+            Assert.AreEqual(Math.Round(4.0, 4), Math.Round(multiple.Value2, 4));
+            Assert.IsNotNull(multiple.Next);
+
+            multiple = multiple.Next;
+            Assert.AreEqual(TransformType.Translate, multiple.Type);
+            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(multiple.Value1, 4));
+            Assert.AreEqual(-Math.Round(20.0, 4), Math.Round(multiple.Value2, 4));
         }
 
         [TestMethod()]
@@ -1161,7 +2232,7 @@ body.grey div.reverse{
 
             Assert.IsNotNull(applied.Columns.ColumnWidths, "Column widths is not set");
             Assert.IsFalse(applied.Columns.ColumnWidths.IsEmpty, "Column widths is empty");
-            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsEmpty, "Column widths explicit values is not empty");
+            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsZero, "Column widths explicit values is not empty");
             Assert.AreEqual(3, applied.Columns.ColumnWidths.Widths.Length, "Column widths is not the right length");
             Assert.AreEqual("[0.5 0 0.2]", applied.Columns.ColumnWidths.ToString(), "Column widths are not correct");
 
@@ -1294,6 +2365,10 @@ body.grey div.reverse{
 
             return doc;
         }
+
+
+
+       
 
     }
 }

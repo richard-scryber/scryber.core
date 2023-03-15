@@ -518,6 +518,44 @@ namespace Scryber.Components
             }
         }
 
+
+        internal static readonly IDocumentPage[] NoPagesArray = new IDocumentPage[] { };
+
+        /// <summary>
+        /// Gets all of the components that implement the IDocummentPage interface within the document. (Including any nested document pages)
+        /// </summary>
+        IDocumentPage[] IDocumentPageContainer.AllPages
+        {
+            get
+            {
+                if (this.InnerContent.Count == 0)
+                    return NoPagesArray;
+                else
+                {
+                    List<IDocumentPage> all = new List<IDocumentPage>(this.InnerContent.Count);
+                    this.DoExtractDocumentPages(all, this.InnerContent);
+                    return all.ToArray();
+                }
+            }
+        }
+
+        protected virtual void DoExtractDocumentPages(List<IDocumentPage> all, ComponentList contents)
+        {
+            for (var i = 0; i < contents.Count; i++)
+            {
+                var pb = contents[i];
+                if (pb is IDocumentPageContainer container)
+                    all.AddRange(container.AllPages);
+                else if (pb is IDocumentPage docPg)
+                    all.Add(docPg);
+                else if (pb is IInvisibleContainer invisible)
+                {
+                    var inner = invisible.Content;
+                    this.DoExtractDocumentPages(all, inner);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates and returns a new page list wrapping on the inner content. Inheritors can override.
         /// </summary>
@@ -620,6 +658,10 @@ namespace Scryber.Components
                 if (null == _cacheprov)
                     _cacheprov = this.CreateCacheProvider();
                 return _cacheprov;
+            }
+            set
+            {
+                _cacheprov = value;
             }
         }
 
@@ -778,7 +820,7 @@ namespace Scryber.Components
             this.RemoteRequests.AddRequest(request);
             this.OnRemoteFileRequestRegistered(request);
 
-            if (this.RemoteRequests.ExecMode == DocumentExecMode.Immediate && request.IsCompleted == false)
+            if (this.RemoteRequests.ExecMode == DocumentExecMode.Immediate && request.IsExecuting == false && request.IsCompleted == false)
             {
                 if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
                     this.TraceLog.Add(TraceLevel.Verbose,"Document", "Fulfilling the result for '" + request.FilePath + "' immediately as we are not asyncronous.");
@@ -1011,7 +1053,7 @@ namespace Scryber.Components
             if (null == baseStyle)
                 baseStyle = new Style();
 
-            this.Styles.MergeInto(baseStyle, forComponent, ComponentState.Normal);
+            this.Styles.MergeInto(baseStyle, forComponent);
 
             
 
@@ -1034,7 +1076,7 @@ namespace Scryber.Components
             
             //Get the applied style and then merge it into the base style
             Style applied = this.GetAppliedStyle(this, style);
-            applied.Flatten();
+            
 
             return applied;
         }

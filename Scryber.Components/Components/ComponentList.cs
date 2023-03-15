@@ -130,7 +130,25 @@ namespace Scryber.Components
             
             foreach (Component item in items)
             {
-                this.Add(item);
+                item.Parent = this.Owner;
+                this.Items.Add(item);
+                if (item.Type == ObjectTypes.NoOp)
+                    this.IncrementNoOps();
+            }
+            this.OnCollectionChanged();
+        }
+
+        public void AddRange(params Component[] items)
+        {
+            if (null != items && items.Length > 0)
+            {
+                foreach (var item in items)
+                {
+                    item.Parent = this.Owner;
+                    this.Items.Add(item);
+                    if (item.Type == ObjectTypes.NoOp)
+                        this.IncrementNoOps();
+                }
             }
             this.OnCollectionChanged();
         }
@@ -147,6 +165,20 @@ namespace Scryber.Components
             if (Component.Type == ObjectTypes.NoOp)
                 this.IncrementNoOps();
             this.OnCollectionChanged();
+        }
+
+
+        /// <summary>
+        /// Adds the string as a text literal to the list
+        /// </summary>
+        /// <param name="literal">The string to add</param>
+        /// <returns>The text literal that was added</returns>
+        public TextLiteral Add(string literal)
+        {
+            literal = literal ?? string.Empty;
+            TextLiteral tl = new TextLiteral(literal);
+            this.Add(tl);
+            return tl;
         }
 
         #region ICollection<PDFComponent> Members

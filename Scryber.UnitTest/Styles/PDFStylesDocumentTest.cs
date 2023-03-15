@@ -282,8 +282,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style actual = new Style();
             Label lbl = new Label() {ElementName = "label"};
             lbl.StyleClass = styleName;
-            target.MergeInto(actual, lbl, ComponentState.Normal);
-            actual.Flatten();
+            target.MergeInto(actual, lbl);
 
             Assert.AreEqual(StandardColors.Red, actual.Border.Color); //from defn (higher priority than defn2)
             Assert.AreEqual((Unit)10, actual.Border.Width); // from defn

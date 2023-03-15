@@ -27,7 +27,7 @@ using Scryber.Drawing;
 
 namespace Scryber.PDF
 {
-    internal class PDFOutlineStack : IArtefactCollection
+    public class PDFOutlineStack : IArtefactCollection
     {
 
         #region ivars
@@ -49,7 +49,7 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets the collection of root outline items
         /// </summary>
-        internal PDFOutlineRefCollection Roots
+        public PDFOutlineRefCollection Roots
         {
             get { return _roots; }
         }
@@ -281,12 +281,12 @@ namespace Scryber.PDF
 
     }
 
-    internal class PDFOutlineRefCollection : List<PDFOutlineRef>
+    public class PDFOutlineRefCollection : List<PDFOutlineRef>
     {
     }
 
 
-    internal class PDFOutlineRef : IArtefactEntry
+    public class PDFOutlineRef : IArtefactEntry
 
 
     {
@@ -297,22 +297,22 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets the PDFOutline this reference refers to.
         /// </summary>
-        internal Outline Outline { get { return _outline; } }
+        public Outline Outline { get { return _outline; } }
 
         /// <summary>
         /// Gets the style associated with this outline
         /// </summary>
-        internal OutlineStyle Style { get { return _style; } }
+        public OutlineStyle Style { get { return _style; } }
 
         /// <summary>
         /// Gets the collection of inner items - can be null
         /// </summary>
-        internal PDFOutlineRefCollection InnerItems { get { return _inneritems; } }
+        public PDFOutlineRefCollection InnerItems { get { return _inneritems; } }
 
         /// <summary>
         /// Returns true if this outline reference has any inner items
         /// </summary>
-        internal bool HasInnerItems { get { return _inneritems != null && _inneritems.Count > 0; } }
+        public bool HasInnerItems { get { return _inneritems != null && _inneritems.Count > 0; } }
 
 
         internal PDFOutlineRef(Outline outline, OutlineStyle style)

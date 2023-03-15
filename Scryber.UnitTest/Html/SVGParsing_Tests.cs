@@ -129,7 +129,9 @@ namespace Scryber.Core.UnitTests.Html
                 Div div;
                 if(doc.TryFindAComponentById("mydiv", out div))
                 {
-                    div.Style.SetValue(StyleKeys.TransformRotateKey, 90);
+                    var angle = 90.0;
+                    angle = (Math.PI / 180.0) * angle;
+                    div.Style.SetValue(StyleKeys.TransformOperationKey, new TransformOperation(TransformType.Rotate, (float)angle, TransformOperation.NotSetValue()));
                 }
 
                 using (var stream = DocStreams.GetOutputStream("Transform.pdf"))

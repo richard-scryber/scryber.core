@@ -16,6 +16,18 @@ namespace Scryber.PDF.Layout
         public Unit FloatWidth, FloatHeight, FloatInset, YOffset;
         public PDFFloatAddition Prev;
 
+
+        public int Count
+        {
+            get
+            {
+                if (null != Prev)
+                    return 1 + Prev.Count;
+                else
+                    return 1;
+            }
+        }
+
         public PDFFloatAddition(FloatMode mode, Unit floatWidth, Unit floatheight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
         {
             this.Mode = mode;

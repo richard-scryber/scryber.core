@@ -192,6 +192,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.TextDecorationLine, new CSSTextDecorationParser());
             all.Add(CSSStyleItems.LetterSpacing, new CSSLetterSpacingParser());
             all.Add(CSSStyleItems.WordSpacing, new CSSWordSpacingParser());
+            all.Add(CSSStyleItems.Hyphenation, new CSSHyphensParser());
+            all.Add(CSSStyleItems.HyphenationMinBefore, new CSSHyphensMinBeforeParser());
+            all.Add(CSSStyleItems.HyphenationMinAfter, new CSSHyphensMinAfterParser());
+            all.Add(CSSStyleItems.HyphenationCharAppend, new CSSHyphensCharAppendParser());
 
             all.Add(CSSStyleItems.WhiteSpace, new CSSWhiteSpaceParser());
             all.Add(CSSStyleItems.OverflowX, new CSSOverflowXParser());
@@ -232,6 +236,12 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.FillOpacity, new CSSFillOpacityParser());
             all.Add(CSSStyleItems.Fill, new CSSFillParser());
+
+            all.Add(CSSStyleItems.Transform, new CSSTransformParser());
+            all.Add(CSSStyleItems.Content, new CSSContentParser());
+
+            all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());
+            all.Add(CSSStyleItems.CounterIncrement, new CSSCounterIncrementParser());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

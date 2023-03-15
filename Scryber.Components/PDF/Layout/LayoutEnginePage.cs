@@ -358,7 +358,7 @@ namespace Scryber.PDF.Layout
                 if (null != head)
                     this.Context.StyleStack.Push(head);
 
-                Style full = this.Context.StyleStack.GetFullStyle(header);
+                Style full = this.BuildHeaderFullStyle(header);
 
                 this.DocumentLayout.CurrentPage.BeginHeader(header, full, this.Context);
 
@@ -384,7 +384,7 @@ namespace Scryber.PDF.Layout
                 if (null != foot)
                     this.Context.StyleStack.Push(foot);
 
-                Style full = this.Context.StyleStack.GetFullStyle(footer);
+                Style full = this.BuildFooterFullStyle(footer);
 
                 
                 this.DocumentLayout.CurrentPage.BeginFooter(footer, full, this.Context);
@@ -399,6 +399,16 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected virtual Style BuildHeaderFullStyle(PDFPageHeader header)
+        {
+            return this.BuildFullStyle(header);
+        }
+
+        protected virtual Style BuildFooterFullStyle(PDFPageFooter footer)
+        {
+            return this.BuildFullStyle(footer);
+        }
 
         #region protected virtual IPDFTemplate GetCurrentHeaderTemplate(int pageIndex)
 

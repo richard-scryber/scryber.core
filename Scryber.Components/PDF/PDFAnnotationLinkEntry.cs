@@ -37,6 +37,7 @@ namespace Scryber.PDF
             int pageindex = context.PageIndex;
             ComponentArrangement arrange = this.Component.GetFirstArrangement();
             int index = 1;
+
             while (null != arrange && arrange.PageIndex == pageindex)
             {
                 PDFObjectRef annotref = writer.BeginObject();
@@ -96,6 +97,7 @@ namespace Scryber.PDF
                 //If we have more than one arrangement on the object then move to the next one
                 if (arrange is ComponentMultiArrangement)
                     arrange = ((ComponentMultiArrangement)arrange).NextArrangement;
+
                 index++;
             }
 
