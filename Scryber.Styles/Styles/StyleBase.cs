@@ -1230,7 +1230,14 @@ namespace Scryber.Styles
                 }
             }
             else if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+            {
                 options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+
+                if (options.WrapText == Text.WordWrap.Character)
+                {
+                    options.HyphenationStrategy = DoCreateHyphenationStrategy();
+                }
+            }
 
             StyleValue<double> hscale;
             if (this.TryGetValue(StyleKeys.TextHorizontalScaling, out hscale))

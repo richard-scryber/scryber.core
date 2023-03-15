@@ -36,7 +36,7 @@ namespace Scryber.PDF.Graphics
 
         
         public PDFHyphenationStrategy()
-            : this('-', null, 3, 2)
+            : this('-', null, 3, 3)
         {
         }
 

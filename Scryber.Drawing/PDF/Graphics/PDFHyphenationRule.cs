@@ -114,7 +114,7 @@ namespace Scryber.PDF.Graphics
 				{
 					//We are OK to split here based on the right as well as the left.
 					//but check for white space. If we are a whitespace then not hyphen, otherwise yes
-					var c = chars[length];
+					var c = chars[length + start];
 					if (char.IsWhiteSpace(c)) //TESTED
 					{
 						return new HyphenationOpportunity(
