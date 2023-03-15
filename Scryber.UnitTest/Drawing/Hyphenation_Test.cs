@@ -573,13 +573,13 @@ namespace Scryber.Core.UnitTests.Drawing
             offset = chars.Length - 1;
 
             expected = chars.IndexOf("e") + 1 - start;
-            actual = PDFHyphenationRule.GetFirstWordBoundaryBefore(chars, start, offset, null, null);
+            actual = PDFHyphenationRule.GetFirstWordBoundaryBefore(chars, start, offset - start, null, null);
 
             Assert.AreEqual(expected, actual);
             Assert.AreEqual("The", chars.Substring(start, actual));
 
 
-            //Check using the offset as mid string
+            //Check using the end of the sentence
             chars = "The quick brown fox. THE QUICK BROWN FOX";
             start = 0;
             offset = chars.Length - 1 - "THE QUICK BROWN FOX".Length;

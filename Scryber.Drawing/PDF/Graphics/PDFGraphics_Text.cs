@@ -175,9 +175,10 @@ namespace Scryber.PDF.Graphics
         /// <returns></returns>
         /// <remarks>Uses the TTFFontFile if available, otherwise will default to using the GDI+ measure,
         /// which is slower but supports postscript fonts</remarks>
-        public Drawing.Size MeasureString(string chars, int startIndex, Drawing.Size available, PDFTextRenderOptions options, out int charsfitted)
+        public Drawing.Size MeasureString(string chars, int startIndex, Drawing.Size available, PDFTextRenderOptions options, out int charsfitted, out char? appendChar)
         {
-            
+            appendChar = null;
+
             PDFFontResource frsc = this.CurrentFontResource;
             Unit fsize = this.CurrentFont.Size;
 
@@ -189,6 +190,7 @@ namespace Scryber.PDF.Graphics
             if (defn.CanMeasureStrings)
             {
                 bool trimtoword = true;
+                
                 if (options.WrapText.HasValue)
                 {
                     if (options.WrapText == WordWrap.NoWrap)
@@ -220,29 +222,42 @@ namespace Scryber.PDF.Graphics
                     hScale = options.CharacterHScale.Value;
                 }
                 if (complexSpacing)
+                {
                     //TODO: Check if we can do this on the widths rather than the ttfile.
                     measured = defn.MeasureStringWidth(chars, startIndex, fsize.PointsValue, available.Width.PointsValue, wordSpace, charSpace, hScale, vertical, trimtoword, out charsfitted);
+
+                    //TODO: 
+                }
                 else
                 {
                     //TODO: Check if we can do this on the widths rather than the ttfile.
                     measured = defn.MeasureStringWidth(chars, startIndex, fsize.PointsValue, available.Width.PointsValue, trimtoword, out charsfitted);
 
-                    if (charsfitted > 0 && (startIndex + charsfitted < chars.Length) && trimtoword == false)
+                    if (trimtoword == false && charsfitted > 0 && (startIndex + charsfitted < chars.Length))
                     {
-                        bool appendHyphen; //TODO: This needs to be sent back to  the caller too.
-                        this.SetWordHypenation(chars, startIndex, ref charsfitted, out appendHyphen);
+                        var strategy = options.HyphenationStrategy;
+                        var opportunity = this.GetWordHypenation(chars, startIndex, charsfitted, strategy);
 
-                        var tomeasure = chars.Substring(startIndex, charsfitted);
-                        if (appendHyphen)
-                            tomeasure += "-";
+                        if (opportunity.NewLength > 0)
+                        {
+                            var tomeasure = chars.Substring(startIndex, opportunity.NewLength);
+                            appendChar = opportunity.AppendHyphenCharacter;
 
-                        measured = defn.MeasureStringWidth(tomeasure, 0, fsize.PointsValue, (double)(int.MaxValue), true, out charsfitted);
-                        charsfitted = tomeasure.Length; //override anyway
+                            if (appendChar.HasValue)
+                                tomeasure += opportunity.AppendHyphenCharacter.Value;
+
+                            measured = defn.MeasureStringWidth(tomeasure, 0, fsize.PointsValue, (double)(int.MaxValue), true, out charsfitted);
+                        }
+                        charsfitted = opportunity.NewLength; //override anyway
+
                     }
                 }
 
                 if (charsfitted > 0)
                     this.RegisterStringUse(chars, startIndex, charsfitted);
+
+                if (appendChar.HasValue)
+                    this.RegisterStringUse(appendChar.Value.ToString(), 0, 1);
             }
             else
             {
@@ -256,10 +271,12 @@ namespace Scryber.PDF.Graphics
             return measured;
         }
 
-        private void SetWordHypenation(string chars, int startindex, ref int length, out bool appendHyphen)
+        private HyphenationOpportunity GetWordHypenation(string chars, int startindex, int charsfitted, PDFHyphenationStrategy strategy)
         {
-            
-            appendHyphen = false;
+            if (null == strategy)
+                strategy = PDFHyphenationStrategy.Default;
+
+            return PDFHyphenationRule.HyphenateLine(strategy, chars, startindex, charsfitted);
         }
 
         private double GetLineLeft(Drawing.Size size, PDFTextRenderOptions options)

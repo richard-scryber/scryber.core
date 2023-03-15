@@ -570,8 +570,8 @@ namespace Scryber.PDF.Layout
             int fitted;
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Measure);
-
-            measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted);
+            char? appendChar;
+            measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted, out appendChar);
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
@@ -589,7 +589,7 @@ namespace Scryber.PDF.Layout
 
                 this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Measure);
 
-                measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted);
+                measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted, out appendChar);
 
                 this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
@@ -700,7 +700,8 @@ namespace Scryber.PDF.Layout
                 Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Measure);
 
                 int fitted;
-                measured =this.MeasureString(availH, availW, chars, offset, out fitted);
+                char? appendChar;
+                measured =this.MeasureString(availH, availW, chars, offset, out fitted, out appendChar);
 
                 Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
@@ -717,6 +718,10 @@ namespace Scryber.PDF.Layout
                 {
                     zeros.Reset();
                     string all = offset == 0 ? chars : chars.Substring(offset);
+
+                    if (appendChar.HasValue)
+                        all += appendChar.Value;
+
                     //if (offset == 0)
                         this.AddCharactersToCurrentLine(required, all);
                     //else
@@ -734,6 +739,9 @@ namespace Scryber.PDF.Layout
                     zeros.Reset();
 
                     string partial = chars.Substring(offset, fitted);
+                    if (appendChar.HasValue)
+                        partial += appendChar.Value;
+
                     this.AddCharactersToCurrentLine(required, partial);
                     //this.AddCharactersToCurrentLine(required, chars, offset, fitted);
                     this.AddSoftReturn(measured.Width);
@@ -873,13 +881,14 @@ namespace Scryber.PDF.Layout
         /// <param name="fitted"></param>
         /// <param name="availh">The available height in the current region</param>
         /// <returns></returns>
-        private Size MeasureString(Unit availh, Unit availw, string chars, int offset, out int fitted)
+        private Size MeasureString(Unit availh, Unit availw, string chars, int offset, out int fitted, out char? appendChar)
         {
             Size available = new Size(availw, availh);
             PDFTextRenderOptions opts = this.TextRenderOptions;
             
             Size measured;
-            measured = this.Context.Graphics.MeasureString(chars, offset, available, opts, out fitted);
+            
+            measured = this.Context.Graphics.MeasureString(chars, offset, available, opts, out fitted, out appendChar);
             return measured;
         }
 

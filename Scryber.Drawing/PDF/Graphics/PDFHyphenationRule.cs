@@ -45,6 +45,7 @@ namespace Scryber.PDF.Graphics
 					trim: true
 					);
 			}
+			
 			var minAfter = strategy.MinCharsAfterHyphen;
 			if (strategy.HyphenPrepend.HasValue)
 				minAfter++; //We have a hypen on the new line as well so add one to the min chars after
@@ -154,7 +155,7 @@ namespace Scryber.PDF.Graphics
 				//Not enough characters at the end
 				//And there are no white spaces after the proposed split so at the end.
 				//We don't hyphenate on the last word for a line - so go back to the first word space and break there
-				var left = GetFirstWordBoundaryBefore(chars, start, chars.Length - 1, strategy.HyphenAppend, strategy.HyphenPrepend);
+				var left = GetFirstWordBoundaryBefore(chars, start, chars.Length - 1 - start, strategy.HyphenAppend, strategy.HyphenPrepend);
 
 				if (left == start)
 				{
@@ -188,7 +189,7 @@ namespace Scryber.PDF.Graphics
 					//We have a white space character before, so go ahead and move that down to the next line.
 					return new HyphenationOpportunity(
 						hyphenate: false, //Not hyphenating
-						length: left, //This is our new break point
+						length: left - start, //This is our new break point
 						append: null, //So no char at end
 						prepend: null, //Or at the front of the new line
 						trim: true //And no white space trimming
@@ -239,7 +240,7 @@ namespace Scryber.PDF.Graphics
 						trim: false //Not a newline on a space
 					);
 				}
-				else if (strategy.HyphenAppend.HasValue && chars[left - start] == strategy.HyphenAppend.Value)
+				else if (strategy.HyphenAppend.HasValue && chars[left + start] == strategy.HyphenAppend.Value)
 				{
 					//we are on a hyphen in the word so split on that
 					return new HyphenationOpportunity(
@@ -250,7 +251,7 @@ namespace Scryber.PDF.Graphics
 						trim: false
 						);
 				}
-				else if (strategy.HyphenPrepend.HasValue && chars[start - left] == strategy.HyphenPrepend.Value)
+				else if (strategy.HyphenPrepend.HasValue && chars[start + left] == strategy.HyphenPrepend.Value)
 				{
 					throw new NotImplementedException();
 				}
@@ -272,9 +273,9 @@ namespace Scryber.PDF.Graphics
 
 		}
 
-        private static bool CheckForSymbolOrDigits(string chars, int start, int offset)
+        private static bool CheckForSymbolOrDigits(string chars, int start, int len)
         {
-			int pos = offset;
+			int pos = start + len;
 			while (pos >= start)
 			{
 				var c = chars[pos];
@@ -284,7 +285,7 @@ namespace Scryber.PDF.Graphics
 					break;
 				pos--;
 			}
-			pos = offset + 1;
+			pos = start + len + 1;
 			while (pos < chars.Length)
 			{
                 var c = chars[pos];
@@ -308,8 +309,9 @@ namespace Scryber.PDF.Graphics
         /// <param name="hyphenAppend">An optional character to denote the hyphen that would be split on</param>
         /// <param name="hyphenPrepend">An optional character to denote the hyphen that would be split afterwards</param>
         /// <returns>Zero (0) if no hyphen was found. Or the position of the hyphen</returns>
-        private static int CheckWordForHyphen(string chars, int start, int offset, char? hyphenAppend, char? hyphenPrepend)
+        private static int CheckWordForHyphen(string chars, int start, int len, char? hyphenAppend, char? hyphenPrepend)
         {
+			var offset = start + len;
             while (offset > start) //ignore the very first character
             {
                 var c = chars[offset];
@@ -334,9 +336,9 @@ namespace Scryber.PDF.Graphics
         /// <param name="hyphenAppend">An optional character to denote the hyphen that would be split on</param>
 		/// <param name="hyphenPrepend">An optional character to denote the hyphen that would be split afterwards</param>
 		/// <returns>The position in the string (from the start position) of the first space, or the start index itself if none is not found</returns>
-        public static int GetFirstWordBoundaryBefore(string chars, int start, int offset, char? hyphenAppend, char? hyphenPrepend)
+        public static int GetFirstWordBoundaryBefore(string chars, int start, int len, char? hyphenAppend, char? hyphenPrepend)
 		{
-			
+			var offset = start + len;
 			while (offset > start) //ignore the very first character
 			{
 				var c = chars[offset];

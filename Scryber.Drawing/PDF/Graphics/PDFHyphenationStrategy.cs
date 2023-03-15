@@ -53,7 +53,7 @@ namespace Scryber.PDF.Graphics
 
 
         //
-        // Culture Specific
+        // Default
         //
 
         public static readonly PDFHyphenationStrategy Default = new PDFHyphenationStrategy();

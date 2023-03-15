@@ -749,7 +749,7 @@ namespace Scryber.UnitLayouts
         public void ALongTextBlockWithHypens()
         {
 
-            Assert.Inconclusive("Need to actually implement the hyphenation strategy in string measurement");
+            // Assert.Inconclusive("Need to actually implement the hyphenation strategy in string measurement");
 
             var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
@@ -779,6 +779,9 @@ namespace Scryber.UnitLayouts
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.LayoutComplete += Doc_LayoutComplete;
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+
             SaveAsPDF(doc, "Text_LongLiteralWithHyphens");
 
 
@@ -787,9 +790,9 @@ namespace Scryber.UnitLayouts
 
             var contentW = layout.AllPages[0].ContentBlock.Width;
 
-            Assert.AreEqual(17, region.Contents.Count);
+            Assert.AreEqual(35, region.Contents.Count);
 
-            for (var i = 0; i < 17; i++)
+            for (var i = 0; i < 35; i++)
             {
                 var line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
                 Assert.IsTrue(line.Width < contentW);
@@ -803,7 +806,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
                 Assert.AreEqual(line.Width, line.Runs[1].Width);
 
-                if (i == 16)
+                if (i == 34)
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
                 else
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
