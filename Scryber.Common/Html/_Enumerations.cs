@@ -148,6 +148,7 @@ namespace Scryber.Html
         public const string TextDecoration = "text-decoration";
         public const string TextDecorationLine = "text-decoration-line";
         public const string LetterSpacing = "letter-spacing";
+        public const string Hyphenation = "hyphens";
         public const string WordSpacing = "word-spacing";
 
         public const string WhiteSpace = "white-space";

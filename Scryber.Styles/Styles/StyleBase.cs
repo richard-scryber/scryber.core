@@ -1210,8 +1210,20 @@ namespace Scryber.Styles
                 options.CharacterSpacing = space.Value(this);
 
             StyleValue<Text.WordWrap> wrap;
+            StyleValue<Text.WordHyphenation> hyphen;
             if (this.TryGetValue(StyleKeys.TextWordWrapKey, out wrap))
+            {
                 options.WrapText = wrap.Value(this);
+
+                //Check the hypenation if and only if we can wrap text
+                if (options.WrapText != Text.WordWrap.NoWrap)
+                {
+                    if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+                        options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+                }
+            }
+            else if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+                options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
 
             StyleValue<double> hscale;
             if (this.TryGetValue(StyleKeys.TextHorizontalScaling, out hscale))

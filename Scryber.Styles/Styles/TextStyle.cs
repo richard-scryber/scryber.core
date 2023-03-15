@@ -190,6 +190,31 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public WordHyphenation Hyphenation {get;set;} + RemoveHypenation()
+
+        public Scryber.Text.WordHyphenation Hyphenation
+        {
+            get
+            {
+                Scryber.Text.WordHyphenation h;
+                if (this.TryGetValue(StyleKeys.TextWordHyphenation, out h))
+                    return h;
+                else
+                    return Scryber.Text.WordHyphenation.None;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextWordHyphenation, value);
+            }
+        }
+
+        public void RemoveHypenation()
+        {
+            this.RemoveValue(StyleKeys.TextWordHyphenation);
+        }
+
+        #endregion
+
         #region public TextDecoration Decoration {get;set;} + RemoveDecoration()
 
         /// <summary>

@@ -89,7 +89,7 @@ namespace Scryber.Generation
         }
 
 
-        static Dictionary<string, char> InitKnownHTMLEntities()
+        public static Dictionary<string, char> InitKnownHTMLEntities()
         {
             Dictionary<string, char> known = new Dictionary<string, char>();
             known.Add("nbsp", ' ');

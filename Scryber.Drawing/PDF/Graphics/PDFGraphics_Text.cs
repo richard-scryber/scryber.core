@@ -223,8 +223,23 @@ namespace Scryber.PDF.Graphics
                     //TODO: Check if we can do this on the widths rather than the ttfile.
                     measured = defn.MeasureStringWidth(chars, startIndex, fsize.PointsValue, available.Width.PointsValue, wordSpace, charSpace, hScale, vertical, trimtoword, out charsfitted);
                 else
+                {
                     //TODO: Check if we can do this on the widths rather than the ttfile.
                     measured = defn.MeasureStringWidth(chars, startIndex, fsize.PointsValue, available.Width.PointsValue, trimtoword, out charsfitted);
+
+                    if (charsfitted > 0 && (startIndex + charsfitted < chars.Length) && trimtoword == false)
+                    {
+                        bool appendHyphen; //TODO: This needs to be sent back to  the caller too.
+                        this.SetWordHypenation(chars, startIndex, ref charsfitted, out appendHyphen);
+
+                        var tomeasure = chars.Substring(startIndex, charsfitted);
+                        if (appendHyphen)
+                            tomeasure += "-";
+
+                        measured = defn.MeasureStringWidth(tomeasure, 0, fsize.PointsValue, (double)(int.MaxValue), true, out charsfitted);
+                        charsfitted = tomeasure.Length; //override anyway
+                    }
+                }
 
                 if (charsfitted > 0)
                     this.RegisterStringUse(chars, startIndex, charsfitted);
@@ -239,6 +254,12 @@ namespace Scryber.PDF.Graphics
             }
 
             return measured;
+        }
+
+        private void SetWordHypenation(string chars, int startindex, ref int length, out bool appendHyphen)
+        {
+            
+            appendHyphen = false;
         }
 
         private double GetLineLeft(Drawing.Size size, PDFTextRenderOptions options)

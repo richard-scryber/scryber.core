@@ -743,8 +743,74 @@ namespace Scryber.UnitLayouts
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
             }
         }
-        
-        
+
+
+        [TestMethod]
+        public void ALongTextBlockWithHypens()
+        {
+
+            Assert.Inconclusive("Need to actually implement the hyphenation strategy in string measurement");
+
+            var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+                "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies." +
+                " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
+                "Donec nec sapien eu mi commodo porta in quis nibh. Sed quam sem, tristique vel lobortis nec, " +
+                "pulvinar id libero. Donec aliquet consectetur lorem, id hendrerit lectus feugiat a. " +
+                "Mauris fringilla nunc consequat sapien varius, in pretium nibh dignissim. Duis in erat neque. " +
+                "Cras dui purus, laoreet vel lacus nec, scelerisque posuere nisl. Nam sed rutrum metus. " +
+                "Ut vel vehicula lorem. Morbi rutrum leo quis nunc lobortis, venenatis posuere dolor porta.";
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+            pg.FontSize = 12;
+            pg.Contents.Add(new TextLiteral(content));
+            pg.ColumnCount = 4; //make small columns to force hypenation
+            pg.Style.Text.Hyphenation = Text.WordHyphenation.Auto;
+            pg.HorizontalAlignment = HorizontalAlignment.Justified;
+
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralWithHyphens");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+
+            var contentW = layout.AllPages[0].ContentBlock.Width;
+
+            Assert.AreEqual(17, region.Contents.Count);
+
+            for (var i = 0; i < 17; i++)
+            {
+                var line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < contentW);
+                Assert.AreEqual(3, line.Runs.Count);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == 16)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+        }
+
+
 
 
         [TestMethod()]

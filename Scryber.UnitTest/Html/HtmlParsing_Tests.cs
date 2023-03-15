@@ -21,13 +21,13 @@ using Scryber.Svg.Components;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using Scryber.PDF.Resources;
-using NuGet.Frameworks;
 using Scryber.Expressive.Functions;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Exceptions;
 using Scryber.Expressive;
 using Scryber.PDF.Secure;
 using System.Collections;
+
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -3057,6 +3057,108 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.Inconclusive();
         }
-        
+
+
+
+        [TestMethod]
+        public void HahyesTest()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/HahyesTest.html");
+
+
+            using (var sr = new System.IO.StreamReader(path))
+            {
+                var text = sr.ReadToEnd();
+
+                using (var doc = HtmlParser.Parse(text, path, ParseSourceType.LocalFile))
+                {
+                    using (var stream = DocStreams.GetOutputStream("HahyesTest2.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+                }
+
+            }
+
+            Assert.Inconclusive();
+        }
+
     }
+
+
+    public static class HtmlParser
+    {
+        const string htmlXmlns = "http://www.w3.org/1999/xhtml";
+
+        private static  System.Text.RegularExpressions.Regex restoreHtmlEntities =
+            new System.Text.RegularExpressions.Regex("&amp;([^ ]{1,8});");
+
+        public static  Document Parse(string html, string path, ParseSourceType type, bool forceXHTMLNamespace = true)
+        {
+            //Use agility pack to load the html
+
+            HtmlAgilityPack.HtmlDocument adoc = new HtmlAgilityPack.HtmlDocument();
+            adoc.LoadHtml(html);
+
+
+            //make sure we have the namespace on the html node
+
+            var node = adoc.DocumentNode.SelectSingleNode("//html");
+            if (null == node)
+            {
+                throw new Scryber.PDFParserException("Cannot parse the html content as the root 'html' node could not be found");
+            }
+            else if (node.Attributes.Contains("xmlns") == false)
+                node.Attributes.Add("xmlns", htmlXmlns);
+            else
+            {
+                var xmlns = node.Attributes["xmlns"];
+                if (xmlns.Value != htmlXmlns)
+                {
+                    if (forceXHTMLNamespace)
+                        xmlns.Value = htmlXmlns;
+                    else
+                        throw new Scryber.PDFParserException("Cannot parse the html content as the namespace dose not match the xhtml namespace");
+                }
+            }
+
+            //output the document as xhtml
+
+            adoc.OptionOutputAsXml = true;
+            adoc.OptionPreserveXmlNamespaces = true;
+            adoc.OptionWriteEmptyNodes = true;
+            adoc.OptionAutoCloseOnEnd = true;
+
+            StringBuilder content = new StringBuilder();
+            using (var sw = new StringWriter(content))
+            {
+                using (var xml = new System.Xml.XmlTextWriter(sw))
+                    adoc.Save(xml);
+            }
+
+            var xhtml = content.ToString();
+
+
+            //HtmlAgilityPack will convert html entities such as &nbsp;
+            //to &amp;nbsp; so we need to convert back
+
+            var restored = restoreHtmlEntities.Replace(xhtml, (input) => {
+                //first is full string second should be the characters between the &amp; and trailing ;
+                var val = "&" + input.Groups[1].Value + ";"; 
+                return val;
+            });
+
+            //finally we can parse the xhtml
+
+            using (var sr = new StringReader(restored))
+            {
+                var doc = Document.ParseDocument(sr, path, type);
+
+                return doc;
+            }
+
+        }
+    }
+    
 }
