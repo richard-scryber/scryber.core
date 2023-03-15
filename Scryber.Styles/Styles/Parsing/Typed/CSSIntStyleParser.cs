@@ -1,20 +1,13 @@
 ﻿using System;
-using Scryber.Drawing;
-
 namespace Scryber.Styles.Parsing.Typed
 {
-    /// <summary>
-    /// Parses a css dimension value into a PDFUnit for a style key
-    /// </summary>
-    public class CSSUnitStyleParser : CSSStyleAttributeParser<Unit>
-    {
+	public class CSSIntStyleParser : CSSStyleAttributeParser<int>
+	{
+		public CSSIntStyleParser(string itemKey, StyleKey<int> attr)
+			: base(itemKey, attr)
+		{
+		}
 
-
-        public CSSUnitStyleParser(string styleItemKey, StyleKey<Scryber.Drawing.Unit> attr)
-            : base(styleItemKey, attr)
-        {
-
-        }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
@@ -23,7 +16,7 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 string value = reader.CurrentTextValue;
 
-                Unit parsed;
+                int parsed;
                 if (IsExpression(value))
                 {
                     result = AttachExpressionBindingHandler(onStyle, this.StyleAttribute, value, this.DoConvertUnit);
@@ -37,22 +30,23 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected virtual bool DoConvertUnit(StyleBase onStyle, object value, out Unit result)
+        protected virtual bool DoConvertUnit(StyleBase onStyle, object value, out int result)
         {
-            if(null == value)
+            if (null == value)
             {
-                result = Unit.Zero;
+                result = 0;
                 return false;
             }
-            else if(value is Unit)
+            else if (value is int)
             {
-                result = (Unit)value;
+                result = (int)value;
                 return true;
             }
-            else if (Unit.TryParse(value.ToString(), out result))
+            else if (int.TryParse(value.ToString(), out result))
                 return true;
             else
                 return false;
         }
     }
 }
+

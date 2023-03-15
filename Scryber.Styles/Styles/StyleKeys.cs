@@ -374,7 +374,14 @@ namespace Scryber.Styles
         public static readonly StyleKey<VerticalAlignment> PositionVAlignKey = StyleKey.InternalCreateStyleValueKey<VerticalAlignment>((ObjectType)"vlgn", TextItemKey);
 
         public static readonly StyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((ObjectType)"hlgn", TextItemKey);
-        
+
+        public static readonly StyleKey<int> TextHyphenationMinBeforeBreak = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"minb", TextItemKey);
+
+        public static readonly StyleKey<int> TextHyphenationMinAfterBreak = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"mina", TextItemKey);
+
+        public static readonly StyleKey<char> TextHyphenationCharAppend = StyleKey.InternalCreateStyleValueKey<char>((ObjectType)"chrb", TextItemKey);
+
+        public static readonly StyleKey<char> TextHyphenationCharPrepend = StyleKey.InternalCreateStyleValueKey<char>((ObjectType)"chra", TextItemKey);
 
         //List
 

@@ -1219,7 +1219,14 @@ namespace Scryber.Styles
                 if (options.WrapText != Text.WordWrap.NoWrap)
                 {
                     if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+                    {
                         options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+
+                        if (options.WrapText == Text.WordWrap.Character)
+                        {
+                            options.HyphenationStrategy = DoCreateHyphenationStrategy();
+                        }
+                    }
                 }
             }
             else if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
@@ -1246,6 +1253,29 @@ namespace Scryber.Styles
                 options.DrawTextFromTop = !frombase.Value(this);
 
             return options;
+        }
+
+        private PDFHyphenationStrategy DoCreateHyphenationStrategy()
+        {
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy();
+
+            StyleValue<int> min;
+            if (this.TryGetValue(StyleKeys.TextHyphenationMinBeforeBreak, out min))
+                strategy.MinCharsBeforeHyphen = min.Value(this);
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationMinAfterBreak, out min))
+                strategy.MinCharsAfterHyphen = min.Value(this);
+
+            StyleValue<char> c;
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out c))
+                strategy.HyphenAppend = c.Value(this);
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationCharPrepend, out c))
+                strategy.HyphenPrepend = c.Value(this);
+
+            return strategy;
+
         }
 
         #endregion

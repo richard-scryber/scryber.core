@@ -5,6 +5,33 @@ using System.Security;
 
 namespace Scryber.Styles.Parsing.Typed
 {
+    /// <summary>
+    /// Parses the number of required characters in a word before a split for hypenation
+    /// </summary>
+    public class CSSHyphensMinBeforeParser : CSSIntStyleParser
+    {
+        public CSSHyphensMinBeforeParser() : base(CSSStyleItems.HyphenationMinBefore, StyleKeys.TextHyphenationMinBeforeBreak) { }
+    }
+
+    /// <summary>
+    /// Parses the number of required characters in a word after a split for hypenation
+    /// </summary>
+    public class CSSHyphensMinAfterParser : CSSIntStyleParser
+    {
+        public CSSHyphensMinAfterParser() : base(CSSStyleItems.HyphenationMinAfter, StyleKeys.TextHyphenationMinAfterBreak) { }
+    }
+
+    /// <summary>
+    /// Parses the character that will be appended as a hyphen to any breaking words
+    /// </summary>
+    public class CSSHyphensCharAppendParser : CSSCharStyleParser
+    {
+        public CSSHyphensCharAppendParser() : base(CSSStyleItems.HyphenationMinAfter, StyleKeys.TextHyphenationCharAppend) { }
+    }
+
+    /// <summary>
+    /// Parses the hypens css enumeration - supporting auto and none
+    /// </summary>
     public class CSSHyphensParser : CSSStyleValueParser
     {
         public CSSHyphensParser()
