@@ -3,7 +3,9 @@ namespace Scryber.Styles.Parsing.Typed
 {
 	public class CSSCharStyleParser : CSSStyleAttributeParser<char>
 	{
-		public CSSCharStyleParser(string itemKey, StyleKey<char> attr)
+        public bool AllowQuotes { get; set; }
+
+        public CSSCharStyleParser(string itemKey, StyleKey<char> attr, bool allowQuotes)
 			: base(itemKey, attr)
 		{
 		}
@@ -49,6 +51,24 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     result = ' ';
                     return false;
+                }
+                else if (AllowQuotes && val.Length == 3)
+                {
+                    if (val[0] == '\'' && val[val.Length - 1] == '\'')
+                    {
+                        result = val[1];
+                        return true;
+                    }
+                    else if (val[0] == '"' && val[val.Length - 1] == '"')
+                    {
+                        result = val[1];
+                        return true;
+                    }
+                    else
+                    {
+                        result = ' ';
+                        return false;
+                    }
                 }
                 else
                 {

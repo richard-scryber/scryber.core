@@ -26,7 +26,7 @@ namespace Scryber.Styles.Parsing.Typed
     /// </summary>
     public class CSSHyphensCharAppendParser : CSSCharStyleParser
     {
-        public CSSHyphensCharAppendParser() : base(CSSStyleItems.HyphenationMinAfter, StyleKeys.TextHyphenationCharAppend) { }
+        public CSSHyphensCharAppendParser() : base(CSSStyleItems.HyphenationMinAfter, StyleKeys.TextHyphenationCharAppend, true) { }
     }
 
     /// <summary>
