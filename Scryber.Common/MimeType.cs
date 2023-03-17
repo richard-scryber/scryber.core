@@ -173,7 +173,26 @@ namespace Scryber
 			}
 			return mime.IsValid;
 		}
-	}
+
+
+
+		//
+		// Default Known Types
+		//
+
+		public static readonly MimeType Html = "text/html";
+
+		public static readonly MimeType Xml = "text/xml";
+
+		public static readonly MimeType xHtml = "application/xhtml+xml";
+
+		public static readonly MimeType xHtmlSimple = "text/xhtml";
+
+		public static readonly MimeType Text = "text/plain";
+
+		public static readonly MimeType Svg = "image/svg+xml";
+
+    }
 
     /// <summary>
     /// Internal class that supports this use of charset and variant options within a mimetype.

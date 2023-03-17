@@ -22,6 +22,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.Text;
 
 namespace Scryber.Components
 {
@@ -1156,6 +1157,8 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public FloatMode FloatMode
+
         /// <summary>
         /// Gets or sets the floating mode of this component, left, right or none (default).
         /// </summary>
@@ -1173,6 +1176,8 @@ namespace Scryber.Components
                 this.Style.SetValue(StyleKeys.PositionFloat, value);
             }
         }
+
+        #endregion
 
         #region public bool FillWidth
 
@@ -1311,19 +1316,19 @@ namespace Scryber.Components
 
         #endregion
 
-        #region public Scryber.Text.TextDecoration TextDecoration {get;set;}
+        #region public TextDecoration TextDecoration {get;set;}
 
         /// <summary>
         /// Gets or sets the text decoration on the characters in this component
         /// </summary>
         [PDFAttribute("text-decoration", Const.PDFStylesNamespace)]
         [PDFDesignable("Decoration", Category = "Text", Priority = 1, Type = "MultiSelect")]
-        public virtual Scryber.Text.TextDecoration TextDecoration
+        public virtual TextDecoration TextDecoration
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.TextDecorationKey, Text.TextDecoration.None);
+                    return this.Style.GetValue(StyleKeys.TextDecorationKey, TextDecoration.None);
                 else
                     return Scryber.Text.TextDecoration.None;
 
@@ -1663,6 +1668,97 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public virtual string DataContent + DataContentType + DataContentAction {get; set; }
+
+        /// <summary>
+        /// Wraps the 3 properties into a single instance,
+        /// as they are used together, but mimimal memory requirements.
+        /// </summary>
+        private Data.DataBindingContent _dataContent;
+        
+
+        /// <summary>
+        /// Gets or sets the data content of this container as a string.
+        /// Used for binding content to the Visual Container
+        /// </summary>
+        [PDFAttribute("data-content")]
+        public virtual string DataContent
+        {
+            get
+            {
+                if (null == _dataContent)
+                    return string.Empty;
+                else
+                    return _dataContent.Content;
+            }
+            set {
+                if (null == _dataContent)
+                    _dataContent = DoCreateDataBindingContent();
+                _dataContent.Content = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the mime-type of the content.
+        /// This tells the document what format the DataContent is in and therefore how to parse the contents 
+        /// </summary>
+        /// <remarks>The MimeType can be implicity converted from a string</remarks>
+        [PDFAttribute("data-content-type")]
+        public virtual MimeType DataContentType
+        {
+            get
+            {
+                if (null == _dataContent)
+                    return null;
+                else
+                    return _dataContent.Type;
+            }
+            set
+            {
+                if (null == _dataContent)
+                    _dataContent = DoCreateDataBindingContent();
+                _dataContent.Type = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets or sets the action that should be taken when binding content into this component
+        /// (Append after, Prepend before or Replace all existing content).
+        /// </summary>
+        [PDFAttribute("data-content-action")]
+        public virtual DataContentAction DataContentAction
+        {
+            get
+            {
+                if (null == _dataContent)
+                    return DataContentAction.Append;
+                else
+                    return _dataContent.Action;
+            }
+            set
+            {
+                if (null == _dataContent)
+                    _dataContent = DoCreateDataBindingContent();
+                _dataContent.Action = value;
+
+            }
+        }
+
+
+        /// <summary>
+        /// Returns an initialized instance of the DataBindingContent for this component, inheritors can override to set their own defaults.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Data.DataBindingContent DoCreateDataBindingContent()
+        {
+            MimeType mime = this.Document.GetDefaultContentMimeType();
+            return new Data.DataBindingContent(string.Empty, mime, DataContentAction.Append);
+        }
+
+        #endregion
+
+
         //
         // ctor
         //
@@ -1684,9 +1780,48 @@ namespace Scryber.Components
             if (includeChildren && this.HasStyle)
                 this.Style.DataBind(context);
             base.DoDataBind(context, includeChildren);
+
+            if (null != this._dataContent && !string.IsNullOrEmpty(this._dataContent.Content))
+            {
+                this.DoBindContentIntoComponent(this._dataContent, context);
+            }
         }
 
         #endregion
+
+
+        protected virtual void DoBindContentIntoComponent(Data.DataBindingContent data, DataContext context)
+        {
+            if (null == data)
+                throw new ArgumentNullException(nameof(data));
+
+            //Does nothing yet - needs implementation
+
+            return;
+
+            var parser = this.Document.EnsureParser(data.Type);
+
+            using (var sr = new System.IO.StringReader(data.Content))
+            {
+                var component = parser.Parse(null, sr, ParseSourceType.DynamicContent) as Component;
+
+                //We clear out even if the returned content is null
+                if (data.Action == DataContentAction.Replace)
+                    this.InnerContent.Clear();
+
+                if (null != component)
+                {
+                    if (data.Action == DataContentAction.PrePend)
+                        this.InnerContent.Insert(0, component);
+                    else
+                        this.InnerContent.Add(component);
+
+                    //actually perfrom the data binding of the content
+                    //TODO: check on the init and load implementation.
+                    component.DataBind(context);
+                }
+            }
+        }
 
     }
 

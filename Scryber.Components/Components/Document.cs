@@ -36,6 +36,7 @@ using Scryber.PDF.Layout;
 using Scryber.PDF.Native;
 using Scryber.Options;
 using Scryber.Logging;
+using System.IO;
 
 namespace Scryber.Components
 {
@@ -1570,6 +1571,63 @@ namespace Scryber.Components
         }
 
         #endregion
+
+        //
+        // Binding Content
+        //
+
+        private Dictionary<MimeType, IParserFactory> _parsers = null;
+        private Generation.ParserSettings _settings = null;
+
+        /// <summary>
+        /// Returns the default binding content type for any complex content in this document
+        /// </summary>
+        /// <returns></returns>
+        public virtual MimeType GetDefaultContentMimeType()
+        {
+            return MimeType.Xml;
+        }
+
+        /// <summary>
+        /// Returns the parser factory that an create content
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public virtual IComponentParser EnsureParser(MimeType type)
+        {
+            if (null == _parsers)
+            {
+                _parsers = new Dictionary<MimeType, IParserFactory>();
+                this.InitKnownParsers(_parsers);
+            }
+
+            if (null == _settings)
+            {
+                PDFReferenceResolver resolver = this.Resolver;
+                if (null == resolver)
+                {
+                    ReferenceChecker checker = new ReferenceChecker(this.LoadedSource);
+                    resolver = checker.Resolver;
+                }
+                _settings = DoCreateGeneratorSettings(resolver);
+            }
+
+            IParserFactory factory;
+            if (!_parsers.TryGetValue(type, out factory))
+                throw new PDFParserException("The mime-type '" + type.ToString() + "' is not a known or supported mime type.");
+
+            return factory.CreateParser(_settings);
+
+            
+        }
+
+        protected virtual void InitKnownParsers(Dictionary<MimeType, IParserFactory> parsers)
+        {
+            parsers.Add(MimeType.Xml, new Generation.PDFXMLReflectionParserFactory());
+        }
+
+
+
 
         //
         // Save as ...
