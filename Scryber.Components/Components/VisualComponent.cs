@@ -1752,8 +1752,7 @@ namespace Scryber.Components
         /// <returns></returns>
         protected virtual Data.DataBindingContent DoCreateDataBindingContent()
         {
-            MimeType mime = this.Document.GetDefaultContentMimeType();
-            return new Data.DataBindingContent(string.Empty, mime, DataContentAction.Append);
+            return new Data.DataBindingContent(string.Empty, null, DataContentAction.Append);
         }
 
         #endregion
@@ -1779,6 +1778,7 @@ namespace Scryber.Components
         {
             if (includeChildren && this.HasStyle)
                 this.Style.DataBind(context);
+
             base.DoDataBind(context, includeChildren);
 
             if (null != this._dataContent && !string.IsNullOrEmpty(this._dataContent.Content))
@@ -1795,9 +1795,8 @@ namespace Scryber.Components
             if (null == data)
                 throw new ArgumentNullException(nameof(data));
 
-            //Does nothing yet - needs implementation
-
-            return;
+            if (null == data.Type)
+                data.Type = this.Document.GetDefaultContentMimeType();
 
             var parser = this.Document.EnsureParser(data.Type);
 
