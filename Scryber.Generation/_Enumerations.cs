@@ -23,20 +23,5 @@ using System.Text;
 
 namespace Scryber
 {
-    public enum CodeDomErrorType
-    {
-        Error,
-        Warning
-    }
-
-    public enum ParseSourceType
-    {
-        LocalFile,
-        Resource,
-        RemoteFile,
-        DynamicContent,
-        Template,
-        Other
-    }
-
+    
 }

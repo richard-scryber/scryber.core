@@ -19,10 +19,12 @@
     <Folder Include="PDF\" />
     <Folder Include="PDF\Resources\" />
     <Folder Include="PDF\Native\" />
+    <Folder Include="Generation\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="PDF\" />
     <None Remove="PDF\Resources\" />
     <None Remove="PDF\Native\" />
+    <None Remove="Generation\" />
   </ItemGroup>
 </Project>

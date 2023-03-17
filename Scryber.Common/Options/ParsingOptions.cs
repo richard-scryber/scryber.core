@@ -21,6 +21,10 @@ namespace Scryber.Options
 
         public List<BindingPrefixOption> Bindings { get; set; }
 
+
+        public Dictionary<MimeType, IParserFactory> Parsers { get; set; }
+        
+
         public ParsingOptions()
         {
             MissingReferenceAction = ParserReferenceMissingAction.RaiseException;
@@ -63,6 +67,8 @@ namespace Scryber.Options
                                                     FactoryType = "Scryber.Binding.BindingXPathExpressionFactory",
                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
+
+            Parsers = new Dictionary<MimeType, IParserFactory>();
         }
 
         private System.Globalization.CultureInfo _defaultCulture;

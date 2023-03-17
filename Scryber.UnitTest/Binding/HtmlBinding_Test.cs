@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Drawing;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -211,6 +212,116 @@ namespace Scryber.Core.UnitTests.Binding
                     Assert.AreEqual(id, content.ID);
                     Assert.AreEqual(1, content.Contents.Count);
 
+                    var lit = content.Contents[0] as TextLiteral;
+                    Assert.IsNotNull(lit);
+                    Assert.AreEqual(literal, lit.Text);
+
+                }
+            }
+        }
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindXHtmlContent_AppendWithInnerBoundValue()
+        {
+            var literal = "Inner Bound Content";
+            var id = "Appended";
+            var contentString = @"<div id='" + id + "' xmlns='http://www.w3.org/1999/xhtml' style='border: solid 1px blue; margin: var(--marginsize);' >{{literal}}</div>";
+
+            var src = @"
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Bound Document</title>
+    </head>
+    <body style='padding: 10pt' >
+        <div id='wrapper' style='border: solid 1px red;' data-content='{{boundContent}}' data-content-action='append'>
+            <div>Before Content</div>
+        </div>
+    </body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                doc.Params["boundContent"] = contentString;
+                doc.Params["literal"] = literal;
+                doc.Params["--marginsize"] = Unit.Pt(10);
+
+                using (var stream = DocStreams.GetOutputStream("HtmlBoundContent_InnerBind.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+                    Assert.AreEqual(1, pg.Contents.Count);
+
+                    var wrapper = pg.Contents[0] as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(2, wrapper.Contents.Count);
+
+                    var content = wrapper.Contents[1] as Div; //appended
+                    Assert.IsNotNull(content);
+                    Assert.AreEqual(id, content.ID);
+                    Assert.AreEqual(1, content.Contents.Count);
+                    Assert.AreEqual(10, content.Margins.Top);
+                    //Check that the bound content is there
+                    var lit = content.Contents[0] as TextLiteral;
+                    Assert.IsNotNull(lit);
+                    Assert.AreEqual(literal, lit.Text);
+
+                }
+            }
+        }
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindHtmlContent_SimpleValue()
+        {
+
+            Assert.Inconclusive("To implement the html parser");
+
+            var literal = "Inner Bound Content";
+            var id = "Appended";
+            var contentString = @"<div id='" + id + "' style='border: solid 1px blue; ' >" + literal + "</div>";
+
+            var src = @"
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Bound Document</title>
+    </head>
+    <body style='padding: 10pt' >
+        <div id='wrapper' style='border: solid 1px red;' data-content='{{boundContent}}' data-content-type='text/html'>
+        </div>
+    </body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                doc.Params["boundContent"] = contentString;
+                doc.Params["literal"] = literal;
+                doc.Params["--marginsize"] = Unit.Pt(10);
+
+                using (var stream = DocStreams.GetOutputStream("HtmlBoundContent_InnerBind.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+                    Assert.AreEqual(1, pg.Contents.Count);
+
+                    var wrapper = pg.Contents[0] as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(1, wrapper.Contents.Count);
+
+                    var content = wrapper.Contents[1] as Div; //appended
+                    Assert.IsNotNull(content);
+                    Assert.AreEqual(id, content.ID);
+                    Assert.AreEqual(1, content.Contents.Count);
+                    Assert.AreEqual(10, content.Margins.Top);
+                    //Check that the bound content is there
                     var lit = content.Contents[0] as TextLiteral;
                     Assert.IsNotNull(lit);
                     Assert.AreEqual(literal, lit.Text);

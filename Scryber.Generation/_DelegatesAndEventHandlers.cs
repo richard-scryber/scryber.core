@@ -24,12 +24,7 @@ using System.Text;
 namespace Scryber
 {
 
-    /// <summary>
-    /// Delegate that can accept a relative or absolute path and return the parsed component from the path
-    /// </summary>
-    /// <param name="path">The path to resolve and parse</param>
-    /// <returns>The parsed component from the specified path</returns>
-    public delegate IComponent PDFReferenceResolver(string filename, string xpath, Generation.ParserSettings settings);
+    
 
     
 }

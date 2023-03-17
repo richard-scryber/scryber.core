@@ -384,6 +384,15 @@ namespace Scryber
         Custom
     }
 
+    public enum ParseSourceType
+    {
+        LocalFile,
+        Resource,
+        RemoteFile,
+        DynamicContent,
+        Template,
+        Other
+    }
 
     public static class EnumParser
     {
