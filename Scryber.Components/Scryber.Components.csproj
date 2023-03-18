@@ -130,6 +130,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Scryber.Styles" />
     <None Remove="Teronis.MSBuild.Packaging.ProjectBuildInPackage" />
     <None Remove="SixLabors.ImageSharp" />
+    <None Remove="Options\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -197,6 +198,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Folder Include="PDF\" />
     <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
+    <Folder Include="Options\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

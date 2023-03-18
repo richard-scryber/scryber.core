@@ -703,7 +703,7 @@ namespace Scryber
         /// <param name="reaser"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        IComponent Parse(string source, System.Xml.XmlReader reaser, ParseSourceType type);
+        IComponent Parse(string source, System.Xml.XmlReader reader, ParseSourceType type);
     }
 
     #endregion
@@ -713,7 +713,9 @@ namespace Scryber
     /// </summary>
     public interface IParserFactory
     {
-        IComponentParser CreateParser(Generation.ParserSettings settings);
+        MimeType[] SupportedTypes { get; }
+
+        IComponentParser CreateParser(MimeType forType, Generation.ParserSettings settings);
     }
 
     /// <summary>

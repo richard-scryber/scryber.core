@@ -1589,16 +1589,17 @@ namespace Scryber.Components
         }
 
         /// <summary>
-        /// Returns the parser factory that an create content
+        /// Returns the parser factory that an create content based on the provided mime-type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
         public virtual IComponentParser EnsureParser(MimeType type)
         {
+            //Check and initialize the parser dictionary
+
             if (null == _parsers)
             {
-                _parsers = new Dictionary<MimeType, IParserFactory>();
-                this.InitKnownParsers(_parsers);
+                _parsers = this.InitKnownParsers();
             }
 
             if (null == _settings)
@@ -1612,18 +1613,23 @@ namespace Scryber.Components
                 _settings = DoCreateGeneratorSettings(resolver);
             }
 
+            //try and get a parser for the mime-type
+
             IParserFactory factory;
+
             if (!_parsers.TryGetValue(type, out factory))
                 throw new PDFParserException("The mime-type '" + type.ToString() + "' is not a known or supported mime type.");
 
-            return factory.CreateParser(_settings);
+            return factory.CreateParser(type, _settings);
 
             
         }
 
-        protected virtual void InitKnownParsers(Dictionary<MimeType, IParserFactory> parsers)
+        protected virtual Dictionary<MimeType, IParserFactory> InitKnownParsers()
         {
-            parsers.Add(MimeType.Xml, new Generation.PDFXMLReflectionParserFactory());
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            ParserFactoryDictionary factories = config.ParsingOptions.GetParserFactories();
+            return factories;
         }
 
 

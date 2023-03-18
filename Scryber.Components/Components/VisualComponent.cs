@@ -1790,6 +1790,12 @@ namespace Scryber.Components
         #endregion
 
 
+        /// <summary>
+        /// Based on the DataBindingContent, this will parse the inner content, and add as specified the inner content
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="context"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         protected virtual void DoBindContentIntoComponent(Data.DataBindingContent data, DataContext context)
         {
             if (null == data)
