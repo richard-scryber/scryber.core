@@ -1768,6 +1768,11 @@ namespace Scryber.Components
             
         }
 
+
+        //
+        // binding methods
+        //
+
         #region Databind()
         
         /// <summary>
@@ -1789,6 +1794,8 @@ namespace Scryber.Components
 
         #endregion
 
+
+        #region protected virtual void DoBindContentIntoComponent(Data.DataBindingContent data, DataContext context)
 
         /// <summary>
         /// Based on the DataBindingContent, this will parse the inner content, and add as specified the inner content
@@ -1821,7 +1828,7 @@ namespace Scryber.Components
 
             using (var sr = new System.IO.StringReader(data.Content))
             {
-                var component = parser.Parse(null, sr, ParseSourceType.DynamicContent) as Component;
+                var component = parser.Parse(null, sr, ParseSourceType.Template) as Component;
 
                 //We clear out even if the returned content is null
                 if (data.Action == DataContentAction.Replace)
@@ -1857,6 +1864,8 @@ namespace Scryber.Components
 
             }
         }
+
+        #endregion
 
     }
 
