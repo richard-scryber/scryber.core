@@ -54,6 +54,7 @@
     <Folder Include="Content\HTML\Fragments\" />
     <Folder Include="Content\SVG\" />
     <Folder Include="Imaging\" />
+    <Folder Include="Common\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -70,6 +71,7 @@
     <None Remove="Content\HTML\Images\groupLZW.tiff" />
     <None Remove="System.Text.Json" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="Common\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />
