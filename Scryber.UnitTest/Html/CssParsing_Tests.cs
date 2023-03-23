@@ -850,7 +850,7 @@ body.grey div.reverse{
         [TestMethod()]
         public void ParseCSSItemContentStyle()
         {
-            var path = "Content/HTML/Images/Group.png";
+            var path = "Content/HTML/Images/group.png";
 
             var src = @".added{
                             content: 'replacement text'
@@ -912,7 +912,7 @@ body.grey div.reverse{
             Assert.IsNotNull(value);
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
             Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
-            Assert.AreEqual("url('Content/HTML/Images/Group.png')", (value as ContentImageDescriptor).Text);
+            Assert.AreEqual("url('Content/HTML/Images/group.png')", (value as ContentImageDescriptor).Text);
             
             Assert.IsNull(value.Next);
 
@@ -953,8 +953,8 @@ body.grey div.reverse{
             value = value.Next;
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
             Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
-            Assert.AreEqual("url(\"Content/HTML/Images/Group.png\")", (value as ContentImageDescriptor).Text);
-            Assert.AreEqual("Content/HTML/Images/Group.png", (value as ContentImageDescriptor).Source);
+            Assert.AreEqual("url(\"Content/HTML/Images/group.png\")", (value as ContentImageDescriptor).Text);
+            Assert.AreEqual("Content/HTML/Images/group.png", (value as ContentImageDescriptor).Source);
             Assert.IsNotNull(value.Next);
 
             value = value.Next;
