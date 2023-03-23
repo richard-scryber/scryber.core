@@ -22,8 +22,6 @@ namespace Scryber.Generation
 
         public XmlHtmlEntityReader(System.IO.TextReader reader) : base(reader)
         {
-            this.DtdProcessing = DtdProcessing.Ignore;
-            this.WhitespaceHandling = WhitespaceHandling.Significant;
             this.AddDefaultEntities();
         }
 

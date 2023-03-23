@@ -1,0 +1,9 @@
+﻿<!DOCTYPE HTML>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>{@:title}</title>
+</head>
+<body>
+    <div style='padding:10px;'>{@:title}</div>
+</body>
+</html>
