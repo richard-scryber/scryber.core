@@ -200,7 +200,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = new XmlHtmlEntityReader(stream, GetXmlSettings()))
+            using (XmlReader reader = new XmlHtmlEntityReader(stream))
             {
                 return Parse(source, reader, type);
             }
@@ -215,7 +215,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = new XmlHtmlEntityReader(reader, GetXmlSettings()))
+            using (XmlReader xreader = new XmlHtmlEntityReader(reader))
             {
                 return this.Parse(source, xreader, type);
             }

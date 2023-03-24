@@ -15,12 +15,12 @@ namespace Scryber.Generation
         }
 
 
-        public XmlHtmlEntityReader(System.IO.Stream stream, XmlReaderSettings settings) : base(stream)
+        public XmlHtmlEntityReader(System.IO.Stream stream) : base(stream)
         {
             this.AddDefaultEntities();
         }
 
-        public XmlHtmlEntityReader(System.IO.TextReader reader, XmlReaderSettings settings) : base(reader)
+        public XmlHtmlEntityReader(System.IO.TextReader reader) : base(reader)
         {
             this.AddDefaultEntities();
         }
@@ -89,7 +89,7 @@ namespace Scryber.Generation
         }
 
 
-        static Dictionary<string, char> InitKnownHTMLEntities()
+        public static Dictionary<string, char> InitKnownHTMLEntities()
         {
             Dictionary<string, char> known = new Dictionary<string, char>();
             known.Add("nbsp", ' ');
@@ -100,9 +100,13 @@ namespace Scryber.Generation
             known.Add("euro", '€');
             known.Add("ldquo", '“');
             known.Add("rdquo", '”');
+            known.Add("lsquo", '‘');
+            known.Add("rsquo", '’');
             known.Add("iexcl", '¡');
             known.Add("cent", '¢');
             known.Add("pound", '£');
+            known.Add("ndash", '-');
+            known.Add("mdash", '—');
             known.Add("curren", '¤');
             known.Add("yen", '¥');
             known.Add("brvbar", '¦');
@@ -114,6 +118,8 @@ namespace Scryber.Generation
             known.Add("reg", '®');
             known.Add("macr", '¯');
             known.Add("deg", '°');
+            known.Add("dagger", '†');
+            known.Add("Dagger", '‡');
             known.Add("plusmn", '±');
             known.Add("sup1", '¹');
             known.Add("sup2", '²');
@@ -193,7 +199,13 @@ namespace Scryber.Generation
             known.Add("yacute", 'ý');
             known.Add("thorn", 'þ');
             known.Add("raquo", '»');
-            
+            known.Add("hellip", '…');
+            known.Add("trade", '™');
+            known.Add("asymp", '≈');
+            known.Add("ne", '≠');
+            known.Add("le", '≤');
+            known.Add("ge", '≥');
+
             return known;
         }
     }

@@ -7,7 +7,7 @@
     <title>Large File Test Document</title>
     <style>
         .grey{ background-color: grey; padding: 20pt}
-        td.key{ color: #333; font-size:10pt;}
+        td.key{ color: #333; font-size:10pt; }
         td.value{  color: black; font-size:10pt; }
         tr.odd{ background-color: #AAA; border-top: solid 1px red;}
         tr.even{ background-color: #CCC; }
@@ -24,23 +24,25 @@
                 <tr>
                     <td class="key">#</td>
                     <td class="key">Name</td>
-                    <td class="value" style="width: 120pt">Value</td>
+                    <td class="value" style="width: 100pt">Value</td>
                 </tr>
             </thead>
             <template data-bind="{{model.Items}}" >
-                <tr class="{{if(index() % 2 == 1, 'odd', 'even')}}" >
-                    <td class="key" data-style-identifier="td_index" >{{index()}}</td>
+                <tr class="{{if(index() % 2 == 1, 'odd', 'even')}}">
+                    <td class="key" data-style-identifier="td_index">{{index()}}</td>
                     <td class="key" data-style-identifier="td_key">{{.Key}}</td>
                     <td class="value" data-style-identifier="td_value">{{.Value}}</td>
-
+                    <!--<td class="key" >{{index()}}</td>
+        <td class="key" >{{.Key}}</td>
+        <td class="value" >{{.Value}}</td>-->
                 </tr>
-            </template>
-        </table>
-    </div>
-    <footer>
-        <p style="text-align:center; font-size: 12pt; padding:5pt; border-top: solid 1pt red; margin-bottom: 5pt;">
-            Page <page /> of <page property="total" />.
-        </p>
-    </footer>
-</body>
-</html>
+                </template>
+            </table>
+        </div>
+        <footer>
+            <p style="text-align:center; font-size: 12pt; padding:5pt; border-top: solid 1pt red; margin-bottom: 5pt;">
+                Page <page /> of <page property="total" />.
+            </p>
+        </footer>
+    </body>
+    </html>

@@ -11,10 +11,14 @@ namespace Scryber.Generation
     /// </summary>
     public class PDFXMLReflectionParserFactory : IParserFactory
     {
-        public PDFXMLReflectionParserFactory()
-        { }
+        public MimeType[] SupportedTypes { get; }
 
-        public IComponentParser CreateParser(ParserSettings settings)
+        public PDFXMLReflectionParserFactory()
+        {
+            SupportedTypes = new MimeType[] { MimeType.Xml, MimeType.xHtml, MimeType.xHtmlSimple };
+        }
+
+        public IComponentParser CreateParser(MimeType type, ParserSettings settings)
         {
             return new XMLParser(settings);
         }

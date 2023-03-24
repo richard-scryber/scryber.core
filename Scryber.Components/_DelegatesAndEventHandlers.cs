@@ -108,9 +108,19 @@ namespace Scryber
 
 
 
+    /// <summary>
+    /// Event that is raised when a remote file request is made on the document, with the associated request in the arguments.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    /// <remarks>If the handler wants to make the request outside of the engine,
+    /// then it should set the IsExecuting flag before returning back to the raiser.</remarks>
     public delegate void RemoteFileRequestEventHandler(object sender, RemoteFileRequestEventArgs args);
 
 
+    /// <summary>
+    /// Arguments for a remote file request
+    /// </summary>
     public class RemoteFileRequestEventArgs : EventArgs
     {
         public RemoteFileRequest Request { get; private set; }

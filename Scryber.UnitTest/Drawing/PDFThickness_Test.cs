@@ -33,35 +33,7 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+       
 
 
         /// <summary>
@@ -97,6 +69,50 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(top, target.Top);
             Assert.AreEqual(bottom, target.Bottom);
             Assert.AreEqual(right, target.Right);
+        }
+
+        /// <summary>
+        ///A test for IsRelative
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void IsRelative_Test()
+        {
+            Thickness target = new Thickness(10, 20, 30, 40);
+            bool expected = false;
+            bool actual;
+
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
+            target = new Thickness(new Unit(20, PageUnits.ViewPortWidth), 30, 40, 50);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Thickness(20, 30, 40, new Unit(50, PageUnits.ViewPortWidth));
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Thickness(20, 30, new Unit(40, PageUnits.ViewPortWidth), 50);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Thickness(20, new Unit(30, PageUnits.ViewPortWidth), 40, 50);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
+            target = new Thickness(new Unit(20, PageUnits.ViewPortWidth), new Unit(30, PageUnits.ViewPortHeight), new Unit(40, PageUnits.ViewPortWidth), new Unit(50, PageUnits.ViewPortHeight));
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
         }
 
         /// <summary>

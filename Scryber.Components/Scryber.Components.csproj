@@ -5,14 +5,34 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.15-beta</PackageVersion>
+    <PackageVersion>6.0.1.0-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
-    <Copyright>Richard Hewitson 2022</Copyright>
+    <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.1.0-beta
+
+We now support html - in many of its flavours, through the HTMLAgilityPack
+
+Added parsing non-formal html documents and components from local and remote files (using the ParseHtml and ParseHtmlDocument on the Document class)
+Added the data-content and data-content-type attributes to visual components so that html and xhtml content can be data bound into pages.
+Added support for the hyphens css property and it's use in hypenating long text.
+
+6.0.0.16-beta
+
+Some Big additions and fixes
+
+Added support for the css counters (reset, increment and the counter(s) functions)
+Added support for css content properties
+Added support for css ::before and ::after selectors
+Added support for relative units in styles e.g. 30% and 0.5em - not supported in calc() with multiple units e.g calc(50% - 5px) will not work.
+
+A lot of layout tests to get everything working - precisely.
+
+
 6.0.0.14-beta
 
 Added support for transformations including css transform property.
@@ -118,6 +138,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Scryber.Styles" />
     <None Remove="Teronis.MSBuild.Packaging.ProjectBuildInPackage" />
     <None Remove="SixLabors.ImageSharp" />
+    <None Remove="Options\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -158,9 +179,10 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -185,6 +207,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Folder Include="PDF\" />
     <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
+    <Folder Include="Options\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

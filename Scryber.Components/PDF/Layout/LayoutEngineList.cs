@@ -210,7 +210,8 @@ namespace Scryber.PDF.Layout
                         this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Style_Build);
                         applied = item.GetAppliedStyle();
                         this.StyleStack.Push(applied);
-                        full = this.StyleStack.GetFullStyle(item);
+
+                        full = this.BuildFullStyle(item);
 
                         if (!string.IsNullOrEmpty(item.DataStyleIdentifier))
                             this.DocumentLayout.SetStyleWithIdentifier(item.DataStyleIdentifier, applied, full);
@@ -518,7 +519,7 @@ namespace Scryber.PDF.Layout
             if (null != applied)
             {
                 this.StyleStack.Push(applied);
-                fullstyle = this.StyleStack.GetFullStyle(literal);
+                fullstyle = this.BuildFullStyle(literal);
             }
 
             //Get the text of the next number

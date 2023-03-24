@@ -44,7 +44,19 @@ namespace Scryber.Drawing
 
         public bool IsEmpty
         {
-            get { return this.Height.IsEmpty && this.Width.IsEmpty; }
+            get { return this.Height.IsZero && this.Width.IsZero; }
+        }
+
+        /// <summary>
+        /// Returns true if one or more of the units in this point are relative units.
+        /// </summary>
+        public bool IsRelative
+        {
+            get
+            {
+                return this._w.IsRelative
+                    || this._h.IsRelative;
+            }
         }
 
         public Size(double width, double height, PageUnits units)
@@ -76,7 +88,7 @@ namespace Scryber.Drawing
             return "[" + this.Width.ToString() + ", " + this.Height.ToString() + "]";
         }
 
-        private static Size _empty = new Size(Unit.Empty, Unit.Empty);
+        private static readonly Size _empty = new Size(Unit.Empty, Unit.Empty);
 
         public static Size Empty
         {
@@ -109,20 +121,12 @@ namespace Scryber.Drawing
 
         public int CompareTo(Size other)
         {
-            Unit me = this.Width.ToPoints() + this.Height.ToPoints();
-            Unit them = other.Width.ToPoints() + other.Height.ToPoints();
-            if (me.Equals(them))
-            {
-                me = this.Width.ToPoints();
-                them = other.Width.ToPoints();
-                if(me.Equals(them))
-                {
-                    me = this.Height.ToPoints();
-                    them = other.Height.ToPoints();
-                }
-            }
-            
-            return me.CompareTo(them);
+
+            var one = this.Width.CompareTo(other.Width);
+            if (one == 0)
+                one = this.Height.CompareTo(other.Height);
+
+            return one;
             
         }
 

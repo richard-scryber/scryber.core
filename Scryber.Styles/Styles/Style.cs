@@ -1241,6 +1241,39 @@ namespace Scryber.Styles
         #endregion
 
 
+        #region public virtual PDFStyle Flatten()
+
+        /// <summary>
+        /// Returns a flat version of the PDFStyle, calculating any relative sizes to absolute.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Style Flatten(Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        {
+            if (this.InheritedValues.Count > 0)
+            {
+                foreach (var key in this.InheritedValues.Keys)
+                {
+                    if (key.CanBeRelative)
+                    {
+                        key.FlattenValue(this, pageSize, containerSize, fontSize, rootFontSize);
+                    }
+                }
+            }
+            if (this.DirectValues.Count > 0)
+            {
+                foreach (var key in this.DirectValues.Keys)
+                {
+                    if (key.CanBeRelative)
+                    {
+                        key.FlattenValue(this, pageSize, containerSize, fontSize, rootFontSize);
+                    }
+                }
+            }
+            return this;
+        }
+
+        #endregion
+
         //
         // variables
         //

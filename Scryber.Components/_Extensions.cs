@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.PDF.Native;
 using Scryber.PDF;
+using Scryber.Options;
 
 namespace Scryber
 {
@@ -43,5 +44,68 @@ namespace Scryber
             }
             return all;
         }
+    }
+
+    /// <summary>
+    /// Adds the factory method for the parsers configuration, that returns a dictionary of all the supported mime-types and their associated factories
+    /// </summary>
+    public static class ParserOptionExtensions
+    {
+
+        public static ParserFactoryDictionary GetParserFactories(this ParsingOptions options)
+        {
+            
+            var all = new ParserFactoryDictionary();
+            var standard = GetStandardFactories();
+
+            if (null != options && null != options.Parsers && options.Parsers.Length > 0)
+            {
+                foreach (var configFactory in options.Parsers)
+                {
+                    var instance = configFactory.GetFactory();
+                    if (null == instance)
+                        throw new NullReferenceException("The configured factory instance for " + configFactory.Name + " was null");
+
+                    var mimes = instance.SupportedTypes;
+                    if (null == mimes || mimes.Length == 0)
+                        throw new NullReferenceException("The configured factory for '" + configFactory.Name + "' returned null or an empty array for the SupportedTypes");
+
+                    foreach (var mime in mimes)
+                    {
+                        if (!all.ContainsKey(mime))
+                            all.Add(mime, instance);
+                    }
+
+                }
+            }
+
+            foreach (var instance in standard)
+            {
+                var mimes = instance.SupportedTypes;
+                foreach (var mime in mimes)
+                {
+                    if (!all.ContainsKey(mime))
+                        all.Add(mime, instance);
+                }
+            }
+
+            return all;
+        }
+
+
+        private static IEnumerable<IParserFactory> GetStandardFactories()
+        {
+            return _standards;
+        }
+
+        private static IParserFactory[] _standards = new IParserFactory[] {
+
+            new Scryber.Generation.PDFXMLReflectionParserFactory(),
+            new Scryber.Html.Parsing.HTMLParserFactory()
+        };
+
+
+        
+
     }
 }

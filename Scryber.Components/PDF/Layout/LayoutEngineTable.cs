@@ -537,6 +537,9 @@ namespace Scryber.PDF.Layout
             List<List<Style>> cellapplieds = new List<List<Style>>();
             int maxcolcount = 0;
 
+            var tablePos = this.FullStyle.CreatePostionOptions();
+            var tableFont = this.FullStyle.CreateTextOptions();
+
             foreach (TableRow row in this.Table.Rows)
             {
                 if (row.Visible == false)
@@ -556,7 +559,8 @@ namespace Scryber.PDF.Layout
                     rowapplied = row.GetAppliedStyle();
 
                     this.StyleStack.Push(rowapplied);
-                    rowfull = this.StyleStack.GetFullStyle(row);
+
+                    rowfull = this.BuildRowFullStyle(row, tablePos, tableFont);
 
                     if (!string.IsNullOrEmpty(row.DataStyleIdentifier))
                         this.Context.DocumentLayout.SetStyleWithIdentifier(row.DataStyleIdentifier, rowapplied, rowfull);
@@ -577,6 +581,9 @@ namespace Scryber.PDF.Layout
 
                 rowapplieds.Add(rowapplied);
                 rowfulls.Add(rowfull);
+
+                var rowPos = rowfull.CreatePostionOptions();
+                var rowFont = rowfull.CreateTextOptions();
 
                 //For each of the cells in the row
                 List<Style> rowcellstyles = new List<Style>();
@@ -603,7 +610,8 @@ namespace Scryber.PDF.Layout
 
                         cellapplied = cell.GetAppliedStyle();
                         this.StyleStack.Push(cellapplied);
-                        cellfull = this.StyleStack.GetFullStyle(cell);
+
+                        cellfull = this.BuildCellFullStyle(cell, row, rowfull, tablePos, rowPos, rowFont);
 
                         if (!string.IsNullOrEmpty(cell.DataStyleIdentifier))
                             Context.DocumentLayout.SetStyleWithIdentifier(cell.DataStyleIdentifier, cellapplied, cellfull);
@@ -685,6 +693,47 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected Size GetSize(Unit? width, Unit containerWidth, Unit? height, Unit containerHeight)
+        {
+            var w = width.HasValue ? width.Value : containerWidth;
+            var h = height.HasValue ? height.Value : containerHeight;
+            return new Size(w, h);
+        }
+
+        protected virtual Style BuildRowFullStyle(TableRow row, PDFPositionOptions tablePosition, PDFTextRenderOptions tablefont)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+            var block = this.CurrentBlock;
+
+            Size pageSize = page.Size;
+
+            Size tableSize = GetSize(tablePosition.Width, block.AvailableBounds.Width,
+                                     tablePosition.Height, block.AvailableBounds.Height);
+
+            Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
+
+            Unit root = Font.DefaultFontSize;
+
+            return this.Context.StyleStack.GetFullStyle(row, pageSize, tableSize, fontSize, root);
+        }
+
+        protected virtual Style BuildCellFullStyle(TableCell cell, TableRow inrow, Style rowStyle, PDFPositionOptions tablePosition, PDFPositionOptions rowPosition, PDFTextRenderOptions rowfont)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+            var block = this.CurrentBlock;
+
+            Size pageSize = page.Size;
+
+            Size tableSize = GetSize(rowPosition.Width, tablePosition.Width.HasValue ? tablePosition.Width.Value : block.AvailableBounds.Width,
+                                     rowPosition.Height, tablePosition.Height.HasValue ? tablePosition.Height.Value : block.AvailableBounds.Height);
+
+            Size fontSize = new Size(rowfont.GetZeroCharWidth(), rowfont.GetSize());
+
+            Unit root = Font.DefaultFontSize;
+
+            return this.Context.StyleStack.GetFullStyle(cell, pageSize, tableSize, fontSize, root);
+        }
 
         #region private void CalculateTableSpace()
 

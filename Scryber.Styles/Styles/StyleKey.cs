@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber;
+using Scryber.Drawing;
 
 namespace Scryber.Styles
 {
@@ -86,6 +87,12 @@ namespace Scryber.Styles
         public bool IsItemKey { get { return this.StyleValueKey == StyleItemIdentifier; } }
 
         #endregion
+
+
+        public virtual bool CanBeRelative
+        {
+            get { return false; }
+        }
 
         //
         // .ctor
@@ -400,7 +407,36 @@ namespace Scryber.Styles
 
         #endregion
 
-        
+        #region internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(PDFObjectType name, PDFStyleKey foritem)
+
+        /// <summary>
+        /// NOT THREAD SAFE implementation of of CreateStyleValueKey that 
+        /// creates a new Value StyleKey based on the item StyleKey and the name of the value
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="foritem"></param>
+        /// <returns></returns>
+        /// <remarks>Used by the PDFStyleKeys style type constructor - as we are assured this is threadsafe</remarks>
+        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, FlattenUnits<T> flatten)
+        {
+            if (foritem.IsItemKey == false)
+                throw new InvalidOperationException("forItem is not an item");
+
+            string full = GetStyleKeyAsString(foritem.StyleItemKey, name);
+            int hash = InternalGetStyleHash(full);
+
+            return new RelativeStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, flatten);
+
+        }
+
+        #endregion
+
+        public virtual void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        {
+            //Does nothing in the default implementation
+        }
+
+
     }
 
     /// <summary>
@@ -415,6 +451,26 @@ namespace Scryber.Styles
         {
         }
 
+    }
+
+    public delegate void FlattenUnits<T>(Style style, StyleKey<T> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize);
+
+    public class RelativeStyleKey<T> : StyleKey<T>
+    {
+        public override bool CanBeRelative { get { return true; } }
+
+        public FlattenUnits<T> Flatten { get; protected set; }
+
+        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, FlattenUnits<T> flatten)
+            : base(fullhash, item, value, inherited, false)
+        {
+            Flatten = flatten ?? throw new ArgumentNullException(nameof(flatten));
+        }
+
+        public override void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        {
+            this.Flatten(style, this, pageSize, containerSize, fontSize, rootFontSize);
+        }
 
     }
 

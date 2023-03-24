@@ -46,12 +46,12 @@ namespace Scryber.Html.Parsing
 
         #region protected HTMLParser Parser {get;}
 
-        private HTMLParser _owner; // The Parser that owns this enumerator (and has the text to enumerate over).
+        private HTMLFragmentParser _owner; // The Parser that owns this enumerator (and has the text to enumerate over).
 
         /// <summary>
         /// Gets the original parser that this enumerator belongs to.
         /// </summary>
-        protected HTMLParser Parser
+        protected HTMLFragmentParser Parser
         {
             get { return _owner; }
         }
@@ -145,7 +145,7 @@ namespace Scryber.Html.Parsing
         /// Creates a new instance of the HTMLParserEnumerator
         /// </summary>
         /// <param name="parser"></param>
-        internal HTMLParserEnumerator(HTMLParser parser)
+        internal HTMLParserEnumerator(HTMLFragmentParser parser)
         {
             if (null == parser)
                 throw new ArgumentNullException("parser");

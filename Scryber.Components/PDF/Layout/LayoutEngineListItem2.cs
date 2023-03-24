@@ -114,7 +114,7 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            Thickness padding = Thickness.Empty();
+            Thickness margins = Thickness.Empty();
             Unit inset = Unit.Zero;
 
             //When laying out an item we inset the content by the required amount and then add a
@@ -124,17 +124,17 @@ namespace Scryber.PDF.Layout
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
                 var style = this.FullStyle;
-                padding = position.Padding;
-                var left = padding.Left;
+                margins = position.Margins;
+                var left = margins.Left;
 
                 inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
                 var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
 
                 //Add the extra space for the list item number
-                padding.Left += inset + alley;
-                style.Padding.Left = padding.Left;
-                position.Padding = padding;
-
+                margins.Left += inset + alley;
+                style.Padding.Left = margins.Left;
+                position.Margins = margins;
+                
                 var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
                 this.LabelComponent = comp;
 

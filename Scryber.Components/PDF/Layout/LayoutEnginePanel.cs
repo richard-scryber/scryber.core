@@ -194,7 +194,7 @@ namespace Scryber.PDF.Layout
 
                 CurrentBlock = containerBlock;
                 //containerRegion = this.BeginNewRelativeRegionForChild(position, this.Component, this.FullStyle);
-                containerRegion = containerBlock.BeginNewPositionedRegion(position, this.CurrentBlock.GetLayoutPage(), this.Component, this.FullStyle, true);
+                containerRegion = containerBlock.BeginNewPositionedRegion(position, this.CurrentBlock.GetLayoutPage(), this.Component, this.FullStyle, isfloating: false, addAssociatedRun: true);
                 CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
                 return containerBlock;
 

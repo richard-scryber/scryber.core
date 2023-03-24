@@ -1,9 +1,15 @@
-﻿<!DOCTYPE HTML>
-<html xmlns='http://www.w3.org/1999/xhtml'>
+﻿<?scryber append-log='false' ?>
+<!DOCTYPE HTML>
+<html>
 <head>
-    <title>{@:title}</title>
+    <title>{{title}}</title>
+    <meta content="nothing" >
 </head>
 <body>
-    <div style='padding:10px;'>{@:title}</div>
+    <div style='padding:5px;'>{@:title}</div>
+    <!-- keep the html entites -->
+    <div style="padding:5pt">&lt;&lsquo;Inside&rsquo;&gt;</div>
+    <!-- Unclosed tag -->
+    <img src="./Images/group.png" style="width:100pt; padding:5pt" >
 </body>
 </html>

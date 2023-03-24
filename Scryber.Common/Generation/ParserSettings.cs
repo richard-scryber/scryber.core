@@ -242,7 +242,7 @@ namespace Scryber.Generation
                     else if (string.Equals("lax", mode, StringComparison.OrdinalIgnoreCase))
                         this.ConformanceMode = Scryber.ParserConformanceMode.Lax;
                     else
-                        throw new PDFParserException("The parser conformance mode could not be understood :" + mode +
+                        throw new PDFException("The parser conformance mode could not be understood :" + mode +
                                                      ", allowed values are 'strict' or 'lax' (case insensitive)");
                     
                 }

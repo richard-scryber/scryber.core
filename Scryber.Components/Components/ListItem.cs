@@ -129,6 +129,7 @@ namespace Scryber.Components
         protected override Styles.Style GetBaseStyle()
         {
             Styles.Style defaultStyle = base.GetBaseStyle();
+            defaultStyle.Size.FullWidth = true;
             //defaultStyle.Overflow.Split = Drawing.OverflowSplit.Never;
             return defaultStyle;
         }

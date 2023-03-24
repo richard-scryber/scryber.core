@@ -190,6 +190,115 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public WordHyphenation Hyphenation {get;set;} + RemoveHypenation()
+
+        public Scryber.Text.WordHyphenation Hyphenation
+        {
+            get
+            {
+                Scryber.Text.WordHyphenation h;
+                if (this.TryGetValue(StyleKeys.TextWordHyphenation, out h))
+                    return h;
+                else
+                    return Scryber.Text.WordHyphenation.None;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextWordHyphenation, value);
+            }
+        }
+
+        public void RemoveHypenation()
+        {
+            this.RemoveValue(StyleKeys.TextWordHyphenation);
+        }
+
+        #endregion
+
+        #region public int HyphenationMinCharsBefore {get;set;} + RemoveHyphenationMinCharsBefore()
+
+        /// <summary>
+        /// Gets or sets the minimum number of characters needed before hyphenation will happen on a word.
+        /// </summary>
+        public int HyphenationMinCharsBefore
+        {
+            get
+            {
+                int h;
+                if (this.TryGetValue(StyleKeys.TextHyphenationMinBeforeBreak, out h))
+                    return h;
+                else
+                    return 0;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextHyphenationMinBeforeBreak, value);
+            }
+        }
+
+        public void RemoveHyphenationMinCharsBefore()
+        {
+            this.RemoveValue(StyleKeys.TextHyphenationMinBeforeBreak);
+        }
+
+        #endregion
+
+        #region public int HyphenationMinCharsBefore {get;set;} + RemoveHyphenationMinCharsBefore()
+
+        /// <summary>
+        /// Gets or sets the minimum number of characters needed before hyphenation will happen on a word.
+        /// </summary>
+        public int HyphenationMinCharsAfter
+        {
+            get
+            {
+                int h;
+                if (this.TryGetValue(StyleKeys.TextHyphenationMinAfterBreak, out h))
+                    return h;
+                else
+                    return 0;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextHyphenationMinAfterBreak, value);
+            }
+        }
+
+        public void RemoveHyphenationMinCharsAfter()
+        {
+            this.RemoveValue(StyleKeys.TextHyphenationMinAfterBreak);
+        }
+
+        #endregion
+
+        #region public int HyphenationHyphenationCharacterAppended {get;set;} + RemoveHyphenationCharacterAppended()
+
+        /// <summary>
+        /// Gets or sets the actual character appended to a line used for hyphenation.
+        /// </summary>
+        public char HyphenationCharacterAppended
+        {
+            get
+            {
+                char h;
+                if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out h))
+                    return h;
+                else
+                    return '-';
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextHyphenationCharAppend, value);
+            }
+        }
+
+        public void RemoveHyphenationCharacterAppended()
+        {
+            this.RemoveValue(StyleKeys.TextHyphenationCharAppend);
+        }
+
+        #endregion
+
         #region public TextDecoration Decoration {get;set;} + RemoveDecoration()
 
         /// <summary>

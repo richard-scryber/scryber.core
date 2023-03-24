@@ -490,6 +490,222 @@ namespace Scryber.UnitLayouts
 
         #endregion
 
+        #region public void PageWithPaddingAndFullWidthPanel()
+
+        /// <summary>
+        /// Tests a single full width panel in a page with an explicit height.
+        /// THe page has margins and padding that reduce the available width.
+        /// </summary>
+        [TestCategory(LayoutTestCategory)]
+        [TestMethod()]
+        public void PageWithPaddingAndFullWidthPanel()
+        {
+            Document doc = new Document();
+            Page pg = new Page();
+            pg.Style.PageStyle.Width = PageWidth;
+            pg.Style.PageStyle.Height = PageHeight;
+            
+            int space = 20;
+
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = space;
+
+            pg.Style.Padding.All = space;
+            //pg.Style.Margins.All = space;
+
+            doc.Pages.Add(pg);
+
+            //Width of fullwidth panel is reduced by padding
+            int expectedWidth = PageWidth - (2 * space); // + (2 * space)) ;
+            int expectedHeight = 50;
+
+            //Position of panel is zero - margins and padding are accounted for when rendering
+            int expectedX = 0;
+            int expectedY = 0;
+
+            Panel panel = new Panel();
+
+            panel.FullWidth = true;
+            panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.StandardColors.Black;
+            pg.Contents.Add(panel);
+
+
+            
+            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthWithPadding.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+                
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count, "There should be only 1 page");
+            PDFLayoutPage layoutpg = layout.AllPages[0];
+
+            //Page content block
+            PDFLayoutBlock content = layoutpg.ContentBlock;
+            Assert.IsTrue(content.Columns.Length == 1, "There should be only 1 column");
+
+            //Page content region
+            PDFLayoutRegion region = content.Columns[0];
+            Assert.IsTrue(region.Contents.Count == 1, "There should be only one item in the region contents");
+
+            //Panel in content
+            PDFLayoutBlock panelBlock = region.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock, "The layout block in the page column should not be null");
+
+            //Panel width and height
+            Assert.AreEqual(expectedWidth, panelBlock.Width, "Panel block should be " + expectedWidth + " wide");
+            Assert.AreEqual(expectedHeight, panelBlock.Height, "Panel block should be " + expectedHeight + " high");
+
+            //Panel Block Total bounds
+            Assert.AreEqual(expectedWidth, panelBlock.TotalBounds.Width, "Panel block total width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, panelBlock.TotalBounds.Height, "Panel block total height should be " + expectedHeight);
+            Assert.AreEqual(expectedX, panelBlock.TotalBounds.X, "Panel block total X should be " + expectedX);
+            Assert.AreEqual(expectedY, panelBlock.TotalBounds.Y, "Panel block total Y should be " + expectedY);
+
+            //Panel Block Available bounds
+            Assert.AreEqual(expectedWidth, panelBlock.AvailableBounds.Width, "Panel block available width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, panelBlock.AvailableBounds.Height, "Panel block available height should be " + expectedHeight);
+            Assert.AreEqual(expectedX, panelBlock.AvailableBounds.X, "Panel block available X should be " + expectedX);
+            Assert.AreEqual(expectedY, panelBlock.AvailableBounds.Y, "Panel block available Y should be " + expectedY);
+
+
+            //Panel inner region
+            Assert.IsTrue(panelBlock.Columns.Length == 1, "There should be one region in the panel block");
+            region = panelBlock.Columns[0];
+
+            //region Total bounds
+            Assert.AreEqual(expectedWidth, region.TotalBounds.Width, "Panel region total width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, region.TotalBounds.Height, "Panel region total height should be " + expectedHeight);
+            Assert.AreEqual(0, region.TotalBounds.X, "Panel region total X should be 0");
+            Assert.AreEqual(0, region.TotalBounds.Y, "Panel region total Y should be 0");
+
+            //region Unused bounds
+            Assert.AreEqual(expectedWidth, region.UnusedBounds.Width, "Panel region unused width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, region.UnusedBounds.Height, "Panel region unused height should be " + expectedHeight);
+            Assert.AreEqual(0, region.UnusedBounds.X, "Panel region unused X should be 0");
+            Assert.AreEqual(0, region.UnusedBounds.Y, "Panel region unused Y should be 0");
+
+            //region Used Size
+            Assert.AreEqual(0, region.UsedSize.Height, "Panel region used height should be 0");
+            Assert.AreEqual(0, region.UsedSize.Width, "Panel region used width should be 0");
+
+            //Region Offset and available height
+            Assert.AreEqual(0, region.OffsetX, "Panel region offsetX should be 0");
+            Assert.AreEqual(expectedHeight, region.AvailableHeight, "Panel region available height should be " + expectedHeight);
+        }
+
+        #endregion
+
+        #region public void PageWithMarginsAndFullWidthPanel()
+
+        /// <summary>
+        /// Tests a single full width panel in a page with an explicit height.
+        /// THe page has margins and padding that reduce the available width.
+        /// </summary>
+        [TestCategory(LayoutTestCategory)]
+        [TestMethod()]
+        public void PageWithMarginsAndFullWidthPanel()
+        {
+            Document doc = new Document();
+            Page pg = new Page();
+            pg.Style.PageStyle.Width = PageWidth;
+            pg.Style.PageStyle.Height = PageHeight;
+
+            int space = 20;
+
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = space;
+
+            //pg.Style.Padding.All = space;
+            pg.Style.Margins.All = space;
+
+            doc.Pages.Add(pg);
+
+            //Width of fullwidth panel is reduced by margins
+            int expectedWidth = PageWidth - (2 * space); // + (2 * space)) ;
+            int expectedHeight = 50;
+
+            //Position of panel is zero -  margins is accounted for when rendering
+            int expectedX = 0;
+            int expectedY = 0;
+
+            Panel panel = new Panel();
+
+            panel.FullWidth = true;
+            panel.Height = expectedHeight;
+            panel.BorderColor = Scryber.Drawing.StandardColors.Black;
+            pg.Contents.Add(panel);
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthWithMargins.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count, "There should be only 1 page");
+            PDFLayoutPage layoutpg = layout.AllPages[0];
+
+            //Page content block
+            PDFLayoutBlock content = layoutpg.ContentBlock;
+            Assert.IsTrue(content.Columns.Length == 1, "There should be only 1 column");
+
+            //Page content region
+            PDFLayoutRegion region = content.Columns[0];
+            Assert.IsTrue(region.Contents.Count == 1, "There should be only one item in the region contents");
+
+            //Panel in content
+            PDFLayoutBlock panelBlock = region.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock, "The layout block in the page column should not be null");
+
+            //Panel width and height
+            Assert.AreEqual(expectedWidth, panelBlock.Width, "Panel block should be " + expectedWidth + " wide");
+            Assert.AreEqual(expectedHeight, panelBlock.Height, "Panel block should be " + expectedHeight + " high");
+
+            //Panel Block Total bounds
+            Assert.AreEqual(expectedWidth, panelBlock.TotalBounds.Width, "Panel block total width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, panelBlock.TotalBounds.Height, "Panel block total height should be " + expectedHeight);
+            Assert.AreEqual(expectedX, panelBlock.TotalBounds.X, "Panel block total X should be " + expectedX);
+            Assert.AreEqual(expectedY, panelBlock.TotalBounds.Y, "Panel block total Y should be " + expectedY);
+
+            //Panel Block Available bounds
+            Assert.AreEqual(expectedWidth, panelBlock.AvailableBounds.Width, "Panel block available width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, panelBlock.AvailableBounds.Height, "Panel block available height should be " + expectedHeight);
+            Assert.AreEqual(expectedX, panelBlock.AvailableBounds.X, "Panel block available X should be " + expectedX);
+            Assert.AreEqual(expectedY, panelBlock.AvailableBounds.Y, "Panel block available Y should be " + expectedY);
+
+
+            //Panel inner region
+            Assert.IsTrue(panelBlock.Columns.Length == 1, "There should be one region in the panel block");
+            region = panelBlock.Columns[0];
+
+            //region Total bounds
+            Assert.AreEqual(expectedWidth, region.TotalBounds.Width, "Panel region total width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, region.TotalBounds.Height, "Panel region total height should be " + expectedHeight);
+            Assert.AreEqual(0, region.TotalBounds.X, "Panel region total X should be 0");
+            Assert.AreEqual(0, region.TotalBounds.Y, "Panel region total Y should be 0");
+
+            //region Unused bounds
+            Assert.AreEqual(expectedWidth, region.UnusedBounds.Width, "Panel region unused width should be " + expectedWidth);
+            Assert.AreEqual(expectedHeight, region.UnusedBounds.Height, "Panel region unused height should be " + expectedHeight);
+            Assert.AreEqual(0, region.UnusedBounds.X, "Panel region unused X should be 0");
+            Assert.AreEqual(0, region.UnusedBounds.Y, "Panel region unused Y should be 0");
+
+            //region Used Size
+            Assert.AreEqual(0, region.UsedSize.Height, "Panel region used height should be 0");
+            Assert.AreEqual(0, region.UsedSize.Width, "Panel region used width should be 0");
+
+            //Region Offset and available height
+            Assert.AreEqual(0, region.OffsetX, "Panel region offsetX should be 0");
+            Assert.AreEqual(expectedHeight, region.AvailableHeight, "Panel region available height should be " + expectedHeight);
+        }
+
+        #endregion
+
         #region public void PageWithMarginsPaddingAndFullWidthPanel()
 
         /// <summary>
@@ -506,13 +722,17 @@ namespace Scryber.UnitLayouts
             pg.Style.PageStyle.Height = PageHeight;
 
             int space = 20;
+
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = space;
+
             pg.Style.Padding.All = space;
             pg.Style.Margins.All = space;
 
             doc.Pages.Add(pg);
 
             //Width of fullwidth panel is reduced by margins and padding
-            int expectedWidth = PageWidth - ((2 * space) + (2 * space));
+            int expectedWidth = PageWidth - ((2 * space) + (2 * space)) ;
             int expectedHeight = 50;
 
             //Position of panel is zero - margins and padding are accounted for when rendering
@@ -527,12 +747,12 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(panel);
 
 
-            
-            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthWithSpacing.pdf"))
+
+            using (var ms = DocStreams.GetOutputStream("Panels_FullWidthWithBothMarginsAndPadding.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
-                
+
             }
 
             Assert.AreEqual(1, layout.AllPages.Count, "There should be only 1 page");

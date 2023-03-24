@@ -850,7 +850,7 @@ body.grey div.reverse{
         [TestMethod()]
         public void ParseCSSItemContentStyle()
         {
-            var path = "Content/HTML/Images/Group.png";
+            var path = "Content/HTML/Images/group.png";
 
             var src = @".added{
                             content: 'replacement text'
@@ -912,7 +912,7 @@ body.grey div.reverse{
             Assert.IsNotNull(value);
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
             Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
-            Assert.AreEqual("url('Content/HTML/Images/Group.png')", (value as ContentImageDescriptor).Text);
+            Assert.AreEqual("url('Content/HTML/Images/group.png')", (value as ContentImageDescriptor).Text);
             
             Assert.IsNull(value.Next);
 
@@ -953,8 +953,8 @@ body.grey div.reverse{
             value = value.Next;
             Assert.AreEqual(ContentDescriptorType.Image, value.Type);
             Assert.IsInstanceOfType(value, typeof(ContentImageDescriptor));
-            Assert.AreEqual("url(\"Content/HTML/Images/Group.png\")", (value as ContentImageDescriptor).Text);
-            Assert.AreEqual("Content/HTML/Images/Group.png", (value as ContentImageDescriptor).Source);
+            Assert.AreEqual("url(\"Content/HTML/Images/group.png\")", (value as ContentImageDescriptor).Text);
+            Assert.AreEqual("Content/HTML/Images/group.png", (value as ContentImageDescriptor).Source);
             Assert.IsNotNull(value.Next);
 
             value = value.Next;
@@ -1417,7 +1417,7 @@ body.grey div.reverse{
                 
                 text = line.Runs[10] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual(" An image, a character, and a quote will be", text.Characters);
+                Assert.AreEqual(" An image, a character, and a quote will be infront with the image inlined.", text.Characters);
             }
         }
 
@@ -2232,7 +2232,7 @@ body.grey div.reverse{
 
             Assert.IsNotNull(applied.Columns.ColumnWidths, "Column widths is not set");
             Assert.IsFalse(applied.Columns.ColumnWidths.IsEmpty, "Column widths is empty");
-            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsEmpty, "Column widths explicit values is not empty");
+            Assert.IsTrue(applied.Columns.ColumnWidths.Explicit.IsZero, "Column widths explicit values is not empty");
             Assert.AreEqual(3, applied.Columns.ColumnWidths.Widths.Length, "Column widths is not the right length");
             Assert.AreEqual("[0.5 0 0.2]", applied.Columns.ColumnWidths.ToString(), "Column widths are not correct");
 

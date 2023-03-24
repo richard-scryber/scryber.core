@@ -27,7 +27,8 @@
 </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.0-rc.1.22426.10" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +54,7 @@
     <Folder Include="Content\HTML\Fragments\" />
     <Folder Include="Content\SVG\" />
     <Folder Include="Imaging\" />
+    <Folder Include="Common\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -69,6 +71,7 @@
     <None Remove="Content\HTML\Images\groupLZW.tiff" />
     <None Remove="System.Text.Json" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="Common\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

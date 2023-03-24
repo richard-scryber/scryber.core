@@ -194,7 +194,7 @@ namespace Scryber.PDF.Layout
         {
             get
             {
-                return _transformBounds.IsEmpty == false;
+                return _transformBounds.IsZero == false;
             }
         }
 
@@ -312,18 +312,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public PDFFloatAddition Floats {get;set;}
-
-        /// <summary>
-        /// Gets or sets the linked list of any floating additions to the block.
-        /// </summary>
-        public PDFFloatAddition Floats
-        {
-            get;
-            set;
-        }
-
-        #endregion
+        
 
         #region public int BlockRepeatIndex { get; set; }
 
@@ -933,7 +922,7 @@ namespace Scryber.PDF.Layout
         /// <param name="comp"></param>
         /// <param name="full"></param>
         /// <returns></returns>
-        public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IComponent comp, Style full, bool addAssociatedRun = true)
+        public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IComponent comp, Style full, bool isfloating, bool addAssociatedRun = true)
         {
             PDFLayoutRegion before = this.CurrentRegion;
             PDFLayoutLine beforeline = before.CurrentItem as PDFLayoutLine;
@@ -989,10 +978,14 @@ namespace Scryber.PDF.Layout
 
             if (addAssociatedRun)
             {
+                PDFLayoutPositionedRegionRun run; 
                 if (pos.PositionMode == PositionMode.InlineBlock)
-                    beforeline.AddInlineBlockRun(created, comp);
+                    run = beforeline.AddInlineBlockRun(created, comp);
                 else
-                beforeline.AddPositionedRun(created, comp);
+                {
+                    run = beforeline.AddPositionedRun(created, comp);
+                    run.IsFloating = isfloating;
+                }
             }
             return created;
         }

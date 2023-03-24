@@ -23,6 +23,7 @@ using System.Text;
 using Scryber;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber.Drawing;
 
 namespace Scryber.PDF.Layout
 {
@@ -109,7 +110,7 @@ namespace Scryber.PDF.Layout
             if (null != style)
                 this.Context.StyleStack.Push(style);
 
-            Style full = this.Context.StyleStack.GetFullStyle(pg);
+            Style full = this.BuildFullStyle(pg);
 
             PDFArtefactRegistrationSet artefacts = pg.RegisterLayoutArtefacts(this.Context, full);
 
@@ -158,6 +159,33 @@ namespace Scryber.PDF.Layout
                     if (null == innergrp.ContinuationHeader)
                         innergrp.ContinuationHeader = this._group.ContinuationHeader;
                 }
+            }
+        }
+
+        private PageSize _pageOptions;
+        private PDFTextRenderOptions _textOptions;
+
+        protected virtual Style BuildFullStyle(Component forComponent)
+        {
+            if (null == this._pageOptions)
+                this._pageOptions = this._full.CreatePageSize();
+
+            var pgSize = this._pageOptions.Size;
+
+            if (null == this._textOptions)
+                this._textOptions = this._full.CreateTextOptions();
+
+            var pos = this._full.CreatePostionOptions();
+
+            var fontSize = new Size(this._textOptions.GetLineHeight(), this._textOptions.GetZeroCharWidth());
+
+            if (forComponent is IDocumentPage docPg)
+            {
+                return this.Context.StyleStack.GetFullStyleForPage(docPg, pgSize, fontSize, Font.DefaultFontSize);
+            }
+            else
+            {
+                return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, pgSize.Subtract(pos.Margins), fontSize, Font.DefaultFontSize);
             }
         }
 

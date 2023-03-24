@@ -1,0 +1,408 @@
+﻿<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <style>
+        @-ms-viewport {
+            width: device-width;
+        }
+
+        article,
+        header,
+        main {
+            display: block
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: .5rem
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 1rem
+        }
+
+        table {
+            border-collapse: collapse
+        }
+
+        th {
+            text-align: inherit
+        }
+
+        [hidden] {
+            display: none !important
+        }
+
+        h2,
+        .h2 {
+            margin-bottom: .5rem;
+            font-family: inherit;
+            line-height: 1.2;
+            color: inherit
+        }
+
+        h2,
+        .h2 {
+            font-size: 1.75rem
+        }
+
+        .container {
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto
+        }
+
+        @media (min-width:1200px) {
+            .container {
+                max-width: 1140px
+            }
+        }
+
+        .row {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -15px
+        }
+
+        .col-auto,
+        .col-sm-7,
+        .col-md-5 {
+            position: relative;
+            width: 100%;
+            min-height: 1px;
+            padding-right: 15px;
+            padding-left: 15px
+        }
+
+        .col-auto {
+            -webkit-box-flex: 0;
+            -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
+            width: auto;
+            max-width: none
+        }
+
+        @media (min-width:768px) {
+            .col-md-5 {
+                flex: 0 0 41.66666667%;
+                max-width: 41.66666667%
+            }
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent
+        }
+
+            .table th,
+            .table td {
+                padding: .75rem;
+                vertical-align: top;
+                border-top: 1px solid #dee2e6
+            }
+
+            .table thead th {
+                vertical-align: bottom;
+                border-bottom: 2px solid #dee2e6
+            }
+
+            .table tbody + tbody {
+                border-top: 2px solid #dee2e6
+            }
+
+            .table .table {
+                background-color: #fff
+            }
+
+        .table-sm th,
+        .table-sm td {
+            padding: .3rem
+        }
+
+        .d-none {
+            display: none !important
+        }
+
+        .d-inline {
+            display: inline !important
+        }
+
+        .d-inline-block {
+            display: inline-block !important
+        }
+
+        .d-block {
+            display: block !important
+        }
+
+        .d-table {
+            display: table !important
+        }
+
+        .d-table-row {
+            display: table-row !important
+        }
+
+        .d-table-cell {
+            display: table-cell !important
+        }
+
+        .d-flex {
+            display: -webkit-box !important;
+            display: -webkit-flex !important;
+            display: flex !important
+        }
+
+        .d-inline-flex {
+            display: -webkit-inline-box !important;
+            display: -webkit-inline-flex !important;
+            display: inline-flex !important
+        }
+
+        @media print {
+            .d-print-none {
+                display: none !important
+            }
+
+            .d-print-inline {
+                display: inline !important
+            }
+
+            .d-print-inline-block {
+                display: inline-block !important
+            }
+
+            .d-print-block {
+                display: block !important
+            }
+
+            .d-print-table {
+                display: table !important
+            }
+
+            .d-print-table-row {
+                display: table-row !important
+            }
+
+            .d-print-table-cell {
+                display: table-cell !important
+            }
+
+            .d-print-flex {
+                display: -webkit-box !important;
+                display: -webkit-flex !important;
+                display: flex !important
+            }
+
+            .d-print-inline-flex {
+                display: -webkit-inline-box !important;
+                display: -webkit-inline-flex !important;
+                display: inline-flex !important
+            }
+        }
+
+        .mw-100 {
+            max-width: 100% !important
+        }
+
+        .mb-2 {
+            margin-bottom: .5rem !important
+        }
+
+        .ml-auto {
+            margin-left: auto !important
+        }
+
+        .text-right {
+            text-align: right !important
+        }
+
+        #wrapwrap {
+            position: relative;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-flow: column nowrap;
+            flex-flow: column nowrap;
+            width: 100%;
+            min-height: 100%
+        }
+
+            #wrapwrap > * {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                flex: 0 0 auto
+            }
+
+            #wrapwrap > main {
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 0 auto;
+                flex: 1 0 auto
+            }
+
+        #ogranicznik {
+            margin-right: 12px;
+            width: 320px;
+            float: right;
+        }
+
+        #opis {
+            position: relative;
+            top: -110px
+        }
+
+        #data {
+            float: right;
+            position: relative;
+            top: -10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="height:30px; width: 100%;">
+        <!-- <div id="data" class="row"> -->
+        <!-- <div class="col-auto mw-100 mb-2" > <strong>Data faktury:</strong> -->
+        <!-- <p class="m-0">01.03.2023</p> -->
+        <!-- </div> -->
+        <!-- <div class="col-auto mw-100 mb-2" ><strong>Data Sprzedaży:</strong> -->
+        <!-- <p class="m-0">01.03.2023</p> -->
+        <!-- </div> -->
+        <!-- <div class="col-auto mw-100 mb-2" > <strong>Termin płatności:</strong> -->
+        <!-- <p class="m-0">01.03.2023</p> -->
+        <!-- </div> -->
+        <!-- </div> -->
+    </div>
+
+    <div id="wrapwrap">
+        <main class="container">
+
+            <div>
+                <div style="margin-top:35px;">
+
+                    <div id="daty_faktury">
+
+                        <table>
+                            <tr>
+                                <td valign="top" width="33%">
+                                    <strong>Data faktury:</strong><br>01.03.2023
+                                </td>
+
+                                <td valign="top" width="33%">
+                                    <strong>Data sprzedaży:</strong><br>01.03.2023
+                                </td>
+
+                                <td valign="top" width="33%">
+                                    <strong>Termin płatności:</strong><br>01.03.2023
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <br><br>
+
+                    <table width="100%">
+                        <tbody width="100%">
+
+                            <tr valign="top" width="100%">
+                                <td width="50%">
+                                    <table width="100%">
+                                        <tr>
+
+                                            <strong>
+                                                Sprzedawca:
+                                                <br>Test Comapny<br />22-222 Test<br />Test 40<br />NIP: 1234567890<br />+48 123 123 123<br />test.me@gmail.com<br />
+
+
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <td width="50%" valign="top">
+                                    <table width="100%">
+                                        <tr>
+                                            <strong>
+                                                Nabywca:
+                                                <br>Testing Person<br>22-222 Test<br>Test 2c <br>123456789<br>wq11cyfy4f+38533bef0@test.com<br>
+                                        </tr>
+                                    </table>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <br>
+                    <h2><center><span>Faktura VAT </span><span>AAAAAAA</span></center></h2> <table class="table table-sm o_main_table" name="invoice_line_table">                        <thead>                            <tr>                                                                <th class="text-left"><span>Nazwa</span></th>                                <th class="d-none text-left"><span>Source Document</span></th>                                <th class="text-right"><span>Ilość</span></th>                                <th class="text-right d-md-table-cell"><span>Cena netto</span></th>                                                                <th class="text-right d-md-table-cell"><span>VAT</span></th> <th class="text-right d-md-table-cell"><span>Stawka VAT</span></th>                               <th class="text-right">                                    <span>Wartość netto</span>                                                                    </th>                            </tr>                        </thead>                        <tbody class="invoice_tbody"><tr class=""><td name="account_invoice_line_name"><span>TEST</span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>8,54</span></td><td class="text-right d-md-table-cell"><span>1,96</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">8,54 zł</span></span></td></tr><tr class=""><td name="account_invoice_line_name"><span>TEST</span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>7,72</span></td><td class="text-right d-md-table-cell"><span>1,78</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">7,72 zł</span></span></td></tr><tr class=""><td name="account_invoice_line_name"><span>TEST</span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>13,17</span></td><td class="text-right d-md-table-cell"><span>3,03</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">13,17 zł</span></span></td></tr><tr class=""><td name="account_invoice_line_name"><span>TEST</span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>4,07</span></td><td class="text-right d-md-table-cell"><span>0,93</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">4,07 zł</span></span></td></tr><tr class=""><td name="account_invoice_line_name"><span>TEST</span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>13,17</span></td><td class="text-right d-md-table-cell"><span>3,03</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">13,17 zł</span></span></td></tr><tr class=""><td name="account_invoice_line_name"><span>TEST </span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>5,69</span></td><td class="text-right d-md-table-cell"><span>1,31</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">5,69 zł</span></span></td></tr><tr class=""><td name="account_invoice_line_name"><span>TEST</span></td><td class="d-none"></td><td class="text-right"><span>1,00</span></td><td class="text-right d-md-table-cell"><span>9,35</span></td><td class="text-right d-md-table-cell"><span>2,15</span></td><td class="text-right d-md-table-cell"><span>23%</span></td><td class="text-right o_price_total"><span><span class="oe_currency_value">9,35 zł</span></span></td></tr></tbody></table>
+                    <tr>
+                        <td colspan="99"> <span></span> </td>
+                    </tr>
+                    </tbody>
+                    </table>
+                    <div class="clearfix">
+                        <div class="row">
+                            <div class="col-sm-7 col-md-5 ml-auto">
+                                <div id="ogranicznik">
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Suma netto</strong></td>
+                                                <td class="text-right">
+                                                    <span><span>61,71</span>&nbsp;zł</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><span>VAT 23%</span></td>
+                                                <td class="text-right"> <span>14,19 zł</span> </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Suma brutto</strong></td>
+                                                <td class="text-right">
+                                                    <span><span>75,90</span>&nbsp;zł</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Kwota do zapłaty</strong></td>
+                                                <td class="text-right">
+                                                    <span><span>75,90</span>&nbsp;zł</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="opis">
+                            <p> Forma płatności: <span>Przelew</span> </p>
+                            <p> Nr konta: <b><span>00 0000 0000 0000 0000 0000 0000</span></b></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

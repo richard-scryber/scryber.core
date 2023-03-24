@@ -292,20 +292,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public virtual PDFStyle Flatten()
-
-        /// <summary>
-        /// Returns a flat version of the PDFStyle. (In this case it is the same instance).
-        /// </summary>
-        /// <returns></returns>
-        public virtual Style Flatten()
-        {
-            //Does nothing in the new implementation
-            //As we are always flat.
-            return (Style)this;
-        }
-
-        #endregion
+        
 
         #region public void Clear()
 
@@ -1223,8 +1210,34 @@ namespace Scryber.Styles
                 options.CharacterSpacing = space.Value(this);
 
             StyleValue<Text.WordWrap> wrap;
+            StyleValue<Text.WordHyphenation> hyphen;
             if (this.TryGetValue(StyleKeys.TextWordWrapKey, out wrap))
+            {
                 options.WrapText = wrap.Value(this);
+
+                //Check the hypenation if and only if we can wrap text
+                if (options.WrapText != Text.WordWrap.NoWrap)
+                {
+                    if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+                    {
+                        options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+
+                        if (options.WrapText == Text.WordWrap.Character)
+                        {
+                            options.HyphenationStrategy = DoCreateHyphenationStrategy();
+                        }
+                    }
+                }
+            }
+            else if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+            {
+                options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+
+                if (options.WrapText == Text.WordWrap.Character)
+                {
+                    options.HyphenationStrategy = DoCreateHyphenationStrategy();
+                }
+            }
 
             StyleValue<double> hscale;
             if (this.TryGetValue(StyleKeys.TextHorizontalScaling, out hscale))
@@ -1247,6 +1260,29 @@ namespace Scryber.Styles
                 options.DrawTextFromTop = !frombase.Value(this);
 
             return options;
+        }
+
+        private PDFHyphenationStrategy DoCreateHyphenationStrategy()
+        {
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy();
+
+            StyleValue<int> min;
+            if (this.TryGetValue(StyleKeys.TextHyphenationMinBeforeBreak, out min))
+                strategy.MinCharsBeforeHyphen = min.Value(this);
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationMinAfterBreak, out min))
+                strategy.MinCharsAfterHyphen = min.Value(this);
+
+            StyleValue<char> c;
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out c))
+                strategy.HyphenAppend = c.Value(this);
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationCharPrepend, out c))
+                strategy.HyphenPrepend = c.Value(this);
+
+            return strategy;
+
         }
 
         #endregion
