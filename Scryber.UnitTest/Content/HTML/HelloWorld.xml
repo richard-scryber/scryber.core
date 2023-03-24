@@ -1,9 +1,19 @@
-﻿<!DOCTYPE HTML>
-<html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <title>{@:title}</title>
-</head>
-<body>
-    <div style='padding:10px;'>{@:title}</div>
-</body>
-</html>
+﻿
+<doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
+                    xmlns:styles='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'
+                    xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd' >
+    <Info>
+        <Title>{@:title}</Title>
+    </Info>
+    <Pages>
+
+        <doc:Page>
+            <Content>
+                <doc:Div styles:padding='20pt'>{@:title}</doc:Div>
+                <doc:Div styles:padding="20pt" >&lt;‘Inside’&gt;</doc:Div>
+                <doc:Image src="./Images/group.png" styles:width="100pt" styles:padding="20px" />
+            </Content>
+        </doc:Page>
+
+    </Pages>
+</doc:Document>

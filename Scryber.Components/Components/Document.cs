@@ -2940,6 +2940,53 @@ namespace Scryber.Components
 
         #endregion
 
+        public static IComponent ParseHtml(string fullpath)
+        {
+            using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+
+                ReferenceChecker checker = new ReferenceChecker(fullpath);
+
+                IComponent comp = ParseHtml(fullpath, stream, ParseSourceType.LocalFile, checker.Resolver);
+
+                if (comp is IRemoteComponent)
+                    ((IRemoteComponent)comp).LoadedSource = fullpath;
+
+                return comp;
+            }
+        }
+
+        public static IComponent ParseHtml(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            return ParseHtml(source, stream, type, resolver, settings);
+        }
+
+        public static IComponent ParseHtml(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver, ParserSettings settings)
+        {
+            IComponentParser parser = new Scryber.Html.Parsing.HTMLParser(settings);
+
+            IComponent comp = parser.Parse(source, stream, type);
+            return comp;
+        }
+
+        public static IComponent ParseHtml(string source, System.IO.TextReader reader, ParseSourceType type, PDFReferenceResolver resolver)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            return ParseHtml(source, reader, type, resolver, settings);
+        }
+
+        public static IComponent ParseHtml(string source, System.IO.TextReader reader, ParseSourceType type, PDFReferenceResolver resolver, ParserSettings settings)
+        {
+            IComponentParser parser = new Scryber.Html.Parsing.HTMLParser(settings);
+
+            IComponent comp = parser.Parse(source, reader, type);
+            return comp;
+        }
+
+
         #region public IPDFComponent ParseTemplate(IPDFRemoteComponent owner, string referencepath, Stream stream) + 2 overloads
 
         public IComponent ParseTemplate(IRemoteComponent owner, System.IO.TextReader reader)
@@ -3067,7 +3114,7 @@ namespace Scryber.Components
         /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException" >Thown if the parsed content was not a document type</exception>
+        /// <exception cref="InvalidCastException" >Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(string path)
         {
             var provider = Scryber.ServiceProvider.GetService<IPathMappingService>();
@@ -3097,10 +3144,8 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
         /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads </returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(Stream stream)
         {
             return ParseDocument(stream, ParseSourceType.DynamicContent);
@@ -3118,10 +3163,8 @@ namespace Scryber.Components
         /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
         /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
         /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.IO.Stream stream, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(string.Empty);
@@ -3146,10 +3189,8 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
         /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.IO.TextReader reader)
         {
             return ParseDocument(reader, ParseSourceType.DynamicContent);
@@ -3167,10 +3208,8 @@ namespace Scryber.Components
         /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
         /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
         /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.IO.TextReader reader, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(string.Empty);
@@ -3194,10 +3233,8 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="reader">The xml reader to read the content from.</param>
         /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads </returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.Xml.XmlReader reader)
         {
             return ParseDocument(reader, ParseSourceType.DynamicContent);
@@ -3214,10 +3251,8 @@ namespace Scryber.Components
         /// <param name="reader">The xml reader to read the content from.</param>
         /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
         /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads </returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.Xml.XmlReader reader, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(string.Empty);
@@ -3244,10 +3279,8 @@ namespace Scryber.Components
         /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
         /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
         /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(path);
@@ -3274,10 +3307,8 @@ namespace Scryber.Components
         /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
         /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
         /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(path);
@@ -3304,10 +3335,8 @@ namespace Scryber.Components
         /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
         /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
         /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads </returns>
-        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
-        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
         /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
         public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
         {
             ReferenceChecker checker = new ReferenceChecker(path);
@@ -3321,7 +3350,191 @@ namespace Scryber.Components
             return doc;
         }
 
-        
+
+
+        #endregion
+
+        //
+        // parse html document
+        //
+
+
+        #region public static Document ParseHtmlDocument(string path)
+
+        /// <summary>
+        /// Parses html content (rather than the more formal xhtml or xml) from a local file into a new <see cref="Document"/> instance.
+        /// All relative paths to images, fonts, etc. should be relative to this path, unless a base path is set within the document.
+        /// </summary>
+        /// <param name="path">The full <paramref name="path"/> to the file, or a relative path from the current working directory</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
+        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException" >Thown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(string path)
+        {
+            var provider = Scryber.ServiceProvider.GetService<IPathMappingService>();
+
+            bool isFile;
+            var newPath = provider.MapPath(ParserLoadType.ReflectiveParser, path, null, out isFile);
+
+            var parsed = ParseHtml(path);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+
+        }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(Stream stream)
+
+        /// <summary>
+        /// Parses an html <see cref="Stream"/> (rather than the more formal xhtml or xml) into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads </returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(Stream stream)
+        {
+            return ParseHtmlDocument(stream, ParseSourceType.DynamicContent);
+        }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(stream stream, ParseSourceType type)
+
+        /// <summary>
+        /// Parses an html <see cref="Stream"/> (rather than the more formal xhtml or xml) into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+
+            IComponent parsed = ParseHtml(string.Empty, stream, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(System.IO.TextReader reader)
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the inner html content (rather than the more formal xhtml or xml), read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.TextReader reader)
+        {
+            return ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+        }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(System.IO.TextReader reader, ParseSourceType type)
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the inner html content (rather than the more formal xhtml or xml) read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.TextReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent parsed = ParseHtml(string.Empty, reader, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(System.IO.Stream stream, string path, ParseSourceType type)
+
+        /// <summary>
+        /// Parses an html <see cref="Stream"/> (rather than the more formal xhtml or xml) into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.Stream stream, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = ParseHtml(path, stream, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(System.IO.TextReader reader, string path, ParseSourceType type)
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the inner html content (rather than the more formal xhtml or xml), read into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.TextReader reader, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = ParseHtml(path, reader, type, checker.Resolver);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
 
         #endregion
 

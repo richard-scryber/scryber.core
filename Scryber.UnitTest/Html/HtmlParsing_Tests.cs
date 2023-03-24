@@ -172,9 +172,7 @@ namespace Scryber.Core.UnitTests.Html
                 defn.Border.LineStyle = LineType.Solid;
 
                 doc.Styles.Add(defn);
-                
-                    
-                
+
                 using (var stream = DocStreams.GetOutputStream("HtmlFromSource.pdf"))
                 {
                     doc.SaveAsPDF(stream);
@@ -188,7 +186,7 @@ namespace Scryber.Core.UnitTests.Html
         public void HelloWorld()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.xhtml");
 
             using (var doc = Document.ParseDocument(path))
             {
