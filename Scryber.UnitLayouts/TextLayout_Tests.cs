@@ -1644,6 +1644,133 @@ namespace Scryber.UnitLayouts
         }
 
 
+        [TestMethod]
+        public void ALongTextBlockWithHypens()
+        {
+
+
+
+            var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+                "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies." +
+                " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
+                "Donec nec sapien eu mi commodo porta in quis nibh. Sed quam sem, tristique vel lobortis nec, " +
+                "pulvinar id libero. Donec aliquet consectetur lorem, id hendrerit lectus feugiat a. " +
+                "Mauris fringilla nunc consequat sapien varius, in pretium nibh dignissim. Duis in erat neque. " +
+                "Cras dui purus, laoreet vel lacus nec, scelerisque posuere nisl. Nam sed rutrum metus. " +
+                "Ut vel vehicula lorem. Morbi rutrum leo quis nunc lobortis, venenatis posuere dolor porta.";
+
+
+
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+            pg.FontSize = 12;
+            pg.ColumnCount = 4; //make small columns to force hypenation
+            pg.Style.Text.Hyphenation = Text.WordHyphenation.Auto;
+            pg.HorizontalAlignment = HorizontalAlignment.Justified;
+
+            pg.Contents.Add(new TextLiteral(content));
+            pg.Contents.Add(new ColumnBreak());
+
+            var div = new Div();
+            div.Style.Text.HyphenationCharacterAppended = '?';
+            div.Style.Text.HyphenationMinCharsAfter = 5;
+            div.Style.Text.HyphenationMinCharsBefore = 5;
+            div.Style.Border.Width = 1;
+
+            div.Contents.Add(new TextLiteral(content));
+            pg.Contents.Add(div); //second column
+
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+
+            SaveAsPDF(doc, "Text_LongLiteralWithHyphens");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+
+            var contentW = layout.AllPages[0].ContentBlock.Width;
+
+            Assert.AreEqual(36, region.Contents.Count);
+            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 31 };
+
+            for (var i = 0; i < 36; i++)
+            {
+                var line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < contentW);
+                Assert.AreEqual(3, line.Runs.Count);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                var chars = line.Runs[1] as PDFTextRunCharacter;
+
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (Array.IndexOf(colHyphens, i) > -1)
+                    Assert.IsTrue(chars.Characters.EndsWith("-"), "Line " + i + " was expected to end with a hyphen for characters: " + chars.Characters);
+                else
+                    Assert.IsFalse(chars.Characters.EndsWith("-"), "Line " + i + " was expected to NOT end with a hyphen for characters: " + chars.Characters);
+
+
+                if (i == 35)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd), "Failed line " + i);
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine), "Failed line " + i);
+            }
+
+            //Second column - min 5 chars both and a ? as the separator
+
+            region = layout.AllPages[0].ContentBlock.Columns[1] as PDFLayoutRegion;
+            var divBlock = region.Contents[0] as PDFLayoutBlock;
+
+            Assert.AreEqual(36, divBlock.Columns[0].Contents.Count);
+            colHyphens = new int[] { 1, 8 };
+
+            for (var i = 0; i < 36; i++)
+            {
+                var line = divBlock.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < contentW);
+                Assert.AreEqual(3, line.Runs.Count);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                var chars = line.Runs[1] as PDFTextRunCharacter;
+
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (Array.IndexOf(colHyphens, i) > -1)
+                    Assert.IsTrue(chars.Characters.EndsWith("?"), "Line " + i + " on second column was expected to end with a hyphen for characters: " + chars.Characters);
+                else
+                    Assert.IsFalse(chars.Characters.EndsWith("?"), "Line " + i + " on second column was expected to NOT end with a hyphen for characters: " + chars.Characters);
+
+
+                if (i == 35)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd), "Failed line " + i + " on second column");
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine), "Failed line " + i + " on second column");
+            }
+        }
+
         [TestMethod()]
         public void BoldAndItalicSpans()
         {
