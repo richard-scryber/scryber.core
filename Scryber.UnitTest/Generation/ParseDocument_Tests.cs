@@ -517,6 +517,98 @@ namespace Scryber.Core.UnitTests.Generation
 
         #endregion
 
+        #region public void ParseXHTMLStreamWithRemotePath()
+
+        /// <summary>
+        /// Test of ParseDocument with the a remote url stream to the xhtml file HellowWorld.xhtml, providing the path and parse type
+        /// </summary>
+        [TestMethod()]
+        [TestCategory("Document")]
+        public void ParseXHTMLStreamWithRemotePath()
+        {
+            var remote = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/HelloWorld.xhtml";
+
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/group.png";
+
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                using (var stream = client.GetStreamAsync(remote).Result)
+                {
+                    //Pass the relative path to the parsing
+                    using (Document doc = Document.ParseDocument(stream, remote, ParseSourceType.RemoteFile))
+                    {
+                        doc.Params["title"] = "Hello World & everyone in it.";
+
+                        using (var ms = DocStreams.GetOutputStream("HelloWorld_StreamRemotePathXhtml.pdf"))
+                        {
+                            doc.SaveAsPDF(ms);
+                        }
+
+                        Assert.IsNotNull(doc.LoadedSource); //Relative path provided
+                        Assert.AreEqual(remote, doc.LoadedSource);
+
+                        Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
+
+                        Assert.AreEqual("Hello World & everyone in it.", doc.Info.Title);
+
+                        Assert.AreEqual(1, doc.Pages.Count);
+
+                        var pg = doc.Pages[0] as Page;
+
+                        Assert.IsNotNull(pg);
+                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+
+                        //first div has a bound literal
+                        var div = pg.Contents[0] as Div;
+
+                        Assert.IsNotNull(div);
+                        Assert.AreEqual(7.5, div.Padding.Left);
+                        Assert.AreEqual(1, div.Contents.Count);
+
+                        var lit = div.Contents[0] as TextLiteral;
+
+                        Assert.IsNotNull(lit);
+                        Assert.AreEqual("Hello World & everyone in it.", lit.Text);
+
+                        div = pg.Contents[1] as Div;
+                        Assert.IsNotNull(div);
+                        Assert.AreEqual(10.0, div.Padding.Left);
+                        Assert.AreEqual(1, div.Contents.Count);
+
+                        lit = div.Contents[0] as TextLiteral;
+                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+
+
+                        var img = pg.Contents[2] as Image;
+                        Assert.AreEqual("./Images/group.png", img.Source);
+                        Assert.AreEqual(7.5, img.Padding.Left);
+                        Assert.AreEqual(100.0, img.Width);
+
+                        var shared = doc.SharedResources;
+                        Assert.AreEqual(2, shared.Count); //image and font
+
+                        //Because we provide the relative path to the source,
+                        //the document should be able to find and load the image
+
+                        var imgRsrc = shared[0] as PDFImageXObject;
+                        Assert.IsNotNull(imgRsrc);
+                        Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file.
+
+                        Assert.IsNotNull(imgRsrc.ImageData);
+                        //Not successfull so 1x1 - unsucessfull image data proxy
+
+                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+
+                    }
+                }
+            }
+
+        }
+
+        #endregion
+
         #region public void ParseXHTMLTextReaderWithPath()
 
         /// <summary>
@@ -1849,6 +1941,98 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
                     Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
 
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region public void ParseHtmlStreamWithRemotePath()
+
+        /// <summary>
+        /// Test of ParseDocument with the a remote url stream to the html file HellowWorld.html, providing the path and parse type
+        /// </summary>
+        [TestMethod()]
+        [TestCategory("Document")]
+        public void ParseHtmlStreamWithRemotePath()
+        {
+            var remote = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/HelloWorld.html";
+
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/group.png";
+
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                using (var stream = client.GetStreamAsync(remote).Result)
+                {
+                    //Pass the relative path to the parsing
+                    using (Document doc = Document.ParseHtmlDocument(stream, remote, ParseSourceType.RemoteFile))
+                    {
+                        doc.Params["title"] = "Hello World & everyone in it.";
+
+                        using (var ms = DocStreams.GetOutputStream("HelloWorld_StreamRemotePathHtml.pdf"))
+                        {
+                            doc.SaveAsPDF(ms);
+                        }
+
+                        Assert.IsNotNull(doc.LoadedSource); //Relative path provided
+                        Assert.AreEqual(remote, doc.LoadedSource);
+
+                        Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
+
+                        Assert.AreEqual("Hello World & everyone in it.", doc.Info.Title);
+
+                        Assert.AreEqual(1, doc.Pages.Count);
+
+                        var pg = doc.Pages[0] as Page;
+
+                        Assert.IsNotNull(pg);
+                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+
+                        //first div has a bound literal
+                        var div = pg.Contents[0] as Div;
+
+                        Assert.IsNotNull(div);
+                        Assert.AreEqual(3.75, div.Padding.Left);
+                        Assert.AreEqual(1, div.Contents.Count);
+
+                        var lit = div.Contents[0] as TextLiteral;
+
+                        Assert.IsNotNull(lit);
+                        Assert.AreEqual("Hello World & everyone in it.", lit.Text);
+
+                        div = pg.Contents[1] as Div;
+                        Assert.IsNotNull(div);
+                        Assert.AreEqual(5.0, div.Padding.Left);
+                        Assert.AreEqual(1, div.Contents.Count);
+
+                        lit = div.Contents[0] as TextLiteral;
+                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+
+
+                        var img = pg.Contents[2] as Image;
+                        Assert.AreEqual("./Images/group.png", img.Source);
+                        Assert.AreEqual(5, img.Padding.Left);
+                        Assert.AreEqual(100.0, img.Width);
+
+                        var shared = doc.SharedResources;
+                        Assert.AreEqual(2, shared.Count); //image and font
+
+                        //Because we provide the relative path to the source,
+                        //the document should be able to find and load the image
+
+                        var imgRsrc = shared[0] as PDFImageXObject;
+                        Assert.IsNotNull(imgRsrc);
+                        Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file.
+
+                        Assert.IsNotNull(imgRsrc.ImageData);
+                        //Not successfull so 1x1 - unsucessfull image data proxy
+
+                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+
+                    }
                 }
             }
 
