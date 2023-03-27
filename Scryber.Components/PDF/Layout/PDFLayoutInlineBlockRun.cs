@@ -81,6 +81,12 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        public bool ContentHasMargins(out Thickness margins)
+        {
+            margins = this.PositionOptions.Margins;
+            return !margins.IsEmpty;
+        }
+
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
         {
             xoffset = Unit.Zero;

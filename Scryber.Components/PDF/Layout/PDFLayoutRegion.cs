@@ -682,8 +682,7 @@ namespace Scryber.PDF.Layout
         // overrides
         //
 
-        #region protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, PDFUnit xoffset, PDFUnit yoffset)
-
+        
         /// <summary>
         /// Overrides the default behaviour to push any arrangements for the child item of this region
         /// </summary>
@@ -825,7 +824,6 @@ namespace Scryber.PDF.Layout
 #endif
         }
 
-        #endregion
 
         #region protected override bool DoClose(ref string msg)
 

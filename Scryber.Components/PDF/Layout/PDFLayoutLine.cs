@@ -636,8 +636,14 @@ namespace Scryber.PDF.Layout
                 }
                 else if (run is PDFLayoutInlineBlockRun inline)
                 {
+                    Thickness margin;
                     if (inline.Height < maxHeight)
+                    {
                         inline.SetOffsetY(maxHeight - inline.Height);
+                    }
+                    //fix for margins being applied and pushing content up rather than down.
+                    else if (inline.ContentHasMargins(out margin))
+                        inline.SetOffsetY(inline.OffsetY + margin.Top + margin.Bottom);
                 }
             }
         }
