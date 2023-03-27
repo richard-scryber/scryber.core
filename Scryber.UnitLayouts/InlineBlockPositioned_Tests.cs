@@ -497,8 +497,8 @@ namespace Scryber.UnitLayouts
             var baseline = leftBegin.TextRenderOptions.GetAscent() + (lineHeight - section.FontSize) / 2;
 
             Assert.AreEqual(baseline, line.BaseLineOffset);
-            //Add the margins for the start text cursor
-            Assert.AreEqual(baseline + section.Margins.Top, leftBegin.StartTextCursor.Height);
+            //Add the margins and line height for the start text cursor
+            Assert.AreEqual(baseline + section.Margins.Top + lineHeight, leftBegin.StartTextCursor.Height);
             Assert.AreEqual(section.Margins.Left, leftBegin.StartTextCursor.Width);
 
             var posBlock = posReg.Contents[0] as PDFLayoutBlock;
@@ -509,7 +509,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(100, posBlock.Width);
 
             //Right begin text
-            Assert.AreEqual(baseline + section.Margins.Top, rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(baseline + section.Margins.Top + lineHeight, rightBegin.StartTextCursor.Height);
             Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
 
             //New line should push the cursor down and right for the inline block and first chars.
@@ -565,10 +565,9 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 2), rightBegin.StartTextCursor.Height);
             Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
 
-            //New line - single line height v offset
+            //New line - offset should be to the line height of the next line (which has a lineHeight * 3 inline block in it)
             offset = newline.NewLineOffset;
-            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
-            Assert.AreEqual(lineHeight, offset.Height);
+            Assert.AreEqual(lineHeight * 3, offset.Height);
             Assert.AreEqual(leftChars.Width + posReg.Width, offset.Width);
 
             //third line - 1 top aligned inline block 3 * line height inc margins with text either side
@@ -616,14 +615,14 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(lineHeight * 3, posBlock.Height);
             Assert.AreEqual(100, posBlock.Width);
 
-            //Right begin text - baseline and margins plue the previous line height ( = lineHeight * 2)
-            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 3), rightBegin.StartTextCursor.Height);
+            //Right begin text - baseline and margins plus the previous lines height (3) + the inline height (3) - a line, so  = lineHeight * 5
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 5), rightBegin.StartTextCursor.Height);
             Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
 
             //New line - single line height v offset
             offset = newline.NewLineOffset;
             Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
-            Assert.AreEqual(lineHeight * 3, offset.Height);
+            Assert.AreEqual(lineHeight, offset.Height);
             //include the margins as well
             Assert.AreEqual(leftChars.Width + posReg.Width + 10, offset.Width);
 
