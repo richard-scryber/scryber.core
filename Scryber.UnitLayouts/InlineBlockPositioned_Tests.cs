@@ -1038,7 +1038,8 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void InlineBlockMultipleBlockExplicitSizeVAlignMiddle()
         {
-            const int lineHeight = 30;
+            const double lineHeight = 30;
+            const VerticalAlignment vAlign = VerticalAlignment.Middle;
 
             Document doc = new Document();
             Section section = new Section();
@@ -1057,6 +1058,7 @@ namespace Scryber.UnitLayouts
             span.Contents.Add(new TextLiteral("Before the inline "));
             section.Contents.Add(span);
 
+            //Inline block twice line height
             Div inline = new Div()
             {
                 Height = lineHeight * 2,
@@ -1064,7 +1066,7 @@ namespace Scryber.UnitLayouts
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
-                VerticalAlignment = VerticalAlignment.Middle
+                VerticalAlignment = vAlign
             };
             //inline.Contents.Add(new TextLiteral("In the inline block"));
             section.Contents.Add(inline);
@@ -1073,6 +1075,7 @@ namespace Scryber.UnitLayouts
             span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
             section.Contents.Add(span);
 
+            //Half height inline block that should be at the top.
             inline = new Div()
             {
                 Height = lineHeight / 2,
@@ -1080,19 +1083,19 @@ namespace Scryber.UnitLayouts
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Aqua,
-                VerticalAlignment = VerticalAlignment.Middle
+                VerticalAlignment = vAlign
             };
 
             section.Contents.Add(inline);
-            //section.Contents.Clear();
+
 
             span = new Span();
             span.Contents.Add(new TextLiteral("After the second inline and flowing onto a new line."));
-            //span.Contents.Add(new TextLiteral(" Inline and flowing onto a new line "));
             section.Contents.Add(span);
 
 
 
+            //3 times line height (inc. magins inline block)
             inline = new Div()
             {
                 Height = (lineHeight * 3) - 10, //take off the margins
@@ -1100,7 +1103,7 @@ namespace Scryber.UnitLayouts
                 PositionMode = Drawing.PositionMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
-                VerticalAlignment = VerticalAlignment.Middle,
+                VerticalAlignment = vAlign,
                 Margins = 5
             };
             section.Contents.Add(inline);
@@ -1109,7 +1112,7 @@ namespace Scryber.UnitLayouts
             span.Contents.Add(new TextLiteral("After the third inline and flowing onto a new line that should continue on in the normal height for the page."));
             section.Contents.Add(span);
 
-            //div is too big for the remaining space on the page
+            //A new full width div - should be set nicely below the rest of the text.
             Div inflow = new Div() { BorderWidth = 1, BorderColor = Drawing.StandardColors.Blue };
             inflow.Contents.Add(new TextLiteral("In normal content flow"));
             section.Contents.Add(inflow);
@@ -1120,7 +1123,7 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.Inconclusive("Need to fix inline block VAlign top");
+
 
             Assert.AreEqual(1, layout.AllPages.Count);
             var content = layout.AllPages[0].ContentBlock;
@@ -1152,18 +1155,20 @@ namespace Scryber.UnitLayouts
             var posReg = content.PositionedRegions[0];
 
             //The positioned region is relative to the origin of the first line.
+
             Assert.AreEqual(leftChars.Width, posReg.TotalBounds.X);
             Assert.AreEqual(0, posReg.TotalBounds.Y);
 
             Assert.AreEqual(lineHeight * 2, posReg.TotalBounds.Height);
             Assert.AreEqual(100, posReg.TotalBounds.Width);
 
-            //valign top baseline offset is ascender + half leading.
-            var baseline = leftBegin.TextRenderOptions.GetAscent() + (lineHeight - section.FontSize) / 2;
+            //valign middle baseline offset is ascender + half leading.
+            var leading = (lineHeight - leftBegin.TextRenderOptions.GetSize());
+            var baseline = leftBegin.TextRenderOptions.GetAscent() + (leading / 2);
 
             Assert.AreEqual(baseline, line.BaseLineOffset);
-            //Add the margins for the start text cursor
-            Assert.AreEqual(baseline + section.Margins.Top, leftBegin.StartTextCursor.Height);
+            //Add the margins and half line height for the start text cursor in middle
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight / 2), leftBegin.StartTextCursor.Height);
             Assert.AreEqual(section.Margins.Left, leftBegin.StartTextCursor.Width);
 
             var posBlock = posReg.Contents[0] as PDFLayoutBlock;
@@ -1174,7 +1179,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(100, posBlock.Width);
 
             //Right begin text
-            Assert.AreEqual(baseline + section.Margins.Top, rightBegin.StartTextCursor.Height);
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight / 2), rightBegin.StartTextCursor.Height);
             Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
 
             //New line should push the cursor down and right for the inline block and first chars.
@@ -1230,10 +1235,9 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 2), rightBegin.StartTextCursor.Height);
             Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
 
-            //New line - single line height v offset
+            //New line - offset should be to the line height of the next line (which has a lineHeight * 3 inline block in it) minus its line space (lineHeight)
             offset = newline.NewLineOffset;
-            Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
-            Assert.AreEqual(lineHeight, offset.Height);
+            Assert.AreEqual((lineHeight * 2), offset.Height);
             Assert.AreEqual(leftChars.Width + posReg.Width, offset.Width);
 
             //third line - 1 top aligned inline block 3 * line height inc margins with text either side
@@ -1281,14 +1285,14 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(lineHeight * 3, posBlock.Height);
             Assert.AreEqual(100, posBlock.Width);
 
-            //Right begin text - baseline and margins plue the previous line height ( = lineHeight * 2)
-            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 3), rightBegin.StartTextCursor.Height);
+            //Right begin text - baseline and margins plus the previous lines height (3 - 1 for middle) + the inline height (3) - a line, so  = lineHeight * 4
+            Assert.AreEqual(baseline + section.Margins.Top + (lineHeight * 4), rightBegin.StartTextCursor.Height);
             Assert.AreEqual(leftChars.Width + inlineRun.Width + section.Margins.Left, rightBegin.StartTextCursor.Width);
 
-            //New line - single line height v offset
+            //New line - single line height + a line height space offset
             offset = newline.NewLineOffset;
             Assert.AreEqual(line.BaseLineOffset + line.BaseLineToBottom, offset.Height);
-            Assert.AreEqual(lineHeight * 3, offset.Height);
+            Assert.AreEqual(lineHeight * 2, offset.Height);
             //include the margins as well
             Assert.AreEqual(leftChars.Width + posReg.Width + 10, offset.Width);
 
@@ -1369,7 +1373,21 @@ namespace Scryber.UnitLayouts
         // Tests to write
         //
 
+        /// <summary>
+        /// Various inline blocks that have different alignments
+        /// with various text sizes and fonts.
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockMixedAlignment()
+        {
+            Assert.Inconclusive();
+        }
 
+        /// <summary>
+        /// An inline block that cannot fit on the avaiable space on the current line
+        /// based on it's explicit width, so should force a new line
+        /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void InlineBlockOverflowToNewLine()
@@ -1378,6 +1396,24 @@ namespace Scryber.UnitLayouts
         }
 
 
+        /// <summary>
+        /// An inline block doesn't have an explicit width, but the content inside will
+        /// force the width to be greater than available on the current line. So should
+        /// move to the next line.
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlockOverflowToNewLineContentWidth()
+        {
+            Assert.Inconclusive();
+        }
+
+
+        /// <summary>
+        /// An inline block that cannot fit on the avaiable space on the current line
+        /// based on it's explicit width, so should force a new line. No line space
+        /// available - so go onto an new column.
+        /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void InlineBlockOverflowToNewColumn()
@@ -1385,6 +1421,11 @@ namespace Scryber.UnitLayouts
             Assert.Inconclusive();
         }
 
+        /// <summary>
+        /// An inline block that cannot fit on the avaiable space on the current line
+        /// based on it's explicit width, so should force a new line. No line space
+        /// available - so go onto an new PAGE.
+        /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void InlineBlockOverflowToNewPage()

@@ -522,7 +522,7 @@ namespace Scryber.PDF.Layout
 
         private void AlignBlocksFromMiddle(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
         {
-            //This is bottom
+            
 
             foreach (var run in this.Runs)
             {
@@ -530,51 +530,71 @@ namespace Scryber.PDF.Layout
                 {
                     var prev = this.Region.Contents[this.LineIndex - 1] as PDFLayoutLine;
                     var newLine = prev.LastRun() as PDFTextRunNewLine;
+
+                    var lastDescender = newLine.TextOptions.GetDescender();
+                    var lastHalfLead = (prev.Height - lastLineHeight) / 2;
+
                     var size = newLine.NewLineOffset;
 
-                    size.Height = prev.Height;
-                    newLine.NewLineOffset = size;
+                    var newHalfLead = (maxHeight - newLine.TextOptions.GetLineHeight()) / 2;
 
-                    //this.BaseLineOffset = newLine.TextOptions.GetBaselineOffset();
+                    size.Height = (lastHalfLead + lastDescender  + baselineOffset - newHalfLead);
+                    newLine.NewLineOffset = size;
 
                 }
                 else if (run is PDFTextRunBegin begin)
                 {
-                    var halfline = begin.TextRenderOptions.GetLineHeight() / 2.0;
-                    var halfasc = begin.TextRenderOptions.GetAscent() / 2.0;
-                    begin.SetOffsetY(halfasc + halfline);
-                    var curs = begin.StartTextCursor;
-                    //Do nothing on a begin as this is the default line alignment based an leading
-                    //without any inline blocks.
-                    continue;
+                    
+                    var h = begin.TextRenderOptions.GetLineHeight();
+                    if (h < maxHeight)
+                    {
+                        var desc = begin.TextRenderOptions.GetDescender();
+                        var halflead = (maxHeight - h) / 2.0;
+                        
+                        var offset = (h - desc) + halflead; //half the space + (the line height - the descender)
+                        //h += 10;
+
+                        begin.SetOffsetY(baselineOffset - offset); //move to the baseline
+                    }
+
                 }
                 else if (run is PDFLayoutInlineBlockRun inline)
                 {
-                    //if (inline.Height < maxHeight)
-                    //    inline.SetOffsetY(maxHeight - inline.Height);
+                    Thickness margin;
+                    if (inline.Height < maxHeight)
+                    {
+                        var halflead = (maxHeight - inline.Height) / 2;
+                        inline.SetOffsetY(halflead);
+                    }
+                    //fix for margins being applied and pushing content up rather than down.
+                    else if (inline.ContentHasMargins(out margin))
+                        inline.SetOffsetY(inline.OffsetY + margin.Top); //Just the top for middle alignment
                 }
-                else if (run is PDFTextRunNewLine nl)
+                else if(run is PDFTextRunNewLine nl)
                 {
-                    //Need to calculate the Baseline to bottom
+                    //end of the middle spaced line - set the offset to this baseline to bottom
 
                     //max ascent character
-                    var height = nl.TextOptions.GetLineHeight();
-                    var ascent = nl.TextOptions.GetAscent();
+                    var baseline = nl.TextOptions.GetBaselineOffset();
+                    var descent = nl.TextOptions.GetDescender();
                     //half the leading
-                    var halflead = (height - nl.TextOptions.Font.Size) / 2.0;
+                    var halfThisLead = (maxHeight - nl.TextOptions.GetLineHeight()) / 2.0;
+                    var halfNextLead = (nl.TextOptions.GetLineHeight() - nl.TextOptions.GetSize()) / 2.0;
+                    //take half the leading of this line, the descender and the half the leading of a normal line (for the next one)
 
-                    //take half the leading and the max ascent from the total line height
-                    var offset = totalHeight - (ascent + halflead);
+                    var offset = descent + halfThisLead + halfNextLead;
 
                     //and this is the offset from the baseline to the bottom of the full line height
-                    this.BaseLineToBottom = height - offset;
+                    this.BaseLineToBottom = offset;
                 }
             }
         }
 
         private void AlignBlocksFromBaseline(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
         {
-            //This is baseline
+            
+            //This is baseline - if its max height, then do it from the bottom
+            //otherwise move to the baseline.
 
             this._totalHeight += maxdescender;
 
@@ -593,17 +613,23 @@ namespace Scryber.PDF.Layout
                 else if (run is PDFTextRunBegin begin)
                 {
                     var h = begin.TextRenderOptions.GetLineHeight();
-                    //var desc = begin.TextRenderOptions.GetDescender();
-                    var offset = h;
+                    var desc = begin.TextRenderOptions.GetDescender();
+                    var offset = h - desc;
                     //h += 10;
 
-                    begin.SetOffsetY(baselineOffset); //just move to the baseline
+                    begin.SetOffsetY(baselineOffset - offset); //just move to the baseline
 
                 }
                 else if (run is PDFLayoutInlineBlockRun inline)
                 {
+                    Thickness margin;
                     if (inline.Height < maxHeight)
+                    {
                         inline.SetOffsetY(maxHeight - inline.Height);
+                    }
+                    //fix for margins being applied and pushing content up rather than down.
+                    else if (inline.ContentHasMargins(out margin))
+                        inline.SetOffsetY(inline.OffsetY + margin.Top + margin.Bottom);
                 }
             }
         }
