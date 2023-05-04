@@ -36,7 +36,6 @@ namespace Scryber.UnitLayouts
             Document doc = new Document();
             Section section = new Section();
             section.FontSize = 20;
-            section.TextLeading = 40;
             section.Padding = 10;
             doc.Pages.Add(section);
 
@@ -59,11 +58,15 @@ namespace Scryber.UnitLayouts
             //inline.Contents.Add(new TextLiteral("In the block"));
             section.Contents.Add(inline);
 
-            section.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
+            var span = new Span();
+            section.Contents.Add(span);
+            span.FontSize = 30;
+            span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
 
 
             Div block = new Div()
             {
+                ID = "Wrapper",
                 BorderColor = Drawing.StandardColors.Blue,
                 Padding = 10,
 
@@ -97,48 +100,99 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.Inconclusive();
-
             Assert.AreEqual(1, layout.AllPages.Count);
             var content = layout.AllPages[0].ContentBlock;
 
-            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+            Assert.AreEqual(3, content.Columns[0].Contents.Count);
             Assert.AreEqual(1, content.PositionedRegions.Count);
 
-            var first = content.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.AreEqual(0, first.Height);
-            Assert.AreEqual(1, first.Runs.Count);
-            var posRun = first.Runs[0] as PDFLayoutPositionedRegionRun;
+            var line = content.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(60, line.Height);
+            Assert.AreEqual(7, line.Runs.Count);
+            var chars = line.Runs[1] as PDFTextRunCharacter;
+            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(chars);
             Assert.IsNotNull(posRun);
 
             Assert.ReferenceEquals(posRun.Region, content.PositionedRegions[0]);
             var posReg = content.PositionedRegions[0];
 
-            //TODO: Clean up offsetX and Y with TotalBounds.
+            
 
-            Assert.AreEqual(50, posReg.TotalBounds.X);
-            Assert.AreEqual(100, posReg.TotalBounds.Y);
+            Assert.AreEqual(chars.Width, posReg.TotalBounds.X);//first literal width
+            Assert.AreEqual(0, posReg.TotalBounds.Y); 
 
-            Assert.AreEqual(150, posReg.TotalBounds.Height);
-            Assert.AreEqual(200, posReg.TotalBounds.Width);
+            Assert.AreEqual(60, posReg.TotalBounds.Height);
+            Assert.AreEqual(100, posReg.TotalBounds.Width);
             Assert.AreEqual(1, posReg.Contents.Count);
+
+
+
 
             var posBlock = posReg.Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(0, posBlock.OffsetX);
             Assert.AreEqual(0, posBlock.OffsetY);
-            Assert.AreEqual(150, posBlock.Height);
-            Assert.AreEqual(200, posBlock.Width);
+            Assert.AreEqual(60, posBlock.Height);
+            Assert.AreEqual(100, posBlock.Width);
             Assert.AreEqual(1, posBlock.Columns.Length);
-            Assert.AreEqual(2, posBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, posBlock.Columns[0].Contents.Count);
 
-            //Check the block after to make sure it is ignoring the positioned region.
-            var second = content.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.AreEqual(0, second.OffsetY);
-            Assert.AreEqual(25, second.Height);
-            Assert.AreEqual(1, second.Columns[0].Contents.Count); //just a line
 
-            //block region line = textbegin, chars, textend
-            Assert.AreEqual("In normal content flow", ((second.Columns[0].Contents[0] as PDFLayoutLine).Runs[1] as PDFTextRunCharacter).Characters);
+            line = content.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("new line with the required offset", chars.Characters);
+
+
+
+            //Check the 'Wrapper' block with inline inside
+
+            var wrapper = content.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.AreEqual("Wrapper", wrapper.Owner.ID);
+
+
+            line = wrapper.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(60, line.Height);
+            Assert.AreEqual(7, line.Runs.Count);
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(chars);
+            Assert.IsNotNull(posRun);
+
+            Assert.ReferenceEquals(posRun.Region, wrapper.PositionedRegions[0]);
+            posReg = wrapper.PositionedRegions[0];
+
+
+
+            Assert.AreEqual(chars.Width, posReg.TotalBounds.X);//first literal width
+            Assert.AreEqual(0, posReg.TotalBounds.Y);
+
+            Assert.AreEqual(60, posReg.TotalBounds.Height);
+            Assert.AreEqual(100, posReg.TotalBounds.Width);
+            Assert.AreEqual(1, posReg.Contents.Count);
+
+
+
+
+            posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(60, posBlock.Height);
+            Assert.AreEqual(100, posBlock.Width);
+            Assert.AreEqual(1, posBlock.Columns.Length);
+            Assert.AreEqual(0, posBlock.Columns[0].Contents.Count);
+
+
+            line = wrapper.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("new line with the required offset", chars.Characters);
+
+            
         }
 
         [TestCategory(TestCategoryName)]
@@ -148,7 +202,7 @@ namespace Scryber.UnitLayouts
             Document doc = new Document();
             Section section = new Section();
             section.FontSize = 20;
-            section.TextLeading = 40;
+            //section.TextLeading = 40;
             doc.Pages.Add(section);
 
             var span = new Span();
@@ -170,8 +224,11 @@ namespace Scryber.UnitLayouts
             span = new Span();
             span.Contents.Add(new TextLiteral(" After the inline and flowing onto a new line with the required offset"));
             span.FontBold = true;
+            span.FontSize = 30;
             section.Contents.Add(span);
 
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = 10;
 
             using (var ms = DocStreams.GetOutputStream("Positioned_InlineBlockExplicitSizeSmall.pdf"))
             {

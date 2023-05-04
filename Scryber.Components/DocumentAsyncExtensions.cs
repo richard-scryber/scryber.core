@@ -1,30 +1,39 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 
 namespace Scryber.Components
 {
+    
+
+    
+
+
     public static class DocumentAsyncExtensions
     {
 
+        //Asyncronous execution with Task
+
         public static async Task SaveAsPDFAsync(this Document doc, string path)
         {
-            using(var stream = new System.IO.FileStream(path, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+            using(var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 await SaveAsAsync(doc, stream, true, OutputFormat.PDF); 
             }
         }
 
-        public static async Task SaveAsPDFAsync(this Document doc, System.IO.Stream stream)
+        public static async Task SaveAsPDFAsync(this Document doc, Stream stream)
         {
             await SaveAsAsync(doc, stream, true, OutputFormat.PDF);
         }
 
-        public static async Task SaveAsAsync(this Document doc, System.IO.Stream stream, bool bind, OutputFormat format)
+        public static async Task SaveAsAsync(this Document doc, Stream stream, bool bind, OutputFormat format)
         {
             if (null == stream)
                 throw new ArgumentNullException(nameof(stream));
+            
 
             var asyncRemotes = new RemoteFileAsyncRequestSet(doc);
             doc.RemoteRequests = asyncRemotes;

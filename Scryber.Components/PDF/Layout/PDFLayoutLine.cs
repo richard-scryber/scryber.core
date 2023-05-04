@@ -325,6 +325,7 @@ namespace Scryber.PDF.Layout
             Unit maxHeight = Unit.Zero;
             Unit maxDescender = Unit.Zero;
             Unit lastlineheight = Unit.Zero;
+            Unit maxFontSize = Unit.Zero;
 
             bool isComplex = false;
 
@@ -349,6 +350,7 @@ namespace Scryber.PDF.Layout
                     if (run is PDFTextRunBegin begin && begin.TextRenderOptions != null)
                     {
                         maxDescender = Unit.Max(maxDescender, begin.TextRenderOptions.GetDescender());
+                        maxFontSize = Unit.Max(maxFontSize, begin.TextRenderOptions.GetSize());
                     }
                     else if (run is PDFLayoutInlineBlockRun blockRun)
                     {
@@ -415,7 +417,7 @@ namespace Scryber.PDF.Layout
                             break;
                         case VerticalAlignment.Baseline:
                         default:
-                            AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                            AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender, maxFontSize);
                             break;
                     }
                     
@@ -590,7 +592,7 @@ namespace Scryber.PDF.Layout
             }
         }
 
-        private void AlignBlocksFromBaseline(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender)
+        private void AlignBlocksFromBaseline(Unit totalHeight, Unit maxHeight, Unit baselineOffset, Unit lastLineHeight, Unit maxdescender, Unit maxfont)
         {
             
             //This is baseline - if its max height, then do it from the bottom
@@ -614,10 +616,10 @@ namespace Scryber.PDF.Layout
                 {
                     var h = begin.TextRenderOptions.GetLineHeight();
                     var desc = begin.TextRenderOptions.GetDescender();
-                    var offset = h - desc;
+                    var aboveBaseline = h - desc;
                     //h += 10;
 
-                    begin.SetOffsetY(baselineOffset - offset); //just move to the baseline
+                    begin.SetOffsetY(baselineOffset - aboveBaseline); //just move to the baseline
 
                 }
                 else if (run is PDFLayoutInlineBlockRun inline)
@@ -625,12 +627,24 @@ namespace Scryber.PDF.Layout
                     Thickness margin;
                     if (inline.Height < maxHeight)
                     {
-                        inline.SetOffsetY(maxHeight - inline.Height);
+                        if (inline.Height < baselineOffset)
+                        {
+                            var halflead = (maxHeight - maxfont) / 2;
+                            var baseline = halflead + maxfont - maxdescender;
+                            var offset = baseline - inline.Height;
+
+                            if (offset < 0)
+                                offset = 0;
+
+                            inline.SetOffsetY(offset);
+                        }
+                        //inline.SetOffsetY(maxHeight - inline.Height);
                     }
                     //fix for margins being applied and pushing content up rather than down.
                     else if (inline.ContentHasMargins(out margin))
                         inline.SetOffsetY(inline.OffsetY + margin.Top + margin.Bottom);
                 }
+                
             }
         }
 

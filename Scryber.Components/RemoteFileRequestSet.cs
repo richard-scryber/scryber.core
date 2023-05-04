@@ -72,7 +72,7 @@ namespace Scryber
         {
             get
             {
-                return this.Count == 0;
+                return this.Count > 0;
             }
         }
 

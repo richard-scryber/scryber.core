@@ -88,9 +88,13 @@ namespace Scryber
             int count = 0;
             int step = 250;
 
-            while(count < this.WaitDurationMillisecond && !request.IsCompleted)
+            while(count < this.WaitDurationMillisecond)
             {
-                System.Threading.Thread.Sleep(step);
+                await Task.Delay(step);
+
+                if (request.IsCompleted)
+                    break;
+
                 count += step;
             }
 

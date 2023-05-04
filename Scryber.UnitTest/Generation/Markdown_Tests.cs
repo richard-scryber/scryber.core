@@ -12,6 +12,8 @@ namespace Scryber.Core.UnitTests.Generation
         {
         }
 
+        private string src = "";
+
         [TestMethod]
         public void MarkdownToHtmlTest()
         {
