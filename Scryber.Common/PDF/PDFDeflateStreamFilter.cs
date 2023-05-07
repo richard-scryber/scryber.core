@@ -16,6 +16,8 @@
  * 
  */
 
+#define USE_IO_COMPRESSION
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,12 +70,35 @@ namespace Scryber.PDF
 
         public byte[] FilterStream(byte[] orig)
         {
+            System.IO.MemoryStream inputStream = null;
+            System.IO.Compression.DeflateStream compressor = null;
+            System.IO.MemoryStream outputStream = null;
+
             try
             {
                 byte[] output;
+
+#if USE_IO_COMPRESSION
+
+                inputStream = new System.IO.MemoryStream(orig);
+                outputStream = new System.IO.MemoryStream();
+
+                //Add the zip headers
+                outputStream.WriteByte((byte)0x78);
+                outputStream.WriteByte((byte)0x9c);
+
+                using (compressor = new System.IO.Compression.DeflateStream(outputStream, System.IO.Compression.CompressionLevel.Optimal , true))
+                {
+                    inputStream.CopyTo(compressor);
+                }
+                compressor = null;
+
+                output = outputStream.ToArray();
+
+#else
                 PDFDeflateZLib zlib = new PDFDeflateZLib();
                 output = zlib.Compress(orig);
-                
+#endif
                 //The ZLib algorithm will return null if there is no compression
                 if (null == output)
                     return orig;
@@ -83,6 +108,19 @@ namespace Scryber.PDF
             catch (Exception ex)
             {
                 throw new PDFException(CommonErrors.CouldNotCompressStreamFilter, ex);
+            }
+            finally
+            {
+                if (null != inputStream)
+                    inputStream.Dispose();
+                if (null != outputStream)
+                    outputStream.Dispose();
+                if (null != compressor)
+                    compressor.Dispose();
+
+                compressor = null;
+                outputStream = null;
+                inputStream = null;
             }
         }
     }

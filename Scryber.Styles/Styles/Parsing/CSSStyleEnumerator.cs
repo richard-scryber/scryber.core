@@ -96,8 +96,8 @@ namespace Scryber.Styles.Parsing
                 if (this.IsMediaQuery(ref selector))
                 {
 
-                    if (this._log.ShouldLog(TraceLevel.Verbose))
-                        this._log.Add(TraceLevel.Verbose, "CSS", "Found media query at rule for " + selector + " parsing inner contents");
+                    if (this._log.ShouldLog(TraceLevel.Debug))
+                        this._log.Add(TraceLevel.Debug, "CSS", "Found media query at rule for " + selector + " parsing inner contents");
 
                     var match = Selectors.MediaMatcher.Parse(selector);
                     StyleMediaGroup media = new StyleMediaGroup(match);
@@ -114,8 +114,8 @@ namespace Scryber.Styles.Parsing
                 }
                 else if(this.IsPageQuery(ref selector))
                 {
-                    if (this._log.ShouldLog(TraceLevel.Verbose))
-                        this._log.Add(TraceLevel.Verbose, "CSS", "Found page at rule for " + selector + " parsing inner contents");
+                    if (this._log.ShouldLog(TraceLevel.Debug))
+                        this._log.Add(TraceLevel.Debug, "CSS", "Found page at rule for " + selector + " parsing inner contents");
 
                     var innerEnd = MoveToNextStyleEnd();
                     if (innerEnd <= next)
@@ -131,8 +131,8 @@ namespace Scryber.Styles.Parsing
                 }
                 else if(this.IsFontFace(ref selector))
                 {
-                    if (this._log.ShouldLog(TraceLevel.Verbose))
-                        this._log.Add(TraceLevel.Verbose, "CSS", "Found font-face at rule for " + selector + " parsing inner contents");
+                    if (this._log.ShouldLog(TraceLevel.Debug))
+                        this._log.Add(TraceLevel.Debug, "CSS", "Found font-face at rule for " + selector + " parsing inner contents");
 
                     var innerEnd = MoveToNextStyleEnd();
                     if (innerEnd <= next)
@@ -377,8 +377,8 @@ namespace Scryber.Styles.Parsing
 
             while (this.MoveNext())
             {
-                if (this._log.ShouldLog(TraceLevel.Verbose))
-                    this._log.Add(TraceLevel.Verbose, "CSS", "Found css style for " + this.Current.ToString() + " parsing inner contents");
+                if (this._log.ShouldLog(TraceLevel.Debug))
+                    this._log.Add(TraceLevel.Debug, "CSS", "Found css style for " + this.Current.ToString() + " parsing inner contents");
 
                 if (null != this.Current)
                     group.Styles.Add(this.Current);
@@ -410,8 +410,8 @@ namespace Scryber.Styles.Parsing
 
             defn.Match = selector;
 
-            if (this._log.ShouldLog(TraceLevel.Verbose))
-                this._log.Add(TraceLevel.Verbose, "CSS", "Found css selector " + defn.Match.ToString() + " parsing inner contents");
+            if (this._log.ShouldLog(TraceLevel.Debug))
+                this._log.Add(TraceLevel.Debug, "CSS", "Found css selector " + defn.Match.ToString() + " parsing inner contents");
 
             CSSStyleItemReader reader = new CSSStyleItemReader(new StringEnumerator(this._str, next + 1, end - (next + 1)));
             CSSStyleItemAllParser parser = new CSSStyleItemAllParser();

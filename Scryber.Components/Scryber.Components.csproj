@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.1.0-beta</PackageVersion>
+    <PackageVersion>6.0.2-alpha</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
@@ -13,6 +13,10 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.1.1-alfa
+Support for SaveAsPDFTimer, to check for asyncronous execution in a single threaded
+application - blazor (or windows forms?), using asyncronous loading of http requests for css images, fonts etc).
+
 6.0.1.0-beta
 
 We now support html - in many of its flavours, through the HTMLAgilityPack

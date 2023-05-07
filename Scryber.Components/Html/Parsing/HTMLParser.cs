@@ -201,8 +201,10 @@ namespace Scryber.Html.Parsing
 
                 content = ExtractHTMLContent(root);
 
-                content = ReplaceCDATATitle(content);
+                Console.WriteLine("Extracted HTML content : " + content);
 
+                content = ReplaceCDATATitle(content);
+                content = ReplaceCDATAStyle(content);
 
                 if (!string.IsNullOrEmpty(processing))
                     content = processing + "\r\n" + content;
@@ -334,6 +336,40 @@ namespace Scryber.Html.Parsing
                     middle = middle.Replace("//<![CDATA[", "");
                     middle = middle.Replace("//]]>//", "");
                     return "<title>" + middle.Trim() + "</title>";
+                }
+                else
+                    return match.Groups[0].Value;
+            }, 1);
+
+            return content;
+        }
+
+        #endregion
+
+        #region public virtual string ReplaceCDATATitle(string content)
+
+        /// <summary>
+        /// Matches the &lt;title&gt;(Anything)&lt;/title&gt;
+        /// </summary>
+        private static readonly System.Text.RegularExpressions.Regex matchStyle =
+            new System.Text.RegularExpressions.Regex("<style([\\s\\S]*)<\\/style>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        /// <summary>
+        /// As HTML Agility Pack wraps the title content in CDATA we can strip it out afterwads
+        /// </summary>
+        /// <param name="content">The html content to find the CDATA title in.</param>
+        /// <returns>The content with the //&lt;[CDATA[ ... //]]&gt;// removed</returns>
+        public virtual string ReplaceCDATAStyle(string content)
+        {
+            content = matchStyle.Replace(content, (match) => {
+                if (match.Groups.Count > 1)
+                {
+                    //Get the bit, inside
+                    var middle = match.Groups[1].Value.Trim();
+
+                    middle = middle.Replace("//<![CDATA[", "");
+                    middle = middle.Replace("//]]>//", "");
+                    return "<style " + middle.Trim() + "</style>";
                 }
                 else
                     return match.Groups[0].Value;
