@@ -7,15 +7,15 @@ namespace Scryber.Components
     /// Delegate callback method from the Document time execution methods.
     /// </summary>
     /// <param name="args">The arguments that will be passed back to the delegate handler. And should be handled appropriately</param>
-    public delegate void SaveAsWithTimerCallback(SaveAsWithTimerArgs args);
+    public delegate void SaveAsCallback(SaveAsCallbackArgs args);
 
 
     /// <summary>
-    /// The arguments passed back to a SaveAsXXXTimer execution.
+    /// The arguments passed back to a SaveAsCallback execution.
     /// If an error was raised then it can either be handled (<see cref="SetErrorHandled(bool, bool)"/>, or it will be re-thrown.
     /// If successful, then close/dispose of the stream if it was created outside of the call.
     /// </summary>
-    public class SaveAsWithTimerArgs
+    public class SaveAsCallbackArgs
     {
         /// <summary>
         /// Set to true if execution has completed (Stage == Written). Otherwise false.
@@ -54,7 +54,7 @@ namespace Scryber.Components
 
         
 
-        internal SaveAsWithTimerArgs(bool success, Stream output, string path, DocumentGenerationStage stage, Exception error)
+        internal SaveAsCallbackArgs(bool success, Stream output, string path, DocumentGenerationStage stage, Exception error)
         {
             this.Success = success;
             this.OutputStream = output;
@@ -82,20 +82,20 @@ namespace Scryber.Components
     {
         //Asyncronous execution with Timer
 
-        public static void SaveAsPDFTimer(this Document doc, string path, SaveAsWithTimerCallback callback)
+        public static void SaveAsPDF(this Document doc, string path, SaveAsCallback callback)
         {
             var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
 
-            SaveAsTimer(doc, stream, path, true, true, OutputFormat.PDF, callback);
+            SaveAs(doc, stream, path, true, true, OutputFormat.PDF, callback);
 
         }
 
-        public static void SaveAsPDFTimer(this Document doc, Stream stream, SaveAsWithTimerCallback callback)
+        public static void SaveAsPDF(this Document doc, Stream stream, SaveAsCallback callback)
         {
-            SaveAsTimer(doc, stream, "", true, false, OutputFormat.PDF, callback);
+            SaveAs(doc, stream, "", true, false, OutputFormat.PDF, callback);
         }
 
-        public static void SaveAsTimer(this Document doc, Stream stream, string path, bool bind, bool ownsStream, OutputFormat format, SaveAsWithTimerCallback callback)
+        public static void SaveAs(this Document doc, Stream stream, string path, bool bind, bool ownsStream, OutputFormat format, SaveAsCallback callback)
         {
             if (null == stream)
             {
@@ -198,7 +198,7 @@ namespace Scryber.Components
                         if (null != callback)
                         {
                             timerRemotes.Dispose();
-                            var args = new SaveAsWithTimerArgs(true, stream, path, DocumentGenerationStage.Written, null);
+                            var args = new SaveAsCallbackArgs(true, stream, path, DocumentGenerationStage.Written, null);
                             callback(args);
                         }
                     }
@@ -212,7 +212,7 @@ namespace Scryber.Components
             });
         }
 
-        private static bool HandleRequestError(Stream stream, string path, bool ownsStream, DocumentGenerationStage stage, SaveAsWithTimerCallback callback, Exception error)
+        private static bool HandleRequestError(Stream stream, string path, bool ownsStream, DocumentGenerationStage stage, SaveAsCallback callback, Exception error)
         {
             if (null == error)
                 error = new Exception("Unknown Exception: an error occurred, but was not passed to the handler");
@@ -220,7 +220,7 @@ namespace Scryber.Components
             if (null != callback)
             {
                 
-                var args = new SaveAsWithTimerArgs(false, stream, path, stage, error);
+                var args = new SaveAsCallbackArgs(false, stream, path, stage, error);
 
                 callback(args);
 

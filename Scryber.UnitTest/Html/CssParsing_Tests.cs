@@ -2315,6 +2315,47 @@ body.grey div.reverse{
             }
         }
 
+        [TestMethod()]
+        public void RemoteCssWithRelativeFileLoading()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/IncludeRelative.css";
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <link href='" + path + @"' rel='stylesheet' />
+                            </head>
+
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content</p>
+                                <div class='relative-background' style='height:50px' >With a background image</div>
+                            </body>
+
+                        </html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSS.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+
+                    doc.SaveAsPDF(stream);
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+
+
+            }
+        }
+
 
         private void ParseCSSWithMultipleSelectors_LayoutComplete(object sender, LayoutEventArgs args)
         {

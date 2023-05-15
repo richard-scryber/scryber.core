@@ -1,0 +1,20 @@
+
+
+
+/* This is the grey body */
+body.grey
+{
+    background-color:#808080; /* body background */
+    color: #222;
+}
+
+
+
+div.relative-background {
+    background-image: url('../images/group.pmg');
+}
+
+
+
+
+
