@@ -105,7 +105,16 @@ namespace Scryber.Binding
         /// <returns></returns>
         public DataBindEventHandler GetDataBindingExpression(string expressionvalue, Type classType, PropertyInfo forProperty)
         {
-            BindingCalcExpression expr = this.CreateBindingExpression(expressionvalue, forProperty);
+            BindingCalcExpression expr = null;
+            try
+            {
+                expr = this.CreateBindingExpression(expressionvalue, forProperty);
+            }
+            catch(Exception ex)
+            {
+                throw new PDFParserException("Could not parse the expression " + expressionvalue + ". " + ex.Message, ex);
+            }
+
             return new DataBindEventHandler(expr.BindComponent);
         }
 
@@ -162,10 +171,19 @@ namespace Scryber.Binding
                 var context = GetContext(this.Options);
                 var parser = new BindingCalcParser(context);
                 expr = new Expression(value, parser, context);
-                expr.CompileExpression();
+
+                try
+                { 
+                    expr.CompileExpression();
+                }
+                catch (Exception ex)
+                {
+                    throw new PDFParserException("Could not compile the expression '" + value + "'. " + ex.Message, ex);
+                }
 
                 if (UseCache)
-                    this.ExpressionCache[value] = expr;
+                        this.ExpressionCache[value] = expr;
+                
             }
 
             return expr;
