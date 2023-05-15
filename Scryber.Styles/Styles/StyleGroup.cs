@@ -61,7 +61,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Gets or sets the owner of this group
         /// </summary>
-        public IComponent Owner
+        public virtual IComponent Owner
         {
             get
             {

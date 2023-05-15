@@ -2327,9 +2327,8 @@ body.grey div.reverse{
 
                             <body class='grey' style='margin:20px;' >
                                 <p id='myPara' >This is a paragraph of content</p>
-                                <div class='relative-background' style='height:50px' >With a background image</div>
+                                <div class='relative-background' style='height:250px; background-size: 60px 50px; font-size:3rem;' >With a background image</div>
                             </body>
-
                         </html>";
 
             using (var sr = new System.IO.StringReader(src))
@@ -2355,6 +2354,72 @@ body.grey div.reverse{
 
                 //The font and the image
                 Assert.AreEqual(2, html.SharedResources.Count);
+
+                //could be first or second
+                var imgXObject = html.SharedResources[0] as PDFImageXObject;
+                if (null == imgXObject)
+                    imgXObject = html.SharedResources[1] as PDFImageXObject;
+
+                Assert.IsNotNull(imgXObject);
+                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/Images/group.png", imgXObject.ResourceKey);
+
+                var w = imgXObject.ImageData.PixelWidth;
+                var h = imgXObject.ImageData.PixelHeight;
+
+                Assert.AreEqual(396, w);
+                Assert.AreEqual(342, h);
+
+            }
+        }
+
+        [TestMethod()]
+        public async Task RemoteRelativeCssWithRelativeFileLoading()
+        {
+            //Full path to source, contains a relative link to a css file, that contains anothor relative link to a background image, that should be resolved.
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/LinkRelative.html";
+
+
+            
+            
+
+            using (var src = await new System.Net.Http.HttpClient().GetStreamAsync(path))
+            {
+                var doc = Document.ParseDocument(src, path, ParseSourceType.RemoteFile);
+
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("HtmlRemoteFileRelativeCSSAndRelativeImage.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    doc.AppendTraceLog = true;
+                    doc.SaveAsPDF(stream);
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                var html = (HTMLDocument)_layoutcontext.Document;
+
+                //The font and the image
+                Assert.AreEqual(2, html.SharedResources.Count);
+
+                //could be first or second
+                var imgXObject = html.SharedResources[0] as PDFImageXObject;
+                if (null == imgXObject)
+                    imgXObject = html.SharedResources[1] as PDFImageXObject;
+
+                Assert.IsNotNull(imgXObject);
+                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/Images/group.png", imgXObject.ResourceKey);
+
+                var w = imgXObject.ImageData.PixelWidth;
+                var h = imgXObject.ImageData.PixelHeight;
+
+                Assert.AreEqual(396, w);
+                Assert.AreEqual(342, h);
 
             }
         }

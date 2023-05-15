@@ -103,12 +103,12 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, layout.AllPages.Count);
             var content = layout.AllPages[0].ContentBlock;
 
-            Assert.AreEqual(3, content.Columns[0].Contents.Count);
+            Assert.AreEqual(4, content.Columns[0].Contents.Count);
             Assert.AreEqual(1, content.PositionedRegions.Count);
 
             var line = content.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.AreEqual(60, line.Height);
-            Assert.AreEqual(7, line.Runs.Count);
+            Assert.AreEqual(8, line.Runs.Count);
             var chars = line.Runs[1] as PDFTextRunCharacter;
             var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(chars);
@@ -143,13 +143,13 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(3, line.Runs.Count);
             chars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(chars);
-            Assert.AreEqual("new line with the required offset", chars.Characters);
+            Assert.AreEqual("flowing onto a new line with the required", chars.Characters);
 
 
 
             //Check the 'Wrapper' block with inline inside
 
-            var wrapper = content.Columns[0].Contents[2] as PDFLayoutBlock;
+            var wrapper = content.Columns[0].Contents[3] as PDFLayoutBlock;
             Assert.AreEqual("Wrapper", wrapper.Owner.ID);
 
 

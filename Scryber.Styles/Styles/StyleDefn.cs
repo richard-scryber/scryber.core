@@ -128,7 +128,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public IComponent Parent {get;set;}
+        #region public IComponent Owner {get;set;}
 
         private IComponent _owner;
 

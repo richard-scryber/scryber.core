@@ -348,9 +348,9 @@ namespace Scryber.Styles
         protected virtual void DoDataBind(DataContext context, bool includechildren)
         {
             if (this.IsValueDefined(StyleKeys.BgImgSrcKey))
-                this.EnsureCSSImage(context, this.GetValue(StyleKeys.BgImgSrcKey, ""), "background");
+                this.EnsureCSSImage(context, StyleKeys.BgImgSrcKey, "background");
             if (this.IsValueDefined(StyleKeys.FillImgSrcKey))
-                this.EnsureCSSImage(context, this.GetValue(StyleKeys.FillImgSrcKey, ""), "fill");
+                this.EnsureCSSImage(context, StyleKeys.FillImgSrcKey, "fill");
             if (this.IsValueDefined(StyleKeys.ContentTextKey))
                 this.EnsureContentImage(context, this.GetValue(StyleKeys.ContentTextKey, null));
 
@@ -368,36 +368,60 @@ namespace Scryber.Styles
             while(null != descriptor)
             {
                 if (descriptor.Type == ContentDescriptorType.Image)
-                    this.EnsureCSSImage(context, (descriptor as ContentImageDescriptor).Source, "content");
+                {
+                    var imgDesc = (descriptor as ContentImageDescriptor);
+                    var updated = this.EnsureCSSImage(context, imgDesc.Source, "content");
+                    imgDesc.Source = updated;
+                }
 
                 descriptor = descriptor.Next;
             }
         }
 
-        protected virtual void EnsureCSSImage(DataContext context, string source, string type)
+        protected virtual void EnsureCSSImage(DataContext context, StyleKey<string> key, string type)
         {
+            var source = this.GetValue(key, "");
+
+            var mapped = EnsureCSSImage(context, source, type);
+
+            this.SetValue(key, mapped);
+
+        }
+
+        protected virtual string EnsureCSSImage(DataContext context, string source, string type)
+        {
+            
+
             if(IsGradientImageSrc(source, out var desc))
             {
-                return;
+                return source;
             }
+            else if (IsDataImage(source))
+            {
+                return source;
+            }
+
+
+            var mapped = this.MapPath(source);
+
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Mapped path for '" + source + "' to '" + mapped + "'");
+
 
             IResourceRequester requester = context.Document as IResourceRequester;
             if(null == requester)
             {
                 context.TraceLog.Add(TraceLevel.Warning, "Styles", "Cannot pre-load " + type + " images as the document does not support resource requests");
-                return;
+                return source;
             }
-
-            var mapped = this.MapPath(source);
-            if (context.ShouldLogVerbose)
-                context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Mapping path for '" + source + "' to '" + mapped + "'");
-
 
             //We just make sure the image is loaded
             var existing = context.Document.GetResource(PDFResource.XObjectResourceType, mapped, true);
 
             if (context.ShouldLogMessage)
                 context.TraceLog.Add(TraceLevel.Message, "Styles", type + " image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
+
+            return mapped;
         }
 
         #endregion
@@ -1844,6 +1868,15 @@ namespace Scryber.Styles
                 descriptor = null;
                 return false;
             }
+        }
+
+
+        protected virtual bool IsDataImage(string value)
+        {
+            if (value.StartsWith("data:image/"))
+                return true;
+            else
+                return false;
         }
 
         #endregion
