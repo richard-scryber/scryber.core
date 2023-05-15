@@ -203,7 +203,7 @@ namespace Scryber.Core.UnitTests.Generation
                     {
                         bool complete = false;
 
-                        doc.SaveAsPDFTimer(stream, (status) =>
+                        doc.SaveAsPDF(stream, (status) =>
                         {
                             if (status.Success)
                                 complete = true;

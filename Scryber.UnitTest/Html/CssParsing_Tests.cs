@@ -2318,7 +2318,7 @@ body.grey div.reverse{
         [TestMethod()]
         public void RemoteCssWithRelativeFileLoading()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/IncludeRelative.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/CSS/IncludeRelative.css";
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
@@ -2337,10 +2337,10 @@ body.grey div.reverse{
                 var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
 
-                using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSS.pdf"))
+                using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSSRelative.pdf"))
                 {
                     doc.LayoutComplete += SimpleDocumentParsing_Layout;
-
+                    doc.AppendTraceLog = true;
                     doc.SaveAsPDF(stream);
                 }
 
@@ -2351,7 +2351,10 @@ body.grey div.reverse{
 
                 //This has been loaded from the remote file
                 Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                var html = (HTMLDocument)_layoutcontext.Document;
 
+                //The font and the image
+                Assert.AreEqual(2, html.SharedResources.Count);
 
             }
         }
