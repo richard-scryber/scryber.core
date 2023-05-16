@@ -1879,6 +1879,37 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod()]
+        public void ItalicThenRegularSpans()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            doc.Pages.Add(pg);
+            pg.FontFamily = new FontSelector("Sans-Serif");
+            pg.FontSize = 20;
+
+
+            var ital = new Div();
+            ital.FontStyle = FontStyle.Italic;
+            ital.Contents.Add(new TextLiteral("This is an italic run with an "));
+            pg.Contents.Add(ital);
+
+            var inner = new Span();
+            inner.FontItalic = false;
+            inner.Contents.Add(new TextLiteral("inner regular font."));
+            ital.Contents.Add(inner);
+
+            ital.Contents.Add(new TextLiteral(" And after the regular, back to italic"));
+
+            doc.LayoutComplete += Doc_LayoutComplete;
+
+            SaveAsPDF(doc, "Text_LiteralsInItalicWithInnerRegular");
+        }
+
+        [TestMethod()]
         public void MultipleFixedLeadingSpans()
         {
             var doc = new Document();

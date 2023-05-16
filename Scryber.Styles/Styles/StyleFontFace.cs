@@ -325,10 +325,16 @@ namespace Scryber.Styles
 
         protected virtual FontSource GetSupportedSource(FontSource source)
         {
+            //Prefer the TTF format, but if woff is there, then use it.
+            FontSource woff = null;
+
             while (null != source)
             {
                 if (source.Format == FontSourceFormat.WOFF)
-                    return source;
+                {
+                    woff = source;
+                    source = source.Next;
+                }
                 else if (source.Format == FontSourceFormat.TrueType)
                     return source;
                 else if (source.Format == FontSourceFormat.OpenType)
@@ -339,14 +345,18 @@ namespace Scryber.Styles
                     {
                         return new FontSource(source.Type, source.Source, FontSourceFormat.TrueType);
                     }
+                    else if (source.Source.EndsWith(".otf")) // url(....otf)
+                    {
+                        return new FontSource(source.Type, source.Source, FontSourceFormat.OpenType);
+                    }
                     else
-                        return null;
+                        return woff;
                 }
                 else
                     source = source.Next;
             }
 
-            return null;
+            return woff;
         }
         
         

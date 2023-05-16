@@ -2424,6 +2424,69 @@ body.grey div.reverse{
             }
         }
 
+        [TestMethod]
+        public void RemoteFontAwesomeLoading()
+        {
+
+            var src = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+
+                        <head>
+                          <title>Font Awesome document</title>
+                          <link href='https://use.fontawesome.com/releases/v5.15.4/css/all.css' rel='stylesheet' />
+                          <style>
+    
+                            body {
+                              padding: 20px;
+                            }
+
+                            i.fa.fa-pen, i.fa.fa-palette{
+                                font-weight:400;
+                            }
+                          </style>
+                        </head>
+
+                        <body>
+                          <i class='fa fa-pen'></i><i class='fa fa-palette' ></i>
+                        </body>
+
+                        </html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("HtmlFontAwesomeRegular.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+                    //doc.AppendTraceLog = true;
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.Inconclusive("Need to sort the standard and solid font programmes from the css stylesheet");
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Font Awesome document", doc.Info.Title, "Title is not correct");
+
+                //This has been loaded from the remote file
+
+                var html = (HTMLDocument)_layoutcontext.Document;
+
+                //The font and the image
+                Assert.AreEqual(1, html.SharedResources.Count);
+
+                //could be first or second
+                var fa = html.SharedResources[0] as PDFFontResource;
+                
+
+                Assert.IsNotNull(fa);
+            }
+
+        }
+
 
         private void ParseCSSWithMultipleSelectors_LayoutComplete(object sender, LayoutEventArgs args)
         {
