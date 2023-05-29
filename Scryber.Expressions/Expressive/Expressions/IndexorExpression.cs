@@ -36,7 +36,7 @@ namespace Scryber.Expressive.Expressions
                     }
 
                 }
-                else if (rhs is IList list)
+                else if (lhsResult is IList list)
                 {
                     if (rhs is int index || int.TryParse(rhs.ToString(), out index))
                     {
@@ -47,7 +47,7 @@ namespace Scryber.Expressive.Expressions
                         throw new IndexOutOfRangeException("Could not extract the index of the list from the expression");
                     }
                 }
-                else if (rhs is IDictionary dict)
+                else if (lhsResult is IDictionary dict)
                 {
                     return DoGetDictionaryValue(dict, rhs.ToString());
                 }

@@ -3082,6 +3082,33 @@ namespace Scryber.Core.UnitTests.Html
             Assert.Inconclusive();
         }
 
+        [TestMethod]
+        public void HelloWorldFromBlazorTest()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <title>Hello World</title>
+</head>
+
+<body>
+    <h1 class='title'>Hello World</h1>
+</body>
+
+</html>";
+
+            using (var sr = new StringReader(src))
+            {
+                using (var doc = Document.ParseDocument(sr))
+                {
+                    using (var stream = DocStreams.GetOutputStream("HelloWorldBlazor.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+                }
+            }
+        }
+
     }
 
 

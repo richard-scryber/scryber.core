@@ -201,8 +201,6 @@ namespace Scryber.Html.Parsing
 
                 content = ExtractHTMLContent(root);
 
-                Console.WriteLine("Extracted HTML content : " + content);
-
                 content = ReplaceCDATATitle(content);
                 content = ReplaceCDATAStyle(content);
 
@@ -214,13 +212,19 @@ namespace Scryber.Html.Parsing
 
             content = ReplaceEscapedEntities(content);
 
+            //Console.WriteLine("Extracted HTML content : " + content);
+
+            IComponent parsed;
+
             using (var sr = new StringReader(content))
             {
                 using (var xr = new XmlHtmlEntityReader(sr))
                 {
-                    return Parse(source, xr, type);
+                    parsed = Parse(source, xr, type);
                 }
             }
+
+            return parsed;
         }
 
 

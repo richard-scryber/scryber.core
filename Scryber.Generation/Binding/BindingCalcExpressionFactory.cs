@@ -75,7 +75,12 @@ namespace Scryber.Binding
 
         public BindingCalcExpressionFactory()
         {
+#if DEBUG
+            this._useCache = false;
+#else
             this._useCache = true;
+#endif
+
             this._options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
             this.ResetBindingOptions();
         }

@@ -30,7 +30,18 @@ namespace Scryber.Expressive.Expressions
             return left;
         }
 
-        
+        public override object Evaluate(IDictionary<string, object> variables)
+        {
+            if (null == this.rightHandSide && this.leftHandSide is CurrentDataExpression)
+            {
+                //special case where we are just a '.'
+                var result = this.leftHandSide.Evaluate(variables);
+                return result;
+            }
+            else
+                return base.Evaluate(variables);
+        }
+
 
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables)
         {

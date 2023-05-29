@@ -1576,5 +1576,73 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+
+
+        [TestMethod]
+        public void ExpressionSelectWhereIndexor()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression SelectWhere Indexor</title>
+                                <style>
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with SelectWhere and an index</h2>
+                                 <p id='innerContent' style='border: solid 1px green'>{{selectWhere(items.deeparray, .name == 'One')[0].value}}</p>
+                            </body>
+                        </html>";
+
+            var json = @"{
+                'items': {
+                       'value':'Single',
+                       'items': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }
+                }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_SelectWhereIndexor.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var p = doc.FindAComponentById("innerContent") as Paragraph;
+                Assert.IsNotNull(p, "Could not find the paragraph to inspect");
+
+                Assert.AreEqual(1, p.Contents.Count);
+                var lit = p.Contents[0] as TextLiteral;
+                Assert.IsNotNull(lit);
+                Assert.AreEqual("1", lit.Text);
+
+                
+
+            }
+
+
+        }
+
     }
+
+
 }

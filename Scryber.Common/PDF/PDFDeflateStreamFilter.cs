@@ -16,7 +16,8 @@
  * 
  */
 
-#define USE_IO_COMPRESSION
+//#define USE_IO_COMPRESSION
+//#define ADD_ZIPBYTES
 
 using System;
 using System.Collections.Generic;
@@ -83,11 +84,14 @@ namespace Scryber.PDF
                 inputStream = new System.IO.MemoryStream(orig);
                 outputStream = new System.IO.MemoryStream();
 
-                //Add the zip headers
+#if ADD_ZIPBYTES
+                //Add the zip compression headers
                 outputStream.WriteByte((byte)0x78);
                 outputStream.WriteByte((byte)0x9c);
+#endif
+                WriteBytesToLog(orig, "Original data");
 
-                using (compressor = new System.IO.Compression.DeflateStream(outputStream, System.IO.Compression.CompressionLevel.Optimal , true))
+                using (compressor = new System.IO.Compression.DeflateStream(outputStream, System.IO.Compression.CompressionMode.Compress , true))
                 {
                     inputStream.CopyTo(compressor);
                 }
@@ -95,9 +99,15 @@ namespace Scryber.PDF
 
                 output = outputStream.ToArray();
 
+                WriteBytesToLog(output, "Compressed data");
+
 #else
+                //WriteBytesToLog(orig, "Original data");
+
                 PDFDeflateZLib zlib = new PDFDeflateZLib();
                 output = zlib.Compress(orig);
+
+                //WriteBytesToLog(output, "Compressed data");
 #endif
                 //The ZLib algorithm will return null if there is no compression
                 if (null == output)
@@ -122,6 +132,18 @@ namespace Scryber.PDF
                 outputStream = null;
                 inputStream = null;
             }
+        }
+
+        private static void WriteBytesToLog(byte[] data, string name)
+        {
+            var sb = new StringBuilder();
+            for(var i = 0; i < data.Length; i++)
+            {
+                sb.Append(data[i]);
+                sb.Append(" ");
+            }
+
+            Console.WriteLine(name + ": " + sb.ToString());
         }
     }
 }
