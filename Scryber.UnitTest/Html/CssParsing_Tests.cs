@@ -564,6 +564,48 @@ body.grey div.reverse{
         }
 
         [TestMethod]
+        public void RemoteCSSWithErrorsLoading()
+        {
+            //the font awesome css file does have errors
+            var src = @"<?scryber append-log='true' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+
+<head>
+    <title>Hello FontAwesome</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.css' />
+</head>
+<body>
+    
+    <h1 class='title'>
+      <i class='far fa-clock' ></i>Hello FontAwesome
+   </h1>
+  
+  
+</body>
+
+</html>";
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("HtmlRemoteCSSWithErrors.pdf"))
+                {
+                    doc.LayoutComplete += SimpleDocumentParsing_Layout;
+
+                    doc.SaveAsPDF(stream);
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Hello FontAwesome", doc.Info.Title, "Title is not correct");
+
+            }
+        }
+
+        [TestMethod]
         public void ParsePDFFontSource()
         {
             string sample = "url(https://somewebsite.com/path/to/font.woff)";

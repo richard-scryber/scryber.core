@@ -92,7 +92,6 @@ namespace Scryber.Styles.Parsing
                 }
 
                 selector = this._str.Substring(start, next - start).Trim();
-
                 if (this.IsMediaQuery(ref selector))
                 {
 
@@ -112,7 +111,7 @@ namespace Scryber.Styles.Parsing
 
                     this._str.Offset = innerEnd;
                 }
-                else if(this.IsPageQuery(ref selector))
+                else if (this.IsPageQuery(ref selector))
                 {
                     if (this._log.ShouldLog(TraceLevel.Debug))
                         this._log.Add(TraceLevel.Debug, "CSS", "Found page at rule for " + selector + " parsing inner contents");
@@ -129,7 +128,7 @@ namespace Scryber.Styles.Parsing
 
                     this._str.Offset = innerEnd;
                 }
-                else if(this.IsFontFace(ref selector))
+                else if (this.IsFontFace(ref selector))
                 {
                     if (this._log.ShouldLog(TraceLevel.Debug))
                         this._log.Add(TraceLevel.Debug, "CSS", "Found font-face at rule for " + selector + " parsing inner contents");
@@ -145,6 +144,23 @@ namespace Scryber.Styles.Parsing
                         parsed = new StyleFontFace();
 
                     this._str.Offset = innerEnd;
+                }
+                else if (IsRuleSelector(selector))
+                {
+                    if (this._log.ShouldLog(TraceLevel.Verbose))
+                    {
+                        this._log.Add(TraceLevel.Warning, "CSS", "Found unsupported rule " + selector + " so skipping content.");
+                    }
+                    //skip over the inner content, and then read the next
+                    this._str.MoveNext();
+
+                    this.MoveToGroupEnd();
+
+
+                    if (this._log.ShouldLog(TraceLevel.Debug))
+                        this._log.Add(TraceLevel.Warning, "CSS", "Next Chars after skipping are " + this._str.Substring(this._str.Offset, 20));
+
+                    return this.ParseNextStyle();
                 }
                 else
                 {
@@ -226,6 +242,18 @@ namespace Scryber.Styles.Parsing
             }
             else
                 return false;
+        }
+
+        private bool IsRuleSelector(string selector)
+        {
+            if(!string.IsNullOrEmpty(selector) && selector.StartsWith("@"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private int MoveToNextStyleStart()

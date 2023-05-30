@@ -36,7 +36,7 @@ namespace Scryber
                 if (_offset < 0)
                     throw new InvalidOperationException("This string enumerator has not yet moved onto the first character. Always call MoveNext atleast once before accessing any character.");
                 else if (_offset >= _length)
-                    throw new InvalidOperationException("The enumerator has moved pat the end of the string");
+                    throw new InvalidOperationException("The enumerator has moved past the end of the string");
 
                 return _text[_offset + _startIndex];
             }
