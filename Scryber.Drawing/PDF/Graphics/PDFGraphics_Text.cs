@@ -194,7 +194,7 @@ namespace Scryber.PDF.Graphics
                 if (options.WrapText.HasValue)
                 {
                     if (options.WrapText == WordWrap.NoWrap)
-                        available.Width = new Unit(int.MaxValue, PageUnits.Points);
+                        available.Width = new Unit(Scryber.Text.TextConst.NoWrappingLineWidthPoints, PageUnits.Points);
                     else if (options.WrapText == WordWrap.Character)
                         trimtoword = false;
                 }

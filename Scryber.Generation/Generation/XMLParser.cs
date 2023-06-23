@@ -237,6 +237,10 @@ namespace Scryber.Generation
             }
             catch(Exception ex)
             {
+                if (string.IsNullOrEmpty(source))
+                {
+                    source = "Dynamic";
+                }
                 throw new PDFParserException(string.Format(Errors.CouldNotParseSource, source, ex.Message), ex);
             }
         }
@@ -424,9 +428,16 @@ namespace Scryber.Generation
                 cdef = AssertGetClassDefinition(reader, out isremote);
             else if (!TryGetClassDefinition(reader, out cdef, out isremote))
             {
-                //No Class definition - so skip this element
-                SkipOverCurrentElement(reader);
-                return null;
+                if (isroot)
+                {
+                    throw new PDFParserException("The root element " + reader.LocalName + " with namespace " + reader.NamespaceURI + " could not be resolved. Check the validity of the supported namespaces");
+                }
+                else
+                {
+                    //No Class definition - so skip this element
+                    SkipOverCurrentElement(reader);
+                    return null;
+                }
             }
 
             this.CheckFrameworkIsSupported(reader, cdef, this.Mode);
