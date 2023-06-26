@@ -211,6 +211,7 @@ namespace Scryber.Html.Parsing
             //HAG will replace &quot; with &amp;quot; - so we can swap these back, as the XmHtmlEntityReader handles them.
 
             content = ReplaceEscapedEntities(content);
+            content = ReplaceEscapedBindingExpressions(content);
 
             //Console.WriteLine("Extracted HTML content : " + content);
 
@@ -315,6 +316,54 @@ namespace Scryber.Html.Parsing
         }
 
         #endregion
+
+        //TODO: Convert to a single regex.
+
+        /// <summary>
+        /// Matches the escaped HTML entities (&amp;nbsp; is converted to &amp;amp;nbsp;).
+        /// Regex is thread-safe so can be kept static.
+        /// </summary>
+        private static readonly System.Text.RegularExpressions.Regex captureBindings =
+            new System.Text.RegularExpressions.Regex("{{([^><]*)}}");
+
+
+        private static readonly System.Text.RegularExpressions.Regex captureEscapedContent
+            = new System.Text.RegularExpressions.Regex("&(\\w){1,8};");
+
+        public virtual string ReplaceEscapedBindingExpressions(string content)
+        {
+            var restored = captureBindings.Replace(content, (input) =>
+            {
+                var val = input.Groups[0].Value;
+
+                var replaced = captureEscapedContent.Replace(val, (matched) => {
+                    string result;
+                    switch (matched.Value)
+                    {
+                        case ("&gt;"):
+                            result = ">";
+                            break;
+                        case ("&lt;"):
+                            result = "<";
+                            break;
+                        case ("&quot;"):
+                            result = "\"";
+                            break;
+                        case ("&apos;"):
+                            result = "'";
+                            break;
+                        default:
+                            result = matched.Value;
+                            break;
+                    }
+                    return result;
+                });
+
+                return replaced;
+            });
+
+            return restored;
+        }
 
         #region public virtual string ReplaceCDATATitle(string content)
 

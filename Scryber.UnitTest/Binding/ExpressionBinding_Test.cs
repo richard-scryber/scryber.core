@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Scryber.Html;
 using Scryber.PDF.Layout;
+using System.IO;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -611,6 +612,123 @@ namespace Scryber.Core.UnitTests.Binding
             }
 
 
+        }
+
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void BindHtmlWithQuotes()
+        {
+            var withQuotes = @"<html>
+  <body>
+    <table class='expressions relational'>
+      <tr>
+        <td>if(model.number == 20.9 , ""Equal"", ""Not equal"")</td>
+        <td class='result'>{{if(model.number == 20.9 , ""Equal"", ""Not equal"")}}</td>
+      </tr>
+      <tr>
+        <td>Before &gt;(if(model.number == 20.9 , ""'Equal'"", ""Not 'equal'"")&lt; After</td>
+        <td class='result'>Before &gt;{{if(model.number == 20.9 , ""'Equal'"", ""Not 'equal'"")}}&lt; After</td>
+      </tr>
+      <tr>
+        <td>Before &gt; (if(model.number == 20.0 , ""'Equal'"", ""Not &apos;equal&apos;"") &lt; After</td>
+        <td class='result'>Before &gt; {{if(model.number == 20.0 , ""'Equal'"", ""Not &apos;equal&apos;"")}} &lt; After</td>
+      </tr>
+    </table>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withQuotes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+
+            doc.Params["model"] = new {
+                number = 20.9
+            };
+
+            using (var stream = DocStreams.GetOutputStream("BindHtmlWithQuotes.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+            var pg = doc.Pages[0] as Page;
+            Assert.IsNotNull(pg);
+
+            var tbl = pg.Contents[0] as TableGrid;
+            Assert.IsNotNull(tbl) ;
+
+            TableCell cell;
+            TextLiteral lit;
+
+            //Row 0 cell 0
+
+            cell = tbl.Rows[0].Cells[0];
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.AreEqual("if(model.number == 20.9 , &quot;Equal&quot;, &quot;Not equal&quot;)", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 0 cell 1
+            cell = tbl.Rows[0].Cells[1];
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+
+            Assert.AreEqual("Equal", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 1 cell 0
+
+            cell = tbl.Rows[1].Cells[0] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("Before &gt;(if(model.number == 20.9 , &quot;&apos;Equal&apos;&quot;, &quot;Not &apos;equal&apos;&quot;)&lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 1 cell 1
+
+            cell = tbl.Rows[1].Cells[1] as TableCell;
+
+            //3 literals together Before > and 'Equal' and < After
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.AreEqual(3, cell.Contents.Count);
+
+            Assert.AreEqual(@"Before &gt;", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[1] as TextLiteral;
+
+            Assert.AreEqual("'Equal'", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[2] as TextLiteral;
+
+            Assert.AreEqual("&lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 2 cell 0
+
+            cell = tbl.Rows[2].Cells[0] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("Before &gt; (if(model.number == 20.0 , &quot;&apos;Equal&apos;&quot;, &quot;Not &apos;equal&apos;&quot;) &lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 2 cell 1
+
+            cell = tbl.Rows[2].Cells[1] as TableCell;
+
+            //3 literals together Before > and 'Equal' and < After
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.AreEqual(3, cell.Contents.Count);
+
+            Assert.AreEqual(@"Before &gt; ", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[1] as TextLiteral;
+
+            Assert.AreEqual("Not 'equal'", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[2] as TextLiteral;
+
+            Assert.AreEqual(" &lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
         }
 
 

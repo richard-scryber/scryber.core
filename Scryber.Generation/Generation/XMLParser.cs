@@ -24,6 +24,7 @@ using System.Xml;
 using System.Data.Common;
 
 using Scryber.Logging;
+using System.Text.RegularExpressions;
 
 namespace Scryber.Generation
 {
@@ -1587,11 +1588,32 @@ namespace Scryber.Generation
             lit.ReaderFormat = format;
             arraydefn.AddToCollection(collection, lit);
 
+            if(format == TextFormat.XML)
+            {
+                expr = ReplaceBindingEntitiesNotInQuotes(expr);
+            }
             var cdef = this.AssertGetClassDefinition(this.Settings.TextLiteralType);
             var prop = cdef.Attributes["value"];
 
             GenerateBindingExpression(null, lit, cdef, prop, expr, factory);
 
+        }
+
+        private Dictionary<string, char> HtmlEntities = XmlHtmlEntityReader.DefaultKnownHTMLEntities;
+        private Regex bindingMatcher = new Regex("&(\\w{1,8});");
+
+        private string ReplaceBindingEntitiesNotInQuotes(string bindindExpr)
+        {
+            var replaced = bindingMatcher.Replace(bindindExpr, (amatch) =>
+            {
+                char found;
+                var toFind = amatch.Groups[1].Value;
+                if (HtmlEntities.TryGetValue(toFind, out found))
+                    return found.ToString();
+                else
+                    return amatch.Value;
+            });
+            return replaced;
         }
 
         private void AddTextString(string text, ParserArrayDefinition arraydefn, object collection, TextFormat format)

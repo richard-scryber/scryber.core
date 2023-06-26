@@ -88,6 +88,12 @@ namespace Scryber.Generation
             // NOTE: we don't use base here. Depends on the scenario
         }
 
+        
+
+        
+
+        public static Dictionary<string, char> DefaultKnownHTMLEntities = InitKnownHTMLEntities();
+
 
         public static Dictionary<string, char> InitKnownHTMLEntities()
         {

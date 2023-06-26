@@ -2956,6 +2956,18 @@ namespace Scryber.Components
             }
         }
 
+        public static IComponent ParseHtml(string source, System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(source);
+
+            IComponent comp = ParseHtml(source, stream, type, checker.Resolver);
+
+            if (comp is IRemoteComponent)
+                ((IRemoteComponent)comp).LoadedSource = source;
+
+            return comp;
+        }
+
         public static IComponent ParseHtml(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
@@ -2968,6 +2980,18 @@ namespace Scryber.Components
             IComponentParser parser = new Scryber.Html.Parsing.HTMLParser(settings);
 
             IComponent comp = parser.Parse(source, stream, type);
+            return comp;
+        }
+
+        public static IComponent ParseHtml(string source, System.IO.TextReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(source);
+
+            IComponent comp = ParseHtml(source, reader, type, checker.Resolver);
+
+            if (comp is IRemoteComponent)
+                ((IRemoteComponent)comp).LoadedSource = source;
+
             return comp;
         }
 

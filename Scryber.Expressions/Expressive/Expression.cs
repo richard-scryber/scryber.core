@@ -91,9 +91,11 @@ namespace Scryber.Expressive
             this.context = context ?? throw new ArgumentNullException(nameof(context));
             this.parser = parser ?? throw new ArgumentNullException(nameof(parser));
         }
-#endregion
+        #endregion
 
-#region Public Methods
+        #region Public Methods
+
+        const int SignificantDigits = 10;
 
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
@@ -107,7 +109,17 @@ namespace Scryber.Expressive
             {
                 this.CompileExpression();
 
-                return this.compiledExpression?.Evaluate(ApplyStringComparerSettings(variables, this.context.ParsingStringComparer));
+                var result = this.compiledExpression?.Evaluate(ApplyStringComparerSettings(variables, this.context.ParsingStringComparer));
+                if(result is double)
+                {
+                    result = Math.Round((double)result, SignificantDigits);
+                }
+                else if(result is decimal)
+                {
+                    result = Math.Round((decimal)result, SignificantDigits);
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
