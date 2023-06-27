@@ -99,9 +99,10 @@ namespace Scryber.Generation
         {
             Dictionary<string, char> known = new Dictionary<string, char>();
             known.Add("nbsp", ' ');
-            known.Add("lt", '<');
-            known.Add("gt", '>');
-            known.Add("amp", '&');
+            //known.Add("lt", '<');
+            //known.Add("gt", '>');
+            //known.Add("amp", '&');
+            known.Add("apos", '\'');
             known.Add("quot", '"');
             known.Add("euro", '€');
             known.Add("ldquo", '“');

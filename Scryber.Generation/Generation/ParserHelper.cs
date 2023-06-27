@@ -69,8 +69,10 @@ namespace Scryber.Generation
         private const int HandlebarsExpressionInset = 2; // for {{
         private const int HandlebarsExpressionLength = 4; // for {{ and }}
 
-        private static System.Text.RegularExpressions.Regex bindingMatcher = new System.Text.RegularExpressions.Regex(@"{\w+\:[\w\.\[\]]+}|{@\:[\w\.\[\]]+}|{{(.*?)}}");
-        private static System.Text.RegularExpressions.Regex handlebarsMatcher = new System.Text.RegularExpressions.Regex(@"{{(.*?)}}");
+        private const string handlebarsExpression = @"(\\?){{(.*?)}}(\1)"; //either \{{ expr }}\ an escaped expression or {{ }} for a valid expression.
+        private const string handlebarsEscapeChar = @"\";
+        private static System.Text.RegularExpressions.Regex bindingMatcher = new System.Text.RegularExpressions.Regex(@"{\w+\:[\w\.\[\]]+}|{@\:[\w\.\[\]]+}|" + handlebarsExpression);
+        private static System.Text.RegularExpressions.Regex handlebarsMatcher = new System.Text.RegularExpressions.Regex(handlebarsExpression);
 
 
         private static object _configlock = new object();
@@ -159,8 +161,13 @@ namespace Scryber.Generation
                     factColl.Add(null);
                 }
                 sub = match.Value;
-
-                if(TryGetBindingExpression(ref sub, out fact))
+                if (IsEscapedBindingExpression(sub)) //We ignore escaped
+                {
+                    partColl.Add(sub.Substring(1, sub.Length-2));
+                    factColl.Add(null);
+                    found = true;
+                }
+                else if(TryGetBindingExpression(ref sub, out fact))
                 {
                     partColl.Add(sub);
                     factColl.Add(fact);
@@ -185,6 +192,19 @@ namespace Scryber.Generation
             factories = factColl.ToArray();
 
             return found;
+        }
+
+        private static bool IsEscapedBindingExpression(string expr)
+        {
+            if (!string.IsNullOrEmpty(expr) &&
+                expr.StartsWith(handlebarsEscapeChar) &&
+                expr.EndsWith(handlebarsEscapeChar))
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
 

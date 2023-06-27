@@ -616,7 +616,57 @@ namespace Scryber.Core.UnitTests.Binding
 
         [TestMethod]
         [TestCategory("Binding")]
-        public void BindHtmlWithQuotes()
+        public void BindHtmlWithEscapes()
+        {
+            var withEscapes = @"<html>
+  <body>
+    <table class='expressions relational'>
+      <tr>
+        <td>A simple string</td>
+        <td>A string with an inner {{model.number}} binding</td>
+      </tr>
+      <tr>
+        <td>Wrapped in escapes \{{ and after }}\ are ignored</td>
+        <td>Wrapped in span <span>{{</span> is ignored but not {{model.number}}</td>
+      </tr>
+      <tr>
+        <td>\{{model.number + 1}}\ ignored start</td>
+        <td>\{{model.number + 1}} binding start</td>
+      </tr>
+      <tr>
+        <td>Ignored end \{{model.number + 1}}\</td>
+        <td>Bound end {{model.number + 1}}\</td>
+      </tr>
+      <tr>
+        <td>Bound with space \ {{model.number + 1}} \</td>
+        <td>Bound with space  {{model.number + 1}} \</td>
+      </tr>
+      <tr>
+        <td>Ignored middle \{{concat('&lt;', model.number + 1, '&gt;')}}\ but not {{'\'' + string(model.number + 1) + '\''}} after</td>
+        <td>Bound middle {{model.number + 1}} but ignored end \{{model.number+2}}\</td>
+      </tr>
+    </table>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withEscapes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.Params["model"] = new
+            {
+                number = 20.9
+            };
+
+            using (var stream = DocStreams.GetOutputStream("BindHtmlWithEscapes.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void BindHtmlWithQuotesAndEncoding()
         {
             var withQuotes = @"<html>
   <body>
@@ -632,6 +682,14 @@ namespace Scryber.Core.UnitTests.Binding
       <tr>
         <td>Before &gt; (if(model.number == 20.0 , ""'Equal'"", ""Not &apos;equal&apos;"") &lt; After</td>
         <td class='result'>Before &gt; {{if(model.number == 20.0 , ""'Equal'"", ""Not &apos;equal&apos;"")}} &lt; After</td>
+      </tr>
+      <tr>
+        <td>20.9 &lt; 20.9</td>
+        <td class='result'>{{20.9 &lt; 20.9}}</td>
+      </tr>
+      <tr>
+        <td>20.9 > 20.9</td>
+        <td class='result'>{{20.9 > 20.9}}</td>
       </tr>
     </table>
   </body>
@@ -729,6 +787,23 @@ namespace Scryber.Core.UnitTests.Binding
 
             Assert.AreEqual(" &lt; After", lit.Text);
             Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 3 cell 0
+
+            cell = tbl.Rows[3].Cells[0] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("20.9 &lt; 20.9", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 3 cell 1
+
+            cell = tbl.Rows[3].Cells[1] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("False", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
         }
 
 

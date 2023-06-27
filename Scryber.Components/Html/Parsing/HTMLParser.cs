@@ -343,9 +343,10 @@ namespace Scryber.Html.Parsing
                         case ("&gt;"):
                             result = ">";
                             break;
-                        case ("&lt;"):
-                            result = "<";
-                            break;
+                        //Don't do < as it will be done later on in the binding expression parser
+                        //case ("&lt;"):
+                        //    result = "<";
+                        //    break;
                         case ("&quot;"):
                             result = "\"";
                             break;
