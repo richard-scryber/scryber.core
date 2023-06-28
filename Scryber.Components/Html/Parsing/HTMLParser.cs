@@ -291,7 +291,7 @@ namespace Scryber.Html.Parsing
         /// Regex is thread-safe so can be kept static.
         /// </summary>
         private static readonly System.Text.RegularExpressions.Regex restoreHtmlEntities =
-            new System.Text.RegularExpressions.Regex("&amp;([^ ]{1,8});");
+            new System.Text.RegularExpressions.Regex("&amp;([^ &]{1,8});");
 
 
         /// <summary>

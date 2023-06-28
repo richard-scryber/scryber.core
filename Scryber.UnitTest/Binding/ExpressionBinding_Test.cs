@@ -207,7 +207,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             var value = expression.Expression.Evaluate<double>();
 
-            Assert.AreEqual(Math.PI, value);
+            Assert.AreEqual(Math.Round(Math.PI, 10), value);
 
             str = "round(Pi, 3)";
             expression = factory.CreateBindingExpression(str, null);
@@ -373,20 +373,27 @@ namespace Scryber.Core.UnitTests.Binding
 
                 new FunctionTest() {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number < 21 && model.number > 20),'Outside','Between')", result = "Between"},
 
-                new FunctionTest() {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = DateTime.Parse("30/06/2021 11:00:00 AM").ToString()},
+                new FunctionTest() {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = DateTime.Parse("30 June 2021 11:00:00 AM").ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
-                new FunctionTest() {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
+                new FunctionTest() {grp = "Conversion Functions", name = "String", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(0)", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean('')", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean('val')", result = "True"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(1)", result = "True"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(0)", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(0.0)", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(date())", result = "True"},
 
-                new FunctionTest() {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("10/07/2021 11:00:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("30/06/2021 21:00:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = DateTime.Parse("30/06/2021 11:00:02").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = DateTime.Parse("30/06/2021 11:40:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = DateTime.Parse("30/08/2021 11:00:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = DateTime.Parse("30/06/2021 11:01:40").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = DateTime.Parse("30/06/3021 11:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("10 July 2021 11:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("30 June 2021 21:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = DateTime.Parse("30 June 2021 11:00:02").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = DateTime.Parse("30 June 2021 11:40:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = DateTime.Parse("30 August 2021 11:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = DateTime.Parse("30 June 2021 11:01:40").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = DateTime.Parse("30 June 3021 11:00:00").ToString()},
 
                 new FunctionTest() {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new FunctionTest() {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
@@ -447,6 +454,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "String Functions", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
                 new FunctionTest() {grp = "String Functions", name = "Concat (with types)", function = "concat('numbers:',9, model.array)", result = "numbers:9101112"},
                 new FunctionTest() {grp = "String Functions", name = "Join", function = "join('-', 9, 12, 13)", result = "9-12-13"},
+                new FunctionTest() {grp = "String Functions", name = "Join", function = "join('-', model.array)", result = "10-11-12"},
                 new FunctionTest() {grp = "String Functions", name = "Join (with types)", function = "join(', ', 9, model.array, 13)", result = "9, 10, 11, 12, 13"},
                 new FunctionTest() {grp = "String Functions", name = "Contains", function = "contains('a string','str')", result = "True"},
                 new FunctionTest() {grp = "String Functions", name = "Contains", function = "contains('a string','l')", result = "False"},
@@ -616,13 +624,38 @@ namespace Scryber.Core.UnitTests.Binding
 
         [TestMethod]
         [TestCategory("Binding")]
+        public void BindHtmlWithDoubleAmpersand()
+        {
+            var withEscapes = @"<html>
+  <body>
+    <span>A simple string (&amp;&amp;)</span>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withEscapes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.Params["model"] = new
+            {
+                number = 20.9
+            };
+
+            using (var stream = DocStreams.GetOutputStream("BindHtmlWithDoubleAmpersand.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Binding")]
         public void BindHtmlWithEscapes()
         {
             var withEscapes = @"<html>
   <body>
-    <table class='expressions relational'>
+    <table class='expressions escaped'>
       <tr>
-        <td>A simple string</td>
+        <td>A simple string (&amp;&amp;)</td>
         <td>A string with an inner {{model.number}} binding</td>
       </tr>
       <tr>
@@ -1093,6 +1126,8 @@ namespace Scryber.Core.UnitTests.Binding
                         new {name = "Last Item", index = 2, group = "one" }
                     }
             };
+            var existCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 
             var functions = new[]
             {
@@ -1167,20 +1202,20 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number &lt; 21 &amp;&amp; model.number &gt; 20),'Outside','Between')", result = "Between"},
                 //new {grp = "Logical Operators", name = "Not", function = "if(not(model.number &lt; 20 and model.number &gt; 21),'Between','Outside')", result = "Between"},
 
-                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = "30/06/2021 11:00:00"},
+                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01 AM"},
                 new {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
 
-                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "10/07/2021 11:00:00"},
-                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "30/06/2021 21:00:00"},
-                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "30/06/2021 11:00:02"},
-                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "30/06/2021 11:40:00"},
-                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "30/08/2021 11:00:00"},
-                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "30/06/2021 11:01:40"},
-                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "30/06/3021 11:00:00"},
+                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00 PM"},
+                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02 AM"},
+                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00 AM"},
+                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40 AM"},
+                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00 AM"},
 
                 new {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
@@ -1354,7 +1389,7 @@ namespace Scryber.Core.UnitTests.Binding
                 }
             }
 
-            
+            System.Threading.Thread.CurrentThread.CurrentCulture = existCulture;
 
 
         }

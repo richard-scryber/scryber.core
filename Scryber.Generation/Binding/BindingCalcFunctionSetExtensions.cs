@@ -29,13 +29,14 @@ namespace Scryber.Binding
         {
             _lock = new object();
             _all = new List<IFunction>();
-
+            //conversion
             _all.Add(new DateFunction());
             _all.Add(new DecimalFunction());
             _all.Add(new DoubleFunction());
             _all.Add(new IntegerFunction());
             _all.Add(new LongFunction());
             _all.Add(new StringFunction());
+            _all.Add(new BoolFunction());
             // Date
             _all.Add(new AddDaysFunction());
             _all.Add(new AddHoursFunction());
