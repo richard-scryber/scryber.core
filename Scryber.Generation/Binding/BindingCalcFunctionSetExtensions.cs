@@ -37,6 +37,7 @@ namespace Scryber.Binding
             _all.Add(new LongFunction());
             _all.Add(new StringFunction());
             _all.Add(new BoolFunction());
+            _all.Add(new TypeOfFunction());
             // Date
             _all.Add(new AddDaysFunction());
             _all.Add(new AddHoursFunction());
@@ -80,6 +81,8 @@ namespace Scryber.Binding
             _all.Add(new SumOfFunction());
             _all.Add(new TanFunction());
             _all.Add(new TruncateFunction());
+            _all.Add(new RadiansFunction());
+            _all.Add(new DegreesFunction());
             // Mathematical Constants
             _all.Add(new EFunction());
             _all.Add(new PIFunction());
@@ -97,6 +100,8 @@ namespace Scryber.Binding
             _all.Add(new EachOfFunction());
             _all.Add(new SortByFunction());
             _all.Add(new SelectWithFunction());
+            //TODO: Add Merge, Splice
+
             // Statistical
             _all.Add(new AverageFunction());
             _all.Add(new AverageOfFunction());
@@ -115,6 +120,9 @@ namespace Scryber.Binding
             _all.Add(new ConcatFunction());
             _all.Add(new IndexOfFunction());
             _all.Add(new JoinFunction());
+            _all.Add(new SplitFunction());
+            _all.Add(new ReplaceFunction());
+            //TODO: Add ToUpper, ToLower, Trim, TrimLeft and TrimRight functions
             //css
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());

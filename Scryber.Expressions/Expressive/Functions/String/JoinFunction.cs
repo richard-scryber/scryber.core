@@ -66,7 +66,7 @@ namespace Scryber.Expressive.Functions.String
 
                 sb.Append(value);
             }
-            else if (value is IEnumerable enumerate)
+            else if (Helpers.Collections.TryIsCollection(value, out var enumerate))
             {
                 foreach (var item in enumerate)
                 {
