@@ -33,6 +33,51 @@ namespace Scryber.Expressive.Helpers
                 return null;
             }
 
+            if (a is Newtonsoft.Json.Linq.JToken token) {
+                if(token.Type == Newtonsoft.Json.Linq.JTokenType.Integer
+                    || token.Type == Newtonsoft.Json.Linq.JTokenType.Float
+                    || token.Type == Newtonsoft.Json.Linq.JTokenType.String)
+                {
+                    a = (token as Newtonsoft.Json.Linq.JValue).Value;
+                }
+            }
+#if NET6_0_OR_GREATER
+            else if(a is System.Text.Json.JsonElement element)
+            {
+                if(element.ValueKind == System.Text.Json.JsonValueKind.Number)
+                {
+                    a = element.GetDouble();
+                }
+                else if(element.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    a = element.GetString();
+                }
+            }
+#endif
+            if (b is Newtonsoft.Json.Linq.JToken btoken)
+            {
+                if (btoken.Type == Newtonsoft.Json.Linq.JTokenType.Integer
+                    || btoken.Type == Newtonsoft.Json.Linq.JTokenType.Float
+                    || btoken.Type == Newtonsoft.Json.Linq.JTokenType.String)
+                {
+                    b = (btoken as Newtonsoft.Json.Linq.JValue).Value;
+                }
+            }
+#if NET6_0_OR_GREATER
+            else if (b is System.Text.Json.JsonElement belement)
+            {
+                if (belement.ValueKind == System.Text.Json.JsonValueKind.Number)
+                {
+                    b = belement.GetDouble();
+                }
+                else if (belement.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    b = belement.GetString();
+                }
+            }
+#endif
+
+
             a = ConvertIfStringOrUnit(a);
             b = ConvertIfStringOrUnit(b);
 

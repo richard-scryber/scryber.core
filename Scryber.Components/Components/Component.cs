@@ -606,6 +606,14 @@ namespace Scryber.Components
             }
         }
 
+        public bool HasID
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(this._id);
+            }
+        }
+
         /// <summary>
         /// Builds and returns the full id for this Component based upon its naming containers.
         /// </summary>

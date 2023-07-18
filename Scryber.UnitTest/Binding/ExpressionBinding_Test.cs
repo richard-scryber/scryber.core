@@ -283,6 +283,43 @@ namespace Scryber.Core.UnitTests.Binding
         }
 
         [TestMethod]
+        public void CountInnerArray_Test()
+        {
+            var model = new
+            {
+                number = 20.7,
+                boolean = true,
+                array = new[] { 10.0, 11.0, 12.0 },
+                str = "#330033",
+                bg = "#AAA",
+                padding = "20pt",
+                items = new[]
+                    {
+                        new {name = "First Item", index = 0},
+                        new {name = "Second Item", index = 1},
+                        new {name = "Third Item", index = 2},
+                    }
+            };
+
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var fSet = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+            var context = new Context(options, fSet, opSet);
+
+            Dictionary<string, object> vars = new Dictionary<string, object>();
+            vars.Add("model", model);
+
+            var func = "sum(model.array)";
+            //Assert.Inconclusive("Inner array declarations are not currently supported");
+
+            var expression = new Expression(func, context);
+            var value = expression.Evaluate(vars);
+
+            Assert.AreEqual(33.0, value, func + " did not evaluate correctly");
+        }
+
+
+        [TestMethod]
         public void AllExpressions_Test()
         {
             var model = new
@@ -446,6 +483,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Count", function = "count(12, 13, 14)", result = "3"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(model.array)", result = "3"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
+                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Min", function = "Min(model.array,13,14)", result = "10"},
@@ -840,6 +878,42 @@ namespace Scryber.Core.UnitTests.Binding
 
             Assert.AreEqual("False", lit.Text);
             Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+        }
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindCribsheetExpressions_PerformanceTest()
+        {
+            var path = "../../../Content/HTML/CribSheet/";
+
+            var content = File.ReadAllText(path + "CribSheet-Expressions.txt");
+            Assert.IsNotNull(content);
+
+            var style = File.ReadAllText(path + "Cribsheet-Expressions-CSS.txt");
+            Assert.IsNotNull(style);
+
+            var json = File.ReadAllText(path + "CribSheet-Expressions-JSON.txt");
+            Assert.IsNotNull(json);
+
+            var model = System.Text.Json.JsonDocument.Parse(json);
+
+            using var sr = new StringReader(content);
+            var doc = Document.ParseHtmlDocument(sr) as Scryber.Html.Components.HTMLDocument;
+            //doc.CacheStyleIdentifiers = true;
+
+            Assert.IsNotNull(doc);
+
+            var css = new Scryber.Html.Components.HTMLStyle();
+            css.Contents = style;
+
+            doc.Head.Contents.Add(css);
+            doc.Params.Add("model", model.RootElement);
+
+            using (var stream = DocStreams.GetOutputStream("BindCribsheetExpressions.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
 
         }
 

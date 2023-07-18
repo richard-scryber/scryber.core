@@ -1,0 +1,1234 @@
+<?scryber append-log='true' log-level='messages' ?>
+<html>
+
+<head>
+    <title>Crib Sheet - Expressions</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.css' />
+</head>
+
+<body title='Crib Sheet - Expressions'>
+  <h1 class='title'>CRIB SHEET<br/><span class='cb-type'>Expressions</span></h1>
+  <div class='branding' >
+    <i class='fa fa-tint' ></i>&nbsp;<span class='branding-name' >Paperwork</span>
+  </div>
+  <div class='about'></div>
+  <div class='history' ></div>
+  <div class='preamble'>
+    <p>The following is a table of all the expressions supported in Paperwork<br/>
+    They are divided into the following groups, and can be combined to perform multiple calculations and evaluations.<br/>
+    All expressions support the binding of the 'model' values directly into the expression, and are split into the following sections:</p>
+
+    <dl class='toc'>
+      <dt><a href='#binary-ops' >The binary operators</a><dt>
+      <dd>+, -, *, /, % along with parentheses, bitwise, and coalescing</dd>
+      <dt><a href='#relational-ops' >The relational operators</a></dt>
+      <dd>&gt;, &lt;, ==, &gt;,&lt;, &gt;=, &lt;=, !=, &lt;&gt;</dd>
+    </dl>
+    <p>To bind expressions wrap them in a double curly brackets such as \{{ ... }}\.</p>
+  </div>
+  <section title='Expression Data'>
+    <h2 class='sub-title' >Expression Data</h2>
+    <p>The following data model values are used through-out the expressions for evaluation purposes</p>
+    <table class='expressions' >
+      <tr>
+        <td class='name'>model.number</td>
+        <td>{{model.number}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.int</td>
+        <td>{{model.int}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.boolean</td>
+        <td>{{model.boolean}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.date</td>
+        <td>{{model.date}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.array</td>
+        <td>{{model.array}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.color</td>
+        <td>{{model.color}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.bg</td>
+        <td>{{model.bg}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.padding</td>
+        <td>{{model.padding}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.items</td>
+        <td>{{model.items}}</td>
+      </tr>
+      <tr>
+        <td class='name'>model.nested</td>
+        <td>{{model.nested}}</td>
+      </tr>
+    </table>
+  </section>
+  <section title='Expression Types'>
+    <h2 class='sub-title' >Expression Types</h2>
+    <table class='expressions' >
+      <tr>
+        <td class='name'>Property (.) dot</td>
+        <td>\{{model.int}}\</td>
+        <td>{{model.int}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Array Indexor</td>
+        <td>\{{model.array[2]}}\</td>
+        <td>{{model.array[2]}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Array Indexor Property</td>
+        <td>\{{model.items[1].name}}\</td>
+        <td>{{model.items[1].name}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Current item (.property)</td>
+        <td>
+          ... \{{.name}}\ ...
+        <td>
+          <template data-bind='{{model.items}}' >
+            <span>{{concat(.name, ' ')}}</span>
+          </template>
+        </td>
+      </tr>
+      <tr>
+        <td class='name'>Functions</td>
+        <td>\{{count(model.array)}}\</td>
+        <td>{{count(model.array)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Constant</td>
+        <td>\{{Pi}}\</td>
+        <td>{{Pi}}</td>
+      </tr>
+      <tr>
+        <td class='name'>CSS Var</td>
+        <td>var(model.color)</td>
+        <td>{{var(model.color)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>CSS Calc</td>
+        <td>calc(concat(model.int/100.0,"%"))</td>
+        <td>{{calc(concat(model.int/100.0,"%"))}}</td>
+      </tr>
+    </table>
+  </section>
+  
+  <!-- Binary Operators -->
+  
+  <section title='Binary Operators'>
+  	<h2 id='binary-ops' class='sub-title'>Binary Operators</h2>
+    <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>Plus (+)</td></tr>
+      <tr><td>Minus (-)</td></tr>
+      <tr><td>Multiply (*)</td></tr>
+      <tr><td>Divide (/)</td></tr>
+      <tr><td>Modulo (%)</td></tr>
+      <tr><td>Bitwise And (&amp;)</td></tr>
+      <tr><td>Bitwise Or (|)</td></tr>
+      <tr><td>Bitwise Left (&lt;&lt;)</td></tr>
+      <tr><td>Bitwise Right (&gt;&gt;)</td></tr>
+      <tr><td>Null coalesce (??)</td></tr>
+    </table>
+    <table class='expressions binary' >
+      <tr>
+        <td class='name'>Plus (+)</td>
+        <td>12 + 4</td>
+        <td class='result'>{{12 + 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Plus (+)</td>
+        <td>12 + model.number</td>
+        <td class='result'>{{12 + model.number}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Minus (-)</td>
+        <td>50 - 4</td>
+        <td class='result'>{{50 - 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Minus (-)</td>
+        <td>50 - model.number</td>
+        <td class='result'>{{50 - model.number}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Multiply (*)</td>
+        <td>12 * 4</td>
+        <td class='result'>{{12 * 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Multiply (*)</td>
+        <td>13 * model.int</td>
+        <td class='result'>{{13*model.int}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Divide (/)</td>
+        <td>100 / 4</td>
+        <td class='result'>{{100 / 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Divide (/)</td>
+        <td>100 / model.number</td>
+        <td class='result'>{{100 / model.number}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Modulo (%)</td>
+        <td>100 % 3</td>
+        <td class='result'>{{100 % 3}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Modulo (%)</td>
+        <td>model.int % 3</td>
+        <td class='result'>{{model.int % 3}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Modulo (%)</td>
+        <td>model.int % 3</td>
+        <td class='result'>{{model.int % 3}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Mixed, natural</td>
+        <td>12 + 2 - 6 * 2 / 4</td>
+        <td class='result'>{{12 + 2 - 6 * 2 / 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Mixed, forced</td>
+        <td>((12 + 2) - 6) * (2 / 4)</td>
+        <td class='result'>{{((12 + 2) - 6) * (2 / 4)}}</td>
+      </tr>
+    </table>
+    <table class='expressions binary'>
+      <tr>
+        <td class='name'>Bitwise And (&amp;)*</td>
+        <td>11 &amp; 7</td>
+        <td class='result'>{{11 &amp; 7}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Bitwise Or (|)</td>
+        <td>11 | 7</td>
+        <td class='result'>{{11 | 7}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Bitwise Left (&lt;&lt;)*</td>
+        <td>model.int &lt;&lt; 2</td>
+        <td class='result'>{{model.int &lt;&lt; 2}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Bitwise Right (&gt;&gt;)</td>
+        <td>model.int &gt;&gt; 2</td>
+        <td class='result'>{{model.int >> 2}}</td>
+      </tr>
+    </table>
+    <table class='expressions binary'>
+      <tr>
+        <td class='name'>Null coalesce (??)</td>
+        <td>model.number ?? 4</td>
+        <td class='result'>{{model.number ?? 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Null coalesce (??)</td>
+        <td>model.notset ?? 4</td>
+        <td class='result'>{{model.notset ?? 4}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Null coalesce (??)</td>
+        <td>(notset ?? 4) * 2</td>
+        <td class='result'>{{(notset ?? 4) * 2}}</td>
+      </tr>
+    </table>
+    <div>* <span class='footnote' >Within the binding expression the &lt; and &amp; <strong>must</strong> be encoded as &amp;amp;lt; or &amp;amp;amp; respectively</span></div>
+  </section>
+  
+  <!-- Relational Operators -->
+  
+  <section title='Relational Operators'>
+  	<h2 id='relational-ops' class='sub-title'>Relational Operators</h2>
+    <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>Equal (==)</td></tr>
+      <tr><td>Not Equal (!=)</td></tr>
+      <tr><td>Less Than (&lt;)</td></tr>
+      <tr><td>More Than (&gt;)</td></tr>
+      <tr><td>Less Than Equal (&lt;=)</td></tr>
+      <tr><td>More Than Equal (&gt;=)</td></tr>
+    </table>
+    <table class='expressions relational'>
+      <tr>
+        <td class='name'>Equal (==)</td>
+        <td>20.9 == 20.9</td>
+        <td class='result'>{{20.9 == 20.9}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Equal (==)</td>
+        <td>model.number == 20.0</td>
+        <td class='result'>{{model.number == 20.0}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Equal (==)</td>
+        <td>if(model.number == 20.9,'Equal', 'Not equal')</td>
+        <td class='result'>{{if(model.number == 20.9 , 'Equal', 'Not equal')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Equal (==)</td>
+        <td>if(model.number == 20.0,'Equal', 'Not equal')</td>
+        <td class='result'>{{if(model.number == 20.0 , 'Equal', 'Not equal')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Equal Null</td>
+        <td>if(model.number == null,'Is Null','Not Null')</td>
+        <td class='result'>{{if(model.number == null,'Is Null','Not Null')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Equal Null</td>
+        <td>if(model.notset == null,"Is Null","Not Null")</td>
+        <td class='result'>{{if(model.notset == null,"Is Null","Not Null")}}</td>
+      </tr>
+    </table>
+    <table class='expressions relational'>
+      <tr>
+        <td class='name'>Not Equal (!=)</td>
+        <td>20.9 != 20.9</td>
+        <td class='result'>{{20.9 != 20.9}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not Equal (!=)</td>
+        <td>model.number != 20.0</td>
+        <td class='result'>{{model.number != 20.0}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not Equal (!=)</td>
+        <td>if(model.number != 20.9,'Equal', 'Not equal')</td>
+        <td class='result'>{{if(model.number != 20.9 , 'Not equal', 'Equal')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not Equal (!=)</td>
+        <td>if(model.number != 20.0,'Equal', 'Not equal')</td>
+        <td class='result'>{{if(model.number != 20.0 , 'Not equal', 'Equal')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not Equal to null</td>
+        <td>if(model.number != null,'Is Null','Not Null')</td>
+        <td class='result'>{{if(model.number != null,'Not Null','Is Null')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not Equal to null</td>
+        <td>if(model.notset != null,"Is Null","Not Null")</td>
+        <td class='result'>{{if(model.notset != null,"Not Null","Is Null")}}</td>
+      </tr>
+    </table>
+    <table class='expressions relational'>
+      <tr>
+        <td class='name'>Less Than (&lt;)*</td>
+        <td>20.9 &lt; 20.9</td>
+        <td class='result'>{{20.9 &lt; 20.9}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Less Than (&lt;)*</td>
+        <td>model.number &lt; 30.0</td>
+        <td class='result'>{{model.number &lt; 30.0}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Less Than (&lt;)*</td>
+        <td>if(model.number &lt; 20,'Less', 'More')</td>
+        <td class='result'>{{if(model.number &lt; 20,'Less', 'More')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>More Than (&gt;)</td>
+        <td>20.9 &gt; 20.9</td>
+        <td class='result'>{{20.9 > 20.9}}</td>
+      </tr>
+      <tr>
+        <td class='name'>More Than (&gt;)</td>
+        <td>model.number &gt; 30.0</td>
+        <td class='result'>{{model.number > 30.0}}</td>
+      </tr>
+      <tr>
+        <td class='name'>More Than (&gt;)</td>
+        <td>if(model.number &gt; 20,'More', 'Less')</td>
+        <td class='result'>{{if(model.number > 20,'More', 'Less')}}</td>
+      </tr>
+    </table>
+    <table class='expressions relational'>
+      <tr>
+        <td class='name'>Less than or equal (&lt;=)*</td>
+        <td>20.9 &lt;= 20.9</td>
+        <td class='result'>{{20.9 &lt;= 20.9}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Less than or equal (&lt;=)*</td>
+        <td>model.number &lt;= 30.0</td>
+        <td class='result'>{{model.number &lt;= 30.0}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Less than or equal (&lt;=)*</td>
+        <td>if(model.number &lt;= 20,'Less', 'More')</td>
+        <td class='result'>{{if(model.number &lt;= 20,'Less', 'More')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Greater than or equal (&gt;=)*</td>
+        <td>20.9 &gt;= 20.9</td>
+        <td class='result'>{{20.9 >= 20.9}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Greater than or equal (&gt;=)*</td>
+        <td>model.number &gt;= 30.0</td>
+        <td class='result'>{{model.number >= 30.0}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Greater than or equal (&gt;=)*</td>
+        <td>if(model.number &gt;= 20,'Less', 'More')</td>
+        <td class='result'>{{if(model.number &gt;= 20,'Less', 'More')}}</td>
+      </tr>
+    </table>
+    <div>* <span class='footnote' >Within the binding expression the &lt; <strong>must</strong> be encoded as &amp;amp;lt;</span></div>
+  </section>
+  <section title='Logical Operators'>
+    <h2 id='logical-ops' class='sub-title'>Logical Operators</h2>
+    <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>And (&amp;&amp;)</td></tr>
+      <tr><td>Or (||)</td></tr>
+      <tr><td>Not (!;)</td></tr>
+    </table>
+    <table class='expressions logical'>
+      <tr>
+        <td class='name'>And (&amp;&amp;)</td>
+        <td>true &amp;&amp; false</td>
+        <td class='result'>{{true &amp;&amp; false}}</td>
+      </tr>
+      <tr>
+        <td class='name'>And (&amp;&amp;)</td>
+        <td>model.boolean &amp;&amp; true</td>
+        <td class='result'>{{model.boolean &amp;&amp; true}}</td>
+      </tr>
+      <tr>
+        <td class='name'>And (&amp;&amp;)</td>
+        <td>if(model.number &lt; 21 &amp;&amp; model.number > 20,'Between','Outside')</td>
+        <td class='result'>{{if(model.number &lt; 21 &amp;&amp; model.number > 20,'Between','Outside')}}</td>
+      </tr>
+      
+      <tr>
+        <td class='name'>Or (||)</td>
+        <td>true || false</td>
+        <td class='result'>{{true || false}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Or (||)</td>
+        <td>boolean(10) || false</td>
+        <td class='result'>{{"true" || false}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Or (||)</td>
+        <td>model.boolean || true</td>
+        <td class='result'>{{model.boolean || true}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Or (||)*</td>
+        <td>if(model.number &lt; 20 || model.number > 21,'Outside','Between')</td>
+        <td class='result'>{{if(model.number &lt; 20 || model.number > 21,'Outside','Between')}}</td>
+      </tr>
+      
+      <tr>
+        <td class='name'>Not (!)</td>
+        <td>!true</td>
+        <td class='result'>{{!true}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not (!)</td>
+        <td>!boolean(10)</td>
+        <td class='result'>{{!boolean(10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not (!)</td>
+        <td>!(model.number &gt; 30.0)</td>
+        <td class='result'>{{!(model.number > 30.0)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not (!)</td>
+        <td>if(!(model.number &gt; 20),'Less', 'More')</td>
+        <td class='result'>{{if(!(model.number > 20),'Less', 'More')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Not Not (!!) **</td>
+        <td>!(!model.number)</td>
+        <td class='result'>{{!(!model.number)}}</td>
+      </tr>
+    </table>
+    <div>* <span class='footnote' >Within the binding expression the &lt; <strong>must</strong> be encoded as &amp;amp;lt;</span></div>
+    <div>** <span class='footnote' >The !! operator must <strong>currently</strong> be separated by parentheses e.g. !(!true), directly using !!true will cause an error</span></div>
+  </section>
+  <section title='Conversion Functions'>
+    <h2 id='conversion-func' class='sub-title'>Conversion Functions</h2>
+    <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>boolean()</td></tr>
+      <tr><td>decimal()</td></tr>
+      <tr><td>double()</td></tr>
+      <tr><td>integer()</td></tr>
+      <tr><td>string()</td></tr>
+      <tr><td>date()</td></tr>
+    </table>
+    <table class='expressions conversion'>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean(1)</td>
+        <td class='result'>{{boolean(1)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean(0)</td>
+        <td class='result'>{{boolean(0)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean(-1)</td>
+        <td class='result'>{{boolean(-1)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean(model.number)</td>
+        <td class='result'>{{boolean(model.number)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean("")</td>
+        <td class='result'>{{boolean("")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean("false")</td>
+        <td class='result'>{{boolean("false")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>boolean(value)</td>
+        <td>boolean(model.array)</td>
+        <td class='result'>{{boolean(model.array)}}</td>
+      </tr>
+    </table>
+    <table class='expressions conversion'>
+      <tr>
+        <td class='name'>decimal(value)</td>
+        <td>decimal(0)</td>
+        <td class='result'>{{decimal(0)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>decimal(value)</td>
+        <td>decimal("0.25")</td>
+        <td class='result'>{{decimal("0.25")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>decimal(value)</td>
+        <td>decimal(false)</td>
+        <td class='result'>{{decimal(false)}}</td>
+      </tr>
+    </table>
+    <table class='expressions conversion'>
+      <tr>
+        <td class='name'>double(value)</td>
+        <td>double(0)</td>
+        <td class='result'>{{double(0)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>double(value)</td>
+        <td>double("0.25")</td>
+        <td class='result'>{{double("0.25")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>double(value)</td>
+        <td>double(false)</td>
+        <td class='result'>{{double(false)}}</td>
+      </tr>
+    </table>
+    <table class='expressions conversion'>
+      <tr>
+        <td class='name'>integer(value)</td>
+        <td>integer(0)</td>
+        <td class='result'>{{integer(0)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>integer(value)</td>
+        <td>integer("10")</td>
+        <td class='result'>{{integer("10")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>integer(value)</td>
+        <td>integer(false)</td>
+        <td class='result'>{{integer(false)}}</td>
+      </tr>
+    </table>
+    <table class='expressions conversion'>
+      <tr>
+        <td class='name'>string(value)</td>
+        <td>string(10 + 1)</td>
+        <td class='result'>{{string(10 + 1)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>string(value)</td>
+        <td>string(10) + 1</td>
+        <td class='result'>{{string(10) + 1}}</td>
+      </tr>
+       <tr>
+        <td class='name'>string(value, format)</td>
+        <td>string(10.3456, '##0.00')</td>
+        <td class='result'>{{string(10.3456,'##0.00')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>string(value)</td>
+        <td>string(date())</td>
+        <td class='result'>{{string(date())}}</td>
+      </tr>
+      <tr>
+        <td class='name'>string(value, format)</td>
+        <td>string(date(),"dd MMM yyyy")</td>
+        <td class='result'>{{string(date(), "dd MMM yyyy")}}</td>
+      </tr>
+    </table>
+    <div>* <span class='footnote' >Use the round(), ceiling() or floor() functions to convert floating point values to integer values.</span></div>
+    <table class='expressions conversion'>
+      <tr>
+        <td class='name'>date()*</td>
+        <td>date()</td>
+        <td class='result'>{{date()}}</td>
+      </tr>
+      <tr>
+        <td class='name'>date(value)</td>
+        <td>date("12 June 2023")</td>
+        <td class='result'>{{date("12 June 2023")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>date(value)</td>
+        <td>date("12 June 2023 11:25:02")</td>
+        <td class='result'>{{date("12 June 2023 11:25:02")}}</td>
+      </tr>
+      
+      <tr>
+        <td class='name'>date(value, format)</td>
+        <td>date("12 06 2023", "dd MM yyyy")</td>
+        <td class='result'>{{date("12 06 2023", "dd MM yyyy")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>date(value, format)</td>
+        <td>date("12 06 2023", "MM dd yyyy")</td>
+        <td class='result'>{{date("12 06 2023", "MM dd yyyy")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>date(value, format)</td>
+        <td>string(date("12 06 2023", "MM dd yyyy"),"dd MMM yyyy")</td>
+        <td class='result'>{{string(date("12 06 2023", "MM dd yyyy"),"dd MMM yyyy")}}</td>
+      </tr>
+    </table>
+    <div>* <span class='footnote' >Without a parameter provided the date() function will return the current date time</span></div>
+  </section>
+  <section title='Mathematical Functions'>
+    <h2 id='math-func' class='sub-title' >Mathematical Functions</h2>
+    <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>abs()</td></tr>
+      <tr><td>sign()</td></tr>
+      <tr><td>round()</td></tr>
+      <tr><td>ceiling()</td></tr>
+      <tr><td>floor()</td></tr>
+      <tr><td>truncate()</td></tr>
+      <tr><td>cos()</td></tr>
+      <tr><td>sin()</td></tr>
+      <tr><td>tan()</td></tr>
+      <tr><td>acos()</td></tr>
+      <tr><td>asin()</td></tr>
+      <tr><td>atan()</td></tr>
+      <tr><td>deg()</td></tr>
+      <tr><td>rad()</td></tr>
+      <tr><td>pow()</td></tr>
+      <tr><td>sqrt()</td></tr>
+      <tr><td>exp()</td></tr>
+      <tr><td>log()</td></tr>
+      <tr><td>log10()</td></tr>
+      <tr><td>random()</td></tr>
+    </table>
+    <table class='expressions mathematical'>
+      <tr>
+        <td class='name'>Constant - Pi</td>
+        <td>Pi</td>
+        <td class='result'>{{Pi}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Constant - Pi</td>
+        <td>Pi/2</td>
+        <td class='result'>{{Pi/2}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Constnat - E</td>
+        <td>E</td>
+        <td class='result'>{{E}}</td>
+      </tr>
+      <tr>
+        <td class='name'>Constnat - E</td>
+        <td>E/2</td>
+        <td class='result'>{{E/2}}</td>
+      </tr>
+    </table>
+    <table class='expressions mathematical'>
+      <tr>
+        <td class='name'>abs(value)</td>
+        <td>abs(10)</td>
+        <td class='result'>{{abs(10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>abs(value)</td>
+        <td>abs(-10)</td>
+        <td class='result'>{{abs(-10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>abs(value)</td>
+        <td>abs(model.number)</td>
+        <td class='result'>{{abs(model.number)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>sign(value)</td>
+        <td>sign(10)</td>
+        <td class='result'>{{sign(10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>sign(value)</td>
+        <td>sign(-10)</td>
+        <td class='result'>{{sign(-10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>sign(value)</td>
+        <td>sign(0)</td>
+        <td class='result'>{{sign(0)}}</td>
+      </tr>
+    </table>
+    <table class='expressions mathematical'>      
+      <tr>
+        <td class='name'>round(value)</td>
+        <td>round(20.3456)</td>
+        <td class='result'>{{round(20.3456)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>round(value)</td>
+        <td>round(model.number)</td>
+        <td class='result'>{{round(model.number)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>round(value, precision)</td>
+        <td>round(20.3456, 3)</td>
+        <td class='result'>{{round(20.3456,3)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>round(value, precision)</td>
+        <td>round(model.number, 3)</td>
+        <td class='result'>{{round(model.number,3)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>ceiling(value)</td>
+        <td>ceiling(20.3456)</td>
+        <td class='result'>{{ceiling(20.3456)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>ceiling(value)</td>
+        <td>ceiling(model.number)</td>
+        <td class='result'>{{ceiling(model.number)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>floor(value)</td>
+        <td>floor(20.3456)</td>
+        <td class='result'>{{floor(20.3456)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>floor(value)</td>
+        <td>floor(model.number)</td>
+        <td class='result'>{{floor(model.number)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>truncate(value)</td>
+        <td>truncate(20.3456)</td>
+        <td class='result'>{{truncate(20.3456)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>truncate(value)</td>
+        <td>truncate(model.number)</td>
+        <td class='result'>{{truncate(model.number)}}</td>
+      </tr>
+    </table>
+    <table class='expressions mathematical'>
+      <tr>
+        <td class='name'>cos(value)</td>
+        <td>cos(Pi/2)</td>
+        <td class='result'>{{cos(Pi/2)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>sin(value)</td>
+        <td>sin(Pi/2)</td>
+        <td class='result'>{{sin(Pi/2)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>tan(value)</td>
+        <td>tan(Pi/4)</td>
+        <td class='result'>{{tan(Pi/4)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>acos(value)</td>
+        <td>acos(0.5)</td>
+        <td class='result'>{{acos(0.5)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>asin(value)</td>
+        <td>asin(0.5)</td>
+        <td class='result'>{{asin(0.5)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>atan(value)</td>
+        <td>atan(0.5)</td>
+        <td class='result'>{{atan(0.5)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>deg(value)</td>
+        <td>deg(Pi/2)</td>
+        <td class='result'>{{deg(Pi/2)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>rad(value)</td>
+        <td>rad(90)</td>
+        <td class='result'>{{rad(90)}}</td>
+      </tr>
+    </table>
+    <table class='expressions mathematical'>
+      <tr>
+        <td class='name'>pow(value, factor)</td>
+        <td>pow(10,2)</td>
+        <td class='result'>{{pow(10,2)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>pow(value, factor)</td>
+        <td>pow(100, 0.5)</td>
+        <td class='result'>{{pow(100, 0.5)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>pow(value, factor)</td>
+        <td>pow(model.number, 2)</td>
+        <td class='result'>{{pow(model.number, 2)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>sqrt(value)</td>
+        <td>sqrt(100)</td>
+        <td class='result'>{{sqrt(100)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>sqrt(value)</td>
+        <td>sqrt(pow(model.number,2))</td>
+        <td class='result'>{{sqrt(pow(model.number,2))}}</td>
+      </tr>
+      <tr>
+        <td class='name'>exp(value)</td>
+        <td>exp(0.5)</td>
+        <td class='result'>{{exp(0.5)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>exp(value)</td>
+        <td>exp(model.number/10)</td>
+        <td class='result'>{{exp(model.number/10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>log(value, base)</td>
+        <td>log(5,2)</td>
+        <td class='result'>{{log(5,2)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>log(value, base)</td>
+        <td>log(model.number,10)</td>
+        <td class='result'>{{log(model.number,10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>log10(value)</td>
+        <td>log10(model.number)</td>
+        <td class='result'>{{log10(model.number)}}</td>
+      </tr>
+    </table>
+    <table class='expressions mathematical'>
+      <tr>
+        <td class='name'>random(min, max)</td>
+        <td>random(2,10)</td>
+        <td class='result'>{{random(2,10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>random(min, max)</td>
+        <td>random(0.0, 0.5)</td>
+        <td class='result'>{{random(0.0, 0.5)}}</td>
+      </tr>
+    </table>
+  </section>
+  <section title='String Functions'>
+    <h2 id='string-func' class='sub-title' >String Functions</h2>
+     <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>concat()</td></tr>
+      <tr><td>join()</td></tr>
+      <tr><td>split()</td></tr>
+      <tr><td>replace()</td></tr>
+      <tr><td>startsWith()</td></tr>
+      <tr><td>endsWith()</td></tr>
+      <tr><td>contains()</td></tr>
+      <tr><td>indexOf()</td></tr>
+      <tr><td>length()</td></tr>
+      <tr><td>substring()</td></tr>
+      <tr><td>padleft()</td></tr>
+      <tr><td>padright()</td></tr>
+      <tr><td>regex()</td></tr>
+    </table>
+    <table class='expressions string'>
+      <tr>
+        <td class='name'>concat(value1, value2....)</td>
+        <td>concat("this", " and this")</td>
+        <td class='result'>{{concat("this", " and this")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>concat(value1, value2....)</td>
+        <td>concat(model.array)</td>
+        <td class='result'>{{concat(model.array)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>concat(value1, value2....)</td>
+        <td>concat("-", model.array, "-")</td>
+        <td class='result'>{{concat("-", model.array, "-")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>join(separator, value1, value2....)</td>
+        <td>join(", ","this", " and this")</td>
+        <td class='result'>{{join(", ","this", " and this")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>join(separator, value1, value2....)</td>
+        <td>join(", ",model.array)</td>
+        <td class='result'>{{join(", ",model.array)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>join(separator, value1, value2....)</td>
+        <td>join(", ", 9, model.array, 13)</td>
+        <td class='result'>{{join(", ", 9, model.array, 13)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>split(value, separator)</td>
+        <td>count(split("this and this", ' '))</td>
+        <td class='result'>{{count(split("this and this", ' '))}}</td>
+      </tr>
+      <tr>
+        <td class='name'>split(value, separator)</td>
+        <td>join('-', split("this and this", ' '))</td>
+        <td class='result'>{{join('-', split("this and this", ' '))}}</td>
+      </tr>
+      <tr>
+        <td class='name'>replace(value, toreplace, replacement)</td>
+        <td>replace("this and this", ' ', '-'))</td>
+        <td class='result'>{{replace("this and this", ' ', '-')}}</td>
+      </tr>
+    </table>
+    <table class='expressions string'>
+      <tr>
+        <td class='name'>startsWith(value, match)</td>
+        <td>startsWith("the quick brown fox", "th")</td>
+        <td class='result'>{{startsWith("the quick brown fox", "th")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>startsWith(value, match)</td>
+        <td>startsWith(model.color, "#")</td>
+        <td class='result'>{{startsWith(model.color, "#")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>startsWith(value, match)</td>
+        <td>startsWith(model.color, "rgb(")</td>
+        <td class='result'>{{startsWith(model.color, "rgb(")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>endsWith(value, match)</td>
+        <td>endsWith("the quick brown fox", "ox")</td>
+        <td class='result'>{{endsWith("the quick brown fox", "ox")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>endsWith(value, match)</td>
+        <td>endsWith(model.color, "33")</td>
+        <td class='result'>{{endsWith(model.color, "33")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>endsWith(value, match)</td>
+        <td>endsWith(model.color, ")")</td>
+        <td class='result'>{{endsWith(model.color, ")")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>contains(value, match)</td>
+        <td>contains("the quick brown fox", "qu")</td>
+        <td class='result'>{{contains("the quick brown fox", "qu")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>contains(value, match)</td>
+        <td>contains(model.color, "33")</td>
+        <td class='result'>{{contains(model.color, "33")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>contains(value, match)</td>
+        <td>contains(model.color, "255")</td>
+        <td class='result'>{{contains(model.color, "255")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>indexOf(value, match)</td>
+        <td>indexOf("the quick brown fox", "qu")</td>
+        <td class='result'>{{indexOf("the quick brown fox", "qu")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>indexOf(value, match)</td>
+        <td>indexOf(model.color, "33")</td>
+        <td class='result'>{{indexOf(model.color, "33")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>indexOf(value, match)</td>
+        <td>indexOf(model.color, "255")</td>
+        <td class='result'>{{indexOf(model.color, "255")}}</td>
+      </tr>
+    </table>
+    <table class='expressions string' >
+      <tr>
+        <td class='name'>length(value)</td>
+        <td>length("the quick brown fox")</td>
+        <td class='result'>{{length("the quick brown fox")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>length(value)</td>
+        <td>length(model.color)</td>
+        <td class='result'>{{length(model.color)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>substring(value, start)</td>
+        <td>substring("the quick brown fox", 4)</td>
+        <td class='result'>{{substring("the quick brown fox", 4)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>substring(value, start)</td>
+        <td>substring(model.color, 1)</td>
+        <td class='result'>{{substring(model.color, 1)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>substring(value, start, len)</td>
+        <td>substring("the quick brown fox", 4, 5)</td>
+        <td class='result'>{{substring("the quick brown fox", 4, 5)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>substring(value, start, len)</td>
+        <td>substring(model.color, 1, 2)</td>
+        <td class='result'>{{substring(model.color, 1, 2)}}</td>
+      </tr>
+    </table>
+    
+    <table class='expressions string' >
+      <tr>
+        <td class='name'>padleft(value, total, char)</td>
+        <td>padleft("the quick brown", 20, '-')</td>
+        <td class='result'>{{padleft("the quick brown", 20, '-')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>padleft(value, total, char)</td>
+        <td>padleft(model.color, 15, '#')</td>
+        <td class='result'>{{padleft(model.color, 10, '#')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>padleft(value, total, char)</td>
+        <td>padleft(model.color, 6, '#')</td>
+        <td class='result'>{{padleft(model.color, 6, '#')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>padright(value, total, char)</td>
+        <td>padright("the quick brown", 20, '-')</td>
+        <td class='result'>{{padright("the quick brown", 20, '-')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>padright(value, total, char)</td>
+        <td>padright(model.color, 15, '#')</td>
+        <td class='result'>{{padright(model.color, 10, '#')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>padright(value, total, char)</td>
+        <td>padright(model.color, 6, '#')</td>
+        <td class='result'>{{padright(model.color, 6, '#')}}</td>
+      </tr>
+    </table>
+      
+    <table class='expressions string' >
+      <tr>
+        <td class='name'>regex(value1, value2....)</td>
+        <td>regex('The quick brown fox','\squick\s')</td>
+        <td class='result'>{{regex('The quick brown fox','\squick\s')}}</td>
+      </tr>
+      <tr>
+        <td class='name'>regex(value1, value2....)</td>
+        <td>regex('The quick brown fox','\jump\s')</td>
+        <td class='result'>{{regex('The quick brown fox','\sjump\s')}}</td>
+      </tr>
+    </table>
+  </section>
+  <section title='Date Functions'>
+    <h2 id='date-func' class='sub-title' >Date Functions</h2>
+    <table class='legend'>
+      <thead><tr><td>Available</td></tr></thead>
+      <tr><td>date()</td></tr>
+      <tr><td>addMilliseconds()</td></tr>
+      <tr><td>addSeconds()</td></tr>
+      <tr><td>addMinutes()</td></tr>
+      <tr><td>addHours()</td></tr>
+      <tr><td>addDays()</td></tr>
+      <tr><td>addMonths()</td></tr>
+      <tr><td>addYears()</td></tr>
+      <tr><td>millisecondOf()</td></tr>
+      <tr><td>secondOf()</td></tr>
+      <tr><td>minuteOf()</td></tr>
+      <tr><td>hourOf()</td></tr>
+      <tr><td>monthOf()</td></tr>
+      <tr><td>yearOf()</td></tr>
+      <tr><td>millisecondsBetween()</td></tr>
+      <tr><td>secondsBetween()</td></tr>
+      <tr><td>minutesBetween()</td></tr>
+      <tr><td>hoursBetween()</td></tr>
+      <tr><td>daysBetween()</td></tr>
+    </table>
+    <table class='expressions date'>
+      <tr>
+        <td class='name'>date()*</td>
+        <td>date()</td>
+        <td class='result'>{{date()}}</td>
+      </tr>
+      <tr>
+        <td class='name'>date(value)</td>
+        <td>date("12 June 2023")</td>
+        <td class='result'>{{date("12 May 2023")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>date(value)</td>
+        <td>date(model.date)</td>
+        <td class='result'>{{date(model.date)}}</td>
+      </tr>
+    </table>
+    <table class='expressions date'>
+      <tr>
+        <td class='name'>addMilliseconds(date, ms)</td>
+        <td>addMilliseconds(date(), 60000)</td>
+        <td class='result'>{{addMilliseconds(date(), 60000)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addMilliseconds(date, ms)</td>
+        <td>addMilliseconds(model.date, model.int * 100)</td>
+        <td class='result'>{{addMilliseconds(model.date, model.int * 100)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addSeconds(date, sec)</td>
+        <td>addSeconds(date(), 61)</td>
+        <td class='result'>{{addSeconds(date(), 61)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addSeconds(date, sec)</td>
+        <td>addSeconds(model.date, model.int)</td>
+        <td class='result'>{{addSeconds(model.date, model.int)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addMinutes(date, mins)</td>
+        <td>addMinutes(date(), 62)</td>
+        <td class='result'>{{addMinutes(date(), 62)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addMinutes(date, mins)</td>
+        <td>addMinutes(model.date, model.int)</td>
+        <td class='result'>{{addMinutes(model.date, model.int)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addHours(date, hrs)</td>
+        <td>addHours(date(), 23)</td>
+        <td class='result'>{{addHours(date(), 23)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addHours(date, hrs)</td>
+        <td>addHours(model.date, model.int)</td>
+        <td class='result'>{{addHours(model.date, model.int)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addDays(date, days)</td>
+        <td>addDays(date(), 31)</td>
+        <td class='result'>{{addDays(date(), 31)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addDays(date, days)</td>
+        <td>addDays(model.date, model.int)</td>
+        <td class='result'>{{addDays(model.date, model.int)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addMonths(date, months)</td>
+        <td>addMonths(date(), 10)</td>
+        <td class='result'>{{addMonths(date(), 10)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addMonths(date, days)</td>
+        <td>addMonths(model.date, model.int)</td>
+        <td class='result'>{{addMonths(model.date, model.int)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addYears(date, years)</td>
+        <td>addYears(date(), 102)</td>
+        <td class='result'>{{addYears(date(), 102)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>addYears(date, months)</td>
+        <td>addYears(model.date, model.int)</td>
+        <td class='result'>{{addYears(model.date, model.int)}}</td>
+      </tr>
+    </table>
+      
+    <table class='expressions date' >
+      <tr>
+        <td class='name'>join(separator, value1, value2....)</td>
+        <td>join(", ","this", " and this")</td>
+        <td class='result'>{{join(", ","this", " and this")}}</td>
+      </tr>
+      <tr>
+        <td class='name'>join(separator, value1, value2....)</td>
+        <td>join(", ",model.array)</td>
+        <td class='result'>{{join(", ",model.array)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>join(separator, value1, value2....)</td>
+        <td>join(", ", 9, model.array, 13)</td>
+        <td class='result'>{{join(", ", 9, model.array, 13)}}</td>
+      </tr>
+      <tr>
+        <td class='name'>split(value, separator)</td>
+        <td>count(split("this and this", ' '))</td>
+        <td class='result'>{{count(split("this and this", ' '))}}</td>
+      </tr>
+      <tr>
+        <td class='name'>split(value, separator)</td>
+        <td>join('-', split("this and this", ' '))</td>
+        <td class='result'>{{join('-', split("this and this", ' '))}}</td>
+      </tr>
+      <tr>
+        <td class='name'>replace(value, toreplace, replacement)</td>
+        <td>replace("this and this", ' ', '-'))</td>
+        <td class='result'>{{replace("this and this", ' ', '-')}}</td>
+      </tr>
+    </table>
+  </section>
+  <footer>
+    <table class='foot'>
+      <tr>
+        <td class='first'>Crib sheet - Expressions</td>
+        <td><span>{{string(date(),"dd MMM yyyy")}}</span>
+        <td class='last'>Page <page/></td>
+      </tr>
+    </table>
+  </footer>
+</body>
+
+</html>

@@ -44,7 +44,22 @@ namespace Scryber.Expressive.Functions.Coalesce
 
 					if(null != one)
 					{
-						all.Add(one);
+						if (one is string s)
+						{
+							if (!string.IsNullOrEmpty(s))
+								all.Add(s);
+						}
+						else if (one is bool b)
+						{
+							if (b)
+							{
+								all.Add(one);
+							}
+						}
+						else if (!(one is DBNull))
+						{
+							all.Add(one);
+						}
 					}
 					
 				}

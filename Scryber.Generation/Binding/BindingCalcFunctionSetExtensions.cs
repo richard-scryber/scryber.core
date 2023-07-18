@@ -99,7 +99,7 @@ namespace Scryber.Binding
             _all.Add(new EachFunction());
             _all.Add(new EachOfFunction());
             _all.Add(new SortByFunction());
-            _all.Add(new SelectWithFunction());
+            _all.Add(new SelectWhereFunction());
             //TODO: Add Merge, Splice
 
             // Statistical
@@ -126,6 +126,8 @@ namespace Scryber.Binding
             //css
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());
+
+            _all.Add(new EvalFunction());
         }
 
         /// <summary>

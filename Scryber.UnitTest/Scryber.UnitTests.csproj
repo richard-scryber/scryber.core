@@ -55,6 +55,7 @@
     <Folder Include="Content\SVG\" />
     <Folder Include="Imaging\" />
     <Folder Include="Common\" />
+    <Folder Include="Content\HTML\CribSheet\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -72,6 +73,7 @@
     <None Remove="System.Text.Json" />
     <None Remove="Newtonsoft.Json" />
     <None Remove="Common\" />
+    <None Remove="Content\HTML\CribSheet\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

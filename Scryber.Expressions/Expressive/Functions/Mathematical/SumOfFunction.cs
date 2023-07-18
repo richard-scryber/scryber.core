@@ -33,7 +33,7 @@ namespace Scryber.Expressive.Functions.Mathematical
 
 			object total = 0;
 
-			if(value is IEnumerable enumerate)
+			if(Helpers.Collections.TryIsCollection(value, out IEnumerable enumerate))
 			{
 				foreach (var item in enumerate)
 				{

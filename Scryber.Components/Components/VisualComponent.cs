@@ -1655,6 +1655,8 @@ namespace Scryber.Components
 
         #region public string DataStyleIdentifier
 
+        private string _styleIdentifier;
+
         /// <summary>
         /// Gets the identifer for the style of this component that can uniquely identify any set of style attributes across a document
         /// </summary>
@@ -1662,8 +1664,14 @@ namespace Scryber.Components
         [PDFDesignable("Style Cache Key", Ignore = true)]
         public virtual string DataStyleIdentifier
         {
-            get;
-            set;
+            get
+            {
+                return _styleIdentifier;
+            }
+            set
+            {
+                this._styleIdentifier = value;
+            }
         }
 
         #endregion
@@ -1866,6 +1874,8 @@ namespace Scryber.Components
         }
 
         #endregion
+
+        
 
     }
 

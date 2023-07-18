@@ -6,7 +6,7 @@ using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Functions.Coalesce
 {
-	public class SelectWithFunction : FunctionBase
+	public class SelectWhereFunction : FunctionBase
 	{
 
         public override string Name
@@ -14,7 +14,7 @@ namespace Scryber.Expressive.Functions.Coalesce
 			get { return "SelectWhere"; }
 		}
 
-        public SelectWithFunction()
+        public SelectWhereFunction()
 		{
 		}
 
