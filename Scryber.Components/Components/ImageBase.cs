@@ -67,7 +67,12 @@ namespace Scryber.Components
             this.MinimumScaleReduction = config.ImagingOptions.MinimumScaleReduction;
             this.AllowMissingImages = config.ImagingOptions.AllowMissingImages;
         }
-        
+
+        public override string MapPath(string source, out bool isfile)
+        {
+            return base.MapPath(source, out isfile);
+        }
+
 
 
         /// <summary>
